@@ -1037,10 +1037,10 @@ namespace AngelLoader
 
                     if (fileName[fileName.Length - 1].IsDirSep()) continue;
 
-                    if (fileName.ContainsDirSep())
+                    if (fileName.Rel_ContainsDirSep())
                     {
                         Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.LastIndexOfDirSep())));
+                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
                     }
 
                     string extractedName = Path.Combine(fmInstalledPath, fileName);

@@ -440,15 +440,6 @@ namespace AL_Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsDirSep(this char character) => character is '/' or '\\';
 
-        #region Disabled until needed
-
-        /*
-        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
-        */
-
-        #endregion
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
 
@@ -461,10 +452,11 @@ namespace AL_Common
 
         /// <summary>
         /// Returns true if <paramref name="value"/> contains either directory separator character.
+        /// <para>Do NOT use for full (non-relative) paths as it will count the "\\" at the start of UNC paths! </para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool ContainsDirSep(this string value)
+        public static bool Rel_ContainsDirSep(this string value)
         {
             for (int i = 0; i < value.Length; i++) if (value[i].IsDirSep()) return true;
             return false;
@@ -472,18 +464,26 @@ namespace AL_Common
 
         /// <summary>
         /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
+        /// <para>Do NOT use for full (non-relative) paths as it will count the "\\" at the start of UNC paths! </para>
         /// </summary>
         /// <param name="value"></param>
         /// <param name="start"></param>
         /// <returns></returns>
-        public static int CountDirSeps(this string value, int start = 0)
+        public static int Rel_CountDirSeps(this string value, int start = 0)
         {
             int count = 0;
             for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
             return count;
         }
 
-        public static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
+        /// <summary>
+        /// <para>Do NOT use for full (non-relative) paths as it will count the "\\" at the start of UNC paths! </para>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="count"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        public static bool Rel_DirSepCountIsAtLeast(this string value, int count, int start = 0)
         {
             int foundCount = 0;
             for (int i = start; i < value.Length; i++)
@@ -498,11 +498,12 @@ namespace AL_Common
         /// <summary>
         /// Returns the number of directory separators in a string, earlying-out once it's counted <paramref name="maxToCount"/>
         /// occurrences.
+        /// <para>Do NOT use for full (non-relative) paths as it will count the "\\" at the start of UNC paths! </para>
         /// </summary>
         /// <param name="value"></param>
         /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
         /// <returns></returns>
-        public static int CountDirSepsUpToAmount(this string value, int maxToCount)
+        public static int Rel_CountDirSepsUpToAmount(this string value, int maxToCount)
         {
             int foundCount = 0;
             for (int i = 0; i < value.Length; i++)
@@ -519,10 +520,11 @@ namespace AL_Common
 
         /// <summary>
         /// Returns the last index of either directory separator character in <paramref name="value"/>.
+        /// <para>Do NOT use for full (non-relative) paths as it will count the "\\" at the start of UNC paths! </para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static int LastIndexOfDirSep(this string value)
+        public static int Rel_LastIndexOfDirSep(this string value)
         {
             int i1 = value.LastIndexOf('/');
             int i2 = value.LastIndexOf('\\');

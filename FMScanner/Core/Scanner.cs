@@ -542,7 +542,7 @@ namespace FMScanner
                             // Also maybe we would need to always extract them regardless for other reasons, but
                             // yeah.
                             if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                                (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                                (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                                   (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                                    fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
                                  dirSeps == 0))
@@ -555,13 +555,13 @@ namespace FMScanner
                                   || _scanOptions.ScanNewDarkRequired
 #endif
                                  ) &&
-                                     !entry.FileName.ContainsDirSep() &&
+                                     !entry.FileName.Rel_ContainsDirSep() &&
                                      (entry.FileName.EndsWithI(".mis") ||
                                       entry.FileName.EndsWithI(".gam")))
                             {
                                 fileNamesList.Add(entry.FileName);
                             }
-                            else if (!entry.FileName.ContainsDirSep() &&
+                            else if (!entry.FileName.Rel_ContainsDirSep() &&
                                      (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
                                       entry.FileName.EqualsI(FMFiles.FMIni) ||
                                       entry.FileName.EqualsI(FMFiles.ModIni)))
@@ -1369,8 +1369,8 @@ namespace FMScanner
             {
                 int lsi;
                 return path.PathStartsWithI(FMDirs.IntrfaceS) &&
-                       path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                       path.Length > (lsi = path.LastIndexOfDirSep()) + 5 &&
+                       path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                       path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
                        (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
                        (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
                        (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
@@ -1383,7 +1383,7 @@ namespace FMScanner
             {
                 int len = path.Length;
                 return path.PathStartsWithI(FMDirs.IntrfaceS) &&
-                       path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                       path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                        // We don't need to check the length because we only need length == 6 but by virtue of
                        // starting with "intrface/", our length is guaranteed to be at least 9
                        (path[len - 6] == 'r' || path[len - 6] == 'R') &&
@@ -1415,7 +1415,7 @@ namespace FMScanner
 
                     if (!t3Found &&
                         fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                        fn.CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
+                        fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
                         (fn.ExtIsIbt() ||
                         fn.ExtIsCbt() ||
                         fn.ExtIsGmp() ||
@@ -1434,7 +1434,7 @@ namespace FMScanner
                         t3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
                         continue;
                     }
-                    else if (!fn.ContainsDirSep() && fn.Contains('.'))
+                    else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
                     {
                         baseDirFiles.Add(new NameAndIndex(fn, index));
                         // Fallthrough so ScanCustomResources can use it
@@ -1512,7 +1512,7 @@ namespace FMScanner
                             fmd.HasCustomCreatures = true;
                         }
                         else if ((fmd.HasCustomScripts == null &&
-                                  !fn.ContainsDirSep() &&
+                                  !fn.Rel_ContainsDirSep() &&
                                   ScriptFileExtensions.Any(fn.EndsWithI)) ||
                                  (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                                   fn.HasFileExtension()))
@@ -1621,9 +1621,12 @@ namespace FMScanner
                         // I tried getting rid of this GetDirectories call, but it made things more complicated
                         // for SS2 fingerprinting and didn't result in a clear perf win. At least not warm. Meh.
                         var baseDirFolders = new List<string>();
-                        foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+                        foreach (string dir in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
                         {
-                            baseDirFolders.Add(f.Substring(f.LastIndexOfDirSep() + 1));
+                            // @DIRSEP: Even for UNC paths, FM working path has to be at least like \\netPC\some_directory
+                            // and we're getting dirs inside that, so it'll be at least \\netPC\some_directory\other
+                            // so we'll always end up with "other" (for example). So we're safe here.
+                            baseDirFolders.Add(dir.Substring(dir.Rel_LastIndexOfDirSep() + 1));
                         }
 
                         if (_scanOptions.ScanCustomResources)

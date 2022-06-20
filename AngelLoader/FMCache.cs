@@ -305,7 +305,7 @@ namespace AngelLoader
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string? t3ReadmeDir = null;
-                    int dirSeps = fn.CountDirSepsUpToAmount(2);
+                    int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
                     if (dirSeps == 1)
                     {
                         if (fn.PathStartsWithI(_t3ReadmeDir1S))
@@ -365,7 +365,7 @@ namespace AngelLoader
                     string fn = entry.FileName;
                     int dirSeps;
                     if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                        (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                        (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                           (fn.PathStartsWithI(_t3ReadmeDir1S) ||
                            fn.PathStartsWithI(_t3ReadmeDir2S))) ||
                          dirSeps == 0))

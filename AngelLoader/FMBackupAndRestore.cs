@@ -24,6 +24,9 @@ namespace AngelLoader
     // Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
     // for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
+    // @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
+    // Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
+
     internal static class FMBackupAndRestore
     {
         #region Private fields
@@ -419,14 +422,14 @@ namespace AngelLoader
                         {
                             var entry = archive.Entries[i];
                             string fn = entry.FullName;
-                            if (!fn.ContainsDirSep())
+                            if (!fn.Rel_ContainsDirSep())
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
                                 entry.ExtractToFile(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true);
                             }
                             else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                             {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                 entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
 
@@ -453,7 +456,7 @@ namespace AngelLoader
                                      (fm.Game == Game.SS2 &&
                                      (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                     entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                                 }
 
@@ -535,9 +538,9 @@ namespace AngelLoader
                                     continue;
                                 }
 
-                                if (fn.ContainsDirSep())
+                                if (fn.Rel_ContainsDirSep())
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                 }
 
                                 f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
