@@ -294,26 +294,23 @@ namespace FenGen
                 w.WL();
 
                 int count = Cache.GamesEnum.GameIndexEnumNames.Count;
+                var gameIndexName = Cache.GamesEnum.GameIndexName;
                 foreach (var gameSet in perGameSets)
                 {
-                    w.WL("internal static string " + gameSet.Key + "(GameIndex gameIndex)");
+                    w.WL("internal static string " + gameSet.Key + "(" + gameIndexName + " gameIndex) => gameIndex switch");
                     w.WL("{");
-                    w.WL("return");
-                    w.IncrementIndent();
                     // Loop through GameIndex count rather than game set count, so if our count mismatches we crash and error
                     for (int i = 0; i < count; i++)
                     {
                         var game = gameSet.Value[i];
                         string prefix = i < count - 1
-                            ? "gameIndex == GameIndex." + Cache.GamesEnum.GameIndexEnumNames[i] +
-                              " ? "
-                            : "";
-                        string suffix = i < count - 1 ? ":" : ";";
+                            ? gameIndexName + "." + Cache.GamesEnum.GameIndexEnumNames[i] + " => "
+                            : "_ => ";
+                        string suffix = i < count - 1 ? "," : "";
                         string line = prefix + "Misc.LText." + game.Section + "." + game.Field + suffix;
                         w.WL(line);
                     }
-                    w.DecrementIndent();
-                    w.WL("}");
+                    w.WL("};");
                     w.WL();
                 }
 
