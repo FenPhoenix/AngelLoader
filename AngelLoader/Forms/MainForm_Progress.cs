@@ -17,6 +17,7 @@ namespace AngelLoader.Forms
         private bool _progressBoxDarkModeEnabled;
         private void SetProgressBoxDarkModeEnabled(bool value)
         {
+            if (_progressBoxDarkModeEnabled == value) return;
             _progressBoxDarkModeEnabled = value;
             if (!_progressBoxConstructed) return;
 
@@ -27,9 +28,8 @@ namespace AngelLoader.Forms
         {
             if (_progressBoxConstructed) return;
 
-            ProgressBox = new ProgressPanel { Tag = LoadType.Lazy, Visible = false };
+            ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
             Controls.Add(ProgressBox);
-            ProgressBox.InjectOwner(this);
             ProgressBox.Anchor = AnchorStyles.None;
             ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
             ProgressBox.SetSizeToDefault();
@@ -200,7 +200,7 @@ namespace AngelLoader.Forms
 
         public void HideProgressBox() => Invoke(() =>
         {
-            ConstructProgressBox();
+            if (!_progressBoxConstructed) return;
             ProgressBox!.HideThis();
         });
     }

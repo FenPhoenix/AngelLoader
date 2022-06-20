@@ -25,7 +25,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Fields
 
-        private MainForm? _owner;
+        private readonly MainForm _owner;
 
         private ProgressSizeMode _sizeModeMode = _defaultSizeMode;
 
@@ -82,16 +82,16 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Init
 
-        public ProgressPanel()
+        public ProgressPanel(MainForm owner)
         {
+            _owner = owner;
+
 #if DEBUG
             InitializeComponent();
 #else
             InitializeComponentSlim();
 #endif
         }
-
-        internal void InjectOwner(MainForm owner) => _owner = owner;
 
         internal void SetSizeToDefault() => SetSizeMode(_defaultSizeMode, forceChange: true);
 
@@ -110,7 +110,7 @@ namespace AngelLoader.Forms.CustomControls
             SubPercentLabel.Visible = doubleSize;
             SubProgressBar.Visible = doubleSize;
 
-            this.CenterHV(_owner!, clientSize: true);
+            this.CenterHV(_owner, clientSize: true);
 
             _sizeModeMode = sizeMode;
 
@@ -124,32 +124,35 @@ namespace AngelLoader.Forms.CustomControls
             Cancel_Button.CenterH(this);
         }
 
-        private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, bool updateTaskbar)
+        private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, DarkLabel percentLabel, bool updateTaskbar)
         {
             if (progressType == ProgressType.Indeterminate)
             {
                 progressBar.Style = ProgressBarStyle.Marquee;
-                if (updateTaskbar)
-                {
-                    if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                }
+                percentLabel.Text = "";
             }
             else
             {
                 progressBar.Style = ProgressBarStyle.Blocks;
-                if (updateTaskbar)
-                {
-                    if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
-                }
+            }
+
+            if (updateTaskbar && _owner.IsHandleCreated)
+            {
+                TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
             }
         }
 
-        private void SetProgressBarValue(DarkProgressBar progressBar, int value, bool updateTaskbar)
+        private void SetPercent(int percent, DarkLabel percentLabel, DarkProgressBar progressBar, bool updateTaskbar)
         {
-            progressBar.Value = value;
-            if (updateTaskbar)
+            percent = percent.Clamp(0, 100);
+
+            percentLabel.Text = NonLocalizableText.PercentStrings[percent];
+
+            progressBar.Value = percent;
+
+            if (updateTaskbar && _owner.IsHandleCreated)
             {
-                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, value, 100);
+                TaskBarProgress.SetValue(_owner.Handle, percent, 100);
             }
         }
 
@@ -159,7 +162,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void HideThis()
         {
-            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
+            if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
 
             Hide();
 
@@ -185,7 +188,7 @@ namespace AngelLoader.Forms.CustomControls
             SetSizeMode(_defaultSizeMode);
 
             Enabled = false;
-            _owner!.SetUIEnabled(true);
+            _owner.SetUIEnabled(true);
         }
 
         /// <summary>
@@ -229,18 +232,11 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (mainPercent != null)
             {
-                int percent = ((int)mainPercent).Clamp(0, 100);
-
-                MainPercentLabel.Text = NonLocalizableText.PercentStrings[percent];
-                SetProgressBarValue(MainProgressBar, percent, updateTaskbar: true);
+                SetPercent((int)mainPercent, MainPercentLabel, MainProgressBar, updateTaskbar: true);
             }
             if (mainProgressBarType != null)
             {
-                SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, updateTaskbar: true);
-                if (mainProgressBarType == ProgressType.Indeterminate)
-                {
-                    MainPercentLabel.Text = "";
-                }
+                SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MainPercentLabel, updateTaskbar: true);
             }
             if (subMessage != null)
             {
@@ -248,18 +244,11 @@ namespace AngelLoader.Forms.CustomControls
             }
             if (subPercent != null)
             {
-                int percent = ((int)subPercent).Clamp(0, 100);
-
-                SubPercentLabel.Text = NonLocalizableText.PercentStrings[percent];
-                SetProgressBarValue(SubProgressBar, percent, updateTaskbar: false);
+                SetPercent((int)subPercent, SubPercentLabel, SubProgressBar, updateTaskbar: false);
             }
             if (subProgressBarType != null)
             {
-                SetProgressBarType(SubProgressBar, (ProgressType)subProgressBarType, updateTaskbar: false);
-                if (subProgressBarType == ProgressType.Indeterminate)
-                {
-                    SubPercentLabel.Text = "";
-                }
+                SetProgressBarType(SubProgressBar, (ProgressType)subProgressBarType, SubPercentLabel, updateTaskbar: false);
             }
             if (cancelButtonMessage != null)
             {
@@ -276,7 +265,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (visible == true)
                 {
-                    _owner!.SetUIEnabled(false);
+                    _owner.SetUIEnabled(false);
                     Enabled = true;
 
                     if (Cancel_Button.Text.IsEmpty())
