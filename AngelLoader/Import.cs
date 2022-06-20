@@ -46,7 +46,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "in GetDrives()", ex);
+                Log(ex: ex);
                 return "";
             }
 

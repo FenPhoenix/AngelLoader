@@ -64,7 +64,7 @@ namespace AngelLoader
                 {
                     if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
                     {
-                        Log(ErrorText.Ex + "thrown", e.Exception);
+                        Log(ex: e.Exception);
                     }
                 };
 

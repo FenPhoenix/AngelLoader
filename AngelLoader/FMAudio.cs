@@ -295,7 +295,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log(ErrorText.Ex + "in file conversion", ex);
+                        Log(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                     }
                 }
                 else
@@ -347,7 +347,7 @@ namespace AngelLoader
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log(ErrorText.Ex + "in FFmpeg convert", ex);
+                                    Log(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
                                 }
 
                                 if (Canceled(ct)) return;
@@ -367,7 +367,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log(ErrorText.Ex + "in file conversion", ex);
+                        Log(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                     }
                 }
             });

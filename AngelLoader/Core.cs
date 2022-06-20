@@ -1910,7 +1910,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "trying to detect game editor exe", ex);
+                Log(ErrorText.Ex + "trying to detect game editor exe\r\n" +
+                    "Game: " + gameIndex, ex);
             }
 
 #if false
