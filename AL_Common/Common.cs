@@ -44,6 +44,43 @@ namespace AL_Common
             }
         }
 
+        private static readonly PathComparer _pathComparer = new();
+
+        public sealed class PathComparer : StringComparer
+        {
+            public override int Compare(string? x, string? y)
+            {
+                return x == y ? 0 :
+                x == null ? -1 :
+                y == null ? 1 :
+                string.Compare(x.ToBackSlashes(), y.ToBackSlashes(), StringComparison.OrdinalIgnoreCase);
+            }
+
+            public override bool Equals(string? x, string? y)
+            {
+                if (x == y) return true;
+                if (x == null || y == null) return false;
+
+                return x.PathEqualsI(y);
+            }
+
+            public override int GetHashCode(string obj) => obj == null
+                ? throw new ArgumentNullException(nameof(obj))
+                : OrdinalIgnoreCase.GetHashCode(obj.ToBackSlashes());
+        }
+
+        public sealed class HashSetIP : HashSet<string>
+        {
+            public HashSetIP() : base(_pathComparer) { }
+
+            public HashSetIP(int capacity) : base(capacity, _pathComparer) { }
+
+            public HashSetIP(IEnumerable<string> collection) : base(collection, _pathComparer) { }
+
+            /// <inheritdoc cref="HashSet{T}.Add"/>
+            public new bool Add(string value) => base.Add(value.ToBackSlashes());
+        }
+
         /// <summary>
         /// HashSet&lt;<see langword="string"/>&gt; that uses <see cref="StringComparer.OrdinalIgnoreCase"/> for equality comparison.
         /// </summary>
@@ -936,6 +973,8 @@ namespace AL_Common
         #endregion
 
         public static HashSetI ToHashSetI(this IEnumerable<string> source) => new HashSetI(source);
+
+        public static HashSetIP ToHashSetIP(this IEnumerable<string> source) => new HashSetIP(source);
 
         #endregion
 

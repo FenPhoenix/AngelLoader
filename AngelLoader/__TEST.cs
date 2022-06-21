@@ -22,6 +22,7 @@ namespace AngelLoader
             }
 
             if (!fm.Archive.EqualsI("TROTB2v1.22.zip"))
+            //if (!fm.Archive.EqualsI("RabenbachV2.7z"))
             {
                 Core.Dialogs.ShowAlert("Safety - not TROTB2!", "Alert");
                 return;

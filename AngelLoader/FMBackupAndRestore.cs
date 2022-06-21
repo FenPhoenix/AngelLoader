@@ -322,7 +322,7 @@ namespace AngelLoader
                     return;
                 }
 
-                string[] installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories);
+                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetIP();
 
                 var (changedList, addedList, fullList) =
                     GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game);
@@ -348,17 +348,16 @@ namespace AngelLoader
                             string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
                             if (IsSaveOrScreenshot(fn, fm.Game) ||
                                 (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
-                                 (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
+                                 (changedList.Contains(fn) || addedList.Contains(fn))))
                             {
                                 AddEntry(archive, f, fn);
                             }
                         }
 
                         string fmSelInfString = "";
-                        for (int i = 0; i < fullList.Count; i++)
+                        foreach (string f in fullList)
                         {
-                            string f = fullList[i];
-                            if (!installedFMFiles.PathContainsI(Path.Combine(fmInstalledPath, f)))
+                            if (!installedFMFiles.Contains(Path.Combine(fmInstalledPath, f)))
                             {
                                 // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
                                 fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
@@ -660,12 +659,12 @@ namespace AngelLoader
         // @BigO(GetFMDiff): We should preprocess all our lists to not need dirsep-agnostic checks or whatever
         // So we can just use hash lookup. We may not be able to do this for everything, as sometimes we need
         // to check starts-with or contains on a string etc.
-        private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
-        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
+        private static (HashSetIP ChangedList, HashSetIP, HashSetIP FullList)
+        GetFMDiff(HashSetIP installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
         {
-            var changedList = new List<string>();
-            var addedList = new List<string>();
-            var fullList = new List<string>();
+            var changedList = new HashSetIP();
+            var addedList = new HashSetIP();
+            var fullList = new HashSetIP();
 
             bool fmIsZip = fmArchivePath.ExtIsZip();
             if (fmIsZip)
@@ -675,6 +674,13 @@ namespace AngelLoader
                 var entries = archive.Entries;
 
                 int entriesCount = entries.Count;
+
+                var entriesFullNamesHash = new HashSetIP(entriesCount);
+
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    entriesFullNamesHash.Add(entries[i].FullName);
+                }
 
                 for (int i = 0; i < entriesCount; i++)
                 {
@@ -691,7 +697,7 @@ namespace AngelLoader
                     fullList.Add(efn);
 
                     string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                    if (installedFMFiles.PathContainsI(fileInInstalledDir))
+                    if (installedFMFiles.Contains(fileInInstalledDir))
                     {
                         try
                         {
@@ -735,23 +741,26 @@ namespace AngelLoader
                         continue;
                     }
 
-                    bool found = false;
-                    for (int i = 0; i < entriesCount; i++)
+                    if (!entriesFullNamesHash.Contains(fn))
                     {
-                        if (entries[i].FullName.PathEqualsI(fn))
-                        {
-                            found = true;
-                            break;
-                        }
+                        addedList.Add(fn);
                     }
-                    if (!found) addedList.Add(fn);
                 }
             }
             else
             {
                 using var archive = new SevenZipExtractor(fmArchivePath);
 
-                for (int i = 0; i < archive.ArchiveFileData.Count; i++)
+                int entriesCount = archive.ArchiveFileData.Count;
+
+                var entriesFullNamesHash = new HashSetIP(entriesCount);
+
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    entriesFullNamesHash.Add(archive.ArchiveFileData[i].FileName);
+                }
+
+                for (int i = 0; i < entriesCount; i++)
                 {
                     var entry = archive.ArchiveFileData[i];
                     string efn = entry.FileName;
@@ -804,17 +813,10 @@ namespace AngelLoader
 
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
-                    bool found = false;
-                    for (int i = 0; i < archive.ArchiveFileData.Count; i++)
+                    if (!entriesFullNamesHash.Contains(fn))
                     {
-                        var entry = archive.ArchiveFileData[i];
-                        if (!entry.IsDirectory && entry.FileName.PathEqualsI(fn))
-                        {
-                            found = true;
-                            break;
-                        }
+                        addedList.Add(fn);
                     }
-                    if (!found) addedList.Add(fn);
                 }
             }
 
