@@ -1209,7 +1209,7 @@ namespace AngelLoader.Forms
         {
             var ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
             using var g = Graphics.FromImage(ret);
-            g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White, 1, 1, 77, 21);
+            g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window, 1, 1, 77, 21);
 
             var borderRect = new Rectangle(0, 0, 78, 22);
 
@@ -1234,7 +1234,7 @@ namespace AngelLoader.Forms
                 font: font,
                 pt: new Point(1, 5),
                 foreColor: darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText,
-                backColor: darkMode ? DarkColors.Fen_DarkBackground : Color.White);
+                backColor: darkMode ? DarkColors.Fen_DarkBackground : SystemColors.Window);
 
             return ret;
         }
