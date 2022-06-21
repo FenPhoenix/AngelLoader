@@ -414,15 +414,17 @@ namespace AngelLoader
                 {
                     if (Canceled(ct)) return;
 
-                    int filesCount = archive.Entries.Count;
+                    var entries = archive.Entries;
+
+                    int entriesCount = entries.Count;
 
                     if (Canceled(ct)) return;
 
                     if (backupFile.DarkLoader)
                     {
-                        for (int i = 0; i < filesCount; i++)
+                        for (int i = 0; i < entriesCount; i++)
                         {
-                            var entry = archive.Entries[i];
+                            ZipArchiveEntry entry = entries[i];
                             string fn = entry.FullName;
                             if (!fn.Rel_ContainsDirSep())
                             {
@@ -443,9 +445,9 @@ namespace AngelLoader
                         string savesDirS = fmIsT3 ? _t3SavesDirS : _darkSavesDirS;
                         if (restoreSavesAndScreensOnly)
                         {
-                            for (int i = 0; i < filesCount; i++)
+                            for (int i = 0; i < entriesCount; i++)
                             {
-                                var entry = archive.Entries[i];
+                                ZipArchiveEntry entry = entries[i];
 
                                 if (Canceled(ct)) return;
 
@@ -528,10 +530,10 @@ namespace AngelLoader
                                 }
                             }
 
-                            for (int i = 0; i < filesCount; i++)
+                            for (int i = 0; i < entriesCount; i++)
                             {
-                                var f = archive.Entries[i];
-                                string fn = f.FullName;
+                                ZipArchiveEntry entry = entries[i];
+                                string fn = entry.FullName;
 
                                 if (fn.PathEqualsI(Paths.FMSelInf) ||
                                     fn.PathEqualsI(_startMisSav) ||
@@ -546,7 +548,7 @@ namespace AngelLoader
                                     Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                 }
 
-                                f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                                entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
 
                                 if (Canceled(ct)) return;
                             }
@@ -667,9 +669,13 @@ namespace AngelLoader
             {
                 using var archive = GetZipArchiveCharEnc(fmArchivePath);
 
-                for (int i = 0; i < archive.Entries.Count; i++)
+                var entries = archive.Entries;
+
+                int entriesCount = entries.Count;
+
+                for (int i = 0; i < entriesCount; i++)
                 {
-                    var entry = archive.Entries[i];
+                    ZipArchiveEntry entry = entries[i];
                     string efn = entry.FullName;
 
                     if (efn.PathEqualsI(Paths.FMSelInf) ||
@@ -729,9 +735,9 @@ namespace AngelLoader
                     }
 
                     bool found = false;
-                    for (int i = 0; i < archive.Entries.Count; i++)
+                    for (int i = 0; i < entriesCount; i++)
                     {
-                        if (archive.Entries[i].FullName.PathEqualsI(fn))
+                        if (entries[i].FullName.PathEqualsI(fn))
                         {
                             found = true;
                             break;
