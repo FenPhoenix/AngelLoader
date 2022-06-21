@@ -321,7 +321,7 @@ namespace AngelLoader
                     return;
                 }
 
-                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetIP();
+                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
                 var (changedList, addedList, fullList) =
                     GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game);
@@ -402,7 +402,7 @@ namespace AngelLoader
 
                 if (Canceled(ct)) return;
 
-                var fileExcludes = new HashSetIP();
+                var fileExcludes = new HashSetPathI();
                 //var dirExcludes = new HashSetIP();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
@@ -655,12 +655,12 @@ namespace AngelLoader
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
 
-        private static (HashSetIP ChangedList, HashSetIP, HashSetIP FullList)
-        GetFMDiff(HashSetIP installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
+        private static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
+        GetFMDiff(HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
         {
-            var changedList = new HashSetIP();
-            var addedList = new HashSetIP();
-            var fullList = new HashSetIP();
+            var changedList = new HashSetPathI();
+            var addedList = new HashSetPathI();
+            var fullList = new HashSetPathI();
 
             bool fmIsZip = fmArchivePath.ExtIsZip();
             if (fmIsZip)
@@ -671,7 +671,7 @@ namespace AngelLoader
 
                 int entriesCount = entries.Count;
 
-                var entriesFullNamesHash = new HashSetIP(entriesCount);
+                var entriesFullNamesHash = new HashSetPathI(entriesCount);
 
                 for (int i = 0; i < entriesCount; i++)
                 {
@@ -749,7 +749,7 @@ namespace AngelLoader
 
                 int entriesCount = archive.ArchiveFileData.Count;
 
-                var entriesFullNamesHash = new HashSetIP(entriesCount);
+                var entriesFullNamesHash = new HashSetPathI(entriesCount);
 
                 for (int i = 0; i < entriesCount; i++)
                 {

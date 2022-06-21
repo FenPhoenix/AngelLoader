@@ -48,12 +48,13 @@ namespace AL_Common
 
         public sealed class PathComparer : StringComparer
         {
+            // Allocations here, but this doesn't ever seem to get hit for Add() or Contains() calls
             public override int Compare(string? x, string? y)
             {
                 return x == y ? 0 :
-                x == null ? -1 :
-                y == null ? 1 :
-                string.Compare(x.ToBackSlashes(), y.ToBackSlashes(), StringComparison.OrdinalIgnoreCase);
+                    x == null ? -1 :
+                    y == null ? 1 :
+                    string.Compare(x.ToBackSlashes(), y.ToBackSlashes(), StringComparison.OrdinalIgnoreCase);
             }
 
             public override bool Equals(string? x, string? y)
@@ -64,18 +65,22 @@ namespace AL_Common
                 return x.PathEqualsI(y);
             }
 
+            // @MEM(PathComparer/GetHashCode): We allocate if the string is not already backslash separators
             public override int GetHashCode(string obj) => obj == null
                 ? throw new ArgumentNullException(nameof(obj))
                 : OrdinalIgnoreCase.GetHashCode(obj.ToBackSlashes());
         }
 
-        public sealed class HashSetIP : HashSet<string>
+        /// <summary>
+        /// A HashSet&lt;<see cref="string"/>&gt; where lookups are case-insensitive and directory separator-insensitive
+        /// </summary>
+        public sealed class HashSetPathI : HashSet<string>
         {
-            public HashSetIP() : base(_pathComparer) { }
+            public HashSetPathI() : base(_pathComparer) { }
 
-            public HashSetIP(int capacity) : base(capacity, _pathComparer) { }
+            public HashSetPathI(int capacity) : base(capacity, _pathComparer) { }
 
-            public HashSetIP(IEnumerable<string> collection) : base(collection, _pathComparer) { }
+            public HashSetPathI(IEnumerable<string> collection) : base(collection, _pathComparer) { }
 
             /// <inheritdoc cref="HashSet{T}.Add"/>
             public new bool Add(string value) => base.Add(value.ToBackSlashes());
@@ -974,7 +979,7 @@ namespace AL_Common
 
         public static HashSetI ToHashSetI(this IEnumerable<string> source) => new HashSetI(source);
 
-        public static HashSetIP ToHashSetIP(this IEnumerable<string> source) => new HashSetIP(source);
+        public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new HashSetPathI(source);
 
         #endregion
 
