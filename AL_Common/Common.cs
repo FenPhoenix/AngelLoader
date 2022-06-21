@@ -44,9 +44,10 @@ namespace AL_Common
             }
         }
 
-        private static readonly PathComparer _pathComparer = new();
+        #region Custom hash tables
 
-        public sealed class PathComparer : StringComparer
+        private static readonly PathComparer _pathComparer = new();
+        private sealed class PathComparer : StringComparer
         {
             // Allocations here, but this doesn't ever seem to get hit for Add() or Contains() calls
             public override int Compare(string? x, string? y)
@@ -114,6 +115,8 @@ namespace AL_Common
             public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
         }
 
+        #endregion
+
         public static readonly byte[] RTFHeaderBytes =
         {
             (byte)'{',
@@ -132,17 +135,17 @@ namespace AL_Common
         public static readonly char[] CA_CommaSemicolon = { ',', ';' };
         public static readonly char[] CA_CommaSpace = { ',', ' ' };
         public static readonly char[] CA_Backslash = { '\\' };
-        //internal static readonly char[] CA_ForwardSlash = { '/' };
         public static readonly char[] CA_BS_FS = { '\\', '/' };
         public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
         public static readonly char[] CA_Plus = { '+' };
-        //public static readonly char[] CA_Period = { '.' };
 
         #endregion
 
         #endregion
 
         #region Methods
+
+        #region Stream reading
 
         public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
         {
@@ -175,6 +178,8 @@ namespace AL_Common
 
             return bytesReadRet;
         }
+
+        #endregion
 
         #region String
 
@@ -924,7 +929,7 @@ namespace AL_Common
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="array">The array to clear.</param>
-        /// <returns>A cleared version of <paramref name="array"/></returns>
+        /// <returns>A cleared version of <paramref name="array"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] Cleared<T>(this T[] array)
         {
@@ -982,6 +987,8 @@ namespace AL_Common
         public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new HashSetPathI(source);
 
         #endregion
+
+        #region Find / replace
 
         // Array version
         public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
@@ -1156,6 +1163,8 @@ namespace AL_Common
         }
 
 #endif
+
+        #endregion
 
         public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
 
