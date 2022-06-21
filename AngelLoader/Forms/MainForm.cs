@@ -2921,7 +2921,7 @@ namespace AngelLoader.Forms
             var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
             for (int i = 0; i < fmAltTitles.Count; i++)
             {
-                var item = new ToolStripMenuItemCustom(fmAltTitles[i]);
+                var item = new ToolStripMenuItemWithBackingText(fmAltTitles[i]);
                 item.Click += EditFMAltTitlesMenuItems_Click;
                 altTitlesMenuItems[i] = item;
             }
@@ -2933,7 +2933,7 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
-            EditFMTitleTextBox.Text = ((ToolStripMenuItemCustom)sender).Text;
+            EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
             Ini.WriteFullFMDataIni();
         }
 

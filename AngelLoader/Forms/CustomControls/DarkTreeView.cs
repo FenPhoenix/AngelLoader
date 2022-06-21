@@ -106,8 +106,11 @@ namespace AngelLoader.Forms.CustomControls
                 textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
             }
 
-            e.Graphics.FillRectangle(backColorBrush, e.Bounds);
-            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Bounds, textColor);
+            // IMPORTANT(TreeView node draw): DO NOT change any of the params "e.Node.Bounds" or "TextFormatFlags.NoPrefix"
+            // They have to be just so or we get one or more of several different visual problems.
+            // Don't use e.Bounds, keep e.Node.Bounds.
+            e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
+            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor, TextFormatFlags.NoPrefix);
 
             base.OnDrawNode(e);
         }
