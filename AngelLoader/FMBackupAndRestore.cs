@@ -246,7 +246,6 @@ namespace AngelLoader
             return DoReturn();
         }
 
-        // @BigO(BackupFM): PathContainsI() calls at the very least
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
             bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
@@ -403,8 +402,8 @@ namespace AngelLoader
 
                 if (Canceled(ct)) return;
 
-                var fileExcludes = new List<string>();
-                //var dirExcludes = new List<string>();
+                var fileExcludes = new HashSetIP();
+                //var dirExcludes = new HashSetIP();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -536,8 +535,7 @@ namespace AngelLoader
 
                                 if (IsIgnoredFile(fn) ||
                                     fn.EndsWithDirSep() ||
-                                    // @BigO(PathContainsI() on list inside for loop)
-                                    fileExcludes.PathContainsI(fn))
+                                    fileExcludes.Contains(fn))
                                 {
                                     continue;
                                 }
@@ -559,8 +557,7 @@ namespace AngelLoader
                 {
                     foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        // @BigO(PathContainsI() on list inside for loop)
-                        if (fileExcludes.PathContainsI(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
+                        if (fileExcludes.Contains(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
                             // If we have crf files replacing dirs, the empty dir will override the crf. We want
@@ -581,6 +578,7 @@ namespace AngelLoader
                         string dt = d.GetDirNameFast();
                         if (Directory.GetFiles(d, "*", SearchOption.AllDirectories).Length == 0)
                         {
+                            // @BigO(FMBackupAndRestore disabled dir excludes code)
                             for (int i = 0; i < crfs.Length; i++)
                             {
                                 string ft = crfs[i].GetFileNameFast().RemoveExtension();
@@ -603,8 +601,7 @@ namespace AngelLoader
                     // Proper method
                     foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        // @BigO(PathContainsI() on list inside for loop) (in disabled code)
-                        if (dirExcludes.PathContainsI(d.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
+                        if (dirExcludes.Contains(d.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             Directory.Delete(d, recursive: true);
                         }
