@@ -346,7 +346,7 @@ namespace AngelLoader
                         {
                             string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
                             if (IsSaveOrScreenshot(fn, fm.Game) ||
-                                (!fn.PathEqualsI(Paths.FMSelInf) && !fn.PathEqualsI(_startMisSav) &&
+                                (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
                                 (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
                             {
                                 AddEntry(archive, f, fn);
@@ -504,8 +504,8 @@ namespace AngelLoader
                                         !val.PathStartsWithI(_screensDirS) &&
                                         (fm.Game != Game.SS2 ||
                                         (!_ss2SaveDirsInZipRegex.IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
-                                        !val.PathEqualsI(Paths.FMSelInf) &&
-                                        !val.PathEqualsI(_startMisSav) &&
+                                        !val.EqualsI(Paths.FMSelInf) &&
+                                        !val.EqualsI(_startMisSav) &&
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
                                         // the FM folder
@@ -535,8 +535,8 @@ namespace AngelLoader
                                 ZipArchiveEntry entry = entries[i];
                                 string fn = entry.FullName;
 
-                                if (fn.PathEqualsI(Paths.FMSelInf) ||
-                                    fn.PathEqualsI(_startMisSav) ||
+                                if (fn.EqualsI(Paths.FMSelInf) ||
+                                    fn.EqualsI(_startMisSav) ||
                                     fn.EndsWithDirSep() ||
                                     fileExcludes.PathContainsI(fn))
                                 {
@@ -678,8 +678,8 @@ namespace AngelLoader
                     ZipArchiveEntry entry = entries[i];
                     string efn = entry.FullName;
 
-                    if (efn.PathEqualsI(Paths.FMSelInf) ||
-                        efn.PathEqualsI(_startMisSav) ||
+                    if (efn.EqualsI(Paths.FMSelInf) ||
+                        efn.EqualsI(_startMisSav) ||
                         efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
                     {
@@ -727,8 +727,8 @@ namespace AngelLoader
                 {
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
-                    if (fn.PathEqualsI(Paths.FMSelInf) ||
-                        fn.PathEqualsI(_startMisSav) ||
+                    if (fn.EqualsI(Paths.FMSelInf) ||
+                        fn.EqualsI(_startMisSav) ||
                         IsSaveOrScreenshot(fn, game))
                     {
                         continue;
@@ -755,8 +755,8 @@ namespace AngelLoader
                     var entry = archive.ArchiveFileData[i];
                     string efn = entry.FileName;
 
-                    if (efn.PathEqualsI(Paths.FMSelInf) ||
-                        efn.PathEqualsI(_startMisSav) ||
+                    if (efn.EqualsI(Paths.FMSelInf) ||
+                        efn.EqualsI(_startMisSav) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
                         entry.IsDirectory || efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
@@ -797,7 +797,8 @@ namespace AngelLoader
                 foreach (string f in installedFMFiles)
                 {
                     string fnTemp = Path.GetFileName(f);
-                    if (fnTemp.PathEqualsI(Paths.FMSelInf) || fnTemp.PathEqualsI(_startMisSav))
+                    if (fnTemp.EqualsI(Paths.FMSelInf) ||
+                        fnTemp.EqualsI(_startMisSav))
                     {
                         continue;
                     }
