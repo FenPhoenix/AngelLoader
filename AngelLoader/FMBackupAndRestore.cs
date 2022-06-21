@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -535,8 +536,7 @@ namespace AngelLoader
                                 ZipArchiveEntry entry = entries[i];
                                 string fn = entry.FullName;
 
-                                if (fn.EqualsI(Paths.FMSelInf) ||
-                                    fn.EqualsI(_startMisSav) ||
+                                if (IsIgnoredFile(fn) ||
                                     fn.EndsWithDirSep() ||
                                     fileExcludes.PathContainsI(fn))
                                 {
@@ -654,6 +654,9 @@ namespace AngelLoader
             (game != Game.Thief3 &&
              (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
+
         // @BigO(GetFMDiff): We should preprocess all our lists to not need dirsep-agnostic checks or whatever
         // So we can just use hash lookup. We may not be able to do this for everything, as sometimes we need
         // to check starts-with or contains on a string etc.
@@ -678,8 +681,7 @@ namespace AngelLoader
                     ZipArchiveEntry entry = entries[i];
                     string efn = entry.FullName;
 
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        efn.EqualsI(_startMisSav) ||
+                    if (IsIgnoredFile(efn) ||
                         efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
                     {
@@ -727,8 +729,7 @@ namespace AngelLoader
                 {
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
-                    if (fn.EqualsI(Paths.FMSelInf) ||
-                        fn.EqualsI(_startMisSav) ||
+                    if (IsIgnoredFile(fn) ||
                         IsSaveOrScreenshot(fn, game))
                     {
                         continue;
@@ -755,8 +756,7 @@ namespace AngelLoader
                     var entry = archive.ArchiveFileData[i];
                     string efn = entry.FileName;
 
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        efn.EqualsI(_startMisSav) ||
+                    if (IsIgnoredFile(efn) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
                         entry.IsDirectory || efn.EndsWithDirSep() ||
                         IsSaveOrScreenshot(efn, game))
@@ -797,8 +797,7 @@ namespace AngelLoader
                 foreach (string f in installedFMFiles)
                 {
                     string fnTemp = Path.GetFileName(f);
-                    if (fnTemp.EqualsI(Paths.FMSelInf) ||
-                        fnTemp.EqualsI(_startMisSav))
+                    if (IsIgnoredFile(fnTemp))
                     {
                         continue;
                     }
