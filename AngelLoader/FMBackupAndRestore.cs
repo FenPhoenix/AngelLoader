@@ -245,6 +245,7 @@ namespace AngelLoader
             return DoReturn();
         }
 
+        // @BigO(BackupFM): PathContainsI() calls at the very least
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
             bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
