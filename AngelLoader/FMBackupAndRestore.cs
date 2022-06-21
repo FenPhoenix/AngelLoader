@@ -382,7 +382,6 @@ namespace AngelLoader
             });
         }
 
-        // @BigO(RestoreFM) probably some loops in here are quadratic
         internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null, CancellationToken? ct = null)
         {
             static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
@@ -537,6 +536,7 @@ namespace AngelLoader
 
                                 if (IsIgnoredFile(fn) ||
                                     fn.EndsWithDirSep() ||
+                                    // @BigO(PathContainsI() on list inside for loop)
                                     fileExcludes.PathContainsI(fn))
                                 {
                                     continue;
@@ -559,6 +559,7 @@ namespace AngelLoader
                 {
                     foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
+                        // @BigO(PathContainsI() on list inside for loop)
                         if (fileExcludes.PathContainsI(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
@@ -602,6 +603,7 @@ namespace AngelLoader
                     // Proper method
                     foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
+                        // @BigO(PathContainsI() on list inside for loop) (in disabled code)
                         if (dirExcludes.PathContainsI(d.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             Directory.Delete(d, recursive: true);
@@ -656,9 +658,6 @@ namespace AngelLoader
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
 
-        // @BigO(GetFMDiff): We should preprocess all our lists to not need dirsep-agnostic checks or whatever
-        // So we can just use hash lookup. We may not be able to do this for everything, as sometimes we need
-        // to check starts-with or contains on a string etc.
         private static (HashSetIP ChangedList, HashSetIP, HashSetIP FullList)
         GetFMDiff(HashSetIP installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
         {
@@ -776,7 +775,7 @@ namespace AngelLoader
                     fullList.Add(efn);
 
                     string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                    if (File.Exists(fileInInstalledDir))
+                    if (installedFMFiles.Contains(fileInInstalledDir))
                     {
                         try
                         {
