@@ -531,21 +531,21 @@ namespace AngelLoader
                             for (int i = 0; i < entriesCount; i++)
                             {
                                 ZipArchiveEntry entry = entries[i];
-                                string fn = entry.FullName;
+                                string efn = entry.FullName.ToBackSlashes();
 
-                                if (IsIgnoredFile(fn) ||
-                                    fn.EndsWithDirSep() ||
-                                    fileExcludes.Contains(fn))
+                                if (IsIgnoredFile(efn) ||
+                                    efn.EndsWithDirSep() ||
+                                    fileExcludes.Contains(efn))
                                 {
                                     continue;
                                 }
 
-                                if (fn.Rel_ContainsDirSep())
+                                if (efn.Rel_ContainsDirSep())
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                                 }
 
-                                entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                                entry.ExtractToFile(Path.Combine(fmInstalledPath, efn), overwrite: true);
 
                                 if (Canceled(ct)) return;
                             }
@@ -675,13 +675,10 @@ namespace AngelLoader
 
                 for (int i = 0; i < entriesCount; i++)
                 {
-                    entriesFullNamesHash.Add(entries[i].FullName);
-                }
-
-                for (int i = 0; i < entriesCount; i++)
-                {
                     ZipArchiveEntry entry = entries[i];
-                    string efn = entry.FullName;
+                    string efn = entry.FullName.ToBackSlashes();
+
+                    entriesFullNamesHash.Add(efn);
 
                     if (IsIgnoredFile(efn) ||
                         efn.EndsWithDirSep() ||
@@ -727,6 +724,7 @@ namespace AngelLoader
                         }
                     }
                 }
+
                 foreach (string f in installedFMFiles)
                 {
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
@@ -753,13 +751,10 @@ namespace AngelLoader
 
                 for (int i = 0; i < entriesCount; i++)
                 {
-                    entriesFullNamesHash.Add(archive.ArchiveFileData[i].FileName);
-                }
-
-                for (int i = 0; i < entriesCount; i++)
-                {
                     var entry = archive.ArchiveFileData[i];
-                    string efn = entry.FileName;
+                    string efn = entry.FileName.ToBackSlashes();
+
+                    entriesFullNamesHash.Add(efn);
 
                     if (IsIgnoredFile(efn) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
@@ -799,6 +794,7 @@ namespace AngelLoader
                         }
                     }
                 }
+
                 foreach (string f in installedFMFiles)
                 {
                     string fnTemp = Path.GetFileName(f);
