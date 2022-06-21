@@ -348,7 +348,7 @@ namespace AngelLoader
                             string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
                             if (IsSaveOrScreenshot(fn, fm.Game) ||
                                 (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
-                                (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
+                                 (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
                             {
                                 AddEntry(archive, f, fn);
                             }
@@ -688,9 +688,9 @@ namespace AngelLoader
                         continue;
                     }
 
-                    fullList.Add(entry.FullName);
+                    fullList.Add(efn);
 
-                    string fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
                     if (installedFMFiles.PathContainsI(fileInInstalledDir))
                     {
                         try
@@ -701,7 +701,7 @@ namespace AngelLoader
                             {
                                 if (fi.Length != entry.Length)
                                 {
-                                    changedList.Add(entry.FullName);
+                                    changedList.Add(efn);
                                 }
                                 continue;
                             }
@@ -717,7 +717,7 @@ namespace AngelLoader
                                 continue;
                             }
 
-                            changedList.Add(entry.FullName);
+                            changedList.Add(efn);
                         }
                         catch (Exception ex)
                         {
