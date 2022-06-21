@@ -381,6 +381,7 @@ namespace AngelLoader
             });
         }
 
+        // @BigO(RestoreFM) probably some loops in here are quadratic
         internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null, CancellationToken? ct = null)
         {
             static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
@@ -505,7 +506,7 @@ namespace AngelLoader
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
                                         // the FM folder
-                                        // @DIRSEP: Relative, no UNC paths can occur here (and if they do it's wrong and we'll reject them anyway)
+                                        // @DIRSEP: Relative, no UNC paths can occur here (and if they do we want to reject them anyway)
                                         !val.StartsWithDirSep() &&
                                         !val.Contains(':') &&
                                         // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
@@ -650,6 +651,9 @@ namespace AngelLoader
             (game != Game.Thief3 &&
              (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
 
+        // @BigO(GetFMDiff): We should preprocess all our lists to not need dirsep-agnostic checks or whatever
+        // So we can just use hash lookup. We may not be able to do this for everything, as sometimes we need
+        // to check starts-with or contains on a string etc.
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
         GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
         {
