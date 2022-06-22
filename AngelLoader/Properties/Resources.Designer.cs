@@ -93,16 +93,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CharacterEncodingLetter_Dark_Disabled {
-            get {
-                object obj = ResourceManager.GetObject("CharacterEncodingLetter_Dark_Disabled", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap ClearFilters {
             get {
                 object obj = ResourceManager.GetObject("ClearFilters", resourceCulture);

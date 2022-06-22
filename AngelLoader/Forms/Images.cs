@@ -99,11 +99,14 @@ namespace AngelLoader.Forms
                 new float[5] { 0.99f, 0.99f, 0.99f, 0.0f, 1f }
             });
 
-        public static Bitmap CreateDarkModeVersion(Bitmap normalImage)
+        public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
         {
             using var imgAttrib = new ImageAttributes();
 
             imgAttrib.ClearColorKey();
+
+            DarkModeMultiplyColorMatrix.Matrix33 = disabled ? 0.273f : 0.8425f;
+
             imgAttrib.SetColorMatrix(DarkModeMultiplyColorMatrix);
 
             Size size = normalImage.Size;
@@ -817,12 +820,13 @@ namespace AngelLoader.Forms
                 ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharacterEncodingLetter)
                 : _charEncLetter ??= Resources.CharacterEncodingLetter;
 
-        // Don't use the auto-disabled-colored-image dictionary for this, because we have a custom disabled image
+        // Don't use the auto-disabled-colored-image dictionary for this, because we want a custom disabled color
+        // to go against the dark background of the readme
         private static Image? _charEncLetter_Disabled;
         private static Image? _charEncLetter_Disabled_Dark;
         private static Image CharEncLetter_Disabled =>
             DarkModeEnabled
-                ? _charEncLetter_Disabled_Dark ??= Resources.CharacterEncodingLetter_Dark_Disabled
+                ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharacterEncodingLetter, true)
                 : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharacterEncodingLetter);
 
         #endregion
