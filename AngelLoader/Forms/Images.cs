@@ -227,6 +227,16 @@ namespace AngelLoader.Forms
         private static GraphicsPath? _finishedCheckGPath;
         private static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
 
+        private static readonly float[] _circleCheckPoints =
+        {
+            40, 80, 86, 128, 215, 0, 253, 38, 86, 204, 0, 118, 40, 80
+        };
+
+        private static readonly byte[] _circleCheckTypes = MakeTypeArray((1, 5, 0, 129));
+
+        private static GraphicsPath? _circleCheckGPath;
+        private static GraphicsPath CircleCheckGPath => _circleCheckGPath ??= MakeGraphicsPath(_circleCheckPoints, _circleCheckTypes);
+
         #endregion
 
         #region Stars
@@ -408,6 +418,10 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Colors / brushes / pens
+
+        private static readonly Brush _greenCircleBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
+        private static readonly Brush _greenCircleBrush = new SolidBrush(Color.FromArgb(65, 173, 73));
+        private static Brush GreenCircleBrush => DarkModeEnabled ? _greenCircleBrushDark : _greenCircleBrush;
 
         #region Finished states
 
@@ -885,8 +899,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _greenCheckCircle_Dark;
         public static Bitmap GreenCheckCircle =>
             DarkModeEnabled
-                ? _greenCheckCircle_Dark ??= Resources.GreenCheckCircle_Dark
-                : _greenCheckCircle ??= Resources.GreenCheckCircle;
+                ? _greenCheckCircle_Dark ??= CreateGreenCheckCircleImage()
+                : _greenCheckCircle ??= CreateGreenCheckCircleImage();
 
         private static Bitmap? _redQuestionMarkCircle;
         private static Bitmap? _redQuestionMarkCircle_Dark;
@@ -1140,6 +1154,38 @@ namespace AngelLoader.Forms
             }
 
             return bmp;
+        }
+
+        private static void FillCircle21(Graphics g, Brush brush)
+        {
+            g.FillEllipse(
+                brush,
+                new RectangleF(-0.5f, -0.5f, 20.8f, 20.8f)
+            );
+        }
+
+        private static Bitmap CreateGreenCheckCircleImage()
+        {
+            var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(ret);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            FillCircle21(g, GreenCircleBrush);
+
+            var gp = CircleCheckGPath;
+
+            FitRectInBounds(
+                g,
+                gp.GetBounds(),
+                new RectangleF(1.7f, 1.7f, 16.5f, 16.5f));
+
+            g.FillPath(
+                DarkModeEnabled ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White,
+                gp
+            );
+
+            return ret;
         }
 
         private static Bitmap CreateCalendarImage(bool lastPlayed, bool darkMode)
