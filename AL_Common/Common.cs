@@ -349,6 +349,7 @@ namespace AL_Common
 
         //public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
         public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
+        public static float GetValueFromPercent_Float(float percent, int total) => percent / 100f * total;
         //public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
         //public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
         //public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
