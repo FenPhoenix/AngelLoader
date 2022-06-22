@@ -534,7 +534,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
+                ErrorIconPictureBox.Image = Images.RedExclCircle;
             }
 
             // Comes last so we don't have to use any DisableEvents blocks
@@ -625,7 +625,7 @@ namespace AngelLoader.Forms
                 // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
                 // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
                 // even if we DID want to do more reflection crap!)
-                ErrorIconPictureBox.Image = Images.RedExclamationMarkCircle;
+                ErrorIconPictureBox.Image = Images.RedExclCircle;
             }
             finally
             {

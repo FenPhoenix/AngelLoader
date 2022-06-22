@@ -736,51 +736,51 @@ namespace AngelLoader.Forms
 
         // @GENGAMES (Images/game image properties): Begin
 
-        private static Bitmap? _thief1_16;
-        private static Bitmap? _thief1_16_Dark;
+        private static Bitmap? _t1_16;
+        private static Bitmap? _t1_16_Dark;
         private static Bitmap Thief1_16() =>
             DarkModeEnabled
-                ? _thief1_16_Dark ??= Resources.Thief1_16_Dark
-                : _thief1_16 ??= Resources.Thief1_16;
+                ? _t1_16_Dark ??= Resources.T1_16_Dark
+                : _t1_16 ??= Resources.T1_16;
 
-        private static Bitmap? _thief2_16;
-        private static Bitmap Thief2_16() => _thief2_16 ??= Resources.Thief2_16;
+        private static Bitmap? _t2_16;
+        private static Bitmap Thief2_16() => _t2_16 ??= Resources.T2_16;
 
-        private static Bitmap? _thief3_16;
-        private static Bitmap Thief3_16() => _thief3_16 ??= Resources.Thief3_16;
+        private static Bitmap? _t3_16;
+        private static Bitmap Thief3_16() => _t3_16 ??= Resources.T3_16;
 
-        private static Bitmap? _shock2_16;
-        private static Bitmap? _shock2_16_Dark;
+        private static Bitmap? _ss2_16;
+        private static Bitmap? _ss2_16_Dark;
         private static Bitmap Shock2_16() =>
             DarkModeEnabled
-                ? _shock2_16_Dark ??= Resources.Shock2_16_Dark
-                : _shock2_16 ??= Resources.Shock2_16;
+                ? _ss2_16_Dark ??= Resources.SS2_16_Dark
+                : _ss2_16 ??= Resources.SS2_16;
 
-        private static Bitmap? _thief1_21;
-        private static Bitmap? _thief1_21_Dark;
+        private static Bitmap? _t1_21;
+        private static Bitmap? t1_21_Dark;
         private static Bitmap Thief1_21() =>
             DarkModeEnabled
-                ? _thief1_21_Dark ??= Resources.Thief1_21_Dark
-                : _thief1_21 ??= Resources.Thief1_21;
+                ? t1_21_Dark ??= Resources.T_21_Dark
+                : _t1_21 ??= Resources.T1_21;
 
-        private static Bitmap? _thief1_21_dark_DarkBG;
+        private static Bitmap? _t1_21_dark_DarkBG;
         private static Bitmap Thief1_21_DGV() =>
             DarkModeEnabled
-                ? _thief1_21_dark_DarkBG ??= Resources.Thief1_21_Dark_DarkBG
-                : _thief1_21 ??= Resources.Thief1_21;
+                ? _t1_21_dark_DarkBG ??= Resources.T1_21_Dark_DarkBG
+                : _t1_21 ??= Resources.T1_21;
 
-        private static Bitmap? _thief2_21;
-        private static Bitmap Thief2_21() => _thief2_21 ??= Resources.Thief2_21;
+        private static Bitmap? _t2_21;
+        private static Bitmap Thief2_21() => _t2_21 ??= Resources.T2_21;
 
-        private static Bitmap? _thief3_21;
-        private static Bitmap Thief3_21() => _thief3_21 ??= Resources.Thief3_21;
+        private static Bitmap? _t3_21;
+        private static Bitmap Thief3_21() => _t3_21 ??= Resources.T3_21;
 
-        private static Bitmap? _shock2_21;
-        private static Bitmap? _shock2_21_Dark;
+        private static Bitmap? _ss2_21;
+        private static Bitmap? _ss2_21_Dark;
         private static Bitmap Shock2_21() =>
             DarkModeEnabled
-                ? _shock2_21_Dark ??= Resources.Shock2_21_Dark
-                : _shock2_21 ??= Resources.Shock2_21;
+                ? _ss2_21_Dark ??= Resources.SS2_21_Dark
+                : _ss2_21 ??= Resources.SS2_21;
 
         // @GENGAMES (Images/game image properties): End
 
@@ -849,8 +849,8 @@ namespace AngelLoader.Forms
         private static Image? _charEncLetter_Dark;
         private static Image CharEncLetter =>
             DarkModeEnabled
-                ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharacterEncodingLetter)
-                : _charEncLetter ??= Resources.CharacterEncodingLetter;
+                ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc)
+                : _charEncLetter ??= Resources.CharEnc;
 
         // Don't use the auto-disabled-colored-image dictionary for this, because we want a custom disabled color
         // to go against the dark background of the readme
@@ -858,25 +858,25 @@ namespace AngelLoader.Forms
         private static Image? _charEncLetter_Disabled_Dark;
         private static Image CharEncLetter_Disabled =>
             DarkModeEnabled
-                ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharacterEncodingLetter, true)
-                : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharacterEncodingLetter);
+                ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, true)
+                : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharEnc);
 
         #endregion
 
         #region Install / uninstall
 
         private static Image? _install_24;
-        public static Image Install_24 => _install_24 ??= Resources.Install_24;
+        public static Image Install_24 => _install_24 ??= Resources.Install;
 
         private static Image? _uninstall_24;
-        public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
+        public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall;
 
         #endregion
 
         #region Settings
 
         private static Image? _settings;
-        public static Image Settings => _settings ??= Resources.Settings_24;
+        public static Image Settings => _settings ??= Resources.Settings;
 
         #endregion
 
@@ -938,12 +938,12 @@ namespace AngelLoader.Forms
                 ? _greenCheckCircle_Dark ??= CreateGreenCheckCircleImage()
                 : _greenCheckCircle ??= CreateGreenCheckCircleImage();
 
-        private static Bitmap? _redQuestionMarkCircle;
-        private static Bitmap? _redQuestionMarkCircle_Dark;
-        public static Bitmap RedQuestionMarkCircle =>
+        private static Bitmap? _redQCircle;
+        private static Bitmap? _redQCircle_Dark;
+        public static Bitmap RedQCircle =>
             DarkModeEnabled
-                ? _redQuestionMarkCircle_Dark ??= Resources.RedQuestionMarkCircle_Dark
-                : _redQuestionMarkCircle ??= Resources.RedQuestionMarkCircle;
+                ? _redQCircle_Dark ??= Resources.RedQCircle_Dark
+                : _redQCircle ??= Resources.RedQCircle;
 
         private static Bitmap? _finishedOnUnknown;
         public static Bitmap FinishedOnUnknown => _finishedOnUnknown ??= CreateFinishedOnBitmap(Difficulty.None);
@@ -952,26 +952,26 @@ namespace AngelLoader.Forms
 
         #region FM context menu
 
-        private static Bitmap? _pin_16;
-        private static Bitmap? _pin_16_Dark;
-        public static Bitmap Pin_16 =>
+        private static Bitmap? _pin;
+        private static Bitmap? _pin_Dark;
+        public static Bitmap Pin =>
             DarkModeEnabled
-                ? _pin_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Pin_16)
-                : _pin_16 ??= Resources.Pin_16;
+                ? _pin_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Pin)
+                : _pin ??= Resources.Pin;
 
-        private static Bitmap? _unpin_16;
-        private static Bitmap? _unpin_16_Dark;
-        public static Bitmap Unpin_16 =>
+        private static Bitmap? _unpin;
+        private static Bitmap? _unpinDark;
+        public static Bitmap Unpin =>
             DarkModeEnabled
-                ? _unpin_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Unpin_16)
-                : _unpin_16 ??= Resources.Unpin_16;
+                ? _unpinDark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Unpin)
+                : _unpin ??= Resources.Unpin;
 
-        private static Bitmap? _trash_16;
-        private static Bitmap? _trash_16_Dark;
-        public static Bitmap Trash_16 =>
+        private static Bitmap? _trash;
+        private static Bitmap? _trashDark;
+        public static Bitmap Trash =>
             DarkModeEnabled
-                ? _trash_16_Dark ??= Resources.Trash_16_Dark
-                : _trash_16 ??= Resources.Trash_16;
+                ? _trashDark ??= Resources.Trash_Dark
+                : _trash ??= Resources.Trash;
 
         private static Bitmap? _deleteFromDB;
         private static Bitmap? _deleteFromDB_Dark;
@@ -988,15 +988,15 @@ namespace AngelLoader.Forms
         private static Bitmap? _mods_16_Dark;
         public static Bitmap Mods_16 =>
             DarkModeEnabled
-                ? _mods_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Mods_16)
-                : _mods_16 ??= Resources.Mods_16;
+                ? _mods_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Mods)
+                : _mods_16 ??= Resources.Mods;
 
-        private static Bitmap? _redExclamationMarkCircle;
-        private static Bitmap? _redExclamationMarkCircle_Dark;
-        public static Bitmap RedExclamationMarkCircle =>
+        private static Bitmap? _redExclCircle;
+        private static Bitmap? _redExclCircle_Dark;
+        public static Bitmap RedExclCircle =>
             DarkModeEnabled
-                ? _redExclamationMarkCircle_Dark ??= Resources.RedExclamationMarkCircle_Dark
-                : _redExclamationMarkCircle ??= Resources.RedExclamationMarkCircle;
+                ? _redExclCircle_Dark ??= Resources.RedExclCircle_Dark
+                : _redExclCircle ??= Resources.RedExclCircle;
 
         private static Bitmap? _refresh;
         private static Bitmap? _refresh_Dark;
@@ -1494,11 +1494,6 @@ namespace AngelLoader.Forms
             g.TranslateTransform(boundsRectCenterX, boundsRectCenterY, MatrixOrder.Append);
         }
 
-        private static void SetSmoothingMode(PaintEventArgs e, SmoothingMode mode)
-        {
-            if (e.Graphics.SmoothingMode != mode) e.Graphics.SmoothingMode = mode;
-        }
-
         #endregion
 
         #endregion
@@ -1514,7 +1509,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             Brush brush = button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark;
 
@@ -1525,13 +1520,13 @@ namespace AngelLoader.Forms
 
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.FillPolygon(button.Enabled ? PlayArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
         }
 
         internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.DrawPolygon(button.Enabled ? PlayArrowPen : PlayArrowDisabledPen, _playOriginalArrowPoints);
         }
 
@@ -1569,9 +1564,9 @@ namespace AngelLoader.Forms
             e.Graphics.FillRectangle(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, hRect);
         }
 
-        internal static void PaintExButton(Button button, PaintEventArgs e)
+        internal static void PaintXButton(Button button, PaintEventArgs e)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             int minDimension = (Math.Min(button.Width, button.Height) - 1).ClampToZero();
             float leftAndTop = GetValueFromPercent_Float(30.43f, minDimension);
@@ -1605,7 +1600,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintWebSearchButton(Button button, PaintEventArgs e)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             Pen pen = button.Enabled ? WebSearchCirclePen : _webSearchCircleDisabledPen;
 
@@ -1642,9 +1637,9 @@ namespace AngelLoader.Forms
             e.Graphics.DrawLine(pen, 2, 11, 18, 11);
         }
 
-        internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
+        internal static void PaintScanButtons(Button button, PaintEventArgs e)
         {
-            SetSmoothingMode(e, SmoothingMode.AntiAlias);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             Brush brush = button.Enabled ? AL_LightBlueBrush : SystemBrushes.ControlDark;
 

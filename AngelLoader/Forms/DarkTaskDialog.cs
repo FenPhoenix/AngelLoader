@@ -74,7 +74,7 @@ namespace AngelLoader.Forms
             {
                 YesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
                 YesButton.ImageAlign = ContentAlignment.MiddleCenter;
-                YesButton.Image = Images.RedExclamationMarkCircle;
+                YesButton.Image = Images.RedExclCircle;
             }
 
             if (yesText != null) YesButton.Text = yesText;

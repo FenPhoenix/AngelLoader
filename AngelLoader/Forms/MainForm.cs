@@ -3897,7 +3897,7 @@ namespace AngelLoader.Forms
                 case Column.Game:
                     e.Value =
                         GameIsKnownAndSupported(fm.Game) ? Images.FMsList_GameIcons[(int)GameToGameIndex(fm.Game)] :
-                        fm.Game == Game.Unsupported ? Images.RedQuestionMarkCircle :
+                        fm.Game == Game.Unsupported ? Images.RedQCircle :
                         // Can't say null, or else it sets an ugly red-x image
                         Images.Blank;
                     break;
@@ -5315,7 +5315,7 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanSmallButtons((Button)sender, e);
+        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
 
         private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
 

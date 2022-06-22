@@ -272,7 +272,7 @@ namespace AngelLoader.Forms
         private void RemoveButtons_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton((Button)sender, e);
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => Images.PaintExButton((Button)sender, e);
+        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => Images.PaintXButton((Button)sender, e);
 
         private void BottomButtonsFLP_Paint(object sender, PaintEventArgs e)
         {

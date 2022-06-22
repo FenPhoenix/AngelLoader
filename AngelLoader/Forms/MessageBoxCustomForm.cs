@@ -104,7 +104,7 @@ namespace AngelLoader.Forms
             {
                 OKButton.TextImageRelation = TextImageRelation.ImageBeforeText;
                 OKButton.ImageAlign = ContentAlignment.MiddleCenter;
-                OKButton.Image = Images.RedExclamationMarkCircle;
+                OKButton.Image = Images.RedExclCircle;
             }
 
             // This is here instead of in the localize method because it's not really localizing, it's just setting

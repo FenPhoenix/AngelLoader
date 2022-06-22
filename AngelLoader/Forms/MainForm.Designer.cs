@@ -650,7 +650,7 @@
             this.FilterByThief1Button.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByThief1Button.CheckOnClick = true;
             this.FilterByThief1Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.Thief1_21;
+            this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.T1_21;
             this.FilterByThief1Button.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.FilterByThief1Button.Name = "FilterByThief1Button";
@@ -663,7 +663,7 @@
             this.FilterByThief2Button.AutoSize = false;
             this.FilterByThief2Button.CheckOnClick = true;
             this.FilterByThief2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief2Button.Image = global::AngelLoader.Properties.Resources.Thief2_21;
+            this.FilterByThief2Button.Image = global::AngelLoader.Properties.Resources.T2_21;
             this.FilterByThief2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByThief2Button.Margin = new System.Windows.Forms.Padding(0);
             this.FilterByThief2Button.Name = "FilterByThief2Button";
@@ -676,7 +676,7 @@
             this.FilterByThief3Button.AutoSize = false;
             this.FilterByThief3Button.CheckOnClick = true;
             this.FilterByThief3Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief3Button.Image = global::AngelLoader.Properties.Resources.Thief3_21;
+            this.FilterByThief3Button.Image = global::AngelLoader.Properties.Resources.T3_21;
             this.FilterByThief3Button.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByThief3Button.Margin = new System.Windows.Forms.Padding(0);
             this.FilterByThief3Button.Name = "FilterByThief3Button";
@@ -689,7 +689,7 @@
             this.FilterBySS2Button.AutoSize = false;
             this.FilterBySS2Button.CheckOnClick = true;
             this.FilterBySS2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.Shock2_21;
+            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.SS2_21;
             this.FilterBySS2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterBySS2Button.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.FilterBySS2Button.Name = "FilterBySS2Button";

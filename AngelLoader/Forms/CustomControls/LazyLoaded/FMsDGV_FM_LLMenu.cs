@@ -97,11 +97,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 _menu.DarkModeEnabled = _darkModeEnabled;
                 FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
-                DeleteFMMenuItem.Image = Images.Trash_16;
+                DeleteFMMenuItem.Image = Images.Trash;
                 DeleteFromDBMenuItem.Image = Images.DeleteFromDB;
-                PinToTopMenuItem.Image = _sayPin ? Images.Pin_16 : Images.Unpin_16;
-                ExplicitPinToTopMenuItem.Image = Images.Pin_16;
-                ExplicitUnpinFromTopMenuItem.Image = Images.Unpin_16;
+                PinToTopMenuItem.Image = _sayPin ? Images.Pin : Images.Unpin;
+                ExplicitPinToTopMenuItem.Image = Images.Pin;
+                ExplicitUnpinFromTopMenuItem.Image = Images.Unpin;
             }
         }
 
@@ -216,10 +216,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
                 new ToolStripSeparator(),
                 PinToTopMenuItem = new ToolStripMenuItemCustom(),
-                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Pin_16, Visible = false },
-                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Unpin_16, Visible = false },
+                ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Pin, Visible = false },
+                ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Unpin, Visible = false },
                 new ToolStripSeparator(),
-                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash_16 },
+                DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash },
                 DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB },
                 OpenInDromEdSep = new ToolStripSeparator(),
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
@@ -507,7 +507,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 ? LText.FMsList.FMMenu_PinFM
                 : LText.FMsList.FMMenu_UnpinFM;
 
-            PinToTopMenuItem.Image = sayPin ? Images.Pin_16 : Images.Unpin_16;
+            PinToTopMenuItem.Image = sayPin ? Images.Pin : Images.Unpin;
         }
 
         internal void SetPinItemsMode()

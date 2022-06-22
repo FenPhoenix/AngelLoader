@@ -83,9 +83,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CharacterEncodingLetter {
+        internal static System.Drawing.Bitmap CharEnc {
             get {
-                object obj = ResourceManager.GetObject("CharacterEncodingLetter", resourceCulture);
+                object obj = ResourceManager.GetObject("CharEnc", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,9 +143,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Help_16 {
+        internal static System.Drawing.Bitmap Help {
             get {
-                object obj = ResourceManager.GetObject("Help_16", resourceCulture);
+                object obj = ResourceManager.GetObject("Help", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -153,9 +153,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Install_24 {
+        internal static System.Drawing.Bitmap Install {
             get {
-                object obj = ResourceManager.GetObject("Install_24", resourceCulture);
+                object obj = ResourceManager.GetObject("Install", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -163,9 +163,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Mods_16 {
+        internal static System.Drawing.Bitmap Mods {
             get {
-                object obj = ResourceManager.GetObject("Mods_16", resourceCulture);
+                object obj = ResourceManager.GetObject("Mods", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,9 +173,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Pin_16 {
+        internal static System.Drawing.Bitmap Pin {
             get {
-                object obj = ResourceManager.GetObject("Pin_16", resourceCulture);
+                object obj = ResourceManager.GetObject("Pin", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +183,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RedExclamationMarkCircle {
+        internal static System.Drawing.Bitmap RedExclCircle {
             get {
-                object obj = ResourceManager.GetObject("RedExclamationMarkCircle", resourceCulture);
+                object obj = ResourceManager.GetObject("RedExclCircle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +193,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RedExclamationMarkCircle_Dark {
+        internal static System.Drawing.Bitmap RedExclCircle_Dark {
             get {
-                object obj = ResourceManager.GetObject("RedExclamationMarkCircle_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("RedExclCircle_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +203,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RedQuestionMarkCircle {
+        internal static System.Drawing.Bitmap RedQCircle {
             get {
-                object obj = ResourceManager.GetObject("RedQuestionMarkCircle", resourceCulture);
+                object obj = ResourceManager.GetObject("RedQCircle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +213,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RedQuestionMarkCircle_Dark {
+        internal static System.Drawing.Bitmap RedQCircle_Dark {
             get {
-                object obj = ResourceManager.GetObject("RedQuestionMarkCircle_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("RedQCircle_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -243,49 +243,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Settings_24 {
+        internal static System.Drawing.Bitmap Settings {
             get {
-                object obj = ResourceManager.GetObject("Settings_24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Shock2_16 {
-            get {
-                object obj = ResourceManager.GetObject("Shock2_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Shock2_16_Dark {
-            get {
-                object obj = ResourceManager.GetObject("Shock2_16_Dark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Shock2_21 {
-            get {
-                object obj = ResourceManager.GetObject("Shock2_21", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Shock2_21_Dark {
-            get {
-                object obj = ResourceManager.GetObject("Shock2_21_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("Settings", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -313,9 +273,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1_16 {
+        internal static System.Drawing.Bitmap SS2_16 {
             get {
-                object obj = ResourceManager.GetObject("Thief1_16", resourceCulture);
+                object obj = ResourceManager.GetObject("SS2_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -323,9 +283,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1_16_Dark {
+        internal static System.Drawing.Bitmap SS2_16_Dark {
             get {
-                object obj = ResourceManager.GetObject("Thief1_16_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("SS2_16_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -333,9 +293,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1_21 {
+        internal static System.Drawing.Bitmap SS2_21 {
             get {
-                object obj = ResourceManager.GetObject("Thief1_21", resourceCulture);
+                object obj = ResourceManager.GetObject("SS2_21", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -343,9 +303,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1_21_Dark {
+        internal static System.Drawing.Bitmap SS2_21_Dark {
             get {
-                object obj = ResourceManager.GetObject("Thief1_21_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("SS2_21_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -353,9 +313,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1_21_Dark_DarkBG {
+        internal static System.Drawing.Bitmap T_21_Dark {
             get {
-                object obj = ResourceManager.GetObject("Thief1_21_Dark_DarkBG", resourceCulture);
+                object obj = ResourceManager.GetObject("T_21_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -363,9 +323,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief2_16 {
+        internal static System.Drawing.Bitmap T1_16 {
             get {
-                object obj = ResourceManager.GetObject("Thief2_16", resourceCulture);
+                object obj = ResourceManager.GetObject("T1_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -373,9 +333,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief2_21 {
+        internal static System.Drawing.Bitmap T1_16_Dark {
             get {
-                object obj = ResourceManager.GetObject("Thief2_21", resourceCulture);
+                object obj = ResourceManager.GetObject("T1_16_Dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -383,9 +343,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief3_16 {
+        internal static System.Drawing.Bitmap T1_21 {
             get {
-                object obj = ResourceManager.GetObject("Thief3_16", resourceCulture);
+                object obj = ResourceManager.GetObject("T1_21", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -393,9 +353,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief3_21 {
+        internal static System.Drawing.Bitmap T1_21_Dark_DarkBG {
             get {
-                object obj = ResourceManager.GetObject("Thief3_21", resourceCulture);
+                object obj = ResourceManager.GetObject("T1_21_Dark_DarkBG", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -403,9 +363,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Trash_16 {
+        internal static System.Drawing.Bitmap T2_16 {
             get {
-                object obj = ResourceManager.GetObject("Trash_16", resourceCulture);
+                object obj = ResourceManager.GetObject("T2_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -413,9 +373,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Trash_16_Dark {
+        internal static System.Drawing.Bitmap T2_21 {
             get {
-                object obj = ResourceManager.GetObject("Trash_16_Dark", resourceCulture);
+                object obj = ResourceManager.GetObject("T2_21", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -423,9 +383,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Uninstall_24 {
+        internal static System.Drawing.Bitmap T3_16 {
             get {
-                object obj = ResourceManager.GetObject("Uninstall_24", resourceCulture);
+                object obj = ResourceManager.GetObject("T3_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -433,9 +393,49 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Unpin_16 {
+        internal static System.Drawing.Bitmap T3_21 {
             get {
-                object obj = ResourceManager.GetObject("Unpin_16", resourceCulture);
+                object obj = ResourceManager.GetObject("T3_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Trash {
+            get {
+                object obj = ResourceManager.GetObject("Trash", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Trash_Dark {
+            get {
+                object obj = ResourceManager.GetObject("Trash_Dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Uninstall {
+            get {
+                object obj = ResourceManager.GetObject("Uninstall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Unpin {
+            get {
+                object obj = ResourceManager.GetObject("Unpin", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
