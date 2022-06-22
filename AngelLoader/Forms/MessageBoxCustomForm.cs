@@ -172,7 +172,7 @@ namespace AngelLoader.Forms
 
         private void SetTheme(VisualTheme theme)
         {
-            ControlUtils.ChangeFormThemeMode(theme, this, _controlColors, x => x == BottomFLP);
+            SetThemeBase(theme, x => x == BottomFLP);
             BottomFLP.BackColor = DarkColors.Fen_DarkBackground;
         }
 

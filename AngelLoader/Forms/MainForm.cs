@@ -1733,14 +1733,12 @@ namespace AngelLoader.Forms
 
                 if (startup && !darkMode)
                 {
-                    ControlUtils.CreateAllControlsHandles(this);
+                    CreateAllControlsHandles(this);
                 }
                 else
                 {
-                    ControlUtils.ChangeFormThemeMode(
+                    SetThemeBase(
                         theme,
-                        this,
-                        _controlColors,
                         x => x.EqualsIfNotNull(ProgressBox)
                              || (_progressBoxConstructed && x is Control xControl &&
                                  ProgressBox!.Controls.Contains(xControl))

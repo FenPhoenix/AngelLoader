@@ -608,10 +608,8 @@ namespace AngelLoader.Forms
             {
                 if (!startup) MainSplitContainer.SuspendDrawing();
 
-                ControlUtils.ChangeFormThemeMode(
+                SetThemeBase(
                     theme,
-                    this,
-                    _controlColors,
                     x => x is SplitterPanel,
                     capacity: 150
                 );
