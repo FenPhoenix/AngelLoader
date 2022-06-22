@@ -61,7 +61,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("There was an error while reading " + file + ".", ex);
+                Log(ErrorText.ExRead + file + ".", ex);
             }
             finally
             {
@@ -210,7 +210,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("There was an error while writing to " + Paths.ConfigIni + ".", ex);
+                Log(ErrorText.ExWrite + Paths.ConfigIni + ".", ex);
             }
             finally
             {

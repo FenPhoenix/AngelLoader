@@ -1633,8 +1633,8 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log("fm is not known or supported. FM game type: " + fm.Game, stackTrace: true);
-                Dialogs.ShowError(ErrorText.UnableToOpenFMFolder);
+                Log(ErrorText.FMGameU + " Game: " + fm.Game, stackTrace: true);
+                Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
                 return;
             }
 
@@ -1653,8 +1653,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "trying to open FM folder " + fmDir, ex);
-                Dialogs.ShowError(ErrorText.UnableToOpenFMFolder);
+                Log(ErrorText.ExTry + "open FM folder " + fmDir, ex);
+                Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
             }
         }
 
@@ -1703,7 +1703,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Problem opening web search URL", ex);
+                Log(ErrorText.ExOpen + "web search URL", ex);
                 Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
                 return;
             }
@@ -1719,7 +1719,7 @@ namespace AngelLoader
             }
             catch (Win32Exception ex)
             {
-                Log("Problem opening web search URL", ex);
+                Log(ErrorText.ExOpen + "web search URL", ex);
                 Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
             }
         }
@@ -1733,7 +1733,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "opening HTML readme " + fm.SelectedReadme, ex);
+                Log(ErrorText.ExOpen + "HTML readme " + fm.SelectedReadme, ex);
                 Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
                 return;
             }
@@ -1746,7 +1746,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "opening HTML readme " + path, ex);
+                    Log(ErrorText.ExOpen + "HTML readme " + path, ex);
                     Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
                 }
             }
@@ -1830,7 +1830,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Problem opening link '" + link + "'", ex);
+                Log(ErrorText.ExOpen + "link '" + link + "'", ex);
                 Dialogs.ShowError(ErrorText.UnableToOpenLink + "\r\n\r\n" + link);
             }
         }

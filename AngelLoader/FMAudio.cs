@@ -317,7 +317,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                Log("Unable to set directory attributes on " + fmSndPath, ex);
+                                Log("Unable to set directory attributes for " + fmSndPath, ex);
                             }
 
                             if (Canceled(ct)) return;

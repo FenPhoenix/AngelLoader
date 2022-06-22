@@ -7,18 +7,21 @@ namespace AngelLoader.DataClasses
     internal static class ErrorText
     {
         internal static readonly string Ex = "Exception ";
-        internal static readonly string UnableToOpenLogFile = "Unable to open log file.";
+        internal static readonly string Un = "Unable to ";
+        internal static readonly string UnableToOpenLogFile = Un + "open log file.";
         internal static readonly string ScanErrors = "One or more errors occurred while scanning.";
-        internal static readonly string UnableToStartExecutable = "Unable to start executable.";
-        internal static readonly string UnableToOpenFMFolder = "Unable to open FM folder.";
-        internal static readonly string UnableToOpenHTMLReadme = "Unable to open HTML readme.";
+        internal static readonly string UnableToStartExe = Un + "start executable.";
+        internal static readonly string UnableToOpenFMDir = Un + "open FM folder.";
+        internal static readonly string UnableToOpenHTMLReadme = Un + "open HTML readme.";
         internal static readonly string HTMLReadmeNotFound = "The HTML readme file could not be found.";
-        internal static readonly string UnableToOpenLink = "Unable to open link.";
+        internal static readonly string UnableToOpenLink = Un + "open link.";
         internal static readonly string FMGameU = "FM game type is unknown or unsupported.";
         internal static readonly string FMGameNotDark = "FM must be for a Dark Engine game.";
         internal static readonly string MPForNonT2 = "Multiplayer is not supported for games other than Thief 2.";
-        internal static readonly string GamePathEmpty = "Game directory is empty (a path to the game executable has not been specified).";
+        internal static readonly string GamePathEmpty = "Game path is empty.";
         internal static readonly string ExRead = Ex + "reading ";
         internal static readonly string ExWrite = Ex + "writing ";
+        internal static readonly string ExOpen = Ex + "opening ";
+        internal static readonly string ExTry = Ex + "trying to ";
     }
 }

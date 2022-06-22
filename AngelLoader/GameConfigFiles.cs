@@ -306,7 +306,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "trying to unset temp config values\r\n" +
+                    Log(ErrorText.ExTry + "unset temp config values\r\n" +
                         "GameIndex: " + gameIndex + "\r\n" +
                         "GameExe: " + gameExe,
                         ex);
@@ -746,7 +746,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Problem reading SneakyOptions.ini", ex);
+                Log(ErrorText.ExRead + "SneakyOptions.ini", ex);
                 return false;
             }
 
@@ -873,7 +873,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Problem writing SneakyOptions.ini", ex);
+                Log(ErrorText.ExWrite + "SneakyOptions.ini", ex);
                 return false;
             }
 

@@ -170,8 +170,8 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log("Game is unknown or unsupported for FM " + GetFMId(fm) + "\r\n" +
-                    "fm.Game was: " + fm.Game, stackTrace: true);
+                Log(ErrorText.FMGameU + " FM: " + GetFMId(fm) + "\r\n" +
+                    "Game: " + fm.Game, stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.FMGameU);
                 return false;
             }
@@ -242,7 +242,7 @@ namespace AngelLoader
                 {
                     Log(ErrorText.FMGameNotDark + "\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
-                        "fm.Game was: " + fm.Game, stackTrace: true);
+                        "Game: " + fm.Game, stackTrace: true);
                     Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                     return false;
                 }
@@ -252,7 +252,7 @@ namespace AngelLoader
                 string gamePath = Config.GetGamePath(gameIndex);
                 if (gamePath.IsEmpty())
                 {
-                    Log("Game path is empty for " + gameIndex, stackTrace: true);
+                    Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex, stackTrace: true);
                     Core.Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
                     return false;
                 }
@@ -403,7 +403,7 @@ namespace AngelLoader
                 Log(ErrorText.Ex + "starting " + exe + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
-                Core.Dialogs.ShowError(ErrorText.UnableToStartExecutable + "\r\n\r\n" + exe);
+                Core.Dialogs.ShowError(ErrorText.UnableToStartExe + "\r\n\r\n" + exe);
             }
         }
 
@@ -421,7 +421,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                Log("Game path is empty for " + gameIndex, stackTrace: true);
+                Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex, stackTrace: true);
                 Core.Dialogs.ShowError(gameName + ":\r\n" + ErrorText.GamePathEmpty);
                 return failed;
             }
@@ -585,7 +585,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "trying to generate missflag.str file for an FM that needs it", ex);
+                    Log(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
                     Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
                                            GetFMId(fm) + "\r\n\r\n" +
                                            "The FM will probably not be able to play its mission(s).");
@@ -593,7 +593,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "trying to generate missflag.str file", ex);
+                Log(ErrorText.ExTry + "generate missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
