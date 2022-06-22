@@ -131,13 +131,6 @@ namespace AngelLoader.DataClasses
 
         internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
 
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
-
         internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
 
         #endregion
@@ -330,7 +323,7 @@ namespace AngelLoader.DataClasses
         #region Settings window state
 
         internal SettingsTab SettingsTab = SettingsTab.Paths;
-        internal Size SettingsWindowSize = new Size(Defaults.SettingsWindowWidth, Defaults.SettingsWindowHeight);
+        internal Size SettingsWindowSize = Defaults.SettingsWindowSize;
         internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
         internal int SettingsPathsVScrollPos = 0;
         internal int SettingsAppearanceVScrollPos = 0;

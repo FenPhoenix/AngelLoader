@@ -153,8 +153,7 @@ namespace AngelLoader
 
             #region Settings window
 
-            internal const int SettingsWindowWidth = 710;
-            internal const int SettingsWindowHeight = 708;
+            internal static readonly Size SettingsWindowSize = new Size(710, 708);
             internal const int SettingsWindowSplitterDistance = 155;
 
             #endregion
