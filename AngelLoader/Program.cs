@@ -1,9 +1,9 @@
 ﻿//#define WPF
+//#define ENABLE_RTF_VISUAL_TEST_FORM
 
 using System;
 using System.IO;
 using System.Reflection;
-using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
 
@@ -17,7 +17,7 @@ namespace AngelLoader
         [STAThread]
         private static void Main(string[] args)
         {
-#if DEBUG || Release_Testing
+#if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
             Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
 #endif
 

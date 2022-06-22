@@ -1,4 +1,5 @@
-﻿#if DEBUG || Release_Testing
+﻿//#define ENABLE_RTF_VISUAL_TEST_FORM
+#if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
 namespace AngelLoader.Forms
 {
     sealed partial class RTF_Visual_Test_Form
@@ -21,7 +22,7 @@ namespace AngelLoader.Forms
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+#region Windows Form Designer generated code
 
         /// <summary>
         /// Required method for Designer support - do not modify
@@ -33,7 +34,6 @@ namespace AngelLoader.Forms
             this.SaveButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.RTFBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.RTFFileComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
-            this.ConvertAllToHTMLButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // NotesTextBox
@@ -83,22 +83,11 @@ namespace AngelLoader.Forms
             this.RTFFileComboBox.TabIndex = 1;
             this.RTFFileComboBox.SelectedIndexChanged += new System.EventHandler(this.RTFFileComboBox_SelectedIndexChanged);
             // 
-            // ConvertAllToHTMLButton
-            // 
-            this.ConvertAllToHTMLButton.Location = new System.Drawing.Point(904, 64);
-            this.ConvertAllToHTMLButton.Name = "ConvertAllToHTMLButton";
-            this.ConvertAllToHTMLButton.Size = new System.Drawing.Size(72, 23);
-            this.ConvertAllToHTMLButton.TabIndex = 4;
-            this.ConvertAllToHTMLButton.Text = "HTML";
-            this.ConvertAllToHTMLButton.UseVisualStyleBackColor = true;
-            this.ConvertAllToHTMLButton.Click += new System.EventHandler(this.ConvertAllToHTMLButton_Click);
-            // 
             // RTF_Visual_Test_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 648);
-            this.Controls.Add(this.ConvertAllToHTMLButton);
             this.Controls.Add(this.NotesTextBox);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.RTFBox);
@@ -111,13 +100,12 @@ namespace AngelLoader.Forms
 
         }
 
-        #endregion
+#endregion
 
         private CustomControls.RichTextBoxCustom RTFBox;
         private CustomControls.DarkComboBox RTFFileComboBox;
         private CustomControls.DarkButton SaveButton;
         private CustomControls.DarkTextBox NotesTextBox;
-        private System.Windows.Forms.Button ConvertAllToHTMLButton;
     }
 }
 #endif
