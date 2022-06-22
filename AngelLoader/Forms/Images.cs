@@ -760,7 +760,7 @@ namespace AngelLoader.Forms
         private static Bitmap? t1_21_Dark;
         private static Bitmap Thief1_21() =>
             DarkModeEnabled
-                ? t1_21_Dark ??= Resources.T_21_Dark
+                ? t1_21_Dark ??= Resources.T1_21_Dark
                 : _t1_21 ??= Resources.T1_21;
 
         private static Bitmap? _t1_21_dark_DarkBG;
