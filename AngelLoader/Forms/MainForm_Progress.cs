@@ -70,6 +70,10 @@ namespace AngelLoader.Forms
                 cancelAction: cancelAction ?? NullAction);
         });
 
+        #region Disabled until needed
+
+#if false
+
         public void ShowProgressBox_Double(
             string? mainMessage1 = null,
             string? mainMessage2 = null,
@@ -93,6 +97,10 @@ namespace AngelLoader.Forms
                 cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
                 cancelAction: cancelAction ?? NullAction);
         });
+
+#endif
+
+        #endregion
 
         #endregion
 

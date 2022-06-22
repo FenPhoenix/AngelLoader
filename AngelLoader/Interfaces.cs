@@ -124,9 +124,19 @@ namespace AngelLoader
     {
         void AddFullItem(string backingItem, string item);
         void ClearFullItems();
+
+        #region Disabled until needed
+
+#if false
+
         int BackingIndexOf(string item);
         string SelectedBackingItem();
         void SelectBackingIndexOf(string item);
+
+#endif
+
+        #endregion
+
         void BeginUpdate();
         void EndUpdate();
     }
@@ -167,6 +177,10 @@ namespace AngelLoader
         /// <param name="cancelAction"></param>
         void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
+        #region Disabled until needed
+
+#if false
+
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
         /// <para/>
@@ -180,6 +194,10 @@ namespace AngelLoader
         /// <param name="cancelMessage"></param>
         /// <param name="cancelAction"></param>
         void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
+
+#endif
+
+        #endregion
 
         /// <summary>
         /// This method call is auto-invoked, so no need to wrap it manually.
@@ -411,7 +429,17 @@ namespace AngelLoader
         void ShowInitialReadmeChooser(bool visible);
         void ActivateThisInstance();
         FanMission? GetFMFromIndex(int index);
+
+        #region Disabled until needed
+
+#if false
+
         FanMission[] GetSelectedFMs_InOrder();
+
+#endif
+
+        #endregion
+
         List<FanMission> GetSelectedFMs_InOrder_List();
 
         #region Dialogs
