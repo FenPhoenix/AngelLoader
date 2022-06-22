@@ -923,7 +923,7 @@ namespace AngelLoader.Forms
             ChangeGameOrganization(startup: true);
 
             // Do this here to prevent double-loading of RTF/GLML readmes
-            SetTheme(Config.VisualTheme, startup: true, alsoCreateControlHandles: true);
+            SetTheme(Config.VisualTheme, startup: true, createControlHandles: true);
 
 #if !ReleaseBeta && !ReleasePublic
             UpdateGameScreenShotModes();
@@ -1723,7 +1723,7 @@ namespace AngelLoader.Forms
 
         public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false);
 
-        private void SetTheme(VisualTheme theme, bool startup, bool alsoCreateControlHandles = false)
+        private void SetTheme(VisualTheme theme, bool startup, bool createControlHandles = false)
         {
             bool darkMode = theme == VisualTheme.Dark;
 
@@ -1745,7 +1745,7 @@ namespace AngelLoader.Forms
                              || (_progressBoxConstructed && x is Control xControl &&
                                  ProgressBox!.Controls.Contains(xControl))
                              || x is SplitterPanel,
-                        alsoCreateControlHandles: alsoCreateControlHandles,
+                        createControlHandles: createControlHandles,
                         capacity: 150
                     );
                 }

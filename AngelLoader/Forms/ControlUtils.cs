@@ -138,13 +138,13 @@ namespace AngelLoader.Forms
 
         private static void FillControlColorList(
             Control control,
-            List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
-            bool alsoCreateControlHandles,
+            List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
+            bool createControlHandles,
             int stackCounter = 0)
         {
             const int maxStackCount = 100;
 
-            if (control.Tag is not LoadType.Lazy)
+            if (controlColors != null && control.Tag is not LoadType.Lazy)
             {
                 ControlOriginalColors? origColors = control is IDarkable
                     ? null
@@ -152,7 +152,7 @@ namespace AngelLoader.Forms
                 controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
             }
 
-            if (alsoCreateControlHandles && !control.IsHandleCreated)
+            if (createControlHandles && !control.IsHandleCreated)
             {
                 IntPtr dummy = control.Handle;
             }
@@ -174,60 +174,26 @@ namespace AngelLoader.Forms
                 var backingPages = dtc.BackingTabPages;
                 for (int i = 0; i < backingPages.Length; i++)
                 {
-                    FillControlColorList(backingPages[i], controlColors, alsoCreateControlHandles, stackCounter);
+                    FillControlColorList(backingPages[i], controlColors, createControlHandles, stackCounter);
                 }
             }
             else
             {
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
-                    FillControlColorList(control.Controls[i], controlColors, alsoCreateControlHandles, stackCounter);
+                    FillControlColorList(control.Controls[i], controlColors, createControlHandles, stackCounter);
                 }
             }
         }
 
-        internal static void CreateAllControlsHandles(
-            Control control,
-            int stackCounter = 0
-            )
-        {
-            const int maxStackCount = 100;
-
-            if (!control.IsHandleCreated)
-            {
-                var dummy = control.Handle;
-            }
-
-            stackCounter++;
-
-            AssertR(
-                stackCounter <= maxStackCount,
-                nameof(CreateAllControlsHandles) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
-
-            // Special-case the custom tab control, see control color filler method for explanation
-            if (control is DarkTabControl dtc)
-            {
-                var backingPages = dtc.BackingTabPages;
-                for (int i = 0; i < backingPages.Length; i++)
-                {
-                    CreateAllControlsHandles(backingPages[i], stackCounter);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < control.Controls.Count; i++)
-                {
-                    CreateAllControlsHandles(control.Controls[i], stackCounter);
-                }
-            }
-        }
+        internal static void CreateAllControlsHandles(Control control) => FillControlColorList(control, null, createControlHandles: true);
 
         internal static void ChangeFormThemeMode(
             VisualTheme theme,
             Form form,
             List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
             Func<Component, bool>? excludePredicate = null,
-            bool alsoCreateControlHandles = false,
+            bool createControlHandles = false,
             int capacity = -1
         )
         {
@@ -238,7 +204,7 @@ namespace AngelLoader.Forms
             if (controlColors.Count == 0)
             {
                 if (capacity >= 0) controlColors.Capacity = capacity;
-                FillControlColorList(form, controlColors, alsoCreateControlHandles);
+                FillControlColorList(form, controlColors, createControlHandles);
             }
 
             foreach (var item in controlColors)
