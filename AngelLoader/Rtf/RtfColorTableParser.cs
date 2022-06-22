@@ -18,21 +18,21 @@ namespace AngelLoader
     {
         #region Private fields
 
-        private byte[] _byteArray = Array.Empty<byte>();
+        private byte[] _rtfBytes = Array.Empty<byte>();
 
         #endregion
 
         #region Stream
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ResetStream(byte[] byteArray)
+        private void ResetStream(byte[] rtfBytes)
         {
-            _byteArray = byteArray;
-            base.ResetStreamBase(byteArray.Length);
+            _rtfBytes = rtfBytes;
+            base.ResetStreamBase(rtfBytes.Length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override byte StreamReadByte() => _byteArray[(int)CurrentPos];
+        protected override byte StreamReadByte() => _rtfBytes[(int)CurrentPos];
 
         #endregion
 
@@ -49,13 +49,13 @@ namespace AngelLoader
 
         [PublicAPI]
         public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-        GetColorTable(byte[] byteArray)
+        GetColorTable(byte[] rtfBytes)
         {
             try
             {
                 // Reset before because at least one thing (current scope) needs it in order to be in a valid
                 // state to start with
-                Reset(byteArray);
+                Reset(rtfBytes);
 
                 Error error = ParseRtf();
                 return error == Error.OK
@@ -71,17 +71,17 @@ namespace AngelLoader
             finally
             {
                 // Reset after so we don't carry around any waste after running
-                Reset(byteArray);
+                Reset(rtfBytes);
             }
         }
 
         #endregion
 
-        private void Reset(byte[] byteArray)
+        private void Reset(byte[] rtfBytes)
         {
             base.ResetBase();
 
-            _byteArray = Array.Empty<byte>();
+            _rtfBytes = Array.Empty<byte>();
 
             #region Fixed-size fields
 
@@ -93,7 +93,7 @@ namespace AngelLoader
 
             _colorTable = null;
 
-            ResetStream(byteArray);
+            ResetStream(rtfBytes);
         }
 
         private Error ParseRtf()
