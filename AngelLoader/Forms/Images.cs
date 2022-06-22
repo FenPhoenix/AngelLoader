@@ -230,6 +230,10 @@ namespace AngelLoader.Forms
         private static GraphicsPath? _finishedCheckGPath;
         private static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
 
+        #endregion
+
+        #region Circle checkmark
+
         private static readonly float[] _circleCheckPoints =
         {
             40, 80, 86, 128, 215, 0, 253, 38, 86, 204, 0, 118, 40, 80
@@ -239,6 +243,32 @@ namespace AngelLoader.Forms
 
         private static GraphicsPath? _circleCheckGPath;
         private static GraphicsPath CircleCheckGPath => _circleCheckGPath ??= MakeGraphicsPath(_circleCheckPoints, _circleCheckTypes);
+
+        #endregion
+
+        #region X symbol
+
+        private static readonly float[] _xPoints =
+        {
+            8, 32,
+            32, 8,
+            80, 58,
+            128, 8,
+            152, 32,
+            102, 80,
+            152, 128,
+            128, 152,
+            80, 102,
+            32, 152,
+            8, 128,
+            58, 80,
+            8, 32
+        };
+
+        private static readonly byte[] _xTypes = MakeTypeArray((1, 11, 0, 129));
+
+        private static GraphicsPath? _xGPath;
+        private static GraphicsPath XGPath => _xGPath ??= MakeGraphicsPath(_xPoints, _xTypes);
 
         #endregion
 
@@ -425,6 +455,10 @@ namespace AngelLoader.Forms
         private static readonly Brush _greenCircleBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
         private static readonly Brush _greenCircleBrush = new SolidBrush(Color.FromArgb(65, 173, 73));
         private static Brush GreenCircleBrush => DarkModeEnabled ? _greenCircleBrushDark : _greenCircleBrush;
+
+        private static readonly Brush _deleteFromDBBrushDark = new SolidBrush(Color.FromArgb(209, 70, 70));
+        private static readonly Brush _deleteFromDBBrush = new SolidBrush(Color.FromArgb(135, 0, 0));
+        private static Brush DeleteFromDBBrush => DarkModeEnabled ? _deleteFromDBBrushDark : _deleteFromDBBrush;
 
         #region Finished states
 
@@ -945,8 +979,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _deleteFromDB_Dark;
         public static Bitmap DeleteFromDB =>
             DarkModeEnabled
-                ? _deleteFromDB_Dark ??= Resources.Delete_16_Dark
-                : _deleteFromDB ??= Resources.Delete_16;
+                ? _deleteFromDB_Dark ??= CreateDeleteFromDBImage()
+                : _deleteFromDB ??= CreateDeleteFromDBImage();
 
         #endregion
 
@@ -1186,6 +1220,28 @@ namespace AngelLoader.Forms
 
             g.FillPath(
                 DarkModeEnabled ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White,
+                gp
+            );
+
+            return ret;
+        }
+
+        private static Bitmap CreateDeleteFromDBImage()
+        {
+            var ret = new Bitmap(16, 16, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(ret);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            var gp = XGPath;
+
+            FitRectInBounds(
+                g,
+                gp.GetBounds(),
+                new RectangleF(0, 0, 14.75f, 14.75f));
+
+            g.FillPath(
+                DeleteFromDBBrush,
                 gp
             );
 
