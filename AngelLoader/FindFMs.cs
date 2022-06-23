@@ -193,7 +193,8 @@ namespace AngelLoader
         /// </summary>
         /// <param name="splashScreen">The splash screen for it to update with a checkmark when it's done.</param>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static (List<FanMission> FMsViewListUnscanned, Exception? Ex) Find_Startup(SplashScreen splashScreen)
+        internal static (List<FanMission> FMsViewListUnscanned, Exception? Ex)
+        Find_Startup(SplashScreen splashScreen)
         {
             // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
             // tasks or anything here... just return an exception and handle it on the main thread...
@@ -210,7 +211,7 @@ namespace AngelLoader
         }
 
         /// <summary>
-        /// Finds and merges new FMs into the set.
+        /// Finds and merges new FMs (archives and installed) into the set.
         /// </summary>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
         internal static List<FanMission> Find() => FindInternal(startup: false);
