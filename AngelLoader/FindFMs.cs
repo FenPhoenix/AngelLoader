@@ -749,6 +749,7 @@ namespace AngelLoader
                 }
             }
 
+            var viewListHash = new HashSetI(FMDataIniList.Count);
             for (int i = 0; i < FMDataIniList.Count; i++)
             {
                 FanMission fm = FMDataIniList[i];
@@ -776,16 +777,21 @@ namespace AngelLoader
 
                 #endregion
 
-                /*
-                BUG: We might cull some of these out of the view list below
-                But their tags will still be added to the global set. It's kind of a meh, all it will do is
-                potentially add some tags to the global list that aren't used by any FMs, which who's even
-                gonna notice. And it's not super likely anyway.
-                Note that the title and comment set are unnecessary for culled FMs but don't hurt anything.
-
-                Anyway, we could try to put the culling code in here, just have this add to the view hash set
-                and then convert that to a list afterwards. That would solve this whole thing.
-                */
+                // Fix: we can have duplicate archive names if the installed dir is different, so cull them
+                // out of the view list at least.
+                // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
+                // We shouldn't have duplicate archives, but importing might add different installed dirs...
+                if (!fm.Archive.IsEmpty())
+                {
+                    if (!viewListHash.Contains(fm.Archive))
+                    {
+                        viewListHash.Add(fm.Archive);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
 
                 // Perf so we don't have to iterate the list again later
                 if (FMNeedsScan(fm)) fmsViewListUnscanned.Add(fm);
@@ -799,28 +805,6 @@ namespace AngelLoader
                 FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
                 FMsViewList.Add(fm);
-            }
-
-            // Fix: we can have duplicate archive names if the installed dir is different, so cull them
-            // out of the view list at least.
-            // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
-            // We shouldn't have duplicate archives, but importing might add different installed dirs...
-            var viewListHash = new HashSetI(FMsViewList.Count);
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                var fm = FMsViewList[i];
-                if (fm.Archive.IsEmpty()) continue;
-
-                if (!viewListHash.Contains(fm.Archive))
-                {
-                    viewListHash.Add(fm.Archive);
-                }
-                else
-                {
-                    FMsViewList.RemoveAt(i);
-                    fmsViewListUnscanned.Remove(fm);
-                    i--;
-                }
             }
 
             FMDataIniList.TrimExcess();
