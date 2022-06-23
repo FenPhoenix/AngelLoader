@@ -60,7 +60,7 @@ namespace AngelLoader
         public enum ProgressSizeMode
         {
             Single,
-            Double,
+            Double
         }
 
         public enum ProgressType

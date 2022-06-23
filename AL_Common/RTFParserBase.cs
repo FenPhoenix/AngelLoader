@@ -10,7 +10,7 @@ namespace AL_Common
         #region Constants
 
         private const int _maxScopes = 100;
-        protected const int _keywordMaxLen = 32;
+        private const int _keywordMaxLen = 32;
         // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
         private const int _paramMaxLen = 10;
 

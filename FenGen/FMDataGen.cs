@@ -495,12 +495,6 @@ namespace FenGen
             w.WL("#endregion");
             w.WL();
 
-            var dictFields = fields.ToList();
-            foreach (string item in customResourceFieldNames)
-            {
-                dictFields.Add(new Field { Name = item });
-            }
-
             w.WL("#endregion");
         }
 

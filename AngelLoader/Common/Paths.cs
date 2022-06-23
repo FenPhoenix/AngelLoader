@@ -23,7 +23,7 @@ namespace AngelLoader
 
         // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern int GetModuleFileName(HandleRef hModule, StringBuilder buffer, int length);
 
         private static string GetStartupPath()

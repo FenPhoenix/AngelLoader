@@ -63,8 +63,9 @@ namespace AngelLoader.Forms
 
         private static ColorMatrix? _darkModeMultiplyColorMatrix;
         private static ColorMatrix DarkModeMultiplyColorMatrix =>
+            // ReSharper disable RedundantExplicitArraySize
             _darkModeMultiplyColorMatrix ??= MultiplyColorMatrix(new float[5][]
-            {
+                {
                 #region Original ToolStripRenderer.CreateDisabledImage version for reference
 
                 //var disabledImageColorMatrix = MultiplyColorMatrix(new float[5][]
@@ -98,6 +99,7 @@ namespace AngelLoader.Forms
                 new float[5] { 0.0f, 0.0f, 0.0f, 1f, 0.0f },
                 new float[5] { 0.99f, 0.99f, 0.99f, 0.0f, 1f }
             });
+        // ReSharper restore RedundantExplicitArraySize
 
         public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
         {

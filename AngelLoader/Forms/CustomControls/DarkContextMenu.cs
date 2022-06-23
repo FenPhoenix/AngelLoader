@@ -81,7 +81,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 foreach (ToolStripItem item in menu.Items)
                 {
-                    if (item is ToolStripMenuItem menuItem && menuItem.DropDown != null)
+                    if (item is ToolStripMenuItem { DropDown: { } } menuItem)
                     {
                         SetMenuTheme(menuItem.DropDown);
                     }

@@ -3743,8 +3743,7 @@ namespace FMScanner
 
                 // Code page 1252 = Western European (using instead of Encoding.Default)
                 using var sr = new StreamReader(stream, enc ?? Encoding.GetEncoding(1252), false, 1024, leaveOpen: true);
-                string? line;
-                while ((line = sr.ReadLine()) != null) lines.Add(line);
+                while (sr.ReadLine() is { } line) lines.Add(line);
             }
             else
             {
@@ -3758,8 +3757,7 @@ namespace FMScanner
                 memStream.Position = 0;
 
                 using var sr = new StreamReader(memStream, enc ?? Encoding.GetEncoding(1252), false);
-                string? line;
-                while ((line = sr.ReadLine()) != null) lines.Add(line);
+                while (sr.ReadLine() is { } line) lines.Add(line);
             }
 
             return lines;
@@ -3770,8 +3768,7 @@ namespace FMScanner
             var lines = new List<string>();
 
             using var sr = new StreamReader(stream, encoding, false);
-            string? line;
-            while ((line = sr.ReadLine()) != null) lines.Add(line);
+            while (sr.ReadLine() is { } line) lines.Add(line);
 
             return lines;
         }
@@ -3781,8 +3778,7 @@ namespace FMScanner
             var lines = new List<string>();
 
             using var sr = new StreamReader(file, encoding, false);
-            string? line;
-            while ((line = sr.ReadLine()) != null) lines.Add(line);
+            while (sr.ReadLine() is { } line) lines.Add(line);
 
             return lines;
         }
@@ -3800,8 +3796,7 @@ namespace FMScanner
             var lines = new List<string>();
 
             using var sr = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
-            string? line;
-            while ((line = sr.ReadLine()) != null) lines.Add(line);
+            while (sr.ReadLine() is { } line) lines.Add(line);
 
             return lines;
         }

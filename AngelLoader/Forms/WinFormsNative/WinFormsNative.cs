@@ -40,14 +40,6 @@ namespace AngelLoader.Forms.WinFormsNative
             public readonly int top;
             public readonly int right;
             public readonly int bottom;
-
-            public RECT(int left, int top, int right, int bottom)
-            {
-                this.left = left;
-                this.top = top;
-                this.right = right;
-                this.bottom = bottom;
-            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -59,10 +51,10 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll")]
         private static extern bool GetCursorPos([In, Out] POINT pt);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll")]
         private static extern int MapWindowPoints(
             HandleRef hWndFrom,
             HandleRef hWndTo,

@@ -138,8 +138,8 @@ namespace AngelLoader
             string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
             using var findHandle = FindFirstFileExW(searchPath,
-                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+                FindExInfoBasic, out WIN32_FIND_DATAW findData,
+                FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
             if (findHandle.IsInvalid)
             {
@@ -264,8 +264,8 @@ namespace AngelLoader
 
             string searchPath = MakeUNCPath(path) + "\\*";
             using var findHandle = FindFirstFileExW(searchPath,
-                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATAW findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+                FindExInfoBasic, out WIN32_FIND_DATAW findData,
+                FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
             if (findHandle.IsInvalid)
             {

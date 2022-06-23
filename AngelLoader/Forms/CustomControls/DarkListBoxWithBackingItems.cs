@@ -18,10 +18,16 @@ namespace AngelLoader.Forms.CustomControls
             Items.Clear();
         }
 
-        public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
-
         public string SelectedBackingItem() => BackingItems[SelectedIndex];
 
+        #region Disabled until needed
+
+#if false
+        public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
+
         public void SelectBackingIndexOf(string item) => SelectedIndex = BackingIndexOf(item);
+#endif
+
+        #endregion
     }
 }

@@ -62,7 +62,7 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
                          List<string> FMSelectorLines, bool AlwaysShowLoader)
-        GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
+        GetInfoFromCamModIni(string gamePath, bool langOnly = false)
         {
             string CreateAndReturnFMsPath()
             {
@@ -85,8 +85,6 @@ namespace AngelLoader
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
-                //error = Error.CamModIniNotFound;
-                error = Error.None;
                 return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
             }
 
@@ -105,8 +103,7 @@ namespace AngelLoader
                  - Comment lines start with ;
                  - No section headers
                 */
-                string? line;
-                while ((line = sr.ReadLine()) != null)
+                while (sr.ReadLine() is { } line)
                 {
                     if (line.IsEmpty()) continue;
 
@@ -142,7 +139,6 @@ namespace AngelLoader
 
             if (langOnly)
             {
-                error = Error.None;
                 return ("", fm_language, fm_language_forced, new List<string>(), false);
             }
 
@@ -154,12 +150,10 @@ namespace AngelLoader
                 }
                 catch
                 {
-                    error = Error.None;
                     return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
                 }
             }
 
-            error = Error.None;
             return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
                 fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
         }

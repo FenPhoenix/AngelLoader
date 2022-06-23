@@ -272,7 +272,7 @@ namespace AngelLoader.Forms
             {
                 var pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
                 result = Native.WindowFromPoint(pos);
-                return result != IntPtr.Zero && Control.FromHandle(result) != null;
+                return Control.FromHandle(result) != null;
             }
 
             // Note: CanFocus will be false if there are modal windows open
@@ -3417,7 +3417,7 @@ namespace AngelLoader.Forms
             {
                 foreach (Control control in MainModsControl.ModsCheckList.Controls)
                 {
-                    if (control is CheckBox checkBox && !MainModsControl.ModsCheckList.IsControlCaution(checkBox))
+                    if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
                     {
                         checkBox.Checked = false;
                     }
@@ -4304,7 +4304,7 @@ namespace AngelLoader.Forms
         internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
         {
             IntPtr hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
-            if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+            if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]

@@ -66,9 +66,9 @@ namespace FMScanner
             {
                 using SafeSearchHandle findHandle = FindFirstFileExW(
                     searchPath + p,
-                    FINDEX_INFO_LEVELS.FindExInfoBasic,
+                    FindExInfoBasic,
                     out findData,
-                    FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                    FindExSearchNameMatch,
                     IntPtr.Zero,
                     0);
 
@@ -96,9 +96,9 @@ namespace FMScanner
 
             using (SafeSearchHandle findHandle = FindFirstFileExW(
                 searchPath + "*",
-                FINDEX_INFO_LEVELS.FindExInfoBasic,
+                FindExInfoBasic,
                 out findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                FindExSearchNameMatch,
                 IntPtr.Zero,
                 0))
             {

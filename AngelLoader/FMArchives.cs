@@ -172,7 +172,7 @@ namespace AngelLoader
                 bool singleArchive = droppedItemsList.Count == 1;
                 bool singleArchivePath = Config.FMArchivePaths.Count == 1;
 
-                string destDir = "";
+                string destDir;
 
                 if (!singleArchivePath)
                 {

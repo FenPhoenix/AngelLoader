@@ -461,8 +461,7 @@ namespace AL_Common
         {
             var stringList = new List<string>();
             using var streamReader = new StreamReader(path, encoding);
-            string? str;
-            while ((str = streamReader.ReadLine()) != null)
+            while (streamReader.ReadLine() is { } str)
             {
                 stringList.Add(str);
             }

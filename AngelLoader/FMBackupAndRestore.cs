@@ -484,8 +484,7 @@ namespace AngelLoader
 
                                 if (Canceled(ct)) return;
 
-                                string? line;
-                                while ((line = sr.ReadLine()) != null)
+                                while (sr.ReadLine() is { } line)
                                 {
                                     bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(_removeFileEq);
                                     bool startsWithRemoveDir = false;

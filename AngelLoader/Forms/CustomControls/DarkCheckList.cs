@@ -152,7 +152,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
-        internal bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
+        internal static bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
 
         // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
         internal void ClearList()

@@ -60,18 +60,26 @@ namespace AL_Common
             private static extern bool FindClose(IntPtr hFindFile);
         }
 
+        /*
         public enum FINDEX_INFO_LEVELS
         {
             //FindExInfoStandard = 0,
             FindExInfoBasic = 1
         }
+        */
 
+        public const int FindExInfoBasic = 1;
+
+        /*
         public enum FINDEX_SEARCH_OPS
         {
             FindExSearchNameMatch = 0,
             //FindExSearchLimitToDirectories = 1,
             //FindExSearchLimitToDevices = 2
         }
+        */
+
+        public const int FindExSearchNameMatch = 0;
 
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
         [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
@@ -99,9 +107,9 @@ namespace AL_Common
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern SafeSearchHandle FindFirstFileExW(
             string lpFileName,
-            FINDEX_INFO_LEVELS fInfoLevelId,
+            int fInfoLevelId,
             out WIN32_FIND_DATAW lpFindFileData,
-            FINDEX_SEARCH_OPS fSearchOp,
+            int fSearchOp,
             IntPtr lpSearchFilter,
             int dwAdditionalFlags);
 

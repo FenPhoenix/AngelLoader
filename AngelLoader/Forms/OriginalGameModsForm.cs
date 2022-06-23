@@ -169,7 +169,7 @@ namespace AngelLoader.Forms
             {
                 foreach (Control control in OrigGameModsControl.ModsCheckList.Controls)
                 {
-                    if (control is CheckBox checkBox && !OrigGameModsControl.ModsCheckList.IsControlCaution(checkBox))
+                    if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
                     {
                         checkBox.Checked = false;
                     }

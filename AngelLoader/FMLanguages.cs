@@ -45,7 +45,7 @@ namespace AngelLoader
             string sLanguage;
             bool bForceLanguage;
 
-            var (_, fmLanguage, _, _, _) = GameConfigFiles.GetInfoFromCamModIni(Config.GetGamePath(game), out _, langOnly: true);
+            var (_, fmLanguage, _, _, _) = GameConfigFiles.GetInfoFromCamModIni(Config.GetGamePath(game), langOnly: true);
 
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?

@@ -618,7 +618,7 @@ namespace AngelLoader
             if (GameIsDark(gameIndex))
             {
                 var data = gameExeSpecified
-                    ? GameConfigFiles.GetInfoFromCamModIni(gamePath, out Error _)
+                    ? GameConfigFiles.GetInfoFromCamModIni(gamePath)
                     : (
                         FMsPath: "",
                         FMLanguage: "",

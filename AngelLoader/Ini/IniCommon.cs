@@ -37,8 +37,7 @@ namespace AngelLoader
                 sr = new StreamReader(file, Encoding.UTF8);
 
                 bool inMeta = false;
-                string? line;
-                while ((line = sr.ReadLine()) != null)
+                while (sr.ReadLine() is { } line)
                 {
                     string lineT = line.Trim();
                     if (inMeta &&
