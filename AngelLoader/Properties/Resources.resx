@@ -121,29 +121,11 @@
   <data name="ClearFilters" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\clearfilters.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FilterByTags" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\filterbytags.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="AngelLoader" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\angelloader.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FilterShowRecentAtTop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\filtershowrecentattop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Show_Unsupported" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\show_unsupported.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="About" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\about.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FilterShowRecentAtTop_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\filtershowrecentattop_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FilterByTags_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\filterbytagsdark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Show_Unavailable" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\filtericons\show_unavailable.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -231,5 +213,23 @@
   </data>
   <data name="T3_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\t3_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Recent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\recent.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Recent_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\recent_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ShowUnavailable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\showunavailable.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ShowUnsupported" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\showunsupported.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Tags" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\tags.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Tags_Dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\filtericons\tagsdark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

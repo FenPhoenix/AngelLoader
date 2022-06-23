@@ -810,8 +810,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _filterByTags_Dark;
         public static Bitmap FilterByTags =>
             DarkModeEnabled
-                ? _filterByTags_Dark ??= Resources.FilterByTags_Dark
-                : _filterByTags ??= Resources.FilterByTags;
+                ? _filterByTags_Dark ??= Resources.Tags_Dark
+                : _filterByTags ??= Resources.Tags;
 
         public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
         public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
@@ -822,8 +822,8 @@ namespace AngelLoader.Forms
         private static Bitmap? _showRecentAtTop_Dark;
         public static Bitmap FilterShowRecentAtTop =>
             DarkModeEnabled
-                ? _showRecentAtTop_Dark ??= Resources.FilterShowRecentAtTop_Dark
-                : _showRecentAtTop ??= Resources.FilterShowRecentAtTop;
+                ? _showRecentAtTop_Dark ??= Resources.Recent_Dark
+                : _showRecentAtTop ??= Resources.Recent;
 
         #endregion
 

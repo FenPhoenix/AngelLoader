@@ -874,7 +874,7 @@
             this.FilterShowUnsupportedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterShowUnsupportedButton.CheckOnClick = true;
             this.FilterShowUnsupportedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterShowUnsupportedButton.Image = global::AngelLoader.Properties.Resources.Show_Unsupported;
+            this.FilterShowUnsupportedButton.Image = global::AngelLoader.Properties.Resources.ShowUnsupported;
             this.FilterShowUnsupportedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterShowUnsupportedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterShowUnsupportedButton.Name = "FilterShowUnsupportedButton";
@@ -887,7 +887,7 @@
             this.FilterShowUnavailableButton.AutoSize = false;
             this.FilterShowUnavailableButton.CheckOnClick = true;
             this.FilterShowUnavailableButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterShowUnavailableButton.Image = global::AngelLoader.Properties.Resources.Show_Unavailable;
+            this.FilterShowUnavailableButton.Image = global::AngelLoader.Properties.Resources.ShowUnavailable;
             this.FilterShowUnavailableButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterShowUnavailableButton.Margin = new System.Windows.Forms.Padding(0);
             this.FilterShowUnavailableButton.Name = "FilterShowUnavailableButton";
