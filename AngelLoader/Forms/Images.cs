@@ -13,10 +13,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    // Pulling an image from Resources is an expensive operation, so if we're going to load an image multiple times,
-    // we want to cache it in a Bitmap object. Images that are loaded only once are not present here, as they would
-    // derive no performance benefit.
-    // NOTE: This class and everything accessible inside it needs to be public for the designers to recognize it.
+    // This acts as both a cache for images that might be loaded more than once, and also a dark mode image
+    // switcher. Images are here because they need caching, because they have a dark mode version, or both.
+
+    // NOTE: Anything in here that a designer needs access to has to be public.
 
     // Performance hack for splash screen, so we don't cause a static ctor cascade, and we still only load the
     // icon once.
@@ -26,6 +26,7 @@ namespace AngelLoader.Forms
         public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
     }
 
+    // Also performance hack for the splash screen as above.
     public static class DarkModeImageConversion
     {
         private static ColorMatrix MultiplyColorMatrix(float[][] matrix1, float[][] matrix2)
@@ -792,56 +793,31 @@ namespace AngelLoader.Forms
 
         #region Filter bar
 
-        private static Bitmap? _filterByReleaseDate;
-        private static Bitmap? _filterByReleaseDate_Dark;
-        public static Bitmap FilterByReleaseDate =>
-            DarkModeEnabled
-                ? _filterByReleaseDate_Dark ??= CreateCalendarImage(lastPlayed: false, darkMode: true)
-                : _filterByReleaseDate ??= CreateCalendarImage(lastPlayed: false, darkMode: false);
+        public static Bitmap FilterByReleaseDate => CreateCalendarImage(lastPlayed: false, darkMode: DarkModeEnabled);
+        public static Bitmap FilterByLastPlayed => CreateCalendarImage(lastPlayed: true, darkMode: DarkModeEnabled);
 
-        private static Bitmap? _filterByLastPlayed;
-        private static Bitmap? _filterByLastPlayed_Dark;
-        public static Bitmap FilterByLastPlayed =>
-            DarkModeEnabled
-                ? _filterByLastPlayed_Dark ??= CreateCalendarImage(lastPlayed: true, darkMode: true)
-                : _filterByLastPlayed ??= CreateCalendarImage(lastPlayed: true, darkMode: false);
-
-        private static Bitmap? _filterByTags;
-        private static Bitmap? _filterByTags_Dark;
-        public static Bitmap FilterByTags =>
-            DarkModeEnabled
-                ? _filterByTags_Dark ??= Resources.Tags_Dark
-                : _filterByTags ??= Resources.Tags;
+        public static Bitmap FilterByTags => DarkModeEnabled ? Resources.Tags_Dark : Resources.Tags;
 
         public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
         public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
 
         public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
-        private static Bitmap? _showRecentAtTop;
-        private static Bitmap? _showRecentAtTop_Dark;
-        public static Bitmap FilterShowRecentAtTop =>
-            DarkModeEnabled
-                ? _showRecentAtTop_Dark ??= Resources.Recent_Dark
-                : _showRecentAtTop ??= Resources.Recent;
+        public static Bitmap FilterShowRecentAtTop => DarkModeEnabled ? Resources.Recent_Dark : Resources.Recent;
 
         #endregion
 
         #region Filter bar right side
 
-        private static Bitmap? _refreshFilters;
-        private static Bitmap? _refreshFilters_Dark;
         public static Bitmap RefreshFilters =>
             DarkModeEnabled
-                ? _refreshFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
-                : _refreshFilters ??= Resources.RefreshFilters;
+                ? DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
+                : Resources.RefreshFilters;
 
-        private static Bitmap? _clearFilters;
-        private static Bitmap? _clearFilters_Dark;
         public static Bitmap ClearFilters =>
             DarkModeEnabled
-                ? _clearFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
-                : _clearFilters ??= Resources.ClearFilters;
+                ? DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
+                : Resources.ClearFilters;
 
         #endregion
 
