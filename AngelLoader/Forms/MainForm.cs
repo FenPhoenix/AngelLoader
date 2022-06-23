@@ -931,7 +931,7 @@ namespace AngelLoader.Forms
         }
 
         // This one can't be multithreaded because it depends on the FMs list
-        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
+        public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
         {
             _splashScreen = splashScreen;
 

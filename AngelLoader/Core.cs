@@ -81,7 +81,7 @@ namespace AngelLoader
             // This is if we have no config file; in that case we assume we're starting for the first time ever
             bool cleanStart = false;
 
-            List<int>? fmsViewListUnscanned = null;
+            List<FanMission>? fmsViewListUnscanned = null;
 
             #region Create required directories
 
@@ -413,7 +413,7 @@ namespace AngelLoader
 
             #endregion
 
-            List<int>? fmsViewListUnscanned = null;
+            List<FanMission>? fmsViewListUnscanned = null;
 
             if (startup)
             {

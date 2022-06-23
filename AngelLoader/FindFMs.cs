@@ -193,7 +193,7 @@ namespace AngelLoader
         /// </summary>
         /// <param name="splashScreen">The splash screen for it to update with a checkmark when it's done.</param>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static (List<int> FMsViewListUnscanned, Exception? Ex) Find_Startup(SplashScreen splashScreen)
+        internal static (List<FanMission> FMsViewListUnscanned, Exception? Ex) Find_Startup(SplashScreen splashScreen)
         {
             // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
             // tasks or anything here... just return an exception and handle it on the main thread...
@@ -205,7 +205,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                return (new List<int>(), ex);
+                return (new List<FanMission>(), ex);
             }
         }
 
@@ -213,12 +213,12 @@ namespace AngelLoader
         /// Finds and merges new FMs into the set.
         /// </summary>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<int> Find() => FindInternal(startup: false);
+        internal static List<FanMission> Find() => FindInternal(startup: false);
 
         // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
-        private static List<int> FindInternal(bool startup)
+        private static List<FanMission> FindInternal(bool startup)
         {
             // @PERF_TODO(Find): Number of hashtable recreations
             // We recreate several hashtables anew after potentially modifying the FM data ini list, because the
@@ -275,7 +275,7 @@ namespace AngelLoader
                     {
                         FMDataIniList.ClearAndAdd(backupList);
                         FMsViewList.ClearAndAdd(viewBackupList);
-                        return new List<int>();
+                        return new List<FanMission>();
                     }
                 }
             }
@@ -393,7 +393,7 @@ namespace AngelLoader
 
             // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
             // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
-            var fmsViewListUnscanned = new List<int>(FMDataIniList.Count);
+            var fmsViewListUnscanned = new List<FanMission>(FMDataIniList.Count);
 
             BuildViewList(fmArchivesAndDatesDict, perGameInstFMDirsItems, fmsViewListUnscanned);
 
@@ -728,7 +728,7 @@ namespace AngelLoader
         private static void BuildViewList(
             DictionaryI<DateTime> fmArchivesDict,
             DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
-            List<int> fmsViewListUnscanned)
+            List<FanMission> fmsViewListUnscanned)
         {
             FMsViewList.Capacity = FMDataIniList.Count;
 
@@ -776,14 +776,26 @@ namespace AngelLoader
 
                 #endregion
 
+                /*
+                BUG: We might cull some of these out of the view list below
+                But their tags will still be added to the global set. It's kind of a meh, all it will do is
+                potentially add some tags to the global list that aren't used by any FMs, which who's even
+                gonna notice. And it's not super likely anyway.
+                Note that the title and comment set are unnecessary for culled FMs but don't hurt anything.
+
+                Anyway, we could try to put the culling code in here, just have this add to the view hash set
+                and then convert that to a list afterwards. That would solve this whole thing.
+                */
+
                 // Perf so we don't have to iterate the list again later
-                if (FMNeedsScan(fm)) fmsViewListUnscanned.Add(i);
+                if (FMNeedsScan(fm)) fmsViewListUnscanned.Add(fm);
 
                 fm.Title =
                     !fm.Title.IsEmpty() ? fm.Title :
                     !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
                     fm.InstalledDir;
                 fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
+
                 FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
                 FMsViewList.Add(fm);
@@ -806,6 +818,7 @@ namespace AngelLoader
                 else
                 {
                     FMsViewList.RemoveAt(i);
+                    fmsViewListUnscanned.Remove(fm);
                     i--;
                 }
             }

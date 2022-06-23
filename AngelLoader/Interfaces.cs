@@ -283,7 +283,7 @@ namespace AngelLoader
         /// Call this only after the FindFMs() thread has finished.
         /// </summary>
         /// <returns></returns>
-        Task FinishInitAndShow(List<int> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
+        Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
 
         void ShowOnly();
 

@@ -357,15 +357,13 @@ namespace AngelLoader
             });
         }
 
-        internal static Task ScanNewFMs(List<int> fmsViewListUnscanned)
+        internal static Task ScanNewFMs(List<FanMission> fmsViewListUnscanned)
         {
             AssertR(fmsViewListUnscanned.Count > 0, nameof(fmsViewListUnscanned) + ".Count was 0");
 
             var fmsToScan = new List<FanMission>(fmsViewListUnscanned.Count);
 
-            // We use FMDataIniList index because that's the list that the indexes are pulled from!
-            // (not FMsViewList)
-            foreach (int index in fmsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
+            fmsToScan.AddRange(fmsViewListUnscanned);
             // Just in case
             fmsViewListUnscanned.Clear();
 
