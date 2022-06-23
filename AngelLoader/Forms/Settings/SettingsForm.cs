@@ -377,6 +377,27 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Rating display style
+
+                switch (config.RatingDisplayStyle)
+                {
+                    case RatingDisplayStyle.NewDarkLoader:
+                        AppearancePage.RatingNDLDisplayStyleRadioButton.Checked = true;
+                        break;
+                    case RatingDisplayStyle.FMSel:
+                    default:
+                        AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked = true;
+                        break;
+                }
+
+                AppearancePage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
+
+                SetRatingImage();
+
+                AppearancePage.RatingUseStarsCheckBox.Enabled = AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked;
+
+                #endregion
+
                 #region Date format
 
                 object[] dateFormatList = ValidDateFormatList.Cast<object>().ToArray();
@@ -431,27 +452,6 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #region Rating display style
-
-                switch (config.RatingDisplayStyle)
-                {
-                    case RatingDisplayStyle.NewDarkLoader:
-                        AppearancePage.RatingNDLDisplayStyleRadioButton.Checked = true;
-                        break;
-                    case RatingDisplayStyle.FMSel:
-                    default:
-                        AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked = true;
-                        break;
-                }
-
-                AppearancePage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
-
-                SetRatingImage();
-
-                AppearancePage.RatingUseStarsCheckBox.Enabled = AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked;
-
-                #endregion
-
                 #region Show/hide UI elements
 
                 AppearancePage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
@@ -462,6 +462,8 @@ namespace AngelLoader.Forms
 
                 AppearancePage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
 
+                #region Play without FM
+
                 if (config.PlayOriginalSeparateButtons)
                 {
                     AppearancePage.PlayWithoutFM_MultipleButtonsRadioButton.Checked = true;
@@ -470,6 +472,8 @@ namespace AngelLoader.Forms
                 {
                     AppearancePage.PlayWithoutFM_SingleButtonRadioButton.Checked = true;
                 }
+
+                #endregion
 
                 #endregion
 
@@ -685,7 +689,7 @@ namespace AngelLoader.Forms
                 OKButton.Text = LText.Global.OK;
                 Cancel_Button.Text = LText.Global.Cancel;
 
-                #region Paths tab
+                #region Paths page
 
                 PathsRadioButton.Text = _startup
                     ? LText.SettingsWindow.InitialSettings_TabText
@@ -700,29 +704,29 @@ namespace AngelLoader.Forms
                 }
 
                 PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
+                PathsPage.GameRequirementsLabel.Text =
+                    LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +
+                    LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
 
                 PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
                 PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
+                PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
                 PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
 
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
+                PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
 
                 PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
                 // Required for the startup version where the lang box is on the same page as paths!
                 PathsPage.FlowLayoutPanel1.PerformLayout();
 
-                PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
-                PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
-
-                PathsPage.GameRequirementsLabel.Text =
-                    LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +
-                    LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
-
                 PathsPage.FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
                 PathsPage.IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;
                 MainToolTip.SetToolTip(PathsPage.AddFMArchivePathButton, LText.SettingsWindow.Paths_AddArchivePathToolTip);
                 MainToolTip.SetToolTip(PathsPage.RemoveFMArchivePathButton, LText.SettingsWindow.Paths_RemoveArchivePathToolTip);
+
+                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
 
                 #endregion
 
@@ -732,9 +736,11 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    #region Appearance tab
+                    #region Appearance page
 
                     AppearanceRadioButton.Text = LText.SettingsWindow.Appearance_TabText;
+
+                    AppearancePage.LanguageGroupBox.Text = LText.SettingsWindow.Appearance_Language;
 
                     AppearancePage.VisualThemeGroupBox.Text = LText.SettingsWindow.Appearance_Theme;
                     AppearancePage.ClassicThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Classic;
@@ -763,13 +769,21 @@ namespace AngelLoader.Forms
                     AppearancePage.RecentFMsHeaderLabel.Text = LText.SettingsWindow.Appearance_RecentFMs;
                     AppearancePage.RecentFMsLabel.Text = LText.SettingsWindow.Appearance_RecentFMs_MaxDays;
 
+                    AppearancePage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Appearance_ShowOrHideInterfaceElements;
+                    AppearancePage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideUninstallButton;
+                    AppearancePage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Appearance_HideFMListZoomButtons;
+                    AppearancePage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideExitButton;
+
+                    AppearancePage.ReadmeGroupBox.Text = LText.SettingsWindow.Appearance_ReadmeBox;
+                    AppearancePage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Appearance_ReadmeUseFixedWidthFont;
+
                     AppearancePage.PlayWithoutFMGroupBox.Text = LText.SettingsWindow.Appearance_PlayWithoutFM;
                     AppearancePage.PlayWithoutFM_SingleButtonRadioButton.Text = LText.SettingsWindow.Appearance_PlayWithoutFM_SingleButton;
                     AppearancePage.PlayWithoutFM_MultipleButtonsRadioButton.Text = LText.SettingsWindow.Appearance_PlayWithoutFM_MultiButton;
 
                     #endregion
 
-                    #region Other tab
+                    #region Other page
 
                     OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
@@ -790,8 +804,6 @@ namespace AngelLoader.Forms
                     OtherPage.BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
                     OtherPage.BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
 
-                    AppearancePage.LanguageGroupBox.Text = LText.SettingsWindow.Appearance_Language;
-
                     OtherPage.WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
                     OtherPage.WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
                     OtherPage.WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
@@ -800,18 +812,8 @@ namespace AngelLoader.Forms
                     OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
                     OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
 
-                    AppearancePage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Appearance_ShowOrHideInterfaceElements;
-                    AppearancePage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideUninstallButton;
-                    AppearancePage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Appearance_HideFMListZoomButtons;
-                    AppearancePage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideExitButton;
-
-                    AppearancePage.ReadmeGroupBox.Text = LText.SettingsWindow.Appearance_ReadmeBox;
-                    AppearancePage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Appearance_ReadmeUseFixedWidthFont;
-
                     #endregion
                 }
-
-                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
             }
             finally
             {
@@ -1033,6 +1035,8 @@ namespace AngelLoader.Forms
             {
                 #region Appearance page
 
+                OutConfig.Language = LangComboBox.SelectedBackingItem();
+
                 OutConfig.VisualTheme = AppearancePage.DarkThemeRadioButton.Checked
                     ? VisualTheme.Dark
                     : VisualTheme.Classic;
@@ -1156,8 +1160,6 @@ namespace AngelLoader.Forms
                 OutConfig.BackupAlwaysAsk = OtherPage.BackupAlwaysAskCheckBox.Checked;
 
                 #endregion
-
-                OutConfig.Language = LangComboBox.SelectedBackingItem();
 
                 OutConfig.WebSearchUrl = OtherPage.WebSearchUrlTextBox.Text;
 

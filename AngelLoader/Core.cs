@@ -378,7 +378,7 @@ namespace AngelLoader
 
             // Set values individually (rather than deep-copying) so that non-Settings values don't get overwritten.
 
-            #region Paths tab
+            #region Paths page
 
             #region Game exes
 
@@ -431,7 +431,9 @@ namespace AngelLoader
             // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and so
             // they won't have been changed
 
-            #region Appearance tab
+            #region Appearance page
+
+            Config.Language = outConfig.Language;
 
             Config.VisualTheme = outConfig.VisualTheme;
 
@@ -440,7 +442,6 @@ namespace AngelLoader
 
             Config.EnableArticles = outConfig.EnableArticles;
             Config.Articles.ClearAndAdd(outConfig.Articles);
-
             Config.MoveArticlesToEnd = outConfig.MoveArticlesToEnd;
 
             Config.RatingDisplayStyle = outConfig.RatingDisplayStyle;
@@ -458,11 +459,17 @@ namespace AngelLoader
 
             Config.DaysRecent = outConfig.DaysRecent;
 
+            Config.HideUninstallButton = outConfig.HideUninstallButton;
+            Config.HideFMListZoomButtons = outConfig.HideFMListZoomButtons;
+            Config.HideExitButton = outConfig.HideExitButton;
+
+            Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
+
             Config.PlayOriginalSeparateButtons = outConfig.PlayOriginalSeparateButtons;
 
             #endregion
 
-            #region Other tab
+            #region Other page
 
             Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
             Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
@@ -474,17 +481,9 @@ namespace AngelLoader
             Config.BackupFMData = outConfig.BackupFMData;
             Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
 
-            Config.Language = outConfig.Language;
-
             Config.WebSearchUrl = outConfig.WebSearchUrl;
 
             Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
-
-            Config.HideUninstallButton = outConfig.HideUninstallButton;
-            Config.HideFMListZoomButtons = outConfig.HideFMListZoomButtons;
-            Config.HideExitButton = outConfig.HideExitButton;
-
-            Config.ReadmeUseFixedWidthFont = outConfig.ReadmeUseFixedWidthFont;
 
             #endregion
 
