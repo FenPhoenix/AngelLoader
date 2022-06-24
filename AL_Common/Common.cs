@@ -163,22 +163,6 @@ namespace AL_Common
             return bytesReadRet;
         }
 
-        public static int ReadAll(this BinaryReader binaryReader, byte[] buffer, int offset, int count)
-        {
-            int bytesReadRet = 0;
-            int startPosThisRound = offset;
-            while (true)
-            {
-                int bytesRead = binaryReader.Read(buffer, startPosThisRound, count);
-                if (bytesRead <= 0) break;
-                bytesReadRet += bytesRead;
-                startPosThisRound += bytesRead;
-                count -= bytesRead;
-            }
-
-            return bytesReadRet;
-        }
-
         #endregion
 
         #region String
