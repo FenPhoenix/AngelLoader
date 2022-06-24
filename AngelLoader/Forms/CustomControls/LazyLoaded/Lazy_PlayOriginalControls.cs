@@ -52,18 +52,22 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructedSingle) return;
 
-            ButtonSingle = new DarkButton { Tag = LoadType.Lazy };
+            ButtonSingle = new DarkButton
+            {
+                Tag = LoadType.Lazy,
 
-            ButtonSingle.AutoSize = true;
-            ButtonSingle.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ButtonSingle.Margin = new Padding(0);
-            ButtonSingle.MinimumSize = new Size(0, 36);
-            ButtonSingle.Padding = new Padding(33, 0, 6, 0);
-            ButtonSingle.TabIndex = 0;
-            ButtonSingle.UseVisualStyleBackColor = true;
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Margin = new Padding(0),
+                MinimumSize = new Size(0, 36),
+                Padding = new Padding(33, 0, 6, 0),
+                TabIndex = 0,
+                UseVisualStyleBackColor = true,
+
+                DarkModeEnabled = _darkModeEnabled
+            };
             ButtonSingle.PaintCustom += _owner.PlayOriginalGameButton_Paint;
             ButtonSingle.Click += _owner.PlayOriginalGameButton_Click;
-            ButtonSingle.DarkModeEnabled = _darkModeEnabled;
             _owner.PlayOriginalFLP.Controls.Add(ButtonSingle);
             _owner.PlayOriginalFLP.Controls.SetChildIndex(ButtonSingle, 0);
 
@@ -80,13 +84,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 var gameButton = new DarkButton
                 {
+                    Tag = LoadType.Lazy,
                     GameIndex = (GameIndex)i,
+
                     Margin = new Padding(0),
                     MinimumSize = new Size(36, 36),
                     Size = new Size(36, 36),
                     TabIndex = tabIndex,
-                    Tag = LoadType.Lazy,
                     UseVisualStyleBackColor = true,
+
                     DarkModeEnabled = _darkModeEnabled
                 };
 
@@ -99,14 +105,18 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 tabIndex += i == (int)GameIndex.Thief2 ? 2 : 1;
             }
 
-            T2MPMenuButton = new DarkArrowButton { Tag = LoadType.Lazy };
+            T2MPMenuButton = new DarkArrowButton
+            {
+                Tag = LoadType.Lazy,
 
-            T2MPMenuButton.ArrowDirection = Direction.Up;
-            T2MPMenuButton.Margin = new Padding(0);
-            T2MPMenuButton.Size = new Size(16, 36);
-            T2MPMenuButton.TabIndex = 3;
-            T2MPMenuButton.UseVisualStyleBackColor = true;
-            T2MPMenuButton.DarkModeEnabled = _darkModeEnabled;
+                ArrowDirection = Direction.Up,
+                Margin = new Padding(0),
+                Size = new Size(16, 36),
+                TabIndex = 3,
+                UseVisualStyleBackColor = true,
+
+                DarkModeEnabled = _darkModeEnabled
+            };
             T2MPMenuButton.Click += _owner.PlayOriginalT2MPButton_Click;
 
             for (int i = 0; i < SupportedGameCount; i++)

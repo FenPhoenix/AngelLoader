@@ -45,16 +45,23 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _listBox = new DarkListBox { Tag = LoadType.Lazy };
-            _owner.EverythingPanel.Controls.Add(_listBox);
-            _listBox.DarkModeEnabled = _darkModeEnabled;
-            _listBox.Scrollable = true;
-            _listBox.TabIndex = 3;
-            _listBox.Visible = false;
+            _listBox = new DarkListBox
+            {
+                Tag = LoadType.Lazy,
+
+                Scrollable = true,
+                TabIndex = 3,
+                Visible = false,
+
+                DarkModeEnabled = _darkModeEnabled
+            };
+
             _listBox.SelectedIndexChanged += _owner.AddTagListBox_SelectedIndexChanged;
             _listBox.KeyDown += _owner.AddTagTextBoxOrListBox_KeyDown;
             _listBox.Leave += _owner.AddTagTextBoxOrListBox_Leave;
             _listBox.MouseUp += _owner.AddTagListBox_MouseUp;
+
+            _owner.EverythingPanel.Controls.Add(_listBox);
 
             _constructed = true;
         }

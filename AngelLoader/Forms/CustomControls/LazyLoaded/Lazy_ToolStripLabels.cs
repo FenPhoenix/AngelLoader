@@ -54,8 +54,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             if (!_constructed[li])
             {
-                _labels[li] = new ToolStripLabel();
-                var _label = _labels[li];
+                var _label = new ToolStripLabel
+                {
+                    ForeColor = LabelForeColor,
+                    Margin = new Padding(4, 5, 0, 2)
+                };
+
+                _labels[li] = _label;
 
                 var container = _owner.FilterIconButtonsToolStrip;
                 var button = label switch
@@ -80,9 +85,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                         break;
                     }
                 }
-
-                _label.ForeColor = LabelForeColor;
-                _label.Margin = new Padding(4, 5, 0, 2);
 
                 _constructed[li] = true;
 

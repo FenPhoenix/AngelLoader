@@ -52,18 +52,24 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 var container = _owner.MainSplitContainer.Panel2;
 
-                Button = new DarkButton { Tag = LoadType.Lazy };
+                Button = new DarkButton
+                {
+                    Tag = LoadType.Lazy,
+
+                    Anchor = AnchorStyles.None,
+                    AutoSize = true,
+                    // This thing gets centered later so no location is specified here
+                    Padding = new Padding(6, 0, 6, 0),
+                    AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                    MinimumSize = new Size(0, 23),
+                    TabIndex = 49,
+                    UseVisualStyleBackColor = true,
+                    Visible = false,
+
+                    DarkModeEnabled = _darkModeEnabled
+                };
+
                 container.Controls.Add(Button);
-                Button.Anchor = AnchorStyles.None;
-                Button.AutoSize = true;
-                Button.DarkModeEnabled = _darkModeEnabled;
-                // This thing gets centered later so no location is specified here
-                Button.Padding = new Padding(6, 0, 6, 0);
-                Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-                Button.MinimumSize = new Size(0, 23);
-                Button.TabIndex = 49;
-                Button.UseVisualStyleBackColor = true;
-                Button.Visible = false;
                 Button.Click += _owner.ViewHTMLReadmeButton_Click;
                 Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
 

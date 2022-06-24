@@ -114,23 +114,27 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     var container = _owner.BottomLeftButtonsFLP;
 
-                    Button = new DarkButton { Tag = LoadType.Lazy };
+                    Button = new DarkButton
+                    {
+                        Tag = LoadType.Lazy,
 
-                    container.Controls.Add(Button);
-                    container.Controls.SetChildIndex(Button, 2);
+                        AutoSize = true,
+                        AutoSizeMode = AutoSizeMode.GrowOnly,
+                        Margin = new Padding(6, 3, 0, 3),
+                        Padding = new Padding(30, 0, 6, 0),
+                        MinimumSize = new Size(0, 36),
+                        TabIndex = 58,
+                        UseVisualStyleBackColor = true,
+                        Enabled = _enabled,
 
-                    Button.AutoSize = true;
-                    Button.AutoSizeMode = AutoSizeMode.GrowOnly;
-                    Button.DarkModeEnabled = _darkModeEnabled;
-                    Button.Margin = new Padding(6, 3, 0, 3);
-                    Button.Padding = new Padding(30, 0, 6, 0);
-                    Button.MinimumSize = new Size(0, 36);
-                    Button.TabIndex = 58;
-                    Button.UseVisualStyleBackColor = true;
+                        DarkModeEnabled = _darkModeEnabled,
+                    };
+
                     Button.Click += _owner.Async_EventHandler_Main;
                     Button.PaintCustom += InstallUninstallButton_Paint;
 
-                    Button.Enabled = _enabled;
+                    container.Controls.Add(Button);
+                    container.Controls.SetChildIndex(Button, 2);
 
                     _constructed = true;
                 }

@@ -46,13 +46,15 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // Insert them in reverse order so we always insert at 0
             for (int i = 2; i >= 0; i--)
             {
-                var button = new ToolStripButtonCustom();
+                var button = new ToolStripButtonCustom
+                {
+                    AutoSize = false,
+                    DisplayStyle = ToolStripItemDisplayStyle.Image,
+                    Margin = new Padding(0),
+                    Size = new Size(25, 25)
+                };
                 Buttons[i] = button;
                 _owner.RefreshAreaToolStrip.Items.Insert(0, button);
-                button.AutoSize = false;
-                button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-                button.Margin = new Padding(0);
-                button.Size = new Size(25, 25);
                 button.Click += _owner.FMsListZoomButtons_Click;
             }
 
@@ -74,23 +76,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal void SetVisible(bool enabled)
         {
-            if (enabled)
-            {
-                Construct();
+            if (!enabled && !_constructed) return;
 
-                for (int i = 0; i < 3; i++)
-                {
-                    Buttons[i].Visible = true;
-                }
-            }
-            else
-            {
-                if (!_constructed) return;
+            Construct();
 
-                for (int i = 0; i < 3; i++)
-                {
-                    Buttons[i].Visible = false;
-                }
+            for (int i = 0; i < 3; i++)
+            {
+                Buttons[i].Visible = enabled;
             }
         }
     }

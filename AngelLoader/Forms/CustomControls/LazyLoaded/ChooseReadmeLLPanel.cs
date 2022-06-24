@@ -56,6 +56,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             OKButton = new DarkButton
             {
                 Tag = LoadType.Lazy,
+
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 AutoSize = true,
                 Margin = new Padding(0),
@@ -64,6 +65,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 MinimumSize = new Size(75, 23),
                 TabIndex = 48,
                 UseVisualStyleBackColor = true,
+
                 DarkModeEnabled = _darkModeEnabled
             };
             OKButton.Click += _owner.ChooseReadmeButton_Click;
@@ -71,10 +73,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             OKButtonFLP = new FlowLayoutPanel
             {
                 Tag = LoadType.Lazy,
+
                 FlowDirection = FlowDirection.RightToLeft,
                 Location = new Point(1, 134),
                 Size = new Size(320, 24),
                 TabIndex = 3,
+
                 BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
             OKButtonFLP.Controls.Add(OKButton);
@@ -82,19 +86,23 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _listBox = new DarkListBoxWithBackingItems
             {
                 Tag = LoadType.Lazy,
+
                 MultiSelect = false,
                 Size = new Size(320, 134),
                 TabIndex = 47,
+
                 DarkModeEnabled = _darkModeEnabled
             };
 
             Panel = new Panel
             {
                 Tag = LoadType.Lazy,
+
                 Anchor = AnchorStyles.None,
                 TabIndex = 46,
                 Visible = false,
                 Size = new Size(324, 161),
+
                 BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
             Panel.Controls.Add(_listBox);

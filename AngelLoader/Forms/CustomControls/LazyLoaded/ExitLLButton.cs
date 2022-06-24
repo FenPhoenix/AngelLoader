@@ -44,18 +44,23 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     var container = _owner.BottomRightButtonsFLP;
 
-                    Button = new DarkButton { Tag = LoadType.Lazy };
+                    Button = new DarkButton
+                    {
+                        Tag = LoadType.Lazy,
+
+                        AutoSize = true,
+                        AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                        MinimumSize = new Size(36, 36),
+                        TabIndex = 63,
+                        UseVisualStyleBackColor = true,
+
+                        DarkModeEnabled = _darkModeEnabled,
+                    };
+
+                    Button.Click += _owner.Exit_Click;
 
                     container.Controls.Add(Button);
                     container.Controls.SetChildIndex(Button, 0);
-
-                    Button.AutoSize = true;
-                    Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-                    Button.DarkModeEnabled = _darkModeEnabled;
-                    Button.MinimumSize = new Size(36, 36);
-                    Button.TabIndex = 63;
-                    Button.UseVisualStyleBackColor = true;
-                    Button.Click += _owner.Exit_Click;
 
                     _constructed = true;
 
