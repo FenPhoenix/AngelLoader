@@ -8,7 +8,7 @@ ffmpeg/**
 temp_transfer_bin/**
 !temp_transfer_bin/.gitkeep
 /AngelLoader/post_build_fen_personal_dev.bat
-local_private/**
+AngelLoader/local_private/**
 
 # User-specific files
 *.suo
