@@ -96,7 +96,6 @@ namespace AL_Common
         public static void Log(
             string message = "",
             Exception? ex = null,
-            bool stackTrace = false,
             [CallerMemberName] string callerMemberName = "")
         {
             if (_logFile.IsEmpty()) return;
@@ -130,8 +129,10 @@ namespace AL_Common
 
                 string methodNameStr = callerMemberName + "\r\n";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
-                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
-                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
+                sw.WriteLine(ex != null
+                    ? "EXCEPTION:\r\n" + ex
+                    : "STACK TRACE:\r\n" + new StackTrace(1)
+                );
                 sw.WriteLine();
             }
             catch (Exception logEx)

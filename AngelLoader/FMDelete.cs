@@ -167,7 +167,7 @@ namespace AngelLoader
             if (fms.Count == 0)
             {
                 const string message = "Delete(List<FanMission>): " + nameof(fms) + ".Count is 0 (meaning all are unavailable).";
-                Log(message, stackTrace: true);
+                Log(message);
                 Core.Dialogs.ShowError(message);
                 return;
             }

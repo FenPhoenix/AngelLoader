@@ -337,7 +337,7 @@ namespace AngelLoader
             {
                 if (!TryCombineFilePathAndCheckExistence(gamePath, fileName, out string cfgFile))
                 {
-                    Log(fileName + " not found for " + gamePath, stackTrace: true);
+                    Log(fileName + " not found for " + gamePath);
                     return;
                 }
 
@@ -405,7 +405,7 @@ namespace AngelLoader
         {
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamCfg, out string camCfg))
             {
-                Log(Paths.CamCfg + " not found for " + gamePath, stackTrace: true);
+                Log(Paths.CamCfg + " not found for " + gamePath);
                 return;
             }
 
@@ -534,7 +534,7 @@ namespace AngelLoader
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
-                Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game), stackTrace: true);
+                Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game));
                 return false;
             }
 
@@ -729,7 +729,7 @@ namespace AngelLoader
             string soIni = Paths.GetSneakyOptionsIni();
             if (soIni.IsEmpty())
             {
-                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found", stackTrace: true);
+                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found");
                 return false;
             }
 
