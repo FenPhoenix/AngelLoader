@@ -356,6 +356,10 @@ namespace AL_Common
             return float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
         }
 
+        #region Disabled until needed
+
+#if false
+
         /// <summary>
         /// Calls <see langword="double"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="double"/> <paramref name="result"/>);
         /// </summary>
@@ -368,6 +372,10 @@ namespace AL_Common
         {
             return double.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
         }
+
+#endif
+
+        #endregion
 
         /// <summary>
         /// Calls <see langword="int"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="int"/> <paramref name="result"/>);
@@ -462,11 +470,17 @@ namespace AL_Common
             return false;
         }
 
+        #region Disabled until needed
+
+#if false
         public static bool PathContainsI(this string[] value, string substring)
         {
             for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
             return false;
         }
+#endif
+
+        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsDirSep(this char character) => character is '/' or '\\';
@@ -655,7 +669,7 @@ namespace AL_Common
 
         #region Disabled until needed
 
-        /*
+#if false
         public static bool PathContainsI_Dir(this List<string> value, string substring)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
@@ -667,9 +681,7 @@ namespace AL_Common
             for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
             return false;
         }
-        */
 
-        /*
         /// <summary>
         /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
         /// </summary>
@@ -682,9 +694,7 @@ namespace AL_Common
             for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
             return count;
         }
-        */
 
-        /*
         /// <summary>
         /// Counts dir seps up to <paramref name="count"/> occurrences and then returns, skipping further counting.
         /// </summary>
@@ -703,7 +713,7 @@ namespace AL_Common
 
             return false;
         }
-        */
+#endif
 
         #endregion
 
@@ -774,6 +784,10 @@ namespace AL_Common
 
         #region Count chars
 
+        #region Disabled until needed
+
+#if false
+
         /// <summary>
         /// Returns the number of times a character appears in a string.
         /// Avoids whatever silly overhead junk Count(predicate) is doing.
@@ -788,6 +802,10 @@ namespace AL_Common
 
             return count;
         }
+
+#endif
+
+        #endregion
 
         /// <summary>
         /// Returns the number of times a character appears in a string, earlying-out once it's counted <paramref name="maxToCount"/>
@@ -966,9 +984,9 @@ namespace AL_Common
 
         #endregion
 
-        public static HashSetI ToHashSetI(this IEnumerable<string> source) => new HashSetI(source);
+        public static HashSetI ToHashSetI(this IEnumerable<string> source) => new(source);
 
-        public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new HashSetPathI(source);
+        public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new(source);
 
         #endregion
 

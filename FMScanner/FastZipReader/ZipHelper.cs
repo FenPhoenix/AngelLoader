@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using AL_Common;
 
 namespace FMScanner.FastZipReader
 {
@@ -269,7 +270,7 @@ namespace FMScanner.FastZipReader
         {
             int bufferPointer = 0;
             uint currentSignature = 0;
-            Array.Clear(bundle.BackwardsSeekingBuffer, 0, bundle.BackwardsSeekingBuffer.Length);
+            bundle.BackwardsSeekingBuffer.Clear();
 
             bool outOfBytes = false;
             bool signatureFound = false;
@@ -312,7 +313,7 @@ namespace FMScanner.FastZipReader
             Debug.Assert(numBytesLeft >= 0);
             while (numBytesLeft != 0)
             {
-                Array.Clear(bundle.ThrowawayBuffer, 0, bundle.ThrowawayBuffer.Length);
+                bundle.ThrowawayBuffer.Clear();
                 int numBytesToSkip = numBytesLeft > ZipReusableBundle.ThrowAwayBufferSize ? ZipReusableBundle.ThrowAwayBufferSize : (int)numBytesLeft;
                 int numBytesActuallySkipped = stream.Read(bundle.ThrowawayBuffer, 0, numBytesToSkip);
                 if (numBytesActuallySkipped == 0) throw new IOException(SR.UnexpectedEndOfStream);

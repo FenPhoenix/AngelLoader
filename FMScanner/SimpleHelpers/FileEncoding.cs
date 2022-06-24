@@ -213,7 +213,7 @@ namespace FMScanner.SimpleHelpers
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size cannot be 0 or less.");
             int maxIterations = maxSize <= 0 ? int.MaxValue : maxSize / bufferSize;
             int i = 0;
-            Array.Clear(_buffer, 0, _buffer.Length);
+            _buffer.Clear();
             while (i++ < maxIterations)
             {
                 int sz = inputData.ReadAll(_buffer, 0, _buffer.Length);

@@ -44,8 +44,7 @@ namespace AngelLoader
                         lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
                         string key = file.GetFileNameFast().RemoveExtension();
-                        string value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
-                        langDict[key] = value;
+                        langDict[key] = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                         return;
                     }
                     else if (lineT == "[" + nameof(LText.Meta) + "]")

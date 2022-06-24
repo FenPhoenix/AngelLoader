@@ -2545,7 +2545,7 @@ namespace FMScanner
             if (containsCloseParen) ret = CloseParenSpacesRegex.Replace(ret, ")");
 
             // If there's stuff like "(this an incomplete sentence and" at the end, chop it right off
-            if (containsOpenParen && ret.CountChars('(') == 1 && !containsCloseParen)
+            if (containsOpenParen && ret.CountCharsUpToAmount('(', 2) == 1 && !containsCloseParen)
             {
                 ret = ret.Substring(0, ret.LastIndexOf('(')).TrimEnd();
             }

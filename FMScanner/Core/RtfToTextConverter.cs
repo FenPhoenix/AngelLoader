@@ -144,7 +144,7 @@ namespace FMScanner
             internal new void Clear()
             {
                 base.Clear();
-                Array.Clear(_array, 0, _array.Length);
+                _array.Clear();
                 Count = 0;
             }
 
