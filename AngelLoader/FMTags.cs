@@ -52,22 +52,22 @@ namespace AngelLoader
 
         private static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
         {
+            if (isCategory ? catText.IsWhiteSpace() : tagText.IsWhiteSpace()) return false;
+
+            // TODO: These messageboxes are annoying, but they prevent accidental deletion.
+            // Figure out something better.
+            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                message: isCategory ? LText.TagsTab.AskRemoveCategory : LText.TagsTab.AskRemoveTag,
+                title: LText.TagsTab.TabText,
+                icon: MBoxIcon.None,
+                yes: LText.Global.Yes,
+                no: LText.Global.No
+            );
+            if (result == MBoxButton.No) return false;
+
             // Parent node (category)
             if (isCategory)
             {
-                if (catText.IsWhiteSpace()) return false;
-
-                // TODO: These messageboxes are annoying, but they prevent accidental deletion.
-                // Figure out something better.
-                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                    message: LText.TagsTab.AskRemoveCategory,
-                    title: LText.TagsTab.TabText,
-                    icon: MBoxIcon.None,
-                    yes: LText.Global.Yes,
-                    no: LText.Global.No
-                );
-                if (result == MBoxButton.No) return false;
-
                 if (fm.Tags.ContainsKey(catText))
                 {
                     fm.Tags.Remove(catText);
@@ -77,17 +77,6 @@ namespace AngelLoader
             // Child node (tag)
             else
             {
-                if (tagText.IsWhiteSpace()) return false;
-
-                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                    message: LText.TagsTab.AskRemoveTag,
-                    title: LText.TagsTab.TabText,
-                    icon: MBoxIcon.None,
-                    yes: LText.Global.Yes,
-                    no: LText.Global.No
-                );
-                if (result == MBoxButton.No) return false;
-
                 if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
                     tagsList.Contains(tagText))
                 {
