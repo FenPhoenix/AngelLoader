@@ -28,14 +28,12 @@ namespace FenGen
         internal static void
         Generate(
             string sourceFile,
-            string destFile,
             string perGameLangGetterDestFile,
             string langIniFile,
             string testLangIniFile)
         {
-            var (langClassName, sections, classNames, perGameSets) = ReadSource(sourceFile);
+            var (sections, perGameSets) = ReadSource(sourceFile);
 
-            WriteDest(langClassName, sections, classNames, destFile);
             WritePerGameStringGetterFile(perGameLangGetterDestFile, perGameSets);
             WriteIniFile(langIniFile, sections);
             if (!testLangIniFile.IsEmpty())
@@ -45,7 +43,7 @@ namespace FenGen
             }
         }
 
-        private static (string LangClassName, List<IniSection> Sections, List<string> ClassNames, Dictionary<string, (string Field, string Section)[]> PerGameSets)
+        private static (List<IniSection> Sections, Dictionary<string, (string Field, string Section)[]> PerGameSets)
         ReadSource(string file)
         {
             string code = File.ReadAllText(file);
@@ -67,7 +65,6 @@ namespace FenGen
             }
 
             var sections = new List<IniSection>();
-            var classNames = new List<string>();
 
             var perGameSets = new Dictionary<string, (string Field, string Section)[]>();
 
@@ -84,7 +81,6 @@ namespace FenGen
 
                 string childClassIdentifier = childClass.Identifier.ToString();
                 string sectionInstanceName = classInstanceDict[childClassIdentifier];
-                classNames.Add(childClassIdentifier);
                 var section = new IniSection(sectionInstanceName);
 
                 int gameIndex = -1;
@@ -196,89 +192,7 @@ namespace FenGen
                 sections.Add(section);
             }
 
-            string lTextClassId = lTextClass.Identifier.ToString();
-            return (lTextClassId, sections, classNames, perGameSets);
-        }
-
-        private static void WriteDest(
-            string langClassName,
-            List<IniSection> sections,
-            List<string> classNames,
-            string destFile)
-        {
-            var w = GetWriterForClass(destFile, GenAttributes.FenGenLocalizationDestClass);
-
-            w.WL(GenMessages.Method);
-            w.WL("[MustUseReturnValue]");
-            w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
-            w.WL("{");
-            w.WL("#region Dictionary setup");
-            w.WL();
-            w.WL("const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;");
-            w.WL();
-
-            for (int i = 0; i < sections.Count; i++)
-            {
-                IniSection section = sections[i];
-                string dictName = section.Name + "_Dict";
-                string langSubclass = langClassName + "." + classNames[i];
-                string curFieldsName = section.Name.FirstCharToLower() + "Fields";
-                w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
-                w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
-                w.WL("foreach (var f in " + curFieldsName + ")");
-                w.WL("{");
-                w.WL(dictName + ".Add(f.Name, f);");
-                w.WL("}");
-            }
-            w.WL();
-            w.WL("#endregion");
-            w.WL();
-            w.WL("var ret = new " + langClassName + "();");
-            w.WL("var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);");
-            w.WL("int linesLength = lines.Count;");
-            w.WL("for (int i = 0; i < linesLength; i++)");
-            w.WL("{");
-            w.WL("string lineT = lines[i].Trim();");
-            bool sectElseIf = false;
-            for (int i = 0; i < sections.Count; i++)
-            {
-                IniSection section = sections[i];
-
-                w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + section.Name + "]\")");
-                w.WL("{");
-                w.WL("while (i < linesLength - 1)");
-                w.WL("{");
-                w.WL("int ltLength;");
-                w.WL("string lt = lines[i + 1].TrimStart();");
-
-                w.WL("int eqIndex = lt.IndexOf('=');");
-                w.WL("if (eqIndex > -1)");
-                w.WL("{");
-                w.WL("string key = lt.Substring(0, eqIndex);");
-                w.WL("if (" + section.Name + "_Dict.TryGetValue(key, out FieldInfo value))");
-                w.WL("{");
-                w.WL("value.SetValue(ret." + section.Name + ", lt.Substring(eqIndex + 1));");
-                w.WL("}");
-                w.WL("}");
-
-                // Line is only start-trimmed, so don't check for last char being ']' because last char could be
-                // whitespace
-                w.WL("else if ((ltLength = lt.Length) > 0 && lt[0] == '[')");
-                w.WL("{");
-                w.WL("break;");
-                w.WL("}");
-                w.WL("i++;");
-                w.WL("}");
-                w.WL("}");
-                sectElseIf = true;
-            }
-            w.WL("}");
-            w.WL();
-            w.WL("return ret;");
-            w.WL("}");
-            w.CloseClassAndNamespace();
-
-            File.WriteAllText(destFile, w.ToString());
+            return (sections, perGameSets);
         }
 
         private static void WritePerGameStringGetterFile(

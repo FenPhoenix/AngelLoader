@@ -224,7 +224,6 @@ namespace FenGen
         private static class GenFileTags
         {
             internal const string LocalizationSource = "FenGen_LocalizationSource";
-            internal const string LocalizationDest = "FenGen_LocalizationDest";
             internal const string GameSupportSource = "FenGen_GameSupportSource";
             internal const string LanguageSupportSource = "FenGen_LanguageSupportSource";
             internal const string LanguageSupportDest = "FenGen_LanguageSupportDest";
@@ -367,7 +366,6 @@ namespace FenGen
             if (LangTaskActive())
             {
                 genFileTags.Add(GenFileTags.LocalizationSource);
-                genFileTags.Add(GenFileTags.LocalizationDest);
                 genFileTags.Add(GenFileTags.LocalizedGameNameGetterDest);
                 genFileTags.Add(GenFileTags.LanguageSupportSource);
                 genFileTags.Add(GenFileTags.LanguageSupportDest);
@@ -430,7 +428,6 @@ namespace FenGen
 
                 Language.Generate(
                     sourceFile: taggedFilesDict[GenFileTags.LocalizationSource],
-                    destFile: taggedFilesDict[GenFileTags.LocalizationDest],
                     perGameLangGetterDestFile: taggedFilesDict[GenFileTags.LocalizedGameNameGetterDest],
                     langIniFile: englishIni,
                     testLangIniFile: testLangIni);
