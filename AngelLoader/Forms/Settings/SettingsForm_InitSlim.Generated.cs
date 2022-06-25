@@ -105,10 +105,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OtherRadioButton.BackColor = System.Drawing.SystemColors.Control;
             this.OtherRadioButton.Checked = false;
-            this.OtherRadioButton.FlatAppearance.BorderSize = 0;
-            this.OtherRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.OtherRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.OtherRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
             this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
             this.OtherRadioButton.TabIndex = 2;
@@ -121,10 +117,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.Control;
             this.AppearanceRadioButton.Checked = false;
-            this.AppearanceRadioButton.FlatAppearance.BorderSize = 0;
-            this.AppearanceRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.AppearanceRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
             this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
             this.AppearanceRadioButton.TabIndex = 1;
@@ -137,10 +129,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PathsRadioButton.BackColor = System.Drawing.SystemColors.Control;
             this.PathsRadioButton.Checked = false;
-            this.PathsRadioButton.FlatAppearance.BorderSize = 0;
-            this.PathsRadioButton.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Window;
-            this.PathsRadioButton.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Window;
-            this.PathsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
             this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
             this.PathsRadioButton.TabIndex = 0;

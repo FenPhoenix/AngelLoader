@@ -26,6 +26,11 @@ namespace AngelLoader.Forms.CustomControls
             DarkModeBackColor = DarkColors.Fen_ControlBackground;
             DarkModeHoverColor = DarkColors.Fen_DarkBackground;
             DarkModePressedColor = DarkColors.Fen_DarkBackground;
+
+            FlatAppearance.BorderSize = 0;
+            FlatAppearance.MouseDownBackColor = SystemColors.Window;
+            FlatAppearance.MouseOverBackColor = SystemColors.Window;
+            FlatStyle = FlatStyle.Flat;
         }
 
         private void SetCheckedVisualState()
