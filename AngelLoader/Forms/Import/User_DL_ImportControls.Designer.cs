@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
             this.AutodetectCheckBox.Location = new System.Drawing.Point(8, 32);
             this.AutodetectCheckBox.Name = "AutodetectCheckBox";
             this.AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
-            this.AutodetectCheckBox.TabIndex = 16;
+            this.AutodetectCheckBox.TabIndex = 1;
             this.AutodetectCheckBox.Text = "Autodetect";
             this.AutodetectCheckBox.UseVisualStyleBackColor = true;
             this.AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBox_CheckedChanged);
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms
             this.ChooseDarkLoaderIniLabel.Location = new System.Drawing.Point(8, 8);
             this.ChooseDarkLoaderIniLabel.Name = "ChooseDarkLoaderIniLabel";
             this.ChooseDarkLoaderIniLabel.Size = new System.Drawing.Size(118, 13);
-            this.ChooseDarkLoaderIniLabel.TabIndex = 11;
+            this.ChooseDarkLoaderIniLabel.TabIndex = 0;
             this.ChooseDarkLoaderIniLabel.Text = "Choose DarkLoader.ini:";
             // 
             // DarkLoaderIniTextBox
@@ -65,19 +65,19 @@ namespace AngelLoader.Forms
             this.DarkLoaderIniTextBox.Name = "DarkLoaderIniTextBox";
             this.DarkLoaderIniTextBox.ReadOnly = true;
             this.DarkLoaderIniTextBox.Size = new System.Drawing.Size(440, 20);
-            this.DarkLoaderIniTextBox.TabIndex = 12;
+            this.DarkLoaderIniTextBox.TabIndex = 2;
             // 
             // DarkLoaderIniBrowseButton
             // 
             this.DarkLoaderIniBrowseButton.AutoSize = true;
             this.DarkLoaderIniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DarkLoaderIniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.DarkLoaderIniBrowseButton.Enabled = false;
             this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(448, 55);
+            this.DarkLoaderIniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";
             this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.DarkLoaderIniBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.DarkLoaderIniBrowseButton.TabIndex = 13;
+            this.DarkLoaderIniBrowseButton.TabIndex = 3;
             this.DarkLoaderIniBrowseButton.Text = "Browse...";
             this.DarkLoaderIniBrowseButton.UseVisualStyleBackColor = true;
             this.DarkLoaderIniBrowseButton.Click += new System.EventHandler(this.DarkLoaderIniBrowseButton_Click);

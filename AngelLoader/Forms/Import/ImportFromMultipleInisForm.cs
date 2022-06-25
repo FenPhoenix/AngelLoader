@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -37,6 +38,12 @@ namespace AngelLoader.Forms
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
             Localize();
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            Cancel_Button.Focus();
         }
 
         private void Localize()

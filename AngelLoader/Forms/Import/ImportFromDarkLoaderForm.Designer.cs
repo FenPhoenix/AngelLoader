@@ -50,10 +50,10 @@ namespace AngelLoader.Forms
             // 
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(382, 8);
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -65,10 +65,10 @@ namespace AngelLoader.Forms
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(463, 8);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -85,7 +85,7 @@ namespace AngelLoader.Forms
             this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(0, 245);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(547, 40);
-            this.OKCancelFlowLayoutPanel.TabIndex = 9;
+            this.OKCancelFlowLayoutPanel.TabIndex = 0;
             // 
             // ImportFinishedOnCheckBox
             // 
@@ -95,7 +95,7 @@ namespace AngelLoader.Forms
             this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(32, 200);
             this.ImportFinishedOnCheckBox.Name = "ImportFinishedOnCheckBox";
             this.ImportFinishedOnCheckBox.Size = new System.Drawing.Size(80, 17);
-            this.ImportFinishedOnCheckBox.TabIndex = 20;
+            this.ImportFinishedOnCheckBox.TabIndex = 8;
             this.ImportFinishedOnCheckBox.Text = "Finished on";
             this.ImportFinishedOnCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -107,7 +107,7 @@ namespace AngelLoader.Forms
             this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(32, 184);
             this.ImportLastPlayedCheckBox.Name = "ImportLastPlayedCheckBox";
             this.ImportLastPlayedCheckBox.Size = new System.Drawing.Size(80, 17);
-            this.ImportLastPlayedCheckBox.TabIndex = 21;
+            this.ImportLastPlayedCheckBox.TabIndex = 7;
             this.ImportLastPlayedCheckBox.Text = "Last played";
             this.ImportLastPlayedCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -119,7 +119,7 @@ namespace AngelLoader.Forms
             this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(32, 168);
             this.ImportReleaseDateCheckBox.Name = "ImportReleaseDateCheckBox";
             this.ImportReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
-            this.ImportReleaseDateCheckBox.TabIndex = 22;
+            this.ImportReleaseDateCheckBox.TabIndex = 6;
             this.ImportReleaseDateCheckBox.Text = "Release date";
             this.ImportReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -131,7 +131,7 @@ namespace AngelLoader.Forms
             this.ImportCommentCheckBox.Location = new System.Drawing.Point(32, 152);
             this.ImportCommentCheckBox.Name = "ImportCommentCheckBox";
             this.ImportCommentCheckBox.Size = new System.Drawing.Size(70, 17);
-            this.ImportCommentCheckBox.TabIndex = 23;
+            this.ImportCommentCheckBox.TabIndex = 5;
             this.ImportCommentCheckBox.Text = "Comment";
             this.ImportCommentCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -143,7 +143,7 @@ namespace AngelLoader.Forms
             this.ImportSizeCheckBox.Location = new System.Drawing.Point(32, 136);
             this.ImportSizeCheckBox.Name = "ImportSizeCheckBox";
             this.ImportSizeCheckBox.Size = new System.Drawing.Size(46, 17);
-            this.ImportSizeCheckBox.TabIndex = 24;
+            this.ImportSizeCheckBox.TabIndex = 4;
             this.ImportSizeCheckBox.Text = "Size";
             this.ImportSizeCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -155,7 +155,7 @@ namespace AngelLoader.Forms
             this.ImportTitleCheckBox.Location = new System.Drawing.Point(32, 120);
             this.ImportTitleCheckBox.Name = "ImportTitleCheckBox";
             this.ImportTitleCheckBox.Size = new System.Drawing.Size(46, 17);
-            this.ImportTitleCheckBox.TabIndex = 25;
+            this.ImportTitleCheckBox.TabIndex = 3;
             this.ImportTitleCheckBox.Text = "Title";
             this.ImportTitleCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -167,7 +167,7 @@ namespace AngelLoader.Forms
             this.ImportFMDataCheckBox.Location = new System.Drawing.Point(16, 96);
             this.ImportFMDataCheckBox.Name = "ImportFMDataCheckBox";
             this.ImportFMDataCheckBox.Size = new System.Drawing.Size(97, 17);
-            this.ImportFMDataCheckBox.TabIndex = 18;
+            this.ImportFMDataCheckBox.TabIndex = 2;
             this.ImportFMDataCheckBox.Text = "Import FM data";
             this.ImportFMDataCheckBox.UseVisualStyleBackColor = true;
             this.ImportFMDataCheckBox.CheckedChanged += new System.EventHandler(this.ImportFMDataCheckBox_CheckedChanged);
@@ -180,7 +180,7 @@ namespace AngelLoader.Forms
             this.ImportSavesCheckBox.Location = new System.Drawing.Point(16, 224);
             this.ImportSavesCheckBox.Name = "ImportSavesCheckBox";
             this.ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
-            this.ImportSavesCheckBox.TabIndex = 19;
+            this.ImportSavesCheckBox.TabIndex = 9;
             this.ImportSavesCheckBox.Text = "Import saves";
             this.ImportSavesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -189,7 +189,7 @@ namespace AngelLoader.Forms
             this.ImportControls.Location = new System.Drawing.Point(8, 8);
             this.ImportControls.Name = "ImportControls";
             this.ImportControls.Size = new System.Drawing.Size(545, 88);
-            this.ImportControls.TabIndex = 10;
+            this.ImportControls.TabIndex = 1;
             // 
             // ImportFromDarkLoaderForm
             // 
