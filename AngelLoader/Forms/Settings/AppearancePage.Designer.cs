@@ -32,7 +32,6 @@ namespace AngelLoader.Forms
         private void InitializeComponent()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -85,6 +84,7 @@ namespace AngelLoader.Forms
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -114,16 +114,8 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 1143);
+            this.PagePanel.Size = new System.Drawing.Size(496, 1163);
             this.PagePanel.TabIndex = 0;
-            // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
-            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // PlayWithoutFMGroupBox
             // 
@@ -131,7 +123,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
-            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1056);
+            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1059);
             this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.PlayWithoutFMGroupBox.Name = "PlayWithoutFMGroupBox";
             this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
@@ -701,13 +693,21 @@ namespace AngelLoader.Forms
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
             // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            this.DummyAutoScrollPanel.TabStop = false;
+            // 
             // AppearancePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "AppearancePage";
-            this.Size = new System.Drawing.Size(496, 1143);
+            this.Size = new System.Drawing.Size(496, 1163);
             this.PagePanel.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.PerformLayout();

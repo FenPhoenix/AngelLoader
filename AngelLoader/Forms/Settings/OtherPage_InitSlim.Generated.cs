@@ -8,6 +8,7 @@
         private void InitializeComponentSlim()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -29,13 +30,34 @@
             this.FMFileConversionGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.darkGroupBox1 = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.darkCheckBox1 = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.darkLabel1 = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.darkCheckBox2 = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.darkRadioButton1 = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.darkRadioButton2 = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.darkGroupBox2 = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.darkButton1 = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.darkLabel2 = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.darkTextBox1 = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.darkLabel3 = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.darkGroupBox3 = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.darkCheckBox3 = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.darkGroupBox4 = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.darkRadioButton3 = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.darkRadioButton4 = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.darkRadioButton5 = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.darkLabel4 = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.PagePanel.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
             this.UninstallingFMsGroupBox.SuspendLayout();
             this.FMFileConversionGroupBox.SuspendLayout();
+            this.darkGroupBox1.SuspendLayout();
+            this.darkGroupBox2.SuspendLayout();
+            this.darkGroupBox3.SuspendLayout();
+            this.darkGroupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -48,18 +70,28 @@
             this.PagePanel.Controls.Add(this.FMFileConversionGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 568);
+            this.PagePanel.Size = new System.Drawing.Size(440, 602);
             this.PagePanel.TabIndex = 0;
+            // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
+            this.DummyAutoScrollPanel.TabIndex = 12;
             // 
             // InstallingFMsGroupBox
             // 
             this.InstallingFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.InstallingFMsGroupBox.Controls.Add(this.darkGroupBox4);
+            this.InstallingFMsGroupBox.Controls.Add(this.darkGroupBox3);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmNeverRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmMultipleOnlyRadioButton);
+            this.InstallingFMsGroupBox.Controls.Add(this.darkGroupBox2);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmAlwaysRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.ConfirmBeforeInstallLabel);
-            this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
+            this.InstallingFMsGroupBox.Controls.Add(this.darkGroupBox1);
+            this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 104);
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 124);
             this.InstallingFMsGroupBox.TabIndex = 1;
@@ -99,7 +131,7 @@
             this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 504);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 520);
             this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
             this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -121,7 +153,7 @@
             this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
-            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 388);
+            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 400);
             this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
             this.WebSearchGroupBox.TabIndex = 3;
@@ -168,7 +200,7 @@
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 232);
+            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 240);
             this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
             this.UninstallingFMsGroupBox.TabIndex = 2;
@@ -243,18 +275,172 @@
             this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
             this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
-            // DummyAutoScrollPanel
+            // darkGroupBox1
             // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-            this.DummyAutoScrollPanel.TabIndex = 12;
+            this.darkGroupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkGroupBox1.Controls.Add(this.darkCheckBox1);
+            this.darkGroupBox1.Controls.Add(this.darkLabel1);
+            this.darkGroupBox1.Controls.Add(this.darkCheckBox2);
+            this.darkGroupBox1.Controls.Add(this.darkRadioButton1);
+            this.darkGroupBox1.Controls.Add(this.darkRadioButton2);
+            this.darkGroupBox1.Location = new System.Drawing.Point(0, 132);
+            this.darkGroupBox1.MinimumSize = new System.Drawing.Size(424, 0);
+            this.darkGroupBox1.Size = new System.Drawing.Size(424, 148);
+            this.darkGroupBox1.TabIndex = 2;
+            this.darkGroupBox1.TabStop = false;
+            // 
+            // darkCheckBox1
+            // 
+            this.darkCheckBox1.AutoSize = true;
+            this.darkCheckBox1.Checked = true;
+            this.darkCheckBox1.Location = new System.Drawing.Point(16, 24);
+            this.darkCheckBox1.TabIndex = 0;
+            this.darkCheckBox1.UseVisualStyleBackColor = true;
+            // 
+            // darkLabel1
+            // 
+            this.darkLabel1.AutoSize = true;
+            this.darkLabel1.Location = new System.Drawing.Point(16, 48);
+            this.darkLabel1.TabIndex = 1;
+            // 
+            // darkCheckBox2
+            // 
+            this.darkCheckBox2.AutoSize = true;
+            this.darkCheckBox2.Checked = true;
+            this.darkCheckBox2.Location = new System.Drawing.Point(24, 120);
+            this.darkCheckBox2.TabIndex = 4;
+            this.darkCheckBox2.UseVisualStyleBackColor = true;
+            // 
+            // darkRadioButton1
+            // 
+            this.darkRadioButton1.AutoSize = true;
+            this.darkRadioButton1.Checked = true;
+            this.darkRadioButton1.Location = new System.Drawing.Point(24, 94);
+            this.darkRadioButton1.TabIndex = 3;
+            this.darkRadioButton1.TabStop = true;
+            this.darkRadioButton1.UseVisualStyleBackColor = true;
+            // 
+            // darkRadioButton2
+            // 
+            this.darkRadioButton2.AutoSize = true;
+            this.darkRadioButton2.Location = new System.Drawing.Point(24, 70);
+            this.darkRadioButton2.TabIndex = 2;
+            this.darkRadioButton2.UseVisualStyleBackColor = true;
+            // 
+            // darkGroupBox2
+            // 
+            this.darkGroupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkGroupBox2.Controls.Add(this.darkButton1);
+            this.darkGroupBox2.Controls.Add(this.darkLabel2);
+            this.darkGroupBox2.Controls.Add(this.darkTextBox1);
+            this.darkGroupBox2.Controls.Add(this.darkLabel3);
+            this.darkGroupBox2.Location = new System.Drawing.Point(0, 288);
+            this.darkGroupBox2.MinimumSize = new System.Drawing.Size(424, 0);
+            this.darkGroupBox2.Size = new System.Drawing.Size(424, 108);
+            this.darkGroupBox2.TabIndex = 3;
+            this.darkGroupBox2.TabStop = false;
+            // 
+            // darkButton1
+            // 
+            this.darkButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkButton1.Location = new System.Drawing.Point(393, 47);
+            this.darkButton1.Size = new System.Drawing.Size(22, 22);
+            this.darkButton1.TabIndex = 2;
+            this.darkButton1.UseVisualStyleBackColor = true;
+            this.darkButton1.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchUrlResetButton_Paint);
+            // 
+            // darkLabel2
+            // 
+            this.darkLabel2.AutoSize = true;
+            this.darkLabel2.Location = new System.Drawing.Point(16, 78);
+            this.darkLabel2.TabIndex = 3;
+            // 
+            // darkTextBox1
+            // 
+            this.darkTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkTextBox1.Location = new System.Drawing.Point(16, 48);
+            this.darkTextBox1.Size = new System.Drawing.Size(376, 20);
+            this.darkTextBox1.TabIndex = 1;
+            // 
+            // darkLabel3
+            // 
+            this.darkLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkLabel3.Location = new System.Drawing.Point(16, 16);
+            this.darkLabel3.Size = new System.Drawing.Size(400, 32);
+            this.darkLabel3.TabIndex = 0;
+            this.darkLabel3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // darkGroupBox3
+            // 
+            this.darkGroupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkGroupBox3.Controls.Add(this.darkCheckBox3);
+            this.darkGroupBox3.Location = new System.Drawing.Point(0, 404);
+            this.darkGroupBox3.MinimumSize = new System.Drawing.Size(424, 0);
+            this.darkGroupBox3.Size = new System.Drawing.Size(424, 56);
+            this.darkGroupBox3.TabIndex = 4;
+            this.darkGroupBox3.TabStop = false;
+            // 
+            // darkCheckBox3
+            // 
+            this.darkCheckBox3.AutoSize = true;
+            this.darkCheckBox3.Checked = true;
+            this.darkCheckBox3.Location = new System.Drawing.Point(16, 24);
+            this.darkCheckBox3.TabIndex = 0;
+            this.darkCheckBox3.UseVisualStyleBackColor = true;
+            // 
+            // darkGroupBox4
+            // 
+            this.darkGroupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkGroupBox4.Controls.Add(this.darkRadioButton3);
+            this.darkGroupBox4.Controls.Add(this.darkRadioButton4);
+            this.darkGroupBox4.Controls.Add(this.darkRadioButton5);
+            this.darkGroupBox4.Controls.Add(this.darkLabel4);
+            this.darkGroupBox4.MinimumSize = new System.Drawing.Size(424, 0);
+            this.darkGroupBox4.Size = new System.Drawing.Size(424, 124);
+            this.darkGroupBox4.TabIndex = 1;
+            this.darkGroupBox4.TabStop = false;
+            // 
+            // darkRadioButton3
+            // 
+            this.darkRadioButton3.AutoSize = true;
+            this.darkRadioButton3.Location = new System.Drawing.Point(24, 96);
+            this.darkRadioButton3.TabIndex = 3;
+            this.darkRadioButton3.UseVisualStyleBackColor = true;
+            // 
+            // darkRadioButton4
+            // 
+            this.darkRadioButton4.AutoSize = true;
+            this.darkRadioButton4.Checked = true;
+            this.darkRadioButton4.Location = new System.Drawing.Point(24, 72);
+            this.darkRadioButton4.TabIndex = 2;
+            this.darkRadioButton4.TabStop = true;
+            this.darkRadioButton4.UseVisualStyleBackColor = true;
+            // 
+            // darkRadioButton5
+            // 
+            this.darkRadioButton5.AutoSize = true;
+            this.darkRadioButton5.Location = new System.Drawing.Point(24, 48);
+            this.darkRadioButton5.TabIndex = 1;
+            this.darkRadioButton5.UseVisualStyleBackColor = true;
+            // 
+            // darkLabel4
+            // 
+            this.darkLabel4.AutoSize = true;
+            this.darkLabel4.Location = new System.Drawing.Point(16, 24);
+            this.darkLabel4.TabIndex = 0;
             // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 568);
+            this.Size = new System.Drawing.Size(440, 602);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
@@ -265,6 +451,14 @@
             this.UninstallingFMsGroupBox.ResumeLayout(false);
             this.UninstallingFMsGroupBox.PerformLayout();
             this.FMFileConversionGroupBox.ResumeLayout(false);
+            this.darkGroupBox1.ResumeLayout(false);
+            this.darkGroupBox1.PerformLayout();
+            this.darkGroupBox2.ResumeLayout(false);
+            this.darkGroupBox2.PerformLayout();
+            this.darkGroupBox3.ResumeLayout(false);
+            this.darkGroupBox3.PerformLayout();
+            this.darkGroupBox4.ResumeLayout(false);
+            this.darkGroupBox4.PerformLayout();
             this.ResumeLayout(false);
         }
     }

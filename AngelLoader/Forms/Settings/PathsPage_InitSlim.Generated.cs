@@ -67,7 +67,7 @@
             this.PagePanel.Controls.Add(this.ActualPathsPanel);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 910);
+            this.PagePanel.Size = new System.Drawing.Size(440, 847);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
@@ -88,7 +88,7 @@
             this.FlowLayoutPanel1.Controls.Add(this.OtherGroupBox);
             this.FlowLayoutPanel1.Controls.Add(this.FMArchivePathsGroupBox);
             this.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 432);
+            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 437);
             this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.FlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 392);
@@ -153,8 +153,8 @@
             this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathBrowseButton.AutoSize = true;
             this.BackupPathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
+            this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.TabIndex = 2;
@@ -166,6 +166,7 @@
             this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
+            this.FMArchivePathsGroupBox.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
             this.FMArchivePathsGroupBox.TabIndex = 3;
@@ -204,7 +205,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
             this.FMArchivePathsListBox.MultiSelect = false;
-            this.FMArchivePathsListBox.Scrollable = true;
             this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
             this.FMArchivePathsListBox.TabIndex = 0;
             // 
@@ -216,7 +216,7 @@
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
-            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 248);
+            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 252);
             this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
             this.SteamOptionsGroupBox.TabIndex = 1;
             this.SteamOptionsGroupBox.TabStop = false;
@@ -291,8 +291,8 @@
             this.SteamExeBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SteamExeBrowseButton.AutoSize = true;
             this.SteamExeBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SteamExeBrowseButton.Location = new System.Drawing.Point(336, 39);
+            this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SteamExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.SteamExeBrowseButton.TabIndex = 2;
@@ -366,8 +366,8 @@
             this.SS2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SS2ExePathBrowseButton.AutoSize = true;
             this.SS2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
+            this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.SS2ExePathBrowseButton.TabIndex = 11;
@@ -378,8 +378,8 @@
             this.Thief3ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief3ExePathBrowseButton.AutoSize = true;
             this.Thief3ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(336, 119);
+            this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.TabIndex = 8;
@@ -390,8 +390,8 @@
             this.Thief2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief2ExePathBrowseButton.AutoSize = true;
             this.Thief2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(336, 79);
+            this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.TabIndex = 5;
@@ -402,8 +402,8 @@
             this.Thief1ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief1ExePathBrowseButton.AutoSize = true;
             this.Thief1ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(336, 39);
+            this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.TabIndex = 2;
@@ -452,7 +452,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 910);
+            this.Size = new System.Drawing.Size(440, 847);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
             this.FlowLayoutPanel1.ResumeLayout(false);

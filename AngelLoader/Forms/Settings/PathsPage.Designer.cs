@@ -93,12 +93,12 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 910);
+            this.PagePanel.Size = new System.Drawing.Size(440, 847);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
             // 
-            this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ActualPathsPanel.Controls.Add(this.FlowLayoutPanel1);
             this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
@@ -111,12 +111,12 @@ namespace AngelLoader.Forms
             // 
             // FlowLayoutPanel1
             // 
-            this.FlowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FlowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FlowLayoutPanel1.Controls.Add(this.OtherGroupBox);
             this.FlowLayoutPanel1.Controls.Add(this.FMArchivePathsGroupBox);
             this.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 432);
+            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 437);
             this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.FlowLayoutPanel1.Name = "FlowLayoutPanel1";
             this.FlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
@@ -183,7 +183,7 @@ namespace AngelLoader.Forms
             // 
             // BackupPathTextBox
             // 
-            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
             this.BackupPathTextBox.Name = "BackupPathTextBox";
@@ -195,8 +195,8 @@ namespace AngelLoader.Forms
             this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathBrowseButton.AutoSize = true;
             this.BackupPathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
+            this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
             this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -210,7 +210,8 @@ namespace AngelLoader.Forms
             this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
-            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 126);
+            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 132);
+            this.FMArchivePathsGroupBox.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
             this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
@@ -251,24 +252,23 @@ namespace AngelLoader.Forms
             // 
             // FMArchivePathsListBox
             // 
-            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
             this.FMArchivePathsListBox.MultiSelect = false;
             this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
-            this.FMArchivePathsListBox.Scrollable = true;
             this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
             this.FMArchivePathsListBox.TabIndex = 0;
             // 
             // SteamOptionsGroupBox
             // 
-            this.SteamOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.SteamOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SteamOptionsGroupBox.Controls.Add(this.LaunchTheseGamesThroughSteamPanel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
-            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 248);
+            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 252);
             this.SteamOptionsGroupBox.Name = "SteamOptionsGroupBox";
             this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
             this.SteamOptionsGroupBox.TabIndex = 1;
@@ -359,7 +359,7 @@ namespace AngelLoader.Forms
             // 
             // SteamExeTextBox
             // 
-            this.SteamExeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.SteamExeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SteamExeTextBox.Location = new System.Drawing.Point(16, 40);
             this.SteamExeTextBox.Name = "SteamExeTextBox";
@@ -371,8 +371,8 @@ namespace AngelLoader.Forms
             this.SteamExeBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SteamExeBrowseButton.AutoSize = true;
             this.SteamExeBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SteamExeBrowseButton.Location = new System.Drawing.Point(336, 39);
+            this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SteamExeBrowseButton.Name = "SteamExeBrowseButton";
             this.SteamExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -382,7 +382,7 @@ namespace AngelLoader.Forms
             // 
             // PathsToGameExesGroupBox
             // 
-            this.PathsToGameExesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.PathsToGameExesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PathsToGameExesGroupBox.Controls.Add(this.GameRequirementsPanel);
             this.PathsToGameExesGroupBox.Controls.Add(this.SS2ExePathLabel);
@@ -407,7 +407,7 @@ namespace AngelLoader.Forms
             // 
             // GameRequirementsPanel
             // 
-            this.GameRequirementsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.GameRequirementsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GameRequirementsPanel.AutoScroll = true;
             this.GameRequirementsPanel.Controls.Add(this.GameRequirementsLabel);
@@ -468,8 +468,8 @@ namespace AngelLoader.Forms
             this.SS2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SS2ExePathBrowseButton.AutoSize = true;
             this.SS2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
+            this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SS2ExePathBrowseButton.Name = "SS2ExePathBrowseButton";
             this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -482,8 +482,8 @@ namespace AngelLoader.Forms
             this.Thief3ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief3ExePathBrowseButton.AutoSize = true;
             this.Thief3ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(336, 119);
+            this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
             this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -496,8 +496,8 @@ namespace AngelLoader.Forms
             this.Thief2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief2ExePathBrowseButton.AutoSize = true;
             this.Thief2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(336, 79);
+            this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
             this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -510,8 +510,8 @@ namespace AngelLoader.Forms
             this.Thief1ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief1ExePathBrowseButton.AutoSize = true;
             this.Thief1ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(336, 39);
+            this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.Name = "Thief1ExePathBrowseButton";
             this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -521,7 +521,7 @@ namespace AngelLoader.Forms
             // 
             // SS2ExePathTextBox
             // 
-            this.SS2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.SS2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SS2ExePathTextBox.Location = new System.Drawing.Point(16, 160);
             this.SS2ExePathTextBox.Name = "SS2ExePathTextBox";
@@ -530,7 +530,7 @@ namespace AngelLoader.Forms
             // 
             // Thief3ExePathTextBox
             // 
-            this.Thief3ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.Thief3ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief3ExePathTextBox.Location = new System.Drawing.Point(16, 120);
             this.Thief3ExePathTextBox.Name = "Thief3ExePathTextBox";
@@ -539,7 +539,7 @@ namespace AngelLoader.Forms
             // 
             // Thief2ExePathTextBox
             // 
-            this.Thief2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.Thief2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief2ExePathTextBox.Location = new System.Drawing.Point(16, 80);
             this.Thief2ExePathTextBox.Name = "Thief2ExePathTextBox";
@@ -548,7 +548,7 @@ namespace AngelLoader.Forms
             // 
             // Thief1ExePathTextBox
             // 
-            this.Thief1ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.Thief1ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief1ExePathTextBox.Location = new System.Drawing.Point(16, 40);
             this.Thief1ExePathTextBox.Name = "Thief1ExePathTextBox";
@@ -568,7 +568,7 @@ namespace AngelLoader.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(440, 910);
+            this.Size = new System.Drawing.Size(440, 847);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
             this.FlowLayoutPanel1.ResumeLayout(false);
