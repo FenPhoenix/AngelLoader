@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
@@ -8,52 +9,89 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class User_FMSel_NDL_ImportControls : UserControl
+    public sealed class User_FMSel_NDL_ImportControls : UserControl
     {
         private ImportType ImportType;
 
-        private readonly (DarkGroupBox GroupBox, DarkCheckBox AutodetectCheckBox, DarkTextBox TextBox, DarkButton BrowseButton)[]
-        GameIniItems;
+        private readonly
+            (DarkGroupBox GroupBox,
+            DarkCheckBox AutodetectCheckBox,
+            DarkTextBox TextBox,
+            DarkButton BrowseButton)[]
+            GameIniItems = new
+                (DarkGroupBox GroupBox,
+                DarkCheckBox AutodetectCheckBox,
+                DarkTextBox TextBox,
+                DarkButton BrowseButton)[SupportedGameCount];
+
+        private readonly DarkLabel ChooseIniFilesLabel;
 
         internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;
 
         public User_FMSel_NDL_ImportControls()
         {
-#if DEBUG
-            InitializeComponent();
-#else
-            InitializeComponentSlim();
-#endif
+            SuspendLayout();
 
-            // @GENGAMES (ImportControls): Begin
-            GameIniItems = new[]
+            ChooseIniFilesLabel = new DarkLabel
             {
-                (
-                    Thief1GroupBox,
-                    Thief1AutodetectCheckBox,
-                    Thief1IniTextBox,
-                    Thief1IniBrowseButton
-                ),
-                (
-                    Thief2GroupBox,
-                    Thief2AutodetectCheckBox,
-                    Thief2IniTextBox,
-                    Thief2IniBrowseButton
-                ),
-                (
-                    Thief3GroupBox,
-                    Thief3AutodetectCheckBox,
-                    Thief3IniTextBox,
-                    Thief3IniBrowseButton
-                ),
-                (
-                    SS2GroupBox,
-                    SS2AutodetectCheckBox,
-                    SS2IniTextBox,
-                    SS2IniBrowseButton
-                )
+                AutoSize = true,
+                Location = new Point(16, 8)
             };
-            // @GENGAMES (ImportControls): End
+
+            AutoScaleDimensions = new SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Size = new Size(551, 410);
+            Controls.Add(ChooseIniFilesLabel);
+
+            for (int i = 0, y = 32; i < SupportedGameCount; i++, y += 88)
+            {
+                var checkBox = new DarkCheckBox();
+                var textBox = new DarkTextBox();
+                var button = new DarkButton();
+                var groupBox = new DarkGroupBox();
+
+                groupBox.SuspendLayout();
+
+                checkBox.AutoSize = true;
+                checkBox.Checked = true;
+                checkBox.Location = new Point(16, 24);
+                checkBox.TabIndex = 0;
+                checkBox.UseVisualStyleBackColor = true;
+                checkBox.CheckedChanged += AutodetectCheckBoxes_CheckedChanged;
+
+                textBox.Location = new Point(16, 48);
+                textBox.ReadOnly = true;
+                textBox.Size = new Size(432, 20);
+                textBox.TabIndex = 1;
+
+                button.AutoSize = true;
+                button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                button.MinimumSize = new Size(75, 23);
+                button.Enabled = false;
+                button.Location = new Point(448, 47);
+                button.Padding = new Padding(6, 0, 6, 0);
+                button.TabIndex = 1;
+                button.UseVisualStyleBackColor = true;
+                button.Click += ThiefIniBrowseButtons_Click;
+
+                groupBox.Controls.Add(checkBox);
+                groupBox.Controls.Add(textBox);
+                groupBox.Controls.Add(button);
+
+                groupBox.Location = new Point(8, y);
+                groupBox.Size = new Size(536, 80);
+                groupBox.TabIndex = i + 1;
+                groupBox.TabStop = false;
+
+                GameIniItems[i].GroupBox = groupBox;
+                GameIniItems[i].AutodetectCheckBox = checkBox;
+                GameIniItems[i].TextBox = textBox;
+                GameIniItems[i].BrowseButton = button;
+
+                Controls.Add(groupBox);
+            }
+
+            ResumeLayout();
         }
 
         internal void Init(ImportType importType)
