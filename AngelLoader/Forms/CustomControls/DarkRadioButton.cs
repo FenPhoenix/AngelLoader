@@ -82,6 +82,9 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new bool UseCompatibleTextRendering => false;
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool UseMnemonic { get => false; set => base.UseMnemonic = false; }
 #endif
 
         #endregion
@@ -116,6 +119,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public DarkRadioButton()
         {
+            UseMnemonic = false;
+
             // Always true in both modes
             SetStyle(ControlStyles.SupportsTransparentBackColor |
                      ControlStyles.OptimizedDoubleBuffer |
