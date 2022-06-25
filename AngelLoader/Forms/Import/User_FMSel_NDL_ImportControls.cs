@@ -89,9 +89,12 @@ namespace AngelLoader.Forms
                 GameIniItems[i].BrowseButton = button;
 
                 Controls.Add(groupBox);
+
+                groupBox.ResumeLayout(false);
             }
 
-            ResumeLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         internal void Init(ImportType importType)
