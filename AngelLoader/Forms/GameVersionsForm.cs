@@ -7,10 +7,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class GameVersionsForm : DarkFormBase
+    public sealed class GameVersionsForm : DarkFormBase
     {
-        private DarkButton OKButton;
-        private FlowLayoutPanel OKFlowLayoutPanel;
+        private readonly DarkButton OKButton;
 
         private readonly
             (DarkLabel Label,
@@ -24,8 +23,8 @@ namespace AngelLoader.Forms
             #region Init
 
             OKButton = new DarkButton();
-            OKFlowLayoutPanel = new FlowLayoutPanel();
-            OKFlowLayoutPanel.SuspendLayout();
+            var okFLP = new FlowLayoutPanel();
+            okFLP.SuspendLayout();
 
             SuspendLayout();
 
@@ -42,12 +41,12 @@ namespace AngelLoader.Forms
             // 
             // OKFlowLayoutPanel
             // 
-            OKFlowLayoutPanel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            OKFlowLayoutPanel.Controls.Add(OKButton);
-            OKFlowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
-            OKFlowLayoutPanel.Location = new Point(0, 106);
-            OKFlowLayoutPanel.Size = new Size(438, 40);
-            OKFlowLayoutPanel.TabIndex = 0;
+            okFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            okFLP.Controls.Add(OKButton);
+            okFLP.FlowDirection = FlowDirection.RightToLeft;
+            okFLP.Location = new Point(0, 106);
+            okFLP.Size = new Size(438, 40);
+            okFLP.TabIndex = 0;
 
             // 
             // GameVersionsForm
@@ -56,7 +55,7 @@ namespace AngelLoader.Forms
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = OKButton;
             ClientSize = new Size(438, 146);
-            Controls.Add(OKFlowLayoutPanel);
+            Controls.Add(okFLP);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
@@ -66,7 +65,6 @@ namespace AngelLoader.Forms
             StartPosition = FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             Text = " ";
-            KeyDown += GameVersionsForm_KeyDown;
 
             for (
                 int i = 0, lblY = 11, tbY = 8;
@@ -95,8 +93,8 @@ namespace AngelLoader.Forms
                 Controls.Add(textBox);
             }
 
-            OKFlowLayoutPanel.ResumeLayout(false);
-            OKFlowLayoutPanel.PerformLayout();
+            okFLP.ResumeLayout(false);
+            okFLP.PerformLayout();
 
             ResumeLayout(false);
             PerformLayout();
@@ -169,12 +167,13 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        private void GameVersionsForm_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F1)
             {
                 Core.OpenHelpFile(HelpSections.GameVersions);
             }
+            base.OnKeyDown(e);
         }
     }
 }

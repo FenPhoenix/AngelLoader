@@ -54,7 +54,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                         TabIndex = 63,
                         UseVisualStyleBackColor = true,
 
-                        DarkModeEnabled = _darkModeEnabled,
+                        DarkModeEnabled = _darkModeEnabled
                     };
 
                     Button.Click += _owner.Exit_Click;

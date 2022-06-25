@@ -90,6 +90,7 @@ namespace AngelLoader
                     foreach (var item in archives)
                     {
                         string key = item.Key;
+                        // ReSharper disable once InlineTemporaryVariable
                         string value = key;
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archives.ContainsKey(key))
                         {

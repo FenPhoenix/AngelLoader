@@ -127,7 +127,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                         UseVisualStyleBackColor = true,
                         Enabled = _enabled,
 
-                        DarkModeEnabled = _darkModeEnabled,
+                        DarkModeEnabled = _darkModeEnabled
                     };
 
                     Button.Click += _owner.Async_EventHandler_Main;
