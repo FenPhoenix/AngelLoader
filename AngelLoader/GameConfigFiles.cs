@@ -1079,7 +1079,7 @@ namespace AngelLoader
 
         internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)
         {
-            // @GENGAMES(Thief 3 isn't supported by DarkLoader)
+            // Thief 3 isn't supported by DarkLoader
             if (gameIndex == GameIndex.Thief3) return false;
 
             string gamePath = Config.GetGamePath(gameIndex);

@@ -103,8 +103,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // @GENGAMES (GameVersionsForm): Begin
-
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
@@ -117,7 +115,7 @@ namespace AngelLoader.Forms
                         error == Error.GameExeNotFound ? LText.GameVersionsWindow.Error_GameExeNotFound :
                         error == Error.SneakyDllNotFound ? LText.GameVersionsWindow.Error_SneakyDllNotFound :
                         error == Error.GameVersionNotFound ? LText.GameVersionsWindow.Error_GameVersionNotFound :
-                        GameIsDark(gameIndex) ? version : "Sneaky Upgrade " + version;
+                        gameIndex == GameIndex.Thief3 ? "Sneaky Upgrade " + version : version;
                 }
                 else
                 {
@@ -125,7 +123,6 @@ namespace AngelLoader.Forms
                     label.Enabled = false;
                 }
             }
-            // @GENGAMES (GameVersionsForm): End
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
