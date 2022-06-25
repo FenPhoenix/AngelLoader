@@ -108,130 +108,139 @@ namespace AngelLoader
             return list;
         }
 
-        internal static async Task<bool> Add(List<string> droppedItemsList)
+        internal static async Task Add(List<string> droppedItemsList)
         {
-            if (Config.FMArchivePaths.Count == 0) return false;
+            if (!Core.View.GetUIEnabled()) return;
 
-            // Drag-and-drop operations block not only the app thread, but also the thread of the Explorer window
-            // from which you dragged the files. Good lord. So shove the entire thing into another thread so our
-            // drag-and-drop operation can finish in the UI thread and unblock Explorer.
-            bool success = await Task.Run(() =>
+            if (Config.FMArchivePaths.Count == 0) return;
+
+            try
             {
-                string archivesLines = "";
-                bool archivesLinesTruncated = false;
-                const int maxArchivesLines = 15;
-                for (int i = 0, archiveLineCount = 0; i < droppedItemsList.Count; i++)
+                Core.View.SetUIEnabled(false);
+
+                // Drag-and-drop operations block not only the app thread, but also the thread of the Explorer window
+                // from which you dragged the files. Good lord. So shove the entire thing into another thread so our
+                // drag-and-drop operation can finish in the UI thread and unblock Explorer.
+                bool success = await Task.Run(() =>
                 {
-                    string di = droppedItemsList[i];
-                    if (di.IsEmpty() || !di.ExtIsArchive() ||
-                        /*
-                        Reject tomfoolery where a directory could be named "whatever.zip" etc.
-                        Don't do this in the drag-over handler, because we don't want to potentially take a long
-                        wait to hit the disk there. It does mean that for directories that are named like archive
-                        files we'll have a "you can do this drop operation" icon and then do nothing once we get
-                        here, but that should be a rare case anyway.
-                        */
-                        Directory.Exists(di))
+                    string archivesLines = "";
+                    bool archivesLinesTruncated = false;
+                    const int maxArchivesLines = 15;
+                    for (int i = 0, archiveLineCount = 0; i < droppedItemsList.Count; i++)
                     {
-                        droppedItemsList.RemoveAt(i);
-                        i--;
-                        continue;
+                        string di = droppedItemsList[i];
+                        if (di.IsEmpty() || !di.ExtIsArchive() ||
+                            /*
+                            Reject tomfoolery where a directory could be named "whatever.zip" etc.
+                            Don't do this in the drag-over handler, because we don't want to potentially take a long
+                            wait to hit the disk there. It does mean that for directories that are named like archive
+                            files we'll have a "you can do this drop operation" icon and then do nothing once we get
+                            here, but that should be a rare case anyway.
+                            */
+                            Directory.Exists(di))
+                        {
+                            droppedItemsList.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+                        else if (PathContainsUnsupportedProgramFilesFolder(di, out string progFilesPath))
+                        {
+                            string message = "This path contains '" + progFilesPath +
+                                             "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
+                                             "The passed path was:\r\n\r\n" +
+                                             di + "\r\n\r\n";
+                            Log(message);
+                            Core.Dialogs.ShowError_ViewOwned(message);
+                            return false;
+                        }
+
+                        if (!archivesLinesTruncated)
+                        {
+                            if (!archivesLines.IsEmpty()) archivesLines += "\r\n";
+                            if (archiveLineCount < maxArchivesLines)
+                            {
+                                archivesLines += di;
+                                archiveLineCount++;
+                            }
+                            else if (archiveLineCount == maxArchivesLines)
+                            {
+                                archivesLines += "[...]";
+                                archivesLinesTruncated = true;
+                            }
+                        }
                     }
-                    else if (PathContainsUnsupportedProgramFilesFolder(di, out string progFilesPath))
+
+                    if (droppedItemsList.Count == 0)
                     {
-                        string message = "This path contains '" + progFilesPath +
-                                         "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
-                                         "The passed path was:\r\n\r\n" +
-                                         di + "\r\n\r\n";
-                        Log(message);
-                        Core.Dialogs.ShowError_ViewOwned(message);
                         return false;
                     }
 
-                    if (!archivesLinesTruncated)
+                    bool singleArchive = droppedItemsList.Count == 1;
+                    bool singleArchivePath = Config.FMArchivePaths.Count == 1;
+
+                    string destDir;
+
+                    if (!singleArchivePath)
                     {
-                        if (!archivesLines.IsEmpty()) archivesLines += "\r\n";
-                        if (archiveLineCount < maxArchivesLines)
+                        (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
+                            messageTop:
+                            (singleArchive
+                                ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
+                                : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
+                            (singleArchive
+                                ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
+                                : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
+                            messageBottom: "",
+                            title: singleArchive
+                                ? LText.AddFMsToSet.AddFM_DialogTitle
+                                : LText.AddFMsToSet.AddFMs_DialogTitle,
+                            icon: MBoxIcon.None,
+                            okText: LText.AddFMsToSet.AddFM_Add,
+                            cancelText: LText.Global.Cancel,
+                            okIsDangerous: false,
+                            choiceStrings: Config.FMArchivePaths.ToArray(),
+                            multiSelectionAllowed: false);
+
+                        if (!accepted) return false;
+
+                        destDir = selectedItems[0];
+                    }
+                    else
+                    {
+                        destDir = Config.FMArchivePaths[0];
+                    }
+
+                    int successfulFilesCopiedCount = 0;
+
+                    foreach (string file in droppedItemsList)
+                    {
+                        string destFile = Path.Combine(destDir, Path.GetFileName(file));
+                        try
                         {
-                            archivesLines += di;
-                            archiveLineCount++;
+                            FileSystem.CopyFile(file, destFile, UIOption.AllDialogs, UICancelOption.DoNothing);
+                            successfulFilesCopiedCount++;
                         }
-                        else if (archiveLineCount == maxArchivesLines)
+                        catch (Exception ex)
                         {
-                            archivesLines += "[...]";
-                            archivesLinesTruncated = true;
+                            Log(ErrorText.Ex + "copying archive '" + file + "' to '" + destDir, ex);
+                            Core.Dialogs.ShowError(
+                                LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
+                                LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +
+                                LText.AlertMessages.AddFM_DestinationDir + destDir);
                         }
                     }
-                }
 
-                if (droppedItemsList.Count == 0)
-                {
-                    return false;
-                }
+                    return successfulFilesCopiedCount > 0;
+                });
 
-                bool singleArchive = droppedItemsList.Count == 1;
-                bool singleArchivePath = Config.FMArchivePaths.Count == 1;
+                if (!success) return;
 
-                string destDir;
-
-                if (!singleArchivePath)
-                {
-                    (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
-                        messageTop:
-                        (singleArchive
-                            ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
-                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
-                        (singleArchive
-                            ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
-                            : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
-                        messageBottom: "",
-                        title: singleArchive
-                            ? LText.AddFMsToSet.AddFM_DialogTitle
-                            : LText.AddFMsToSet.AddFMs_DialogTitle,
-                        icon: MBoxIcon.None,
-                        okText: LText.AddFMsToSet.AddFM_Add,
-                        cancelText: LText.Global.Cancel,
-                        okIsDangerous: false,
-                        choiceStrings: Config.FMArchivePaths.ToArray(),
-                        multiSelectionAllowed: false);
-
-                    if (!accepted) return false;
-
-                    destDir = selectedItems[0];
-                }
-                else
-                {
-                    destDir = Config.FMArchivePaths[0];
-                }
-
-                int successfulFilesCopiedCount = 0;
-
-                foreach (string file in droppedItemsList)
-                {
-                    string destFile = Path.Combine(destDir, Path.GetFileName(file));
-                    try
-                    {
-                        FileSystem.CopyFile(file, destFile, UIOption.AllDialogs, UICancelOption.DoNothing);
-                        successfulFilesCopiedCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(ErrorText.Ex + "copying archive '" + file + "' to '" + destDir, ex);
-                        Core.Dialogs.ShowError(
-                            LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
-                            LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +
-                            LText.AlertMessages.AddFM_DestinationDir + destDir);
-                    }
-                }
-
-                return successfulFilesCopiedCount > 0;
-            });
-
-            if (!success) return false;
-
-            await Core.RefreshFMsListFromDisk();
-
-            return true;
+                await Core.RefreshFMsListFromDisk();
+            }
+            finally
+            {
+                Core.View.SetUIEnabled(true);
+            }
         }
     }
 }

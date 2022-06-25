@@ -765,9 +765,7 @@ namespace AngelLoader
                 if (fm.Pinned) tempFMs.Add(fm);
             }
 
-            tempFMs.Reverse();
-
-            for (int i = 0; i < tempFMs.Count; i++)
+            for (int i = tempFMs.Count - 1; i >= 0; i--)
             {
                 var fm = tempFMs[i];
                 FMsViewList.Remove(fm);
@@ -2321,7 +2319,7 @@ namespace AngelLoader
 
         #region Command line
 
-        public static void ActivateMainView()
+        internal static void ActivateMainView()
         {
             if (View != null!)
             {
@@ -2330,21 +2328,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        public static async Task<bool> AddFMs(string[] fmArchiveNames)
-        {
-            if (!View.GetUIEnabled()) return false;
-
-            try
-            {
-                View.SetUIEnabled(false);
-                return await FMArchives.Add(fmArchiveNames.ToList());
-            }
-            finally
-            {
-                View.SetUIEnabled(true);
-            }
-        }
 
         public static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
         {

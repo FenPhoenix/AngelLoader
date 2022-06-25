@@ -5570,7 +5570,7 @@ namespace AngelLoader.Forms
         {
             if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out string[]? droppedItems))
             {
-                await Core.AddFMs(droppedItems);
+                await FMArchives.Add(droppedItems.ToList());
             }
         }
 
