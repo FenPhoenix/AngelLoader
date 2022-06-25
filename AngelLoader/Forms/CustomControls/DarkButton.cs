@@ -136,13 +136,12 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        private bool _darkModeEnabled;
+        private protected bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public virtual bool DarkModeEnabled
         {
-            get => _darkModeEnabled;
             set
             {
                 if (_darkModeEnabled == value) return;

@@ -95,7 +95,6 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
-            get => _darkModeEnabled;
             set
             {
                 if (_darkModeEnabled == value) return;
@@ -137,7 +136,7 @@ namespace AngelLoader.Forms.CustomControls
             if (_controlState != controlState)
             {
                 _controlState = controlState;
-                if (DarkModeEnabled) Invalidate();
+                if (_darkModeEnabled) Invalidate();
             }
         }
 
@@ -149,7 +148,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnMouseMove(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed) return;
 
@@ -162,7 +161,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnMouseDown(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
             {
@@ -174,7 +173,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnMouseUp(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed) return;
 
@@ -185,7 +184,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnMouseLeave(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed) return;
 
@@ -196,7 +195,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnMouseCaptureChanged(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             if (_spacePressed) return;
 
@@ -210,7 +209,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnGotFocus(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             Invalidate();
         }
@@ -219,7 +218,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnLostFocus(e);
 
-            if (!DarkModeEnabled) return;
+            if (!_darkModeEnabled) return;
 
             _spacePressed = false;
 
@@ -234,7 +233,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (!DarkModeEnabled)
+            if (!_darkModeEnabled)
             {
                 base.OnPaint(e);
                 return;

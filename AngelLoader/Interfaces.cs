@@ -97,7 +97,7 @@ namespace AngelLoader
     [PublicAPI]
     public interface IDarkable
     {
-        bool DarkModeEnabled { get; set; }
+        bool DarkModeEnabled { set; }
     }
 
     public interface ISplashScreen

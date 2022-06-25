@@ -24,7 +24,6 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DarkModeEnabled
         {
-            get => _darkModeEnabled;
             set
             {
                 if (_darkModeEnabled == value) return;

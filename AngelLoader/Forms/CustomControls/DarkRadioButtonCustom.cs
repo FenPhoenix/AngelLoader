@@ -13,7 +13,6 @@ namespace AngelLoader.Forms.CustomControls
 
         public override bool DarkModeEnabled
         {
-            get => base.DarkModeEnabled;
             set
             {
                 base.DarkModeEnabled = value;
@@ -40,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls
                     ? DarkColors.Fen_DarkBackground
                     : DarkColors.Fen_ControlBackground;
 
-            if (!DarkModeEnabled)
+            if (!_darkModeEnabled)
             {
                 BackColor = _checked
                     ? SystemColors.Window
@@ -84,7 +83,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
             var rect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-            e.Graphics.DrawRectangle(DarkModeEnabled ? DarkColors.LightTextPen : SystemPens.ControlText, rect);
+            e.Graphics.DrawRectangle(_darkModeEnabled ? DarkColors.LightTextPen : SystemPens.ControlText, rect);
         }
     }
 }
