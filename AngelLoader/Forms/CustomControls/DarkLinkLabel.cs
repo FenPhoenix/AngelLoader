@@ -13,6 +13,17 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origVisitedLinkColor;
         private Color? _origDisabledLinkColor;
 
+#if DEBUG
+
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new bool UseMnemonic { get => base.UseMnemonic; set => base.UseMnemonic = value; }
+
+#endif
+
+        public DarkLinkLabel() => UseMnemonic = false;
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
