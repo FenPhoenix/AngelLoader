@@ -43,7 +43,6 @@ namespace AngelLoader
                 {
                     while (i < linesLength - 1)
                     {
-                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
                         int eqIndex = lt.IndexOf('=');
                         if (eqIndex > -1)
@@ -54,7 +53,7 @@ namespace AngelLoader
                                 value.FieldInfo.SetValue(value.Obj, lt.Substring(eqIndex + 1));
                             }
                         }
-                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[')
+                        else if (lt.Length > 0 && lt[0] == '[')
                         {
                             break;
                         }
