@@ -47,7 +47,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private const int _padding = 10;
+        private const int _padding = 6;
 
         // Store non-ampersand-doubled text so we can measure it accurately for the purposes of positioning the
         // gap in the border correctly to fit the text.
@@ -76,24 +76,28 @@ namespace AngelLoader.Forms.CustomControls
 
             var g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
-            var stringSize = g.MeasureString(_rawText, Font);
+            Size stringSize = TextRenderer.MeasureText(_rawText, Font);
 
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
             var borderRect = new Rectangle(
                 0,
-                (int)stringSize.Height / 2,
+                stringSize.Height / 2,
                 rect.Width - 1,
-                rect.Height - ((int)stringSize.Height / 2) - 1);
+                rect.Height - (int)(Math.Ceiling((double)stringSize.Height / 2)) - 1
+            );
             g.DrawRectangle(DarkColors.LighterBorderPen, borderRect);
 
             var textRect = new Rectangle(
                 rect.Left + _padding,
                 rect.Top,
                 rect.Width - (_padding * 2),
-                (int)stringSize.Height);
+                stringSize.Height);
 
-            var modRect = new Rectangle(textRect.Left, textRect.Top, Math.Min(textRect.Width, (int)stringSize.Width), textRect.Height);
+            var modRect = new Rectangle(
+                textRect.Left + 1,
+                textRect.Top,
+                Math.Min(textRect.Width, stringSize.Width) - 3, textRect.Height);
             g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, modRect);
 
             // No TextAlign property, so leave constant
