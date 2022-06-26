@@ -140,14 +140,6 @@ namespace AngelLoader
         internal sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
 
         /// <summary>
-        /// This attribute should be placed on the localization ini read/write class. Only one instance of this
-        /// attribute should be used, or else FenGen will throw an error.
-        /// </summary>
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Class)]
-        internal sealed class FenGenLocalizationDestClassAttribute : Attribute { }
-
-        /// <summary>
         /// Places a comment before the attached field or property.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
