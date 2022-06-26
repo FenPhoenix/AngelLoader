@@ -365,6 +365,8 @@ namespace AngelLoader
 
         #endregion
 
+        #region FMData
+
         private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
         {
             int lastIndexOfComma = line.LastIndexOf(',');
@@ -381,8 +383,6 @@ namespace AngelLoader
                 }
             }
         }
-
-        #region FMData
 
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
@@ -580,6 +580,24 @@ namespace AngelLoader
             sb.AppendLine();
         }
 
+        private static void CommaCombineLanguageFlags(StringBuilder sb, Language languages)
+        {
+            bool notEmpty = false;
+            for (int i = 0; i < SupportedLanguageCount; i++)
+            {
+                LanguageIndex languageIndex = (LanguageIndex)i;
+                Language language = LanguageIndexToLanguage(languageIndex);
+                if (languages.HasFlagFast(language))
+                {
+                    if (notEmpty) sb.Append(',');
+                    sb.Append(SupportedLanguages[i]);
+                    notEmpty = true;
+                }
+            }
+
+            sb.AppendLine();
+        }
+
         #endregion
 
         #region Config
@@ -699,24 +717,6 @@ namespace AngelLoader
                 {
                     if (notEmpty) sb.Append(',');
                     sb.Append(game.ToString());
-                    notEmpty = true;
-                }
-            }
-
-            sb.AppendLine();
-        }
-
-        private static void CommaCombineLanguageFlags(StringBuilder sb, Language languages)
-        {
-            bool notEmpty = false;
-            for (int i = 0; i < SupportedLanguageCount; i++)
-            {
-                LanguageIndex languageIndex = (LanguageIndex)i;
-                Language language = LanguageIndexToLanguage(languageIndex);
-                if (languages.HasFlagFast(language))
-                {
-                    if (notEmpty) sb.Append(',');
-                    sb.Append(SupportedLanguages[i]);
                     notEmpty = true;
                 }
             }
