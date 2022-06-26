@@ -150,7 +150,7 @@ namespace AngelLoader
                 // name in its own language
                 var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
                 bool selFound = false;
-                
+
                 // Do it ONCE here, not every loop!
                 Config.LanguageNames.Clear();
 
