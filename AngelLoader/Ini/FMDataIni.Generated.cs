@@ -8,7 +8,6 @@ using System.IO;
 using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
