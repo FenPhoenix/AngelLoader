@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SevenZip;
@@ -1098,7 +1099,7 @@ namespace AngelLoader
                     entriesCount = extractor.ArchiveFileData.Count;
                 }
 
-                void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
+                void ReportProgress(Fen7z.ProgressReport pr)
                 {
                     int newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
 
@@ -1119,9 +1120,9 @@ namespace AngelLoader
                     }
                 }
 
-                var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
+                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
-                var result = Fen7z.Fen7z.Extract(
+                var result = Fen7z.Extract(
                     Paths.SevenZipPath,
                     Paths.SevenZipExe,
                     fmArchivePath,

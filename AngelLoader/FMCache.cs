@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
@@ -379,7 +380,7 @@ namespace AngelLoader
 
                 Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
 
-                static void ReportProgress(Fen7z.Fen7z.ProgressReport pr)
+                static void ReportProgress(Fen7z.ProgressReport pr)
                 {
                     // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files but
                     // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
@@ -388,11 +389,11 @@ namespace AngelLoader
                     Core.View.SetProgressPercent(pr.PercentOfBytes);
                 }
 
-                var progress = new Progress<Fen7z.Fen7z.ProgressReport>(ReportProgress);
+                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
                 string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
-                var result = Fen7z.Fen7z.Extract(
+                var result = Fen7z.Extract(
                     Paths.SevenZipPath,
                     Paths.SevenZipExe,
                     fmArchivePath,

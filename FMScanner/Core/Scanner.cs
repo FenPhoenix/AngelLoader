@@ -23,6 +23,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using AL_Common;
 using FMScanner.FastZipReader;
 using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
@@ -476,7 +477,7 @@ namespace FMScanner
 
 #endif
 
-            static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+            static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
             {
                 ScannedFMData = new ScannedFMData
                 {
@@ -488,7 +489,7 @@ namespace FMScanner
                 ErrorInfo = errorInfo
             };
 
-            static ScannedFMDataAndError UnsupportedDir(Fen7z.Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+            static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
             {
                 ScannedFMData = null,
                 Fen7zResult = fen7zResult,
@@ -582,7 +583,7 @@ namespace FMScanner
 
                     string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
-                    var result = Fen7z.Fen7z.Extract(
+                    var result = Fen7z.Extract(
                         Path.GetDirectoryName(_sevenZipExePath)!,
                         _sevenZipExePath,
                         fm.Path,

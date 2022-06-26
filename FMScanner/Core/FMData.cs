@@ -2,6 +2,7 @@
 //#define FMScanner_FullCode
 
 using System;
+using AL_Common;
 using JetBrains.Annotations;
 
 namespace FMScanner
@@ -190,7 +191,7 @@ namespace FMScanner
     {
         public ScannedFMData? ScannedFMData;
         public Exception? Exception;
-        public Fen7z.Fen7z.Result? Fen7zResult;
+        public Fen7z.Result? Fen7zResult;
         public string ErrorInfo = "";
     }
 

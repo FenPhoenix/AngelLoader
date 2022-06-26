@@ -6,7 +6,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-namespace Fen7z
+namespace AL_Common
 {
     public static class Fen7z
     {
@@ -47,8 +47,8 @@ namespace Fen7z
             public bool ErrorOccurred =>
                 !Canceled &&
                 (Exception != null
-                 || (ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped)
-                 || (ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255));
+                 || ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped
+                 || ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255);
 
             public string ErrorText = "";
             public Exception? Exception;
@@ -178,8 +178,7 @@ namespace Fen7z
                                 ? lineT.Substring(pi + 1, di)
                                 : lineT.Substring(pi + 1), out int entriesDone))
                             {
-                                int filesPercent = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
-                                report.PercentOfEntries = filesPercent;
+                                report.PercentOfEntries = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
                             }
 
                             if (int.TryParse(lineT.Substring(0, pi), out int bytesPercent))
