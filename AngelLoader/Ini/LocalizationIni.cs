@@ -24,7 +24,7 @@ namespace AngelLoader
                 FieldInfo f = sectionFields[i];
 
                 var fields = f.FieldType.GetFields(_bfLText);
-                var dict = new Dictionary<string, (FieldInfo, object)>(sectionFields.Length);
+                var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length);
                 foreach (var field in fields)
                 {
                     dict[field.Name] = (field, f.GetValue(ret));
