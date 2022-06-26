@@ -111,7 +111,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
+            // Stupid weird code in an attempt to squeeze a little bit more perf out of this thing for faster
+            // initial show
+
             _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+
+            _menu.SuspendLayout();
 
             #region Item init
 
@@ -124,11 +129,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 new ToolStripMenuItemWithBackingField<int>(1201),
                 new ToolStripMenuItemWithBackingField<int>(12000),
                 new ToolStripMenuItemWithBackingField<int>(12001),
-                new ToolStripSeparator()
-            });
-
-            _menu.Items.AddRange(new ToolStripItem[]
-            {
+                new ToolStripSeparator(),
                 ArabicMenu = new ToolStripMenuItemCustom(),
                 BalticMenu = new ToolStripMenuItemCustom(),
                 CentralEuropeanMenu = new ToolStripMenuItemCustom(),
@@ -403,7 +404,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             _constructed = true;
 
-            Localize();
+            Localize(suspendResume: false);
+
+            _menu.ResumeLayout();
         }
 
         internal void SetEncodingMenuItemChecked(Encoding encoding)
@@ -418,9 +421,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal void Localize()
+        internal void Localize(bool suspendResume = true)
         {
             if (!_constructed) return;
+
+            if (suspendResume) _menu.SuspendLayout();
 
             AutodetectMenuItem!.Text = LText.CharacterEncoding.AutodetectNow;
             ArabicMenu!.Text = LText.CharacterEncoding.Category_Arabic;
@@ -442,6 +447,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             VietnameseMenu!.Text = LText.CharacterEncoding.Category_Vietnamese;
             WesternEuropeanMenu!.Text = LText.CharacterEncoding.Category_WesternEuropean;
             OtherMenu!.Text = LText.CharacterEncoding.Category_Other;
+
+            if (suspendResume) _menu.ResumeLayout();
         }
 
         #endregion

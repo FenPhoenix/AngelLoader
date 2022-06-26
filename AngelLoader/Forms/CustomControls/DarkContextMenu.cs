@@ -60,6 +60,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_darkModeEnabled)
                 {
+                    // We can't cache this, because it stops working on a second dark mode set if we do
                     menu.Renderer = new DarkMenuRenderer();
                 }
                 else
