@@ -146,6 +146,7 @@ namespace AngelLoader.Forms.CustomControls
                     break;
                 case Native.WM_NCPAINT:
                     // Attempt to reduce flicker (only reduces the chance very slightly)
+                    // NOTE: I don't think this does anything at all actually
                     PaintCustom();
                     break;
                 default:
