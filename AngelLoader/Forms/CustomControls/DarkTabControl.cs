@@ -28,10 +28,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private TabPage? _dragTab;
 
-        // Because of the lack of any clean and easy way to pass in an initial capacity value (we can't do it
-        // through the constructor because that gets called in the Designer code-behind), let's just give it a
-        // reasonable constant value and be done with it.
-        private readonly List<BackingTab> _backingTabList = new(10);
+        private readonly List<BackingTab> _backingTabList = new(0);
 
         private Font? _originalFont;
 
@@ -366,6 +363,7 @@ namespace AngelLoader.Forms.CustomControls
         public void SetTabsFull(List<TabPage> tabPages)
         {
             ClearTabsFull();
+            _backingTabList.Capacity = tabPages.Count;
 
             foreach (TabPage tabPage in tabPages)
             {
