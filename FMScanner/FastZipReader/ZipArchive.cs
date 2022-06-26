@@ -49,6 +49,19 @@ namespace FMScanner.FastZipReader
 
         private readonly ZipReusableBundle _bundle;
 
+        private readonly bool _disposeBundle;
+
+        /// <summary>
+        /// Initializes a new instance of ZipArchive on the given stream.
+        /// </summary>
+        /// <exception cref="ArgumentException">The stream is already closed.</exception>
+        /// <exception cref="ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+        /// <param name="stream">The input or output stream.</param>
+        public ZipArchiveFast(Stream stream) : this(stream, new ZipReusableBundle(), disposeBundle: true)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream.
         /// </summary>
@@ -58,8 +71,15 @@ namespace FMScanner.FastZipReader
         /// <param name="stream">The input or output stream.</param>
         /// <param name="bundle"></param>
         [PublicAPI]
-        public ZipArchiveFast(Stream stream, ZipReusableBundle bundle)
+        public ZipArchiveFast(Stream stream, ZipReusableBundle bundle) : this(stream, bundle, disposeBundle: false)
         {
+        }
+
+        [PublicAPI]
+        private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle)
+        {
+            _disposeBundle = disposeBundle;
+
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             _bundle = bundle;
@@ -393,6 +413,8 @@ namespace FMScanner.FastZipReader
                 ArchiveStream.Dispose();
                 _bundle.ArchiveSubReadStream.SetSuperStream(null);
                 _backingStream?.Dispose();
+
+                if (_disposeBundle) _bundle.Dispose();
 
                 _isDisposed = true;
             }
