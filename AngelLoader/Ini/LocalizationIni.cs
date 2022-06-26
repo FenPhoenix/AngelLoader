@@ -18,7 +18,7 @@ namespace AngelLoader
             const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
             var sectionFields = typeof(LText_Class).GetFields(_bfLText);
-            var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(31);
+            var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length);
             for (int i = 0; i < sectionFields.Length; i++)
             {
                 FieldInfo f = sectionFields[i];
