@@ -65,7 +65,7 @@ namespace AngelLoader.Forms
         private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
 
         private readonly DarkComboBoxWithBackingItems LangComboBox;
-        private readonly GroupBox LangGroupBox;
+        private readonly DarkGroupBox LangGroupBox;
 
         private readonly PathsPage PathsPage;
         private readonly AppearancePage AppearancePage;
@@ -925,10 +925,6 @@ namespace AngelLoader.Forms
                 }
                 ErrorIconPictureBox.Hide();
                 ErrorLabel.Hide();
-
-                // Extremely petty visual nicety - makes the error stuff go away before the form closes
-                Refresh();
-                PathsPage.Refresh();
             }
 
             return false;
@@ -1338,16 +1334,6 @@ namespace AngelLoader.Forms
 
         #region Archive paths
 
-        private bool FMArchivePathExistsInBox(string path)
-        {
-            foreach (string item in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
-            {
-                if (item.PathEqualsI(path)) return true;
-            }
-
-            return false;
-        }
-
         private void AddFMArchivePathButton_Click(object sender, EventArgs e)
         {
             using var d = new VistaFolderBrowserDialog();
@@ -1372,9 +1358,12 @@ namespace AngelLoader.Forms
             if (d.ShowDialogDark(this) == DialogResult.OK)
             {
                 PathsPage.FMArchivePathsListBox.BeginUpdate();
+
+                var hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetI();
+
                 foreach (string dir in d.DirectoryNames)
                 {
-                    if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
+                    if (!hash.Contains(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
                 }
                 PathsPage.FMArchivePathsListBox.EndUpdate();
             }
@@ -1393,20 +1382,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Appearance page
-
-        private void SetCursors(bool wait)
-        {
-            if (wait)
-            {
-                _ownerForm?.SetWaitCursor(true);
-                Cursor = Cursors.WaitCursor;
-            }
-            else
-            {
-                _ownerForm?.SetWaitCursor(false);
-                Cursor = Cursors.Default;
-            }
-        }
 
         private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
@@ -1641,6 +1616,20 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetCursors(bool wait)
+        {
+            if (wait)
+            {
+                _ownerForm?.SetWaitCursor(true);
+                Cursor = Cursors.WaitCursor;
+            }
+            else
+            {
+                _ownerForm?.SetWaitCursor(false);
+                Cursor = Cursors.Default;
+            }
+        }
+
         private void ShowPathError(Control control, bool shown)
         {
             if (control is DarkTextBox textBox)
@@ -1729,9 +1718,9 @@ namespace AngelLoader.Forms
                 components?.Dispose();
                 // If we're on startup, only PathsPage will have been added, so others must be manually disposed.
                 // Just dispose them all if they need it, to be thorough.
-                PathsPage?.Dispose();
-                AppearancePage?.Dispose();
-                OtherPage?.Dispose();
+                PathsPage.Dispose();
+                AppearancePage.Dispose();
+                OtherPage.Dispose();
             }
             base.Dispose(disposing);
         }
