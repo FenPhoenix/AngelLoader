@@ -29,7 +29,7 @@ namespace AngelLoader
 
         // This kinda belongs in LanguageIni.cs, but it's separated to prevent it from being removed when that
         // file is re-generated. I could make it so it doesn't get removed, but meh.
-        internal static void AddLanguageFromFile(string file, DictionaryI<string> langDict)
+        internal static void AddLanguageFromFile(string file, string key, DictionaryI<string> langDict)
         {
             StreamReader? sr = null;
             try
@@ -43,7 +43,6 @@ namespace AngelLoader
                     if (inMeta &&
                         lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
-                        string key = file.GetFileNameFast().RemoveExtension();
                         langDict[key] = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                         return;
                     }
