@@ -229,10 +229,6 @@ namespace AngelLoader
                              (!checkAllGames &&
                               (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe)))))
                         {
-                            string logExe = checkAllGames ? "a game exe" : gameExe;
-
-                            Log("Found " + logExe + " running: " + fn +
-                                "\r\nReturning true, game should be blocked from starting");
                             return true;
                         }
                     }

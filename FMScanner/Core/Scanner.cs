@@ -653,7 +653,7 @@ namespace FMScanner
                         // thrown while loading them. If this passes, we're definitely good.
                         if (_archive.Entries.Count == 0)
                         {
-                            Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.");
+                            Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
                             return UnsupportedZip(fm.Path, null, null, "");
                         }
                     }
@@ -669,7 +669,7 @@ namespace FMScanner
                 else
                 {
                     Log(fm.Path + ": " + nameof(_fmIsZip) +
-                        " == true, but extension was not .zip. Returning 'Unsupported' game type.");
+                        " == true, but extension was not .zip. Returning 'Unsupported' game type.", stackTrace: false);
                     return UnsupportedZip(fm.Path, null, null, "");
                 }
             }
@@ -678,7 +678,7 @@ namespace FMScanner
                 if (!Directory.Exists(_fmWorkingPath))
                 {
                     Log(fm.Path + ": fm is dir, but " + nameof(_fmWorkingPath) +
-                        " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.");
+                        " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.", stackTrace: false);
                     return UnsupportedDir(null, null, "");
                 }
                 Debug.WriteLine("----------" + _fmWorkingPath);
@@ -774,7 +774,7 @@ namespace FMScanner
             {
                 string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
                 Log(fm.Path + ": fm is " + ext + ", " +
-                    nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.");
+                    nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
 
                 return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
             }
@@ -1540,7 +1540,7 @@ namespace FMScanner
                 {
                     if (baseDirFiles.Count == 0)
                     {
-                        Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.");
+                        Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.", stackTrace: false);
                         return false;
                     }
 
@@ -1590,7 +1590,7 @@ namespace FMScanner
                 {
                     if (baseDirFiles.Count == 0)
                     {
-                        Log(fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.");
+                        Log(fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.", stackTrace: false);
                         return false;
                     }
 
@@ -1712,7 +1712,7 @@ namespace FMScanner
 
             if (misFiles.Count == 0)
             {
-                Log(fmPath + ": No .mis files in base dir. Returning false.");
+                Log(fmPath + ": No .mis files in base dir. Returning false.", stackTrace: false);
                 return false;
             }
 
