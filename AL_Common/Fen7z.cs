@@ -47,8 +47,8 @@ namespace AL_Common
             public bool ErrorOccurred =>
                 !Canceled &&
                 (Exception != null
-                 || ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped
-                 || ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255);
+                 || (ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped)
+                 || (ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255));
 
             public string ErrorText = "";
             public Exception? Exception;
@@ -272,36 +272,17 @@ namespace AL_Common
         {
             try
             {
-                int? exitCode = p.ExitCode;
-                SevenZipExitCode sevenZipExitCode;
-                if (exitCode == (int?)SevenZipExitCode.NoError)
+                int exitCode = p.ExitCode;
+                SevenZipExitCode sevenZipExitCode = exitCode switch
                 {
-                    sevenZipExitCode = SevenZipExitCode.NoError;
-                }
-                else if (exitCode == (int?)SevenZipExitCode.Warning)
-                {
-                    sevenZipExitCode = SevenZipExitCode.Warning;
-                }
-                else if (exitCode == (int?)SevenZipExitCode.FatalError)
-                {
-                    sevenZipExitCode = SevenZipExitCode.FatalError;
-                }
-                else if (exitCode == (int?)SevenZipExitCode.CommandLineError)
-                {
-                    sevenZipExitCode = SevenZipExitCode.CommandLineError;
-                }
-                else if (exitCode == (int?)SevenZipExitCode.NotEnoughMemory)
-                {
-                    sevenZipExitCode = SevenZipExitCode.NotEnoughMemory;
-                }
-                else if (exitCode == (int?)SevenZipExitCode.UserStopped)
-                {
-                    sevenZipExitCode = SevenZipExitCode.UserStopped;
-                }
-                else
-                {
-                    sevenZipExitCode = SevenZipExitCode.Unknown;
-                }
+                    (int)SevenZipExitCode.NoError => SevenZipExitCode.NoError,
+                    (int)SevenZipExitCode.Warning => SevenZipExitCode.Warning,
+                    (int)SevenZipExitCode.FatalError => SevenZipExitCode.FatalError,
+                    (int)SevenZipExitCode.CommandLineError => SevenZipExitCode.CommandLineError,
+                    (int)SevenZipExitCode.NotEnoughMemory => SevenZipExitCode.NotEnoughMemory,
+                    (int)SevenZipExitCode.UserStopped => SevenZipExitCode.UserStopped,
+                    _ => SevenZipExitCode.Unknown
+                };
                 return (sevenZipExitCode, exitCode, null);
             }
             catch (InvalidOperationException ex)
