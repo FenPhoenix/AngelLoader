@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -15,6 +16,16 @@ namespace AngelLoader.Forms.CustomControls
             InitializeComponentSlim();
 #endif
             ModsCheckList.SetCautionVisiblePredicate(() => ModsShowUberCheckBox.Checked);
+        }
+
+        public void Localize(string headerText)
+        {
+            ModsHeaderLabel.Text = headerText;
+            ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
+            ModsEnableAllButton.Text = LText.ModsTab.EnableAll;
+            ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
+            MainToolTip.SetToolTip(ModsDisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
+            ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
         }
 
         [PublicAPI]

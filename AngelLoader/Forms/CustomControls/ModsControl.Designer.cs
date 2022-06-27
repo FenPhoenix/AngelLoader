@@ -31,6 +31,7 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ModsDisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -40,6 +41,7 @@ namespace AngelLoader.Forms.CustomControls
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
             this.ModsAutoScrollDummyPanel = new System.Windows.Forms.Panel();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ModsResetFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -175,5 +177,6 @@ namespace AngelLoader.Forms.CustomControls
         internal DarkLabel ModsDisabledModsLabel;
         internal DarkCheckList ModsCheckList;
         internal System.Windows.Forms.Panel ModsAutoScrollDummyPanel;
+        internal System.Windows.Forms.ToolTip MainToolTip;
     }
 }

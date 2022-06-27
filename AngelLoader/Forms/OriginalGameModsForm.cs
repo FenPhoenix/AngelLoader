@@ -78,11 +78,7 @@ namespace AngelLoader.Forms
         private void Localize(GameIndex gameIndex)
         {
             Text = GetLocalizedGameName(gameIndex);
-            OrigGameModsControl.ModsHeaderLabel.Text = GetLocalizedOriginalModHeaderText(gameIndex);
-            OrigGameModsControl.ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
-            OrigGameModsControl.ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
-            OrigGameModsControl.ModsEnableAllButton.Text = LText.ModsTab.EnableAll;
-            OrigGameModsControl.ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
+            OrigGameModsControl.Localize(GetLocalizedOriginalModHeaderText(gameIndex));
             OKButton.Text = LText.Global.OK;
             Cancel_Button.Text = LText.Global.Cancel;
         }

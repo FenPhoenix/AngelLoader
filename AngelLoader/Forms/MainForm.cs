@@ -1655,16 +1655,8 @@ namespace AngelLoader.Forms
 
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
-                MainModsControl.ModsHeaderLabel.Text = LText.ModsTab.Header;
-
+                MainModsControl.Localize(LText.ModsTab.Header);
                 MainModsControl.ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
-
-                MainModsControl.ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
-                MainModsControl.ModsEnableAllButton.Text = LText.ModsTab.EnableAll;
-                MainModsControl.ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
-                MainToolTip.SetToolTip(MainModsControl.ModsDisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
-
-                MainModsControl.ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 
                 #endregion
 

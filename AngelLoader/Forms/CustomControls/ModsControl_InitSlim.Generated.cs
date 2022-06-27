@@ -7,6 +7,7 @@
         /// </summary>
         private void InitializeComponentSlim()
         {
+            this.components = new System.ComponentModel.Container();
             this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ModsDisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -16,6 +17,7 @@
             this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
             this.ModsAutoScrollDummyPanel = new System.Windows.Forms.Panel();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ModsResetFLP.SuspendLayout();
             this.SuspendLayout();
             // 
