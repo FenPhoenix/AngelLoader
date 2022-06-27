@@ -19,17 +19,44 @@ namespace AngelLoader.Forms.CustomControls
 #else
             InitializeComponentSlim();
 #endif
-            ModsCheckList.SetCautionVisiblePredicate(() => ModsShowUberCheckBox.Checked);
+            CheckList.SetCautionVisiblePredicate(() => ShowUberCheckBox.Checked);
         }
 
         public void Localize(string headerText)
         {
-            ModsHeaderLabel.Text = headerText;
-            ModsShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
-            ModsEnableAllButton.Text = LText.ModsTab.EnableAll;
-            ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
-            MainToolTip.SetToolTip(ModsDisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
-            ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
+            HeaderLabel.Text = headerText;
+            ShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
+            EnableAllButton.Text = LText.ModsTab.EnableAll;
+            DisableNonImportantButton.Text = LText.ModsTab.DisableAll;
+            MainToolTip.SetToolTip(DisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
+            DisabledModsLabel.Text = LText.ModsTab.DisabledMods;
+        }
+
+        private void Commit()
+        {
+            string[] disabledMods = ModsDisabledModsTextBox.Text.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
+
+            var modNames = new DictionaryI<int>(CheckList.CheckItems.Length);
+
+            for (int i = 0; i < CheckList.CheckItems.Length; i++)
+            {
+                var checkItem = CheckList.CheckItems[i];
+                modNames[checkItem.Text] = i;
+            }
+
+            bool[] checkedStates = InitializedArray(CheckList.CheckItems.Length, true);
+
+            foreach (string mod in disabledMods)
+            {
+                if (modNames.TryGetValue(mod, out int index))
+                {
+                    checkedStates[index] = false;
+                }
+            }
+
+            CheckList.SetItemCheckedStates(checkedStates);
+
+            DisabledModsTextBoxCommitted?.Invoke(this, EventArgs.Empty);
         }
 
         public (bool Success, string DisabledMods, bool DisableAllMods)
@@ -39,11 +66,11 @@ namespace AngelLoader.Forms.CustomControls
 
             try
             {
-                ModsCheckList.SuspendDrawing();
+                CheckList.SuspendDrawing();
 
                 ModsDisabledModsTextBox.Text = disabledMods;
 
-                ModsCheckList.ClearList();
+                CheckList.ClearList();
 
                 if (!GameIsDark(game)) return fail;
 
@@ -92,79 +119,89 @@ namespace AngelLoader.Forms.CustomControls
                     disableAllMods = false;
                 }
 
-                ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
+                CheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
 
                 return (true, disabledMods, disableAllMods);
             }
             finally
             {
-                ModsCheckList.ResumeDrawing();
+                CheckList.ResumeDrawing();
             }
         }
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? ModsEnableAllButtonClick;
+        public event EventHandler? EnableAllButtonClick;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? ModsDisableNonImportantButtonClick;
+        public event EventHandler? DisableNonImportantButtonClick;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? ModsDisabledModsTextBoxTextChanged;
+        public event EventHandler? DisabledModsTextBoxTextChanged;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler<KeyEventArgs>? ModsDisabledModsTextBoxKeyDown;
+        public event EventHandler<KeyEventArgs>? DisabledModsTextBoxKeyDown;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? ModsDisabledModsTextBoxLeave;
+        public event EventHandler? DisabledModsTextBoxLeave;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler<DarkCheckList.DarkCheckListEventArgs>? ModsCheckListItemCheckedChanged;
+        public event EventHandler<DarkCheckList.DarkCheckListEventArgs>? CheckListItemCheckedChanged;
 
-        private void ModsEnableAllButton_Click(object sender, EventArgs e)
+        [PublicAPI]
+        [Browsable(true)]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        public event EventHandler? DisabledModsTextBoxCommitted;
+
+        private void EnableAllButton_Click(object sender, EventArgs e)
         {
-            ModsEnableAllButtonClick?.Invoke(ModsEnableAllButton, e);
+            EnableAllButtonClick?.Invoke(EnableAllButton, e);
         }
 
-        private void ModsDisableNonImportantButton_Click(object sender, EventArgs e)
+        private void DisableNonImportantButton_Click(object sender, EventArgs e)
         {
-            ModsDisableNonImportantButtonClick?.Invoke(ModsDisableNonImportantButton, e);
+            DisableNonImportantButtonClick?.Invoke(DisableNonImportantButton, e);
         }
 
-        private void ModsShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            ModsCheckList.ShowCautionSection(ModsShowUberCheckBox.Checked);
+            CheckList.ShowCautionSection(ShowUberCheckBox.Checked);
         }
 
-        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        private void DisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
-            ModsDisabledModsTextBoxTextChanged?.Invoke(ModsDisabledModsTextBox, e);
+            DisabledModsTextBoxTextChanged?.Invoke(ModsDisabledModsTextBox, e);
         }
 
-        private void ModsDisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void DisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            ModsDisabledModsTextBoxKeyDown?.Invoke(ModsDisabledModsTextBox, e);
+            DisabledModsTextBoxKeyDown?.Invoke(ModsDisabledModsTextBox, e);
+            if (e.KeyCode == Keys.Enter)
+            {
+                Commit();
+            }
         }
 
-        private void ModsDisabledModsTextBox_Leave(object sender, EventArgs e)
+        private void DisabledModsTextBox_Leave(object sender, EventArgs e)
         {
-            ModsDisabledModsTextBoxLeave?.Invoke(ModsDisabledModsTextBox, e);
+            DisabledModsTextBoxLeave?.Invoke(ModsDisabledModsTextBox, e);
+            Commit();
         }
 
-        private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+        private void CheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
-            ModsCheckListItemCheckedChanged?.Invoke(ModsCheckList, e);
+            CheckListItemCheckedChanged?.Invoke(CheckList, e);
         }
     }
 }

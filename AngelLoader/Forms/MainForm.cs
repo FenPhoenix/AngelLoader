@@ -1656,7 +1656,7 @@ namespace AngelLoader.Forms
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
                 MainModsControl.Localize(LText.ModsTab.Header);
-                MainModsControl.ModsCheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+                MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
 
                 #endregion
 
@@ -3319,50 +3319,9 @@ namespace AngelLoader.Forms
             RefreshMainSelectedFMRow_Fast();
         }
 
-        private void ModsDisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void ModsDisabledModsTextBox_Committed(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                ModsDisabledModsTextBoxCommit();
-            }
-        }
-
-        private void ModsDisabledModsTextBox_Leave(object sender, EventArgs e)
-        {
-            ModsDisabledModsTextBoxCommit();
-        }
-
-        // @VBL(ModsDisabledModsTextBoxCommit()): But actually maybe not?
-        // This looks business-logic-ish, but really it's kind of a UI detail still? Directly updating a list of
-        // checkboxes from a textbox. Meh.
-        private void ModsDisabledModsTextBoxCommit()
-        {
-            if (EventsDisabled) return;
-
-            if (!FMsDGV.RowSelected()) return;
-
-            string[] disabledMods = FMsDGV.GetMainSelectedFM().DisabledMods.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
-
-            var modNames = new DictionaryI<int>(MainModsControl.ModsCheckList.CheckItems.Length);
-
-            for (int i = 0; i < MainModsControl.ModsCheckList.CheckItems.Length; i++)
-            {
-                var checkItem = MainModsControl.ModsCheckList.CheckItems[i];
-                modNames[checkItem.Text] = i;
-            }
-
-            bool[] checkedStates = InitializedArray(MainModsControl.ModsCheckList.CheckItems.Length, true);
-
-            foreach (string mod in disabledMods)
-            {
-                if (modNames.TryGetValue(mod, out int index))
-                {
-                    checkedStates[index] = false;
-                }
-            }
-
-            MainModsControl.ModsCheckList.SetItemCheckedStates(checkedStates);
-
+            if (EventsDisabled || !FMsDGV.RowSelected()) return;
             Ini.WriteFullFMDataIni();
         }
 
@@ -3384,7 +3343,7 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this))
             {
-                foreach (Control control in MainModsControl.ModsCheckList.Controls)
+                foreach (Control control in MainModsControl.CheckList.Controls)
                 {
                     if (control is CheckBox checkBox)
                     {
@@ -3407,7 +3366,7 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this))
             {
-                foreach (Control control in MainModsControl.ModsCheckList.Controls)
+                foreach (Control control in MainModsControl.CheckList.Controls)
                 {
                     if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
                     {
@@ -3423,7 +3382,7 @@ namespace AngelLoader.Forms
         {
             fm.DisabledMods = "";
 
-            foreach (DarkCheckList.CheckItem item in MainModsControl.ModsCheckList.CheckItems)
+            foreach (DarkCheckList.CheckItem item in MainModsControl.CheckList.CheckItems)
             {
                 if (!item.Checked)
                 {
@@ -4614,8 +4573,8 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
-                MainModsControl.ModsCheckList.ClearList();
-                MainModsControl.ModsCheckList.Enabled = false;
+                MainModsControl.CheckList.ClearList();
+                MainModsControl.CheckList.Enabled = false;
 
                 foreach (Control c in ModsTabPage.Controls)
                 {
@@ -4813,7 +4772,7 @@ namespace AngelLoader.Forms
 
             #region Toggles
 
-            MainModsControl.ModsCheckList.Enabled = !fmIsT3;
+            MainModsControl.CheckList.Enabled = !fmIsT3;
 
             // We should never get here when FMsList.Count == 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);

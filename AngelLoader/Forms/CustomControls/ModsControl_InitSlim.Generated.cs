@@ -8,112 +8,112 @@
         private void InitializeComponentSlim()
         {
             this.components = new System.ComponentModel.Container();
-            this.ModsHeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ModsResetFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.ModsDisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ModsEnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ModsShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.ResetFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.ShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.ModsDisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ModsCheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
-            this.ModsAutoScrollDummyPanel = new System.Windows.Forms.Panel();
+            this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.CheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
+            this.AutoScrollDummyPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ModsResetFLP.SuspendLayout();
+            this.ResetFLP.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ModsHeaderLabel
+            // HeaderLabel
             // 
-            this.ModsHeaderLabel.AutoSize = true;
-            this.ModsHeaderLabel.Location = new System.Drawing.Point(7, 8);
-            this.ModsHeaderLabel.TabIndex = 10;
+            this.HeaderLabel.AutoSize = true;
+            this.HeaderLabel.Location = new System.Drawing.Point(7, 8);
+            this.HeaderLabel.TabIndex = 10;
             // 
-            // ModsResetFLP
+            // ResetFLP
             // 
-            this.ModsResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.ResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsResetFLP.Controls.Add(this.ModsDisableNonImportantButton);
-            this.ModsResetFLP.Controls.Add(this.ModsEnableAllButton);
-            this.ModsResetFLP.Controls.Add(this.ModsShowUberCheckBox);
-            this.ModsResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.ModsResetFLP.Location = new System.Drawing.Point(7, 216);
-            this.ModsResetFLP.Size = new System.Drawing.Size(513, 24);
-            this.ModsResetFLP.TabIndex = 7;
-            this.ModsResetFLP.WrapContents = false;
+            this.ResetFLP.Controls.Add(this.DisableNonImportantButton);
+            this.ResetFLP.Controls.Add(this.EnableAllButton);
+            this.ResetFLP.Controls.Add(this.ShowUberCheckBox);
+            this.ResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.ResetFLP.Location = new System.Drawing.Point(7, 216);
+            this.ResetFLP.Size = new System.Drawing.Size(513, 24);
+            this.ResetFLP.TabIndex = 7;
+            this.ResetFLP.WrapContents = false;
             // 
-            // ModsDisableNonImportantButton
+            // DisableNonImportantButton
             // 
-            this.ModsDisableNonImportantButton.Margin = new System.Windows.Forms.Padding(0);
-            this.ModsDisableNonImportantButton.MinimumSize = new System.Drawing.Size(75, 23);
-            this.ModsDisableNonImportantButton.TabIndex = 2;
-            this.ModsDisableNonImportantButton.UseVisualStyleBackColor = true;
-            this.ModsDisableNonImportantButton.Click += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
+            this.DisableNonImportantButton.Margin = new System.Windows.Forms.Padding(0);
+            this.DisableNonImportantButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.DisableNonImportantButton.TabIndex = 2;
+            this.DisableNonImportantButton.UseVisualStyleBackColor = true;
+            this.DisableNonImportantButton.Click += new System.EventHandler(this.DisableNonImportantButton_Click);
             // 
-            // ModsEnableAllButton
+            // EnableAllButton
             // 
-            this.ModsEnableAllButton.Margin = new System.Windows.Forms.Padding(0);
-            this.ModsEnableAllButton.MinimumSize = new System.Drawing.Size(75, 23);
-            this.ModsEnableAllButton.TabIndex = 1;
-            this.ModsEnableAllButton.UseVisualStyleBackColor = true;
-            this.ModsEnableAllButton.Click += new System.EventHandler(this.ModsEnableAllButton_Click);
+            this.EnableAllButton.Margin = new System.Windows.Forms.Padding(0);
+            this.EnableAllButton.MinimumSize = new System.Drawing.Size(75, 23);
+            this.EnableAllButton.TabIndex = 1;
+            this.EnableAllButton.UseVisualStyleBackColor = true;
+            this.EnableAllButton.Click += new System.EventHandler(this.EnableAllButton_Click);
             // 
-            // ModsShowUberCheckBox
+            // ShowUberCheckBox
             // 
-            this.ModsShowUberCheckBox.AutoSize = true;
-            this.ModsShowUberCheckBox.TabIndex = 0;
-            this.ModsShowUberCheckBox.UseVisualStyleBackColor = true;
-            this.ModsShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ModsShowUberCheckBox_CheckedChanged);
+            this.ShowUberCheckBox.AutoSize = true;
+            this.ShowUberCheckBox.TabIndex = 0;
+            this.ShowUberCheckBox.UseVisualStyleBackColor = true;
+            this.ShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ShowUberCheckBox_CheckedChanged);
             // 
-            // ModsDisabledModsTextBox
+            // DisabledModsTextBox
             // 
             this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(7, 256);
             this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
             this.ModsDisabledModsTextBox.TabIndex = 9;
-            this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
-            this.ModsDisabledModsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModsDisabledModsTextBox_KeyDown);
-            this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
+            this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.DisabledModsTextBox_TextChanged);
+            this.ModsDisabledModsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DisabledModsTextBox_KeyDown);
+            this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.DisabledModsTextBox_Leave);
             // 
-            // ModsDisabledModsLabel
+            // DisabledModsLabel
             // 
-            this.ModsDisabledModsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ModsDisabledModsLabel.AutoSize = true;
-            this.ModsDisabledModsLabel.Location = new System.Drawing.Point(7, 240);
-            this.ModsDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
-            this.ModsDisabledModsLabel.TabIndex = 8;
+            this.DisabledModsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.DisabledModsLabel.AutoSize = true;
+            this.DisabledModsLabel.Location = new System.Drawing.Point(7, 240);
+            this.DisabledModsLabel.Size = new System.Drawing.Size(79, 13);
+            this.DisabledModsLabel.TabIndex = 8;
             // 
-            // ModsCheckList
+            // CheckList
             // 
-            this.ModsCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.CheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsCheckList.AutoScroll = true;
-            this.ModsCheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ModsCheckList.Location = new System.Drawing.Point(7, 32);
-            this.ModsCheckList.Size = new System.Drawing.Size(512, 184);
-            this.ModsCheckList.TabIndex = 6;
-            this.ModsCheckList.ItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsCheckList_ItemCheckedChanged);
+            this.CheckList.AutoScroll = true;
+            this.CheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CheckList.Location = new System.Drawing.Point(7, 32);
+            this.CheckList.Size = new System.Drawing.Size(512, 184);
+            this.CheckList.TabIndex = 6;
+            this.CheckList.ItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.CheckList_ItemCheckedChanged);
             // 
-            // ModsAutoScrollDummyPanel
+            // AutoScrollDummyPanel
             // 
-            this.ModsAutoScrollDummyPanel.Location = new System.Drawing.Point(7, 8);
-            this.ModsAutoScrollDummyPanel.Size = new System.Drawing.Size(280, 208);
-            this.ModsAutoScrollDummyPanel.TabIndex = 11;
+            this.AutoScrollDummyPanel.Location = new System.Drawing.Point(7, 8);
+            this.AutoScrollDummyPanel.Size = new System.Drawing.Size(280, 208);
+            this.AutoScrollDummyPanel.TabIndex = 11;
             // 
             // ModsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.Controls.Add(this.ModsHeaderLabel);
-            this.Controls.Add(this.ModsResetFLP);
+            this.Controls.Add(this.HeaderLabel);
+            this.Controls.Add(this.ResetFLP);
             this.Controls.Add(this.ModsDisabledModsTextBox);
-            this.Controls.Add(this.ModsDisabledModsLabel);
-            this.Controls.Add(this.ModsCheckList);
-            this.Controls.Add(this.ModsAutoScrollDummyPanel);
+            this.Controls.Add(this.DisabledModsLabel);
+            this.Controls.Add(this.CheckList);
+            this.Controls.Add(this.AutoScrollDummyPanel);
             this.Size = new System.Drawing.Size(527, 284);
-            this.ModsResetFLP.ResumeLayout(false);
-            this.ModsResetFLP.PerformLayout();
+            this.ResetFLP.ResumeLayout(false);
+            this.ResetFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }

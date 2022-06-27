@@ -54,45 +54,6 @@ namespace AngelLoader.Forms
             DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
         }
 
-        private void OrigGameModsControl_ModsDisabledModsTextBoxKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                ModsDisabledModsTextBoxCommit();
-                e.SuppressKeyPress = true;
-            }
-        }
-
-        private void OrigGameModsControl_ModsDisabledModsTextBoxLeave(object sender, EventArgs e)
-        {
-            ModsDisabledModsTextBoxCommit();
-        }
-
-        private void ModsDisabledModsTextBoxCommit()
-        {
-            string[] disabledMods = DisabledMods.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
-
-            var modNames = new DictionaryI<int>(OrigGameModsControl.ModsCheckList.CheckItems.Length);
-
-            for (int i = 0; i < OrigGameModsControl.ModsCheckList.CheckItems.Length; i++)
-            {
-                var checkItem = OrigGameModsControl.ModsCheckList.CheckItems[i];
-                modNames[checkItem.Text] = i;
-            }
-
-            bool[] checkedStates = InitializedArray(OrigGameModsControl.ModsCheckList.CheckItems.Length, true);
-
-            foreach (string mod in disabledMods)
-            {
-                if (modNames.TryGetValue(mod, out int index))
-                {
-                    checkedStates[index] = false;
-                }
-            }
-
-            OrigGameModsControl.ModsCheckList.SetItemCheckedStates(checkedStates);
-        }
-
         private void OrigGameModsControl_ModsCheckListItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
@@ -103,7 +64,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (Control control in OrigGameModsControl.ModsCheckList.Controls)
+                foreach (Control control in OrigGameModsControl.CheckList.Controls)
                 {
                     if (control is CheckBox checkBox)
                     {
@@ -120,7 +81,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (Control control in OrigGameModsControl.ModsCheckList.Controls)
+                foreach (Control control in OrigGameModsControl.CheckList.Controls)
                 {
                     if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
                     {
@@ -136,7 +97,7 @@ namespace AngelLoader.Forms
         {
             DisabledMods = "";
 
-            foreach (DarkCheckList.CheckItem item in OrigGameModsControl.ModsCheckList.CheckItems)
+            foreach (DarkCheckList.CheckItem item in OrigGameModsControl.CheckList.CheckItems)
             {
                 if (!item.Checked)
                 {

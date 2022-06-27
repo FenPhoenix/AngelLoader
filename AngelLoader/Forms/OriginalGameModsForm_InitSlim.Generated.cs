@@ -22,12 +22,10 @@
             this.OrigGameModsControl.AutoScroll = true;
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 468);
             this.OrigGameModsControl.TabIndex = 0;
-            this.OrigGameModsControl.ModsEnableAllButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsEnableAllButtonClick);
-            this.OrigGameModsControl.ModsDisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsDisableNonImportantButtonClick);
-            this.OrigGameModsControl.ModsDisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxTextChanged);
-            this.OrigGameModsControl.ModsDisabledModsTextBoxKeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.OrigGameModsControl_ModsDisabledModsTextBoxKeyDown);
-            this.OrigGameModsControl.ModsDisabledModsTextBoxLeave += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxLeave);
-            this.OrigGameModsControl.ModsCheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_ModsCheckListItemCheckedChanged);
+            this.OrigGameModsControl.EnableAllButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsEnableAllButtonClick);
+            this.OrigGameModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsDisableNonImportantButtonClick);
+            this.OrigGameModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxTextChanged);
+            this.OrigGameModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_ModsCheckListItemCheckedChanged);
             // 
             // OKButton
             // 

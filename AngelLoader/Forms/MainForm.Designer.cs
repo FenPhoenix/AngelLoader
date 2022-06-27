@@ -1752,12 +1752,11 @@
             this.MainModsControl.Name = "MainModsControl";
             this.MainModsControl.Size = new System.Drawing.Size(527, 284);
             this.MainModsControl.TabIndex = 6;
-            this.MainModsControl.ModsEnableAllButtonClick += new System.EventHandler(this.ModsEnableAllButton_Click);
-            this.MainModsControl.ModsDisableNonImportantButtonClick += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
-            this.MainModsControl.ModsDisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
-            this.MainModsControl.ModsDisabledModsTextBoxKeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.ModsDisabledModsTextBox_KeyDown);
-            this.MainModsControl.ModsDisabledModsTextBoxLeave += new System.EventHandler(this.ModsDisabledModsTextBox_Leave);
-            this.MainModsControl.ModsCheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsCheckList_ItemCheckedChanged);
+            this.MainModsControl.EnableAllButtonClick += new System.EventHandler(this.ModsEnableAllButton_Click);
+            this.MainModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
+            this.MainModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
+            this.MainModsControl.DisabledModsTextBoxCommitted += new System.EventHandler(this.ModsDisabledModsTextBox_Committed);
+            this.MainModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.ModsCheckList_ItemCheckedChanged);
             // 
             // ReadmeEncodingButton
             // 
