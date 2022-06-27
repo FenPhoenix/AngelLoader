@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AL_Common.Common;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -26,6 +30,76 @@ namespace AngelLoader.Forms.CustomControls
             ModsDisableNonImportantButton.Text = LText.ModsTab.DisableAll;
             MainToolTip.SetToolTip(ModsDisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
             ModsDisabledModsLabel.Text = LText.ModsTab.DisabledMods;
+        }
+
+        public (bool Success, string DisabledMods, bool DisableAllMods)
+        Set(Game game, string disabledMods, bool disableAllMods)
+        {
+            var fail = (false, "", false);
+
+            try
+            {
+                ModsCheckList.SuspendDrawing();
+
+                ModsDisabledModsTextBox.Text = disabledMods;
+
+                ModsCheckList.ClearList();
+
+                if (!GameIsDark(game)) return fail;
+
+                (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
+
+                if (error != Error.None) return fail;
+
+                var disabledModsList = disabledMods
+                    .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                    .ToHashSetI();
+
+                bool allDisabled = disableAllMods;
+
+                if (allDisabled) disabledMods = "";
+
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    Mod mod = mods[i];
+                    if (mod.IsUber)
+                    {
+                        mods.RemoveAt(i);
+                        mods.Add(mod);
+                    }
+                }
+
+                var checkItems = new DarkCheckList.CheckItem[mods.Count];
+
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    Mod mod = mods[i];
+                    checkItems[i] = new DarkCheckList.CheckItem(
+                        @checked: allDisabled ? mod.IsUber : !disabledModsList.Contains(mod.InternalName),
+                        text: mod.InternalName,
+                        caution: mod.IsUber);
+
+                    if (allDisabled && !mod.IsUber)
+                    {
+                        if (!disabledMods.IsEmpty()) disabledMods += "+";
+                        disabledMods += mod.InternalName;
+                    }
+                }
+
+                if (allDisabled)
+                {
+                    ModsDisabledModsTextBox.Text = disabledMods;
+                    disableAllMods = false;
+                }
+
+                ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
+
+                return (true, disabledMods, disableAllMods);
+            }
+            finally
+            {
+                ModsCheckList.ResumeDrawing();
+            }
         }
 
         [PublicAPI]

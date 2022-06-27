@@ -4961,73 +4961,16 @@ namespace AngelLoader.Forms
                 // @VBL
                 #region Mods tab
 
-                MainModsControl.ModsDisabledModsTextBox.Text = fm.DisabledMods;
-
                 foreach (Control c in ModsTabPage.Controls)
                 {
                     c.Enabled = true;
                 }
 
-                try
+                var modsFillResult = MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
+                if (modsFillResult.Success)
                 {
-                    MainModsControl.ModsCheckList.SuspendDrawing();
-
-                    MainModsControl.ModsCheckList.ClearList();
-
-                    if (GameIsDark(fm.Game))
-                    {
-                        (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(fm.Game));
-
-                        if (error == Error.None)
-                        {
-                            var disabledModsList = fm.DisabledMods
-                                .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                                .ToHashSetI();
-
-                            bool allDisabled = fm.DisableAllMods;
-
-                            if (allDisabled) fm.DisabledMods = "";
-
-                            for (int i = 0; i < mods.Count; i++)
-                            {
-                                Mod mod = mods[i];
-                                if (mod.IsUber)
-                                {
-                                    mods.RemoveAt(i);
-                                    mods.Add(mod);
-                                }
-                            }
-
-                            var checkItems = new DarkCheckList.CheckItem[mods.Count];
-
-                            for (int i = 0; i < mods.Count; i++)
-                            {
-                                Mod mod = mods[i];
-                                checkItems[i] = new DarkCheckList.CheckItem(
-                                    @checked: allDisabled ? mod.IsUber : !disabledModsList.Contains(mod.InternalName),
-                                    text: mod.InternalName,
-                                    caution: mod.IsUber);
-
-                                if (allDisabled && !mod.IsUber)
-                                {
-                                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
-                                    fm.DisabledMods += mod.InternalName;
-                                }
-                            }
-
-                            if (allDisabled)
-                            {
-                                MainModsControl.ModsDisabledModsTextBox.Text = fm.DisabledMods;
-                                fm.DisableAllMods = false;
-                            }
-
-                            MainModsControl.ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
-                        }
-                    }
-                }
-                finally
-                {
-                    MainModsControl.ModsCheckList.ResumeDrawing();
+                    fm.DisabledMods = modsFillResult.DisabledMods;
+                    fm.DisableAllMods = modsFillResult.DisableAllMods;
                 }
 
                 #endregion

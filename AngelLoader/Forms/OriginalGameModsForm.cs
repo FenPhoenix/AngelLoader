@@ -31,48 +31,7 @@ namespace AngelLoader.Forms
 
             Localize(gameIndex);
 
-            try
-            {
-                OrigGameModsControl.ModsCheckList.SuspendDrawing();
-
-                OrigGameModsControl.ModsCheckList.ClearList();
-
-                (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
-
-                if (error == Error.None)
-                {
-                    var disabledModsList = DisabledMods
-                        .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                        .ToHashSetI();
-
-                    for (int i = 0; i < mods.Count; i++)
-                    {
-                        Mod mod = mods[i];
-                        if (mod.IsUber)
-                        {
-                            mods.RemoveAt(i);
-                            mods.Add(mod);
-                        }
-                    }
-
-                    var checkItems = new DarkCheckList.CheckItem[mods.Count];
-
-                    for (int i = 0; i < mods.Count; i++)
-                    {
-                        Mod mod = mods[i];
-                        checkItems[i] = new DarkCheckList.CheckItem(
-                            @checked: !disabledModsList.Contains(mod.InternalName),
-                            text: mod.InternalName,
-                            caution: mod.IsUber);
-                    }
-
-                    OrigGameModsControl.ModsCheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
-                }
-            }
-            finally
-            {
-                OrigGameModsControl.ModsCheckList.ResumeDrawing();
-            }
+            OrigGameModsControl.Set(GameIndexToGame(gameIndex), DisabledMods, false);
         }
 
         private void Localize(GameIndex gameIndex)
