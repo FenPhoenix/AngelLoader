@@ -40,18 +40,14 @@ namespace AngelLoader.Forms
             // 
             // OrigGameModsControl
             // 
-            this.OrigGameModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.OrigGameModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OrigGameModsControl.AutoScroll = true;
             this.OrigGameModsControl.Location = new System.Drawing.Point(0, 0);
             this.OrigGameModsControl.Name = "OrigGameModsControl";
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 468);
             this.OrigGameModsControl.TabIndex = 0;
-            this.OrigGameModsControl.AllEnabled += new System.EventHandler(this.OrigGameModsControl_AllEnabled);
-            this.OrigGameModsControl.AllDisabled += new System.EventHandler(this.OrigGameModsControl_AllDisabled);
-            this.OrigGameModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_DisabledModsTextBoxTextChanged);
-            this.OrigGameModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_CheckListItemCheckedChanged);
             // 
             // OKButton
             // 
@@ -67,7 +63,7 @@ namespace AngelLoader.Forms
             // 
             // flowLayoutPanel1
             // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
             this.flowLayoutPanel1.Controls.Add(this.OKButton);

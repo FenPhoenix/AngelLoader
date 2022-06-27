@@ -58,7 +58,7 @@ namespace AngelLoader.Forms.CustomControls
 
             CheckList.SetItemCheckedStates(checkedStates);
 
-            DisabledModsTextBoxCommitted?.Invoke(this, EventArgs.Empty);
+            DisabledModsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public (bool Success, string DisabledMods, bool DisableAllMods)
@@ -134,37 +134,12 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? AllEnabled;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? AllDisabled;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
         public event EventHandler? DisabledModsTextBoxTextChanged;
 
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler<KeyEventArgs>? DisabledModsTextBoxKeyDown;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? DisabledModsTextBoxLeave;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler<DarkCheckList.DarkCheckListEventArgs>? CheckListItemCheckedChanged;
-
-        [PublicAPI]
-        [Browsable(true)]
-        [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? DisabledModsTextBoxCommitted;
+        public event EventHandler? DisabledModsUpdated;
 
         private void EnableAllButton_Click(object sender, EventArgs e)
         {
@@ -177,11 +152,9 @@ namespace AngelLoader.Forms.CustomControls
                         checkBox.Checked = true;
                     }
                 }
-
-                ModsDisabledModsTextBox.Text = "";
             }
 
-            AllEnabled?.Invoke(this, e);
+            UpdateDisabledMods();
         }
 
         private void DisableNonImportantButton_Click(object sender, EventArgs e)
@@ -198,8 +171,6 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             UpdateDisabledMods();
-
-            AllDisabled?.Invoke(this, e);
         }
 
         private void UpdateDisabledMods()
@@ -219,6 +190,8 @@ namespace AngelLoader.Forms.CustomControls
             {
                 ModsDisabledModsTextBox.Text = disabledMods;
             }
+
+            DisabledModsUpdated?.Invoke(CheckList, EventArgs.Empty);
         }
 
         private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -235,7 +208,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            DisabledModsTextBoxKeyDown?.Invoke(ModsDisabledModsTextBox, e);
             if (e.KeyCode == Keys.Enter)
             {
                 Commit();
@@ -244,7 +216,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DisabledModsTextBox_Leave(object sender, EventArgs e)
         {
-            DisabledModsTextBoxLeave?.Invoke(ModsDisabledModsTextBox, e);
             Commit();
         }
 
@@ -252,7 +223,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (EventsDisabled) return;
             UpdateDisabledMods();
-            CheckListItemCheckedChanged?.Invoke(CheckList, e);
         }
     }
 }

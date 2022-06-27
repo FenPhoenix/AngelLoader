@@ -1372,11 +1372,8 @@ namespace AngelLoader.Forms
             MainModsControl.Location = new Point(0, 0);
             MainModsControl.Size = new Size(527, 284);
             MainModsControl.TabIndex = 6;
-            MainModsControl.AllEnabled += Mods_AllEnabled;
-            MainModsControl.AllDisabled += Mods_AllDisabled;
             MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
-            MainModsControl.DisabledModsTextBoxCommitted += ModsDisabledModsTextBox_Committed;
-            MainModsControl.CheckListItemCheckedChanged += ModsCheckList_ItemCheckedChanged;
+            MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
             // 
             // ReadmeEncodingButton
             // 

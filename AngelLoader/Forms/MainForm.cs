@@ -3313,43 +3313,22 @@ namespace AngelLoader.Forms
 
         private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
+            UpdateFMDisabledMods(writeIni: false);
         }
 
-        private void ModsDisabledModsTextBox_Committed(object sender, EventArgs e)
+        private void Mods_DisabledModsUpdated(object sender, EventArgs e)
         {
-            if (EventsDisabled || !FMsDGV.RowSelected()) return;
-            Ini.WriteFullFMDataIni();
+            UpdateFMDisabledMods(writeIni: true);
         }
 
-        private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
-        {
-            UpdateFMDisabledMods();
-        }
-
-        private void Mods_AllEnabled(object sender, EventArgs e)
-        {
-            if (!FMsDGV.RowSelected()) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = "";
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void Mods_AllDisabled(object sender, EventArgs e) => UpdateFMDisabledMods();
-
-        private void UpdateFMDisabledMods()
+        private void UpdateFMDisabledMods(bool writeIni)
         {
             if (EventsDisabled || !FMsDGV.RowSelected()) return;
 
             FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
             RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
+            if (writeIni) Ini.WriteFullFMDataIni();
         }
 
         #endregion
