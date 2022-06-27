@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
