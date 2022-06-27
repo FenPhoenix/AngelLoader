@@ -48,36 +48,24 @@ namespace AngelLoader.Forms
 
         // ---
 
-        private void OrigGameModsControl_ModsDisabledModsTextBoxTextChanged(object sender, EventArgs e)
+        private void OrigGameModsControl_DisabledModsTextBoxTextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
         }
 
-        private void OrigGameModsControl_ModsCheckListItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+        private void OrigGameModsControl_CheckListItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
             UpdateDisabledMods();
         }
 
-        private void OrigGameModsControl_ModsEnableAllButtonClick(object sender, EventArgs e)
+        private void OrigGameModsControl_AllEnabled(object sender, EventArgs e)
         {
-            using (new DisableEvents(this))
-            {
-                foreach (Control control in OrigGameModsControl.CheckList.Controls)
-                {
-                    if (control is CheckBox checkBox)
-                    {
-                        checkBox.Checked = true;
-                    }
-                }
-
-                DisabledMods = "";
-                OrigGameModsControl.ModsDisabledModsTextBox.Text = "";
-            }
+            DisabledMods = "";
         }
 
-        private void OrigGameModsControl_ModsDisableNonImportantButtonClick(object sender, EventArgs e)
+        private void OrigGameModsControl_DisableNonImportantButtonClick(object sender, EventArgs e)
         {
             using (new DisableEvents(this))
             {

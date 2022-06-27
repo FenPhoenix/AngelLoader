@@ -48,10 +48,10 @@ namespace AngelLoader.Forms
             this.OrigGameModsControl.Name = "OrigGameModsControl";
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 468);
             this.OrigGameModsControl.TabIndex = 0;
-            this.OrigGameModsControl.EnableAllButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsEnableAllButtonClick);
-            this.OrigGameModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_ModsDisableNonImportantButtonClick);
-            this.OrigGameModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_ModsDisabledModsTextBoxTextChanged);
-            this.OrigGameModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_ModsCheckListItemCheckedChanged);
+            this.OrigGameModsControl.AllEnabled += new System.EventHandler(this.OrigGameModsControl_AllEnabled);
+            this.OrigGameModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_DisableNonImportantButtonClick);
+            this.OrigGameModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_DisabledModsTextBoxTextChanged);
+            this.OrigGameModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_CheckListItemCheckedChanged);
             // 
             // OKButton
             // 

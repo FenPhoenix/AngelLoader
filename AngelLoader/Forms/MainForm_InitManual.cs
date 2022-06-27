@@ -1372,7 +1372,7 @@ namespace AngelLoader.Forms
             MainModsControl.Location = new Point(0, 0);
             MainModsControl.Size = new Size(527, 284);
             MainModsControl.TabIndex = 6;
-            MainModsControl.EnableAllButtonClick += ModsEnableAllButton_Click;
+            MainModsControl.AllEnabled += Mods_AllEnabled;
             MainModsControl.DisableNonImportantButtonClick += ModsDisableNonImportantButton_Click;
             MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
             MainModsControl.DisabledModsTextBoxCommitted += ModsDisabledModsTextBox_Committed;

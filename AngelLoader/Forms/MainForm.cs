@@ -3337,26 +3337,11 @@ namespace AngelLoader.Forms
             UpdateFMDisabledMods(fm);
         }
 
-        private void ModsEnableAllButton_Click(object sender, EventArgs e)
+        private void Mods_AllEnabled(object sender, EventArgs e)
         {
             var fm = FMsDGV.GetMainSelectedFM();
-
-            using (new DisableEvents(this))
-            {
-                foreach (Control control in MainModsControl.CheckList.Controls)
-                {
-                    if (control is CheckBox checkBox)
-                    {
-                        checkBox.Checked = true;
-                    }
-                }
-
-                fm.DisabledMods = "";
-                MainModsControl.ModsDisabledModsTextBox.Text = "";
-            }
-
+            fm.DisabledMods = "";
             RefreshMainSelectedFMRow_Fast();
-
             Ini.WriteFullFMDataIni();
         }
 

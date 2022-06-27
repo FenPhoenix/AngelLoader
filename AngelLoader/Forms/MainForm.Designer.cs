@@ -1752,7 +1752,7 @@
             this.MainModsControl.Name = "MainModsControl";
             this.MainModsControl.Size = new System.Drawing.Size(527, 284);
             this.MainModsControl.TabIndex = 6;
-            this.MainModsControl.EnableAllButtonClick += new System.EventHandler(this.ModsEnableAllButton_Click);
+            this.MainModsControl.AllEnabled += new System.EventHandler(this.Mods_AllEnabled);
             this.MainModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.ModsDisableNonImportantButton_Click);
             this.MainModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
             this.MainModsControl.DisabledModsTextBoxCommitted += new System.EventHandler(this.ModsDisabledModsTextBox_Committed);

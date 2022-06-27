@@ -10,8 +10,10 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed partial class ModsControl : UserControl
+    public sealed partial class ModsControl : UserControl, IEventDisabler
     {
+        public bool EventsDisabled { get; set; }
+
         public ModsControl()
         {
 #if DEBUG
@@ -132,7 +134,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? EnableAllButtonClick;
+        public event EventHandler? AllEnabled;
 
         [PublicAPI]
         [Browsable(true)]
@@ -166,7 +168,20 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EnableAllButton_Click(object sender, EventArgs e)
         {
-            EnableAllButtonClick?.Invoke(EnableAllButton, e);
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in CheckList.Controls)
+                {
+                    if (control is CheckBox checkBox)
+                    {
+                        checkBox.Checked = true;
+                    }
+                }
+
+                ModsDisabledModsTextBox.Text = "";
+            }
+
+            AllEnabled?.Invoke(this, e);
         }
 
         private void DisableNonImportantButton_Click(object sender, EventArgs e)
@@ -176,11 +191,13 @@ namespace AngelLoader.Forms.CustomControls
 
         private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (EventsDisabled) return;
             CheckList.ShowCautionSection(ShowUberCheckBox.Checked);
         }
 
         private void DisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
+            if (EventsDisabled) return;
             DisabledModsTextBoxTextChanged?.Invoke(ModsDisabledModsTextBox, e);
         }
 
@@ -201,6 +218,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void CheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
+            if (EventsDisabled) return;
             CheckListItemCheckedChanged?.Invoke(CheckList, e);
         }
     }
