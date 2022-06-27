@@ -139,7 +139,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public event EventHandler? DisableNonImportantButtonClick;
+        public event EventHandler? AllDisabled;
 
         [PublicAPI]
         [Browsable(true)]
@@ -186,7 +186,18 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DisableNonImportantButton_Click(object sender, EventArgs e)
         {
-            DisableNonImportantButtonClick?.Invoke(DisableNonImportantButton, e);
+            using (new DisableEvents(this))
+            {
+                foreach (Control control in CheckList.Controls)
+                {
+                    if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
+                    {
+                        checkBox.Checked = false;
+                    }
+                }
+            }
+
+            AllDisabled?.Invoke(this, e);
         }
 
         private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)

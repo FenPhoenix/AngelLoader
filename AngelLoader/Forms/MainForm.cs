@@ -3345,22 +3345,10 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
-        private void ModsDisableNonImportantButton_Click(object sender, EventArgs e)
+        private void Mods_AllDisabled(object sender, EventArgs e)
         {
             var fm = FMsDGV.GetMainSelectedFM();
-
-            using (new DisableEvents(this))
-            {
-                foreach (Control control in MainModsControl.CheckList.Controls)
-                {
-                    if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
-                    {
-                        checkBox.Checked = false;
-                    }
-                }
-
-                UpdateFMDisabledMods(fm);
-            }
+            UpdateFMDisabledMods(fm);
         }
 
         private void UpdateFMDisabledMods(FanMission fm)

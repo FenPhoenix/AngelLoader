@@ -23,7 +23,7 @@
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 468);
             this.OrigGameModsControl.TabIndex = 0;
             this.OrigGameModsControl.AllEnabled += new System.EventHandler(this.OrigGameModsControl_AllEnabled);
-            this.OrigGameModsControl.DisableNonImportantButtonClick += new System.EventHandler(this.OrigGameModsControl_DisableNonImportantButtonClick);
+            this.OrigGameModsControl.AllDisabled += new System.EventHandler(this.OrigGameModsControl_AllDisabled);
             this.OrigGameModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.OrigGameModsControl_DisabledModsTextBoxTextChanged);
             this.OrigGameModsControl.CheckListItemCheckedChanged += new System.EventHandler<AngelLoader.Forms.CustomControls.DarkCheckList.DarkCheckListEventArgs>(this.OrigGameModsControl_CheckListItemCheckedChanged);
             // 

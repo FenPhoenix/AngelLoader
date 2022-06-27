@@ -65,20 +65,9 @@ namespace AngelLoader.Forms
             DisabledMods = "";
         }
 
-        private void OrigGameModsControl_DisableNonImportantButtonClick(object sender, EventArgs e)
+        private void OrigGameModsControl_AllDisabled(object sender, EventArgs e)
         {
-            using (new DisableEvents(this))
-            {
-                foreach (Control control in OrigGameModsControl.CheckList.Controls)
-                {
-                    if (control is CheckBox checkBox && !DarkCheckList.IsControlCaution(checkBox))
-                    {
-                        checkBox.Checked = false;
-                    }
-                }
-
-                UpdateDisabledMods();
-            }
+            UpdateDisabledMods();
         }
 
         private void UpdateDisabledMods()
