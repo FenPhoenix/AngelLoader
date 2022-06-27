@@ -3325,53 +3325,30 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
-        // @VBL
         private void ModsCheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
-            if (EventsDisabled) return;
-
-            if (!FMsDGV.RowSelected()) return;
-
-            var fm = FMsDGV.GetMainSelectedFM();
-
-            UpdateFMDisabledMods(fm);
+            UpdateFMDisabledMods();
         }
 
         private void Mods_AllEnabled(object sender, EventArgs e)
         {
-            var fm = FMsDGV.GetMainSelectedFM();
+            if (!FMsDGV.RowSelected()) return;
+
+            FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.DisabledMods = "";
             RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
 
-        private void Mods_AllDisabled(object sender, EventArgs e)
+        private void Mods_AllDisabled(object sender, EventArgs e) => UpdateFMDisabledMods();
+
+        private void UpdateFMDisabledMods()
         {
-            var fm = FMsDGV.GetMainSelectedFM();
-            UpdateFMDisabledMods(fm);
-        }
+            if (EventsDisabled || !FMsDGV.RowSelected()) return;
 
-        private void UpdateFMDisabledMods(FanMission fm)
-        {
-            fm.DisabledMods = "";
-
-            foreach (DarkCheckList.CheckItem item in MainModsControl.CheckList.CheckItems)
-            {
-                if (!item.Checked)
-                {
-                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
-                    fm.DisabledMods += item.Text;
-                }
-            }
-
-            using (new DisableEvents(this))
-            {
-                MainModsControl.ModsDisabledModsTextBox.Text = fm.DisabledMods;
-            }
-
+            FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
             RefreshMainSelectedFMRow_Fast();
-
             Ini.WriteFullFMDataIni();
         }
 

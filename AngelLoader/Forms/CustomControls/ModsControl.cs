@@ -197,7 +197,28 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
 
+            UpdateDisabledMods();
+
             AllDisabled?.Invoke(this, e);
+        }
+
+        private void UpdateDisabledMods()
+        {
+            string disabledMods = "";
+
+            foreach (DarkCheckList.CheckItem item in CheckList.CheckItems)
+            {
+                if (!item.Checked)
+                {
+                    if (!disabledMods.IsEmpty()) disabledMods += "+";
+                    disabledMods += item.Text;
+                }
+            }
+
+            using (new DisableEvents(this))
+            {
+                ModsDisabledModsTextBox.Text = disabledMods;
+            }
         }
 
         private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -230,6 +251,7 @@ namespace AngelLoader.Forms.CustomControls
         private void CheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
         {
             if (EventsDisabled) return;
+            UpdateDisabledMods();
             CheckListItemCheckedChanged?.Invoke(CheckList, e);
         }
     }

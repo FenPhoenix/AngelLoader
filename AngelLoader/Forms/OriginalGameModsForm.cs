@@ -72,22 +72,6 @@ namespace AngelLoader.Forms
 
         private void UpdateDisabledMods()
         {
-            DisabledMods = "";
-
-            foreach (DarkCheckList.CheckItem item in OrigGameModsControl.CheckList.CheckItems)
-            {
-                if (!item.Checked)
-                {
-                    if (!DisabledMods.IsEmpty()) DisabledMods += "+";
-                    DisabledMods += item.Text;
-                }
-            }
-
-            using (new DisableEvents(this))
-            {
-                OrigGameModsControl.ModsDisabledModsTextBox.Text = DisabledMods;
-            }
-
             DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
         }
     }
