@@ -1123,7 +1123,7 @@
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             this.StatsScanCustomResourcesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
+            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1334,7 +1334,7 @@
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             this.EditFMScanForReadmesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
+            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // EditFMScanReleaseDateButton
             // 
@@ -1344,7 +1344,7 @@
             this.EditFMScanReleaseDateButton.TabIndex = 22;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             this.EditFMScanReleaseDateButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
+            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // EditFMScanAuthorButton
             // 
@@ -1355,7 +1355,7 @@
             this.EditFMScanAuthorButton.TabIndex = 19;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             this.EditFMScanAuthorButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
+            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // EditFMScanTitleButton
             // 
@@ -1366,7 +1366,7 @@
             this.EditFMScanTitleButton.TabIndex = 16;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             this.EditFMScanTitleButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanTitleButton.Click += new System.EventHandler(this.FieldScanButtons_Click);
+            this.EditFMScanTitleButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // EditFMAltTitlesArrowButton
             // 

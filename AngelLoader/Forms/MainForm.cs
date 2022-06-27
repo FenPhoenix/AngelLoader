@@ -2341,6 +2341,56 @@ namespace AngelLoader.Forms
 
                 await Import.ImportFrom(importType);
             }
+            else if (sender == EditFMScanForReadmesButton ||
+                     sender == EditFMScanTitleButton ||
+                     sender == EditFMScanAuthorButton ||
+                     sender == EditFMScanReleaseDateButton ||
+                     sender == StatsScanCustomResourcesButton)
+            {
+                if (sender == EditFMScanForReadmesButton)
+                {
+                    try
+                    {
+                        Cursor = Cursors.WaitCursor;
+
+                        Ini.WriteFullFMDataIni();
+                        _displayedFM = await Core.DisplayFM(refreshCache: true);
+                    }
+                    finally
+                    {
+                        Cursor = Cursors.Default;
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        FanMission fm = FMsDGV.GetMainSelectedFM();
+
+                        // .7z FMs will have a progress box instead
+                        if (!fm.Archive.ExtIs7z())
+                        {
+                            Cursor = Cursors.WaitCursor;
+                        }
+
+                        var scanOptions =
+                            sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
+                            sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
+                            sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
+                            //sender == StatsScanCustomResourcesButton
+                            FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
+
+                        if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
+                        {
+                            RefreshFM(fm);
+                        }
+                    }
+                    finally
+                    {
+                        Cursor = Cursors.Default;
+                    }
+                }
+            }
             else
             {
                 bool senderIsTextBox = sender == FilterTitleTextBox ||
@@ -2851,55 +2901,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Top-right area
-
-        // @VBL (technically)
-        // Hook them all up to one event handler to avoid extraneous async/awaits
-        private async void FieldScanButtons_Click(object sender, EventArgs e)
-        {
-            if (sender == EditFMScanForReadmesButton)
-            {
-                try
-                {
-                    Cursor = Cursors.WaitCursor;
-
-                    Ini.WriteFullFMDataIni();
-                    _displayedFM = await Core.DisplayFM(refreshCache: true);
-                }
-                finally
-                {
-                    Cursor = Cursors.Default;
-                }
-            }
-            else
-            {
-                try
-                {
-                    FanMission fm = FMsDGV.GetMainSelectedFM();
-
-                    // .7z FMs will have a progress box instead
-                    if (!fm.Archive.ExtIs7z())
-                    {
-                        Cursor = Cursors.WaitCursor;
-                    }
-
-                    var scanOptions =
-                        sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
-                        sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
-                        sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
-                        //sender == StatsScanCustomResourcesButton
-                        FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
-
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
-                    {
-                        RefreshFM(fm);
-                    }
-                }
-                finally
-                {
-                    Cursor = Cursors.Default;
-                }
-            }
-        }
 
         #region Edit FM tab
 

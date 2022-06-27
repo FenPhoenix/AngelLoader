@@ -871,7 +871,7 @@ namespace AngelLoader.Forms
             StatsScanCustomResourcesButton.TabIndex = 12;
             StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             StatsScanCustomResourcesButton.PaintCustom += ScanIconButtons_Paint;
-            StatsScanCustomResourcesButton.Click += FieldScanButtons_Click;
+            StatsScanCustomResourcesButton.Click += Async_EventHandler_Main;
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1035,7 +1035,7 @@ namespace AngelLoader.Forms
             EditFMScanForReadmesButton.TabIndex = 34;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             EditFMScanForReadmesButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanForReadmesButton.Click += FieldScanButtons_Click;
+            EditFMScanForReadmesButton.Click += Async_EventHandler_Main;
             // 
             // EditFMScanReleaseDateButton
             // 
@@ -1044,7 +1044,7 @@ namespace AngelLoader.Forms
             EditFMScanReleaseDateButton.TabIndex = 22;
             EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             EditFMScanReleaseDateButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanReleaseDateButton.Click += FieldScanButtons_Click;
+            EditFMScanReleaseDateButton.Click += Async_EventHandler_Main;
             // 
             // EditFMScanAuthorButton
             // 
@@ -1054,7 +1054,7 @@ namespace AngelLoader.Forms
             EditFMScanAuthorButton.TabIndex = 19;
             EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             EditFMScanAuthorButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanAuthorButton.Click += FieldScanButtons_Click;
+            EditFMScanAuthorButton.Click += Async_EventHandler_Main;
             // 
             // EditFMScanTitleButton
             // 
@@ -1064,7 +1064,7 @@ namespace AngelLoader.Forms
             EditFMScanTitleButton.TabIndex = 16;
             EditFMScanTitleButton.UseVisualStyleBackColor = true;
             EditFMScanTitleButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanTitleButton.Click += FieldScanButtons_Click;
+            EditFMScanTitleButton.Click += Async_EventHandler_Main;
             // 
             // EditFMAltTitlesArrowButton
             // 
