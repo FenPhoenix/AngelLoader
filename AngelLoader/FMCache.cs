@@ -65,7 +65,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
+                    LogFMInfo(fm, ErrorText.Ex + "clearing files in FM cache.", ex);
                 }
             }
         }
@@ -405,8 +405,7 @@ namespace AngelLoader
 
                 if (result.ErrorOccurred)
                 {
-                    Log("Readme caching (7z): " + fmCachePath + ":\r\n"
-                        + result.ToString());
+                    Log("Readme caching (7z): " + fmCachePath + ":\r\n" + result);
                 }
             }
             catch (Exception ex)

@@ -254,7 +254,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game, stackTrace: true);
+                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;
             }
 
@@ -324,7 +324,7 @@ namespace AngelLoader
                 var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
                 var (changedList, addedList, fullList) =
-                    GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game);
+                    GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath);
 
                 // If >90% of files are different, re-run and use only size difference
                 // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -332,7 +332,7 @@ namespace AngelLoader
                 if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
                 {
                     (changedList, addedList, fullList) =
-                        GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game, useOnlySize: true);
+                        GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, useOnlySize: true);
                 }
 
                 try
@@ -376,7 +376,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
+                    LogFMInfo(fm, ErrorText.Ex + "in zip archive create and/or write", ex);
                 }
             });
         }
@@ -387,7 +387,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game, stackTrace: true);
+                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;
             }
 
@@ -655,7 +655,7 @@ namespace AngelLoader
         private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
 
         private static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
-        GetFMDiff(HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
+        GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, bool useOnlySize = false)
         {
             var changedList = new HashSetPathI();
             var addedList = new HashSetPathI();
@@ -681,7 +681,7 @@ namespace AngelLoader
 
                     if (IsIgnoredFile(efn) ||
                         efn.EndsWithDirSep() ||
-                        IsSaveOrScreenshot(efn, game))
+                        IsSaveOrScreenshot(efn, fm.Game))
                     {
                         continue;
                     }
@@ -719,7 +719,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.Ex + "in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                            LogFMInfo(fm, ErrorText.Ex + "in last write time compare (zip)", ex);
                         }
                     }
                 }
@@ -729,7 +729,7 @@ namespace AngelLoader
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
                     if (IsIgnoredFile(fn) ||
-                        IsSaveOrScreenshot(fn, game))
+                        IsSaveOrScreenshot(fn, fm.Game))
                     {
                         continue;
                     }
@@ -758,7 +758,7 @@ namespace AngelLoader
                     if (IsIgnoredFile(efn) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
                         entry.IsDirectory || efn.EndsWithDirSep() ||
-                        IsSaveOrScreenshot(efn, game))
+                        IsSaveOrScreenshot(efn, fm.Game))
                     {
                         continue;
                     }
@@ -789,7 +789,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.Ex + "in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                            LogFMInfo(fm, ErrorText.Ex + "in last write time compare (7z)", ex);
                         }
                     }
                 }

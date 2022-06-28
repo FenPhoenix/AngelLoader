@@ -299,16 +299,21 @@ namespace AngelLoader
             return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
         }
 
-        internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
+        internal static void LogFMInfo(
+            FanMission fm,
+            string topMessage,
+            Exception? ex = null,
+            bool stackTrace = false)
         {
             Log(topMessage + "\r\n" +
-                "FM game type: " + fm.Game + "\r\n" +
-                "FM archive name:" + fm.Archive + "\r\n" +
-                "FM installed name:" + fm.InstalledDir + "\r\n" +
+                "fm." + nameof(fm.Game) + ": " + fm.Game + "\r\n" +
+                "fm." + nameof(fm.Archive) + ": " + fm.Archive + "\r\n" +
+                "fm." + nameof(fm.InstalledDir) + ": " + fm.InstalledDir + "\r\n" +
+                "fm." + nameof(fm.Installed) + ": " + fm.Installed + "\r\n" +
                 (GameIsKnownAndSupported(fm.Game)
                     ? "Base directory for installed FMs: " + Config.GetFMInstallPathUnsafe(fm.Game)
                     : "Game type is not known or not supported.") +
-                (ex != null ? "\r\nException:\r\n" + ex : ""));
+                (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
         }
     }
 }

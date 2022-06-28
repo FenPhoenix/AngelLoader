@@ -51,9 +51,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + "\r\n" +
-                    "FM: " + GetFMId(fm) + "\r\n" +
-                    "FM game was: " + fm.Game, stackTrace: true);
+                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                 return;
             }
@@ -62,9 +60,7 @@ namespace AngelLoader
 
             if (playMP && gameIndex != GameIndex.Thief2)
             {
-                Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
-                    "fm: " + GetFMId(fm) + "\r\n" +
-                    "fm.Game was: " + fm.Game, stackTrace: true);
+                LogFMInfo(fm, "playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.MPForNonT2);
                 return;
             }
@@ -231,9 +227,7 @@ namespace AngelLoader
                 // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
                 if (!GameIsDark(fm.Game))
                 {
-                    Log(ErrorText.FMGameNotDark + "\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "Game: " + fm.Game, stackTrace: true);
+                    LogFMInfo(fm, ErrorText.FMGameNotDark, stackTrace: true);
                     Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                     return false;
                 }
@@ -251,8 +245,8 @@ namespace AngelLoader
                 string editorExe = Core.GetEditorExe_FromDisk(gameIndex);
                 if (editorExe.IsEmpty())
                 {
-                    Log("Editor executable not found.\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
+                    LogFMInfo(fm,
+                        "Editor executable not found.\r\n" +
                         "Editor executable: " + editorExe);
                     Core.Dialogs.ShowError(fm.Game == Game.SS2
                         ? LText.AlertMessages.ShockEd_ExecutableNotFound
@@ -576,7 +570,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
+                    LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
                     Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
                                            GetFMId(fm) + "\r\n\r\n" +
                                            "The FM will probably not be able to play its mission(s).");
@@ -584,7 +578,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExTry + "generate missflag.str file", ex);
+                LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
@@ -607,9 +601,7 @@ namespace AngelLoader
 
                 if (!GameIsKnownAndSupported(fm.Game))
                 {
-                    Log(ErrorText.FMGameU + "\r\n" +
-                        "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game, stackTrace: true);
+                    LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                     Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                     return false;
                 }
@@ -638,9 +630,7 @@ namespace AngelLoader
                 {
                     if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
                     {
-                        Log("FM archive field was empty; this means an archive was not found for it on the last search.\r\n" +
-                            "FM: " + GetFMId(fm) + "\r\n" +
-                            "FM game was: " + fm.Game);
+                        LogFMInfo(fm, "FM archive field was empty; this means an archive was not found for it on the last search.");
                         Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
                                                LText.AlertMessages.Install_ArchiveNotFound);
 
@@ -667,11 +657,8 @@ namespace AngelLoader
 
                         if (!Directory.Exists(instBasePath))
                         {
-                            Log("FM install path not found.\r\n" +
-                                "FM: " + GetFMId(fm) + "\r\n" +
-                                "FM game was: " + fm.Game + "\r\n" +
-                                "FM install path: " + instBasePath
-                            );
+                            LogFMInfo(fm, "FM install path not found.");
+
                             Core.Dialogs.ShowError(gameName + ":\r\n" +
                                                    GetFMId(fm) + "\r\n" +
                                                    LText.AlertMessages.Install_FMInstallPathNotFound);
@@ -958,7 +945,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.Ex + "in audio conversion", ex);
+                            LogFMInfo(fmData.FM, ErrorText.Ex + "in audio conversion", ex);
                         }
                     }
 
@@ -1126,11 +1113,7 @@ namespace AngelLoader
 
                 if (result.ErrorOccurred)
                 {
-                    Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n"
-                        + result.ErrorText + "\r\n"
-                        + (result.Exception?.ToString() ?? "") + "\r\n"
-                        + "ExitCode: " + result.ExitCode + "\r\n"
-                        + "ExitCodeInt: " + (result.ExitCodeInt?.ToString() ?? ""));
+                    Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + "\r\n" + result);
 
                     Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
@@ -1337,9 +1320,7 @@ namespace AngelLoader
                     // Make option to open the folder in Explorer and delete it manually?
                     if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                     {
-                        Log("Could not delete FM installed directory.\r\n" +
-                            "FM: " + GetFMId(fm) + "\r\n" +
-                            "FM installed path: " + fmInstalledPath);
+                        LogFMInfo(fm, "Could not delete FM installed directory.");
                         Core.Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
                                                "FM: " + GetFMId(fm));
                     }

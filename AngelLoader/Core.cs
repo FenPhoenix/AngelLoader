@@ -1216,7 +1216,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                LogFMInstDirError(fm, "FM install directory not found.");
+                LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
                 return false;
             }
@@ -1230,7 +1230,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInstDirError(fm, "Unable to add .dml to installed folder.", ex);
+                LogFMInfo(fm, "Unable to add .dml to installed folder.", ex);
                 Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_UnableToAdd);
                 return false;
             }
@@ -1244,7 +1244,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                LogFMInstDirError(fm, "FM install directory not found.");
+                LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
                 return false;
             }
@@ -1256,7 +1256,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInstDirError(fm, "Unable to remove .dml from installed folder.", ex);
+                LogFMInfo(fm, "Unable to remove .dml from installed folder.", ex);
                 Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
                 return false;
             }
@@ -1278,7 +1278,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
+                LogFMInfo(fm, ErrorText.Ex + "getting DML files.", ex);
                 return (false, new List<string>());
             }
         }
@@ -1533,9 +1533,10 @@ namespace AngelLoader
 
         internal static void LoadReadme(FanMission fm)
         {
+            string path = "";
             try
             {
-                (string path, ReadmeType fileType) = GetReadmeFileAndType(fm);
+                (path, ReadmeType fileType) = GetReadmeFileAndType(fm);
                 #region Debug
 
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
@@ -1587,7 +1588,11 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Readme load failed.", ex);
+                LogFMInfo(fm,
+                    "Readme load failed.\r\n" +
+                    "FM selected readme: " + fm.SelectedReadme + "\r\n" +
+                    "Path: " + path,
+                    ex);
                 View.SetReadmeState(ReadmeState.LoadError);
                 View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.UnableToLoadReadme);
             }
@@ -1630,7 +1635,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " Game: " + fm.Game, stackTrace: true);
+                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
                 return;
             }
@@ -1639,7 +1644,7 @@ namespace AngelLoader
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
-                LogFMInstDirError(fm, "FM install directory not found.");
+                LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
                 return;
             }
@@ -1650,7 +1655,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExTry + "open FM folder " + fmDir, ex);
+                LogFMInfo(fm, ErrorText.ExTry + "open FM folder " + fmDir, ex);
                 Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
             }
         }
@@ -1802,7 +1807,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Couldn't open help file.", ex);
+                Log(ErrorText.ExOpen + "help file '" + finalUri + "'", ex);
                 Dialogs.ShowError(LText.AlertMessages.Help_UnableToOpenHelpFile);
             }
         }
