@@ -983,6 +983,8 @@ namespace AngelLoader
 
             string gamePath = Config.GetGamePath(gameIndex);
 
+            if (gamePath.IsEmpty()) return (Error.None, list);
+
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
                 return (Error.CamModIniNotFound, list);
