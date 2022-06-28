@@ -11,8 +11,8 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class DrawnPanel : Panel, IDarkable
     {
         [PublicAPI]
-
         public Color DrawnBackColor = SystemColors.Control;
+
         [PublicAPI]
         public Color DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground;
 
