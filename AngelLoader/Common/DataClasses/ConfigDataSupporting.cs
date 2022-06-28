@@ -99,12 +99,7 @@ namespace AngelLoader.DataClasses
 
         internal TopRightTabsData() => ResetAllDisplayIndexes();
 
-        internal TopRightTabData StatsTab => Tabs[(int)TopRightTab.Statistics];
-        internal TopRightTabData EditFMTab => Tabs[(int)TopRightTab.EditFM];
-        internal TopRightTabData CommentTab => Tabs[(int)TopRightTab.Comment];
-        internal TopRightTabData TagsTab => Tabs[(int)TopRightTab.Tags];
-        internal TopRightTabData PatchTab => Tabs[(int)TopRightTab.Patch];
-        internal TopRightTabData ModsTab => Tabs[(int)TopRightTab.Mods];
+        internal TopRightTabData GetTab(TopRightTab tab) => Tabs[(int)tab];
 
         internal void EnsureValidity()
         {
