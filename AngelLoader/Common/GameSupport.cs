@@ -101,6 +101,22 @@ namespace AngelLoader
         internal static bool GameIsKnownAndSupported(Game game) => game is not Game.Null and not Game.Unsupported;
 
         #endregion
+
+        #region Mod support
+
+        // @GENGAMES(T3 doesn't support mod management) - We could properly generalize this later
+        // And have a "supports mods" field for each game etc.
+
+        internal static bool GameSupportsMods(Game game) => GameIsDark(game);
+        internal static bool GameSupportsMods(GameIndex game) => GameIsDark(game);
+
+        internal static string GetLocalizedNoModSupportText(GameIndex gameIndex) => gameIndex switch
+        {
+            GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+            _ => ""
+        };
+
+        #endregion
     }
     // @GENGAMES (GameSupport): End
 }

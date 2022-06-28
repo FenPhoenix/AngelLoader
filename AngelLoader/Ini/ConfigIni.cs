@@ -1007,8 +1007,7 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-                // @GENGAMES(T3 doesn't support mod management)
-                if (GameIsDark(gameIndex))
+                if (GameSupportsMods(gameIndex))
                 {
                     sb.Append(GetGamePrefix(gameIndex)).Append("DisabledMods=").AppendLine(config.GetDisabledMods(gameIndex).Trim());
                 }

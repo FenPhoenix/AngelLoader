@@ -95,8 +95,8 @@ namespace AngelLoader.Forms
 
         #region Control arrays
 
-        private readonly TabPage[] _gameTabsInOrder;
-        private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
+        private readonly TabPage[] _gameTabs;
+        private readonly ToolStripButtonCustom[] _filterByGameButtons;
         private readonly TabPage[] _topRightTabsInOrder;
 
         private readonly Control[] _filterLabels;
@@ -667,23 +667,50 @@ namespace AngelLoader.Forms
 
             #region Control arrays
 
-            // -------- New games go here!
-            // @GENGAMES (tabs and filter buttons): Begin
-            _gameTabsInOrder = new TabPage[]
+            _gameTabs = new TabPage[SupportedGameCount];
+            _filterByGameButtons = new ToolStripButtonCustom[SupportedGameCount];
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                Thief1TabPage,
-                Thief2TabPage,
-                Thief3TabPage,
-                SS2TabPage
-            };
-            _filterByGameButtonsInOrder = new[]
-            {
-                FilterByThief1Button,
-                FilterByThief2Button,
-                FilterByThief3Button,
-                FilterBySS2Button
-            };
-            // @GENGAMES (tabs and filter buttons): End
+                #region Game tabs
+
+                var tab = new DarkTabPageCustom
+                {
+                    TabIndex = i,
+                    ImageIndex = i
+                };
+                _gameTabs[i] = tab;
+                // Still add the tabs to the collection like before, even though we're going to clear and add
+                // again, because I remember we had some kind of issue with the fonts if we didn't do that.
+                // Quick testing doesn't show the issue now, but whatever, maybe it was only on Win 7?
+                // Let's just keep it like before for safety.
+                GamesTabControl.Controls.Add(tab);
+
+                #endregion
+
+                #region Game filter buttons
+
+                var button = new ToolStripButtonCustom
+                {
+                    AutoSize = false,
+                    CheckOnClick = true,
+                    DisplayStyle = ToolStripItemDisplayStyle.Image,
+                    Margin =
+                        i == 0 ? new Padding(1, 0, 0, 0) :
+                        i == SupportedGameCount - 1 ? new Padding(0, 0, 2, 0) :
+                        new Padding(0),
+                    Size = new Size(25, 25)
+                };
+                _filterByGameButtons[i] = button;
+                button.Click += Async_EventHandler_Main;
+
+                #endregion
+            }
+
+            FilterGameButtonsToolStrip.Items.AddRange(_filterByGameButtons.Cast<ToolStripItem>().ToArray());
+
+            // Do this only after adding so they don't fire from the adds
+            GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
+            GamesTabControl.Deselecting += GamesTabControl_Deselecting;
 
             _topRightTabsInOrder = new TabPage[]
             {
@@ -790,7 +817,7 @@ namespace AngelLoader.Forms
             // This removes any existing tabs so it works even though we always add all tabs in component init now
             TopRightTabControl.SetTabsFull(topRightTabs);
             var gameTabs = new List<TabPage>(SupportedGameCount);
-            foreach (TabPage item in _gameTabsInOrder) gameTabs.Add(item);
+            foreach (TabPage item in _gameTabs) gameTabs.Add(item);
             GamesTabControl.SetTabsFull(gameTabs);
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
@@ -1489,7 +1516,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    _filterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
+                    _filterByGameButtons[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
                 }
 
                 SetGameFilterShowHideMenuText();
@@ -1786,7 +1813,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    _filterByGameButtonsInOrder[i].Image = Images.GetPerGameImage(i).Primary.Large();
+                    _filterByGameButtons[i].Image = Images.GetPerGameImage(i).Primary.Large();
                 }
 
                 var gameTabImages = new Image[SupportedGameCount];
@@ -1874,7 +1901,7 @@ namespace AngelLoader.Forms
 
                 using (new DisableEvents(this))
                 {
-                    GamesTabControl.SelectedTab = _gameTabsInOrder[(int)Config.GameTab];
+                    GamesTabControl.SelectedTab = _gameTabs[(int)Config.GameTab];
                 }
             }
 
@@ -1882,7 +1909,7 @@ namespace AngelLoader.Forms
             {
                 GameIndex gameIndex = (GameIndex)i;
                 Game game = GameIndexToGame(gameIndex);
-                ToolStripButtonCustom button = _filterByGameButtonsInOrder[i];
+                ToolStripButtonCustom button = _filterByGameButtons[i];
                 button.Checked = Config.Filter.Games.HasFlagFast(game);
             }
 
@@ -1897,7 +1924,7 @@ namespace AngelLoader.Forms
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                _gameTabsInOrder[i].Text = useShort
+                _gameTabs[i].Text = useShort
                     ? GetShortLocalizedGameName((GameIndex)i)
                     : GetLocalizedGameName((GameIndex)i);
             }
@@ -1932,7 +1959,7 @@ namespace AngelLoader.Forms
             GameIndex? gameIndex = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (_gameTabsInOrder[i] == tabPage)
+                if (_gameTabs[i] == tabPage)
                 {
                     gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
                     gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
@@ -1980,7 +2007,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                _filterByGameButtonsInOrder[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
+                _filterByGameButtons[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
             }
 
             gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
@@ -2003,7 +2030,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                gamesChecked[i] = _filterByGameButtonsInOrder[i].Checked;
+                gamesChecked[i] = _filterByGameButtons[i].Checked;
             }
 
             return gamesChecked;
@@ -2037,7 +2064,7 @@ namespace AngelLoader.Forms
                 int selectedTabOrderIndex = 0;
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    if (GamesTabControl.SelectedTab == _gameTabsInOrder[i])
+                    if (GamesTabControl.SelectedTab == _gameTabs[i])
                     {
                         selectedTabOrderIndex = i;
                         break;
@@ -2056,7 +2083,7 @@ namespace AngelLoader.Forms
                         }
                     }
 
-                    GamesTabControl.SelectedTab = _gameTabsInOrder[index];
+                    GamesTabControl.SelectedTab = _gameTabs[index];
                 }
 
                 // Twice through, show first and then hide, to prevent the possibility of a temporary state of no
@@ -2064,12 +2091,12 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
-                    if (visible) GamesTabControl.ShowTab(_gameTabsInOrder[i], true);
+                    if (visible) GamesTabControl.ShowTab(_gameTabs[i], true);
                 }
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
-                    if (!visible) GamesTabControl.ShowTab(_gameTabsInOrder[i], false);
+                    if (!visible) GamesTabControl.ShowTab(_gameTabs[i], false);
                 }
 
                 #endregion
@@ -2084,7 +2111,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
-                    var button = _filterByGameButtonsInOrder[i];
+                    var button = _filterByGameButtons[i];
                     button.Visible = visible;
                     if (button.Checked && !visible) button.Checked = false;
                 }
@@ -2114,7 +2141,7 @@ namespace AngelLoader.Forms
                     {
                         for (int i = 0; i < SupportedGameCount; i++)
                         {
-                            _filterByGameButtonsInOrder[i].Checked = false;
+                            _filterByGameButtons[i].Checked = false;
                         }
                     }
                     FilterTitleTextBox.Clear();
@@ -2395,7 +2422,7 @@ namespace AngelLoader.Forms
             {
                 bool senderIsTextBox = sender == FilterTitleTextBox ||
                                        sender == FilterAuthorTextBox;
-                bool senderIsGameButton = _filterByGameButtonsInOrder.Contains(sender);
+                bool senderIsGameButton = _filterByGameButtons.Contains(sender);
 
                 if ((senderIsTextBox || senderIsGameButton) && EventsDisabled)
                 {
@@ -2592,7 +2619,7 @@ namespace AngelLoader.Forms
                 {
                     if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
                     {
-                        button = _filterByGameButtonsInOrder[i];
+                        button = _filterByGameButtons[i];
                         break;
                     }
                 }
@@ -2612,7 +2639,7 @@ namespace AngelLoader.Forms
                 {
                     if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
                     {
-                        tab = _gameTabsInOrder[i];
+                        tab = _gameTabs[i];
                         break;
                     }
                 }
@@ -4345,8 +4372,7 @@ namespace AngelLoader.Forms
 
         private void ShowPerGameModsWindow(GameIndex gameIndex)
         {
-            // @GENGAMES(T3 doesn't support mod management)
-            if (GameIsDark(gameIndex))
+            if (GameSupportsMods(gameIndex))
             {
                 using var f = new OriginalGameModsForm(gameIndex, Config.GetDisabledMods(gameIndex));
                 if (f.ShowDialogDark() != DialogResult.OK) return;
@@ -4355,7 +4381,7 @@ namespace AngelLoader.Forms
             else
             {
                 Core.Dialogs.ShowAlert(
-                    LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+                    GetLocalizedNoModSupportText(gameIndex),
                     LText.AlertMessages.Alert,
                     MBoxIcon.None);
             }
@@ -5256,7 +5282,7 @@ namespace AngelLoader.Forms
                 var selGameTab = GamesTabControl.SelectedTab;
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    if (_gameTabsInOrder[i] == selGameTab)
+                    if (_gameTabs[i] == selGameTab)
                     {
                         gameTab = (GameIndex)i;
                         break;

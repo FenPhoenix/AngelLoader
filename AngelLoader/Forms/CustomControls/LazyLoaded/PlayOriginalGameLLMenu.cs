@@ -30,7 +30,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal readonly ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
 
-        // @GENGAMES(T3 doesn't support mod management)
+        // @GENGAMES(T3 doesn't support mod management) - we need to do supported mod-supporting game count
         private readonly ToolStripItem[] ModMenuItems = new ToolStripItem[SupportedGameCount - 1];
 
         private bool _darkModeEnabled;
@@ -49,8 +49,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     GameIndex gameIndex = (GameIndex)i;
                     GameMenuItems[i].Image = Images.GetPerGameImage(i).Primary.Small();
-                    // @GENGAMES(T3 doesn't support mod management)
-                    if (GameIsDark(gameIndex))
+                    if (GameSupportsMods(gameIndex))
                     {
                         ModMenuItems[modI].Image = Images.GetPerGameImage(i).Primary.Small();
                         modI++;
@@ -75,8 +74,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     GameIndex = gameIndex,
                     Image = Images.GetPerGameImage(i).Primary.Small()
                 };
-                // @GENGAMES(T3 doesn't support mod management)
-                if (GameIsDark(gameIndex))
+                if (GameSupportsMods(gameIndex))
                 {
                     ModMenuItems[modI] = new ToolStripMenuItemCustom
                     {
@@ -132,8 +130,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 GameIndex gameIndex = (GameIndex)i;
                 GameMenuItems[i].Text = GetLocalizedGameName(gameIndex);
-                // @GENGAMES(T3 doesn't support mod management)
-                if (GameIsDark(gameIndex))
+                if (GameSupportsMods(gameIndex))
                 {
                     ModsSubMenu.DropDownItems[modI].Text = GetLocalizedGameName(gameIndex) + "...";
                     modI++;

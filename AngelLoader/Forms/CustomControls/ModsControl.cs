@@ -74,7 +74,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 CheckList.ClearList();
 
-                if (!GameIsDark(game)) return fail;
+                if (!GameSupportsMods(game)) return fail;
 
                 (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
 

@@ -210,7 +210,7 @@ namespace AngelLoader.Forms
             MakeTypeArray((1, 7, 0, 129), (1, 7, 0, 129))
         };
 
-        private static readonly GraphicsPath?[] _zoomImageGraphicsPaths = new GraphicsPath[ZoomTypesCount];
+        private static readonly GraphicsPath?[] _zoomImageGPaths = new GraphicsPath[ZoomTypesCount];
 
         #endregion
 
@@ -1395,15 +1395,15 @@ namespace AngelLoader.Forms
         private static GraphicsPath GetZoomImageGraphicsPath(Zoom zoomType)
         {
             int index = (int)zoomType;
-            if (_zoomImageGraphicsPaths[index] == null)
+            if (_zoomImageGPaths[index] == null)
             {
                 var gp = new GraphicsPath();
                 gp.AddPath(MagnifierEmptyGPath, true);
                 gp.AddPath(MakeGraphicsPath(_zoomTypePoints[index], _zoomTypeTypes[index]), true);
 
-                _zoomImageGraphicsPaths[index] = gp;
+                _zoomImageGPaths[index] = gp;
             }
-            return _zoomImageGraphicsPaths[index]!;
+            return _zoomImageGPaths[index]!;
         }
 
         #region Vector helpers

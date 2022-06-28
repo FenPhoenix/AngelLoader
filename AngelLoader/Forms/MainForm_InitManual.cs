@@ -57,10 +57,6 @@ namespace AngelLoader.Forms
             CommentColumn = new DataGridViewTextBoxColumn();
             FilterBarFLP = new FlowLayoutPanel();
             FilterGameButtonsToolStrip = new ToolStripCustom();
-            FilterByThief1Button = new ToolStripButtonCustom();
-            FilterByThief2Button = new ToolStripButtonCustom();
-            FilterByThief3Button = new ToolStripButtonCustom();
-            FilterBySS2Button = new ToolStripButtonCustom();
             GameFilterControlsShowHideButtonToolStrip = new ToolStripCustom();
             GameFilterControlsShowHideButton = new ToolStripArrowButton();
             FilterTitleLabel = new DarkLabel();
@@ -84,10 +80,6 @@ namespace AngelLoader.Forms
             ClearFiltersButton = new ToolStripButtonCustom();
             ResetLayoutButton = new DarkButton();
             GamesTabControl = new DarkTabControl();
-            Thief1TabPage = new DarkTabPageCustom();
-            Thief2TabPage = new DarkTabPageCustom();
-            Thief3TabPage = new DarkTabPageCustom();
-            SS2TabPage = new DarkTabPageCustom();
             TopRightMenuButton = new DarkButton();
             TopRightCollapseButton = new DarkArrowButton();
             TopRightTabControl = new DarkTabControl();
@@ -522,49 +514,8 @@ namespace AngelLoader.Forms
             FilterGameButtonsToolStrip.GripMargin = new Padding(0);
             FilterGameButtonsToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             FilterGameButtonsToolStrip.ImageScalingSize = new Size(22, 22);
-            FilterGameButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
-            FilterByThief1Button,
-            FilterByThief2Button,
-            FilterByThief3Button,
-            FilterBySS2Button});
             FilterGameButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             FilterGameButtonsToolStrip.TabIndex = 3;
-            // 
-            // FilterByThief1Button
-            // 
-            FilterByThief1Button.AutoSize = false;
-            FilterByThief1Button.CheckOnClick = true;
-            FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief1Button.Margin = new Padding(1, 0, 0, 0);
-            FilterByThief1Button.Size = new Size(25, 25);
-            FilterByThief1Button.Click += Async_EventHandler_Main;
-            // 
-            // FilterByThief2Button
-            // 
-            FilterByThief2Button.AutoSize = false;
-            FilterByThief2Button.CheckOnClick = true;
-            FilterByThief2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief2Button.Margin = new Padding(0);
-            FilterByThief2Button.Size = new Size(25, 25);
-            FilterByThief2Button.Click += Async_EventHandler_Main;
-            // 
-            // FilterByThief3Button
-            // 
-            FilterByThief3Button.AutoSize = false;
-            FilterByThief3Button.CheckOnClick = true;
-            FilterByThief3Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief3Button.Margin = new Padding(0);
-            FilterByThief3Button.Size = new Size(25, 25);
-            FilterByThief3Button.Click += Async_EventHandler_Main;
-            // 
-            // FilterBySS2Button
-            // 
-            FilterBySS2Button.AutoSize = false;
-            FilterBySS2Button.CheckOnClick = true;
-            FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
-            FilterBySS2Button.Size = new Size(25, 25);
-            FilterBySS2Button.Click += Async_EventHandler_Main;
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
@@ -782,37 +733,10 @@ namespace AngelLoader.Forms
             // 
             // GamesTabControl
             // 
-            GamesTabControl.Controls.Add(Thief1TabPage);
-            GamesTabControl.Controls.Add(Thief2TabPage);
-            GamesTabControl.Controls.Add(Thief3TabPage);
-            GamesTabControl.Controls.Add(SS2TabPage);
             GamesTabControl.ImageList = GameTabsImageList;
             GamesTabControl.Location = new Point(28, 5);
-            GamesTabControl.SelectedIndex = 0;
             GamesTabControl.Size = new Size(1075, 24);
             GamesTabControl.TabIndex = 1;
-            GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
-            GamesTabControl.Deselecting += GamesTabControl_Deselecting;
-            // 
-            // Thief1TabPage
-            // 
-            Thief1TabPage.ImageIndex = 0;
-            Thief1TabPage.TabIndex = 0;
-            // 
-            // Thief2TabPage
-            // 
-            Thief2TabPage.ImageIndex = 1;
-            Thief2TabPage.TabIndex = 1;
-            // 
-            // Thief3TabPage
-            // 
-            Thief3TabPage.ImageIndex = 2;
-            Thief3TabPage.TabIndex = 2;
-            //
-            // SS2TabPage
-            //
-            SS2TabPage.ImageIndex = 3;
-            SS2TabPage.TabIndex = 3;
             // 
             // TopRightMenuButton
             // 

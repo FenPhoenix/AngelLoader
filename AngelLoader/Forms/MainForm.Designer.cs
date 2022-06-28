@@ -77,10 +77,6 @@
             this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.FilterGameButtonsToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
-            this.FilterByThief1Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
-            this.FilterByThief2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
-            this.FilterByThief3Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
-            this.FilterBySS2Button = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.GameFilterControlsShowHideButtonToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
             this.GameFilterControlsShowHideButton = new AngelLoader.Forms.CustomControls.ToolStripArrowButton();
             this.FilterTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -104,10 +100,6 @@
             this.ClearFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
             this.ResetLayoutButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.GamesTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
-            this.Thief1TabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.Thief2TabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.Thief3TabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.SS2TabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.TopRightMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
@@ -633,69 +625,11 @@
             this.FilterGameButtonsToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
             this.FilterGameButtonsToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.FilterGameButtonsToolStrip.ImageScalingSize = new System.Drawing.Size(22, 22);
-            this.FilterGameButtonsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FilterByThief1Button,
-            this.FilterByThief2Button,
-            this.FilterByThief3Button,
-            this.FilterBySS2Button});
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
             this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(104, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
-            // 
-            // FilterByThief1Button
-            // 
-            this.FilterByThief1Button.AutoSize = false;
-            this.FilterByThief1Button.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByThief1Button.CheckOnClick = true;
-            this.FilterByThief1Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.T1_21;
-            this.FilterByThief1Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-            this.FilterByThief1Button.Name = "FilterByThief1Button";
-            this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief1Button.ToolTipText = "Thief 1";
-            this.FilterByThief1Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // FilterByThief2Button
-            // 
-            this.FilterByThief2Button.AutoSize = false;
-            this.FilterByThief2Button.CheckOnClick = true;
-            this.FilterByThief2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief2Button.Image = global::AngelLoader.Properties.Resources.T2_21;
-            this.FilterByThief2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief2Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByThief2Button.Name = "FilterByThief2Button";
-            this.FilterByThief2Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief2Button.ToolTipText = "Thief 2";
-            this.FilterByThief2Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // FilterByThief3Button
-            // 
-            this.FilterByThief3Button.AutoSize = false;
-            this.FilterByThief3Button.CheckOnClick = true;
-            this.FilterByThief3Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief3Button.Image = global::AngelLoader.Properties.Resources.T3_21;
-            this.FilterByThief3Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief3Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByThief3Button.Name = "FilterByThief3Button";
-            this.FilterByThief3Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief3Button.ToolTipText = "Thief 3";
-            this.FilterByThief3Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // FilterBySS2Button
-            // 
-            this.FilterBySS2Button.AutoSize = false;
-            this.FilterBySS2Button.CheckOnClick = true;
-            this.FilterBySS2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.SS2_21;
-            this.FilterBySS2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterBySS2Button.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.FilterBySS2Button.Name = "FilterBySS2Button";
-            this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterBySS2Button.ToolTipText = "System Shock 2";
-            this.FilterBySS2Button.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // GameFilterControlsShowHideButtonToolStrip
             // 
@@ -995,62 +929,11 @@
             // 
             // GamesTabControl
             // 
-            this.GamesTabControl.Controls.Add(this.Thief1TabPage);
-            this.GamesTabControl.Controls.Add(this.Thief2TabPage);
-            this.GamesTabControl.Controls.Add(this.Thief3TabPage);
-            this.GamesTabControl.Controls.Add(this.SS2TabPage);
             this.GamesTabControl.ImageList = this.GameTabsImageList;
             this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
             this.GamesTabControl.Name = "GamesTabControl";
-            this.GamesTabControl.SelectedIndex = 0;
             this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
             this.GamesTabControl.TabIndex = 1;
-            this.GamesTabControl.SelectedIndexChanged += new System.EventHandler(this.GamesTabControl_SelectedIndexChanged);
-            this.GamesTabControl.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.GamesTabControl_Deselecting);
-            // 
-            // Thief1TabPage
-            // 
-            this.Thief1TabPage.ImageIndex = 0;
-            this.Thief1TabPage.Location = new System.Drawing.Point(4, 23);
-            this.Thief1TabPage.Name = "Thief1TabPage";
-            this.Thief1TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief1TabPage.Size = new System.Drawing.Size(1067, 0);
-            this.Thief1TabPage.TabIndex = 0;
-            this.Thief1TabPage.Text = "Thief 1";
-            this.Thief1TabPage.UseVisualStyleBackColor = true;
-            // 
-            // Thief2TabPage
-            // 
-            this.Thief2TabPage.ImageIndex = 1;
-            this.Thief2TabPage.Location = new System.Drawing.Point(4, 23);
-            this.Thief2TabPage.Name = "Thief2TabPage";
-            this.Thief2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief2TabPage.Size = new System.Drawing.Size(1067, 0);
-            this.Thief2TabPage.TabIndex = 1;
-            this.Thief2TabPage.Text = "Thief 2";
-            this.Thief2TabPage.UseVisualStyleBackColor = true;
-            // 
-            // Thief3TabPage
-            // 
-            this.Thief3TabPage.ImageIndex = 2;
-            this.Thief3TabPage.Location = new System.Drawing.Point(4, 23);
-            this.Thief3TabPage.Name = "Thief3TabPage";
-            this.Thief3TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.Thief3TabPage.Size = new System.Drawing.Size(1067, 0);
-            this.Thief3TabPage.TabIndex = 2;
-            this.Thief3TabPage.Text = "Thief 3";
-            this.Thief3TabPage.UseVisualStyleBackColor = true;
-            // 
-            // SS2TabPage
-            // 
-            this.SS2TabPage.ImageIndex = 3;
-            this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
-            this.SS2TabPage.Name = "SS2TabPage";
-            this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SS2TabPage.Size = new System.Drawing.Size(1067, 0);
-            this.SS2TabPage.TabIndex = 3;
-            this.SS2TabPage.Text = "System Shock 2";
-            this.SS2TabPage.UseVisualStyleBackColor = true;
             // 
             // TopRightMenuButton
             // 
@@ -1978,8 +1861,6 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel FilterTitleLabel;
         internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterTitleTextBox;
         internal AngelLoader.Forms.CustomControls.DarkTabControl GamesTabControl;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom Thief1TabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom Thief2TabPage;
         internal System.Windows.Forms.ImageList GameTabsImageList;
         internal AngelLoader.Forms.CustomControls.DarkTabControl TopRightTabControl;
         internal AngelLoader.Forms.CustomControls.DarkTabPageCustom StatisticsTabPage;
@@ -2014,8 +1895,6 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel EditFMTitleLabel;
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief1Button;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief2Button;
         internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMLastPlayedCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMReleaseDateCheckBox;
@@ -2036,8 +1915,6 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByThief3Button;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom Thief3TabPage;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFiltersButton;
         internal System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
         internal System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
@@ -2077,8 +1954,6 @@
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterBySS2Button;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom SS2TabPage;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems EditFMLanguageComboBox;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
