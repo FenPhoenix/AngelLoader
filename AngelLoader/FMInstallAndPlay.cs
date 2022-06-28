@@ -111,7 +111,7 @@ namespace AngelLoader
                 {
                     Core.View.SetWaitCursor(true);
 
-                    if (PlayFM(fm, playMP))
+                    if (PlayFM(fm, gameIndex, playMP))
                     {
                         fm.LastPlayed.DateTime = DateTime.Now;
                         Core.View.RefreshFM(fm);
@@ -167,18 +167,8 @@ namespace AngelLoader
             }
         }
 
-        private static bool PlayFM(FanMission fm, bool playMP = false)
+        private static bool PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
         {
-            if (!GameIsKnownAndSupported(fm.Game))
-            {
-                Log(ErrorText.FMGameU + " FM: " + GetFMId(fm) + "\r\n" +
-                    "Game: " + fm.Game, stackTrace: true);
-                Core.Dialogs.ShowError(ErrorText.FMGameU);
-                return false;
-            }
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
-
             (bool success, string gameExe, string gamePath) =
                 CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
             if (!success) return false;
