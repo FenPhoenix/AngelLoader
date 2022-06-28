@@ -149,7 +149,7 @@ namespace AngelLoader
                                              "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
                                              "The passed path was:\r\n\r\n" +
                                              di + "\r\n\r\n";
-                            Log(message);
+                            Log(message, stackTrace: true);
                             Core.Dialogs.ShowError_ViewOwned(message);
                             return false;
                         }

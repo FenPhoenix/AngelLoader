@@ -96,7 +96,7 @@ namespace AL_Common
         public static void Log(
             string message = "",
             Exception? ex = null,
-            bool stackTrace = true,
+            bool stackTrace = false,
             [CallerMemberName] string callerMemberName = "")
         {
             if (_logFile.IsEmpty()) return;

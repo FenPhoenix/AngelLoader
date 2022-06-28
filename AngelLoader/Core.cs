@@ -1630,7 +1630,7 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " Game: " + fm.Game);
+                Log(ErrorText.FMGameU + " Game: " + fm.Game, stackTrace: true);
                 Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
                 return;
             }
@@ -1749,7 +1749,7 @@ namespace AngelLoader
             }
             else
             {
-                Log("File not found: " + path);
+                Log("File not found: " + path, stackTrace: true);
                 Dialogs.ShowError(path + "\r\n\r\n" + ErrorText.HTMLReadmeNotFound);
             }
         }

@@ -301,8 +301,7 @@ namespace AngelLoader
 
         internal static void LogFMInstDirError(FanMission fm, string topMessage, Exception? ex = null)
         {
-            Log(
-                topMessage + "\r\n" +
+            Log(topMessage + "\r\n" +
                 "FM game type: " + fm.Game + "\r\n" +
                 "FM archive name:" + fm.Archive + "\r\n" +
                 "FM installed name:" + fm.InstalledDir + "\r\n" +

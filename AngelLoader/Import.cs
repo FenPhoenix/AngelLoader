@@ -202,7 +202,7 @@ namespace AngelLoader
 
                     if (error != ImportError.None)
                     {
-                        Log("ImportError: " + error);
+                        Log("ImportError: " + error, stackTrace: true);
 
                         if (importType == ImportType.DarkLoader)
                         {

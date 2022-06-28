@@ -234,7 +234,7 @@ namespace AngelLoader
                                          (ffProbeNotFound ? Paths.FFprobeExe + "\r\n" : "") + "\r\n" +
                                          "Unable to convert audio files.";
 
-                        Log(message);
+                        Log(message, stackTrace: true);
                         Core.Dialogs.ShowError(message);
                         return;
                     }

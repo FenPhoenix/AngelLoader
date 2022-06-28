@@ -53,7 +53,7 @@ namespace AngelLoader
             {
                 Log(ErrorText.FMGameU + "\r\n" +
                     "FM: " + GetFMId(fm) + "\r\n" +
-                    "FM game was: " + fm.Game);
+                    "FM game was: " + fm.Game, stackTrace: true);
                 Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                 return;
             }
@@ -64,7 +64,7 @@ namespace AngelLoader
             {
                 Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
                     "fm: " + GetFMId(fm) + "\r\n" +
-                    "fm.Game was: " + fm.Game);
+                    "fm.Game was: " + fm.Game, stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.MPForNonT2);
                 return;
             }
@@ -172,7 +172,7 @@ namespace AngelLoader
             if (!GameIsKnownAndSupported(fm.Game))
             {
                 Log(ErrorText.FMGameU + " FM: " + GetFMId(fm) + "\r\n" +
-                    "Game: " + fm.Game);
+                    "Game: " + fm.Game, stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.FMGameU);
                 return false;
             }
@@ -243,7 +243,7 @@ namespace AngelLoader
                 {
                     Log(ErrorText.FMGameNotDark + "\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
-                        "Game: " + fm.Game);
+                        "Game: " + fm.Game, stackTrace: true);
                     Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                     return false;
                 }
@@ -253,7 +253,7 @@ namespace AngelLoader
                 string gamePath = Config.GetGamePath(gameIndex);
                 if (gamePath.IsEmpty())
                 {
-                    Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex);
+                    Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex, stackTrace: true);
                     Core.Dialogs.ShowError(gameIndex + ":\r\n" + ErrorText.GamePathEmpty);
                     return false;
                 }
@@ -312,7 +312,7 @@ namespace AngelLoader
                 Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
                     (GameIsDark(gameIndex) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
                     " returned false)\r\n" +
-                    "Source: " + playSource);
+                    "Source: " + playSource, stackTrace: true);
 
                 Core.Dialogs.ShowError(
                     "Failed to set AngelLoader as the FM selector.\r\n\r\n" +
@@ -422,7 +422,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(gameIndex);
             if (gamePath.IsEmpty())
             {
-                Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex);
+                Log(ErrorText.GamePathEmpty + "\r\n" + gameIndex, stackTrace: true);
                 Core.Dialogs.ShowError(gameName + ":\r\n" + ErrorText.GamePathEmpty);
                 return failed;
             }
@@ -619,7 +619,7 @@ namespace AngelLoader
                 {
                     Log(ErrorText.FMGameU + "\r\n" +
                         "FM: " + GetFMId(fm) + "\r\n" +
-                        "FM game was: " + fm.Game);
+                        "FM game was: " + fm.Game, stackTrace: true);
                     Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                     return false;
                 }

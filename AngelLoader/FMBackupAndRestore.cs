@@ -254,7 +254,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game);
+                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game, stackTrace: true);
                 return;
             }
 
@@ -387,7 +387,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game);
+                Log(ErrorText.FMGameU + " FM: " + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game, stackTrace: true);
                 return;
             }
 

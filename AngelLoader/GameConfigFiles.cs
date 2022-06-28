@@ -333,11 +333,12 @@ namespace AngelLoader
 
             string gamePath = Config.GetGamePath(gameIndex);
 
+            if (gamePath.IsEmpty()) return;
+
             static void Run(string gamePath, string fileName, bool removeAll)
             {
                 if (!TryCombineFilePathAndCheckExistence(gamePath, fileName, out string cfgFile))
                 {
-                    Log(fileName + " not found for " + gamePath);
                     return;
                 }
 
@@ -403,9 +404,10 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void SetCamCfgLanguage(string gamePath, string lang)
         {
+            if (gamePath.IsEmpty()) return;
+
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamCfg, out string camCfg))
             {
-                Log(Paths.CamCfg + " not found for " + gamePath);
                 return;
             }
 
@@ -456,6 +458,8 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static bool SetDarkFMSelector(GameIndex game, string gamePath, bool resetSelector = false)
         {
+            if (gamePath.IsEmpty()) return false;
+
             #region Local functions
 
             static string FindPreviousSelector(List<string> lines, string stubPath, string gamePath)
@@ -534,7 +538,6 @@ namespace AngelLoader
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
-                Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game));
                 return false;
             }
 
@@ -729,7 +732,7 @@ namespace AngelLoader
             string soIni = Paths.GetSneakyOptionsIni();
             if (soIni.IsEmpty())
             {
-                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found");
+                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found", stackTrace: true);
                 return false;
             }
 
