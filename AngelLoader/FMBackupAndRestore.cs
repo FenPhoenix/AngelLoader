@@ -381,7 +381,7 @@ namespace AngelLoader
             });
         }
 
-        internal static async Task RestoreFM(FanMission fm, BackupFile? backupFile = null, CancellationToken? ct = null)
+        internal static async Task RestoreFM(FanMission fm, CancellationToken? ct = null)
         {
             static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
 
@@ -397,7 +397,7 @@ namespace AngelLoader
 
             await Task.Run(() =>
             {
-                backupFile ??= GetBackupFile(fm);
+                BackupFile backupFile = GetBackupFile(fm);
                 if (!backupFile.Found) return;
 
                 if (Canceled(ct)) return;
