@@ -76,6 +76,8 @@ namespace AngelLoader.DataClasses
 
     #region Top-right tabs
 
+    // IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
+    // For TopRightTab (selected tab) value
     internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
 
     internal sealed class TopRightTabData
