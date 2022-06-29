@@ -463,45 +463,19 @@ namespace AngelLoader
                     {
                         return;
                     }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Map)))
+                    else
                     {
-                        SetFMResource(fm, CustomResources.Map, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Automap)))
-                    {
-                        SetFMResource(fm, CustomResources.Automap, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Scripts)))
-                    {
-                        SetFMResource(fm, CustomResources.Scripts, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Textures)))
-                    {
-                        SetFMResource(fm, CustomResources.Textures, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Sounds)))
-                    {
-                        SetFMResource(fm, CustomResources.Sounds, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Objects)))
-                    {
-                        SetFMResource(fm, CustomResources.Objects, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Creatures)))
-                    {
-                        SetFMResource(fm, CustomResources.Creatures, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Motions)))
-                    {
-                        SetFMResource(fm, CustomResources.Motions, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Movies)))
-                    {
-                        SetFMResource(fm, CustomResources.Movies, true);
-                    }
-                    else if (fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.Subtitles)))
-                    {
-                        SetFMResource(fm, CustomResources.Subtitles, true);
+                        int at = 1;
+                        for (int crI = 1; crI < CustomResourcesCount; crI++)
+                        {
+                            CustomResources cr = (CustomResources)at;
+                            if (fieldsString.SegmentEquals(curStart, i, CustomResourceNames[crI]))
+                            {
+                                SetFMResource(fm, cr, true);
+                                break;
+                            }
+                            at <<= 1;
+                        }
                     }
 
                     curStart = i + 1;
