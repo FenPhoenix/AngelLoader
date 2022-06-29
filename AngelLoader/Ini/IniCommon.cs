@@ -516,65 +516,19 @@ namespace AngelLoader
                 sb.AppendLine(nameof(CustomResources.None));
                 return;
             }
-            // Hmm... doesn't make for good code, but fast...
+
             bool notEmpty = false;
-            if (FMHasResource(fm, CustomResources.Map))
+            int at = 1;
+            for (int i = 1; i < CustomResourcesCount; i++)
             {
-                sb.Append(nameof(CustomResources.Map));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Automap))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Automap));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Scripts))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Scripts));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Textures))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Textures));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Sounds))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Sounds));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Objects))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Objects));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Creatures))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Creatures));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Motions))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Motions));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Movies))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Movies));
-                notEmpty = true;
-            }
-            if (FMHasResource(fm, CustomResources.Subtitles))
-            {
-                if (notEmpty) sb.Append(',');
-                sb.Append(nameof(CustomResources.Subtitles));
+                CustomResources cr = (CustomResources)at;
+                if (FMHasResource(fm, cr))
+                {
+                    if (notEmpty) sb.Append(',');
+                    sb.Append(CustomResourceNames[i]);
+                    notEmpty = true;
+                }
+                at <<= 1;
             }
 
             sb.AppendLine();

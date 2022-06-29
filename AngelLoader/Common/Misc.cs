@@ -15,6 +15,8 @@ namespace AngelLoader
         internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
         internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
         public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
+        internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
+        internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
 
         #region Enums and enum-like
 
