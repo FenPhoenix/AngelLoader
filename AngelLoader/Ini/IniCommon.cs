@@ -644,7 +644,7 @@ namespace AngelLoader
                 if (games.HasFlagFast(game))
                 {
                     if (notEmpty) sb.Append(',');
-                    sb.Append(game.ToString());
+                    sb.Append(SupportedGameNames[i]);
                     notEmpty = true;
                 }
             }
