@@ -1400,7 +1400,6 @@ namespace AngelLoader.Forms
             ClientSize = new Size(1671, 716);
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
-            Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;

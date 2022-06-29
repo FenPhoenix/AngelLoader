@@ -143,7 +143,6 @@
             this.Controls.Add(this.ImportControls);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;

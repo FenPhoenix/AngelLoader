@@ -166,7 +166,6 @@
             this.Controls.Add(this.AuthorCheckBox);
             this.Controls.Add(this.TitleCheckBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

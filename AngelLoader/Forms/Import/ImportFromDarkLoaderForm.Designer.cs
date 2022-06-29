@@ -209,7 +209,6 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.ImportControls);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportFromDarkLoaderForm";

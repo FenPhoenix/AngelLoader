@@ -186,7 +186,6 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.BottomFlowLayoutPanel);
             this.DoubleBuffered = true;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

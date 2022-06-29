@@ -57,7 +57,6 @@ namespace AngelLoader.Forms
             ClientSize = new Size(438, 146);
             Controls.Add(okFLP);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Icon = AL_Icon.AngelLoader;
             KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;

@@ -150,7 +150,6 @@
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.BottomFlowLayoutPanel);
             this.DoubleBuffered = true;
-            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

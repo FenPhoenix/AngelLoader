@@ -95,7 +95,6 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.OrigGameModsControl);
             this.KeyPreview = true;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(200, 200);

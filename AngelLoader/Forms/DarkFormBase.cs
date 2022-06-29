@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -13,6 +14,13 @@ namespace AngelLoader.Forms
     public class DarkFormBase : Form
     {
         private bool _loading = true;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
+        public new Icon? Icon { get; set; }
+
+        protected DarkFormBase() => base.Icon = AL_Icon.AngelLoader;
 
         #region Theming
 

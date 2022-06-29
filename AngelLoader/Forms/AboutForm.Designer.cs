@@ -301,7 +301,6 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.GitHubLinkLabel);
             this.Controls.Add(this.LogoPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutForm";
