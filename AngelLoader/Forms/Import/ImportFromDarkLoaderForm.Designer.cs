@@ -212,7 +212,6 @@ namespace AngelLoader.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportFromDarkLoaderForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Import from DarkLoader";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromDarkLoaderForm_FormClosing);

@@ -239,7 +239,6 @@ namespace AngelLoader.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportFromMultipleInisForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "[Import From Multiple]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromMultipleInisForm_FormClosing);

@@ -243,7 +243,6 @@ namespace AngelLoader.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ScanAllFMsForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Scan all FMs";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanAllFMs_FormClosing);

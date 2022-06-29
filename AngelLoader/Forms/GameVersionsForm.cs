@@ -60,7 +60,6 @@ namespace AngelLoader.Forms
             KeyPreview = true;
             MaximizeBox = false;
             MinimizeBox = false;
-            ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             Text = " ";

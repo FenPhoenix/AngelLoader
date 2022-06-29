@@ -18,9 +18,26 @@ namespace AngelLoader.Forms
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [PublicAPI]
-        public new Icon? Icon { get; set; }
+        public new Icon? Icon
+        {
+            get => base.Icon;
+            set => base.Icon = value;
+        }
 
-        protected DarkFormBase() => base.Icon = AL_Icon.AngelLoader;
+        [Browsable(true)]
+        [PublicAPI]
+        [DefaultValue(false)]
+        public new bool ShowInTaskbar
+        {
+            get => base.ShowInTaskbar;
+            set => base.ShowInTaskbar = value;
+        }
+
+        protected DarkFormBase()
+        {
+            base.Icon = AL_Icon.AngelLoader;
+            base.ShowInTaskbar = false;
+        }
 
         #region Theming
 

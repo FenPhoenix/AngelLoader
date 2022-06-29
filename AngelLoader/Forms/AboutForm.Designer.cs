@@ -304,7 +304,6 @@ namespace AngelLoader.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About AngelLoader";
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();

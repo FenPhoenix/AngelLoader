@@ -99,7 +99,6 @@ namespace AngelLoader.Forms
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "OriginalGameModsForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Manage mods for [Game]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OriginalGameMods_FormClosing);

@@ -349,7 +349,6 @@ namespace AngelLoader.Forms
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1056, 242);
             this.Name = "FilterTagsForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Tags Filter";
             this.FilterLabelsPanel.ResumeLayout(false);

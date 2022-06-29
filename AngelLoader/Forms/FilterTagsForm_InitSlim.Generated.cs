@@ -280,7 +280,6 @@
             this.MaximumSize = new System.Drawing.Size(1056, 32767);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1056, 242);
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";

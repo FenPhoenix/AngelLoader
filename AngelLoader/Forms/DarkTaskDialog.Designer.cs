@@ -144,7 +144,6 @@ namespace AngelLoader.Forms
             this.MinimizeBox = false;
             this.Name = "DarkTaskDialog";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DarkTaskDialog";
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();

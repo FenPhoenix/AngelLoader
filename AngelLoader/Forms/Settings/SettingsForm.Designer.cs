@@ -191,7 +191,6 @@ namespace AngelLoader.Forms
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(540, 320);
             this.Name = "SettingsForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SettingsForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);

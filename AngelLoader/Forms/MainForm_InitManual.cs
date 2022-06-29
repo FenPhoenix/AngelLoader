@@ -1402,6 +1402,7 @@ namespace AngelLoader.Forms
             DoubleBuffered = true;
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
+            ShowInTaskbar = true;
             Deactivate += MainForm_Deactivate;
             FormClosed += MainForm_FormClosed;
             FormClosing += MainForm_FormClosing;

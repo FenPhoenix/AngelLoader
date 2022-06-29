@@ -185,7 +185,6 @@ namespace AngelLoader.Forms
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FilterDateForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Set release date filter";
             this.ResumeLayout(false);
