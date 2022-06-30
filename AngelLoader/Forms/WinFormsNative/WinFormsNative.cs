@@ -309,25 +309,19 @@ namespace AngelLoader.Forms.WinFormsNative
 
         // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
-        [PublicAPI]
+#if false
         internal static int MAKELONG(int low, int high) => high << 16 | (low & (int)ushort.MaxValue);
-        [PublicAPI]
+#endif
         internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | (low & (int)ushort.MaxValue));
-        [PublicAPI]
         internal static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
-        [PublicAPI]
+#if false
         internal static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
-        [PublicAPI]
+#endif
         internal static int LOWORD(int n) => n & (int)ushort.MaxValue;
-        [PublicAPI]
         internal static int LOWORD(IntPtr n) => LOWORD((int)(long)n);
-        [PublicAPI]
         internal static int SignedHIWORD(IntPtr n) => SignedHIWORD((int)(long)n);
-        [PublicAPI]
         internal static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
-        [PublicAPI]
         internal static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
-        [PublicAPI]
         internal static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
 #pragma warning restore IDE0004
         // ReSharper restore RedundantCast

@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms
 {
-    partial class PathsPage
+    sealed partial class PathsPage
     {
         /// <summary> 
         /// Required designer variable.

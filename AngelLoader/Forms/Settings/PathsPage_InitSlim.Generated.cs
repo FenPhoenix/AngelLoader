@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class PathsPage
+    sealed partial class PathsPage
     {
         /// <summary>
         /// Custom generated component initializer with cruft removed.

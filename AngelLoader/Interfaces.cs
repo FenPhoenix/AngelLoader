@@ -98,7 +98,6 @@ namespace AngelLoader
         void SetWaitCursor(bool value);
     }
 
-    [PublicAPI]
     public interface IDarkable
     {
         bool DarkModeEnabled { set; }

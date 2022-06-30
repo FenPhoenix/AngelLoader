@@ -9,7 +9,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
-using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -42,21 +41,18 @@ namespace AngelLoader.Forms
 
         #region Centering
 
-        [PublicAPI]
         internal static void CenterH(this Control control, Control parent)
         {
             control.Location = control.Location with { X = (parent.Width / 2) - (control.Width / 2) };
         }
 
         /*
-        [PublicAPI]
         internal static void CenterV(this Control control, Control parent)
         {
             control.Location = control.Location with { Y = (parent.Height / 2) - (control.Height / 2) };
         }
         */
 
-        [PublicAPI]
         internal static void CenterHV(this Control control, Control parent, bool clientSize = false)
         {
             int pWidth = clientSize ? parent.ClientSize.Width : parent.Width;

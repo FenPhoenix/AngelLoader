@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms
 {
-    partial class OtherPage
+    sealed partial class OtherPage
     {
         /// <summary> 
         /// Required designer variable.

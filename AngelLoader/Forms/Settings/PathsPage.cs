@@ -1,13 +1,11 @@
 ﻿using System.Windows.Forms;
 using AL_Common;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms
 {
-    [PublicAPI]
-    public partial class PathsPage : UserControl, Interfaces.ISettingsPage
+    public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
     {
-        public bool IsVisible { get => Visible; set => Visible = value; }
+        public bool IsVisible => Visible;
 
         /// <summary>
         /// Horrible hack, just set it to true when you want it to start doing the layout crap

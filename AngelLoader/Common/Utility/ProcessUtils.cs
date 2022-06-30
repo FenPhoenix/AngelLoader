@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using JetBrains.Annotations;
 
 namespace AngelLoader
 {
@@ -13,7 +12,6 @@ namespace AngelLoader
         // work with it true or false. I can't remember the details at the moment but yeah.
 
         /// <inheritdoc cref="Process.Start(string)"/>
-        [PublicAPI]
         internal static void ProcessStart_UseShellExecute(string fileName)
         {
             using (Process.Start(new ProcessStartInfo { FileName = fileName, UseShellExecute = true }))
@@ -39,7 +37,6 @@ namespace AngelLoader
         /// The sum of the length of the arguments and the length of the full path to the process exceeds 2080. The error message associated with this exception can be one of the following: "The data area passed to a system call is too small." or "Access is denied."</exception>
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.IO.FileNotFoundException">The PATH environment variable has a string containing quotes.</exception>
-        [PublicAPI]
         internal static void ProcessStart_UseShellExecute(string fileName, string arguments)
         {
             using (Process.Start(new ProcessStartInfo { FileName = fileName, Arguments = arguments, UseShellExecute = true }))
@@ -64,7 +61,6 @@ namespace AngelLoader
         /// The sum of the length of the arguments and the length of the full path to the associated file exceeds 2080. The error message associated with this exception can be one of the following: "The data area passed to a system call is too small." or "Access is denied."</exception>
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
-        [PublicAPI]
         internal static void ProcessStart_UseShellExecute(string fileName, string arguments, string userName, SecureString password, string domain)
         {
             using (
@@ -95,7 +91,6 @@ namespace AngelLoader
         /// <exception cref="T:System.ComponentModel.Win32Exception">There was an error in opening the associated file.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
-        [PublicAPI]
         internal static void ProcessStart_UseShellExecute(string fileName, string userName, SecureString password, string domain)
         {
             using (
@@ -135,7 +130,6 @@ namespace AngelLoader
         /// -or-
         /// The sum of the length of the arguments and the length of the full path to the process exceeds 2080. The error message associated with this exception can be one of the following: "The data area passed to a system call is too small." or "Access is denied."</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on operating systems without shell support such as Nano Server (.NET Core only).</exception>
-        [PublicAPI]
         internal static void ProcessStart_UseShellExecute(ProcessStartInfo startInfo, bool overrideUseShellExecuteToOn = true)
         {
             if (overrideUseShellExecuteToOn) startInfo.UseShellExecute = true;

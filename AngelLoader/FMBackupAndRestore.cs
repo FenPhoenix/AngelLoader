@@ -9,10 +9,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using SevenZip;
 using static AL_Common.Common;
-using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
@@ -64,14 +62,11 @@ namespace AngelLoader
 
         #endregion
 
-        [PublicAPI]
-        internal sealed class BackupFile
+        private sealed class BackupFile
         {
             internal bool Found;
             internal string Name;
             internal bool DarkLoader;
-            internal FileNameBoth? Cached_DarkLoaderBackups;
-            internal List<string>? Cached_NewBackups;
 
             internal BackupFile()
             {
@@ -86,16 +81,9 @@ namespace AngelLoader
                 Name = name;
                 DarkLoader = darkLoader;
             }
-
-            internal BackupFile(bool found, string name, bool darkLoader)
-            {
-                Found = found;
-                Name = name;
-                DarkLoader = darkLoader;
-            }
         }
 
-        internal sealed class FileNameBoth
+        private sealed class FileNameBoth
         {
             internal readonly List<string> FullPaths;
             internal readonly List<string> FileNamesMinusSavesSuffix;
@@ -141,14 +129,6 @@ namespace AngelLoader
 
             var ret = new BackupFile();
 
-            BackupFile DoReturn()
-            {
-                ret.Cached_DarkLoaderBackups = cachedDarkLoaderFiles;
-                ret.Cached_NewBackups = cachedFMArchivePaths;
-
-                return ret;
-            }
-
             // TODO: Do I need both or is the use of the non-trimmed version a mistake?
             string fmArchiveNoExt = fm.Archive.RemoveExtension();
             string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
@@ -173,7 +153,7 @@ namespace AngelLoader
                     if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
                     {
                         ret.Set(true, f, true);
-                        if (findDarkLoaderOnly) return DoReturn();
+                        if (findDarkLoaderOnly) return ret;
                         break;
                     }
                 }
@@ -184,7 +164,7 @@ namespace AngelLoader
             if (findDarkLoaderOnly)
             {
                 ret.Set(false, "", false);
-                return DoReturn();
+                return ret;
             }
 
             #region AngelLoader / FMSel / NewDarkLoader
@@ -232,7 +212,7 @@ namespace AngelLoader
                     if (bakFiles.Count == 0)
                     {
                         ret.Set(false, "", false);
-                        return DoReturn();
+                        return ret;
                     }
 
                     // Use the newest of all files found in all archive dirs
@@ -243,7 +223,7 @@ namespace AngelLoader
             #endregion
 
             ret.Found = true;
-            return DoReturn();
+            return ret;
         }
 
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)

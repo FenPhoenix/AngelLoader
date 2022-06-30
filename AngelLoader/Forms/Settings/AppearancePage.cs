@@ -1,13 +1,11 @@
 ﻿using System.Windows.Forms;
 using AL_Common;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms
 {
-    [PublicAPI]
-    public partial class AppearancePage : UserControl, Interfaces.ISettingsPage
+    public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPage
     {
-        public bool IsVisible { get => Visible; set => Visible = value; }
+        public bool IsVisible => Visible;
 
         public AppearancePage()
         {

@@ -90,7 +90,6 @@ namespace AL_Common
         /// <summary>
         /// HashSet&lt;<see langword="string"/>&gt; that uses <see cref="StringComparer.OrdinalIgnoreCase"/> for equality comparison.
         /// </summary>
-        [PublicAPI]
         public sealed class HashSetI : HashSet<string>
         {
             public HashSetI() : base(StringComparer.OrdinalIgnoreCase) { }
@@ -105,14 +104,15 @@ namespace AL_Common
         /// Since the key type will always be <see langword="string"/>, only the value type is specifiable.
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
-        [PublicAPI]
         public sealed class DictionaryI<TValue> : Dictionary<string, TValue>
         {
             public DictionaryI() : base(StringComparer.OrdinalIgnoreCase) { }
 
             public DictionaryI(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase) { }
 
+#if false
             public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
+#endif
         }
 
         #endregion
