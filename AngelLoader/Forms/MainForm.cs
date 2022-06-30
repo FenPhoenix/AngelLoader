@@ -4391,7 +4391,7 @@ namespace AngelLoader.Forms
 
         internal void PlayOriginalGameButton_MouseUp(object sender, MouseEventArgs e)
         {
-            if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+            if (CursorOverControl((Control)sender) && e.Button == MouseButtons.Right)
             {
                 ShowPerGameModsWindow(((DarkButton)sender).GameIndex);
             }
