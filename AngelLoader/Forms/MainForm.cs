@@ -4723,92 +4723,70 @@ namespace AngelLoader.Forms
         {
             bool fmIsT3 = fm.Game == Game.Thief3;
 
-            #region Toggles
-
-            MainModsControl.CheckList.Enabled = !fmIsT3;
+            UpdateUIControlsForMultiSelectState(fm);
 
             // We should never get here when FMsList.Count == 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
-            UpdateUIControlsForMultiSelectState(fm);
-
-            StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
-
-            foreach (Control c in EditFMTabPage.Controls)
-            {
-                if (c == EditFMLanguageLabel ||
-                    c == EditFMLanguageComboBox)
-                {
-                    c.Enabled = !fmIsT3;
-                }
-                else
-                {
-                    c.Enabled = true;
-                }
-            }
-
-            EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
-            EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
-            EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
-            EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
-            EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
-
-            CommentTextBox.Enabled = true;
-            foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
-
-            PatchMainPanel.Enabled = true;
-
-            if (fm.Installed)
-            {
-                ShowPatchSection(enable: true);
-            }
-            else
-            {
-                HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
-            }
-
-            PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
-
-            #endregion
-
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
-
-            #region Stats tab
-
-            if (fmIsT3)
-            {
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
-                StatsScanCustomResourcesButton.Hide();
-            }
-            else if (!fm.ResourcesScanned)
-            {
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
-                StatsScanCustomResourcesButton.Show();
-            }
-            else
-            {
-                CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
-
-                CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
-                CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
-                CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
-                CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
-                CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
-                CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
-                CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
-                CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
-                CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
-                CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
-
-                StatsCheckBoxesPanel.Show();
-                StatsScanCustomResourcesButton.Show();
-            }
-
-            #endregion
 
             using (new DisableEvents(this))
             {
+                #region Stats tab
+
+                StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
+
+                if (fmIsT3)
+                {
+                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                    StatsScanCustomResourcesButton.Hide();
+                }
+                else if (!fm.ResourcesScanned)
+                {
+                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
+                    StatsScanCustomResourcesButton.Show();
+                }
+                else
+                {
+                    CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
+
+                    CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
+                    CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
+                    CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
+                    CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
+                    CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
+                    CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
+                    CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
+                    CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
+                    CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
+                    CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
+
+                    StatsCheckBoxesPanel.Show();
+                    StatsScanCustomResourcesButton.Show();
+                }
+
+                #endregion
+
                 #region Edit FM tab
+
+                foreach (Control c in EditFMTabPage.Controls)
+                {
+                    if (c == EditFMLanguageLabel ||
+                        c == EditFMLanguageComboBox)
+                    {
+                        c.Enabled = !fmIsT3;
+                    }
+                    else
+                    {
+                        c.Enabled = true;
+                    }
+                }
+
+                EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
+                EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
+                EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
+                EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
+                EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
 
                 EditFMTitleTextBox.Text = fm.Title;
 
@@ -4832,11 +4810,14 @@ namespace AngelLoader.Forms
 
                 #region Comment tab
 
+                CommentTextBox.Enabled = true;
                 CommentTextBox.Text = fm.Comment.FromRNEscapes();
 
                 #endregion
 
                 #region Tags tab
+
+                foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
 
                 AddTagTextBox.Text = "";
                 DisplayFMTags(fm.Tags);
@@ -4844,6 +4825,19 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region Patch tab
+
+                PatchMainPanel.Enabled = true;
+
+                if (fm.Installed)
+                {
+                    ShowPatchSection(enable: true);
+                }
+                else
+                {
+                    HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
+                }
+
+                PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
 
                 if (GameIsDark(fm.Game) && fm.Installed)
                 {
@@ -4873,10 +4867,13 @@ namespace AngelLoader.Forms
                 // @VBL
                 #region Mods tab
 
+                // TODO: We might want to just disable the whole mods tab for Thief 3
                 foreach (Control c in ModsTabPage.Controls)
                 {
                     c.Enabled = true;
                 }
+
+                MainModsControl.CheckList.Enabled = !fmIsT3;
 
                 var modsFillResult = MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
                 if (modsFillResult.Success)
