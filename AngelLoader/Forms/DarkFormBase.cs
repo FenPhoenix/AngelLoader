@@ -58,10 +58,15 @@ namespace AngelLoader.Forms
         private static void FillControlColorList(
             Control control,
             List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
-            bool createControlHandles,
-            int stackCounter = 0)
+            bool createControlHandles
+#if !ReleasePublic && !NoAsserts
+            , int stackCounter = 0
+#endif
+        )
         {
+#if !ReleasePublic && !NoAsserts
             const int maxStackCount = 100;
+#endif
 
             if (controlColors != null && control.Tag is not LoadType.Lazy)
             {
@@ -76,11 +81,13 @@ namespace AngelLoader.Forms
                 IntPtr dummy = control.Handle;
             }
 
+#if !ReleasePublic && !NoAsserts
             stackCounter++;
 
             AssertR(
                 stackCounter <= maxStackCount,
                 nameof(FillControlColorList) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+#endif
 
             // Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
             // implemented by actually adding and removing the tab pages from the control and keeping them in a
@@ -93,14 +100,22 @@ namespace AngelLoader.Forms
                 var backingPages = dtc.BackingTabPages;
                 for (int i = 0; i < backingPages.Length; i++)
                 {
-                    FillControlColorList(backingPages[i], controlColors, createControlHandles, stackCounter);
+                    FillControlColorList(backingPages[i], controlColors, createControlHandles
+#if !ReleasePublic && !NoAsserts
+                    , stackCounter
+#endif
+                    );
                 }
             }
             else
             {
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
-                    FillControlColorList(control.Controls[i], controlColors, createControlHandles, stackCounter);
+                    FillControlColorList(control.Controls[i], controlColors, createControlHandles
+#if !ReleasePublic && !NoAsserts
+                    , stackCounter
+#endif
+                    );
                 }
             }
         }
