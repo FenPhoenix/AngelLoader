@@ -4032,9 +4032,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #endregion
-
         public bool MultipleFMsSelected() => FMsDGV.MultipleFMsSelected();
+
+        #endregion
 
         #region Update displayed rating
 
@@ -4053,8 +4053,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i <= 10; i++)
                 {
-                    string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                    EditFMRatingComboBox.Items[i + 1] = num;
+                    EditFMRatingComboBox.Items[i + 1] = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
                 }
             }
 
@@ -4075,6 +4074,7 @@ namespace AngelLoader.Forms
                 newRatingColumn.Width = newRatingColumn == RatingTextColumn
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
+                    // @NET5: "Normal zoom" cell height will change with a different font
                     : FMsDGV.RowTemplate.Height == 22
                         ? _ratingImageColumnWidth
                         : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (_ratingImageColumnWidth / 22);
