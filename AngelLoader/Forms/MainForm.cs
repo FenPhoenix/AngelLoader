@@ -97,7 +97,7 @@ namespace AngelLoader.Forms
 
         private readonly TabPage[] _gameTabs;
         private readonly ToolStripButtonCustom[] _filterByGameButtons;
-        private readonly TabPage[] _topRightTabsInOrder;
+        private readonly TabPage[] _topRightTabs;
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -712,7 +712,7 @@ namespace AngelLoader.Forms
             GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
             GamesTabControl.Deselecting += GamesTabControl_Deselecting;
 
-            _topRightTabsInOrder = new TabPage[]
+            _topRightTabs = new TabPage[]
             {
                 StatisticsTabPage,
                 EditFMTabPage,
@@ -801,29 +801,40 @@ namespace AngelLoader.Forms
             // Set here specifically (before anything else) so that splitter positioning etc. works right.
             SetWindowStateAndSize();
 
+            GamesTabControl.SetTabsFull(_gameTabs);
+
             #region Top-right tabs
 
-            AssertR(_topRightTabsInOrder.Length == TopRightTabsData.Count, nameof(_topRightTabsInOrder) + " length is different than enum length");
+            AssertR(_topRightTabs.Length == TopRightTabsData.Count, nameof(_topRightTabs) + " length is different than enum length");
 
-            var sortedTabPages = new SortedDictionary<int, TabPage>();
+            var topRightTabsDict = new Dictionary<int, TabPage>();
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabsInOrder[i]);
+                topRightTabsDict.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabs[i]);
             }
 
-            var topRightTabs = new List<TabPage>(sortedTabPages.Count);
-            foreach (var item in sortedTabPages) topRightTabs.Add(item.Value);
+            var topRightTabs = new TabPage[TopRightTabsData.Count];
+            for (int i = 0; i < TopRightTabsData.Count; i++)
+            {
+                topRightTabs[i] = topRightTabsDict[i];
+            }
 
-            // This removes any existing tabs so it works even though we always add all tabs in component init now
             TopRightTabControl.SetTabsFull(topRightTabs);
-            var gameTabs = new List<TabPage>(SupportedGameCount);
-            foreach (TabPage item in _gameTabs) gameTabs.Add(item);
-            GamesTabControl.SetTabsFull(gameTabs);
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                TopRightTabControl.ShowTab(_topRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
+                TopRightTabControl.ShowTab(_topRightTabs[i], Config.TopRightTabsData.Tabs[i].Visible);
                 TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
+            }
+
+            // EnsureValidity() guarantees selected tab will not be invisible
+            for (int i = 0; i < TopRightTabsData.Count; i++)
+            {
+                if ((int)Config.TopRightTabsData.SelectedTab == i)
+                {
+                    TopRightTabControl.SelectedTab = _topRightTabs[i];
+                    break;
+                }
             }
 
             #endregion
@@ -914,16 +925,6 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
 
             #endregion
-
-            // EnsureValidity() guarantees selected tab will not be invisible
-            for (int i = 0; i < TopRightTabsData.Count; i++)
-            {
-                if ((int)Config.TopRightTabsData.SelectedTab == i)
-                {
-                    TopRightTabControl.SelectedTab = _topRightTabsInOrder[i];
-                    break;
-                }
-            }
 
             SetPlayOriginalGameControlsState();
 
@@ -3400,7 +3401,7 @@ namespace AngelLoader.Forms
             {
                 if (s == (ToolStripMenuItemCustom)TopRightLLMenu.Menu.Items[i])
                 {
-                    tab = _topRightTabsInOrder[i];
+                    tab = _topRightTabs[i];
                     break;
                 }
             }
@@ -5294,13 +5295,13 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabsInOrder, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs, TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabsInOrder[i]);
-                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabsInOrder[i]);
+                topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabs[i]);
+                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabs[i]);
             }
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized

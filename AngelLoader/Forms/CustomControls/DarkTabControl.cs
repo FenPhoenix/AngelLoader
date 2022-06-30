@@ -360,23 +360,18 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         /// <param name="tabPages"></param>
         [PublicAPI]
-        public void SetTabsFull(List<TabPage> tabPages)
+        public void SetTabsFull(TabPage[] tabPages)
         {
-            ClearTabsFull();
-            _backingTabList.Capacity = tabPages.Count;
+            if (TabCount > 0) TabPages.Clear();
+            _backingTabList.Clear();
+
+            _backingTabList.Capacity = tabPages.Length;
 
             foreach (TabPage tabPage in tabPages)
             {
                 TabPages.Add(tabPage);
                 _backingTabList.Add(new BackingTab(tabPage));
             }
-        }
-
-        [PublicAPI]
-        public void ClearTabsFull()
-        {
-            if (TabCount > 0) TabPages.Clear();
-            _backingTabList.Clear();
         }
 
         /// <summary>
