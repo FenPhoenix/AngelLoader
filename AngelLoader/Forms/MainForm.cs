@@ -4768,6 +4768,10 @@ namespace AngelLoader.Forms
 
                 EditFMTitleTextBox.Text = fm.Title;
 
+                // FM AltTitles is nominally always supposed to be non-empty (because the scan puts at least a
+                // copy of the title in it), but it can be empty if all AltTitles lines for the FM have been
+                // removed manually from the entry in the ini file. "Won't happen but could happen so we have to
+                // handle it" scenario.
                 EditFMAltTitlesArrowButton.Enabled = fm.AltTitles.Count > 0;
 
                 EditFMAuthorTextBox.Text = fm.Author;
