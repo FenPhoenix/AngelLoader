@@ -68,7 +68,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
 
             // For some reason getting a built-in font is godawful slow (270+ ms), so we literally just fricking

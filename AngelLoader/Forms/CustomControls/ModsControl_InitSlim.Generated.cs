@@ -5,7 +5,7 @@
         /// <summary>
         /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private void InitializeComponentSlim()
+        private void InitSlim()
         {
             this.components = new System.ComponentModel.Container();
             this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

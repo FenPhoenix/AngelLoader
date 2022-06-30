@@ -5,7 +5,7 @@
         /// <summary>
         /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private void InitializeComponentSlim()
+        private void InitSlim()
         {
             this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.IconPictureBox = new System.Windows.Forms.PictureBox();

@@ -31,7 +31,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
 
             _multiChoice = choiceStrings?.Length > 0;

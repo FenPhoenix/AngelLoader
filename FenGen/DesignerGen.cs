@@ -642,7 +642,7 @@ namespace FenGen
             w.WL("/// <summary>");
             w.WL("/// Custom generated component initializer with cruft removed.");
             w.WL("/// </summary>");
-            w.WL("private void InitializeComponentSlim()");
+            w.WL("private void InitSlim()");
             w.WL("{");
             foreach (NodeCustom node in destNodes)
             {

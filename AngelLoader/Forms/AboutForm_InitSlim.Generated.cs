@@ -5,7 +5,7 @@
         /// <summary>
         /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private void InitializeComponentSlim()
+        private void InitSlim()
         {
             this.LogoPictureBox = new System.Windows.Forms.PictureBox();
             this.VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

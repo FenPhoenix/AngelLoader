@@ -14,7 +14,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
 
             // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't

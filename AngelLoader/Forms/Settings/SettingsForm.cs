@@ -97,7 +97,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
 
             if (startup) Win32ThemeHooks.InstallHooks();

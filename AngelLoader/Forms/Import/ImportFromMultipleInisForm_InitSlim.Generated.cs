@@ -5,7 +5,7 @@
         /// <summary>
         /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private void InitializeComponentSlim()
+        private void InitSlim()
         {
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();

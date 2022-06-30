@@ -24,7 +24,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);

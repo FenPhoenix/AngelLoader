@@ -11,7 +11,7 @@ namespace AngelLoader.Forms
 #if DEBUG
             InitializeComponent();
 #else
-            InitializeComponentSlim();
+            InitSlim();
 #endif
             DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
         }
