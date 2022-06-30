@@ -1734,10 +1734,6 @@ namespace AngelLoader.Forms
                 // This causes a refresh of everything and in turn updates the size column strings
                 // We don't need to refresh on startup because we already will later
                 if (!startup) EverythingPanel.ResumeDrawing();
-
-                // We can't do this while the layout is suspended, because then it won't have the right dimensions
-                // for centering
-                ViewHTMLReadmeLLButton.Center(MainSplitContainer.Panel2);
             }
         }
 

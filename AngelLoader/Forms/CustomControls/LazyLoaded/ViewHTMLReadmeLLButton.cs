@@ -30,12 +30,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal void Localize()
         {
-            if (_constructed) Button.Text = LText.ReadmeArea.ViewHTMLReadme;
-        }
+            if (!_constructed) return;
 
-        internal void Center(Control parent)
-        {
-            if (_constructed) Button.CenterHV(parent);
+            Button.Text = LText.ReadmeArea.ViewHTMLReadme;
+            Button.CenterHV(_owner.MainSplitContainer.Panel2);
         }
 
         internal bool Visible => _constructed && Button.Visible;
@@ -57,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                     Anchor = AnchorStyles.None,
                     AutoSize = true,
-                    // This thing gets centered later so no location is specified here
+                    // Button gets centered on localize so no location is specified here
                     Padding = new Padding(6, 0, 6, 0),
                     AutoSizeMode = AutoSizeMode.GrowAndShrink,
                     MinimumSize = new Size(0, 23),
@@ -75,7 +73,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 _constructed = true;
 
                 Localize();
-                Button.CenterHV(container);
             }
 
             Button.Show();
