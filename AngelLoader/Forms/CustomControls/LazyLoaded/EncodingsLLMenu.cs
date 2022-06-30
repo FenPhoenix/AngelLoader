@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
 using JetBrains.Annotations;
@@ -11,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
     {
         #region Private fields
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         private bool _constructed;

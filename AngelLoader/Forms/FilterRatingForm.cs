@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using static AngelLoader.Misc;
 
@@ -11,6 +12,8 @@ namespace AngelLoader.Forms
     // TEXT WHICH IS THE #$@$ING THING WE'RE TRYING TO PREVENT IN THE FIRST PLACE.
     public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     {
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         internal int RatingFrom;

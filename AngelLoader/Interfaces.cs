@@ -34,11 +34,6 @@ namespace AngelLoader
         bool EventsDisabled { set; }
     }
 
-    public interface IZeroSelectCodeDisabler
-    {
-        bool ZeroSelectCodeDisabled { set; }
-    }
-
     internal sealed class DisableEvents : IDisposable
     {
         private readonly IEventDisabler Obj;
@@ -49,6 +44,15 @@ namespace AngelLoader
         }
 
         public void Dispose() => Obj.EventsDisabled = false;
+    }
+
+    #endregion
+
+    #region DisableZeroSelectCode
+
+    public interface IZeroSelectCodeDisabler
+    {
+        bool ZeroSelectCodeDisabled { set; }
     }
 
     internal sealed class DisableZeroSelectCode : IDisposable

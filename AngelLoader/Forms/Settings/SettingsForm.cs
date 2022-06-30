@@ -7,6 +7,7 @@
 // UPDATE 2021-04-27: We have severe flickering issues with the TreeView. Reverting to old style for now.
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -73,6 +74,8 @@ namespace AngelLoader.Forms
 
         private enum PathError { True, False }
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         #endregion

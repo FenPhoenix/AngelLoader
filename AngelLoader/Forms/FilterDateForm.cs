@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using static AngelLoader.Misc;
 
@@ -8,6 +9,8 @@ namespace AngelLoader.Forms
     {
         private enum DateType { From, To }
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         internal DateTime? DateFrom;
