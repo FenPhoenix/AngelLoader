@@ -271,6 +271,7 @@
             this.Controls.Add(this.AndTreeView);
             this.Controls.Add(this.OriginTreeView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1056, 32767);
             this.MinimizeBox = false;
@@ -278,6 +279,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilterTagsForm_KeyDown);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
             this.BottomFLP.ResumeLayout(false);

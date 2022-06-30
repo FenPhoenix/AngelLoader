@@ -292,5 +292,14 @@ namespace AngelLoader.Forms
                 controlEnabled: button.Enabled
             );
         }
+
+        private void FilterTagsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.F)
+            {
+                FindTagTextBox.Focus();
+                FindTagTextBox.SelectAll();
+            }
+        }
     }
 }
