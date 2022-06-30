@@ -2611,40 +2611,28 @@ namespace AngelLoader.Forms
 
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                ToolStripButtonCustom? button = null;
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
-                    {
-                        button = _filterByGameButtons[i];
-                        break;
-                    }
-                }
+                ToolStripButtonCustom button = GetObjectFromMenuItem(
+                    GameFilterControlsLLMenu.Menu,
+                    s,
+                    _filterByGameButtons,
+                    SupportedGameCount);
 
-                AssertR(button != null, nameof(button) + " is null - button does not have a corresponding menu item");
-
-                button!.Visible = s.Checked;
-                if (button!.Checked && !s.Checked) button.Checked = false;
+                button.Visible = s.Checked;
+                if (button.Checked && !s.Checked) button.Checked = false;
 
                 // We have to refresh manually because Checked change doesn't trigger the refresh, only Click
                 await SortAndSetFilter(keepSelection: true);
             }
             else // ByTab
             {
-                TabPage? tab = null;
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    if (s == (ToolStripMenuItemCustom)GameFilterControlsLLMenu.Menu.Items[i])
-                    {
-                        tab = _gameTabs[i];
-                        break;
-                    }
-                }
-
-                AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+                TabPage tab = GetObjectFromMenuItem(
+                    GameFilterControlsLLMenu.Menu,
+                    s,
+                    _gameTabs,
+                    SupportedGameCount);
 
                 // We don't need to do a manual refresh here because ShowTab will end up resulting in one
-                GamesTabControl.ShowTab(tab!, s.Checked);
+                GamesTabControl.ShowTab(tab, s.Checked);
                 AutosizeGameTabsWidth();
                 PositionFilterBarAfterTabs();
             }
@@ -3392,17 +3380,7 @@ namespace AngelLoader.Forms
         {
             var s = (ToolStripMenuItemCustom)sender;
 
-            TabPage? tab = null;
-            for (int i = 0; i < TopRightTabsData.Count; i++)
-            {
-                if (s == (ToolStripMenuItemCustom)TopRightLLMenu.Menu.Items[i])
-                {
-                    tab = _topRightTabs[i];
-                    break;
-                }
-            }
-
-            AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+            TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabsData.Count);
 
             if (!s.Checked && TopRightTabControl.TabCount == 1)
             {
@@ -3410,7 +3388,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            TopRightTabControl.ShowTab(tab!, s.Checked);
+            TopRightTabControl.ShowTab(tab, s.Checked);
         }
 
         #endregion
@@ -5377,6 +5355,23 @@ namespace AngelLoader.Forms
         {
             if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
             Activate();
+        }
+
+        private static T GetObjectFromMenuItem<T>(DarkContextMenu menu, ToolStripMenuItemCustom menuItem, T[] array, int count)
+        {
+            T? obj = default;
+            for (int i = 0; i < count; i++)
+            {
+                if (menuItem == (ToolStripMenuItemCustom)menu.Items[i])
+                {
+                    obj = array[i];
+                    break;
+                }
+            }
+
+            AssertR(obj != null, nameof(obj) + " is null - object does not have a corresponding menu item");
+
+            return obj!;
         }
 
         #endregion
