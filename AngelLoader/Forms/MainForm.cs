@@ -651,14 +651,14 @@ namespace AngelLoader.Forms
 
 #if !ReleaseBeta && !ReleasePublic
             ForceWindowedCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
-            BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
+            BottomRightFLP.Controls.Add(ForceWindowedCheckBox);
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 
             T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
             T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
             // Add in reverse order because the flow layout panel is right-to-left I guess?
-            BottomRightButtonsFLP.Controls.Add(T2ScreenShotModeCheckBox);
-            BottomRightButtonsFLP.Controls.Add(T1ScreenShotModeCheckBox);
+            BottomRightFLP.Controls.Add(T2ScreenShotModeCheckBox);
+            BottomRightFLP.Controls.Add(T1ScreenShotModeCheckBox);
             T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
             T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
 #endif
@@ -5093,7 +5093,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
+        private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
 
         private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 

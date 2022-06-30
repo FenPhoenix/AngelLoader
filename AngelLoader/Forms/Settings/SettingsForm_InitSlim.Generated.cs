@@ -8,7 +8,7 @@
         private void InitializeComponentSlim()
         {
             this.components = new System.ComponentModel.Container();
-            this.BottomFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -19,7 +19,7 @@
             this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.BottomFlowLayoutPanel.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -27,25 +27,25 @@
             this.MainSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
-            // BottomFlowLayoutPanel
+            // BottomFLP
             // 
-            this.BottomFlowLayoutPanel.Controls.Add(this.Cancel_Button);
-            this.BottomFlowLayoutPanel.Controls.Add(this.OKButton);
-            this.BottomFlowLayoutPanel.Controls.Add(this.ErrorLabel);
-            this.BottomFlowLayoutPanel.Controls.Add(this.ErrorIconPictureBox);
-            this.BottomFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 616);
-            this.BottomFlowLayoutPanel.Size = new System.Drawing.Size(694, 40);
-            this.BottomFlowLayoutPanel.TabIndex = 4;
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.Controls.Add(this.ErrorLabel);
+            this.BottomFLP.Controls.Add(this.ErrorIconPictureBox);
+            this.BottomFLP.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 616);
+            this.BottomFLP.Size = new System.Drawing.Size(694, 40);
+            this.BottomFLP.TabIndex = 4;
             // 
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.UseVisualStyleBackColor = true;
@@ -54,9 +54,9 @@
             // 
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.TabIndex = 1;
             this.OKButton.UseVisualStyleBackColor = true;
@@ -148,7 +148,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(694, 656);
             this.Controls.Add(this.MainSplitContainer);
-            this.Controls.Add(this.BottomFlowLayoutPanel);
+            this.Controls.Add(this.BottomFLP);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -161,8 +161,8 @@
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.Shown += new System.EventHandler(this.SettingsForm_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
-            this.BottomFlowLayoutPanel.ResumeLayout(false);
-            this.BottomFlowLayoutPanel.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).EndInit();
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);

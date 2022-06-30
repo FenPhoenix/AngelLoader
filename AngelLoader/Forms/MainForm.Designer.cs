@@ -49,9 +49,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
             this.BottomPanel = new System.Windows.Forms.Panel();
-            this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomRightFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomLeftFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.WebSearchButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -167,8 +167,8 @@
             this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.BottomPanel.SuspendLayout();
-            this.BottomRightButtonsFLP.SuspendLayout();
-            this.BottomLeftButtonsFLP.SuspendLayout();
+            this.BottomRightFLP.SuspendLayout();
+            this.BottomLeftFLP.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -209,25 +209,25 @@
             // 
             // BottomPanel
             // 
-            this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
-            this.BottomPanel.Controls.Add(this.BottomLeftButtonsFLP);
+            this.BottomPanel.Controls.Add(this.BottomRightFLP);
+            this.BottomPanel.Controls.Add(this.BottomLeftFLP);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomPanel.Location = new System.Drawing.Point(0, 672);
             this.BottomPanel.Name = "BottomPanel";
             this.BottomPanel.Size = new System.Drawing.Size(1671, 44);
             this.BottomPanel.TabIndex = 1;
             // 
-            // BottomRightButtonsFLP
+            // BottomRightFLP
             // 
-            this.BottomRightButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BottomRightButtonsFLP.AutoSize = true;
-            this.BottomRightButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BottomRightButtonsFLP.Controls.Add(this.SettingsButton);
-            this.BottomRightButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightButtonsFLP.Location = new System.Drawing.Point(1563, 0);
-            this.BottomRightButtonsFLP.Name = "BottomRightButtonsFLP";
-            this.BottomRightButtonsFLP.Size = new System.Drawing.Size(106, 42);
-            this.BottomRightButtonsFLP.TabIndex = 37;
+            this.BottomRightFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BottomRightFLP.AutoSize = true;
+            this.BottomRightFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomRightFLP.Controls.Add(this.SettingsButton);
+            this.BottomRightFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomRightFLP.Location = new System.Drawing.Point(1563, 0);
+            this.BottomRightFLP.Name = "BottomRightFLP";
+            this.BottomRightFLP.Size = new System.Drawing.Size(106, 42);
+            this.BottomRightFLP.TabIndex = 37;
             // 
             // SettingsButton
             // 
@@ -244,18 +244,18 @@
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
             this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
             // 
-            // BottomLeftButtonsFLP
+            // BottomLeftFLP
             // 
-            this.BottomLeftButtonsFLP.AutoSize = true;
-            this.BottomLeftButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalFLP);
-            this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
-            this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
-            this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(234, 42);
-            this.BottomLeftButtonsFLP.TabIndex = 36;
-            this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
+            this.BottomLeftFLP.AutoSize = true;
+            this.BottomLeftFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomLeftFLP.Controls.Add(this.PlayFMButton);
+            this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
+            this.BottomLeftFLP.Controls.Add(this.WebSearchButton);
+            this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
+            this.BottomLeftFLP.Name = "BottomLeftFLP";
+            this.BottomLeftFLP.Size = new System.Drawing.Size(234, 42);
+            this.BottomLeftFLP.TabIndex = 36;
+            this.BottomLeftFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftFLP_Paint);
             // 
             // PlayFMButton
             // 
@@ -1777,10 +1777,10 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
-            this.BottomRightButtonsFLP.ResumeLayout(false);
-            this.BottomRightButtonsFLP.PerformLayout();
-            this.BottomLeftButtonsFLP.ResumeLayout(false);
-            this.BottomLeftButtonsFLP.PerformLayout();
+            this.BottomRightFLP.ResumeLayout(false);
+            this.BottomRightFLP.PerformLayout();
+            this.BottomLeftFLP.ResumeLayout(false);
+            this.BottomLeftFLP.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -1916,8 +1916,8 @@
         internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFiltersButton;
-        internal System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
-        internal System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
+        internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
+        internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;

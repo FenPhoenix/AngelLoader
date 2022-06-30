@@ -22,14 +22,14 @@
             this.NetCore3SysIOCompLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             this.AngelLoaderUsesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.LogoTextPictureBox = new System.Windows.Forms.PictureBox();
-            this.OKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.OK_FLP = new System.Windows.Forms.FlowLayoutPanel();
             this.BuildDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DarkUILinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             this.EasyHookLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             this.OpenSansLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).BeginInit();
-            this.OKFlowLayoutPanel.SuspendLayout();
+            this.OK_FLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // LogoPictureBox
@@ -156,14 +156,14 @@
             this.LogoTextPictureBox.TabIndex = 7;
             this.LogoTextPictureBox.TabStop = false;
             // 
-            // OKFlowLayoutPanel
+            // OK_FLP
             // 
-            this.OKFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.OKFlowLayoutPanel.Controls.Add(this.OKButton);
-            this.OKFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKFlowLayoutPanel.Location = new System.Drawing.Point(0, 523);
-            this.OKFlowLayoutPanel.Size = new System.Drawing.Size(529, 40);
-            this.OKFlowLayoutPanel.TabIndex = 0;
+            this.OK_FLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.OK_FLP.Controls.Add(this.OKButton);
+            this.OK_FLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.OK_FLP.Location = new System.Drawing.Point(0, 523);
+            this.OK_FLP.Size = new System.Drawing.Size(529, 40);
+            this.OK_FLP.TabIndex = 0;
             // 
             // BuildDateLabel
             // 
@@ -206,7 +206,7 @@
             this.ClientSize = new System.Drawing.Size(529, 563);
             this.Controls.Add(this.BuildDateLabel);
             this.Controls.Add(this.VersionLabel);
-            this.Controls.Add(this.OKFlowLayoutPanel);
+            this.Controls.Add(this.OK_FLP);
             this.Controls.Add(this.LogoTextPictureBox);
             this.Controls.Add(this.AngelLoaderUsesLabel);
             this.Controls.Add(this.NetCore3SysIOCompLinkLabel);
@@ -231,8 +231,8 @@
             this.Text = " ";
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LogoTextPictureBox)).EndInit();
-            this.OKFlowLayoutPanel.ResumeLayout(false);
-            this.OKFlowLayoutPanel.PerformLayout();
+            this.OK_FLP.ResumeLayout(false);
+            this.OK_FLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }

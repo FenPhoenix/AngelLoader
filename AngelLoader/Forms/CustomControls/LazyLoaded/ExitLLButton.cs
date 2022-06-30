@@ -41,7 +41,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (!_constructed)
                 {
-                    var container = _owner.BottomRightButtonsFLP;
+                    var container = _owner.BottomRightFLP;
 
                     Button = new DarkButton
                     {

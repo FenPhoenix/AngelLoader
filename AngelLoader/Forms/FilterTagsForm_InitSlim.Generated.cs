@@ -28,12 +28,12 @@
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.BottomButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.FilterLabelsPanel.SuspendLayout();
-            this.BottomButtonsFLP.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.MoveButtonsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,7 +42,6 @@
             this.OriginTreeView.AlwaysDrawNodesFocused = true;
             this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
             this.OriginTreeView.Location = new System.Drawing.Point(8, 32);
             this.OriginTreeView.Size = new System.Drawing.Size(224, 624);
@@ -79,38 +78,38 @@
             // AndButton
             // 
             this.AndButton.AutoSize = true;
-            this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.AndButton.Location = new System.Drawing.Point(16, 0);
+            this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.AndButton.TabIndex = 0;
             this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.UseVisualStyleBackColor = true;
-            this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // OrButton
             // 
             this.OrButton.AutoSize = true;
-            this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.OrButton.Location = new System.Drawing.Point(16, 23);
+            this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.OrButton.TabIndex = 1;
             this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.UseVisualStyleBackColor = true;
-            this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // NotButton
             // 
             this.NotButton.AutoSize = true;
-            this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.NotButton.Location = new System.Drawing.Point(16, 46);
+            this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.NotButton.TabIndex = 2;
             this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.UseVisualStyleBackColor = true;
-            this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // IncludeAllLabel
             // 
@@ -151,8 +150,8 @@
             this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllNotButton.TabIndex = 8;
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
-            this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllOrButton
             // 
@@ -160,8 +159,8 @@
             this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllOrButton.TabIndex = 5;
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
-            this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllAndButton
             // 
@@ -169,8 +168,8 @@
             this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllAndButton.TabIndex = 2;
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
-            this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveSelectedNotButton
             // 
@@ -178,8 +177,8 @@
             this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedNotButton.TabIndex = 7;
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedOrButton
             // 
@@ -187,8 +186,8 @@
             this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedOrButton.TabIndex = 4;
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedAndButton
             // 
@@ -196,16 +195,16 @@
             this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedAndButton.TabIndex = 1;
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // OKButton
             // 
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.TabIndex = 2;
             this.OKButton.UseVisualStyleBackColor = true;
@@ -213,8 +212,6 @@
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 3, 7, 3);
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -224,25 +221,23 @@
             // ResetButton
             // 
             this.ResetButton.AutoSize = true;
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.TabIndex = 0;
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
-            // BottomButtonsFLP
+            // BottomFLP
             // 
-            this.BottomButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BottomButtonsFLP.Controls.Add(this.Cancel_Button);
-            this.BottomButtonsFLP.Controls.Add(this.OKButton);
-            this.BottomButtonsFLP.Controls.Add(this.ResetButton);
-            this.BottomButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 660);
-            this.BottomButtonsFLP.Size = new System.Drawing.Size(1040, 32);
-            this.BottomButtonsFLP.TabIndex = 6;
-            this.BottomButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomButtonsFLP_Paint);
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.Controls.Add(this.ResetButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 660);
+            this.BottomFLP.Size = new System.Drawing.Size(1040, 32);
+            this.BottomFLP.TabIndex = 6;
+            this.BottomFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomFLP_Paint);
             // 
             // MoveButtonsPanel
             // 
@@ -269,7 +264,7 @@
             this.ClientSize = new System.Drawing.Size(1040, 692);
             this.Controls.Add(this.FindTagTextBox);
             this.Controls.Add(this.MoveButtonsPanel);
-            this.Controls.Add(this.BottomButtonsFLP);
+            this.Controls.Add(this.BottomFLP);
             this.Controls.Add(this.FilterLabelsPanel);
             this.Controls.Add(this.NotTreeView);
             this.Controls.Add(this.OrTreeView);
@@ -285,8 +280,8 @@
             this.Text = " ";
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
-            this.BottomButtonsFLP.ResumeLayout(false);
-            this.BottomButtonsFLP.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.MoveButtonsPanel.ResumeLayout(false);
             this.MoveButtonsPanel.PerformLayout();
             this.ResumeLayout(false);

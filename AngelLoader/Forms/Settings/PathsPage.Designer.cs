@@ -33,7 +33,7 @@ namespace AngelLoader.Forms
         {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
-            this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.BackupPathPanel = new System.Windows.Forms.Panel();
             this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
@@ -74,7 +74,7 @@ namespace AngelLoader.Forms
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
-            this.FlowLayoutPanel1.SuspendLayout();
+            this.LayoutFLP.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
             this.BackupPathPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
@@ -100,7 +100,7 @@ namespace AngelLoader.Forms
             // 
             this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ActualPathsPanel.Controls.Add(this.FlowLayoutPanel1);
+            this.ActualPathsPanel.Controls.Add(this.LayoutFLP);
             this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
             this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
             this.ActualPathsPanel.Location = new System.Drawing.Point(0, 0);
@@ -109,21 +109,21 @@ namespace AngelLoader.Forms
             this.ActualPathsPanel.Size = new System.Drawing.Size(440, 824);
             this.ActualPathsPanel.TabIndex = 4;
             // 
-            // FlowLayoutPanel1
+            // LayoutFLP
             // 
-            this.FlowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.LayoutFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FlowLayoutPanel1.Controls.Add(this.OtherGroupBox);
-            this.FlowLayoutPanel1.Controls.Add(this.FMArchivePathsGroupBox);
-            this.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 437);
-            this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.FlowLayoutPanel1.Name = "FlowLayoutPanel1";
-            this.FlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 392);
-            this.FlowLayoutPanel1.TabIndex = 4;
-            this.FlowLayoutPanel1.WrapContents = false;
-            this.FlowLayoutPanel1.Layout += new System.Windows.Forms.LayoutEventHandler(this.FlowLayoutPanel1_Layout);
+            this.LayoutFLP.Controls.Add(this.OtherGroupBox);
+            this.LayoutFLP.Controls.Add(this.FMArchivePathsGroupBox);
+            this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.LayoutFLP.Location = new System.Drawing.Point(0, 437);
+            this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.LayoutFLP.Name = "LayoutFLP";
+            this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.LayoutFLP.Size = new System.Drawing.Size(440, 392);
+            this.LayoutFLP.TabIndex = 4;
+            this.LayoutFLP.WrapContents = false;
+            this.LayoutFLP.Layout += new System.Windows.Forms.LayoutEventHandler(this.LayoutFLP_Layout);
             // 
             // OtherGroupBox
             // 
@@ -571,7 +571,7 @@ namespace AngelLoader.Forms
             this.Size = new System.Drawing.Size(440, 847);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
-            this.FlowLayoutPanel1.ResumeLayout(false);
+            this.LayoutFLP.ResumeLayout(false);
             this.OtherGroupBox.ResumeLayout(false);
             this.BackupPathPanel.ResumeLayout(false);
             this.BackupPathPanel.PerformLayout();
@@ -631,7 +631,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.DarkTextBox SS2ExePathTextBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox SS2UseSteamCheckBox;
         internal System.Windows.Forms.Panel BackupPathPanel;
-        internal System.Windows.Forms.FlowLayoutPanel FlowLayoutPanel1;
+        internal System.Windows.Forms.FlowLayoutPanel LayoutFLP;
         internal AngelLoader.Forms.CustomControls.DarkLabel BackupPathHelpLabel;
         private System.Windows.Forms.PictureBox BackupHelpPictureBox;
     }

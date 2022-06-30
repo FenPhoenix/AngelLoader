@@ -19,9 +19,9 @@
             this.ScanButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ScanAllFMsForLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.OKCancelButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.OKCancelButtonsFLP.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.SelectButtonsFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,8 +85,8 @@
             // 
             this.SelectAllButton.AutoSize = true;
             this.SelectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SelectAllButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.SelectAllButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SelectAllButton.TabIndex = 0;
             this.SelectAllButton.UseVisualStyleBackColor = true;
@@ -106,9 +106,9 @@
             // 
             this.ScanButton.AutoSize = true;
             this.ScanButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ScanButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ScanButton.TabIndex = 1;
             this.ScanButton.UseVisualStyleBackColor = true;
@@ -117,9 +117,9 @@
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.UseVisualStyleBackColor = true;
@@ -130,15 +130,15 @@
             this.ScanAllFMsForLabel.Location = new System.Drawing.Point(16, 16);
             this.ScanAllFMsForLabel.TabIndex = 1;
             // 
-            // OKCancelButtonsFLP
+            // BottomFLP
             // 
-            this.OKCancelButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.OKCancelButtonsFLP.Controls.Add(this.Cancel_Button);
-            this.OKCancelButtonsFLP.Controls.Add(this.ScanButton);
-            this.OKCancelButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelButtonsFLP.Location = new System.Drawing.Point(0, 179);
-            this.OKCancelButtonsFLP.Size = new System.Drawing.Size(416, 40);
-            this.OKCancelButtonsFLP.TabIndex = 0;
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.ScanButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 179);
+            this.BottomFLP.Size = new System.Drawing.Size(416, 40);
+            this.BottomFLP.TabIndex = 0;
             // 
             // SelectButtonsFLP
             // 
@@ -156,7 +156,7 @@
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(416, 219);
             this.Controls.Add(this.SelectButtonsFLP);
-            this.Controls.Add(this.OKCancelButtonsFLP);
+            this.Controls.Add(this.BottomFLP);
             this.Controls.Add(this.ScanAllFMsForLabel);
             this.Controls.Add(this.TagsCheckBox);
             this.Controls.Add(this.ReleaseDateCheckBox);
@@ -174,8 +174,8 @@
             this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanAllFMs_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScanAllFMsForm_KeyDown);
-            this.OKCancelButtonsFLP.ResumeLayout(false);
-            this.OKCancelButtonsFLP.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.SelectButtonsFLP.ResumeLayout(false);
             this.SelectButtonsFLP.PerformLayout();
             this.ResumeLayout(false);

@@ -39,7 +39,7 @@ namespace AngelLoader.Forms
             OKButton.TabIndex = 0;
             OKButton.UseVisualStyleBackColor = true;
             // 
-            // OKFlowLayoutPanel
+            // okFLP
             // 
             okFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             okFLP.Controls.Add(OKButton);

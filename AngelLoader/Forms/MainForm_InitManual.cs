@@ -29,9 +29,9 @@ namespace AngelLoader.Forms
             components = new Container();
             GameTabsImageList = new ImageList(components);
             BottomPanel = new Panel();
-            BottomRightButtonsFLP = new FlowLayoutPanel();
+            BottomRightFLP = new FlowLayoutPanel();
             SettingsButton = new DarkButton();
-            BottomLeftButtonsFLP = new FlowLayoutPanel();
+            BottomLeftFLP = new FlowLayoutPanel();
             PlayFMButton = new DarkButton();
             PlayOriginalFLP = new FlowLayoutPanel();
             WebSearchButton = new DarkButton();
@@ -147,8 +147,8 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
             BottomPanel.SuspendLayout();
-            BottomRightButtonsFLP.SuspendLayout();
-            BottomLeftButtonsFLP.SuspendLayout();
+            BottomRightFLP.SuspendLayout();
+            BottomLeftFLP.SuspendLayout();
             EverythingPanel.SuspendLayout();
             MainSplitContainer.BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
@@ -184,23 +184,23 @@ namespace AngelLoader.Forms
             // 
             // BottomPanel
             // 
-            BottomPanel.Controls.Add(BottomRightButtonsFLP);
-            BottomPanel.Controls.Add(BottomLeftButtonsFLP);
+            BottomPanel.Controls.Add(BottomRightFLP);
+            BottomPanel.Controls.Add(BottomLeftFLP);
             BottomPanel.Dock = DockStyle.Bottom;
             BottomPanel.Size = new Size(1671, 44);
             BottomPanel.TabIndex = 1;
             // 
-            // BottomRightButtonsFLP
+            // BottomRightFLP
             // 
-            BottomRightButtonsFLP.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BottomRightButtonsFLP.AutoSize = true;
-            BottomRightButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            BottomRightButtonsFLP.Controls.Add(SettingsButton);
-            BottomRightButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
-            BottomRightButtonsFLP.Location = new Point(1563, 0);
+            BottomRightFLP.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BottomRightFLP.AutoSize = true;
+            BottomRightFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            BottomRightFLP.Controls.Add(SettingsButton);
+            BottomRightFLP.FlowDirection = FlowDirection.RightToLeft;
+            BottomRightFLP.Location = new Point(1563, 0);
             // Needs width to be anchored correctly
-            BottomRightButtonsFLP.Width = 106;
-            BottomRightButtonsFLP.TabIndex = 37;
+            BottomRightFLP.Width = 106;
+            BottomRightFLP.TabIndex = 37;
             // 
             // SettingsButton
             // 
@@ -213,16 +213,16 @@ namespace AngelLoader.Forms
             SettingsButton.PaintCustom += SettingsButton_Paint;
             SettingsButton.Click += Async_EventHandler_Main;
             // 
-            // BottomLeftButtonsFLP
+            // BottomLeftFLP
             // 
-            BottomLeftButtonsFLP.AutoSize = true;
-            BottomLeftButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            BottomLeftButtonsFLP.Controls.Add(PlayFMButton);
-            BottomLeftButtonsFLP.Controls.Add(PlayOriginalFLP);
-            BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
-            BottomLeftButtonsFLP.Location = new Point(2, 0);
-            BottomLeftButtonsFLP.TabIndex = 36;
-            BottomLeftButtonsFLP.Paint += BottomLeftButtonsFLP_Paint;
+            BottomLeftFLP.AutoSize = true;
+            BottomLeftFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            BottomLeftFLP.Controls.Add(PlayFMButton);
+            BottomLeftFLP.Controls.Add(PlayOriginalFLP);
+            BottomLeftFLP.Controls.Add(WebSearchButton);
+            BottomLeftFLP.Location = new Point(2, 0);
+            BottomLeftFLP.TabIndex = 36;
+            BottomLeftFLP.Paint += BottomLeftFLP_Paint;
             // 
             // PlayFMButton
             // 
@@ -1413,10 +1413,10 @@ namespace AngelLoader.Forms
             KeyDown += MainForm_KeyDown;
             BottomPanel.ResumeLayout(false);
             BottomPanel.PerformLayout();
-            BottomRightButtonsFLP.ResumeLayout(false);
-            BottomRightButtonsFLP.PerformLayout();
-            BottomLeftButtonsFLP.ResumeLayout(false);
-            BottomLeftButtonsFLP.PerformLayout();
+            BottomRightFLP.ResumeLayout(false);
+            BottomRightFLP.PerformLayout();
+            BottomLeftFLP.ResumeLayout(false);
+            BottomLeftFLP.PerformLayout();
             EverythingPanel.ResumeLayout(false);
             MainSplitContainer.Panel1.ResumeLayout(false);
             MainSplitContainer.Panel2.ResumeLayout(false);

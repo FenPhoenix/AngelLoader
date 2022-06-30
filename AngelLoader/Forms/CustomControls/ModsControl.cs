@@ -12,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class ModsControl : UserControl, IEventDisabler
     {
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
         public ModsControl()

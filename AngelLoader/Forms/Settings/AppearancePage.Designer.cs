@@ -53,7 +53,7 @@ namespace AngelLoader.Forms
             this.UseShortGameTabNamesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.RecentFMsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.RecentFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.PreviewDateFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.PreviewDateFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PreviewDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
             this.DateSeparator3TextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
@@ -92,7 +92,7 @@ namespace AngelLoader.Forms
             this.RatingDisplayStyleRBPanel.SuspendLayout();
             this.GameOrganizationRBPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RecentFMsNumericUpDown)).BeginInit();
-            this.PreviewDateFlowLayoutPanel.SuspendLayout();
+            this.PreviewDateFLP.SuspendLayout();
             this.DateCustomFormatPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.ReadmeGroupBox.SuspendLayout();
@@ -166,7 +166,7 @@ namespace AngelLoader.Forms
             this.FMsListGroupBox.Controls.Add(this.GameOrganizationRBPanel);
             this.FMsListGroupBox.Controls.Add(this.RecentFMsNumericUpDown);
             this.FMsListGroupBox.Controls.Add(this.RecentFMsLabel);
-            this.FMsListGroupBox.Controls.Add(this.PreviewDateFlowLayoutPanel);
+            this.FMsListGroupBox.Controls.Add(this.PreviewDateFLP);
             this.FMsListGroupBox.Controls.Add(this.DateCustomFormatPanel);
             this.FMsListGroupBox.Controls.Add(this.RatingUseStarsCheckBox);
             this.FMsListGroupBox.Controls.Add(this.RatingExamplePictureBox);
@@ -371,16 +371,16 @@ namespace AngelLoader.Forms
             this.RecentFMsLabel.Text = "Maximum number of days to consider an FM \"recent\":";
             this.RecentFMsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // PreviewDateFlowLayoutPanel
+            // PreviewDateFLP
             // 
-            this.PreviewDateFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.PreviewDateFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.PreviewDateFlowLayoutPanel.Controls.Add(this.PreviewDateLabel);
-            this.PreviewDateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.PreviewDateFlowLayoutPanel.Location = new System.Drawing.Point(16, 456);
-            this.PreviewDateFlowLayoutPanel.Name = "PreviewDateFlowLayoutPanel";
-            this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(456, 16);
-            this.PreviewDateFlowLayoutPanel.TabIndex = 11;
+            this.PreviewDateFLP.Controls.Add(this.PreviewDateLabel);
+            this.PreviewDateFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.PreviewDateFLP.Location = new System.Drawing.Point(16, 456);
+            this.PreviewDateFLP.Name = "PreviewDateFLP";
+            this.PreviewDateFLP.Size = new System.Drawing.Size(456, 16);
+            this.PreviewDateFLP.TabIndex = 11;
             // 
             // PreviewDateLabel
             // 
@@ -720,8 +720,8 @@ namespace AngelLoader.Forms
             this.GameOrganizationRBPanel.ResumeLayout(false);
             this.GameOrganizationRBPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RecentFMsNumericUpDown)).EndInit();
-            this.PreviewDateFlowLayoutPanel.ResumeLayout(false);
-            this.PreviewDateFlowLayoutPanel.PerformLayout();
+            this.PreviewDateFLP.ResumeLayout(false);
+            this.PreviewDateFLP.PerformLayout();
             this.DateCustomFormatPanel.ResumeLayout(false);
             this.DateCustomFormatPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
@@ -747,7 +747,7 @@ namespace AngelLoader.Forms
         internal AngelLoader.Forms.CustomControls.DarkGroupBox ReadmeGroupBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox ReadmeFixedWidthFontCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkGroupBox FMsListGroupBox;
-        internal System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
+        internal System.Windows.Forms.FlowLayoutPanel PreviewDateFLP;
         internal AngelLoader.Forms.CustomControls.DarkLabel PreviewDateLabel;
         internal System.Windows.Forms.Panel DateCustomFormatPanel;
         internal AngelLoader.Forms.CustomControls.DarkTextBox DateSeparator3TextBox;

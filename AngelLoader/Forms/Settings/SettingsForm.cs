@@ -663,7 +663,7 @@ namespace AngelLoader.Forms
             // there's supposed to be scroll bars or whatever else... this makes it visually correct. Don't ask
             // questions.
             PathsPage.DoLayout = true;
-            PathsPage.FlowLayoutPanel1.PerformLayout();
+            PathsPage.LayoutFLP.PerformLayout();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
@@ -719,7 +719,7 @@ namespace AngelLoader.Forms
 
                 PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
                 // Required for the startup version where the lang box is on the same page as paths!
-                PathsPage.FlowLayoutPanel1.PerformLayout();
+                PathsPage.LayoutFLP.PerformLayout();
 
                 PathsPage.FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
                 PathsPage.IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;

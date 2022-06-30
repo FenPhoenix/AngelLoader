@@ -9,7 +9,7 @@
         {
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ImportControls = new AngelLoader.Forms.User_FMSel_NDL_ImportControls();
             this.ImportSizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -21,7 +21,7 @@
             this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.OKCancelFlowLayoutPanel.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // OKButton
@@ -44,17 +44,17 @@
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // OKCancelFlowLayoutPanel
+            // BottomFLP
             // 
-            this.OKCancelFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.OKCancelFlowLayoutPanel.AutoSize = true;
-            this.OKCancelFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
-            this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(386, 578);
-            this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
-            this.OKCancelFlowLayoutPanel.TabIndex = 0;
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomFLP.AutoSize = true;
+            this.BottomFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(386, 578);
+            this.BottomFLP.Size = new System.Drawing.Size(162, 29);
+            this.BottomFLP.TabIndex = 0;
             // 
             // ImportControls
             // 
@@ -159,7 +159,7 @@
             this.Controls.Add(this.ImportReleaseDateCheckBox);
             this.Controls.Add(this.ImportTitleCheckBox);
             this.Controls.Add(this.ImportControls);
-            this.Controls.Add(this.OKCancelFlowLayoutPanel);
+            this.Controls.Add(this.BottomFLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -167,8 +167,8 @@
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromMultipleInisForm_FormClosing);
-            this.OKCancelFlowLayoutPanel.ResumeLayout(false);
-            this.OKCancelFlowLayoutPanel.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }

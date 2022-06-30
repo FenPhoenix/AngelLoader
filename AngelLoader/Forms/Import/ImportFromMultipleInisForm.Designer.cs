@@ -33,7 +33,7 @@ namespace AngelLoader.Forms
         {
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ImportControls = new AngelLoader.Forms.User_FMSel_NDL_ImportControls();
             this.ImportSizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
             this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.OKCancelFlowLayoutPanel.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // OKButton
@@ -76,18 +76,18 @@ namespace AngelLoader.Forms
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // OKCancelFlowLayoutPanel
+            // BottomFLP
             // 
-            this.OKCancelFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.OKCancelFlowLayoutPanel.AutoSize = true;
-            this.OKCancelFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
-            this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(386, 578);
-            this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
-            this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
-            this.OKCancelFlowLayoutPanel.TabIndex = 0;
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomFLP.AutoSize = true;
+            this.BottomFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(386, 578);
+            this.BottomFLP.Name = "BottomFLP";
+            this.BottomFLP.Size = new System.Drawing.Size(162, 29);
+            this.BottomFLP.TabIndex = 0;
             // 
             // ImportControls
             // 
@@ -234,7 +234,7 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.ImportReleaseDateCheckBox);
             this.Controls.Add(this.ImportTitleCheckBox);
             this.Controls.Add(this.ImportControls);
-            this.Controls.Add(this.OKCancelFlowLayoutPanel);
+            this.Controls.Add(this.BottomFLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -242,8 +242,8 @@ namespace AngelLoader.Forms
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "[Import From Multiple]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromMultipleInisForm_FormClosing);
-            this.OKCancelFlowLayoutPanel.ResumeLayout(false);
-            this.OKCancelFlowLayoutPanel.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -254,7 +254,7 @@ namespace AngelLoader.Forms
 
         private AngelLoader.Forms.CustomControls.DarkButton OKButton;
         private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
-        private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel BottomFLP;
         private User_FMSel_NDL_ImportControls ImportControls;
         private AngelLoader.Forms.CustomControls.DarkCheckBox ImportSizeCheckBox;
         private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFinishedOnCheckBox;

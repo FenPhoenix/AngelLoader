@@ -52,21 +52,20 @@ namespace AngelLoader.Forms
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.BottomButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.FilterLabelsPanel.SuspendLayout();
-            this.BottomButtonsFLP.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.MoveButtonsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // OriginTreeView
             // 
             this.OriginTreeView.AlwaysDrawNodesFocused = true;
-            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
             this.OriginTreeView.Location = new System.Drawing.Point(8, 32);
             this.OriginTreeView.Name = "OriginTreeView";
@@ -76,7 +75,7 @@ namespace AngelLoader.Forms
             // 
             // AndTreeView
             // 
-            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
@@ -86,7 +85,7 @@ namespace AngelLoader.Forms
             // 
             // OrTreeView
             // 
-            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
@@ -96,7 +95,7 @@ namespace AngelLoader.Forms
             // 
             // NotTreeView
             // 
-            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
@@ -107,8 +106,8 @@ namespace AngelLoader.Forms
             // AndButton
             // 
             this.AndButton.AutoSize = true;
-            this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.AndButton.Location = new System.Drawing.Point(16, 0);
+            this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.AndButton.Name = "AndButton";
             this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.AndButton.Size = new System.Drawing.Size(80, 23);
@@ -116,14 +115,14 @@ namespace AngelLoader.Forms
             this.AndButton.Text = "All";
             this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.UseVisualStyleBackColor = true;
-            this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // OrButton
             // 
             this.OrButton.AutoSize = true;
-            this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.OrButton.Location = new System.Drawing.Point(16, 23);
+            this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.OrButton.Name = "OrButton";
             this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.OrButton.Size = new System.Drawing.Size(80, 23);
@@ -131,14 +130,14 @@ namespace AngelLoader.Forms
             this.OrButton.Text = "Any";
             this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.UseVisualStyleBackColor = true;
-            this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // NotButton
             // 
             this.NotButton.AutoSize = true;
-            this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.NotButton.Location = new System.Drawing.Point(16, 46);
+            this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.NotButton.Name = "NotButton";
             this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this.NotButton.Size = new System.Drawing.Size(80, 23);
@@ -146,8 +145,8 @@ namespace AngelLoader.Forms
             this.NotButton.Text = "Exclude";
             this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.UseVisualStyleBackColor = true;
-            this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+            this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // IncludeAllLabel
             // 
@@ -199,8 +198,8 @@ namespace AngelLoader.Forms
             this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllNotButton.TabIndex = 8;
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
-            this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllOrButton
             // 
@@ -209,8 +208,8 @@ namespace AngelLoader.Forms
             this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllOrButton.TabIndex = 5;
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
-            this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllAndButton
             // 
@@ -219,8 +218,8 @@ namespace AngelLoader.Forms
             this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllAndButton.TabIndex = 2;
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
-            this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+            this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveSelectedNotButton
             // 
@@ -229,8 +228,8 @@ namespace AngelLoader.Forms
             this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedNotButton.TabIndex = 7;
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedOrButton
             // 
@@ -239,8 +238,8 @@ namespace AngelLoader.Forms
             this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedOrButton.TabIndex = 4;
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedAndButton
             // 
@@ -249,17 +248,17 @@ namespace AngelLoader.Forms
             this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedAndButton.TabIndex = 1;
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
-            this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+            this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // OKButton
             // 
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(877, 3);
             this.OKButton.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -270,8 +269,6 @@ namespace AngelLoader.Forms
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(958, 3);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 3, 7, 3);
@@ -285,9 +282,7 @@ namespace AngelLoader.Forms
             // ResetButton
             // 
             this.ResetButton.AutoSize = true;
-            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
-            this.ResetButton.Location = new System.Drawing.Point(788, 3);
+            this.ResetButton.Location = new System.Drawing.Point(789, 3);
             this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -297,18 +292,18 @@ namespace AngelLoader.Forms
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
-            // BottomButtonsFLP
+            // BottomFLP
             // 
-            this.BottomButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BottomButtonsFLP.Controls.Add(this.Cancel_Button);
-            this.BottomButtonsFLP.Controls.Add(this.OKButton);
-            this.BottomButtonsFLP.Controls.Add(this.ResetButton);
-            this.BottomButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 660);
-            this.BottomButtonsFLP.Name = "BottomButtonsFLP";
-            this.BottomButtonsFLP.Size = new System.Drawing.Size(1040, 32);
-            this.BottomButtonsFLP.TabIndex = 6;
-            this.BottomButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomButtonsFLP_Paint);
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.Controls.Add(this.ResetButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 660);
+            this.BottomFLP.Name = "BottomFLP";
+            this.BottomFLP.Size = new System.Drawing.Size(1040, 32);
+            this.BottomFLP.TabIndex = 6;
+            this.BottomFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomFLP_Paint);
             // 
             // MoveButtonsPanel
             // 
@@ -337,7 +332,7 @@ namespace AngelLoader.Forms
             this.ClientSize = new System.Drawing.Size(1040, 692);
             this.Controls.Add(this.FindTagTextBox);
             this.Controls.Add(this.MoveButtonsPanel);
-            this.Controls.Add(this.BottomButtonsFLP);
+            this.Controls.Add(this.BottomFLP);
             this.Controls.Add(this.FilterLabelsPanel);
             this.Controls.Add(this.NotTreeView);
             this.Controls.Add(this.OrTreeView);
@@ -353,8 +348,8 @@ namespace AngelLoader.Forms
             this.Text = "Set Tags Filter";
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
-            this.BottomButtonsFLP.ResumeLayout(false);
-            this.BottomButtonsFLP.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.MoveButtonsPanel.ResumeLayout(false);
             this.MoveButtonsPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -385,7 +380,7 @@ namespace AngelLoader.Forms
         private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedNotButton;
         private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedOrButton;
         private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
-        private System.Windows.Forms.FlowLayoutPanel BottomButtonsFLP;
+        private System.Windows.Forms.FlowLayoutPanel BottomFLP;
         private System.Windows.Forms.Panel MoveButtonsPanel;
         private System.Windows.Forms.ToolTip MainToolTip;
         private AngelLoader.Forms.CustomControls.DarkTextBox FindTagTextBox;

@@ -35,20 +35,20 @@ namespace AngelLoader.Forms
 
         private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(RemoveFMArchivePathButton, e);
 
-        private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
+        private void LayoutFLP_Layout(object sender, LayoutEventArgs e)
         {
             // Horrible hack to get everything to look right on first show
             if (!DoLayout) return;
             try
             {
-                FlowLayoutPanel1.SuspendLayout();
+                LayoutFLP.SuspendLayout();
                 ActualPathsPanel.SuspendLayout();
 
                 // Manual crap. Yes, it's necessary. All automatic methods are "almost what we need but not quite".
-                int flpC = FlowLayoutPanel1.Controls.Count;
+                int flpC = LayoutFLP.Controls.Count;
                 for (int i = 0; i < flpC; i++)
                 {
-                    FlowLayoutPanel1.Controls[i].Width = FlowLayoutPanel1.ClientSize.Width - 16;
+                    LayoutFLP.Controls[i].Width = LayoutFLP.ClientSize.Width - 16;
                 }
 
                 BackupPathHelpLabel.MaximumSize = BackupPathHelpLabel.MaximumSize with
@@ -65,16 +65,16 @@ namespace AngelLoader.Forms
                                        6;
 
                 // Have to do this separately after, because our heights will have changed above
-                int flpHeight = FlowLayoutPanel1.Padding.Vertical;
+                int flpHeight = LayoutFLP.Padding.Vertical;
                 for (int i = 0; i < flpC; i++)
                 {
-                    Control c = FlowLayoutPanel1.Controls[i];
+                    Control c = LayoutFLP.Controls[i];
                     flpHeight += c.Margin.Vertical +
                                  c.Padding.Vertical +
                                  c.Height;
                 }
 
-                FlowLayoutPanel1.Height = flpHeight;
+                LayoutFLP.Height = flpHeight;
 
                 int greatestTop = 0;
                 Control? bottomMostControl = null;
@@ -103,12 +103,12 @@ namespace AngelLoader.Forms
                     ? PagePanel.Width - SystemInformation.VerticalScrollBarWidth
                     : PagePanel.Width;
                 // Guess we gotta do this one too or something
-                FlowLayoutPanel1.Width = ActualPathsPanel.Width;
+                LayoutFLP.Width = ActualPathsPanel.Width;
             }
             finally
             {
                 ActualPathsPanel.ResumeLayout();
-                FlowLayoutPanel1.ResumeLayout();
+                LayoutFLP.ResumeLayout();
             }
         }
 
@@ -116,7 +116,7 @@ namespace AngelLoader.Forms
         {
             // The text changing might also require the box to change height, but the flow layout panel may not
             // have fired its layout event in that case, so do it manually here.
-            FlowLayoutPanel1.PerformLayout();
+            LayoutFLP.PerformLayout();
         }
     }
 }

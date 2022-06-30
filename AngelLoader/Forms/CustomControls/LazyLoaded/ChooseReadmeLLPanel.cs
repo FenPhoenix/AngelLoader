@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        private FlowLayoutPanel OKButtonFLP = null!;
+        private FlowLayoutPanel OK_FLP = null!;
         private DarkButton OKButton = null!;
 
         private bool _darkModeEnabled;
@@ -39,7 +39,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 Panel.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
                 _listBox.DarkModeEnabled = _darkModeEnabled;
-                OKButtonFLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
+                OK_FLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
                 OKButton.DarkModeEnabled = _darkModeEnabled;
             }
         }
@@ -69,7 +69,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             };
             OKButton.Click += _owner.ChooseReadmeButton_Click;
 
-            OKButtonFLP = new FlowLayoutPanel
+            OK_FLP = new FlowLayoutPanel
             {
                 Tag = LoadType.Lazy,
 
@@ -80,7 +80,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
                 BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
-            OKButtonFLP.Controls.Add(OKButton);
+            OK_FLP.Controls.Add(OKButton);
 
             _listBox = new DarkListBoxWithBackingItems
             {
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
             };
             Panel.Controls.Add(_listBox);
-            Panel.Controls.Add(OKButtonFLP);
+            Panel.Controls.Add(OK_FLP);
 
             container.Controls.Add(Panel);
             Panel.CenterHV(container);

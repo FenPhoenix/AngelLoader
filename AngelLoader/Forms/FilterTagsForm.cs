@@ -274,7 +274,7 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => Images.PaintXButton((Button)sender, e);
 
-        private void BottomButtonsFLP_Paint(object sender, PaintEventArgs e)
+        private void BottomFLP_Paint(object sender, PaintEventArgs e)
         {
             Images.PaintControlSeparators(
                 e: e,

@@ -9,7 +9,7 @@
         {
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -19,7 +19,7 @@
             this.ImportFMDataCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportSavesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportControls = new AngelLoader.Forms.User_DL_ImportControls();
-            this.OKCancelFlowLayoutPanel.SuspendLayout();
+            this.BottomFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // OKButton
@@ -44,15 +44,15 @@
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // OKCancelFlowLayoutPanel
+            // BottomFLP
             // 
-            this.OKCancelFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
-            this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
-            this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(0, 245);
-            this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(547, 40);
-            this.OKCancelFlowLayoutPanel.TabIndex = 0;
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 245);
+            this.BottomFLP.Size = new System.Drawing.Size(547, 40);
+            this.BottomFLP.TabIndex = 0;
             // 
             // ImportFinishedOnCheckBox
             // 
@@ -141,7 +141,7 @@
             this.Controls.Add(this.ImportFMDataCheckBox);
             this.Controls.Add(this.ImportSavesCheckBox);
             this.Controls.Add(this.ImportControls);
-            this.Controls.Add(this.OKCancelFlowLayoutPanel);
+            this.Controls.Add(this.BottomFLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -150,8 +150,8 @@
             this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromDarkLoaderForm_FormClosing);
             this.Load += new System.EventHandler(this.ImportFromDarkLoaderForm_Load);
-            this.OKCancelFlowLayoutPanel.ResumeLayout(false);
-            this.OKCancelFlowLayoutPanel.PerformLayout();
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
