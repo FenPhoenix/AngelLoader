@@ -2141,6 +2141,7 @@ namespace AngelLoader.Forms
                             _filterByGameButtons[i].Checked = false;
                         }
                     }
+
                     FilterTitleTextBox.Clear();
                     FilterAuthorTextBox.Clear();
 
@@ -2151,6 +2152,7 @@ namespace AngelLoader.Forms
                     Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
 
                     FilterByTagsButton.Checked = false;
+
                     FilterByFinishedButton.Checked = false;
                     FilterByUnfinishedButton.Checked = false;
 
@@ -2177,6 +2179,12 @@ namespace AngelLoader.Forms
                     FilterTitleTextBox.Text = filter.Title;
                     FilterAuthorTextBox.Text = filter.Author;
 
+                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
+                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
+
+                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
+                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
+
                     FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
                     FilterByFinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Finished);
@@ -2184,12 +2192,6 @@ namespace AngelLoader.Forms
 
                     FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
                     UpdateRatingLabel(suspendResume: false);
-
-                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
-                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
-
-                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
-                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
                 }
                 finally
                 {
@@ -2303,9 +2305,10 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    Lazy_ToolStripLabels.Hide(lastPlayed
-                        ? Lazy_ToolStripLabel.FilterByLastPlayed
-                        : Lazy_ToolStripLabel.FilterByReleaseDate);
+                    Lazy_ToolStripLabels.Hide(
+                        lastPlayed
+                            ? Lazy_ToolStripLabel.FilterByLastPlayed
+                            : Lazy_ToolStripLabel.FilterByReleaseDate);
                 }
             }
             finally
@@ -2755,7 +2758,7 @@ namespace AngelLoader.Forms
             RefreshFMsListRowsOnlyKeepSelection();
         }
 
-        // Convenience method so I don't forget why I'm calling with "rowOnly: false" again
+        // Convenience method so I don't forget why I'm calling the full update method again
         public void RefreshAllSelectedFMs_UpdateInstallState()
         {
             // We need to update the Patch tab too, and if we ever have any other tab in the future that might
