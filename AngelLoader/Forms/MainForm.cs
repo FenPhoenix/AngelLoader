@@ -5357,9 +5357,9 @@ namespace AngelLoader.Forms
             Activate();
         }
 
-        private static T GetObjectFromMenuItem<T>(DarkContextMenu menu, ToolStripMenuItemCustom menuItem, T[] array, int count)
+        private static T GetObjectFromMenuItem<T>(DarkContextMenu menu, ToolStripMenuItemCustom menuItem, T[] array, int count) where T : class
         {
-            T? obj = default;
+            T? obj = null;
             for (int i = 0; i < count; i++)
             {
                 if (menuItem == (ToolStripMenuItemCustom)menu.Items[i])
