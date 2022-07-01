@@ -333,7 +333,13 @@ namespace AngelLoader
              WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
             *Note: We don't put \cf0 inserts anymore, but the above still applies with having the default color
              be bright which is what we have now.
-
+            -2022-07-01: The "white" is actually our dark mode default text color, which seems to affect
+             transparent images. It seems that if you leave the rtf "default color" unhooked, then it makes the
+             text black and the image transparent portions whatever color they should be (document background I
+             guess). But if we hook the default color, now it makes the text AND transparent image backgrounds
+             that color. Except I guess if the images are pngs or whatever the hell "proper" format it wants,
+             then transparency works actually properly.
+           
             -Beginning of Era Karath-Din:
              It has dark text on a not-quite-white background, which inverts to light text on an also bright
              background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
