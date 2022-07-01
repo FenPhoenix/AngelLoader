@@ -1767,13 +1767,6 @@
             this.ShowInTaskbar = true;
             this.Text = "AngelLoader";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
-            this.LocationChanged += new System.EventHandler(this.MainForm_LocationChanged);
-            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();

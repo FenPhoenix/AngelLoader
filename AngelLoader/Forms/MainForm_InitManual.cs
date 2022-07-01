@@ -1403,13 +1403,6 @@ namespace AngelLoader.Forms
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
             ShowInTaskbar = true;
-            Deactivate += MainForm_Deactivate;
-            FormClosed += MainForm_FormClosed;
-            FormClosing += MainForm_FormClosing;
-            Load += MainForm_Load;
-            Shown += MainForm_Shown;
-            LocationChanged += MainForm_LocationChanged;
-            SizeChanged += MainForm_SizeChanged;
             KeyDown += MainForm_KeyDown;
             BottomPanel.ResumeLayout(false);
             BottomPanel.PerformLayout();

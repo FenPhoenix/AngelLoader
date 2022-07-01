@@ -1037,8 +1037,10 @@ namespace AngelLoader.Forms
 
         #region Form events
 
-        private void MainForm_Load(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
+
             // These have to go here because they depend on and/or affect the width of other controls, and we
             // need to be in a state where layout is happening
             ChangeFilterControlsForGameType();
@@ -1047,9 +1049,10 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private void MainForm_Shown(object sender, EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
+            base.OnShown(e);
+
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
             // Regular Environment.Exit() because we're testing speed
@@ -1058,12 +1061,13 @@ namespace AngelLoader.Forms
 #endif
         }
 
-        private void MainForm_Deactivate(object sender, EventArgs e)
+        protected override void OnDeactivate(EventArgs e)
         {
             CancelResizables();
+            base.OnDeactivate(e);
         }
 
-        private void MainForm_SizeChanged(object sender, EventArgs e)
+        protected override void OnSizeChanged(EventArgs e)
         {
             // Prevent unpleasant visual garbage drawing in the window on startup if we do the full thing
             if (_startupState)
@@ -1142,11 +1146,14 @@ namespace AngelLoader.Forms
 
             // Industrial strength protection against stupid event handler firing in the component init method...
             if (AddTagLLDropDown != null! && AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
+
+            base.OnSizeChanged(e);
         }
 
-        private void MainForm_LocationChanged(object sender, EventArgs e)
+        protected override void OnLocationChanged(EventArgs e)
         {
             if (WindowState == FormWindowState.Normal) _nominalWindowLocation = Location;
+            base.OnLocationChanged(e);
         }
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -1460,7 +1467,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
             // separate and detached thread to complete. Argh. Threading sucks.
@@ -1478,9 +1485,15 @@ namespace AngelLoader.Forms
             Application.RemoveMessageFilter(this);
 
             UpdateConfig();
+
+            base.OnFormClosing(e);
         }
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e) => Core.Shutdown();
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            Core.Shutdown();
+        }
 
         #endregion
 
