@@ -56,9 +56,11 @@ namespace FenGen
 
                     if (langAttr != null)
                     {
-                        if (langAttr.ArgumentList == null || langAttr.ArgumentList.Arguments.Count < 2)
+                        const int reqArgsCount = 2;
+
+                        if (langAttr.ArgumentList is not { Arguments.Count: reqArgsCount })
                         {
-                            ThrowErrorAndTerminate(nameof(GenAttributes.FenGenLanguage) + " had < 2 args");
+                            ThrowErrorAndTerminate(nameof(GenAttributes.FenGenLanguage) + " had other than " + reqArgsCount + " args");
                         }
 
                         string codeArg =
@@ -187,9 +189,9 @@ namespace FenGen
 
             #endregion
 
-            w.WL("public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(uint)index];");
+            w.WL("public static string GetLanguageString(" + Cache.LangsEnum.LanguageIndexName + " index) => SupportedLanguages[(uint)index];");
             w.WL();
-            w.WL("public static string GetLanguageStringUnsafe(Language language) => SupportedLanguages[(uint)LanguageToLanguageIndex(language)];");
+            w.WL("public static string GetLanguageStringUnsafe(" + Cache.LangsEnum.Name + " language) => SupportedLanguages[(uint)LanguageToLanguageIndex(language)];");
             w.WL();
 
             w.WL("#endregion");

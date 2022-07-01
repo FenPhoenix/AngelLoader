@@ -208,10 +208,11 @@ namespace FenGen
                 w.WL();
 
                 int count = Cache.GamesEnum.GameIndexEnumNames.Count;
-                var gameIndexName = Cache.GamesEnum.GameIndexName;
+                string gameIndexName = Cache.GamesEnum.GameIndexName;
+                string gameIndexNameVarCase = gameIndexName.ToVarCase();
                 foreach (var gameSet in perGameSets)
                 {
-                    w.WL("internal static string " + gameSet.Key + "(" + gameIndexName + " gameIndex) => gameIndex switch");
+                    w.WL("internal static string " + gameSet.Key + "(" + gameIndexName + " " + gameIndexNameVarCase + ") => " + gameIndexNameVarCase + " switch");
                     w.WL("{");
                     // Loop through GameIndex count rather than game set count, so if our count mismatches we crash and error
                     for (int i = 0; i < count; i++)
