@@ -279,7 +279,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilterTagsForm_KeyDown);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
             this.BottomFLP.ResumeLayout(false);

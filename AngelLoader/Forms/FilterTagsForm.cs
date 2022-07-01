@@ -293,13 +293,14 @@ namespace AngelLoader.Forms
             );
         }
 
-        private void FilterTagsForm_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.F)
             {
                 FindTagTextBox.Focus();
                 FindTagTextBox.SelectAll();
             }
+            base.OnKeyDown(e);
         }
     }
 }

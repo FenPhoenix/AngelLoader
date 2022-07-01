@@ -347,7 +347,6 @@ namespace AngelLoader.Forms
             this.Name = "FilterTagsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Tags Filter";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FilterTagsForm_KeyDown);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
             this.BottomFLP.ResumeLayout(false);
