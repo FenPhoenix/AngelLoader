@@ -21,6 +21,7 @@ namespace AngelLoader.Forms
             }
             base.Dispose(disposing);
         }
+
         #region Windows Form Designer generated code
 
 #if DEBUG
@@ -59,7 +60,7 @@ namespace AngelLoader.Forms
             // 
             // FromComboBox
             // 
-            this.FromComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FromComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FromComboBox.FormattingEnabled = true;
             this.FromComboBox.Location = new System.Drawing.Point(8, 24);
@@ -70,7 +71,7 @@ namespace AngelLoader.Forms
             // 
             // ToComboBox
             // 
-            this.ToComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ToComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ToComboBox.FormattingEnabled = true;
             this.ToComboBox.Location = new System.Drawing.Point(8, 64);
@@ -92,7 +93,6 @@ namespace AngelLoader.Forms
             this.OKButton.TabIndex = 6;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
-            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // Cancel_Button
             // 
@@ -110,7 +110,7 @@ namespace AngelLoader.Forms
             // 
             // ResetButton
             // 
-            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Name = "ResetButton";
@@ -148,6 +148,7 @@ namespace AngelLoader.Forms
 #endif
 
         #endregion
+
         private AngelLoader.Forms.CustomControls.DarkLabel FromLabel;
         private AngelLoader.Forms.CustomControls.DarkLabel ToLabel;
         private AngelLoader.Forms.CustomControls.DarkComboBox FromComboBox;

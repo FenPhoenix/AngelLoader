@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Windows.Forms;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
@@ -64,12 +65,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
-        {
-            RatingFrom = FromComboBox.SelectedIndex - 1;
-            RatingTo = ToComboBox.SelectedIndex - 1;
-        }
-
         private void ComboBoxes_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -83,6 +78,16 @@ namespace AngelLoader.Forms
                     ToComboBox.SelectedIndex = ti;
                 }
             }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (DialogResult == DialogResult.OK)
+            {
+                RatingFrom = FromComboBox.SelectedIndex - 1;
+                RatingTo = ToComboBox.SelectedIndex - 1;
+            }
+            base.OnFormClosing(e);
         }
     }
 }
