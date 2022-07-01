@@ -241,7 +241,6 @@ namespace AngelLoader.Forms
             this.Name = "ImportFromMultipleInisForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "[Import From Multiple]";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromMultipleInisForm_FormClosing);
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
