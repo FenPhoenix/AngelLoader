@@ -224,7 +224,6 @@ namespace AngelLoader.Forms
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MessageBoxCustomForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageBoxCustomForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.ContentTLP.ResumeLayout(false);
             this.MainFLP.ResumeLayout(false);

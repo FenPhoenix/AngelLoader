@@ -166,7 +166,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageBoxCustomForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.ContentTLP.ResumeLayout(false);
             this.MainFLP.ResumeLayout(false);

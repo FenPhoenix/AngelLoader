@@ -201,12 +201,13 @@ namespace AngelLoader.Forms
             if (_multiChoice) OKButton.Enabled = ChoiceListBox.SelectedIndex > -1;
         }
 
-        private void MessageBoxCustomForm_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (DialogResult == DialogResult.OK && _multiChoice && ChoiceListBox.SelectedIndex > -1)
             {
                 SelectedItems.AddRange(ChoiceListBox.SelectedItemsAsStrings);
             }
+            base.OnFormClosing(e);
         }
     }
 }
