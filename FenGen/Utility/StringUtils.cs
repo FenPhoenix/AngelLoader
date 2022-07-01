@@ -8,6 +8,11 @@ namespace FenGen
 {
     internal static partial class Misc
     {
+        internal static string ToVarCase(this string value)
+        {
+            return value.IsEmpty() ? value : value[0].ToString().ToLowerInvariant() + value.Substring(1);
+        }
+
         #region ASCII-specific
 
         [PublicAPI]

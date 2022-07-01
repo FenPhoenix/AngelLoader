@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -29,12 +28,6 @@ namespace FenGen
             internal bool DoNotWrite;
             internal bool IsEnumAndSingleAssignment;
             internal bool IsReadmeEncoding;
-        }
-
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        private sealed class FieldList : List<Field>
-        {
-            //internal string Version;
         }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -80,7 +73,7 @@ namespace FenGen
 
         internal static void Generate(string sourceFile, string destFile)
         {
-            FieldList fields = ReadSourceFields(sourceFile);
+            List<Field> fields = ReadSourceFields(sourceFile);
 
             var w = GetWriterForClass(destFile, GenAttributes.FenGenFMDataDestClass);
 
@@ -98,7 +91,7 @@ namespace FenGen
         }
 
         [MustUseReturnValue]
-        private static FieldList ReadSourceFields(string sourceFile)
+        private static List<Field> ReadSourceFields(string sourceFile)
         {
             #region Local functions
 
@@ -128,8 +121,7 @@ namespace FenGen
                 {
                     foreach (AttributeSyntax attr in attrList.Attributes)
                     {
-                        string name = attr.Name.ToString();
-                        switch (name)
+                        switch (attr.Name.ToString())
                         {
                             case GenAttributes.FenGenIgnore:
                                 ignore = true;
@@ -212,7 +204,7 @@ namespace FenGen
 
             CheckParamCount(classAttr, 0);
 
-            var fields = new FieldList();
+            var fields = new List<Field>();
 
             foreach (SyntaxNode item in fmDataClass.ChildNodes())
             {
@@ -236,7 +228,7 @@ namespace FenGen
             return fields;
         }
 
-        private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, FieldList fields)
+        private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
         {
             static string GetFloatArgsRead(string fieldType) =>
                 IsDecimal(fieldType)
@@ -499,7 +491,7 @@ namespace FenGen
         }
 
         // @LANGS: Carry as much data from the source enum as you can: type (uint) etc.
-        private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, FieldList fields)
+        private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
         {
             static void WriteEnumSingle(
                 CodeWriters.IndentingWriter writer,
