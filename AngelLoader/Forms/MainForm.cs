@@ -150,6 +150,8 @@ namespace AngelLoader.Forms
 
         #region Lazy-loaded controls
 
+        private readonly IDarkable[] _lazyLoadedControls;
+
         private readonly AddTagLLDropDown AddTagLLDropDown;
         private readonly DynamicItemsLLMenu AddTagLLMenu;
         private readonly DynamicItemsLLMenu AltTitlesLLMenu;
@@ -510,25 +512,28 @@ namespace AngelLoader.Forms
 
             #region Lazy-loaded controls
 
-            AddTagLLDropDown = new AddTagLLDropDown(this);
-            AddTagLLMenu = new DynamicItemsLLMenu(this);
-            AltTitlesLLMenu = new DynamicItemsLLMenu(this);
-            ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this);
-            EncodingsLLMenu = new EncodingsLLMenu(this);
-            ExitLLButton = new ExitLLButton(this);
-            FilterControlsLLMenu = new FilterControlsLLMenu(this);
-            FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this);
-            FMsDGV_FM_LLMenu = new FMsDGV_FM_LLMenu(this);
-            GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this);
-            InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this);
-            Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this);
-            Lazy_PlayOriginalControls = new Lazy_PlayOriginalControls(this);
-            Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this);
-            MainLLMenu = new MainLLMenu(this);
-            PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this);
-            PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this);
-            TopRightLLMenu = new TopRightLLMenu(this);
-            ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this);
+            _lazyLoadedControls = new IDarkable[]
+            {
+                AddTagLLDropDown = new AddTagLLDropDown(this),
+                AddTagLLMenu = new DynamicItemsLLMenu(this),
+                AltTitlesLLMenu = new DynamicItemsLLMenu(this),
+                ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
+                EncodingsLLMenu = new EncodingsLLMenu(this),
+                ExitLLButton = new ExitLLButton(this),
+                FilterControlsLLMenu = new FilterControlsLLMenu(this),
+                FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this),
+                FMsDGV_FM_LLMenu = new FMsDGV_FM_LLMenu(this),
+                GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this),
+                InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this),
+                Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this),
+                Lazy_PlayOriginalControls = new Lazy_PlayOriginalControls(this),
+                Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this),
+                MainLLMenu = new MainLLMenu(this),
+                PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this),
+                PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
+                TopRightLLMenu = new TopRightLLMenu(this),
+                ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this)
+            };
 
             #endregion
 
@@ -1794,26 +1799,11 @@ namespace AngelLoader.Forms
 
                 if (!startup || darkMode)
                 {
-                    MainLLMenu.DarkModeEnabled = darkMode;
-                    FMsDGV_FM_LLMenu.DarkModeEnabled = darkMode;
-                    FMsDGV_ColumnHeaderLLMenu.DarkModeEnabled = darkMode;
-                    TopRightLLMenu.DarkModeEnabled = darkMode;
-                    AddTagLLMenu.DarkModeEnabled = darkMode;
-                    AddTagLLDropDown.DarkModeEnabled = darkMode;
-                    AltTitlesLLMenu.DarkModeEnabled = darkMode;
-                    GameFilterControlsLLMenu.DarkModeEnabled = darkMode;
-                    FilterControlsLLMenu.DarkModeEnabled = darkMode;
-                    PlayOriginalGameLLMenu.DarkModeEnabled = darkMode;
-                    PlayOriginalT2InMultiplayerLLMenu.DarkModeEnabled = darkMode;
-                    InstallUninstallFMLLButton.DarkModeEnabled = darkMode;
-                    ExitLLButton.DarkModeEnabled = darkMode;
-                    ViewHTMLReadmeLLButton.DarkModeEnabled = darkMode;
+                    for (int i = 0; i < _lazyLoadedControls.Length; i++)
+                    {
+                        _lazyLoadedControls[i].DarkModeEnabled = darkMode;
+                    }
                     SetProgressBoxDarkModeEnabled(darkMode);
-                    Lazy_FMsListZoomButtons.DarkModeEnabled = darkMode;
-                    ChooseReadmeLLPanel.DarkModeEnabled = darkMode;
-                    EncodingsLLMenu.DarkModeEnabled = darkMode;
-                    Lazy_ToolStripLabels.DarkModeEnabled = darkMode;
-                    Lazy_PlayOriginalControls.DarkModeEnabled = darkMode;
                 }
 
                 FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
@@ -1828,14 +1818,10 @@ namespace AngelLoader.Forms
                 RefreshFiltersButton.Image = Images.RefreshFilters;
                 ClearFiltersButton.Image = Images.ClearFilters;
 
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    _filterByGameButtons[i].Image = Images.GetPerGameImage(i).Primary.Large();
-                }
-
                 var gameTabImages = new Image[SupportedGameCount];
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
+                    _filterByGameButtons[i].Image = Images.GetPerGameImage(i).Primary.Large();
                     gameTabImages[i] = Images.GetPerGameImage(i).Primary.Small();
                 }
 

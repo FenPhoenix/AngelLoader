@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class Lazy_FMsListZoomButtons
+    internal sealed class Lazy_FMsListZoomButtons : IDarkable
     {
         private readonly MainForm _owner;
 
@@ -15,7 +15,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

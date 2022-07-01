@@ -11,7 +11,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class FMsDGV_FM_LLMenu
+    internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         #region Backing fields
 

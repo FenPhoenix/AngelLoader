@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class ChooseReadmeLLPanel
+    internal sealed class ChooseReadmeLLPanel : IDarkable
     {
         private bool _constructed;
 
@@ -28,7 +28,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

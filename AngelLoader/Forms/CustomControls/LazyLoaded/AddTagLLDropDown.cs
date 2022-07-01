@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class AddTagLLDropDown
+    internal sealed class AddTagLLDropDown : IDarkable
     {
         private bool _constructed;
 
@@ -25,7 +25,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

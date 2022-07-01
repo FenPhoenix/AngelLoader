@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class ExitLLButton
+    internal sealed class ExitLLButton : IDarkable
     {
         private bool _constructed;
 

@@ -6,7 +6,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class InstallUninstallFMLLButton
+    internal sealed class InstallUninstallFMLLButton : IDarkable
     {
         private readonly MainForm _owner;
 

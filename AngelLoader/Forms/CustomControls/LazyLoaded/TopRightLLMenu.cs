@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class TopRightLLMenu
+    internal sealed class TopRightLLMenu : IDarkable
     {
         private bool _constructed;
         private readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
@@ -62,7 +62,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

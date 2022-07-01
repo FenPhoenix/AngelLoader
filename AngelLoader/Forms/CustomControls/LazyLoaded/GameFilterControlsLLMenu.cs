@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class GameFilterControlsLLMenu
+    internal sealed class GameFilterControlsLLMenu : IDarkable
     {
         private bool _constructed;
         private readonly bool[] _checkedStates = InitializedArray(SupportedGameCount, true);

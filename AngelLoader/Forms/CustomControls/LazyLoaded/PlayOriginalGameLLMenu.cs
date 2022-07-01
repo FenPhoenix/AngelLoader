@@ -6,7 +6,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     // @GENGAMES(T2MP) (Play original game menu): Begin
-    internal sealed class PlayOriginalGameLLMenu
+    internal sealed class PlayOriginalGameLLMenu : IDarkable
     {
         private bool _constructed;
 
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

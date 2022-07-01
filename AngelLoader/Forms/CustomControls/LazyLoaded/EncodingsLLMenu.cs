@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class EncodingsLLMenu : IEventDisabler
+    internal sealed class EncodingsLLMenu : IEventDisabler, IDarkable
     {
         #region Private fields
 

@@ -4,7 +4,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class DynamicItemsLLMenu
+    internal sealed class DynamicItemsLLMenu : IDarkable
     {
         private bool _constructed;
 

@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class ViewHTMLReadmeLLButton
+    internal sealed class ViewHTMLReadmeLLButton : IDarkable
     {
         private bool _constructed;
         private DarkButton Button = null!;
@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

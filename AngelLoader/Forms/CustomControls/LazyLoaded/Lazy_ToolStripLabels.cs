@@ -14,13 +14,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         FilterByRating
     }
 
-    internal sealed class Lazy_ToolStripLabels
+    internal sealed class Lazy_ToolStripLabels : IDarkable
     {
         private readonly MainForm _owner;
 
         private bool _darkModeEnabled;
         [PublicAPI]
-        internal bool DarkModeEnabled
+        public bool DarkModeEnabled
         {
             set
             {

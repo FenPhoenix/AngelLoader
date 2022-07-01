@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class FilterControlsLLMenu
+    internal sealed class FilterControlsLLMenu : IDarkable
     {
         private bool _constructed;
         private readonly bool[] _filterCheckedStates = InitializedArray(HideableFilterControlsCount, true);

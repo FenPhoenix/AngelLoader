@@ -4,7 +4,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal sealed class PlayOriginalT2InMultiplayerLLMenu
+    internal sealed class PlayOriginalT2InMultiplayerLLMenu : IDarkable
     {
         private bool _constructed;
 
