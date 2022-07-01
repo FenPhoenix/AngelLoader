@@ -158,9 +158,6 @@
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
-            this.Load += new System.EventHandler(this.SettingsForm_Load);
-            this.Shown += new System.EventHandler(this.SettingsForm_Shown);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).EndInit();

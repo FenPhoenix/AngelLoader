@@ -638,7 +638,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void SettingsForm_Load(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
             foreach (var button in PageRadioButtons)
             {
@@ -658,15 +658,19 @@ namespace AngelLoader.Forms
             // hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
             // prior to then.
             if (_startup && !_cleanStart) CheckForErrors();
+
+            base.OnLoad(e);
         }
 
-        private void SettingsForm_Shown(object sender, EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
             // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
             // there's supposed to be scroll bars or whatever else... this makes it visually correct. Don't ask
             // questions.
             PathsPage.DoLayout = true;
             PathsPage.LayoutFLP.PerformLayout();
+
+            base.OnShown(e);
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
@@ -1682,7 +1686,7 @@ namespace AngelLoader.Forms
 
         private static bool PathErrorIsSet(Control control) => control.Tag is PathError.True;
 
-        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {
@@ -1708,6 +1712,8 @@ namespace AngelLoader.Forms
 
                 if (!section.IsEmpty()) Core.OpenHelpFile(section);
             }
+
+            base.OnKeyDown(e);
         }
 
         /// <summary>
