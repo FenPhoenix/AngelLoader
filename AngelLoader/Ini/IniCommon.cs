@@ -21,9 +21,9 @@ namespace AngelLoader
         #region BindingFlags
 
         private const BindingFlags _bFlagsEnum = BindingFlags.Instance |
-                                                BindingFlags.Static |
-                                                BindingFlags.Public |
-                                                BindingFlags.NonPublic;
+                                                 BindingFlags.Static |
+                                                 BindingFlags.Public |
+                                                 BindingFlags.NonPublic;
 
         #endregion
 
@@ -618,9 +618,7 @@ namespace AngelLoader
 
         private static void ReadFinishedStates(Filter filter, string val)
         {
-            var list = val.Split(CA_Comma);
-
-            foreach (string finishedState in list)
+            foreach (string finishedState in val.Split(CA_Comma))
             {
                 switch (finishedState.Trim())
                 {
