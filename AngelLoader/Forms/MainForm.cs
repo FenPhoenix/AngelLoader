@@ -381,9 +381,9 @@ namespace AngelLoader.Forms
                     // Fix multi-select after view-blocking scan
                     // (so it doesn't throw out the mouseup and leave us selecting lines with mouse not down)
                     (m.Msg is
-                        Native.WM_LBUTTONDOWN or Native.WM_NCLBUTTONDOWN or
-                        Native.WM_MBUTTONDOWN or Native.WM_NCMBUTTONDOWN or
-                        Native.WM_RBUTTONDOWN or Native.WM_NCRBUTTONDOWN))
+                        Native.WM_LBUTTONDOWN or
+                        Native.WM_MBUTTONDOWN or
+                        Native.WM_RBUTTONDOWN))
                 {
                     return BlockMessage;
                 }
@@ -421,10 +421,17 @@ namespace AngelLoader.Forms
             #endregion
             #region Keys
             // To handle alt presses, we have to handle WM_SYSKEYDOWN, which handles alt and F10. Sure why not.
-            else if (m.Msg == Native.WM_SYSKEYDOWN)
+            else if (m.Msg is Native.WM_SYSKEYDOWN or Native.WM_SYSKEYUP)
             {
                 int wParam = (int)m.WParam;
-                if (ModifierKeys == Keys.Alt && wParam == (int)Keys.F4) return PassMessageOn;
+                if (ModifierKeys == Keys.Alt && wParam == (int)Keys.F4)
+                {
+                    return PassMessageOn;
+                }
+                else if (ViewBlocked || KeyPressesDisabled)
+                {
+                    return BlockMessage;
+                }
             }
             // Any other keys have to use this.
             else if (m.Msg == Native.WM_KEYDOWN)

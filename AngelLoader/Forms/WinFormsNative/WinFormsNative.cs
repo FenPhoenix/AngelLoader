@@ -388,6 +388,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         internal const int WM_KEYDOWN = 0x100;
         internal const int WM_SYSKEYDOWN = 0x104;
+        internal const int WM_SYSKEYUP = 0x105;
         internal const int WM_KEYUP = 0x101;
 
         // MK_ only to be used in mouse messages
@@ -728,7 +729,8 @@ namespace AngelLoader.Forms.WinFormsNative
                 return false;
             }
 
-            #endregion
         }
+
+        #endregion
     }
 }
