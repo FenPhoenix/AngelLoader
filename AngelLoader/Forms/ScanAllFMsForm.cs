@@ -66,42 +66,46 @@ namespace AngelLoader.Forms
             foreach (DarkCheckBox cb in _checkBoxes) cb.Checked = enabled;
         }
 
-        private void ScanAllFMs_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (DialogResult != DialogResult.OK) return;
-
-            bool noneChecked = true;
-            for (int i = 0; i < _checkBoxes.Length; i++)
+            if (DialogResult == DialogResult.OK)
             {
-                if (_checkBoxes[i].Checked)
+                bool noneChecked = true;
+                for (int i = 0; i < _checkBoxes.Length; i++)
                 {
-                    noneChecked = false;
-                    break;
+                    if (_checkBoxes[i].Checked)
+                    {
+                        noneChecked = false;
+                        break;
+                    }
+                }
+
+                if (noneChecked)
+                {
+                    NoneSelected = true;
+                }
+                else
+                {
+                    ScanOptions.ScanTitle = TitleCheckBox.Checked;
+                    ScanOptions.ScanAuthor = AuthorCheckBox.Checked;
+                    ScanOptions.ScanGameType = GameCheckBox.Checked;
+                    ScanOptions.ScanCustomResources = CustomResourcesCheckBox.Checked;
+                    ScanOptions.ScanSize = SizeCheckBox.Checked;
+                    ScanOptions.ScanReleaseDate = ReleaseDateCheckBox.Checked;
+                    ScanOptions.ScanTags = TagsCheckBox.Checked;
                 }
             }
 
-            if (noneChecked)
-            {
-                NoneSelected = true;
-            }
-            else
-            {
-                ScanOptions.ScanTitle = TitleCheckBox.Checked;
-                ScanOptions.ScanAuthor = AuthorCheckBox.Checked;
-                ScanOptions.ScanGameType = GameCheckBox.Checked;
-                ScanOptions.ScanCustomResources = CustomResourcesCheckBox.Checked;
-                ScanOptions.ScanSize = SizeCheckBox.Checked;
-                ScanOptions.ScanReleaseDate = ReleaseDateCheckBox.Checked;
-                ScanOptions.ScanTags = TagsCheckBox.Checked;
-            }
+            base.OnFormClosing(e);
         }
 
-        private void ScanAllFMsForm_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F1)
             {
                 Core.OpenHelpFile(HelpSections.ScanAllFMs);
             }
+            base.OnKeyDown(e);
         }
     }
 }

@@ -245,8 +245,6 @@ namespace AngelLoader.Forms
             this.Name = "ScanAllFMsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Scan all FMs";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanAllFMs_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScanAllFMsForm_KeyDown);
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             this.SelectButtonsFLP.ResumeLayout(false);
