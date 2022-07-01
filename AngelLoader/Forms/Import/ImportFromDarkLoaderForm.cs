@@ -30,7 +30,11 @@ namespace AngelLoader.Forms
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
         }
 
-        private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            Localize();
+        }
 
         private void Localize()
         {
@@ -63,8 +67,10 @@ namespace AngelLoader.Forms
             ImportFinishedOnCheckBox.Enabled = value;
         }
 
-        private void ImportFromDarkLoaderForm_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            base.OnFormClosing(e);
+
             if (DialogResult != DialogResult.OK) return;
 
             string file = ImportControls.DarkLoaderIniText;

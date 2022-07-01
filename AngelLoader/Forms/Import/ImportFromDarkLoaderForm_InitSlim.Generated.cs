@@ -148,8 +148,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             // Hack to prevent slow first render on some forms if Text is blank
             this.Text = " ";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromDarkLoaderForm_FormClosing);
-            this.Load += new System.EventHandler(this.ImportFromDarkLoaderForm_Load);
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
