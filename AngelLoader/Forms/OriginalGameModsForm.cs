@@ -35,10 +35,13 @@ namespace AngelLoader.Forms
             Cancel_Button.Text = LText.Global.Cancel;
         }
 
-        private void OriginalGameMods_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (DialogResult != DialogResult.OK) return;
-            DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
+            if (DialogResult == DialogResult.OK)
+            {
+                DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
+            }
+            base.OnFormClosing(e);
         }
     }
 }

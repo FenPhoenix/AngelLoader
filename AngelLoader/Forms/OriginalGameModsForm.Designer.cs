@@ -40,8 +40,8 @@ namespace AngelLoader.Forms
             // 
             // OrigGameModsControl
             // 
-            this.OrigGameModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.OrigGameModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OrigGameModsControl.AutoScroll = true;
             this.OrigGameModsControl.Location = new System.Drawing.Point(0, 0);
@@ -63,7 +63,7 @@ namespace AngelLoader.Forms
             // 
             // BottomFLP
             // 
-            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BottomFLP.Controls.Add(this.Cancel_Button);
             this.BottomFLP.Controls.Add(this.OKButton);
@@ -101,7 +101,6 @@ namespace AngelLoader.Forms
             this.Name = "OriginalGameModsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Manage mods for [Game]";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OriginalGameMods_FormClosing);
             this.BottomFLP.ResumeLayout(false);
             this.ResumeLayout(false);
 
