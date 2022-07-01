@@ -937,8 +937,10 @@ namespace AngelLoader.Forms
             return false;
         }
 
-        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            base.OnFormClosing(e);
+
             #region Save window state
 
             // Special case: these are meta, so they should always be set even if the user clicked Cancel

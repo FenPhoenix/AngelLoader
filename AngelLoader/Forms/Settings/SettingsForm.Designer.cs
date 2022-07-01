@@ -193,7 +193,6 @@ namespace AngelLoader.Forms
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "SettingsForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).EndInit();
