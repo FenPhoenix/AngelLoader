@@ -104,10 +104,14 @@ namespace AngelLoader.Forms
             ToDateTimePicker.Value = DateTime.Now;
         }
 
-        private void OKButton_Click(object sender, EventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : null;
-            DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : null;
+            if (DialogResult == DialogResult.OK)
+            {
+                DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : null;
+                DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : null;
+            }
+            base.OnFormClosing(e);
         }
     }
 }
