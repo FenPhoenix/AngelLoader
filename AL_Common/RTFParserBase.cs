@@ -487,51 +487,31 @@ namespace AL_Common
             };
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private uint Hash(ListFast<char> str, int len)
-            {
-                uint hval = (uint)len;
-
-                // Original C code does a stupid thing where it puts default at the top and falls through and junk,
-                // but we can't do that in C#, so have something clearer/clunkier
-                switch (len)
-                {
-                    case 1:
-                        hval += asso_values[str.ItemsArray[0]];
-                        break;
-                    case 2:
-                        hval += asso_values[str.ItemsArray[1]];
-                        hval += asso_values[str.ItemsArray[0]];
-                        break;
-                    default:
-                        hval += asso_values[str.ItemsArray[2]];
-                        hval += asso_values[str.ItemsArray[1]];
-                        hval += asso_values[str.ItemsArray[0]];
-                        break;
-                }
-                return hval + asso_values[str.ItemsArray[len - 1]];
-            }
-
-            // Not a duplicate: this one needs to take a string instead of char[]...
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static bool SeqEqual(ListFast<char> seq1, string seq2)
-            {
-                int seq1Count = seq1.Count;
-                if (seq1Count != seq2.Length) return false;
-
-                for (int ci = 0; ci < seq1Count; ci++)
-                {
-                    if (seq1.ItemsArray[ci] != seq2[ci]) return false;
-                }
-                return true;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
             {
                 int len = str.Count;
                 if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
                 {
-                    uint key = Hash(str, len);
+                    int key = len;
+
+                    // Original C code does a stupid thing where it puts default at the top and falls through and junk,
+                    // but we can't do that in C#, so have something clearer/clunkier
+                    switch (len)
+                    {
+                        case 1:
+                            key += asso_values[str.ItemsArray[0]];
+                            break;
+                        case 2:
+                            key += asso_values[str.ItemsArray[1]];
+                            key += asso_values[str.ItemsArray[0]];
+                            break;
+                        default:
+                            key += asso_values[str.ItemsArray[2]];
+                            key += asso_values[str.ItemsArray[1]];
+                            key += asso_values[str.ItemsArray[0]];
+                            break;
+                    }
+                    key += asso_values[str.ItemsArray[len - 1]];
 
                     if (key <= MAX_HASH_VALUE)
                     {
@@ -542,11 +522,24 @@ namespace AL_Common
                             return false;
                         }
 
-                        if (SeqEqual(str, symbol.Keyword))
+                        var seq2 = symbol.Keyword;
+                        if (len != seq2.Length)
                         {
-                            result = symbol;
-                            return true;
+                            result = null;
+                            return false;
                         }
+
+                        for (int ci = 0; ci < len; ci++)
+                        {
+                            if (str.ItemsArray[ci] != seq2[ci])
+                            {
+                                result = null;
+                                return false;
+                            }
+                        }
+
+                        result = symbol;
+                        return true;
                     }
                 }
 

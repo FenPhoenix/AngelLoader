@@ -47,6 +47,10 @@ Notes and miscellaneous:
 Perf: (RtfToTextConverter)
 -We could collapse fonts if we find multiple ones with the same name and charset but different numbers.
  I mean it looks like we're plenty fast and memory-reasonable without doing so, but you know, idea.
+PERF_TODO(RTF-to-plaintext): Perf notes:
+-StreamReadByte() drops 50-100ms by removing the unGetBuffer check (even when the condition is never hit!)
+-StreamReadByte() drops another 70 or something ms by not being called virtual etc. (I think)
+-Basically all the slowness is from reading from the stream
 
 Memory:
 -n/a at the moment
@@ -1184,13 +1188,13 @@ namespace FMScanner
                 {
                     case '{':
                         // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
-                        if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
+                        _unicodeCharsLeftToSkip = 0;
                         if (_unicodeBuffer.Count > 0) ParseUnicode();
                         if ((ec = PushScope()) != Error.OK) return ec;
                         break;
                     case '}':
                         // ditto the above
-                        if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
+                        _unicodeCharsLeftToSkip = 0;
                         if (_unicodeBuffer.Count > 0) ParseUnicode();
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
