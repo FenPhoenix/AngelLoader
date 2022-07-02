@@ -350,74 +350,8 @@ namespace AngelLoader.Forms.CustomControls
                             overly-specific meddling. Microsoft have changed their RichEdit control before, and
                             they might again, in which case I'm screwed either way.
                             */
-#if true
                             ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
                             ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
-#else
-                            var fixer = new ImageFixer();
-
-                            // TODO: This code is suspect. It may work okay in practice, but:
-                            // We should at the very least make sure our nonshppict is DIRECTLY after the shppict.
-                            // In theory, a shppict should always be paired up with a nonshppict directly after
-                            // it. So this code should probably be correct if every file is to spec. That's if
-                            // every file is to spec... run a semi-auto eyeball test on the cached set of files.
-
-                            // If shppict type is pngblip (able to be transparent), we need to patch its matching
-                            // nonshppict REGARDLESS of what that nonshppict's type is. Otherwise, we need to
-                            // leave both unpatched.
-
-                            /*
-                            List of problematic files:
-
-                            __2011-06-30_Heretic_ND__FMInfo-de.rtf
-                            __2011-06-30_Heretic_ND__FMInfo-En.rtf
-                            __2011-06-30_Heretic_ND__FMInfo-FR.rtf
-
-                            The above files are all not displaying the header image.
-
-                            This file DOES display it:
-                            __2011-06-30_Heretic_ND__FMInfo-It.rtf
-
-                            The broken files all have a shppict pngblip / nonshppict wmetafile pair.
-                            The working file has a shppict pngblip / nonshppict wmetafile8 pair.
-
-                            We should try detecting this situation and NOT blanking the nonshppict in that case.
-
-                            ---
-
-                            __michele_v1__FMInfo-Fr.rtf
-
-                            Same issue as above - wmetafile (no 8)
-
-                            ---
-
-                            Test to see if any explicit params (like 1, the default) cause this problem and exclude
-                            on those too.
-                            */
-                            int end = 0;
-                            byte[] keyword = _shppict;
-                            byte[] replace = _shppictBlanked;
-                            bool replacedShppictInThisSet = false;
-                            while (true)
-                            {
-                                (bool found, int start, end) = FindStartAndEndIndicesOfRtfGroup(_currentReadmeBytes, keyword, end);
-                                if (!found) break;
-                                var seg = new ByteArraySegmentSlim(_currentReadmeBytes, start, end - start);
-                                if (keyword == _shppict)
-                                {
-                                    replacedShppictInThisSet = fixer.Run(seg, replace);
-                                }
-                                else if (replacedShppictInThisSet)
-                                {
-                                    ImageFixer.Replace(seg, replace);
-                                    replacedShppictInThisSet = false;
-                                }
-                                keyword = keyword == _shppict ? _nonshppict : _shppict;
-                                replace = replace == _shppictBlanked ? _nonshppictBlanked : _shppictBlanked;
-                            }
-
-                            //File.WriteAllBytes(@"M:\Local Storage HDD\rtf\heretic_current_modded.rtf", _currentReadmeBytes);
-#endif
                         }
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
