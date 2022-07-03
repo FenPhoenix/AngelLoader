@@ -670,43 +670,23 @@ namespace AngelLoader
             {
                 if (!loaderIsAlreadyUs)
                 {
-                    if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
-                    {
-                        lines.Add(key_fm_selector + " " + selectorPath);
-                    }
-                    else
-                    {
-                        lines.Insert(lastSelKeyIndex + 1, key_fm_selector + " " + selectorPath);
-                    }
+                    if (lastSelKeyIndex == -1) lastSelKeyIndex = lines.Count - 1;
+                    lines.Insert(lastSelKeyIndex + 1, key_fm_selector + " " + selectorPath);
                 }
             }
 
             if (fmLineLastIndex == -1)
             {
-                if (fmCommentLineIndex == -1 || fmCommentLineIndex == lines.Count - 1)
+                string fmLine = resetSelector && !prevAlwaysLoadSelector ? ";" + key_fm : key_fm;
+
+                if (fmCommentLineIndex == -1)
                 {
                     lines.Add("");
                     lines.Add("; " + fmCommentLine);
-                    if (!resetSelector)
-                    {
-                        lines.Add(key_fm);
-                    }
-                    else
-                    {
-                        lines.Add(prevAlwaysLoadSelector ? key_fm : ";" + key_fm);
-                    }
+                    fmCommentLineIndex = lines.Count - 1;
                 }
-                else
-                {
-                    if (!resetSelector)
-                    {
-                        lines.Insert(fmCommentLineIndex + 1, key_fm);
-                    }
-                    else
-                    {
-                        lines.Insert(fmCommentLineIndex + 1, prevAlwaysLoadSelector ? key_fm : ";" + key_fm);
-                    }
-                }
+
+                lines.Insert(fmCommentLineIndex + 1, fmLine);
             }
 
             try
