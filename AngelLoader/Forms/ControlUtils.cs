@@ -578,6 +578,16 @@ namespace AngelLoader.Forms
             };
         }
 
+        // @vNext: Test to see if screen bounds start at non-zero sometimes for multiple monitors? Do they?
+        internal static Point ClampFormToScreenBounds(Form form, Point desiredLocation)
+        {
+            Rectangle screenBounds = Screen.FromControl(form).WorkingArea;
+            return new Point(
+                desiredLocation.X - ((desiredLocation.X + form.Width) - screenBounds.Width).ClampToZero(),
+                desiredLocation.Y - ((desiredLocation.Y + form.Height) - screenBounds.Height).ClampToZero()
+            );
+        }
+
         #region Aero Snap window restore hack
 
         private static bool? _restoredHackReflectable;

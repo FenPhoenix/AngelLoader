@@ -2242,9 +2242,12 @@ namespace AngelLoader.Forms
 
                 using (var f = new FilterDateForm(title, fromDate, toDate))
                 {
-                    f.Location = FilterBarFLP.PointToScreen_Fast(new Point(
-                        FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
-                        FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height));
+                    f.Location = ControlUtils.ClampFormToScreenBounds(
+                        form: f,
+                        desiredLocation:
+                        FilterBarFLP.PointToScreen_Fast(new Point(
+                            FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
+                            FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height)));
 
                     if (f.ShowDialogDark(this) != DialogResult.OK) return;
 
@@ -2268,13 +2271,15 @@ namespace AngelLoader.Forms
                 bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
                 using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
                 {
-                    f.Location =
+                    f.Location = ControlUtils.ClampFormToScreenBounds(
+                        form: f,
+                        desiredLocation:
                         FilterBarFLP.PointToScreen_Fast(new Point(
                             FilterIconButtonsToolStrip.Location.X +
                             FilterByRatingButton.Bounds.X,
                             FilterIconButtonsToolStrip.Location.Y +
                             FilterByRatingButton.Bounds.Y +
-                            FilterByRatingButton.Height));
+                            FilterByRatingButton.Height)));
 
                     if (f.ShowDialogDark(this) != DialogResult.OK) return;
                     FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
