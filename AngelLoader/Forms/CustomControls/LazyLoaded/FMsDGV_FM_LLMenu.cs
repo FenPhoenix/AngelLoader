@@ -681,7 +681,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         internal void SetRatingMenuItemChecked(int value)
         {
-            value = value.Clamp(-1, 10);
+            value = value.SetRatingClamped();
 
             if (_constructed)
             {

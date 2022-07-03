@@ -43,6 +43,8 @@ namespace AngelLoader
             return (float)Math.Round(value, 2);
         }
 
+        internal static int SetRatingClamped(this int rating) => rating.Clamp(-1, 10);
+
         #endregion
 
         internal static float CubicRoot(float x) => (float)Math.Pow(x, 1f / 3f);

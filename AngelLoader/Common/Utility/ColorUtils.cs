@@ -123,7 +123,7 @@ namespace AngelLoader
             #region Invert and global lightness boost
 
             float newL = lab.L < 0.5f
-                ? ((1.0f - lab.L) + 0.10f).Clamp(0.0f, 1.0f)
+                ? ((1.0f - lab.L) + 0.10f).ClampZeroToOne()
                 : (lab.L + 0.025f).Clamp(0.5f, 1.0f);
 
             lab = new Lab(newL, lab.a, lab.b);
@@ -149,7 +149,7 @@ namespace AngelLoader
                     lch = new LCh(lch.L.Clamp(0.6f, 1.0f), lch.C, lch.h);
                     if (lch.L is >= 0.5f and <= 0.7f)
                     {
-                        lch = new LCh(lch.L, (lch.C - 0.025f).Clamp(0, 1.0f), lch.h);
+                        lch = new LCh(lch.L, (lch.C - 0.025f).ClampZeroToOne(), lch.h);
                         redDesaturated = true;
                     }
                     break;
@@ -158,7 +158,7 @@ namespace AngelLoader
             #endregion
 
             // Slight global desaturation
-            lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).Clamp(0, 1.0f), lch.h));
+            lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).ClampZeroToOne(), lch.h));
 
             Color retColor = OklabToColor(lab);
 

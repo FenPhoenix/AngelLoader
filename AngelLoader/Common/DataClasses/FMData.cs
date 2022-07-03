@@ -83,7 +83,7 @@ namespace AngelLoader.DataClasses
         private int _rating = -1;
         [FenGenNumericEmpty(-1)]
         [FenGenMaxDigits(2)]
-        internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
+        internal int Rating { get => _rating; set => _rating = value.SetRatingClamped(); }
 
         internal readonly ExpandableDate ReleaseDate = new();
         internal readonly ExpandableDate LastPlayed = new();

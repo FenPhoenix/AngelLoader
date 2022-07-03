@@ -239,10 +239,10 @@ namespace AngelLoader.DataClasses
         }
 
         private int _ratingFrom = -1;
-        internal int RatingFrom { get => _ratingFrom; set => _ratingFrom = value.Clamp(-1, 10); }
+        internal int RatingFrom { get => _ratingFrom; set => _ratingFrom = value.SetRatingClamped(); }
 
         private int _ratingTo = 10;
-        internal int RatingTo { get => _ratingTo; set => _ratingTo = value.Clamp(-1, 10); }
+        internal int RatingTo { get => _ratingTo; set => _ratingTo = value.SetRatingClamped(); }
 
         #endregion
 
