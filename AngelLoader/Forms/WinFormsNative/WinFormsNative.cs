@@ -728,7 +728,67 @@ namespace AngelLoader.Forms.WinFormsNative
                 rect = Rectangle.Empty;
                 return false;
             }
+        }
 
+        #endregion
+
+        #region Get system metrics
+
+        private const int LF_FACESIZE = 32;
+
+        private const int SPI_GETNONCLIENTMETRICS = 0x0029;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [PublicAPI]
+        internal struct LOGFONTW
+        {
+            internal int lfHeight;
+            internal int lfWidth;
+            internal int lfEscapement;
+            internal int lfOrientation;
+            internal int lfWeight;
+            internal byte lfItalic;
+            internal byte lfUnderline;
+            internal byte lfStrikeOut;
+            internal byte lfCharSet;
+            internal byte lfOutPrecision;
+            internal byte lfClipPrecision;
+            internal byte lfQuality;
+            internal byte lfPitchAndFamily;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
+            internal string lfFaceName;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
+        internal struct NONCLIENTMETRICSW
+        {
+            internal int cbSize;
+            internal int iBorderWidth;
+            internal int iScrollWidth;
+            internal int iScrollHeight;
+            internal int iCaptionWidth;
+            internal int iCaptionHeight;
+            internal LOGFONTW lfCaptionFont;
+            internal int iSMCaptionWidth;
+            internal int iSMCaptionHeight;
+            internal LOGFONTW lfSMCaptionFont;
+            internal int iMenuWidth;
+            internal int iMenuHeight;
+            internal LOGFONTW lfMenuFont;
+            internal LOGFONTW lfStatusFont;
+            internal LOGFONTW lfMessageFont;
+            internal int iPaddedBorderWidth;
+        }
+
+        [DllImport("user32", CharSet = CharSet.Unicode)]
+        private static extern int SystemParametersInfo(int uAction, int uParam, ref NONCLIENTMETRICSW lpvParam, int fuWinIni);
+
+        public static NONCLIENTMETRICSW GetNonClientMetrics()
+        {
+            var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
+            SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
+            return metrics;
         }
 
         #endregion

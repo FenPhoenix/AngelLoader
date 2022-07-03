@@ -41,6 +41,8 @@ namespace AngelLoader.Forms
             this.ToCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.NoMinLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.NoMaxLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // Cancel_Button
@@ -48,7 +50,7 @@ namespace AngelLoader.Forms
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(86, 128);
+            this.Cancel_Button.Location = new System.Drawing.Point(88, 3);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -62,12 +64,12 @@ namespace AngelLoader.Forms
             this.OKButton.AutoSize = true;
             this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(7, 128);
+            this.OKButton.Location = new System.Drawing.Point(7, 3);
             this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 11;
+            this.OKButton.TabIndex = 1;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
@@ -78,8 +80,8 @@ namespace AngelLoader.Forms
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ResetButton.Size = new System.Drawing.Size(154, 22);
-            this.ResetButton.TabIndex = 10;
+            this.ResetButton.Size = new System.Drawing.Size(156, 22);
+            this.ResetButton.TabIndex = 9;
             this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
@@ -90,7 +92,7 @@ namespace AngelLoader.Forms
             this.ToLabel.Location = new System.Drawing.Point(8, 48);
             this.ToLabel.Name = "ToLabel";
             this.ToLabel.Size = new System.Drawing.Size(23, 13);
-            this.ToLabel.TabIndex = 6;
+            this.ToLabel.TabIndex = 5;
             this.ToLabel.Text = "To:";
             // 
             // FromLabel
@@ -109,8 +111,8 @@ namespace AngelLoader.Forms
             this.FromDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.FromDateTimePicker.Location = new System.Drawing.Point(28, 24);
             this.FromDateTimePicker.Name = "FromDateTimePicker";
-            this.FromDateTimePicker.Size = new System.Drawing.Size(132, 20);
-            this.FromDateTimePicker.TabIndex = 4;
+            this.FromDateTimePicker.Size = new System.Drawing.Size(134, 20);
+            this.FromDateTimePicker.TabIndex = 3;
             this.FromDateTimePicker.Visible = false;
             // 
             // ToDateTimePicker
@@ -120,8 +122,8 @@ namespace AngelLoader.Forms
             this.ToDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.ToDateTimePicker.Location = new System.Drawing.Point(28, 64);
             this.ToDateTimePicker.Name = "ToDateTimePicker";
-            this.ToDateTimePicker.Size = new System.Drawing.Size(132, 20);
-            this.ToDateTimePicker.TabIndex = 8;
+            this.ToDateTimePicker.Size = new System.Drawing.Size(134, 20);
+            this.ToDateTimePicker.TabIndex = 7;
             this.ToDateTimePicker.Visible = false;
             // 
             // FromCheckBox
@@ -130,7 +132,7 @@ namespace AngelLoader.Forms
             this.FromCheckBox.Location = new System.Drawing.Point(12, 27);
             this.FromCheckBox.Name = "FromCheckBox";
             this.FromCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.FromCheckBox.TabIndex = 3;
+            this.FromCheckBox.TabIndex = 2;
             this.FromCheckBox.UseVisualStyleBackColor = true;
             this.FromCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
             // 
@@ -140,7 +142,7 @@ namespace AngelLoader.Forms
             this.ToCheckBox.Location = new System.Drawing.Point(12, 67);
             this.ToCheckBox.Name = "ToCheckBox";
             this.ToCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.ToCheckBox.TabIndex = 7;
+            this.ToCheckBox.TabIndex = 6;
             this.ToCheckBox.UseVisualStyleBackColor = true;
             this.ToCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
             // 
@@ -150,7 +152,7 @@ namespace AngelLoader.Forms
             this.NoMinLabel.Location = new System.Drawing.Point(56, 0);
             this.NoMinLabel.Name = "NoMinLabel";
             this.NoMinLabel.Size = new System.Drawing.Size(40, 20);
-            this.NoMinLabel.TabIndex = 2;
+            this.NoMinLabel.TabIndex = 4;
             this.NoMinLabel.Text = "(no minimum)";
             // 
             // NoMaxLabel
@@ -159,8 +161,21 @@ namespace AngelLoader.Forms
             this.NoMaxLabel.Location = new System.Drawing.Point(104, 0);
             this.NoMaxLabel.Name = "NoMaxLabel";
             this.NoMaxLabel.Size = new System.Drawing.Size(40, 20);
-            this.NoMaxLabel.TabIndex = 5;
+            this.NoMaxLabel.TabIndex = 8;
             this.NoMaxLabel.Text = "(no maximum)";
+            // 
+            // BottomFLP
+            // 
+            this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BottomFLP.Controls.Add(this.Cancel_Button);
+            this.BottomFLP.Controls.Add(this.OKButton);
+            this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomFLP.Location = new System.Drawing.Point(0, 125);
+            this.BottomFLP.Name = "BottomFLP";
+            this.BottomFLP.Padding = new System.Windows.Forms.Padding(0, 0, 4, 0);
+            this.BottomFLP.Size = new System.Drawing.Size(170, 33);
+            this.BottomFLP.TabIndex = 0;
             // 
             // FilterDateForm
             // 
@@ -169,6 +184,7 @@ namespace AngelLoader.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(170, 158);
+            this.Controls.Add(this.BottomFLP);
             this.Controls.Add(this.NoMaxLabel);
             this.Controls.Add(this.NoMinLabel);
             this.Controls.Add(this.ToCheckBox);
@@ -178,14 +194,14 @@ namespace AngelLoader.Forms
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.ToLabel);
             this.Controls.Add(this.FromLabel);
-            this.Controls.Add(this.Cancel_Button);
-            this.Controls.Add(this.OKButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FilterDateForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Set release date filter";
+            this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -205,5 +221,6 @@ namespace AngelLoader.Forms
         private AngelLoader.Forms.CustomControls.DarkCheckBox ToCheckBox;
         private AngelLoader.Forms.CustomControls.DarkTextBox NoMinLabel;
         private AngelLoader.Forms.CustomControls.DarkTextBox NoMaxLabel;
+        private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     }
 }

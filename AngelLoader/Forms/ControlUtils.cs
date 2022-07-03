@@ -555,13 +555,27 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void DoFilterWindowButtonLayout(Form form, Button okButton, Button cancelButton)
+        internal static void AutoSizeFilterWindow(Form form, Button okButton, Button cancelButton)
         {
-            int width = (okButton.Width + cancelButton.Width + 24).ClampToMin(form.ClientSize.Width);
+            var metrics = Native.GetNonClientMetrics();
 
-            form.ClientSize = form.ClientSize with { Width = width };
+            int totalButtonsWidth = okButton.Width + okButton.Padding.Horizontal + okButton.Margin.Horizontal +
+                                    cancelButton.Width + cancelButton.Padding.Horizontal + cancelButton.Margin.Horizontal;
 
-            cancelButton.Location = cancelButton.Location with { X = okButton.Right + 8 };
+            form.Size = form.Size with
+            {
+                Width =
+                Math.Min(
+                    MathMax3(
+                        num1: form.Width,
+                        num2: totalButtonsWidth,
+                        num3: metrics.iSMCaptionWidth +
+                              TextRenderer.MeasureText(form.Text, SystemFonts.SmallCaptionFont).Width +
+                              metrics.iMenuWidth +
+                              (metrics.iBorderWidth * 2) +
+                              (metrics.iPaddedBorderWidth * 2)),
+                    800)
+            };
         }
 
         #region Aero Snap window restore hack

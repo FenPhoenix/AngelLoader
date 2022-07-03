@@ -11,7 +11,7 @@ namespace AngelLoader.DataClasses
 
     // @Localization: Missing localized bits:
     // -Hitches with localizability:
-    //  -Date and rating forms are not set up for easy resizability of controls
+    //  -Tags form move buttons get cut off if they resize wider
 
     [FenGenLocalizationSourceClass]
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]

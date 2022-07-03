@@ -130,8 +130,6 @@ namespace AngelLoader.Forms
                       control.Height
                     : 0;
 
-            static int MathMax4(int num1, int num2, int num3, int num4) => Math.Max(Math.Max(Math.Max(num1, num2), num3), num4);
-
             #endregion
 
             // Set this last: all controls sizes are now set, so we can size the window

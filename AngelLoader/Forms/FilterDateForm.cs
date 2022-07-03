@@ -38,7 +38,7 @@ namespace AngelLoader.Forms
 
             Text = title;
 
-            ControlUtils.DoFilterWindowButtonLayout(this, OKButton, Cancel_Button);
+            ControlUtils.AutoSizeFilterWindow(this, OKButton, Cancel_Button);
 
             using (new DisableEvents(this))
             {
