@@ -779,7 +779,6 @@ namespace AL_Common
         rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
         */
         private readonly UnGetStack _unGetBuffer = new();
-        private bool _unGetBufferEmpty = true;
 
         /// <summary>
         /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
@@ -794,7 +793,6 @@ namespace AL_Common
             if (CurrentPos < 0) return;
 
             _unGetBuffer.Push(c);
-            _unGetBufferEmpty = false;
             if (CurrentPos > 0) CurrentPos--;
         }
 
@@ -811,15 +809,17 @@ namespace AL_Common
                 return false;
             }
 
-            if (!_unGetBufferEmpty)
+            // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
+#pragma warning disable IDE0045 // Convert to conditional expression
+            if (_unGetBuffer.Count > 0)
             {
                 ch = _unGetBuffer.Pop();
-                _unGetBufferEmpty = _unGetBuffer.Count == 0;
             }
             else
             {
                 ch = (char)StreamReadByte();
             }
+#pragma warning restore IDE0045 // Convert to conditional expression
             CurrentPos++;
 
             return true;
@@ -833,15 +833,17 @@ namespace AL_Common
         protected char GetNextCharFast()
         {
             char ch;
-            if (!_unGetBufferEmpty)
+            // Ditto above
+#pragma warning disable IDE0045 // Convert to conditional expression
+            if (_unGetBuffer.Count > 0)
             {
                 ch = _unGetBuffer.Pop();
-                _unGetBufferEmpty = _unGetBuffer.Count == 0;
             }
             else
             {
                 ch = (char)StreamReadByte();
             }
+#pragma warning restore IDE0045 // Convert to conditional expression
             CurrentPos++;
 
             return ch;
@@ -859,7 +861,6 @@ namespace AL_Common
             _bufferPos = _bufferLen - 1;
 
             _unGetBuffer.Clear();
-            _unGetBufferEmpty = true;
         }
 
         #endregion
