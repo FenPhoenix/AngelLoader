@@ -456,6 +456,7 @@ namespace AngelLoader
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
         // @CAN_RUN_BEFORE_VIEW_INIT
+        // @vNext(SetDarkFMSelector): Rewrite this mess into something readable!
         internal static bool SetDarkFMSelector(GameIndex game, string gamePath, bool resetSelector = false)
         {
             if (gamePath.IsEmpty()) return false;
@@ -648,7 +649,7 @@ namespace AngelLoader
                         {
                             lines.RemoveAt(i);
                             i--;
-                            lastSelKeyIndex = (lastSelKeyIndex - 1).Clamp(-1, int.MaxValue);
+                            lastSelKeyIndex = (lastSelKeyIndex - 1).ClampToMin(-1);
                         }
                         else
                         {
@@ -1064,8 +1065,8 @@ namespace AngelLoader
 
         internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)
         {
-            // Thief 3 isn't supported by DarkLoader
-            if (gameIndex == GameIndex.Thief3) return false;
+            // DarkLoader only supports T1/T2/SS2
+            if (!GameIsDark(gameIndex)) return false;
 
             string gamePath = Config.GetGamePath(gameIndex);
             if (!gamePath.IsEmpty() &&
