@@ -1154,11 +1154,6 @@ namespace FMScanner
             // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
             if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
-            // This one has the seek-back buffer (a Stack<char>) which is technically eligible for deallocation,
-            // even though in practice I think it's guaranteed never to have more than like 5 chars in it maybe?
-            // Again, it's a stack so we can't check its capacity. But... meh. See above.
-            // Not way into the idea of making another custom type where the only difference is we can access a
-            // frigging internal variable, gonna be honest.
             ResetStream(stream, streamLength);
         }
 
