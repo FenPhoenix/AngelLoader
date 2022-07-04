@@ -82,11 +82,15 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        #region Disabled mods
+
         private readonly string[] _disabledMods;
 
         internal string GetDisabledMods(GameIndex index) => GameSupportsMods(index) ? _disabledMods[(int)index] : "";
 
         internal void SetDisabledMods(GameIndex index, string value) => _disabledMods[(int)index] = GameSupportsMods(index) ? value : "";
+
+        #endregion
 
         #region Paths
 
