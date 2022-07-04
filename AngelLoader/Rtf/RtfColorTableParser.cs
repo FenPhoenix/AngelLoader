@@ -120,13 +120,9 @@ namespace AngelLoader
                 switch (ch)
                 {
                     case '{':
-                        // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
-                        if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
                         if ((ec = PushScope()) != Error.OK) return ec;
                         break;
                     case '}':
-                        // ditto the above
-                        if (_unicodeCharsLeftToSkip > 0) _unicodeCharsLeftToSkip = 0;
                         if ((ec = PopScope()) != Error.OK) return ec;
                         break;
                     case '\\':
@@ -134,14 +130,6 @@ namespace AngelLoader
                         break;
                     case '\r':
                     case '\n':
-                        break;
-                    default:
-                        if (_currentScope.RtfInternalState == RtfInternalState.Normal &&
-                            _currentScope.RtfDestinationState == RtfDestinationState.Normal &&
-                            --_unicodeCharsLeftToSkip <= 0)
-                        {
-                            _unicodeCharsLeftToSkip = 0;
-                        }
                         break;
                 }
             }
@@ -164,48 +152,9 @@ namespace AngelLoader
                 return Error.OK;
             }
 
-            // From the spec:
-            // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
-            // data that follows are considered one character for skipping purposes."
-            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
-            {
-                // Rather than literally counting it as one character for skipping purposes, we just increment
-                // the chars left to skip count by the specified length of the binary run, which accomplishes
-                // the same thing and is the easiest option.
-                // Note: It seems like we should have to add 1 for the space after \binN, but it looks like the
-                // numbers somehow work out that we don't have to and it's already implicitly counted. Shrug.
-                if (param >= 0) _unicodeCharsLeftToSkip += param;
-            }
-
-            // From the spec:
-            // "Any RTF control word or symbol is considered a single character for the purposes of counting
-            // skippable characters."
-            // But don't do it if it's a hex char, because we handle it elsewhere in that case.
-            if (symbol.Index != (int)SpecialType.HexEncodedChar &&
-                _currentScope.RtfInternalState != RtfInternalState.Binary &&
-                _unicodeCharsLeftToSkip > 0)
-            {
-                if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-                return Error.OK;
-            }
-
             _skipDestinationIfUnknown = false;
             switch (symbol.KeywordType)
             {
-                case KeywordType.Property:
-                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                    if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
-                    {
-                        _currentScope.Properties[symbol.Index] = param;
-                    }
-                    return Error.OK;
-                case KeywordType.Character:
-                    if (_currentScope.RtfDestinationState == RtfDestinationState.Normal &&
-                        --_unicodeCharsLeftToSkip <= 0)
-                    {
-                        _unicodeCharsLeftToSkip = 0;
-                    }
-                    return Error.OK;
                 case KeywordType.Destination:
                     return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
@@ -233,14 +182,8 @@ namespace AngelLoader
                         _binaryCharsLeftToSkip = param;
                     }
                     break;
-                case SpecialType.HexEncodedChar:
-                    _currentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
-                    break;
                 case SpecialType.SkipDest:
                     _skipDestinationIfUnknown = true;
-                    break;
-                case SpecialType.UnicodeChar:
-                    _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
                     break;
                 case SpecialType.ColorTable:
                     // Spec is to ignore any further color tables after the first one, which is fortunate for us
