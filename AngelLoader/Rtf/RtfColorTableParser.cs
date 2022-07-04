@@ -210,7 +210,6 @@ namespace AngelLoader
                     _currentScope.RtfDestinationState = RtfDestinationState.Skip;
                     return Error.OK;
                 default:
-                    //return Error.InvalidSymbolTableEntry;
                     return Error.OK;
             }
         }

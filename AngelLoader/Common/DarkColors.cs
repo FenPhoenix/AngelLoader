@@ -13,6 +13,9 @@ namespace AngelLoader
         // Hot:     122, 128, 132 (GreyHighlight)
         // Pressed: 159, 178, 196 (ActiveControl)
 
+        public static readonly Color GLMLRed_Light = Color.Red;
+        public static readonly Color GLMLRed_Dark = Color.FromArgb(222, 73, 64);
+
         public static readonly Color Fen_DarkBackground = Color.FromArgb(32, 32, 32);
         public static readonly Color Fen_DarkForeground = Color.FromArgb(200, 200, 200);
 

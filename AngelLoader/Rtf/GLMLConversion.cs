@@ -23,12 +23,14 @@ namespace AngelLoader
             static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 
             string colorTable = @"{\colortbl ";
+            // TODO(GLML colors):
+            // This doesn't actually quite work (we would have to explicitly set \cf0 or whatever) but the
+            // GetSysColor() hook handles it. So technically we should either get rid of this, or explicitly
+            // add the \cf0 at the start.
             colorTable = darkModeEnabled
                 ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground)
                 : colorTable + ";";
-            colorTable += darkModeEnabled
-                ? @"\red222\green73\blue64;"
-                : @"\red255\green0\blue0;";
+            colorTable = AddColorToTable(colorTable, darkModeEnabled ? DarkColors.GLMLRed_Dark : DarkColors.GLMLRed_Light);
             colorTable += "}";
 
             string rtfHeader =
@@ -40,7 +42,7 @@ namespace AngelLoader
                 @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
                 // Set up red color and dark mode text colors
                 colorTable +
-                // viewkind4 = normal, uc1 = 1 char Unicode fallback (don't worry about it), f0 = use font 0 I guess?
+                // viewkind4 = normal, uc1 = 1 char Unicode fallback (don't worry about it), f0 = use font 0
                 @"\viewkind4\uc1\f0 ";
 
             #region Horizontal line setup
