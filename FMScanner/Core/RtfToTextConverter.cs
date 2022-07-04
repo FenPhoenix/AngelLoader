@@ -1090,11 +1090,8 @@ namespace FMScanner
 
         public RtfToTextConverter()
         {
-            // If we're on something other than Windows, we don't normally have access to most of the
-            // codepages that Windows does. To get access to them, we need to take a dependency on the
-            // ~700k System.Text.Encoding.CodePages NuGet package and then call this RegisterProvider
-            // method like this. But we don't want to carry around the extra package until we actually
-            // need it, so it's disabled for now.
+            // .NET Framework supports all the Windows code pages out of the box, but newer .NET versions don't
+            // unless you explicitly register the provider like this.
 #if CROSS_PLATFORM
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
