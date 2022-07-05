@@ -10,6 +10,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    // IMPORTANT (ProgressBox layout / size of controls / centering):
+    // Designer layout is NOT accurate on the right edge! Progress bar dimensions look like 9px left/11px right,
+    // but in-app it's 9px left/9px right like we want. Ugh.
     public sealed partial class ProgressPanel : UserControl, IDarkable
     {
         #region Consts

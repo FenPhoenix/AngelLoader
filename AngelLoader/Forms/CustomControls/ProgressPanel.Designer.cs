@@ -86,14 +86,14 @@ namespace AngelLoader.Forms.CustomControls
             // 
             this.MainProgressBar.Location = new System.Drawing.Point(8, 56);
             this.MainProgressBar.Name = "MainProgressBar";
-            this.MainProgressBar.Size = new System.Drawing.Size(408, 23);
+            this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
             this.MainProgressBar.TabIndex = 3;
             // 
             // SubProgressBar
             // 
             this.SubProgressBar.Location = new System.Drawing.Point(8, 120);
             this.SubProgressBar.Name = "SubProgressBar";
-            this.SubProgressBar.Size = new System.Drawing.Size(408, 16);
+            this.SubProgressBar.Size = new System.Drawing.Size(406, 16);
             this.SubProgressBar.TabIndex = 6;
             // 
             // SubMessageLabel
