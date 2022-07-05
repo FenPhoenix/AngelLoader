@@ -1003,12 +1003,17 @@ namespace AngelLoader.Forms
 #endif
         }
 
-        // @vNext: Fix multi-monitor stuff here
-        // -Should save/restore position no matter what monitor it's on.
-        // -If off the edge of the screen and there is NOT another monitor there, should reposition to be onscreen
-        //  as usual.
-        // -If partly off one screen and partly on another, reposition to be on the screen its greatest part was on.
-        // -Handle vertical monitors.
+        /*
+        @vNext: Fix multi-monitor stuff here
+        -Should save/restore position no matter what monitor it's on.
+        -If off the edge of the screen and there is NOT another monitor there, should reposition to be onscreen
+         as usual.
+        -If partly off one screen and partly on another, reposition to be on the screen its greatest part was on.
+        -Handle vertical monitors.
+        -UPDATE: It seems it comes up on whatever monitor you start its exe from. Don't know if this is
+         DisplayFusion or stock Win10 behavior. But that's a semi-reasonable behavior although Notepad++
+         overrides it because it's slick af.
+        */
         private void SetWindowStateAndSize()
         {
             // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
