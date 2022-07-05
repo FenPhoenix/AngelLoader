@@ -1161,7 +1161,8 @@ namespace AngelLoader
             {
                 Core.View.SetWaitCursor(true);
 
-                bool success = await Task.Run(() => DoPreChecks(fms, fmDataList, install: false));
+                bool success = DoPreChecks(fms, fmDataList, install: false);
+
                 if (!success) return fail;
             }
             finally
