@@ -180,6 +180,7 @@ namespace AngelLoader
                         var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
                         Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
+                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
 
                         if (_scanCts.IsCancellationRequested) return false;
 
@@ -191,6 +192,8 @@ namespace AngelLoader
                     }
                     catch (OperationCanceledException)
                     {
+                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
+                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
                         return false;
                     }
                     finally
