@@ -92,6 +92,7 @@ namespace AngelLoader
             string fm_language = "";
             bool fm_language_forced = false;
 
+            // TODO: Convert this to ReadAllLines in advance style like everything else
             using (var sr = new StreamReader(camModIni))
             {
                 /*

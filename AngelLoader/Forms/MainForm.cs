@@ -4717,7 +4717,7 @@ namespace AngelLoader.Forms
 
             UpdateUIControlsForMultiSelectState(fm);
 
-            // We should never get here when FMsList.Count == 0, but hey
+            // We should never get here when the view list count is 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);

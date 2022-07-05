@@ -451,13 +451,13 @@ namespace AL_Common
 
         private static List<string> InternalFileReadAllLinesList(string path, Encoding encoding)
         {
-            var stringList = new List<string>();
-            using var streamReader = new StreamReader(path, encoding);
-            while (streamReader.ReadLine() is { } str)
+            var ret = new List<string>();
+            using var sr = new StreamReader(path, encoding);
+            while (sr.ReadLine() is { } str)
             {
-                stringList.Add(str);
+                ret.Add(str);
             }
-            return stringList;
+            return ret;
         }
 
         #endregion

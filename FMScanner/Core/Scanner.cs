@@ -205,9 +205,6 @@ namespace FMScanner
             Languages_FS_Lang_FS = new string[langsCount];
             Languages_FS_Lang_Language_FS = new string[langsCount];
             LanguagesC = new DictionaryI<string>(langsCount);
-            EnglishOnly = new List<string> { Languages[0] };
-
-            FMFiles_SS2MisFiles = new HashSetI(23);
 
             #region FMFiles_TitlesStrLocations
 
@@ -245,12 +242,14 @@ namespace FMScanner
 
         #region Scan synchronous
 
+#if FMScanner_FullCode
+
         [PublicAPI]
         public ScannedFMDataAndError
         Scan(string mission, string tempPath, bool forceFullIfNew)
         {
             return ScanMany(
-                new List<FMToScan> { new FMToScan { Path = mission, ForceFullScan = forceFullIfNew } },
+                new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
                 tempPath, _scanOptions, null, CancellationToken.None)[0];
         }
 
@@ -259,9 +258,11 @@ namespace FMScanner
         Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
         {
             return ScanMany(
-                new List<FMToScan> { new FMToScan { Path = mission, ForceFullScan = forceFullIfNew } },
+                new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
                 tempPath, scanOptions, null, CancellationToken.None)[0];
         }
+
+#endif
 
         // Debug - scan on UI thread so breaks will actually break where they're supposed to
         // (test frontend use only)
@@ -278,6 +279,8 @@ namespace FMScanner
         #endregion
 
         #region Scan asynchronous
+
+#if FMScanner_FullCode
 
         [PublicAPI]
         public Task<List<ScannedFMDataAndError>>
@@ -301,6 +304,9 @@ namespace FMScanner
             return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
         }
 
+#endif
+
+        // TODO: Allow cancelling during individual file scan
         [PublicAPI]
         public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
