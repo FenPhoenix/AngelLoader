@@ -427,7 +427,11 @@ namespace FMScanner
 
                         try
                         {
-                            scannedFMAndError = ScanCurrentFM(missions[i], tempPath);
+                            scannedFMAndError = ScanCurrentFM(missions[i], tempPath, cancellationToken);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            throw;
                         }
                         catch (Exception ex)
                         {
@@ -465,7 +469,7 @@ namespace FMScanner
         }
 
         private ScannedFMDataAndError
-        ScanCurrentFM(FMToScan fm, string tempPath)
+        ScanCurrentFM(FMToScan fm, string tempPath, CancellationToken cancellationToken)
         {
 #if DEBUG
             _overallTimer.Restart();
@@ -526,6 +530,8 @@ namespace FMScanner
                 {
                     Directory.CreateDirectory(_fmWorkingPath);
 
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     // We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
                     // involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
                     // we can get last write times in DateTime format and not have to parse possible localized
@@ -534,10 +540,14 @@ namespace FMScanner
                     uint extractorFilesCount;
                     using (var _sevenZipArchive = new SevenZipExtractor(fm.Path) { PreserveDirectoryStructure = true })
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
                         extractorFilesCount = _sevenZipArchive.FilesCount;
                         for (int i = 0; i < extractorFilesCount; i++)
                         {
+                            cancellationToken.ThrowIfCancellationRequested();
+
                             var entry = _sevenZipArchive.ArchiveFileData[i];
                             string fn = entry.FileName;
                             int dirSeps;
@@ -590,13 +600,16 @@ namespace FMScanner
                     string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
                     var result = Fen7z.Extract(
-                        Path.GetDirectoryName(_sevenZipExePath)!,
-                        _sevenZipExePath,
-                        fm.Path,
-                        _fmWorkingPath,
-                        (int)extractorFilesCount,
-                        listFile,
-                        fileNamesList);
+                        sevenZipWorkingPath: Path.GetDirectoryName(_sevenZipExePath)!,
+                        sevenZipPathAndExe: _sevenZipExePath,
+                        archivePath: fm.Path,
+                        outputPath: _fmWorkingPath,
+                        entriesCount: (int)extractorFilesCount,
+                        listFile: listFile,
+                        fileNamesList: fileNamesList,
+                        cancellationToken: cancellationToken);
+
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     if (result.ErrorOccurred)
                     {
@@ -612,7 +625,7 @@ namespace FMScanner
                                        fm.Path + ": fm is 7z\r\n");
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log(fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
                     return UnsupportedZip(
@@ -637,6 +650,7 @@ namespace FMScanner
                     {
                         // ignore for now
                     }
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
 #endif
             }
