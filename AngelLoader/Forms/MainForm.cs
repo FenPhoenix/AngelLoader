@@ -1003,6 +1003,12 @@ namespace AngelLoader.Forms
 #endif
         }
 
+        // @vNext: Fix multi-monitor stuff here
+        // -Should save/restore position no matter what monitor it's on.
+        // -If off the edge of the screen and there is NOT another monitor there, should reposition to be onscreen
+        //  as usual.
+        // -If partly off one screen and partly on another, reposition to be on the screen its greatest part was on.
+        // -Handle vertical monitors.
         private void SetWindowStateAndSize()
         {
             // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
@@ -2243,6 +2249,7 @@ namespace AngelLoader.Forms
                 using (var f = new FilterDateForm(title, fromDate, toDate))
                 {
                     f.Location = ControlUtils.ClampFormToScreenBounds(
+                        parent: this,
                         form: f,
                         desiredLocation:
                         FilterBarFLP.PointToScreen_Fast(new Point(
@@ -2272,6 +2279,7 @@ namespace AngelLoader.Forms
                 using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
                 {
                     f.Location = ControlUtils.ClampFormToScreenBounds(
+                        parent: this,
                         form: f,
                         desiredLocation:
                         FilterBarFLP.PointToScreen_Fast(new Point(
