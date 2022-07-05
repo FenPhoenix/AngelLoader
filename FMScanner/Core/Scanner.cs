@@ -306,7 +306,6 @@ namespace FMScanner
 
 #endif
 
-        // TODO: Allow cancelling during individual file scan
         [PublicAPI]
         public Task<List<ScannedFMDataAndError>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
