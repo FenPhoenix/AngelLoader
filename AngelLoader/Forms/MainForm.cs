@@ -4863,7 +4863,7 @@ namespace AngelLoader.Forms
                 // @VBL
                 #region Mods tab
 
-                // TODO: We might want to just disable the whole mods tab for Thief 3
+                // @vNext: We might want to just disable the whole mods tab for Thief 3
                 foreach (Control c in ModsTabPage.Controls)
                 {
                     c.Enabled = true;
