@@ -1307,24 +1307,23 @@ namespace AngelLoader
                 return (readmeOnDisk, ReadmeType.Wri);
             }
 
-            int headerLen = RTFHeaderBytes.Length;
-
-            _rtfHeaderBuffer.Clear();
-
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
             using (var fs = File.OpenRead(readmeOnDisk))
             {
+                int headerLen = RTFHeaderBytes.Length;
                 // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    _ = fs.ReadAll(_rtfHeaderBuffer, 0, headerLen);
+                    int bytesRead = fs.ReadAll(_rtfHeaderBuffer.Cleared(), 0, headerLen);
+                    if (bytesRead >= headerLen && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
+                    {
+                        return (readmeOnDisk, ReadmeType.RichText);
+                    }
                 }
             }
 
-            var readmeType = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
-
-            return (readmeOnDisk, readmeType);
+            return (readmeOnDisk, ReadmeType.PlainText);
         }
 
 #if ENABLE_SAFE_README_IDENTICALITY_TEST
