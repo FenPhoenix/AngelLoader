@@ -73,14 +73,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 {
                     if (container.Items[i] == button)
                     {
-                        if (i == container.Items.Count - 1)
-                        {
-                            container.Items.Add(_label);
-                        }
-                        else
-                        {
-                            container.Items.Insert(i + 1, _label);
-                        }
+                        container.Items.Insert(i + 1, _label);
                         break;
                     }
                 }
