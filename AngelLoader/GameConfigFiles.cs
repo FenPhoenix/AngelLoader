@@ -959,20 +959,20 @@ namespace AngelLoader
 
 #endif
 
-        internal static (Error Error, List<Mod>)
+        internal static (bool Success, List<Mod>)
         GetGameMods(GameIndex gameIndex)
         {
             var list = new List<Mod>();
 
-            if (!GameIsDark(gameIndex)) return (Error.None, list);
+            if (!GameSupportsMods(gameIndex)) return (false, list);
 
             string gamePath = Config.GetGamePath(gameIndex);
 
-            if (gamePath.IsEmpty()) return (Error.None, list);
+            if (gamePath.IsEmpty()) return (false, list);
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
-                return (Error.CamModIniNotFound, list);
+                return (false, list);
             }
 
             List<string> lines;
@@ -988,7 +988,7 @@ namespace AngelLoader
                 //Dialogs.ShowError(nameof(GetGameMods) + "():" +
                 //                  "Couldn't read " + camModIni + "\r\n" +
                 //                  "Game: " + gameIndex);
-                return (Error.CamModIniCouldNotBeRead, list);
+                return (false, list);
             }
 
             int modPathLastIndex = -1;
@@ -1061,7 +1061,7 @@ namespace AngelLoader
             foreach (var modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
             foreach (var modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
 
-            return (Error.None, list);
+            return (true, list);
         }
 
         internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)

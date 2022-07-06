@@ -78,9 +78,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (!GameSupportsMods(game)) return fail;
 
-                (Error error, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
+                (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
 
-                if (error != Error.None) return fail;
+                if (!success) return fail;
 
                 var disabledModsList = disabledMods
                     .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)

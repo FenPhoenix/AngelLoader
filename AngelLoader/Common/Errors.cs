@@ -9,9 +9,9 @@
         T1CamModIniNotFound,
         T2CamModIniNotFound,
         SS2CamModIniNotFound,
-        */
         CamModIniNotFound,
         CamModIniCouldNotBeRead,
+        */
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
         T3FMInstPathNotFound,
