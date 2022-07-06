@@ -377,13 +377,8 @@ namespace AngelLoader
 
                 if (!linesModified) return;
 
-                try
+                if (!TryWriteAllLines(cfgFile, lines))
                 {
-                    File.WriteAllLines(cfgFile, lines);
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.ExWrite + fileName + " for " + gamePath, ex);
                     // ReSharper disable once RedundantJumpStatement
                     return; // Explicit for clarity of intent
                 }
@@ -426,13 +421,8 @@ namespace AngelLoader
                 lines.Add(key_fm_language_forced + " 1");
             }
 
-            try
+            if (!TryWriteAllLines(camCfg, lines))
             {
-                File.WriteAllLines(camCfg, lines);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExWrite + Paths.CamCfg + " for " + gamePath, ex);
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
             }
@@ -672,17 +662,7 @@ namespace AngelLoader
                 lines.Insert(fmCommentLineIndex + 1, fmLine);
             }
 
-            try
-            {
-                File.WriteAllLines(camModIni, lines);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExWrite + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
-                return false;
-            }
-
-            return true;
+            return TryWriteAllLines(camModIni, lines);
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -820,17 +800,7 @@ namespace AngelLoader
                 lines.Insert(insertLineIndex, key_AlwaysShow + "true");
             }
 
-            try
-            {
-                File.WriteAllLines(soIni, lines);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExWrite + "SneakyOptions.ini", ex);
-                return false;
-            }
-
-            return true;
+            return TryWriteAllLines(soIni, lines);
         }
 
         #endregion

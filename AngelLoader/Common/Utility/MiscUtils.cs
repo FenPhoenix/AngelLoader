@@ -339,5 +339,19 @@ namespace AngelLoader
                 return false;
             }
         }
+
+        internal static bool TryWriteAllLines(string file, IEnumerable<string> lines)
+        {
+            try
+            {
+                File.WriteAllLines(file, lines);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.ExWrite + file, ex);
+                return false;
+            }
+        }
     }
 }
