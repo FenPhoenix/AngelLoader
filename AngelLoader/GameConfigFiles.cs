@@ -183,7 +183,17 @@ namespace AngelLoader
             bool alwaysShowLoaderFound = false;
             bool alwaysShowLoader = false;
 
-            var lines = File_ReadAllLines_List(soIni);
+            List<string> lines;
+            try
+            {
+                lines = File_ReadAllLines_List(soIni);
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.ExRead + "SneakyOptions.ini", ex);
+                return (false, false, "", "", false);
+            }
+
             for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
