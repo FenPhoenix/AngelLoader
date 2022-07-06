@@ -340,7 +340,7 @@ namespace AngelLoader
             }
         }
 
-        internal static bool TryWriteAllLines(string file, IEnumerable<string> lines)
+        internal static bool TryWriteAllLines(string file, List<string> lines)
         {
             try
             {
