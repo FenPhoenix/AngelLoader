@@ -311,14 +311,7 @@ namespace AngelLoader
 
                             if (Canceled(ct)) return;
 
-                            try
-                            {
-                                Dir_UnSetReadOnly(fmSndPath);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log("Unable to set directory attributes for " + fmSndPath, ex);
-                            }
+                            Dir_UnSetReadOnly(fmSndPath);
 
                             if (Canceled(ct)) return;
 
@@ -358,7 +351,7 @@ namespace AngelLoader
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log(ErrorText.Ex + "in deleting file " + f, ex);
+                                    Log(ErrorText.Ex + "deleting file " + f, ex);
                                 }
 
                                 if (Canceled(ct)) return;

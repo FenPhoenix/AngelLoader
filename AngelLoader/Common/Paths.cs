@@ -174,7 +174,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "creating temp path " + path, ex);
+                    Log(ErrorText.ExCreate + "temp path " + path, ex);
                 }
             }
         }

@@ -385,10 +385,11 @@ namespace AngelLoader
             {
                 // @BetterErrors(FMInstallAndPlay/StartExe()):
                 // Use more specific messages depending on the exception
-                Log(ErrorText.Ex + "starting " + exe + "\r\n" +
+                string msg = ErrorText.UnStartExe + "\r\n\r\n" + exe;
+                Log(msg + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
-                Core.Dialogs.ShowError(ErrorText.UnableToStartExe + "\r\n\r\n" + exe);
+                Core.Dialogs.ShowError(msg);
             }
         }
 
@@ -891,7 +892,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
+                        Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmInstalledPath, ex);
                     }
 
                     // Only Dark engine games need audio conversion

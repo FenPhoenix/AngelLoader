@@ -717,7 +717,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "in creating or overwriting" + path, ex);
+                Log(ErrorText.ExWrite + path, ex);
             }
         }
 

@@ -74,7 +74,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
-                    Log(ErrorText.Ex + "creating FM installed base dir", ex);
+                    Log(ErrorText.ExCreate + "FM installed base dir", ex);
                 }
 
                 return fmsPath;

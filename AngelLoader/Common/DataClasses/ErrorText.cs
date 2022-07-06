@@ -8,13 +8,13 @@ namespace AngelLoader.DataClasses
     {
         internal static readonly string Ex = "Exception ";
         internal static readonly string Un = "Unable to ";
-        internal static readonly string UnableToOpenLogFile = Un + "open log file.";
+        internal static readonly string UnOpenLogFile = Un + "open log file.";
         internal static readonly string ScanErrors = "One or more errors occurred while scanning.";
-        internal static readonly string UnableToStartExe = Un + "start executable.";
-        internal static readonly string UnableToOpenFMDir = Un + "open FM folder.";
-        internal static readonly string UnableToOpenHTMLReadme = Un + "open HTML readme.";
+        internal static readonly string UnStartExe = Un + "start executable.";
+        internal static readonly string UnOpenFMDir = Un + "open FM folder.";
+        internal static readonly string UnOpenHTMLReadme = Un + "open HTML readme ";
         internal static readonly string HTMLReadmeNotFound = "The HTML readme file could not be found.";
-        internal static readonly string UnableToOpenLink = Un + "open link.";
+        internal static readonly string UnOpenLink = Un + "open link.";
         internal static readonly string FMGameU = "FM game type is unknown or unsupported.";
         internal static readonly string FMGameNotDark = "FM must be for a Dark Engine game.";
         internal static readonly string MPForNonT2 = "Multiplayer is not supported for games other than Thief 2.";
@@ -23,5 +23,6 @@ namespace AngelLoader.DataClasses
         internal static readonly string ExWrite = Ex + "writing ";
         internal static readonly string ExOpen = Ex + "opening ";
         internal static readonly string ExTry = Ex + "trying to ";
+        internal static readonly string ExCreate = "creating ";
     }
 }

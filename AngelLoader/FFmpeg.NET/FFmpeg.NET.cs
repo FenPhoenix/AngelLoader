@@ -27,6 +27,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 
 namespace AngelLoader.FFmpeg.NET
@@ -66,7 +67,7 @@ namespace AngelLoader.FFmpeg.NET
             }
             catch (Exception ex)
             {
-                Log("Failed trying to run or exit FFmpeg", ex);
+                Log(ErrorText.ExTry + "run or exit FFmpeg", ex);
                 throw;
             }
         }

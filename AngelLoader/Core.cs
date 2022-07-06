@@ -170,7 +170,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Error while reading " + f + ".", ex);
+                            Log(ErrorText.ExRead + f, ex);
                         }
                     }
                     Ini.AddLanguageFromFile(f, fn, Config.LanguageNames);
@@ -1635,7 +1635,7 @@ namespace AngelLoader
             if (!GameIsKnownAndSupported(fm.Game))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-                Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
+                Dialogs.ShowError(ErrorText.UnOpenFMDir);
                 return;
             }
 
@@ -1655,7 +1655,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 LogFMInfo(fm, ErrorText.ExTry + "open FM folder " + fmDir, ex);
-                Dialogs.ShowError(ErrorText.UnableToOpenFMDir);
+                Dialogs.ShowError(ErrorText.UnOpenFMDir);
             }
         }
 
@@ -1694,31 +1694,14 @@ namespace AngelLoader
 
             int index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
-            string finalUrl;
-
             try
             {
-                finalUrl = index == -1
+                string finalUrl = index == -1
                     ? url
                     : url.Substring(0, index) + Uri.EscapeDataString(fmTitle) + url.Substring(index + "$TITLE$".Length);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExOpen + "web search URL", ex);
-                Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
-                return;
-            }
-
-            try
-            {
                 ProcessStart_UseShellExecute(finalUrl);
             }
-            catch (FileNotFoundException ex)
-            {
-                Log("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
-                Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
-            }
-            catch (Win32Exception ex)
+            catch (Exception ex)
             {
                 Log(ErrorText.ExOpen + "web search URL", ex);
                 Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
@@ -1734,8 +1717,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExOpen + "HTML readme " + fm.SelectedReadme, ex);
-                Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
+                Log(ErrorText.UnOpenHTMLReadme + "\r\n" + fm.SelectedReadme, ex);
+                Dialogs.ShowError(ErrorText.UnOpenHTMLReadme);
                 return;
             }
 
@@ -1747,8 +1730,8 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.ExOpen + "HTML readme " + path, ex);
-                    Dialogs.ShowError(ErrorText.UnableToOpenHTMLReadme);
+                    Log(ErrorText.UnOpenHTMLReadme + "\r\n" + path, ex);
+                    Dialogs.ShowError(ErrorText.UnOpenHTMLReadme + path);
                 }
             }
             else
@@ -1832,7 +1815,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log(ErrorText.ExOpen + "link '" + link + "'", ex);
-                Dialogs.ShowError(ErrorText.UnableToOpenLink + "\r\n\r\n" + link);
+                Dialogs.ShowError(ErrorText.UnOpenLink + "\r\n\r\n" + link);
             }
         }
 
@@ -1911,8 +1894,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "trying to detect game editor exe\r\n" +
-                    "Game: " + gameIndex, ex);
+                Log(ErrorText.ExTry + "detect game editor exe\r\nGame: " + gameIndex, ex);
             }
 
 #if false
