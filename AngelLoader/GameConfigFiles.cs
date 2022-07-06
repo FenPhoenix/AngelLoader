@@ -165,7 +165,7 @@ namespace AngelLoader
         GetInfoFromSneakyOptionsIni()
         {
             string soIni = Paths.GetSneakyOptionsIni();
-            if (soIni.IsEmpty() || !File.Exists(soIni))
+            if (soIni.IsEmpty())
             {
                 Core.Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
                 return (false, false, "", "", false);
@@ -295,7 +295,7 @@ namespace AngelLoader
                             // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game
                             // itself existing is not technically a requirement.
                             string soIni = Paths.GetSneakyOptionsIni();
-                            if (!soIni.IsEmpty() && File.Exists(soIni))
+                            if (!soIni.IsEmpty())
                             {
                                 SetT3FMSelector(resetSelector: true);
                             }

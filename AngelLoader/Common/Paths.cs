@@ -335,6 +335,7 @@ namespace AngelLoader
                             "Full path was: " + soIni, ex);
                         return "";
                     }
+
                     if (!File.Exists(soIni))
                     {
                         Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
