@@ -328,11 +328,8 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
-                            "Additionally, it seems the registry key's value contained invalid path characters " +
-                            "or was otherwise not a valid path (Path.Combine() failed).\r\n" +
-                            "Registry key path was: " + regKeyStr + "\r\n" +
-                            "Full path was: " + soIni, ex);
+                        Log("Found the registry key but it appears to be an invalid path (Path.Combine() failed).\r\n" +
+                            "Registry key path was: " + regKeyStr, ex);
                         return "";
                     }
 

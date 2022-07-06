@@ -1328,8 +1328,9 @@ namespace AngelLoader
                     if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                     {
                         LogFMInfo(fm, "Could not delete FM installed directory.");
-                        Core.Dialogs.ShowError(LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
-                                               "FM: " + GetFMId(fm));
+                        Core.Dialogs.ShowError(
+                            LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
+                            "FM: " + GetFMId(fm));
                     }
 
                     fm.Installed = false;
