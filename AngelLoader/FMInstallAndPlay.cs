@@ -28,6 +28,8 @@ namespace AngelLoader
 
     internal static class FMInstallAndPlay
     {
+        #region Private fields
+
         private enum PlaySource
         {
             OriginalGame,
@@ -35,11 +37,16 @@ namespace AngelLoader
             FM
         }
 
+        private static Encoding? _utf8NoBOM;
+        private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
+
         private static CancellationTokenSource _installCts = new();
         private static void CancelInstallToken() => _installCts.CancelIfNotDisposed();
 
         private static CancellationTokenSource _uninstallCts = new();
         private static void CancelUninstallToken() => _uninstallCts.CancelIfNotDisposed();
+
+        #endregion
 
         internal static Task InstallOrUninstall(params FanMission[] fms)
         {
@@ -341,10 +348,8 @@ namespace AngelLoader
             try
             {
                 // IMPORTANT (Stub comm file encoding):
-                // Encoding MUST be "new UTF8Encoding(false, true)" or the C++ stub won't read it (it doesn't
-                // handle the byte order mark).
-                using var sw = new StreamWriter(Paths.StubCommFilePath, append: false,
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
+                // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
+                using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
                 sw.WriteLine("PlayOriginalGame=" + (fm == null));
                 if (fm == null && !origDisabledMods.IsEmpty())
                 {
