@@ -55,11 +55,11 @@ namespace AngelLoader
                     // ignore
                 }
 
-                // We don't need to clear this log because LogStartup says append: false
+                // We don't need to clear this log because LogStartup overwrites (no append)
                 LogStartup(viewEnv.ProductVersion + " Started session");
 
-                // Do this after the startup log so we don't try to log something at the same time as the non-lock-
-                // protected startup log
+                // Do this after the startup log so we don't try to log something at the same time as the non-
+                // lock-protected startup log
                 AppDomain.CurrentDomain.FirstChanceException += (_, e) =>
                 {
                     if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())

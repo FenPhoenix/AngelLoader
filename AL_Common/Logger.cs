@@ -83,7 +83,7 @@ namespace AL_Common
 
             try
             {
-                using var sw = new StreamWriter(_logFile, append: false);
+                using var sw = new StreamWriter(_logFile);
                 sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
             }
             catch (Exception logEx)

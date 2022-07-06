@@ -711,7 +711,7 @@ namespace AngelLoader
         {
             try
             {
-                using var sw = new StreamWriter(path, append: false);
+                using var sw = new StreamWriter(path);
                 sw.WriteLine("Name=" + fm.InstalledDir);
                 sw.WriteLine("Archive=" + archiveName);
             }

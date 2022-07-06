@@ -886,7 +886,7 @@ namespace AngelLoader
 
                     try
                     {
-                        using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false);
+                        using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf));
                         await sw.WriteLineAsync("Name=" + fmData.FM.InstalledDir);
                         await sw.WriteLineAsync("Archive=" + fmData.FM.Archive);
                     }
