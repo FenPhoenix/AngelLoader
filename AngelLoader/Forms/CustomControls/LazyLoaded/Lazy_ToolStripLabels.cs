@@ -7,11 +7,11 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
-    internal enum Lazy_ToolStripLabel
+    internal enum Lazy_FilterLabel
     {
-        FilterByReleaseDate,
-        FilterByLastPlayed,
-        FilterByRating
+        ReleaseDate,
+        LastPlayed,
+        Rating
     }
 
     internal sealed class Lazy_ToolStripLabels : IDarkable
@@ -47,7 +47,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         // Inits to null, don't worry
         private readonly ToolStripLabel[] _labels = new ToolStripLabel[3];
 
-        internal void Show(Lazy_ToolStripLabel label, string text)
+        internal void Show(Lazy_FilterLabel label, string text)
         {
             int li = (int)label;
 
@@ -64,9 +64,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 var container = _owner.FilterIconButtonsToolStrip;
                 var button = label switch
                 {
-                    Lazy_ToolStripLabel.FilterByReleaseDate => _owner.FilterByReleaseDateButton,
-                    Lazy_ToolStripLabel.FilterByLastPlayed => _owner.FilterByLastPlayedButton,
-                    Lazy_ToolStripLabel.FilterByRating => _owner.FilterByRatingButton
+                    Lazy_FilterLabel.ReleaseDate => _owner.FilterByReleaseDateButton,
+                    Lazy_FilterLabel.LastPlayed => _owner.FilterByLastPlayedButton,
+                    Lazy_FilterLabel.Rating => _owner.FilterByRatingButton
                 };
 
                 for (int i = 0; i < container.Items.Count; i++)
@@ -94,7 +94,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _labels[li].Visible = true;
         }
 
-        internal void Localize(Lazy_ToolStripLabel label)
+        internal void Localize(Lazy_FilterLabel label)
         {
             int li = (int)label;
 
@@ -102,14 +102,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 _labels[li].ToolTipText = label switch
                 {
-                    Lazy_ToolStripLabel.FilterByReleaseDate => LText.FilterBar.ReleaseDateToolTip,
-                    Lazy_ToolStripLabel.FilterByLastPlayed => LText.FilterBar.LastPlayedToolTip,
-                    Lazy_ToolStripLabel.FilterByRating => LText.FilterBar.RatingToolTip
+                    Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
+                    Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
+                    Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip
                 };
             }
         }
 
-        internal void Hide(Lazy_ToolStripLabel label)
+        internal void Hide(Lazy_FilterLabel label)
         {
             int li = (int)label;
             if (_constructed[li]) _labels[li].Visible = false;

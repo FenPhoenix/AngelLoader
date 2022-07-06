@@ -1563,18 +1563,17 @@ namespace AngelLoader.Forms
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
 
                 FilterByReleaseDateButton.ToolTipText = LText.FilterBar.ReleaseDateToolTip;
-                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByReleaseDate);
+                Lazy_ToolStripLabels.Localize(Lazy_FilterLabel.ReleaseDate);
 
                 FilterByLastPlayedButton.ToolTipText = LText.FilterBar.LastPlayedToolTip;
-                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByLastPlayed);
+                Lazy_ToolStripLabels.Localize(Lazy_FilterLabel.LastPlayed);
 
                 FilterByTagsButton.ToolTipText = LText.FilterBar.TagsToolTip;
                 FilterByFinishedButton.ToolTipText = LText.FilterBar.FinishedToolTip;
                 FilterByUnfinishedButton.ToolTipText = LText.FilterBar.UnfinishedToolTip;
 
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
-
-                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
+                Lazy_ToolStripLabels.Localize(Lazy_FilterLabel.Rating);
                 // This one is tricky - it could have LText.Global.None as part of its text. Finally caught!
                 if (!startup) UpdateRatingLabel();
 
@@ -2163,10 +2162,10 @@ namespace AngelLoader.Forms
                     FilterAuthorTextBox.Clear();
 
                     FilterByReleaseDateButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
+                    Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.ReleaseDate);
 
                     FilterByLastPlayedButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
+                    Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.LastPlayed);
 
                     FilterByTagsButton.Checked = false;
 
@@ -2174,7 +2173,7 @@ namespace AngelLoader.Forms
                     FilterByUnfinishedButton.Checked = false;
 
                     FilterByRatingButton.Checked = false;
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+                    Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.Rating);
 
                     // Here is the line where the internal filter is cleared. It does in fact happen!
                     FMsDGV.Filter.ClearAll(oneList);
@@ -2324,15 +2323,15 @@ namespace AngelLoader.Forms
 
                     Lazy_ToolStripLabels.Show(
                         lastPlayed
-                            ? Lazy_ToolStripLabel.FilterByLastPlayed
-                            : Lazy_ToolStripLabel.FilterByReleaseDate, from + " - " + to);
+                            ? Lazy_FilterLabel.LastPlayed
+                            : Lazy_FilterLabel.ReleaseDate, from + " - " + to);
                 }
                 else
                 {
                     Lazy_ToolStripLabels.Hide(
                         lastPlayed
-                            ? Lazy_ToolStripLabel.FilterByLastPlayed
-                            : Lazy_ToolStripLabel.FilterByReleaseDate);
+                            ? Lazy_FilterLabel.LastPlayed
+                            : Lazy_FilterLabel.ReleaseDate);
                 }
             }
             finally
@@ -2718,13 +2717,13 @@ namespace AngelLoader.Forms
                                 switch (filterControl)
                                 {
                                     case HideableFilterControls.ReleaseDate:
-                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
+                                        Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.ReleaseDate);
                                         break;
                                     case HideableFilterControls.LastPlayed:
-                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
+                                        Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.LastPlayed);
                                         break;
                                     case HideableFilterControls.Rating:
-                                        Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+                                        Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.Rating);
                                         break;
                                 }
 
@@ -4140,11 +4139,11 @@ namespace AngelLoader.Forms
                     string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
                     string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
 
-                    Lazy_ToolStripLabels.Show(Lazy_ToolStripLabel.FilterByRating, from + " - " + to);
+                    Lazy_ToolStripLabels.Show(Lazy_FilterLabel.Rating, from + " - " + to);
                 }
                 else
                 {
-                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
+                    Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.Rating);
                 }
             }
             finally
