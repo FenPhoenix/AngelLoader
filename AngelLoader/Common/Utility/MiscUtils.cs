@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -8,6 +10,7 @@ using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
@@ -320,6 +323,21 @@ namespace AngelLoader
                     ? "Base directory for installed FMs: " + Config.GetFMInstallPathUnsafe(fm.Game)
                     : "Game type is not known or not supported.") +
                 (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
+        }
+
+        internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
+        {
+            try
+            {
+                lines = File_ReadAllLines_List(file);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.ExRead + file, ex);
+                lines = null;
+                return false;
+            }
         }
     }
 }

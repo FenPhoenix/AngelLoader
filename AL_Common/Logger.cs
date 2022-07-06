@@ -130,12 +130,8 @@ namespace AL_Common
 
                 string methodNameStr = callerMemberName + "\r\n";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
-                sw.WriteLine(ex != null
-                    ? "EXCEPTION:\r\n" + ex
-                    : stackTrace
-                        ? "STACK TRACE:\r\n" + new StackTrace(1)
-                        : ""
-                );
+                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
+                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
                 sw.WriteLine();
             }
             catch (Exception logEx)

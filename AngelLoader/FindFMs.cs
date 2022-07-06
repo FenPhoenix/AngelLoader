@@ -673,14 +673,8 @@ namespace AngelLoader
 
             if (!File.Exists(fmselInf!)) return FixUp();
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(fmselInf!, out var lines))
             {
-                lines = File_ReadAllLines_List(fmselInf!);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + fmselInf, ex);
                 return null;
             }
 

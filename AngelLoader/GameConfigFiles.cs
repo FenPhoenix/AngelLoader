@@ -183,14 +183,8 @@ namespace AngelLoader
             bool alwaysShowLoaderFound = false;
             bool alwaysShowLoader = false;
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(soIni, out var lines))
             {
-                lines = File_ReadAllLines_List(soIni);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + "SneakyOptions.ini", ex);
                 return (false, false, "", "", false);
             }
 
@@ -352,14 +346,8 @@ namespace AngelLoader
                     return;
                 }
 
-                List<string> lines;
-                try
+                if (!TryReadAllLines(cfgFile, out var lines))
                 {
-                    lines = File_ReadAllLines_List(cfgFile);
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.ExRead + fileName + " for " + gamePath, ex);
                     return;
                 }
 
@@ -421,14 +409,8 @@ namespace AngelLoader
                 return;
             }
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(camCfg, out var lines))
             {
-                lines = File_ReadAllLines_List(camCfg);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + Paths.CamCfg + " for " + gamePath, ex);
                 return;
             }
 
@@ -552,14 +534,8 @@ namespace AngelLoader
                 return false;
             }
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(camModIni, out var lines))
             {
-                lines = File_ReadAllLines_List(camModIni);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
@@ -727,14 +703,8 @@ namespace AngelLoader
                 return false;
             }
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(soIni, out var lines))
             {
-                lines = File_ReadAllLines_List(soIni);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + "SneakyOptions.ini", ex);
                 return false;
             }
 
@@ -984,15 +954,8 @@ namespace AngelLoader
                 return (false, list);
             }
 
-            List<string> lines;
-            try
+            if (!TryReadAllLines(camModIni, out var lines))
             {
-                lines = File_ReadAllLines_List(camModIni);
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + camModIni + "\r\n" +
-                    "Game: " + gameIndex, ex);
                 // @BetterErrors(GetGameMods): Should we show the dialog?
                 //Dialogs.ShowError(nameof(GetGameMods) + "():" +
                 //                  "Couldn't read " + camModIni + "\r\n" +
