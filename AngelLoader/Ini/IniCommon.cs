@@ -128,7 +128,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log("Error attempting to copy '" + Paths.FMDataIni + "' to '" + file + "'", ex);
+                        Log(ErrorText.ExCopy + "'" + Paths.FMDataIni + "' to '" + file + "'", ex);
                     }
                 }
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);

@@ -24,5 +24,6 @@ namespace AngelLoader.DataClasses
         internal static readonly string ExOpen = Ex + "opening ";
         internal static readonly string ExTry = Ex + "trying to ";
         internal static readonly string ExCreate = Ex + "creating ";
+        internal static readonly string ExCopy = Ex + "copying ";
     }
 }

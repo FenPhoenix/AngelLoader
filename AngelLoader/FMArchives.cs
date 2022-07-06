@@ -222,7 +222,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.Ex + "copying archive '" + file + "' to '" + destDir, ex);
+                            Log(ErrorText.ExCopy + "archive '" + file + "' to '" + destDir + "'", ex);
                             Core.Dialogs.ShowError(
                                 LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
                                 LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +
