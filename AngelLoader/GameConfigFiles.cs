@@ -292,13 +292,9 @@ namespace AngelLoader
                         }
                         else
                         {
-                            // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game
-                            // itself existing is not technically a requirement.
-                            string soIni = Paths.GetSneakyOptionsIni();
-                            if (!soIni.IsEmpty())
-                            {
-                                SetT3FMSelector(resetSelector: true);
-                            }
+                            // For Thief 3, we actually just need SneakyOptions.ini. The game itself existing
+                            // is not technically a requirement.
+                            SetT3FMSelector(resetSelector: true);
                         }
                     }
                 }
@@ -699,7 +695,6 @@ namespace AngelLoader
             string soIni = Paths.GetSneakyOptionsIni();
             if (soIni.IsEmpty())
             {
-                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found", stackTrace: true);
                 return false;
             }
 
