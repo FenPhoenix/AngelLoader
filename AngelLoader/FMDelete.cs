@@ -180,7 +180,7 @@ namespace AngelLoader
 
             (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
                 message: single
-                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].Archive
+                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + GetFMId(fms[0])
                     : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
                       LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
                 title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
