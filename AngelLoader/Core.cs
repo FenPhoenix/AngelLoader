@@ -653,7 +653,7 @@ namespace AngelLoader
                 if (gameExeSpecified)
                 {
                     var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
-                    if (t3Data.Error == Error.None)
+                    if (t3Data.Success)
                     {
                         Config.SetFMInstallPath(GameIndex.Thief3, t3Data.FMInstallPath);
                         Config.T3UseCentralSaves = t3Data.UseCentralSaves;

@@ -11,10 +11,10 @@
         SS2CamModIniNotFound,
         CamModIniNotFound,
         CamModIniCouldNotBeRead,
-        */
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
         T3FMInstPathNotFound,
+        */
         GameExeNotSpecified,
         GameExeNotFound,
         SneakyDllNotFound,

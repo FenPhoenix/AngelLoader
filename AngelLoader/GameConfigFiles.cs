@@ -160,16 +160,15 @@ namespace AngelLoader
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
+        internal static (bool Success, bool UseCentralSaves, string FMInstallPath,
                         string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromSneakyOptionsIni()
         {
             string soIni = Paths.GetSneakyOptionsIni();
-            Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
-            if (soError != Error.None)
+            if (soIni.IsEmpty() || !File.Exists(soIni))
             {
                 Core.Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
-                return (soError, false, "", "", false);
+                return (false, false, "", "", false);
             }
 
             bool ignoreSavesKeyFound = false;
@@ -246,8 +245,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
-                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
+                ? (true, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
+                : (false, false, "", prevFMSelectorValue, alwaysShowLoader);
         }
 
         #endregion
