@@ -264,7 +264,6 @@ namespace AngelLoader.DataClasses
             internal readonly string DarkLoader_OpenNow = "Open DarkLoader now";
         }
 
-        // Working, subject to change
         internal sealed class MainMenu_Class
         {
             internal readonly string MainMenuToolTip = "Main menu";
