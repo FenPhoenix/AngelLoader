@@ -2081,6 +2081,9 @@ namespace AngelLoader
             Ini.WriteFullFMDataIni();
         }
 
+        // TODO(DisplayFM/sel change/int index):
+        // Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
+        // it always is >-1 and matches the currently selected FM/row. Can probably be removed.
         [MustUseReturnValue]
         internal static async Task<FanMission?>
         DisplayFM(int index = -1, bool refreshCache = false)
