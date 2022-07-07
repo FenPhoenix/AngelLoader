@@ -375,10 +375,10 @@ namespace AngelLoader
                 scanFullIfNew: true);
         }
 
-        private static FMScanner.ScanOptions? GetScanOptionsFromDialog()
+        private static FMScanner.ScanOptions? GetScanOptionsFromDialog(bool selected)
         {
             (bool accepted, FMScanner.ScanOptions scanOptions, bool noneSelected) =
-                Core.View.ShowScanAllFMsWindow();
+                Core.View.ShowScanAllFMsWindow(selected);
 
             if (!accepted) return null;
 
@@ -395,7 +395,7 @@ namespace AngelLoader
         {
             if (FMsViewList.Count == 0) return;
 
-            FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog();
+            FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
             if (scanOptions == null) return;
 
             if (await ScanFMs(FMsViewList, scanOptions))
@@ -416,7 +416,7 @@ namespace AngelLoader
             }
             else if (fms.Count > 1)
             {
-                FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog();
+                FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
                 if (scanOptions == null) return;
 
                 if (await ScanFMs(fms, scanOptions))

@@ -794,8 +794,10 @@ namespace AngelLoader.DataClasses
         internal sealed class ScanAllFMsBox_Class
         {
             internal readonly string TitleText = "Scan all FMs";
+            internal readonly string TitleTextSelected = "Scan selected FMs";
             [FenGenBlankLine]
             internal readonly string ScanAllFMsFor = "Scan all FMs for:";
+            internal readonly string ScanSelectedFMsFor = "Scan selected FMs for:";
             [FenGenBlankLine]
             internal readonly string Title = "Title";
             internal readonly string Author = "Author";

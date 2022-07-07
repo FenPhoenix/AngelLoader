@@ -447,7 +447,7 @@ namespace AngelLoader
 
         #region Dialogs
 
-        (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow();
+        (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
 
         (bool Accepted, string IniFile, bool ImportFMData, bool ImportTitle, bool ImportSize, bool ImportComment, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportFinishedOn, bool ImportSaves) ShowDarkLoaderImportWindow();
 

@@ -5462,9 +5462,9 @@ namespace AngelLoader.Forms
         #region Show dialogs
 
         public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
-        ShowScanAllFMsWindow()
+        ShowScanAllFMsWindow(bool selected)
         {
-            using var f = new ScanAllFMsForm();
+            using var f = new ScanAllFMsForm(selected);
             return (f.ShowDialogDark(this) == DialogResult.OK, f.ScanOptions, f.NoneSelected);
         }
 

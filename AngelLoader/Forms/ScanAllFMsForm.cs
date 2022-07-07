@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
         internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
         internal bool NoneSelected;
 
-        public ScanAllFMsForm()
+        public ScanAllFMsForm(bool selected)
         {
 #if DEBUG
             InitializeComponent();
@@ -34,14 +34,14 @@ namespace AngelLoader.Forms
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
-            Localize();
+            Localize(selected);
         }
 
-        private void Localize()
+        private void Localize(bool selected)
         {
-            Text = LText.ScanAllFMsBox.TitleText;
+            Text = selected ? LText.ScanAllFMsBox.TitleTextSelected : LText.ScanAllFMsBox.TitleText;
 
-            ScanAllFMsForLabel.Text = LText.ScanAllFMsBox.ScanAllFMsFor;
+            ScanAllFMsForLabel.Text = selected ? LText.ScanAllFMsBox.ScanSelectedFMsFor : LText.ScanAllFMsBox.ScanAllFMsFor;
             TitleCheckBox.Text = LText.ScanAllFMsBox.Title;
             AuthorCheckBox.Text = LText.ScanAllFMsBox.Author;
             GameCheckBox.Text = LText.ScanAllFMsBox.Game;
