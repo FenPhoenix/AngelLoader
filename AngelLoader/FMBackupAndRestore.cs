@@ -100,9 +100,7 @@ namespace AngelLoader
         private static BackupFile
         GetBackupFile(
             FanMission fm,
-            bool findDarkLoaderOnly = false,
-            FileNameBoth? cachedDarkLoaderFiles = null,
-            List<string>? cachedFMArchivePaths = null)
+            bool findDarkLoaderOnly = false)
         {
             static FileNameBoth GetDarkLoaderArchiveFiles()
             {
@@ -139,12 +137,12 @@ namespace AngelLoader
             {
                 // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
                 // Rather than just using File.Exists()?!
-                cachedDarkLoaderFiles ??= GetDarkLoaderArchiveFiles();
-                for (int i = 0; i < cachedDarkLoaderFiles.FullPaths.Count; i++)
+                FileNameBoth dlArchives = GetDarkLoaderArchiveFiles();
+                for (int i = 0; i < dlArchives.FullPaths.Count; i++)
                 {
-                    string f = cachedDarkLoaderFiles.FullPaths[i];
+                    string f = dlArchives.FullPaths[i];
 
-                    string an = cachedDarkLoaderFiles.FileNamesMinusSavesSuffix[i];
+                    string an = dlArchives.FileNamesMinusSavesSuffix[i];
                     if (an.IsEmpty()) continue;
 
                     // Account for the fact that DarkLoader trims archive names for save backup zips
@@ -204,7 +202,7 @@ namespace AngelLoader
                 // (for automatic use of FMSel/NDL saves)
                 if (ret.Name.IsEmpty())
                 {
-                    foreach (string path in cachedFMArchivePaths ??= FMArchives.GetFMArchivePaths())
+                    foreach (string path in FMArchives.GetFMArchivePaths())
                     {
                         AddBakFilesFrom(path);
                     }

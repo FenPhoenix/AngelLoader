@@ -321,7 +321,7 @@ namespace AngelLoader
                 // means "key name not found". Jank.
                 if (regKey is not (null or -1) && regKey is string regKeyStr)
                 {
-                    string soIni = "";
+                    string soIni;
                     try
                     {
                         soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");

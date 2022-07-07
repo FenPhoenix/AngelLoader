@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
