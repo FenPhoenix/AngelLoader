@@ -1897,25 +1897,6 @@ namespace AngelLoader
                 Log(ErrorText.ExTry + "detect game editor exe\r\nGame: " + gameIndex, ex);
             }
 
-#if false
-            for (int i = 0; i < exeFiles.Count; i++)
-            {
-                string exeFile = exeFiles[i];
-                try
-                {
-                    var fvi = FileVersionInfo.GetVersionInfo(exeFile);
-                    if (fvi.ProductName?.ContainsI(editorName) == true)
-                    {
-                        return exeFile;
-                    }
-                }
-                catch
-                {
-                    // ignore: just move on to the next file
-                }
-            }
-#endif
-
             return Fallback(gamePath, editorName);
         }
 
