@@ -4951,21 +4951,17 @@ namespace AngelLoader.Forms
             }
             else
             {
-                if (language == Language.Default)
-                {
-                    EditFMLanguageComboBox.SelectedIndex = 0;
-                }
-                else
-                {
-                    int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(GetLanguageStringUnsafe(language)));
-                    EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
-                }
+                EditFMLanguageComboBox.SelectedIndex = language == Language.Default
+                    ? 0
+                    : EditFMLanguageComboBox
+                        .BackingItems
+                        .FindIndex(x => x.EqualsI(GetLanguageStringUnsafe(language)))
+                        .ClampToZero();
 
-                return EditFMLanguageComboBox.SelectedIndex == 0
-                    ? Language.Default
-                    : LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
-                        ? returnLanguage
-                        : Language.Default;
+                return EditFMLanguageComboBox.SelectedIndex > 0 &&
+                       LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
+                    ? returnLanguage
+                    : Language.Default;
             }
         }
 
