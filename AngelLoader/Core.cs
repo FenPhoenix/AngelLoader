@@ -17,22 +17,6 @@ TODO(Perfect hashes/gperf):
  For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
  every time we write
-
-@vNext(GetFiles() *.xxx extension quirk):
-https://docs.microsoft.com/en-us/dotnet/api/system.io.directory.enumeratefiles?view=netframework-4.7.2
-
----snip---
-
-.NET Framework only: When you use the asterisk wildcard character in searchPattern and you specify a
-three-character file extension, for example, "*.txt", this method also returns files with extensions that
-_begin_ with the specified extension.
-
----snip---
-
-ie. if we say "*.xls" we also match "*.xlsx" (Framework only!)
-
-Test if this also applies with our custom IO methods. Test if this applies to like "*.zip" matching "*.zip.blah"
-Probably doesn't match that but test!
 */
 using System;
 using System.Collections.Generic;
