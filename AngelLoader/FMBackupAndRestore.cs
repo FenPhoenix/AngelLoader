@@ -51,7 +51,7 @@ namespace AngelLoader
         private const string _screensDirS = _screensDir + "/";
 
         private const string _removeFileEq = "RemoveFile=";
-        private const string _removeDirEq = "RemoveDir=";
+        private const int _removeFileEqLen = 11;
 
         // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
         private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
@@ -381,7 +381,6 @@ namespace AngelLoader
                 if (Canceled(ct)) return;
 
                 var fileExcludes = new HashSetPathI();
-                //var dirExcludes = new HashSetIP();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -465,15 +464,10 @@ namespace AngelLoader
                                 while (sr.ReadLine() is { } line)
                                 {
                                     bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(_removeFileEq);
-                                    bool startsWithRemoveDir = false;
-                                    if (!startsWithRemoveFile)
-                                    {
-                                        startsWithRemoveDir = line.StartsWithFast_NoNullChecks(_removeDirEq);
-                                    }
 
-                                    if (!startsWithRemoveFile && !startsWithRemoveDir) continue;
+                                    if (!startsWithRemoveFile) continue;
 
-                                    string val = line.Substring(startsWithRemoveFile ? 11 : 10).Trim();
+                                    string val = line.Substring(_removeFileEqLen).Trim();
                                     if (!val.PathStartsWithI(savesDirS) &&
                                         !val.PathStartsWithI(_darkNetSavesDirS) &&
                                         !val.PathStartsWithI(_screensDirS) &&
@@ -486,19 +480,13 @@ namespace AngelLoader
                                         // the FM folder
                                         // @DIRSEP: Relative, no UNC paths can occur here (and if they do we want to reject them anyway)
                                         !val.StartsWithDirSep() &&
+                                        !val.EndsWithDirSep() &&
                                         !val.Contains(':') &&
                                         // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
                                         !val.Contains("./") &&
                                         !val.Contains(".\\"))
                                     {
-                                        if (startsWithRemoveFile)
-                                        {
-                                            fileExcludes.Add(val);
-                                        }
-                                        //else
-                                        //{
-                                        //    dirExcludes.Add(val);
-                                        //}
+                                        fileExcludes.Add(val);
                                     }
 
                                     if (Canceled(ct)) return;
@@ -544,46 +532,6 @@ namespace AngelLoader
 
                         if (Canceled(ct)) return;
                     }
-
-                    // Disabled till this is working completely
-#if false
-                    // Crappy hack method
-                    var crfs = Directory.GetFiles(fmInstalledPath, "*.crf", SearchOption.TopDirectoryOnly);
-                    var dirRemoveList = new List<string>();
-                    foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.TopDirectoryOnly))
-                    {
-                        string dt = d.GetDirNameFast();
-                        if (Directory.GetFiles(d, "*", SearchOption.AllDirectories).Length == 0)
-                        {
-                            // @BigO(FMBackupAndRestore disabled dir excludes code)
-                            for (int i = 0; i < crfs.Length; i++)
-                            {
-                                string ft = crfs[i].GetFileNameFast().RemoveExtension();
-                                if (ft.PathEqualsI(dt))
-                                {
-                                    dirRemoveList.Add(d);
-                                }
-                            }
-                        }
-                    }
-
-                    if (dirRemoveList.Count > 0)
-                    {
-                        for (int i = 0; i < dirRemoveList.Count; i++)
-                        {
-                            Directory.Delete(dirRemoveList[i], recursive: true);
-                        }
-                    }
-
-                    // Proper method
-                    foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
-                    {
-                        if (dirExcludes.Contains(d.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
-                        {
-                            Directory.Delete(d, recursive: true);
-                        }
-                    }
-#endif
                 }
             });
         }
