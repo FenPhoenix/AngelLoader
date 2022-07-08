@@ -1588,19 +1588,19 @@ namespace FMScanner
                     fmd.Game = Game.Thief3;
                 }
 
-                foreach (string f in EnumFiles("*", SearchOption.TopDirectoryOnly))
+                foreach (string f in EnumFiles(SearchOption.TopDirectoryOnly))
                 {
                     baseDirFiles.Add(new NameAndIndex(Path.GetFileName(f)));
                 }
 
                 if (t3Found)
                 {
-                    foreach (string f in EnumFiles(FMDirs.T3FMExtras1S, "*", SearchOption.TopDirectoryOnly))
+                    foreach (string f in EnumFiles(FMDirs.T3FMExtras1S, SearchOption.TopDirectoryOnly))
                     {
                         t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.T3FMExtras2S, "*", SearchOption.TopDirectoryOnly))
+                    foreach (string f in EnumFiles(FMDirs.T3FMExtras2S, SearchOption.TopDirectoryOnly))
                     {
                         t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
@@ -1613,7 +1613,7 @@ namespace FMScanner
                         return false;
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.StringsS, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.StringsS, SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                         if (SS2FingerprintRequiredAndNotDone() &&
@@ -1626,12 +1626,12 @@ namespace FMScanner
                         }
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.IntrfaceS, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.IntrfaceS, SearchOption.AllDirectories))
                     {
                         intrfaceDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
-                    foreach (string f in EnumFiles(FMDirs.BooksS, "*", SearchOption.AllDirectories))
+                    foreach (string f in EnumFiles(FMDirs.BooksS, SearchOption.AllDirectories))
                     {
                         booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
@@ -1975,12 +1975,12 @@ namespace FMScanner
 
                 // Remove surrounding quotes
                 if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
-                    fmIni.Descr.CountChars('\"') == 2)
+                    CountChars(fmIni.Descr, '\"') == 2)
                 {
                     fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
                 }
                 if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
-                    fmIni.Descr.CountChars(LeftDoubleQuote) + fmIni.Descr.CountChars(RightDoubleQuote) == 2)
+                    CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
                 {
                     fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
                 }
@@ -3691,6 +3691,27 @@ namespace FMScanner
 
         #region Helpers
 
+#if FMScanner_FullCode
+
+        // So we don't bloat up AL_Common with this when we don't use it there
+
+        /// <summary>
+        /// Returns the number of times a character appears in a string.
+        /// Avoids whatever silly overhead junk Count(predicate) is doing.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        private static int CountChars(string value, char character)
+        {
+            int count = 0;
+            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
+
+            return count;
+        }
+
+#endif
+
         /// <summary>
         /// Deletes a directory after first setting everything in it, and itself, to non-read-only.
         /// </summary>
@@ -3720,18 +3741,15 @@ namespace FMScanner
         #region Generic dir/file functions
 
         private string[]
-        EnumFiles(string searchPattern, SearchOption searchOption)
-        {
-            return EnumFiles("", searchPattern, searchOption, checkDirExists: false);
-        }
+        EnumFiles(SearchOption searchOption) => EnumFiles("", searchOption, checkDirExists: false);
 
         private string[]
-        EnumFiles(string path, string searchPattern, SearchOption searchOption, bool checkDirExists = true)
+        EnumFiles(string path, SearchOption searchOption, bool checkDirExists = true)
         {
             string fullDir = Path.Combine(_fmWorkingPath, path);
 
             return !checkDirExists || Directory.Exists(fullDir)
-                ? Directory.GetFiles(fullDir, searchPattern, searchOption)
+                ? Directory.GetFiles(fullDir, "*", searchOption)
                 : Array.Empty<string>();
         }
 

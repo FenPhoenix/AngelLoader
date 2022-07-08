@@ -122,6 +122,7 @@ namespace AngelLoader
             }
 
             path = NormalizeAndCheckPath(path, pathIsKnownValid);
+            bool searchPatternHas3CharExt = SearchPatternHas3CharExt(searchPattern);
 
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
@@ -137,9 +138,13 @@ namespace AngelLoader
 
             string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
-            using var findHandle = FindFirstFileExW(searchPath,
-                FindExInfoBasic, out WIN32_FIND_DATAW findData,
-                FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+            using var findHandle = FindFirstFileExW(
+                searchPath,
+                FindExInfoBasic,
+                out WIN32_FIND_DATAW findData,
+                FindExSearchNameMatch,
+                IntPtr.Zero,
+                FIND_FIRST_EX_LARGE_FETCH);
 
             if (findHandle.IsInvalid)
             {
@@ -158,7 +163,8 @@ namespace AngelLoader
                      (fileType == FileType.Directories &&
                       (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
                      (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT))) &&
-                    findData.cFileName != "." && findData.cFileName != "..")
+                    findData.cFileName != "." && findData.cFileName != ".." &&
+                    !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName)))
                 {
                     string fullName = returnFullPaths
                         // Exception could occur here
@@ -183,42 +189,22 @@ namespace AngelLoader
 #if false
         internal static bool AnyFilesInDir(string path)
         {
-            path = path.ToBackSlashes().TrimEnd(CA_Backslash);
-
-            bool pathContainsInvalidChars = false;
-            char[] invalidChars = Path.GetInvalidPathChars();
-
-            // Dumb loop to avoid LINQ.
-            for (int i = 0; i < invalidChars.Length; i++)
-            {
-                if (path.Contains(invalidChars[i]))
-                {
-                    pathContainsInvalidChars = true;
-                    break;
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
-            {
-                throw new ArgumentException("The path '" + path + "' is invalid in some, or other, regard.");
-            }
+            path = NormalizeAndCheckPath(path, pathIsKnownValid: false);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            WIN32_FIND_DATA findData;
-
             // Search the base directory first, and only then search subdirectories.
 
             string searchPath = MakeUNCPath(path) + "\\*";
 
-            using SafeSearchHandle findHandle = FindFirstFileEx(
+            using SafeSearchHandle findHandle = FindFirstFileExW(
                 searchPath,
-                FINDEX_INFO_LEVELS.FindExInfoBasic,
-                out findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                FindExInfoBasic,
+                out WIN32_FIND_DATAW findData,
+                FindExSearchNameMatch,
                 IntPtr.Zero,
                 0);
 

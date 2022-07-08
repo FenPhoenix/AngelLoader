@@ -20,6 +20,7 @@ namespace FMScanner
         {
             return FirstFileExists(FastIOSearchOption.TopDirectoryOnly, path, searchPatterns);
         }
+
         internal static bool FilesExistSearchAll(string path, params string[] searchPatterns)
         {
             return FirstFileExists(FastIOSearchOption.AllDirectories, path, searchPatterns);
@@ -64,6 +65,8 @@ namespace FMScanner
 
             foreach (string p in searchPatterns)
             {
+                bool searchPatternHas3CharExt = SearchPatternHas3CharExt(p);
+
                 using SafeSearchHandle findHandle = FindFirstFileExW(
                     searchPath + p,
                     FindExInfoBasic,
@@ -85,7 +88,8 @@ namespace FMScanner
                 do
                 {
                     if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
-                        findData.cFileName != "." && findData.cFileName != "..")
+                        findData.cFileName != "." && findData.cFileName != ".." &&
+                        !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName)))
                     {
                         return true;
                     }

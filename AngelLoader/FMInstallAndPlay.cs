@@ -533,7 +533,7 @@ namespace AngelLoader
 
                 if (MissFlagFilesExist()) return;
 
-                string[] misFiles = Directory.GetFiles(fmInstalledPath, "miss*.mis", SearchOption.TopDirectoryOnly);
+                var misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
                 var misNums = new List<int>();
                 foreach (string mf in misFiles)
                 {

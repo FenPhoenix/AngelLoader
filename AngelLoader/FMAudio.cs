@@ -260,6 +260,9 @@ namespace AngelLoader
 
                             foreach (string f in wavFiles)
                             {
+                                // Workaround https://fenphoenix.github.io/file_ext_note.html
+                                if (!f.EndsWithI(".wav")) continue;
+
                                 File_UnSetReadOnly(f);
 
                                 if (Canceled(ct)) return;
@@ -296,6 +299,7 @@ namespace AngelLoader
                     try
                     {
                         string pattern = type == AudioConvert.MP3ToWAV ? "*.mp3" : "*.ogg";
+                        string ext = type == AudioConvert.MP3ToWAV ? ".mp3" : ".ogg";
 
                         var fmSndPaths = GetFMSoundPathsByGame(fm);
                         foreach (string fmSndPath in fmSndPaths)
@@ -323,6 +327,9 @@ namespace AngelLoader
 
                             foreach (string f in files)
                             {
+                                // Workaround https://fenphoenix.github.io/file_ext_note.html
+                                if (!f.EndsWithI(ext)) continue;
+
                                 File_UnSetReadOnly(f);
 
                                 if (Canceled(ct)) return;
