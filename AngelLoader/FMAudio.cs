@@ -278,15 +278,8 @@ namespace AngelLoader
                                 if (bits is >= 1 and <= 16) continue;
 
                                 string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
-
                                 await FFmpeg.NET.Engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
-
-                                if (Canceled(ct)) return;
-
                                 File.Delete(f);
-
-                                if (Canceled(ct)) return;
-
                                 File.Move(tempFile, f);
 
                                 if (Canceled(ct)) return;
@@ -342,8 +335,6 @@ namespace AngelLoader
                                 {
                                     LogFMInfo(fm, ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
                                 }
-
-                                if (Canceled(ct)) return;
 
                                 try
                                 {
