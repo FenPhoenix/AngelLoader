@@ -1,5 +1,6 @@
 ﻿#define FenGen_ConfigSource
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -336,7 +337,16 @@ namespace AngelLoader.DataClasses
         #region Readme box
 
         private float _readmeZoomFactor = 1;
-        internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.ClampToRichTextBoxZoomMinMax(); }
+        internal float ReadmeZoomFactor
+        {
+            get => _readmeZoomFactor;
+            set
+            {
+                value = (float)Math.Round(value, 1, MidpointRounding.AwayFromZero);
+                _readmeZoomFactor = value.ClampToRichTextBoxZoomMinMax();
+            }
+        }
+
         internal bool ReadmeUseFixedWidthFont = true;
 
         #endregion
