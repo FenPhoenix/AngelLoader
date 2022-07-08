@@ -260,7 +260,7 @@ namespace AngelLoader
 
                             foreach (string f in wavFiles)
                             {
-                                // Workaround https://fenphoenix.github.io/file_ext_note.html
+                                // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                                 if (!f.EndsWithI(".wav")) continue;
 
                                 File_UnSetReadOnly(f);
@@ -327,7 +327,7 @@ namespace AngelLoader
 
                             foreach (string f in files)
                             {
-                                // Workaround https://fenphoenix.github.io/file_ext_note.html
+                                // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                                 if (!f.EndsWithI(ext)) continue;
 
                                 File_UnSetReadOnly(f);

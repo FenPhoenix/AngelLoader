@@ -150,7 +150,7 @@ namespace AL_Common
             return path;
         }
 
-        #region Workaround https://fenphoenix.github.io/file_ext_note.html
+        #region Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
 
         public static bool SearchPatternHas3CharExt(string searchPattern)
         {
