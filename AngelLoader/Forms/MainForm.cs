@@ -853,8 +853,8 @@ namespace AngelLoader.Forms
 
             #region SplitContainers
 
-            MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, suspendResume: false);
-            TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, suspendResume: false);
+            MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, setIfFullScreen: true, suspendResume: false);
+            TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, setIfFullScreen: false, suspendResume: false);
 
             MainSplitContainer.InjectSibling(TopSplitContainer);
             MainSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
@@ -2610,8 +2610,8 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Click(object sender, EventArgs e)
         {
-            MainSplitContainer.ResetSplitterPercent();
-            TopSplitContainer.ResetSplitterPercent();
+            MainSplitContainer.ResetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
+            TopSplitContainer.ResetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
             if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
         }
 
@@ -5519,7 +5519,14 @@ namespace AngelLoader.Forms
                     ImportSize: f.ImportSize
                 );
         }
-    }
 
-    #endregion
+        #endregion
+
+        private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
+        {
+            // Colossal hack (hiding dark tab control prevents white line on side)
+            // NOTE: The "white line" was probably from the size bug, so this probably could be removed, but meh.
+            TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
+        }
+    }
 }

@@ -315,9 +315,11 @@
             // 
             this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel1;
             this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.MainSplitContainer.Name = "MainSplitContainer";
             this.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.MainSplitContainer.RefreshSiblingFirst = true;
             // 
             // MainSplitContainer.Panel1
             // 
@@ -347,8 +349,11 @@
             // 
             this.TopSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.TopSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TopSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
             this.TopSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.TopSplitContainer.Name = "TopSplitContainer";
+            this.TopSplitContainer.RefreshSiblingFirst = false;
+            this.TopSplitContainer.FullScreenChanged += new System.EventHandler(this.TopSplitContainer_FullScreenChanged);
             // 
             // TopSplitContainer.Panel1
             // 

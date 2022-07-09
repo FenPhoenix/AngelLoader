@@ -269,7 +269,9 @@ namespace AngelLoader.Forms
             // 
             MainSplitContainer.BackColor = SystemColors.ActiveBorder;
             MainSplitContainer.Dock = DockStyle.Fill;
+            MainSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel1;
             MainSplitContainer.Orientation = Orientation.Horizontal;
+            MainSplitContainer.RefreshSiblingFirst = true;
             // 
             // MainSplitContainer.Panel1
             // 
@@ -299,6 +301,9 @@ namespace AngelLoader.Forms
             // 
             TopSplitContainer.BackColor = SystemColors.ActiveBorder;
             TopSplitContainer.Dock = DockStyle.Fill;
+            TopSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel2;
+            TopSplitContainer.RefreshSiblingFirst = false;
+            TopSplitContainer.FullScreenChanged += TopSplitContainer_FullScreenChanged;
             // 
             // TopSplitContainer.Panel1
             // 

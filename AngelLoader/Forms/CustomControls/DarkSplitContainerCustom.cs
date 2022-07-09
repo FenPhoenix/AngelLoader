@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -19,12 +18,15 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Private fields
 
+        private bool IsStacked => Orientation == Orientation.Horizontal;
+        private int CrossLength => IsStacked ? Height : Width;
+
         private int _storedCollapsiblePanelMinSize;
         private float _storedSplitterPercent;
         private float SplitterPercent
         {
-            get => SplitterDistance / (float)(IsMain ? Height : Width);
-            set => SplitterDistance = (int)Math.Round(value * (IsMain ? Height : Width));
+            get => SplitterDistance / (float)CrossLength;
+            set => SplitterDistance = (int)Math.Round(value * CrossLength);
         }
 
         // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
@@ -40,6 +42,17 @@ namespace AngelLoader.Forms.CustomControls
         private Color? _origBackColor;
         private Color? _origPanel1BackColor;
         private Color? _origPanel2BackColor;
+
+        private bool _resizing;
+        private bool Resizing
+        {
+            get => _resizing;
+            set
+            {
+                IsSplitterFixed = value;
+                _resizing = value;
+            }
+        }
 
         #endregion
 
@@ -79,21 +92,36 @@ namespace AngelLoader.Forms.CustomControls
         internal float SplitterPercentReal => FullScreen ? _storedSplitterPercent : SplitterPercent;
 
         internal bool FullScreen { get; private set; }
-        internal int CollapsedSize = 0;
+        internal int CollapsedSize;
 
         internal Color Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
         internal Color Panel2DarkBackColor = DarkColors.Fen_ControlBackground;
 
         #endregion
 
-        private bool IsMain => Orientation == Orientation.Horizontal;
+        [PublicAPI]
+        public enum Panel
+        {
+            Panel1,
+            Panel2
+        }
+
+        [Browsable(true)]
+        [PublicAPI]
+        public Panel FullScreenCollapsePanel { get; set; }
+
+        [Browsable(true)]
+        [PublicAPI]
+        public bool RefreshSiblingFirst { get; set; }
 
         public DarkSplitContainerCustom()
         {
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
-            _storedCollapsiblePanelMinSize = IsMain ? Panel1MinSize : Panel2MinSize;
+            _storedCollapsiblePanelMinSize = FullScreenCollapsePanel == Panel.Panel1 ? Panel1MinSize : Panel2MinSize;
         }
+
+        public event EventHandler? FullScreenChanged;
 
         #region Public methods
 
@@ -107,7 +135,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (suspendResume) this.SuspendDrawing();
 
-                if (IsMain)
+                if (FullScreenCollapsePanel == Panel.Panel1)
                 {
                     if (enabled)
                     {
@@ -136,13 +164,8 @@ namespace AngelLoader.Forms.CustomControls
                         _storedCollapsiblePanelMinSize = Panel2MinSize;
                         _storedSplitterPercent = SplitterPercent;
                         Panel2MinSize = CollapsedSize;
-                        SplitterDistance = Width - CollapsedSize;
+                        SplitterDistance = CrossLength - CollapsedSize;
                         FullScreen = true;
-                        // Colossal hack (hiding dark tab control prevents white line on side)
-                        foreach (Control control in Panel2.Controls)
-                        {
-                            if (control is DarkTabControl) control.Hide();
-                        }
                     }
                     else
                     {
@@ -150,25 +173,20 @@ namespace AngelLoader.Forms.CustomControls
                         Panel2MinSize = _storedCollapsiblePanelMinSize;
                         FullScreen = false;
                         IsSplitterFixed = false;
-                        // Colossal hack (hiding dark tab control prevents white line on side)
-                        foreach (Control control in Panel2.Controls)
-                        {
-                            if (control is DarkTabControl) control.Show();
-                        }
                     }
                 }
             }
             finally
             {
+                FullScreenChanged?.Invoke(this, EventArgs.Empty);
                 if (suspendResume) this.ResumeDrawing();
             }
         }
 
-        internal void SetSplitterPercent(float percent, bool suspendResume = true)
+        internal void SetSplitterPercent(float percent, bool setIfFullScreen, bool suspendResume = true)
         {
-            if (FullScreen && !IsMain)
+            if (FullScreen && !setIfFullScreen)
             {
-                // Don't un-collapse top-right panel
                 _storedSplitterPercent = percent;
                 return;
             }
@@ -188,23 +206,23 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void ResetSplitterPercent()
+        internal void ResetSplitterPercent(float percent, bool setIfFullScreen)
         {
-            if (!IsMain && FullScreen)
+            if (!setIfFullScreen && FullScreen)
             {
-                _storedSplitterPercent = Defaults.TopSplitterPercent;
+                _storedSplitterPercent = percent;
             }
             else
             {
-                SplitterPercent = IsMain ? Defaults.MainSplitterPercent : Defaults.TopSplitterPercent;
+                SplitterPercent = percent;
             }
         }
 
         internal void CancelResize()
         {
-            if (!IsSplitterFixed || FullScreen) return;
+            if (!Resizing || FullScreen) return;
 
-            IsSplitterFixed = false;
+            Resizing = false;
             SplitterDistance = _originalDistance;
             if (MouseOverCrossSection) _sibling!.SplitterDistance = _sibling._originalDistance;
             _mouseOverCrossSection = false;
@@ -217,9 +235,26 @@ namespace AngelLoader.Forms.CustomControls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
+            DoSizeFix();
+        }
+
+        private bool _parentShownOnce;
+        protected override void OnParentVisibleChanged(EventArgs e)
+        {
+            base.OnParentVisibleChanged(e);
+
+            if (Parent?.Visible == true && !_parentShownOnce)
+            {
+                DoSizeFix();
+                _parentShownOnce = true;
+            }
+        }
+
+        private void DoSizeFix()
+        {
             if (FullScreen)
             {
-                SplitterDistance = IsMain ? CollapsedSize : Width - CollapsedSize;
+                SplitterDistance = FullScreenCollapsePanel == Panel.Panel1 ? CollapsedSize : CrossLength - CollapsedSize;
             }
         }
 
@@ -235,16 +270,16 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Button == MouseButtons.Left &&
                 (Cursor.Current == Cursors.SizeAll ||
-                 (IsMain && Cursor.Current == Cursors.HSplit) ||
-                 (!IsMain && Cursor.Current == Cursors.VSplit)))
+                 (IsStacked && Cursor.Current == Cursors.HSplit) ||
+                 (!IsStacked && Cursor.Current == Cursors.VSplit)))
             {
                 _originalDistance = SplitterDistance;
                 if (MouseOverCrossSection) _sibling!._originalDistance = _sibling.SplitterDistance;
-                IsSplitterFixed = true;
+                Resizing = true;
             }
             else
             {
-                if (IsSplitterFixed) CancelResize();
+                if (Resizing) CancelResize();
             }
 
             base.OnMouseDown(e);
@@ -261,7 +296,7 @@ namespace AngelLoader.Forms.CustomControls
             if (FullScreen) return;
 
             _mouseOverCrossSection = false;
-            IsSplitterFixed = false;
+            Resizing = false;
 
             base.OnMouseUp(e);
         }
@@ -276,13 +311,13 @@ namespace AngelLoader.Forms.CustomControls
 
             if (FullScreen) return;
 
-            if (!IsSplitterFixed && _sibling != null)
+            if (!Resizing && _sibling != null)
             {
-                int sibCursorPos = IsMain
+                int sibCursorPos = IsStacked
                     ? _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).X
                     : _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).Y;
 
-                int sibSplitterPos = IsMain
+                int sibSplitterPos = IsStacked
                     ? _sibling.Panel1.Width
                     : _sibling.Panel1.Height;
 
@@ -299,21 +334,21 @@ namespace AngelLoader.Forms.CustomControls
                     _mouseOverCrossSection = false;
                 }
             }
-            if (IsSplitterFixed)
+            if (Resizing)
             {
                 if (e.Button == MouseButtons.Left)
                 {
                     if (MouseOverCrossSection) Cursor.Current = Cursors.SizeAll;
 
                     // SuspendDrawing() / ResumeDrawing() reduces visual artifacts
-                    int axis = IsMain ? e.Y : e.X;
+                    int axis = IsStacked ? e.Y : e.X;
 
                     // Things need to happen in different orders depending on who we are, in order to avoid
                     // flickering. We could also Suspend/Resume them one at a time, but that's perceptibly
                     // laggier.
                     if (MouseOverCrossSection)
                     {
-                        if (IsMain)
+                        if (RefreshSiblingFirst)
                         {
                             _sibling!.SuspendDrawing();
                             this.SuspendDrawing();
@@ -335,7 +370,7 @@ namespace AngelLoader.Forms.CustomControls
 
                     if (MouseOverCrossSection)
                     {
-                        if (IsMain)
+                        if (RefreshSiblingFirst)
                         {
                             _sibling!.ResumeDrawing();
                             this.ResumeDrawing();
@@ -353,7 +388,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else
                 {
-                    IsSplitterFixed = false;
+                    Resizing = false;
                 }
             }
 
