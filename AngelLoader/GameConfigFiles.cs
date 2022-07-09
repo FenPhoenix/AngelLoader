@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -52,6 +53,7 @@ namespace AngelLoader
 
         // user.cfg
         private const string key_inv_status_height = "inv_status_height";
+        private const string key_game_screen_size = "game_screen_size";
 
 #endif
 
@@ -809,6 +811,42 @@ namespace AngelLoader
 
 #if !ReleaseBeta && !ReleasePublic
 
+        private static void RemoveKeyLine(string key, List<string> lines)
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string ltNS = RemoveLeadingSemicolons(lines[i].Trim());
+                if (ltNS.StartsWithIPlusWhiteSpace(key))
+                {
+                    lines.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        private static void RemoveConsecutiveWhiteSpace(List<string> lines)
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].IsWhiteSpace())
+                {
+                    for (int j = i + 1; j < lines.Count; j++)
+                    {
+                        if (lines[j].IsWhiteSpace())
+                        {
+                            lines.RemoveAt(j);
+                            j--;
+                            i--;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         private static bool TryGetGameDirFilePathIfExists(GameIndex gameIndex, string fileName, out string result)
         {
             result = "";
@@ -836,11 +874,14 @@ namespace AngelLoader
         private static readonly char[] _ca_Space_Tab_Semicolon = { ' ', '\t', ';' };
         internal static bool? GetScreenShotMode(GameIndex gameIndex)
         {
+            if (!GameIsDark(gameIndex)) return null;
+
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return null;
+
+            if (!TryReadAllLines(userCfgFile, out var lines)) return null;
 
             bool ret = false;
 
-            var lines = File_ReadAllLines_List(userCfgFile);
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
@@ -860,45 +901,38 @@ namespace AngelLoader
 
         internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
         {
+            if (!GameIsDark(gameIndex)) return;
+
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return;
 
-            var lines = File_ReadAllLines_List(userCfgFile);
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lt = lines[i].Trim();
-                string ltNS = RemoveLeadingSemicolons(lt);
-                if (ltNS.StartsWithIPlusWhiteSpace(key_inv_status_height))
-                {
-                    lines.RemoveAt(i);
-                    i--;
-                }
-            }
+            if (!TryReadAllLines(userCfgFile, out var lines)) return;
+
+            RemoveKeyLine(key_inv_status_height, lines);
 
             lines.Insert(0, (enabled ? "" : ";") + key_inv_status_height + " 0 ; Added by AngelLoader: uncommented = screenshot mode enabled (no hud)");
             lines.Insert(1, "");
 
-            // Remove consecutive whitespace lines (leaving only one-in-a-row at most).
-            for (int i = 0; i < lines.Count; i++)
-            {
-                if (lines[i].IsWhiteSpace())
-                {
-                    for (int j = i + 1; j < lines.Count; j++)
-                    {
-                        if (lines[j].IsWhiteSpace())
-                        {
-                            lines.RemoveAt(j);
-                            j--;
-                            i--;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+            RemoveConsecutiveWhiteSpace(lines);
 
-            File.WriteAllLines(userCfgFile, lines);
+            TryWriteAllLines(userCfgFile, lines);
+        }
+
+        internal static void SetResolution(GameIndex gameIndex)
+        {
+            if (!GameIsDark(gameIndex)) return;
+
+            if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.CamCfg, out string camCfgFile)) return;
+
+            if (!TryReadAllLines(camCfgFile, out var lines)) return;
+
+            RemoveKeyLine(key_game_screen_size, lines);
+
+            var res = Screen.PrimaryScreen.Bounds;
+            lines.Add(key_game_screen_size + " " + res.Width + " " + res.Height);
+
+            RemoveConsecutiveWhiteSpace(lines);
+
+            TryWriteAllLines(camCfgFile, lines);
         }
 
 #endif

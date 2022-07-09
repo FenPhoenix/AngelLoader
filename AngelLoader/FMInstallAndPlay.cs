@@ -143,6 +143,9 @@ namespace AngelLoader
                 Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
                 GameConfigFiles.FixCharacterDetailLine(gameIndex);
+#if !ReleaseBeta && !ReleasePublic
+                GameConfigFiles.SetResolution(gameIndex);
+#endif
                 SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
@@ -180,6 +183,9 @@ namespace AngelLoader
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
+#if !ReleaseBeta && !ReleasePublic
+            GameConfigFiles.SetResolution(gameIndex);
+#endif
             SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
 
             string steamArgs = "";
