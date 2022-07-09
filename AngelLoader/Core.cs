@@ -273,10 +273,6 @@ namespace AngelLoader
                     await DoParallelLoad();
                 }
             }
-
-#if false
-            await HandleCommandLineArgs(args);
-#endif
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT

@@ -81,6 +81,9 @@ namespace AngelLoader
                 // The official Microsoft example puts the base call line first, so I guess I will too?
                 // https://github.com/microsoft/wpf-samples/tree/main/Application%20Management/SingleInstanceDetection
                 base.OnStartupNextInstance(eventArgs);
+                // We're supposed to be able to set BringToForeground = true, but it doesn't work for us. It
+                // could be because we're not directly running a form, but running it later through an app context?
+                // Who knows the frigging reason, but we have to do it manually for it to work, so meh.
                 Core.ActivateMainView();
             }
         }
