@@ -935,6 +935,101 @@ namespace AngelLoader
             TryWriteAllLines(camCfgFile, lines);
         }
 
+        internal enum FMValueEnabled
+        {
+            Enabled,
+            Disabled,
+            Default
+        };
+
+        // @FM_CFG: Make the key / value system more robust and not stringly typed
+        internal static void SetPerFMValue(FanMission fm, string key, FMValueEnabled enabled)
+        {
+            if (!GameIsDark(fm.Game) || !FMIsReallyInstalled(fm)) return;
+
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+            string fmCfgFile = Path.Combine(
+                Config.GetFMInstallPath(gameIndex),
+                fm.InstalledDir,
+                Paths.FMCfg
+            );
+
+            List<string>? lines;
+
+            if (File.Exists(fmCfgFile))
+            {
+                if (!TryReadAllLines(fmCfgFile, out lines))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                lines = new List<string>();
+            }
+
+            // @FM_CFG: We want start AND end section markers, for industrial strength safety
+            const string alSectionHeader = ";[AngelLoader]";
+
+            int alSectionIndex = -1;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+                if (lt.Length > 0 && lt[0] == ';' && (";" + RemoveLeadingSemicolons(lt)) == alSectionHeader)
+                {
+                    alSectionIndex = i;
+                    break;
+                }
+            }
+
+            // @FM_CFG: We add this and then remove it and then add it again, make this more efficient later
+            if (alSectionIndex == -1)
+            {
+                if (lines.Count > 0 && !lines[lines.Count - 1].Trim().IsEmpty())
+                {
+                    lines.Add("");
+                }
+                lines.Add(alSectionHeader);
+                alSectionIndex = lines.Count - 1;
+            }
+
+            var keyValues = new DictionaryI<string>();
+
+            for (int i = alSectionIndex; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+
+                if (!lt.IsEmpty() && lt[0] != ';' && lt[0] != '[' && lt.CharCountIsAtLeast(' ', 1))
+                {
+                    keyValues[lt.Substring(0, lt.IndexOf(' ')).Trim()] = lt.Substring(lt.IndexOf(' ') + 1).Trim();
+                }
+
+                lines.RemoveAt(i);
+                i--;
+            }
+
+            if (enabled == FMValueEnabled.Default)
+            {
+                keyValues.Remove(key);
+            }
+            else
+            {
+                // @FM_CFG: Temp, generalize this to all possible value formats!
+                keyValues[key] = enabled == FMValueEnabled.Enabled ? "1" : "0";
+            }
+
+            lines.Add(alSectionHeader);
+
+            foreach (var item in keyValues)
+            {
+                lines.Add(item.Key + " " + item.Value);
+            }
+
+            TryWriteAllLines(fmCfgFile, lines);
+        }
+
 #endif
 
         internal static (bool Success, List<Mod>)
