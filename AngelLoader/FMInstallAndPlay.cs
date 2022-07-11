@@ -184,7 +184,7 @@ namespace AngelLoader
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
-            GameConfigFiles.SetPerFMDarkGameValues(gameIndex);
+            GameConfigFiles.SetPerFMDarkGameValues(fm, gameIndex);
 #endif
             SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
 

@@ -939,10 +939,11 @@ namespace AngelLoader
             SetResolution(gameIndex);
         }
 
-        internal static void SetPerFMDarkGameValues(GameIndex gameIndex)
+        internal static void SetPerFMDarkGameValues(FanMission fm, GameIndex gameIndex)
         {
             if (!GameIsDark(gameIndex)) return;
             SetResolution(gameIndex);
+            // @FM_CFG: Call final SetPerFMValues() here
         }
 
         private static void SetResolution(GameIndex gameIndex)
@@ -973,7 +974,25 @@ namespace AngelLoader
         };
 
         // @FM_CFG: Make the key / value system more robust and not stringly typed
-        internal static void SetPerFMValue(FanMission fm, string key, FMValueEnabled enabled)
+        // @FM_CFG: Make the value be able to different types somehow(?) without just resorting to strings
+        // We need "0 / 1" but we also need arbitrarily many space-separated numbers in sequence, sometimes
+        // just one number, sometimes many, and sometimes they can be floats, and sometimes they can be negative
+        // I guess we just need an array of floats, and some convenience methods to say "on / off" and it will
+        // just make it be like float[0] = on ? "1" : "0"
+        // We also need a way to say "default" (ie. remove it from fm.cfg), so I guess an empty array?
+        public sealed class FMKeyValue
+        {
+            public readonly string Key;
+            public readonly FMValueEnabled Value;
+
+            public FMKeyValue(string key, FMValueEnabled value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+
+        internal static void SetPerFMValues(FanMission fm, FMKeyValue[] keys)
         {
             if (!GameIsDark(fm.Game) || !FMIsReallyInstalled(fm)) return;
 
@@ -1040,14 +1059,19 @@ namespace AngelLoader
                 i--;
             }
 
-            if (enabled == FMValueEnabled.Default)
+            for (int i = 0; i < keys.Length; i++)
             {
-                keyValues.Remove(key);
-            }
-            else
-            {
-                // @FM_CFG: Temp, generalize this to all possible value formats!
-                keyValues[key] = enabled == FMValueEnabled.Enabled ? "1" : "0";
+                FMKeyValue item = keys[i];
+
+                if (item.Value == FMValueEnabled.Default)
+                {
+                    keyValues.Remove(item.Key);
+                }
+                else
+                {
+                    // @FM_CFG: Temp, generalize this to all possible value formats!
+                    keyValues[item.Key] = item.Value == FMValueEnabled.Enabled ? "1" : "0";
+                }
             }
 
             lines.Add(alSectionHeader);
