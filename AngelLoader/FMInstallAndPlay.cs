@@ -144,7 +144,7 @@ namespace AngelLoader
 
                 GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
-                GameConfigFiles.SetResolution(gameIndex);
+                GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
 #endif
                 SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
 
@@ -184,7 +184,7 @@ namespace AngelLoader
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
-            GameConfigFiles.SetResolution(gameIndex);
+            GameConfigFiles.SetPerFMDarkGameValues(gameIndex);
 #endif
             SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
 

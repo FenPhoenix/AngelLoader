@@ -412,6 +412,8 @@ namespace AngelLoader.DataClasses
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;
+        // @FM_CFG: Make this properly customizable if we want to add it to the public release
+        internal bool ForceGameResToMainMonitorRes = true;
         //internal bool CheckForUpdatesOnStartup = true;
 #endif
     }

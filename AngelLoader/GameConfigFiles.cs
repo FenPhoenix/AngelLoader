@@ -933,8 +933,22 @@ namespace AngelLoader
             TryWriteAllLines(userCfgFile, lines);
         }
 
-        internal static void SetResolution(GameIndex gameIndex)
+        internal static void SetGlobalDarkGameValues(GameIndex gameIndex)
         {
+            if (!GameIsDark(gameIndex)) return;
+            SetResolution(gameIndex);
+        }
+
+        internal static void SetPerFMDarkGameValues(GameIndex gameIndex)
+        {
+            if (!GameIsDark(gameIndex)) return;
+            SetResolution(gameIndex);
+        }
+
+        private static void SetResolution(GameIndex gameIndex)
+        {
+            if (!Config.ForceGameResToMainMonitorRes) return;
+
             if (!GameIsDark(gameIndex)) return;
 
             if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.CamCfg, out string camCfgFile)) return;
