@@ -450,8 +450,10 @@ namespace AngelLoader
 
         // @CAN_RUN_BEFORE_VIEW_INIT
         // @vNext(SetDarkFMSelector): Rewrite this mess into something readable!
-        internal static bool SetDarkFMSelector(GameIndex game, string gamePath, bool resetSelector = false)
+        internal static bool SetDarkFMSelector(GameIndex gameIndex, string gamePath, bool resetSelector = false)
         {
+            if (!GameIsDark(gameIndex)) return false;
+
             if (gamePath.IsEmpty()) return false;
 
             #region Local functions
@@ -532,6 +534,7 @@ namespace AngelLoader
 
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
+                // @BetterErrors: Notify if cam_mod.ini not found / couldn't read
                 return false;
             }
 
@@ -571,13 +574,13 @@ namespace AngelLoader
             // Confirmed NewDark can read fm_selector values with both forward and backward slashes
 
             // The loader is us, so use our saved previous loader or lacking that, make a best-effort guess
-            var startupFMSelectorLines = Config.GetStartupFMSelectorLines(game);
+            var startupFMSelectorLines = Config.GetStartupFMSelectorLines(gameIndex);
             string selectorPath = resetSelector
                 ? FindPreviousSelector(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
                     Paths.StubPath, gamePath)
                 : Paths.StubPath;
 
-            bool prevAlwaysLoadSelector = Config.GetStartupAlwaysStartSelector(game);
+            bool prevAlwaysLoadSelector = Config.GetStartupAlwaysStartSelector(gameIndex);
 
             /*
              Conforms to the way NewDark reads it:
