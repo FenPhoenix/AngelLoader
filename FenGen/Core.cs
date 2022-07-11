@@ -116,6 +116,8 @@ namespace FenGen
             _csFiles = null;
             DesignerCSFiles.Clear();
         }
+
+        internal static readonly string CurrentYear = DateTime.Now.Year.ToString();
     }
 
     internal static class GenAttributes
@@ -176,6 +178,8 @@ namespace FenGen
         internal const string FenGenDoNotRemoveToolTipTextAttribute = nameof(FenGenDoNotRemoveToolTipTextAttribute);
 
         internal const string FenGenForceRemoveSizeAttribute = nameof(FenGenForceRemoveSizeAttribute);
+
+        internal const string FenGenCurrentYearDestClassAttribute = nameof(FenGenCurrentYearDestClassAttribute);
     }
 
     internal static class Core
@@ -191,7 +195,8 @@ namespace FenGen
             RestoreResx,
             AddBuildDate,
             RemoveBuildDate,
-            GenSlimDesignerFiles
+            GenSlimDesignerFiles,
+            GenCopyright
         }
 
         private static readonly Dictionary<string, GenType>
@@ -205,7 +210,8 @@ namespace FenGen
             { "-resx_r", GenType.RestoreResx },
             { "-bd", GenType.AddBuildDate },
             { "-bd_r", GenType.RemoveBuildDate },
-            { "-des", GenType.GenSlimDesignerFiles }
+            { "-des", GenType.GenSlimDesignerFiles },
+            { "-cr", GenType.GenCopyright }
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -233,6 +239,7 @@ namespace FenGen
             internal const string BuildDate = "FenGen_BuildDateDest";
             internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
             internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
+            internal const string CurrentYearDest = "FenGen_CurrentYearDest";
         }
 
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -294,7 +301,8 @@ namespace FenGen
                 //GetArg(GenType.RestoreResx),
                 GetArg(GenType.AddBuildDate),
                 GetArg(GenType.GenSlimDesignerFiles),
-                GetArg(GenType.GameSupport)
+                GetArg(GenType.GameSupport),
+                GetArg(GenType.GenCopyright)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -378,6 +386,10 @@ namespace FenGen
             {
                 forceFindRequiredFiles = true;
             }
+            if (GenTaskActive(GenType.GenCopyright))
+            {
+                genFileTags.Add(GenFileTags.CurrentYearDest);
+            }
 
             var taggedFilesDict = new Dictionary<string, string>();
             if (forceFindRequiredFiles || genFileTags.Count > 0)
@@ -457,6 +469,12 @@ namespace FenGen
             if (GenTaskActive(GenType.GenSlimDesignerFiles))
             {
                 DesignerGen.Generate();
+            }
+            if (GenTaskActive(GenType.GenCopyright))
+            {
+                CopyrightGen.GenProjCopyright();
+                CopyrightGen.GenCurrentYear(taggedFilesDict[GenFileTags.CurrentYearDest]);
+                CopyrightGen.GenLicenses();
             }
         }
 

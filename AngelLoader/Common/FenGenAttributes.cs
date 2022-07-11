@@ -223,6 +223,10 @@ namespace AngelLoader
         internal sealed class FenGenBuildDateDestClassAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal sealed class FenGenCurrentYearDestClassAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]
         internal sealed class FenGenForceRemoveSizeAttribute : Attribute { }
     }

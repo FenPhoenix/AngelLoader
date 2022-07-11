@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
+using static FenGen.Misc;
 
 namespace FenGen
 {
@@ -100,59 +99,6 @@ namespace FenGen
             projNode.PrependChild(xml.CreateWhitespace("\r\n"));
 
             WriteXml(xml);
-        }
-
-        private static void WriteXml(XmlDocument xml)
-        {
-            List<string> lines;
-            using (var strW = new StringWriter())
-            {
-                var settings = new XmlWriterSettings { Encoding = Encoding.UTF8, OmitXmlDeclaration = true };
-                using (var xmlWriter = XmlWriter.Create(strW, settings))
-                {
-                    xml.Save(xmlWriter);
-                }
-
-                lines = strW
-                    .ToString()
-                    .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                    .ToList();
-            }
-
-            // Remove consecutive whitespace lines (leaving only one-in-a-row at most).
-            // This gets rid of the garbage left behind from removing the old nodes (whitespace lines).
-            for (int i = 0; i < lines.Count; i++)
-            {
-                if (lines[i].IsWhiteSpace())
-                {
-                    for (int j = i + 1; j < lines.Count; j++)
-                    {
-                        if (lines[j].IsWhiteSpace())
-                        {
-                            lines.RemoveAt(j);
-                            j--;
-                            i--;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            using var sw = new StreamWriter(Core.ALProjectFile, append: false, Encoding.UTF8);
-            for (int i = 0; i < lines.Count; i++)
-            {
-                if (i == lines.Count - 1)
-                {
-                    sw.Write(lines[i]);
-                }
-                else
-                {
-                    sw.WriteLine(lines[i]);
-                }
-            }
         }
     }
 }

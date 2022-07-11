@@ -8,7 +8,7 @@ using AL_Common;
 namespace AngelLoader.DataClasses
 {
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
-    internal static class NonLocalizableText
+    internal static partial class NonLocalizableText
     {
         internal static readonly string DarkLoaderEllipses = "DarkLoader...";
         internal static readonly string FMSelEllipses = "FMSel...";
@@ -16,7 +16,7 @@ namespace AngelLoader.DataClasses
 
         internal static readonly string License =
             "MIT License\r\n\r\n" +
-            "Copyright (c) 2018-2022 Brian Tobin (FenPhoenix)\r\n\r\n" +
+            "Copyright (c) 2018-" + CurrentYear + " Brian Tobin (FenPhoenix)\r\n\r\n" +
             "Permission is hereby granted, free of charge, to any person obtaining a copy " +
             "of this software and associated documentation files (the \"Software\"), to deal " +
             "in the Software without restriction, including without limitation the rights " +
