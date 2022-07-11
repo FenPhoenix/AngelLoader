@@ -85,6 +85,7 @@ namespace AngelLoader
             var fmSelectorLines = new List<string>();
             bool alwaysShowLoader = false;
 
+            // @BetterErrors: Throw up dialog if not found, cause that means we're OldDark or broken.
             if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
                 return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
@@ -94,7 +95,19 @@ namespace AngelLoader
             string fm_language = "";
             bool fm_language_forced = false;
 
-            // @vNext: Convert this to ReadAllLines in advance style like everything else
+            /*
+            @vNext: Convert this to ReadAllLines in advance style like everything else
+            NOTE: The issue is return value: if we can't read cam_mod.ini, do we want to create an FMs dir?
+            We don't have an error return value. I think we don't want to create an FMs dir if we can't read
+            cam_mod.ini because there could be a different one in there and so we would create the default
+            one when we shouldn't in that case.
+            If we return "" for fms path, we'll have it set blank in Config even though we're NewDark and it
+            should never be blank. Normally if it's blank that means we didn't find cam_mod.ini at all, so
+            we're OldDark, and the user is on their own, unsupported scenario.
+            So it's actually quite tricky to figure out what we should do if we fail reading cam_mod.ini.
+            We could throw up an error dialog, but we're still in a weird state after. We currently just let
+            it crash (we have no exception catching for this!).
+            */
             using (var sr = new StreamReader(camModIni))
             {
                 /*
