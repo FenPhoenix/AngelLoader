@@ -983,6 +983,7 @@ namespace AngelLoader
         We also need a way to say "default" (ie. remove it from fm.cfg), so I guess an empty array?
         Update: There exist keys with string values. eg. "screenshot_format png" or "snd_oal_device Generic Software"
         Not that we probably care about these as per-FM values, but they're _possible_. Bleh.
+        Update: Some are _multiple_ string values separated by +: "movie_crop_exclude intro.avi+credits.avi"
         */
         public sealed class FMKeyValue
         {
