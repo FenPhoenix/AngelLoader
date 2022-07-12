@@ -4617,6 +4617,8 @@ namespace AngelLoader.Forms
         // row"
         // @FM_CFG: Make Even the option overrides hidden for Thief 3, as we really don't support anything for that
         // Put a label saying we don't support patch/customize stuff for Thief 3
+        // @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
+        // (blink tab somehow to let the user know if the tab is already shown)
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
             SetTopRightBlockerVisible();
