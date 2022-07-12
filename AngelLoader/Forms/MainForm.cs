@@ -4527,6 +4527,8 @@ namespace AngelLoader.Forms
 
                 #region Patch tab
 
+                DisablePatchNonDMLSection();
+
                 ShowPatchInstalledOnlySection(enable: false);
 
                 #endregion
@@ -4559,6 +4561,34 @@ namespace AngelLoader.Forms
             SetTopRightBlockerVisible();
         }
 
+        private void DisablePatchNonDMLSection()
+        {
+            foreach (Control c in PatchTabPage.Controls)
+            {
+                if (c != PatchMainPanel)
+                {
+                    c.Enabled = false;
+                }
+
+                switch (c)
+                {
+                    case TextBox tb:
+                        tb.Text = "";
+                        break;
+                    case CheckBox chk:
+                        if (chk.ThreeState)
+                        {
+                            chk.CheckState = CheckState.Indeterminate;
+                        }
+                        else
+                        {
+                            chk.Checked = false;
+                        }
+                        break;
+                }
+            }
+        }
+
         private void HidePatchInstalledOnlySection()
         {
             PatchDMLsListBox.Items.Clear();
@@ -4585,6 +4615,8 @@ namespace AngelLoader.Forms
         // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
         // for preventing "multi-select starts from top row even though our selection is not actually at the top
         // row"
+        // @FM_CFG: Make Even the option overrides hidden for Thief 3, as we really don't support anything for that
+        // Put a label saying we don't support patch/customize stuff for Thief 3
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
             SetTopRightBlockerVisible();
@@ -4832,9 +4864,26 @@ namespace AngelLoader.Forms
 
                 #region Patch tab
 
+                if (fmIsT3)
+                {
+                    DisablePatchNonDMLSection();
+                }
+                else
+                {
+                    foreach (Control c in PatchTabPage.Controls)
+                    {
+                        if (c != PatchMainPanel)
+                        {
+                            c.Enabled = true;
+                        }
+                    }
+                }
+
+                // @FM_CFG: Load values from fm.cfg (or blank if no values or fm.cfg not found) here
+
                 PatchMainPanel.Enabled = true;
 
-                if (fm.Installed)
+                if (fm.Installed && !fmIsT3)
                 {
                     ShowPatchInstalledOnlySection(enable: true);
                 }
