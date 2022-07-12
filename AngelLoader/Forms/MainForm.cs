@@ -1705,11 +1705,14 @@ namespace AngelLoader.Forms
                 #region Patch tab
 
                 PatchTabPage.Text = LText.PatchTab.TabText;
+
+                Patch_PerFMValues_Label.Text = LText.PatchTab.OptionOverrides;
+                Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
+                Patch_PaletteFix_CheckBox.Text = LText.PatchTab.PaletteFix;
+
                 PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
                 MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
-                PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
-                PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
                 PatchOpenFMFolderButton.Text = LText.PatchTab.OpenFMFolder;
 
                 #endregion
@@ -4524,7 +4527,7 @@ namespace AngelLoader.Forms
 
                 #region Patch tab
 
-                ShowPatchSection(enable: false);
+                ShowPatchInstalledOnlySection(enable: false);
 
                 #endregion
 
@@ -4556,21 +4559,16 @@ namespace AngelLoader.Forms
             SetTopRightBlockerVisible();
         }
 
-        private void HidePatchSectionWithMessage(string message)
+        private void HidePatchInstalledOnlySection()
         {
             PatchDMLsListBox.Items.Clear();
             PatchMainPanel.Hide();
-            PatchFMNotInstalledLabel.Text = message;
-            PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
-            PatchFMNotInstalledLabel.Show();
         }
 
-        private void ShowPatchSection(bool enable)
+        private void ShowPatchInstalledOnlySection(bool enable)
         {
             PatchDMLsListBox.Items.Clear();
             PatchMainPanel.Show();
-            PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
-            PatchFMNotInstalledLabel.Hide();
             PatchMainPanel.Enabled = enable;
         }
 
@@ -4838,11 +4836,11 @@ namespace AngelLoader.Forms
 
                 if (fm.Installed)
                 {
-                    ShowPatchSection(enable: true);
+                    ShowPatchInstalledOnlySection(enable: true);
                 }
                 else
                 {
-                    HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
+                    HidePatchInstalledOnlySection();
                 }
 
                 PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
@@ -4850,7 +4848,6 @@ namespace AngelLoader.Forms
                 if (GameIsDark(fm.Game) && fm.Installed)
                 {
                     PatchMainPanel.Show();
-                    PatchFMNotInstalledLabel.Hide();
                     try
                     {
                         PatchDMLsListBox.BeginUpdate();

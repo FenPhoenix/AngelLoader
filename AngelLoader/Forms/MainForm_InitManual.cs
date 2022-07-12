@@ -128,6 +128,9 @@ namespace AngelLoader.Forms
             TagsTreeView = new DarkTreeView();
             TagsTabAutoScrollMarker = new Control();
             PatchTabPage = new DarkTabPageCustom();
+            Patch_PerFMValues_Label = new DarkLabel();
+            Patch_PaletteFix_CheckBox = new DarkCheckBox();
+            Patch_NewMantle_CheckBox = new DarkCheckBox();
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
             PatchDMLPatchesLabel = new DarkLabel();
@@ -135,7 +138,6 @@ namespace AngelLoader.Forms
             PatchRemoveDMLButton = new DarkButton();
             PatchAddDMLButton = new DarkButton();
             PatchOpenFMFolderButton = new DarkButton();
-            PatchFMNotInstalledLabel = new DarkLabel();
             ModsTabPage = new DarkTabPageCustom();
             MainModsControl = new ModsControl();
             ReadmeEncodingButton = new DarkButton();
@@ -160,11 +162,9 @@ namespace AngelLoader.Forms
             TopSplitContainer.SuspendLayout();
             ((ISupportInitialize)FMsDGV).BeginInit();
             FilterBarFLP.SuspendLayout();
-            FilterGameButtonsToolStrip.SuspendLayout();
             GameFilterControlsShowHideButtonToolStrip.SuspendLayout();
             FilterIconButtonsToolStrip.SuspendLayout();
             RefreshAreaToolStrip.SuspendLayout();
-            GamesTabControl.SuspendLayout();
             TopRightTabControl.SuspendLayout();
             StatisticsTabPage.SuspendLayout();
             StatsCheckBoxesPanel.SuspendLayout();
@@ -271,7 +271,6 @@ namespace AngelLoader.Forms
             MainSplitContainer.Dock = DockStyle.Fill;
             MainSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel1;
             MainSplitContainer.Orientation = Orientation.Horizontal;
-            MainSplitContainer.RefreshSiblingFirst = true;
             // 
             // MainSplitContainer.Panel1
             // 
@@ -293,6 +292,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Paint += MainSplitContainer_Panel2_Paint;
             MainSplitContainer.Panel2MinSize = 38;
             MainSplitContainer.Panel2.Padding = new Padding(1, 1, 2, 2);
+            MainSplitContainer.RefreshSiblingFirst = true;
             MainSplitContainer.Size = new Size(1671, 672);
             MainSplitContainer.SplitterDistance = 309;
             MainSplitContainer.TabIndex = 0;
@@ -302,8 +302,6 @@ namespace AngelLoader.Forms
             TopSplitContainer.BackColor = SystemColors.ActiveBorder;
             TopSplitContainer.Dock = DockStyle.Fill;
             TopSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel2;
-            TopSplitContainer.RefreshSiblingFirst = false;
-            TopSplitContainer.FullScreenChanged += TopSplitContainer_FullScreenChanged;
             // 
             // TopSplitContainer.Panel1
             // 
@@ -323,9 +321,11 @@ namespace AngelLoader.Forms
             TopSplitContainer.Panel2.Controls.Add(TopRightMenuButton);
             TopSplitContainer.Panel2.Controls.Add(TopRightCollapseButton);
             TopSplitContainer.Panel2.Controls.Add(TopRightTabControl);
+            TopSplitContainer.RefreshSiblingFirst = false;
             TopSplitContainer.Size = new Size(1671, 309);
             TopSplitContainer.SplitterDistance = 1116;
             TopSplitContainer.TabIndex = 0;
+            TopSplitContainer.FullScreenChanged += TopSplitContainer_FullScreenChanged;
             // 
             // MainMenuButton
             // 
@@ -1211,10 +1211,38 @@ namespace AngelLoader.Forms
             // 
             PatchTabPage.AutoScroll = true;
             PatchTabPage.BackColor = SystemColors.Control;
+            PatchTabPage.Controls.Add(Patch_PerFMValues_Label);
+            PatchTabPage.Controls.Add(Patch_PaletteFix_CheckBox);
+            PatchTabPage.Controls.Add(Patch_NewMantle_CheckBox);
             PatchTabPage.Controls.Add(PatchMainPanel);
-            PatchTabPage.Controls.Add(PatchFMNotInstalledLabel);
             PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
+            // 
+            // Patch_PerFMValues_Label
+            // 
+            Patch_PerFMValues_Label.AutoSize = true;
+            Patch_PerFMValues_Label.Location = new Point(6, 8);
+            Patch_PerFMValues_Label.TabIndex = 47;
+            // 
+            // Patch_PaletteFix_CheckBox
+            // 
+            Patch_PaletteFix_CheckBox.AutoSize = true;
+            Patch_PaletteFix_CheckBox.Checked = true;
+            Patch_PaletteFix_CheckBox.CheckState = CheckState.Indeterminate;
+            Patch_PaletteFix_CheckBox.Location = new Point(8, 56);
+            Patch_PaletteFix_CheckBox.TabIndex = 46;
+            Patch_PaletteFix_CheckBox.ThreeState = true;
+            Patch_PaletteFix_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // Patch_NewMantle_CheckBox
+            // 
+            Patch_NewMantle_CheckBox.AutoSize = true;
+            Patch_NewMantle_CheckBox.Checked = true;
+            Patch_NewMantle_CheckBox.CheckState = CheckState.Indeterminate;
+            Patch_NewMantle_CheckBox.Location = new Point(8, 32);
+            Patch_NewMantle_CheckBox.TabIndex = 46;
+            Patch_NewMantle_CheckBox.ThreeState = true;
+            Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
             // 
             // PatchMainPanel
             // 
@@ -1222,6 +1250,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PatchMainPanel.Controls.Add(PatchDMLsPanel);
             PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
+            PatchMainPanel.Location = new Point(0, 80);
             PatchMainPanel.Size = new Size(311, 250);
             PatchMainPanel.TabIndex = 38;
             // 
@@ -1276,13 +1305,6 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton.TabIndex = 44;
             PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
             PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;
-            // 
-            // PatchFMNotInstalledLabel
-            // 
-            PatchFMNotInstalledLabel.Anchor = AnchorStyles.None;
-            PatchFMNotInstalledLabel.AutoSize = true;
-            // This thing gets centered later so no location is specified here
-            PatchFMNotInstalledLabel.TabIndex = 45;
             // 
             // ModsTabPage
             // 
@@ -1428,15 +1450,12 @@ namespace AngelLoader.Forms
             ((ISupportInitialize)FMsDGV).EndInit();
             FilterBarFLP.ResumeLayout(false);
             FilterBarFLP.PerformLayout();
-            FilterGameButtonsToolStrip.ResumeLayout(false);
-            FilterGameButtonsToolStrip.PerformLayout();
             GameFilterControlsShowHideButtonToolStrip.ResumeLayout(false);
             GameFilterControlsShowHideButtonToolStrip.PerformLayout();
             FilterIconButtonsToolStrip.ResumeLayout(false);
             FilterIconButtonsToolStrip.PerformLayout();
             RefreshAreaToolStrip.ResumeLayout(false);
             RefreshAreaToolStrip.PerformLayout();
-            GamesTabControl.ResumeLayout(false);
             TopRightTabControl.ResumeLayout(false);
             StatisticsTabPage.ResumeLayout(false);
             StatisticsTabPage.PerformLayout();

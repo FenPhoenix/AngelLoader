@@ -527,10 +527,13 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string TabText = "Patch & Customize";
             [FenGenBlankLine]
+            // @FM_CFG: Finalize these and add explanatory tooltips, and ini comment explanation if needed
+            internal readonly string OptionOverrides = "Option overrides:";
+            internal readonly string NewMantle = "New mantle";
+            internal readonly string PaletteFix = "Custom palette fix";
             internal readonly string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal readonly string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
-            internal readonly string FMNotInstalled = "FM must be installed in order to use this section.";
             internal readonly string OpenFMFolder = "Open FM folder";
         }
 

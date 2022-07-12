@@ -148,6 +148,9 @@
             this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
+            this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.Patch_PaletteFix_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
             this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -155,7 +158,6 @@
             this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchFMNotInstalledLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.MainModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -180,11 +182,9 @@
             this.TopSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).BeginInit();
             this.FilterBarFLP.SuspendLayout();
-            this.FilterGameButtonsToolStrip.SuspendLayout();
             this.GameFilterControlsShowHideButtonToolStrip.SuspendLayout();
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
-            this.GamesTabControl.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
             this.StatisticsTabPage.SuspendLayout();
             this.StatsCheckBoxesPanel.SuspendLayout();
@@ -319,7 +319,6 @@
             this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.MainSplitContainer.Name = "MainSplitContainer";
             this.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.MainSplitContainer.RefreshSiblingFirst = true;
             // 
             // MainSplitContainer.Panel1
             // 
@@ -341,6 +340,7 @@
             this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.MainSplitContainer_Panel2_Paint);
             this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             this.MainSplitContainer.Panel2MinSize = 38;
+            this.MainSplitContainer.RefreshSiblingFirst = true;
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
             this.MainSplitContainer.TabIndex = 0;
@@ -352,8 +352,6 @@
             this.TopSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
             this.TopSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.TopSplitContainer.Name = "TopSplitContainer";
-            this.TopSplitContainer.RefreshSiblingFirst = false;
-            this.TopSplitContainer.FullScreenChanged += new System.EventHandler(this.TopSplitContainer_FullScreenChanged);
             // 
             // TopSplitContainer.Panel1
             // 
@@ -373,9 +371,11 @@
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightMenuButton);
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
+            this.TopSplitContainer.RefreshSiblingFirst = false;
             this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
             this.TopSplitContainer.SplitterDistance = 1116;
             this.TopSplitContainer.TabIndex = 0;
+            this.TopSplitContainer.FullScreenChanged += new System.EventHandler(this.TopSplitContainer_FullScreenChanged);
             // 
             // MainMenuButton
             // 
@@ -633,7 +633,7 @@
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
-            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(104, 26);
+            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(1, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // GameFilterControlsShowHideButtonToolStrip
@@ -647,7 +647,7 @@
             this.GameFilterControlsShowHideButtonToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.GameFilterControlsShowHideButton});
             this.GameFilterControlsShowHideButtonToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.GameFilterControlsShowHideButtonToolStrip.Location = new System.Drawing.Point(104, 0);
+            this.GameFilterControlsShowHideButtonToolStrip.Location = new System.Drawing.Point(1, 0);
             this.GameFilterControlsShowHideButtonToolStrip.Name = "GameFilterControlsShowHideButtonToolStrip";
             this.GameFilterControlsShowHideButtonToolStrip.Padding = new System.Windows.Forms.Padding(0);
             this.GameFilterControlsShowHideButtonToolStrip.Size = new System.Drawing.Size(13, 26);
@@ -666,7 +666,7 @@
             // FilterTitleLabel
             // 
             this.FilterTitleLabel.AutoSize = true;
-            this.FilterTitleLabel.Location = new System.Drawing.Point(125, 6);
+            this.FilterTitleLabel.Location = new System.Drawing.Point(24, 6);
             this.FilterTitleLabel.Margin = new System.Windows.Forms.Padding(10, 6, 0, 0);
             this.FilterTitleLabel.Name = "FilterTitleLabel";
             this.FilterTitleLabel.Size = new System.Drawing.Size(30, 13);
@@ -675,7 +675,7 @@
             // 
             // FilterTitleTextBox
             // 
-            this.FilterTitleTextBox.Location = new System.Drawing.Point(158, 3);
+            this.FilterTitleTextBox.Location = new System.Drawing.Point(57, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
@@ -684,7 +684,7 @@
             // FilterAuthorLabel
             // 
             this.FilterAuthorLabel.AutoSize = true;
-            this.FilterAuthorLabel.Location = new System.Drawing.Point(314, 6);
+            this.FilterAuthorLabel.Location = new System.Drawing.Point(213, 6);
             this.FilterAuthorLabel.Margin = new System.Windows.Forms.Padding(9, 6, 0, 0);
             this.FilterAuthorLabel.Name = "FilterAuthorLabel";
             this.FilterAuthorLabel.Size = new System.Drawing.Size(41, 13);
@@ -693,7 +693,7 @@
             // 
             // FilterAuthorTextBox
             // 
-            this.FilterAuthorTextBox.Location = new System.Drawing.Point(358, 3);
+            this.FilterAuthorTextBox.Location = new System.Drawing.Point(257, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
@@ -721,7 +721,7 @@
             this.FilterShowRecentAtTopButton,
             this.FilterControlsShowHideButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(505, 0);
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(404, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(285, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
@@ -1393,7 +1393,7 @@
             this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
             this.EditFMTitleLabel.TabIndex = 13;
             this.EditFMTitleLabel.Text = "Title:";
-            // 
+            //
             // CommentTabPage
             // 
             this.CommentTabPage.BackColor = System.Drawing.SystemColors.Control;
@@ -1528,13 +1528,50 @@
             // 
             this.PatchTabPage.AutoScroll = true;
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.PatchTabPage.Controls.Add(this.Patch_PerFMValues_Label);
+            this.PatchTabPage.Controls.Add(this.Patch_PaletteFix_CheckBox);
+            this.PatchTabPage.Controls.Add(this.Patch_NewMantle_CheckBox);
             this.PatchTabPage.Controls.Add(this.PatchMainPanel);
-            this.PatchTabPage.Controls.Add(this.PatchFMNotInstalledLabel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
             this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
+            // 
+            // Patch_PerFMValues_Label
+            // 
+            this.Patch_PerFMValues_Label.AutoSize = true;
+            this.Patch_PerFMValues_Label.Location = new System.Drawing.Point(6, 8);
+            this.Patch_PerFMValues_Label.Name = "Patch_PerFMValues_Label";
+            this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
+            this.Patch_PerFMValues_Label.TabIndex = 47;
+            this.Patch_PerFMValues_Label.Text = "Option overrides:";
+            // 
+            // Patch_PaletteFix_CheckBox
+            // 
+            this.Patch_PaletteFix_CheckBox.AutoSize = true;
+            this.Patch_PaletteFix_CheckBox.Checked = true;
+            this.Patch_PaletteFix_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.Patch_PaletteFix_CheckBox.Location = new System.Drawing.Point(8, 56);
+            this.Patch_PaletteFix_CheckBox.Name = "Patch_PaletteFix_CheckBox";
+            this.Patch_PaletteFix_CheckBox.Size = new System.Drawing.Size(109, 17);
+            this.Patch_PaletteFix_CheckBox.TabIndex = 46;
+            this.Patch_PaletteFix_CheckBox.Text = "Custom palette fix";
+            this.Patch_PaletteFix_CheckBox.ThreeState = true;
+            this.Patch_PaletteFix_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // Patch_NewMantle_CheckBox
+            // 
+            this.Patch_NewMantle_CheckBox.AutoSize = true;
+            this.Patch_NewMantle_CheckBox.Checked = true;
+            this.Patch_NewMantle_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.Patch_NewMantle_CheckBox.Location = new System.Drawing.Point(8, 32);
+            this.Patch_NewMantle_CheckBox.Name = "Patch_NewMantle_CheckBox";
+            this.Patch_NewMantle_CheckBox.Size = new System.Drawing.Size(82, 17);
+            this.Patch_NewMantle_CheckBox.TabIndex = 46;
+            this.Patch_NewMantle_CheckBox.Text = "New mantle";
+            this.Patch_NewMantle_CheckBox.ThreeState = true;
+            this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
             // 
             // PatchMainPanel
             // 
@@ -1542,7 +1579,7 @@
             this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
             this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 0);
+            this.PatchMainPanel.Location = new System.Drawing.Point(0, 80);
             this.PatchMainPanel.Name = "PatchMainPanel";
             this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
             this.PatchMainPanel.TabIndex = 38;
@@ -1609,16 +1646,6 @@
             this.PatchOpenFMFolderButton.Text = "Open FM folder";
             this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
             this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
-            // 
-            // PatchFMNotInstalledLabel
-            // 
-            this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.PatchFMNotInstalledLabel.AutoSize = true;
-            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(8, 264);
-            this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
-            this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
-            this.PatchFMNotInstalledLabel.TabIndex = 45;
-            this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
             // ModsTabPage
             // 
@@ -1792,15 +1819,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).EndInit();
             this.FilterBarFLP.ResumeLayout(false);
             this.FilterBarFLP.PerformLayout();
-            this.FilterGameButtonsToolStrip.ResumeLayout(false);
-            this.FilterGameButtonsToolStrip.PerformLayout();
             this.GameFilterControlsShowHideButtonToolStrip.ResumeLayout(false);
             this.GameFilterControlsShowHideButtonToolStrip.PerformLayout();
             this.FilterIconButtonsToolStrip.ResumeLayout(false);
             this.FilterIconButtonsToolStrip.PerformLayout();
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
-            this.GamesTabControl.ResumeLayout(false);
             this.TopRightTabControl.ResumeLayout(false);
             this.StatisticsTabPage.ResumeLayout(false);
             this.StatisticsTabPage.PerformLayout();
@@ -1931,7 +1955,6 @@
         internal AngelLoader.Forms.CustomControls.DarkButton PatchAddDMLButton;
         internal AngelLoader.Forms.CustomControls.DarkLabel PatchDMLPatchesLabel;
         internal System.Windows.Forms.Panel PatchDMLsPanel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel PatchFMNotInstalledLabel;
         internal System.Windows.Forms.Panel PatchMainPanel;
         internal AngelLoader.Forms.CustomControls.DarkButton PatchOpenFMFolderButton;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton TopRightCollapseButton;
@@ -1966,5 +1989,8 @@
         internal CustomControls.DarkTabPageCustom ModsTabPage;
         internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
         internal CustomControls.ModsControl MainModsControl;
+        internal CustomControls.DarkCheckBox Patch_PaletteFix_CheckBox;
+        internal CustomControls.DarkCheckBox Patch_NewMantle_CheckBox;
+        internal CustomControls.DarkLabel Patch_PerFMValues_Label;
     }
 }
