@@ -1023,80 +1023,51 @@ namespace AngelLoader
                 lines = new List<string>();
             }
 
-            // @FM_CFG: We want start AND end section markers, for industrial strength safety
+            // @FM_CFG: Temp, store actual valid-and-supported key-values later
+            // We're going to try storing the per-FM values in the fm.cfg file itself to save space in the db.
+            // This might turn out not to be the right decision but we're just gonna try and see how it works.
+            // Use a dict so as to de-dupe multiple keys and use only the latest in the file (that's how NewDark
+            // takes the value).
+            var oldLines = new List<string>();
+
             const string alSectionHeader = ";[AngelLoader]";
+
             /*
-            @FM_CFG: This one doesn't get removed if it's the only one.
-            We should look for an opening-closing pair, remove the header, footer, and all lines in between,
-            and then always re-add the section to the end of the file. Since we'll know all supported lines'
-            values per-FM explicitly (on, off, some value, or default (don't write)), it's fine that we remove
-            the old ones and just re-write the set every time.
             -We should also use this as an opportunity to implement a robust failsafe system for file writes.
              Use a temp file and copy and check for fail and the whole deal.
             */
-            const string alSectionFooter = ";[/AngelLoader]";
-
-            int alSectionIndex = -1;
 
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
                 if (lt.Length > 0 && lt[0] == ';' && (";" + RemoveLeadingSemicolons(lt)) == alSectionHeader)
                 {
-                    alSectionIndex = i;
-                    break;
+                    // Remove actual header line (so we don't add it to the old lines list)
+                    lines.RemoveAt(i);
+                    i--;
+
+                    for (int j = i; j < lines.Count; j++)
+                    {
+                        string lt2 = RemoveLeadingSemicolons(lines[i].Trim());
+                        if (!lt2.IsEmpty()) oldLines.Add(lines[j]);
+                        lines.RemoveAt(j);
+                        j--;
+                        i--;
+                    }
                 }
             }
 
-            // @FM_CFG: We add this and then remove it and then add it again, make this more efficient later
-            if (alSectionIndex == -1)
-            {
-                if (lines.Count > 0 && !lines[lines.Count - 1].Trim().IsEmpty())
-                {
-                    lines.Add("");
-                }
-                lines.Add(alSectionHeader);
-                alSectionIndex = lines.Count - 1;
-            }
-
-            var keyValues = new DictionaryI<string>();
-
-            for (int i = alSectionIndex; i < lines.Count; i++)
-            {
-                string lt = lines[i].Trim();
-
-                if (!lt.IsEmpty() && lt[0] != ';' && lt[0] != '[' && lt.CharCountIsAtLeast(' ', 1))
-                {
-                    keyValues[lt.Substring(0, lt.IndexOf(' ')).Trim()] = lt.Substring(lt.IndexOf(' ') + 1).Trim();
-                }
-
-                lines.RemoveAt(i);
-                i--;
-            }
-
-            for (int i = 0; i < keys.Length; i++)
-            {
-                FMKeyValue item = keys[i];
-
-                if (item.Value == FMValueEnabled.Default)
-                {
-                    keyValues.Remove(item.Key);
-                }
-                else
-                {
-                    // @FM_CFG: Temp, generalize this to all possible value formats!
-                    keyValues[item.Key] = item.Value == FMValueEnabled.Enabled ? "1" : "0";
-                }
-            }
-
+            lines.Add("");
             lines.Add(alSectionHeader);
 
-            foreach (var item in keyValues)
+            foreach (var item in keys)
             {
-                lines.Add(item.Key + " " + item.Value);
+                if (item.Value != FMValueEnabled.Default)
+                {
+                    // @FM_CFG: Temp, generalize this to all possible value formats!
+                    lines.Add(item.Key + " " + (item.Value == FMValueEnabled.Enabled ? "1" : "0"));
+                }
             }
-
-            lines.Add(alSectionFooter);
 
             TryWriteAllLines(fmCfgFile, lines);
         }
