@@ -997,7 +997,7 @@ namespace AngelLoader
             }
         }
 
-        internal static void SetPerFMValues(FanMission fm, FMKeyValue[] keys)
+        internal static void SetPerFMValues(FanMission fm, params FMKeyValue[] keys)
         {
             if (!GameIsDark(fm.Game) || !FMIsReallyInstalled(fm)) return;
 
@@ -1025,6 +1025,16 @@ namespace AngelLoader
 
             // @FM_CFG: We want start AND end section markers, for industrial strength safety
             const string alSectionHeader = ";[AngelLoader]";
+            /*
+            @FM_CFG: This one doesn't get removed if it's the only one.
+            We should look for an opening-closing pair, remove the header, footer, and all lines in between,
+            and then always re-add the section to the end of the file. Since we'll know all supported lines'
+            values per-FM explicitly (on, off, some value, or default (don't write)), it's fine that we remove
+            the old ones and just re-write the set every time.
+            -We should also use this as an opportunity to implement a robust failsafe system for file writes.
+             Use a temp file and copy and check for fail and the whole deal.
+            */
+            const string alSectionFooter = ";[/AngelLoader]";
 
             int alSectionIndex = -1;
 
@@ -1085,6 +1095,8 @@ namespace AngelLoader
             {
                 lines.Add(item.Key + " " + item.Value);
             }
+
+            lines.Add(alSectionFooter);
 
             TryWriteAllLines(fmCfgFile, lines);
         }
