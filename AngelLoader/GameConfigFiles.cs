@@ -974,16 +974,9 @@ namespace AngelLoader
         };
 
         /*
-        @FM_CFG: Make the key / value system more robust and not stringly typed
-        @FM_CFG: Make the value be able to different types somehow(?) without just resorting to strings
-        We need "0 / 1" but we also need arbitrarily many space-separated numbers in sequence, sometimes
-        just one number, sometimes many, and sometimes they can be floats, and sometimes they can be negative
-        I guess we just need an array of floats, and some convenience methods to say "on / off" and it will
-        just make it be like float[0] = on ? "1" : "0"
-        We also need a way to say "default" (ie. remove it from fm.cfg), so I guess an empty array?
-        Update: There exist keys with string values. eg. "screenshot_format png" or "snd_oal_device Generic Software"
-        Not that we probably care about these as per-FM values, but they're _possible_. Bleh.
-        Update: Some are _multiple_ string values separated by +: "movie_crop_exclude intro.avi+credits.avi"
+        @FM_CFG: We only need 2 values currently
+        ... and they're both on/off. So get rid of the generalization attempt and just do it simple until such
+        time as we need anything more complex.
         */
         public sealed class FMKeyValue
         {
@@ -1064,7 +1057,6 @@ namespace AngelLoader
             {
                 if (item.Value != FMValueEnabled.Default)
                 {
-                    // @FM_CFG: Temp, generalize this to all possible value formats!
                     lines.Add(item.Key + " " + (item.Value == FMValueEnabled.Enabled ? "1" : "0"));
                 }
             }
