@@ -16,6 +16,15 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
+#if DEBUG
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [PublicAPI]
+        public new bool AutoScroll { get; set; }
+
+#endif
+
         public ModsControl()
         {
 #if DEBUG

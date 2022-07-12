@@ -1222,7 +1222,7 @@ namespace AngelLoader.Forms
             // 
             Patch_PerFMValues_Label.AutoSize = true;
             Patch_PerFMValues_Label.Location = new Point(6, 8);
-            Patch_PerFMValues_Label.TabIndex = 47;
+            Patch_PerFMValues_Label.TabIndex = 0;
             // 
             // Patch_PaletteFix_CheckBox
             // 
@@ -1230,7 +1230,7 @@ namespace AngelLoader.Forms
             Patch_PaletteFix_CheckBox.Checked = true;
             Patch_PaletteFix_CheckBox.CheckState = CheckState.Indeterminate;
             Patch_PaletteFix_CheckBox.Location = new Point(8, 56);
-            Patch_PaletteFix_CheckBox.TabIndex = 46;
+            Patch_PaletteFix_CheckBox.TabIndex = 2;
             Patch_PaletteFix_CheckBox.ThreeState = true;
             Patch_PaletteFix_CheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1240,7 +1240,7 @@ namespace AngelLoader.Forms
             Patch_NewMantle_CheckBox.Checked = true;
             Patch_NewMantle_CheckBox.CheckState = CheckState.Indeterminate;
             Patch_NewMantle_CheckBox.Location = new Point(8, 32);
-            Patch_NewMantle_CheckBox.TabIndex = 46;
+            Patch_NewMantle_CheckBox.TabIndex = 1;
             Patch_NewMantle_CheckBox.ThreeState = true;
             Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
             // 

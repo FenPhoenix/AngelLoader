@@ -43,7 +43,6 @@ namespace AngelLoader.Forms
             this.OrigGameModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.OrigGameModsControl.AutoScroll = true;
             this.OrigGameModsControl.Location = new System.Drawing.Point(0, 0);
             this.OrigGameModsControl.Name = "OrigGameModsControl";
             this.OrigGameModsControl.Size = new System.Drawing.Size(527, 468);

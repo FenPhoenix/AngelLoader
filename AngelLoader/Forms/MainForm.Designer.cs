@@ -428,8 +428,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -601,7 +601,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -622,7 +622,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -701,7 +701,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -1544,7 +1544,7 @@
             this.Patch_PerFMValues_Label.Location = new System.Drawing.Point(6, 8);
             this.Patch_PerFMValues_Label.Name = "Patch_PerFMValues_Label";
             this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
-            this.Patch_PerFMValues_Label.TabIndex = 47;
+            this.Patch_PerFMValues_Label.TabIndex = 0;
             this.Patch_PerFMValues_Label.Text = "Option overrides:";
             // 
             // Patch_PaletteFix_CheckBox
@@ -1555,7 +1555,7 @@
             this.Patch_PaletteFix_CheckBox.Location = new System.Drawing.Point(8, 56);
             this.Patch_PaletteFix_CheckBox.Name = "Patch_PaletteFix_CheckBox";
             this.Patch_PaletteFix_CheckBox.Size = new System.Drawing.Size(109, 17);
-            this.Patch_PaletteFix_CheckBox.TabIndex = 46;
+            this.Patch_PaletteFix_CheckBox.TabIndex = 2;
             this.Patch_PaletteFix_CheckBox.Text = "Custom palette fix";
             this.Patch_PaletteFix_CheckBox.ThreeState = true;
             this.Patch_PaletteFix_CheckBox.UseVisualStyleBackColor = true;
@@ -1568,7 +1568,7 @@
             this.Patch_NewMantle_CheckBox.Location = new System.Drawing.Point(8, 32);
             this.Patch_NewMantle_CheckBox.Name = "Patch_NewMantle_CheckBox";
             this.Patch_NewMantle_CheckBox.Size = new System.Drawing.Size(82, 17);
-            this.Patch_NewMantle_CheckBox.TabIndex = 46;
+            this.Patch_NewMantle_CheckBox.TabIndex = 1;
             this.Patch_NewMantle_CheckBox.Text = "New mantle";
             this.Patch_NewMantle_CheckBox.ThreeState = true;
             this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
@@ -1660,8 +1660,8 @@
             // 
             // MainModsControl
             // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainModsControl.Location = new System.Drawing.Point(0, 0);
             this.MainModsControl.Name = "MainModsControl";
