@@ -1016,11 +1016,23 @@ namespace AngelLoader
                 lines = new List<string>();
             }
 
-            // @FM_CFG: Temp, store actual valid-and-supported key-values later
-            // We're going to try storing the per-FM values in the fm.cfg file itself to save space in the db.
-            // This might turn out not to be the right decision but we're just gonna try and see how it works.
-            // Use a dict so as to de-dupe multiple keys and use only the latest in the file (that's how NewDark
-            // takes the value).
+            /*
+            @FM_CFG: Temp, store actual valid-and-supported key-values later
+            We're going to try storing the per-FM values in the fm.cfg file itself to save space in the db.
+            This might turn out not to be the right decision but we're just gonna try and see how it works.
+            Use a dict so as to de-dupe multiple keys and use only the latest in the file (that's how NewDark
+            takes the value).
+            -After further thought: Storing the value in fm.cfg only really works if we're on backup-all-files
+             mode. Otherwise we lose it if we uninstall and reinstall. So we should definitely store in the db.
+            -BUT! We still need to read from the file to get back any stored values that ARE there.
+             And I guess we need to keep the two places in sync... Bleh...
+             Otherwise we try and make the fm.cfg change temporary but then that's a whole other can of worms
+             with tracking the game process exit, changing on proc exit/app exit/dir change, trying not to
+             modify a file being used by someone else, etc...
+            -UNLESS we just always update the fm.cfg file with our db-stored values, overwriting even if we just
+             got the file from a backup restore. Because we're only overwriting the AL-specific section at the
+             end of the file, that should be fine.
+            */
             var oldLines = new List<string>();
 
             const string alSectionHeader = ";[AngelLoader]";
