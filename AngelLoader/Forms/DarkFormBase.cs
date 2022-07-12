@@ -33,7 +33,7 @@ namespace AngelLoader.Forms
             set => base.ShowInTaskbar = value;
         }
 
-        protected DarkFormBase()
+        public DarkFormBase()
         {
             base.Icon = AL_Icon.AngelLoader;
             base.ShowInTaskbar = false;
