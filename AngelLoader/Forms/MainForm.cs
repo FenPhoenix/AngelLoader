@@ -237,6 +237,7 @@ namespace AngelLoader.Forms
 
         private void Test3Button_Click(object sender, EventArgs e)
         {
+            FMsDGV.GetMainSelectedFM().DarkVersion = FMDarkVersion.NewDark;
         }
 
         private void Test4Button_Click(object sender, EventArgs e)

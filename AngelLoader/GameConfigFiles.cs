@@ -1063,14 +1063,6 @@ namespace AngelLoader
             return true;
         }
 
-        public enum FMDarkVersion
-        {
-            NotDetected,
-            OldDark,
-            NewDark,
-            NotApplicable
-        }
-
         // @FM_CFG: Test this for identicality with the scanner!
         // Prolly just go through all FMs' archives and temp extract them to folders, do the operation, then
         // write out the results to a txt file, then do the same for the scanner, then diff them.

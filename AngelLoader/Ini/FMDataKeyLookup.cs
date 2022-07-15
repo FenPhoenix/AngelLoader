@@ -1,4 +1,8 @@
 ﻿//#define CONVERSION_ENABLED
+#if CONVERSION_ENABLED
+using System.IO;
+using System.Text.RegularExpressions;
+#endif
 using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
 
@@ -12,7 +16,7 @@ namespace AngelLoader
             // TODO: Make this more automated later! It's going to be a pain!
             public static void ConvertSemiAuto()
             {
-                const string gperfFile = @"C:\temp2.txt";
+                const string gperfFile = @"C:\gperf_fmdata_conv_in.txt";
 
                 var lines = File.ReadAllLines(gperfFile);
 
@@ -45,14 +49,14 @@ namespace AngelLoader
                     }
                 }
 
-                File.WriteAllLines(@"C:\OUT_TEST.txt", lines);
+                File.WriteAllLines(@"C:\gperf_fmdata_conv_out.txt", lines);
             }
 #endif
             /* ANSI-C code produced by gperf version 3.1 */
-            /* Command-line: gperf --output-file='c:\\gperf_out.txt' -t -L ANSI-C -H Hash -G -W _dict 'c:\\gperf_in.txt'  */
+            /* Command-line: gperf --output-file='c:\\gperf_fmdata_out.txt' -t -L ANSI-C -H Hash -G -W _dict 'c:\\gperf_fmdata_in.txt'  */
             /* Computed positions: -k'1,4' */
 
-            //private const int TOTAL_KEYWORDS = 38;
+            //private const int TOTAL_KEYWORDS = 39;
             private const int MIN_WORD_LENGTH = 4;
             private const int MAX_WORD_LENGTH = 17;
             //private const int MIN_HASH_VALUE = 6;
@@ -67,12 +71,12 @@ namespace AngelLoader
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
-                65, 65, 65, 65, 65, 10, 65, 40, 15, 65,
-                20, 55, 0, 35, 65, 65, 15, 0, 35, 40,
-                10, 65, 0, 5, 20, 65, 65, 65, 65, 65,
+                65, 65, 65, 65, 65, 10, 65, 40, 20, 65,
+                20, 55, 0, 25, 65, 65, 10, 0, 35, 40,
+                15, 65, 0, 5, 10, 65, 65, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 5, 65, 65,
-                45, 5, 65, 10, 10, 5, 65, 0, 20, 10,
-                5, 65, 65, 65, 10, 10, 0, 65, 65, 65,
+                45, 5, 65, 10, 10, 5, 65, 0, 30, 10,
+                15, 65, 65, 65, 10, 20, 10, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
                 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
@@ -130,39 +134,40 @@ namespace AngelLoader
                 new("SizeBytes", &FMData_SizeBytes_Set),
 // Entry 29
                 new("HasAutomap", &FMData_HasAutomap_Set),
-// Entry 2
-                new("Pinned", &FMData_Pinned_Set),
+// Entry 31
+                new("HasTextures", &FMData_HasTextures_Set),
 // Entry 26
                 new("SelectedLang", &FMData_SelectedLang_Set),
                 null,
 // Entry 11
                 new("SelectedReadme", &FMData_SelectedReadme_Set),
-// Entry 16
-                new("LastPlayed", &FMData_LastPlayed_Set),
+// Entry 25
+                new("Langs", &FMData_Langs_Set),
 // Entry 7
                 new("Author", &FMData_Author_Set),
 // Entry 3
                 new("Archive", &FMData_Archive_Set),
                 null,
+// Entry 6
+                new("AltTitles", &FMData_AltTitles_Set),
+// Entry 16
+                new("LastPlayed", &FMData_LastPlayed_Set),
+// Entry 38
+                new("DarkVersion", &FMData_DarkVersion_Set),
+// Entry 24
+                new("LangsScanned", &FMData_LangsScanned_Set),
+                null,
 // Entry 17
                 new("DateAdded", &FMData_DateAdded_Set),
-// Entry 25
-                new("Langs", &FMData_Langs_Set),
-// Entry 31
-                new("HasTextures", &FMData_HasTextures_Set),
+// Entry 18
+                new("FinishedOn", &FMData_FinishedOn_Set),
+// Entry 2
+                new("Pinned", &FMData_Pinned_Set),
 // Entry 21
                 new("DisabledMods", &FMData_DisabledMods_Set),
                 null,
 // Entry 22
                 new("DisableAllMods", &FMData_DisableAllMods_Set),
-// Entry 18
-                new("FinishedOn", &FMData_FinishedOn_Set),
-                null,
-// Entry 24
-                new("LangsScanned", &FMData_LangsScanned_Set),
-                null,
-// Entry 6
-                new("AltTitles", &FMData_AltTitles_Set),
 // Entry 27
                 new("TagsString", &FMData_TagsString_Set),
                 null,

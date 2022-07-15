@@ -241,6 +241,13 @@ namespace AngelLoader
             fm.TagsString = val;
         }
 
+        private static void FMData_DarkVersion_Set(FanMission fm, string val, int eqIndex)
+        {
+            val = val.Substring(eqIndex + 1);
+            val = val.Trim();
+            SetDarkVersion(fm, val);
+        }
+
         #region Old resource format - backward compatibility, we still have to be able to read it
 
         private static void FMData_HasMap_Set(FanMission fm, string val, int eqIndex)
@@ -513,6 +520,11 @@ namespace AngelLoader
                 {
                     sb.Append("TagsString=");
                     sb.AppendLine(fm.TagsString);
+                }
+                if (fm.DarkVersion != FMDarkVersion.NotDetected)
+                {
+                    sb.Append("DarkVersion=");
+                    sb.AppendLine(fm.DarkVersion.ToString());
                 }
             }
 
