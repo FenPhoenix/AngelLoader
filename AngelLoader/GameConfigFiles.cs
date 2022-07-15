@@ -977,6 +977,22 @@ namespace AngelLoader
         @FM_CFG: We only need 2 values currently
         ... and they're both on/off. So get rid of the generalization attempt and just do it simple until such
         time as we need anything more complex.
+        @FM_CFG(Automatic value set) notes:
+        -We can detect if a mission is OldDark and have the option "disable new mantle on all OldDark missions"
+         (with manual override option per-FM), also we can detect if a mission needs the palette fix by checking
+         OldDark and then checking pal\*pal.pcx existence (not confirmed this is reliable, just a working theory!)
+        -To detect OldDark, we can use this heuristic/fingerprinting:
+        -Find MAPISRC at byte 580 in first used .mis file. If present there, the mission should be NewDark.
+         Otherwise OldDark.
+        -To be more robust, we can also check if SKYOBJVAR is at 772 or is not in the file at all (both of these
+         cases signify OldDark). Normally we wouldn't do this during a scan because we would have to search the
+         entire .mis file, but here, we can just defer until the user goes to play an FM, and then:
+        -If FM has no value in the NewDark field (true, false, n/a (T3)) then do the .mis scan from installed
+         dir. Even for large .mis files, this won't take too much time to do once, and especially when playing
+         a game since that's a "slow" operation anyway. Then, we store the NewDark value in the FM so we don't
+         have to detect again.
+        -Note! MAPISRC check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
+         SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
         */
         public sealed class FMKeyValue
         {
