@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -964,6 +965,173 @@ namespace AngelLoader
             RemoveConsecutiveWhiteSpace(lines);
 
             TryWriteAllLines(camCfgFile, lines);
+        }
+
+        internal static bool TryGetSmallestUsedMisFile(FanMission fm, out string misFile)
+        {
+            misFile = "";
+
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
+
+            if (!FMIsReallyInstalled(fm)) return false;
+
+            GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+            string fmDir = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+
+            var misFiles = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly);
+
+            if (misFiles.Length == 0) return false;
+
+            var usedMisFiles = new List<FileInfo>(misFiles.Length);
+
+            string? missFlag = null;
+
+            string loc1 = Path.Combine(fmDir, "strings", "missflag.str");
+            string loc2 = Path.Combine(fmDir, "strings", "english", "missflag.str");
+
+            if (File.Exists(loc1))
+            {
+                missFlag = loc1;
+            }
+            else if (File.Exists(loc2))
+            {
+                missFlag = loc2;
+            }
+            else
+            {
+                string[] files = Directory.GetFiles(Path.Combine(fmDir, "strings"), "missflag.str", SearchOption.AllDirectories);
+                if (files.Length > 0) missFlag = files[0];
+            }
+
+            if (missFlag == null) return false;
+
+            if (!TryReadAllLines(missFlag, out var mfLines)) return false;
+
+            for (int mfI = 0; mfI < misFiles.Length; mfI++)
+            {
+                FileInfo mf = misFiles[mfI];
+
+                // @FM_CFG: This is copied from the scanner where perf matters, but we should rewrite this to be clearer and simpler
+                // Obtuse nonsense to avoid string allocations (perf)
+                if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
+                {
+                    // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
+                    // character and not get a -1 index. And since we know our file starts with "miss", the
+                    // -4 is guaranteed not to take us negative either.
+                    int count = mf.Name.IndexOf('.') - 4;
+                    for (int mflI = 0; mflI < mfLines.Count; mflI++)
+                    {
+                        string line = mfLines[mflI];
+                        if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
+                        {
+                            bool numsMatch = true;
+                            for (int li = 4; li < 4 + count; li++)
+                            {
+                                if (line[li + 1] != mf.Name[li])
+                                {
+                                    numsMatch = false;
+                                    break;
+                                }
+                            }
+                            int qIndex;
+                            if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
+                            {
+                                if (!(line.Length > qIndex + 5 &&
+                                      // I don't think any files actually have "skip" in anything other than
+                                      // lowercase, but I'm supporting any case anyway. You never know.
+                                      (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
+                                      (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
+                                      (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
+                                      (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
+                                      line[qIndex + 5] == '\"'))
+                                {
+                                    usedMisFiles.Add(mf);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles);
+
+            usedMisFiles = usedMisFiles.OrderBy(x => x.Length).ToList();
+
+            misFile = usedMisFiles[0].FullName;
+
+            return true;
+        }
+
+        public enum FMDarkVersion
+        {
+            NotDetected,
+            OldDark,
+            NewDark,
+            NotApplicable
+        }
+
+        // @FM_CFG: Test this for identicality with the scanner!
+        // Prolly just go through all FMs' archives and temp extract them to folders, do the operation, then
+        // write out the results to a txt file, then do the same for the scanner, then diff them.
+        internal static FMDarkVersion MissionIsOldDark(FanMission fm)
+        {
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return FMDarkVersion.NotApplicable;
+
+            // Return "not detected" because if we're T1/T2 we're always supposed to succeed in finding at least
+            // one .mis file, so we don't want to set it to "don't try again"
+            if (!TryGetSmallestUsedMisFile(fm, out string misFile)) return FMDarkVersion.NotDetected;
+
+            try
+            {
+                const int bufferSize = 81_920;
+
+                byte[] SKYOBJVAR = Encoding.ASCII.GetBytes("SKYOBJVAR");
+
+                using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
+
+                static bool TryReadFromLocation(BinaryReader br, int location, int count, out byte[] result)
+                {
+                    if (location + count > br.BaseStream.Length)
+                    {
+                        result = Array.Empty<byte>();
+                        return false;
+                    }
+
+                    br.BaseStream.Position = location;
+                    result = br.ReadBytes(count);
+
+                    return true;
+                }
+
+                if (TryReadFromLocation(br, 772, 9, out byte[] buffer) &&
+                    buffer.SequenceEqual(SKYOBJVAR))
+                {
+                    // SKYOBJVAR at byte 772: OldDark Thief 2
+                    return FMDarkVersion.OldDark;
+                }
+
+                br.BaseStream.Position = 0;
+                byte[] chunk = new byte[bufferSize + SKYOBJVAR.Length];
+                if (!StreamContainsIdentString(br.BaseStream, SKYOBJVAR, chunk, bufferSize))
+                {
+                    // No SKYOBJVAR at all: OldDark Thief 1/Gold
+                    return FMDarkVersion.OldDark;
+                }
+
+                // A very small number of T2 missions have SKYOBJVAR in a weird place, so we can't just say that
+                // if we DID find that phrase that we're definitely NewDark. So check another byte location for
+                // another string for robustness.
+                return TryReadFromLocation(br, 580, 7, out buffer) &&
+                       buffer.SequenceEqual(Encoding.ASCII.GetBytes("MAPISRC"))
+                    ? FMDarkVersion.NewDark
+                    : FMDarkVersion.OldDark;
+            }
+            catch (Exception ex)
+            {
+                Log(ex: ex);
+                return FMDarkVersion.NotDetected;
+            }
         }
 
         internal enum FMValueEnabled

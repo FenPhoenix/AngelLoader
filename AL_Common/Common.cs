@@ -1171,5 +1171,63 @@ namespace AL_Common
         public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
 
         #endregion
+
+        // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
+        // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
+        // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
+        // Or maybe I just don't know what I'm doing. Either way.
+        public static bool Contains(this byte[] input, byte[] pattern)
+        {
+            byte firstByte = pattern[0];
+            int index = Array.IndexOf(input, firstByte);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Length) return false;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return false;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool StreamContainsIdentString(
+            Stream stream,
+            byte[] identString,
+            byte[] chunk,
+            int _gameTypeBufferSize)
+        {
+            // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+            // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+            // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+            int boundaryLen = identString.Length;
+
+            int bytesRead;
+            while ((bytesRead = stream.ReadAll(chunk, boundaryLen, _gameTypeBufferSize)) != 0)
+            {
+                // Zero out all bytes after the end of the read data if there are any, in the ludicrously
+                // unlikely case that the end of this read data combines with the data that was already in
+                // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
+                if (bytesRead < _gameTypeBufferSize)
+                {
+                    Array.Clear(chunk, boundaryLen + bytesRead, _gameTypeBufferSize - (boundaryLen + bytesRead));
+                }
+
+                if (chunk.Contains(identString)) return true;
+
+                // Copy the last boundaryLen bytes from chunk and put them at the beginning
+                for (int si = 0, ei = _gameTypeBufferSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
+            }
+
+            return false;
+        }
     }
 }

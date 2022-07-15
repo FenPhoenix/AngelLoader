@@ -58,37 +58,6 @@ namespace FMScanner
 
         #endregion
 
-        #region Contains
-
-        // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
-        // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
-        // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
-        // Or maybe I just don't know what I'm doing. Either way.
-        internal static bool Contains(this byte[] input, byte[] pattern)
-        {
-            byte firstByte = pattern[0];
-            int index = Array.IndexOf(input, firstByte);
-
-            while (index > -1)
-            {
-                for (int i = 0; i < pattern.Length; i++)
-                {
-                    if (index + i >= input.Length) return false;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return false;
-                        break;
-                    }
-
-                    if (i == pattern.Length - 1) return true;
-                }
-            }
-
-            return false;
-        }
-
-        #endregion
-
         #region File extensions
 
         #region Baked-in extension checks (generated)
