@@ -1113,6 +1113,10 @@ namespace AngelLoader
 
                 br.BaseStream.Position = 0;
                 byte[] chunk = new byte[bufferSize + SKYOBJVAR.Length];
+                // This takes only ~50ms even searching the entire ~150MB Death's Turbid Veil .mis file (modified
+                // to not have SKYOBJVAR) on my SATA SSD. If we were decompressing a zip entry this code would
+                // be SLOW, but looks like it's not a problem at all for file-on-disk. Not tested on a spinning
+                // disk, but it can't be that bad, right? Meh!
                 if (!StreamContainsIdentString(br.BaseStream, SKYOBJVAR, chunk, bufferSize))
                 {
                     // No SKYOBJVAR at all: OldDark Thief 1/Gold
