@@ -1163,6 +1163,10 @@ namespace AngelLoader
         -To detect OldDark, we can use this heuristic/fingerprinting:
         -Find MAPISRC at byte 580 in first used .mis file. If present there, the mission should be NewDark.
          Otherwise OldDark.
+        -Note! Although MAPISRC appears to always exist regardless (in NewDark at least?), it apparently means
+         "Automap info". There's another phrase "DARKMISS" at byte 612, which apparently means "Dark mission
+         description". That sounds more solid/reliable so we should check if it's always at the right spot in
+         NewDark missions and use that instead, I guess.
         -To be more robust, we can also check if SKYOBJVAR is at 772 or is not in the file at all (both of these
          cases signify OldDark). Normally we wouldn't do this during a scan because we would have to search the
          entire .mis file, but here, we can just defer until the user goes to play an FM, and then:
@@ -1172,6 +1176,7 @@ namespace AngelLoader
          have to detect again.
         -Note! MAPISRC check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
          SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
+        -DARKMISS seems to not exist for SS2 either.
         */
         public sealed class FMKeyValue
         {
