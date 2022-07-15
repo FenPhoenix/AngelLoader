@@ -1111,12 +1111,19 @@ namespace AngelLoader
                     return FMDarkVersion.OldDark;
                 }
 
+                /*
+                Full-file SKYOBJVAR search perf:
+                Test FM: Death's Turbid Veil; .mis file ~150MB; modified to not have SKYOBJVAR (so full file search)
+                ~1560ms on 5400RPM HDD (cache cold)
+                ~500ms on towards-the-faster-end SATA SSD (cache cold)
+                ~50ms cache warm
+
+                So about 1.5 seconds worst case. That's fine for a once-only thing, and the average case will be
+                way, way faster (not least because extremely large OldDark Thief 1 .mis files are probably near
+                to - if not actually - nonexistent).
+                */
                 br.BaseStream.Position = 0;
                 byte[] chunk = new byte[bufferSize + SKYOBJVAR.Length];
-                // This takes only ~50ms even searching the entire ~150MB Death's Turbid Veil .mis file (modified
-                // to not have SKYOBJVAR) on my SATA SSD. If we were decompressing a zip entry this code would
-                // be SLOW, but looks like it's not a problem at all for file-on-disk. Not tested on a spinning
-                // disk, but it can't be that bad, right? Meh!
                 if (!StreamContainsIdentString(br.BaseStream, SKYOBJVAR, chunk, bufferSize))
                 {
                     // No SKYOBJVAR at all: OldDark Thief 1/Gold
