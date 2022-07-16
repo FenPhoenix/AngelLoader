@@ -1146,8 +1146,12 @@ namespace AngelLoader
             }
         }
 
-        // @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
-        // It's important we don't have bugs here!
+        /*
+        @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
+        It's important we don't have bugs here!
+        @FM_CFG: Great news: we can pass +[any config var] on the command line and it works!
+        @FM_CFG: Terrible news: we can't pass command line args to Steam, so it won't work there. ARGH!
+        */
         internal static void ApplyFMPaletteFixIfRequired(FanMission fm)
         {
             static bool FMRequiresPaletteFix(FanMission fm)

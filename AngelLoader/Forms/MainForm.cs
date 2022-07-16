@@ -29,6 +29,20 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
+
+@FM_CFG: Remove manual palette fix checkbox, and consider removing per-FM new mantle checkbox and making it global?
+Like [ ] Disable new mantling for all OldDark FMs
+
+@FM_CFG: If we're going to track game exit (for the time-tracking feature request), we should try to reset fm.cfg on exit
+Because new mantle disable for OldDark FMs toggle will work as long as AL is the loader being used, because we'll
+always overwrite our fm.cfg section with the latest values when we actually go to play, but if someone then uses
+another loader, it will just use whatever values are in there, even if they're ours. And there may be hundreds
+of FMs with our values in their fm.cfg files, and we have no way to reset them in bulk...
+
+Speaking of...
+
+@FM_CFG: We should remove our stuff from fm.cfg on backup, because it's "conceptually" temporary.
+Then if the file is empty after removing our stuff, we should just not back it up.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
