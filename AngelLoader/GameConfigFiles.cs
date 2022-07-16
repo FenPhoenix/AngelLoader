@@ -1063,9 +1063,6 @@ namespace AngelLoader
             return true;
         }
 
-        // @FM_CFG: Test this for identicality with the scanner!
-        // Prolly just go through all FMs' archives and temp extract them to folders, do the operation, then
-        // write out the results to a txt file, then do the same for the scanner, then diff them.
         internal static FMDarkVersion MissionIsOldDark(FanMission fm)
         {
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return FMDarkVersion.NotApplicable;
@@ -1160,6 +1157,15 @@ namespace AngelLoader
          have to detect again.
         -Note! DARKMISS check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
          SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
+        UPDATE 2022-07-16:
+        To confirm requirement for palette fix, we need to do the following:
+        -Check for pal\ dir
+         -If exists, check for dark.cfg in fm dir
+          -If exists, check for this line: default_game_palette [palette-name]
+           "palette-name" can be any name but should be "darkpal" by default, like: default_game_palette darkpal
+          -If doesn't exist, check in the global dark.cfg in the game dir for same value
+         -Check for [palette-name].pcx file in \pal dir
+          -If exists, the game needs the palette fix
         */
         public sealed class FMKeyValue
         {
