@@ -1151,6 +1151,10 @@ namespace AngelLoader
         It's important we don't have bugs here!
         @FM_CFG: Great news: we can pass +[any config var] on the command line and it works!
         @FM_CFG: Terrible news: we can't pass command line args to Steam, so it won't work there. ARGH!
+        @FM_CFG: Puzzling news?: Searching around the internet it almost looks like you _can_ pass exe-specific args after -applaunch?
+        But then why didn't that work back when I added Steam support?! Did I just not format it right?
+        I need to buy one of the games on Steam so I can test it myself. If we can pass exe-specific args to
+        Steam, then HALLELUJAH
         */
         internal static void ApplyFMPaletteFixIfRequired(FanMission fm)
         {
