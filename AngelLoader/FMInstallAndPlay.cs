@@ -219,6 +219,10 @@ namespace AngelLoader
 
             GenerateMissFlagFileIfRequired(fm);
 
+            // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
+            // .mis file when detecting OldDark (if there is no missflag.str)!
+            GameConfigFiles.ApplyFMPaletteFixIfRequired(fm);
+
             WriteStubCommFile(fm, gamePath);
 
             StartExe(gameExe, workingPath, args);

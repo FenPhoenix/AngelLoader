@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -49,6 +50,12 @@ namespace AngelLoader
         private const string key_FanMission = "FanMission=";
         private const string key_InstallPath = "InstallPath=";
         private const string key_IgnoreSavesKey = "IgnoreSavesKey=";
+
+        // dark.cfg
+        private const string key_default_game_palette = "default_game_palette";
+
+        // fm.cfg
+        private const string key_legacy_32bit_txtpal = "legacy_32bit_txtpal";
 
 #if !ReleaseBeta && !ReleasePublic
 
@@ -967,7 +974,7 @@ namespace AngelLoader
             TryWriteAllLines(camCfgFile, lines);
         }
 
-        internal static bool TryGetSmallestUsedMisFile(FanMission fm, out string misFile)
+        private static bool TryGetSmallestUsedMisFile(FanMission fm, out string misFile)
         {
             misFile = "";
 
@@ -1063,6 +1070,11 @@ namespace AngelLoader
             return true;
         }
 
+        /*
+        @FM_CFG: I _think_ we can just do the DARKMISS-at-byte-612 check and not lose accuracy
+        Because if its location changes, we're going to misdetect the mission as OldDark anyway, as that's our
+        only check for NewDark.
+        */
         internal static FMDarkVersion MissionIsOldDark(FanMission fm)
         {
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return FMDarkVersion.NotApplicable;
@@ -1134,6 +1146,78 @@ namespace AngelLoader
             }
         }
 
+        // @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
+        // It's important we don't have bugs here!
+        internal static void ApplyFMPaletteFixIfRequired(FanMission fm)
+        {
+            static bool FMRequiresPaletteFix(FanMission fm)
+            {
+                #region Local functions
+
+                static string GetDefaultPalName(string file)
+                {
+                    if (!File.Exists(file)) return "";
+
+                    using var sr = new StreamReader(file);
+                    while (sr.ReadLine() is { } line)
+                    {
+                        string lineT = line.Trim();
+                        if (lineT.StartsWithIPlusWhiteSpace(key_default_game_palette))
+                        {
+                            string defaultPal = lineT.Substring(key_default_game_palette.Length).Trim();
+                            if (!defaultPal.IsEmpty()) return defaultPal;
+                        }
+                    }
+
+                    return "";
+                }
+
+                #endregion
+
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+
+                string gamePath = Config.GetGamePath(gameIndex);
+                string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+
+                if (gamePath.IsEmpty() || fmInstallPath.IsEmpty()) return false;
+
+                string fmDir = Path.Combine(gamePath, fmInstallPath, fm.InstalledDir);
+
+                if (!Directory.Exists(fmDir)) return false;
+
+                string palDir = Path.Combine(fmDir, "pal");
+
+                if (!Directory.Exists(palDir)) return false;
+
+                string defaultPal = GetDefaultPalName(Path.Combine(fmDir, Paths.DarkCfg));
+                if (defaultPal.IsEmpty())
+                {
+                    defaultPal = GetDefaultPalName(Path.Combine(gamePath, Paths.DarkCfg));
+                    if (defaultPal.IsEmpty()) return false;
+                }
+
+                return File.Exists(Path.Combine(palDir, defaultPal + ".pcx"));
+            }
+
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return;
+            if (MissionIsOldDark(fm) != FMDarkVersion.OldDark) return;
+
+            try
+            {
+                if (!FMRequiresPaletteFix(fm)) return;
+            }
+            catch (Exception ex)
+            {
+                LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix", ex: ex);
+                return;
+            }
+
+            // @FM_CFG: Test line, remove after final accuracy testing done
+            Trace.WriteLine("********* FM requires palette fix: " + GetFMId(fm));
+
+            SetPerFMValues(fm, new FMKeyValue(key_legacy_32bit_txtpal, FMValueEnabled.Enabled));
+        }
+
         internal enum FMValueEnabled
         {
             Enabled,
@@ -1147,25 +1231,21 @@ namespace AngelLoader
         time as we need anything more complex.
         @FM_CFG(Automatic value set) notes:
         -We can detect if a mission is OldDark and have the option "disable new mantle on all OldDark missions"
-         (with manual override option per-FM), also we can detect if a mission needs the palette fix by checking
-         OldDark and then checking pal\*pal.pcx existence (not confirmed this is reliable, just a working theory!)
+         (with manual override option per-FM)
         -Normally we wouldn't do this during a scan because we would have to search the entire .mis file, but
          here, we can just defer until the user goes to play an FM, and then:
         -If FM has no value in the NewDark field (true, false, n/a (T3)) then do the .mis scan from installed
          dir. Even for large .mis files, this won't take too much time to do once, and especially when playing
          a game since that's a "slow" operation anyway. Then, we store the NewDark value in the FM so we don't
          have to detect again.
+        -UPDATE 2022-07-16: If we just do the fast check for "DARKMISS" at byte 612, we'll be accurate all the
+         time and it's blazing fast so we don't need to store the value in the db.
         -Note! DARKMISS check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
          SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
-        UPDATE 2022-07-16:
-        To confirm requirement for palette fix, we need to do the following:
-        -Check for pal\ dir
-         -If exists, check for dark.cfg in fm dir
-          -If exists, check for this line: default_game_palette [palette-name]
-           "palette-name" can be any name but should be "darkpal" by default, like: default_game_palette darkpal
-          -If doesn't exist, check in the global dark.cfg in the game dir for same value
-         -Check for [palette-name].pcx file in \pal dir
-          -If exists, the game needs the palette fix
+        -We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
+         so I'm just going to assume it's not supported to do the palette thing for SS2.
+        -But we _can_ do the new_mantle thing with SS2, as it has mantling. So if we wanted to do that, we would
+         still need to detect OldDark for SS2.
         */
         public sealed class FMKeyValue
         {
@@ -1179,6 +1259,10 @@ namespace AngelLoader
             }
         }
 
+        /*
+        @FM_CFG: We have to only call this once with the whole list of values we want to set
+        Otherwise it will just overwrite the previous single value with the latest (it erases all every time)
+        */
         internal static void SetPerFMValues(FanMission fm, params FMKeyValue[] keys)
         {
             if (!GameIsDark(fm.Game) || !FMIsReallyInstalled(fm)) return;
@@ -1205,25 +1289,6 @@ namespace AngelLoader
                 lines = new List<string>();
             }
 
-            /*
-            @FM_CFG: Temp, store actual valid-and-supported key-values later
-            We're going to try storing the per-FM values in the fm.cfg file itself to save space in the db.
-            This might turn out not to be the right decision but we're just gonna try and see how it works.
-            Use a dict so as to de-dupe multiple keys and use only the latest in the file (that's how NewDark
-            takes the value).
-            -After further thought: Storing the value in fm.cfg only really works if we're on backup-all-files
-             mode. Otherwise we lose it if we uninstall and reinstall. So we should definitely store in the db.
-            -BUT! We still need to read from the file to get back any stored values that ARE there.
-             And I guess we need to keep the two places in sync... Bleh...
-             Otherwise we try and make the fm.cfg change temporary but then that's a whole other can of worms
-             with tracking the game process exit, changing on proc exit/app exit/dir change, trying not to
-             modify a file being used by someone else, etc...
-            -UNLESS we just always update the fm.cfg file with our db-stored values, overwriting even if we just
-             got the file from a backup restore. Because we're only overwriting the AL-specific section at the
-             end of the file, that should be fine.
-            */
-            var oldLines = new List<string>();
-
             const string alSectionHeader = ";[AngelLoader]";
 
             /*
@@ -1231,27 +1296,33 @@ namespace AngelLoader
              Use a temp file and copy and check for fail and the whole deal.
             */
 
+            int alSectionHeaderIndex = -1;
+
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
                 if (lt.Length > 0 && lt[0] == ';' && (";" + RemoveLeadingSemicolons(lt)) == alSectionHeader)
                 {
-                    // Remove actual header line (so we don't add it to the old lines list)
-                    lines.RemoveAt(i);
-                    i--;
-
-                    for (int j = i; j < lines.Count; j++)
-                    {
-                        string lt2 = RemoveLeadingSemicolons(lines[i].Trim());
-                        if (!lt2.IsEmpty()) oldLines.Add(lines[j]);
-                        lines.RemoveAt(j);
-                        j--;
-                        i--;
-                    }
+                    alSectionHeaderIndex = i;
+                    break;
                 }
             }
 
-            lines.Add("");
+            if (alSectionHeaderIndex > -1)
+            {
+                for (int i = alSectionHeaderIndex; i < lines.Count; i++)
+                {
+                    lines.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            while (lines.Count > 0 && lines[lines.Count - 1].IsWhiteSpace())
+            {
+                lines.RemoveAt(lines.Count - 1);
+            }
+
+            if (lines.Count > 0) lines.Add("");
             lines.Add(alSectionHeader);
 
             foreach (var item in keys)

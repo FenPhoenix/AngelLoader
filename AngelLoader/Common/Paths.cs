@@ -290,6 +290,8 @@ namespace AngelLoader
 
         #region Game config files
 
+        internal const string DarkCfg = "dark.cfg";
+
         internal const string FMCfg = "fm.cfg";
 
         internal const string CamCfg = "cam.cfg";
