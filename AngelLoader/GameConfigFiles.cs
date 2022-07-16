@@ -1279,6 +1279,8 @@ namespace AngelLoader
 
             if (File.Exists(fmCfgFile))
             {
+                File_UnSetReadOnly(fmCfgFile);
+
                 if (!TryReadAllLines(fmCfgFile, out lines))
                 {
                     return;
@@ -1333,7 +1335,10 @@ namespace AngelLoader
                 }
             }
 
-            TryWriteAllLines(fmCfgFile, lines);
+            if (!TryWriteAllLines(fmCfgFile, lines))
+            {
+                Core.Dialogs.ShowError("Unable to write to " + Paths.FMCfg + "; per-FM options/fixes may not have been applied.");
+            }
         }
 
 #endif
