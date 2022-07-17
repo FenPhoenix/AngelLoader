@@ -974,6 +974,10 @@ namespace AngelLoader
             TryWriteAllLines(camCfgFile, lines);
         }
 
+#endif
+
+        #region Set per-FM values
+
         private static bool TryGetSmallestUsedMisFile(FanMission fm, out string misFile)
         {
             misFile = "";
@@ -1349,7 +1353,7 @@ namespace AngelLoader
             }
         }
 
-#endif
+        #endregion
 
         internal static (bool Success, List<Mod>)
         GetGameMods(GameIndex gameIndex)
