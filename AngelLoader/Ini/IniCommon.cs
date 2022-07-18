@@ -150,6 +150,60 @@ namespace AngelLoader
             }
         }
 
+        private sealed class KeyComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y)
+            {
+                if (x == y) return true;
+
+                // Intended: x == key in dict (no '='), y == incoming full line (with '=')
+                // But assume we have no guarantee on which param is which, so swap them if they're wrong.
+
+                int index = y.IndexOf('=');
+                if (index == -1)
+                {
+                    (y, x) = (x, y);
+                    index = y.IndexOf('=');
+                }
+
+                if (index != x.Length) return false;
+
+                for (int i = 0; i < x.Length; i++)
+                {
+                    if (x[i] != y[i]) return false;
+                }
+
+                return true;
+            }
+
+            // Copy of internal "non-randomized-per-app-domain" x86 string hash, but with cheap '='-is-end check
+            // because who wants to try to figure out how to get it to check for length-based end, meh.
+            // @X64: We might need to swap this out for x64!
+            public unsafe int GetHashCode(string obj)
+            {
+                fixed (char* chPtr1 = obj)
+                {
+                    int num1 = 5381;
+                    int num2 = num1;
+                    int num3;
+                    for (char* chPtr2 = chPtr1; (num3 = (int)*chPtr2) != '=' && num3 != 0; chPtr2 += 2)
+                    {
+                        num1 = (num1 << 5) + num1 ^ num3;
+                        int num4 = (int)chPtr2[1];
+                        if (num4 != 0 && num4 != '=')
+                        {
+                            num2 = (num2 << 5) + num2 ^ num4;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    return num1 + (num2 * 1566083941);
+                }
+            }
+        }
+
         internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList)
         {
             fmsList.Clear();
@@ -186,13 +240,13 @@ namespace AngelLoader
                     // -Resources
                     // -Langs (we do an alloc-free parse on the value itself, but we still substring the value)
                     // -SelectedLang
-                    if (FMDataKeyLookup.TryGetValue(lineTS, eqIndex, out var action))
+                    if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split
                         // the string so the value part can go in the FM field. But if the value is a knowable
                         // type, then we don't need to split the string, we can just parse the value section.
                         // This slashes our allocation count WAY down.
-                        action(fmsList[fmsList.Count - 1], lineTS, eqIndex);
+                        result.Action(fmsList[fmsList.Count - 1], lineTS, eqIndex);
                     }
                 }
             }

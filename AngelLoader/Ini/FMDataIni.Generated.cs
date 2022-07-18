@@ -312,6 +312,64 @@ namespace AngelLoader
 
         #endregion
 
+        private sealed unsafe class FMData_DelegatePointerWrapper
+        {
+            internal readonly delegate*<FanMission, string, int, void> Action;
+
+            internal FMData_DelegatePointerWrapper(delegate*<FanMission, string, int, void> action)
+            {
+                Action = action;
+            }
+        }
+
+        private static readonly unsafe Dictionary<string, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new KeyComparer())
+        {
+            { "NoArchive", new FMData_DelegatePointerWrapper(&FMData_NoArchive_Set) },
+            { "MarkedScanned", new FMData_DelegatePointerWrapper(&FMData_MarkedScanned_Set) },
+            { "Pinned", new FMData_DelegatePointerWrapper(&FMData_Pinned_Set) },
+            { "Archive", new FMData_DelegatePointerWrapper(&FMData_Archive_Set) },
+            { "InstalledDir", new FMData_DelegatePointerWrapper(&FMData_InstalledDir_Set) },
+            { "Title", new FMData_DelegatePointerWrapper(&FMData_Title_Set) },
+            { "AltTitles", new FMData_DelegatePointerWrapper(&FMData_AltTitles_Set) },
+            { "Author", new FMData_DelegatePointerWrapper(&FMData_Author_Set) },
+            { "Game", new FMData_DelegatePointerWrapper(&FMData_Game_Set) },
+            { "Installed", new FMData_DelegatePointerWrapper(&FMData_Installed_Set) },
+            { "NoReadmes", new FMData_DelegatePointerWrapper(&FMData_NoReadmes_Set) },
+            { "SelectedReadme", new FMData_DelegatePointerWrapper(&FMData_SelectedReadme_Set) },
+            { "ReadmeEncoding", new FMData_DelegatePointerWrapper(&FMData_ReadmeEncoding_Set) },
+            { "SizeBytes", new FMData_DelegatePointerWrapper(&FMData_SizeBytes_Set) },
+            { "Rating", new FMData_DelegatePointerWrapper(&FMData_Rating_Set) },
+            { "ReleaseDate", new FMData_DelegatePointerWrapper(&FMData_ReleaseDate_Set) },
+            { "LastPlayed", new FMData_DelegatePointerWrapper(&FMData_LastPlayed_Set) },
+            { "DateAdded", new FMData_DelegatePointerWrapper(&FMData_DateAdded_Set) },
+            { "FinishedOn", new FMData_DelegatePointerWrapper(&FMData_FinishedOn_Set) },
+            { "FinishedOnUnknown", new FMData_DelegatePointerWrapper(&FMData_FinishedOnUnknown_Set) },
+            { "Comment", new FMData_DelegatePointerWrapper(&FMData_Comment_Set) },
+            { "DisabledMods", new FMData_DelegatePointerWrapper(&FMData_DisabledMods_Set) },
+            { "DisableAllMods", new FMData_DelegatePointerWrapper(&FMData_DisableAllMods_Set) },
+            { "HasResources", new FMData_DelegatePointerWrapper(&FMData_HasResources_Set) },
+            { "LangsScanned", new FMData_DelegatePointerWrapper(&FMData_LangsScanned_Set) },
+            { "Langs", new FMData_DelegatePointerWrapper(&FMData_Langs_Set) },
+            { "SelectedLang", new FMData_DelegatePointerWrapper(&FMData_SelectedLang_Set) },
+            { "TagsString", new FMData_DelegatePointerWrapper(&FMData_TagsString_Set) },
+            { "DarkVersion", new FMData_DelegatePointerWrapper(&FMData_DarkVersion_Set) },
+
+            #region Old resource format - backward compatibility, we still have to be able to read it
+
+            { "HasMap", new FMData_DelegatePointerWrapper(&FMData_HasMap_Set) },
+            { "HasAutomap", new FMData_DelegatePointerWrapper(&FMData_HasAutomap_Set) },
+            { "HasScripts", new FMData_DelegatePointerWrapper(&FMData_HasScripts_Set) },
+            { "HasTextures", new FMData_DelegatePointerWrapper(&FMData_HasTextures_Set) },
+            { "HasSounds", new FMData_DelegatePointerWrapper(&FMData_HasSounds_Set) },
+            { "HasObjects", new FMData_DelegatePointerWrapper(&FMData_HasObjects_Set) },
+            { "HasCreatures", new FMData_DelegatePointerWrapper(&FMData_HasCreatures_Set) },
+            { "HasMotions", new FMData_DelegatePointerWrapper(&FMData_HasMotions_Set) },
+            { "HasMovies", new FMData_DelegatePointerWrapper(&FMData_HasMovies_Set) },
+            { "HasSubtitles", new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) }
+
+            #endregion
+        };
+
         #endregion
 
         #region Generated code for writer

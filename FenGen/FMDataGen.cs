@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -492,6 +493,46 @@ namespace FenGen
             w.WL("#endregion");
             w.WL();
 
+            var dictFields = fields.ToList();
+            foreach (string item in customResourceFieldNames)
+            {
+                dictFields.Add(new Field { Name = item });
+            }
+
+            w.WL("private sealed unsafe class FMData_DelegatePointerWrapper");
+            w.WL("{");
+            w.WL("internal readonly delegate*<FanMission, string, int, void> Action;");
+            w.WL();
+            w.WL("internal FMData_DelegatePointerWrapper(delegate*<FanMission, string, int, void> action)");
+            w.WL("{");
+            w.WL("Action = action;");
+            w.WL("}");
+            w.WL("}");
+            w.WL();
+
+            w.WL("private static readonly unsafe Dictionary<string, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new KeyComparer())");
+            w.WL("{");
+            for (int i = 0; i < dictFields.Count; i++)
+            {
+                Field field = dictFields[i];
+                string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
+                string comma = i == dictFields.Count - 1 ? "" : ",";
+                w.WL("{ \"" + fieldIniName + "\", new FMData_DelegatePointerWrapper(&FMData_" + fieldIniName + "_Set) }" + comma);
+
+                if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
+                {
+                    w.WL();
+                    w.WL("#region " + _oldResourceFormatMessage);
+                    w.WL();
+                }
+                else if (i == dictFields.Count - 1)
+                {
+                    w.WL();
+                    w.WL("#endregion");
+                }
+            }
+            w.WL("};");
+            w.WL();
             w.WL("#endregion");
         }
 

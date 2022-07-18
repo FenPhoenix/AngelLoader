@@ -717,172 +717,182 @@ namespace AngelLoader
 
         #endregion
 
-        private static readonly Dictionary<string, Action<ConfigData, string, string, GameIndex, bool>> _actionDict_Config = new()
+        private sealed unsafe class Config_DelegatePointerWrapper
+        {
+            internal readonly delegate*<ConfigData, string, string, GameIndex, bool, void> Action;
+
+            internal Config_DelegatePointerWrapper(delegate*<ConfigData, string, string, GameIndex, bool, void> action)
+            {
+                Action = action;
+            }
+        }
+
+        private static readonly unsafe Dictionary<string, Config_DelegatePointerWrapper> _actionDict_Config = new(new KeyComparer())
         {
             #region Settings window state
 
-            { "SettingsTab", Config_SettingsTab_Set },
-            { "SettingsWindowSize", Config_SettingsWindowSize_Set },
-            { "SettingsWindowSplitterDistance", Config_SettingsWindowSplitterDistance_Set },
-            { "SettingsPathsVScrollPos", Config_SettingsPathsVScrollPos_Set },
-            { "SettingsAppearanceVScrollPos", Config_SettingsAppearanceVScrollPos_Set },
-            { "SettingsOtherVScrollPos", Config_SettingsOtherVScrollPos_Set },
+            { "SettingsTab", new Config_DelegatePointerWrapper(&Config_SettingsTab_Set) },
+            { "SettingsWindowSize", new Config_DelegatePointerWrapper(&Config_SettingsWindowSize_Set) },
+            { "SettingsWindowSplitterDistance", new Config_DelegatePointerWrapper(&Config_SettingsWindowSplitterDistance_Set) },
+            { "SettingsPathsVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsPathsVScrollPos_Set) },
+            { "SettingsAppearanceVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
+            { "SettingsOtherVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
 
             #endregion
 
-            { "LaunchGamesWithSteam", Config_LaunchGamesWithSteam_Set },
-            { "SteamExe", Config_SteamExe_Set },
-            { "FMsBackupPath", Config_FMsBackupPath_Set },
-            { "FMArchivePath", Config_FMArchivePath_Set },
-            { "FMArchivePathsIncludeSubfolders", Config_FMArchivePathsIncludeSubfolders_Set },
-            { "GameOrganization", Config_GameOrganization_Set },
-            { "UseShortGameTabNames", Config_UseShortGameTabNames_Set },
-            { "EnableArticles", Config_EnableArticles_Set },
-            { "Articles", Config_Articles_Set },
-            { "MoveArticlesToEnd", Config_MoveArticlesToEnd_Set },
-            { "RatingDisplayStyle", Config_RatingDisplayStyle_Set },
-            { "RatingUseStars", Config_RatingUseStars_Set },
+            { "LaunchGamesWithSteam", new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
+            { "SteamExe", new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
+            { "FMsBackupPath", new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
+            { "FMArchivePath", new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
+            { "FMArchivePathsIncludeSubfolders", new Config_DelegatePointerWrapper(&Config_FMArchivePathsIncludeSubfolders_Set) },
+            { "GameOrganization", new Config_DelegatePointerWrapper(&Config_GameOrganization_Set) },
+            { "UseShortGameTabNames", new Config_DelegatePointerWrapper(&Config_UseShortGameTabNames_Set) },
+            { "EnableArticles", new Config_DelegatePointerWrapper(&Config_EnableArticles_Set) },
+            { "Articles", new Config_DelegatePointerWrapper(&Config_Articles_Set) },
+            { "MoveArticlesToEnd", new Config_DelegatePointerWrapper(&Config_MoveArticlesToEnd_Set) },
+            { "RatingDisplayStyle", new Config_DelegatePointerWrapper(&Config_RatingDisplayStyle_Set) },
+            { "RatingUseStars", new Config_DelegatePointerWrapper(&Config_RatingUseStars_Set) },
 
             #region Date format
 
-            { "DateFormat", Config_DateFormat_Set },
-            { "DateCustomFormat1", Config_DateCustomFormat1_Set },
-            { "DateCustomSeparator1", Config_DateCustomSeparator1_Set },
-            { "DateCustomFormat2", Config_DateCustomFormat2_Set },
-            { "DateCustomSeparator2", Config_DateCustomSeparator2_Set },
-            { "DateCustomFormat3", Config_DateCustomFormat3_Set },
-            { "DateCustomSeparator3", Config_DateCustomSeparator3_Set },
-            { "DateCustomFormat4", Config_DateCustomFormat4_Set },
+            { "DateFormat", new Config_DelegatePointerWrapper(&Config_DateFormat_Set) },
+            { "DateCustomFormat1", new Config_DelegatePointerWrapper(&Config_DateCustomFormat1_Set) },
+            { "DateCustomSeparator1", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator1_Set) },
+            { "DateCustomFormat2", new Config_DelegatePointerWrapper(&Config_DateCustomFormat2_Set) },
+            { "DateCustomSeparator2", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator2_Set) },
+            { "DateCustomFormat3", new Config_DelegatePointerWrapper(&Config_DateCustomFormat3_Set) },
+            { "DateCustomSeparator3", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator3_Set) },
+            { "DateCustomFormat4", new Config_DelegatePointerWrapper(&Config_DateCustomFormat4_Set) },
 
             #endregion
 
-            { "DaysRecent", Config_DaysRecent_Set },
-            { "ConvertWAVsTo16BitOnInstall", Config_ConvertWAVsTo16BitOnInstall_Set },
-            { "ConvertOGGsToWAVsOnInstall", Config_ConvertOGGsToWAVsOnInstall_Set },
-            { "HideUninstallButton", Config_HideUninstallButton_Set },
-            { "HideFMListZoomButtons", Config_HideFMListZoomButtons_Set },
-            { "HideExitButton", Config_HideExitButton_Set },
-            { "ConfirmBeforeInstall", Config_ConfirmInstall_Set },
-            { "ConfirmUninstall", Config_ConfirmUninstall_Set },
-            { "BackupFMData", Config_BackupFMData_Set },
-            { "BackupAlwaysAsk", Config_BackupAlwaysAsk_Set },
-            { "Language", Config_Language_Set },
-            { "WebSearchUrl", Config_WebSearchUrl_Set },
-            { "ConfirmPlayOnDCOrEnter", Config_ConfirmPlayOnDCOrEnter_Set },
-            { "VisualTheme", Config_VisualTheme_Set },
+            { "DaysRecent", new Config_DelegatePointerWrapper(&Config_DaysRecent_Set) },
+            { "ConvertWAVsTo16BitOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertWAVsTo16BitOnInstall_Set) },
+            { "ConvertOGGsToWAVsOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertOGGsToWAVsOnInstall_Set) },
+            { "HideUninstallButton", new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
+            { "HideFMListZoomButtons", new Config_DelegatePointerWrapper(&Config_HideFMListZoomButtons_Set) },
+            { "HideExitButton", new Config_DelegatePointerWrapper(&Config_HideExitButton_Set) },
+            { "ConfirmBeforeInstall", new Config_DelegatePointerWrapper(&Config_ConfirmInstall_Set) },
+            { "ConfirmUninstall", new Config_DelegatePointerWrapper(&Config_ConfirmUninstall_Set) },
+            { "BackupFMData", new Config_DelegatePointerWrapper(&Config_BackupFMData_Set) },
+            { "BackupAlwaysAsk", new Config_DelegatePointerWrapper(&Config_BackupAlwaysAsk_Set) },
+            { "Language", new Config_DelegatePointerWrapper(&Config_Language_Set) },
+            { "WebSearchUrl", new Config_DelegatePointerWrapper(&Config_WebSearchUrl_Set) },
+            { "ConfirmPlayOnDCOrEnter", new Config_DelegatePointerWrapper(&Config_ConfirmPlayOnDCOrEnter_Set) },
+            { "VisualTheme", new Config_DelegatePointerWrapper(&Config_VisualTheme_Set) },
 
             #region Filter visibilities
 
-            { "FilterVisibleTitle", Config_FilterVisibleTitle_Set },
-            { "FilterVisibleAuthor", Config_FilterVisibleAuthor_Set },
-            { "FilterVisibleReleaseDate", Config_FilterVisibleReleaseDate_Set },
-            { "FilterVisibleLastPlayed", Config_FilterVisibleLastPlayed_Set },
-            { "FilterVisibleTags", Config_FilterVisibleTags_Set },
-            { "FilterVisibleFinishedState", Config_FilterVisibleFinishedState_Set },
-            { "FilterVisibleRating", Config_FilterVisibleRating_Set },
-            { "FilterVisibleShowUnsupported", Config_FilterVisibleShowUnsupported_Set },
-            { "FilterVisibleShowUnavailable", Config_FilterVisibleShowUnavailable_Set },
-            { "FilterVisibleShowRecentAtTop", Config_FilterVisibleShowRecentAtTop_Set },
+            { "FilterVisibleTitle", new Config_DelegatePointerWrapper(&Config_FilterVisibleTitle_Set) },
+            { "FilterVisibleAuthor", new Config_DelegatePointerWrapper(&Config_FilterVisibleAuthor_Set) },
+            { "FilterVisibleReleaseDate", new Config_DelegatePointerWrapper(&Config_FilterVisibleReleaseDate_Set) },
+            { "FilterVisibleLastPlayed", new Config_DelegatePointerWrapper(&Config_FilterVisibleLastPlayed_Set) },
+            { "FilterVisibleTags", new Config_DelegatePointerWrapper(&Config_FilterVisibleTags_Set) },
+            { "FilterVisibleFinishedState", new Config_DelegatePointerWrapper(&Config_FilterVisibleFinishedState_Set) },
+            { "FilterVisibleRating", new Config_DelegatePointerWrapper(&Config_FilterVisibleRating_Set) },
+            { "FilterVisibleShowUnsupported", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnsupported_Set) },
+            { "FilterVisibleShowUnavailable", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnavailable_Set) },
+            { "FilterVisibleShowRecentAtTop", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowRecentAtTop_Set) },
 
             #endregion
 
             #region Filter values
 
-            { "FilterGames", Config_FilterGames_Set },
-            { "FilterTitle", Config_FilterTitle_Set },
-            { "FilterAuthor", Config_FilterAuthor_Set },
-            { "FilterReleaseDateFrom", Config_FilterReleaseDateFrom_Set },
-            { "FilterReleaseDateTo", Config_FilterReleaseDateTo_Set },
-            { "FilterLastPlayedFrom", Config_FilterLastPlayedFrom_Set },
-            { "FilterLastPlayedTo", Config_FilterLastPlayedTo_Set },
-            { "FilterFinishedStates", Config_FilterFinishedStates_Set },
-            { "FilterRatingFrom", Config_FilterRatingFrom_Set },
-            { "FilterRatingTo", Config_FilterRatingTo_Set },
-            { "FilterTagsAnd", Config_FilterTagsAnd_Set },
-            { "FilterTagsOr", Config_FilterTagsOr_Set },
-            { "FilterTagsNot", Config_FilterTagsNot_Set },
+            { "FilterGames", new Config_DelegatePointerWrapper(&Config_FilterGames_Set) },
+            { "FilterTitle", new Config_DelegatePointerWrapper(&Config_FilterTitle_Set) },
+            { "FilterAuthor", new Config_DelegatePointerWrapper(&Config_FilterAuthor_Set) },
+            { "FilterReleaseDateFrom", new Config_DelegatePointerWrapper(&Config_FilterReleaseDateFrom_Set) },
+            { "FilterReleaseDateTo", new Config_DelegatePointerWrapper(&Config_FilterReleaseDateTo_Set) },
+            { "FilterLastPlayedFrom", new Config_DelegatePointerWrapper(&Config_FilterLastPlayedFrom_Set) },
+            { "FilterLastPlayedTo", new Config_DelegatePointerWrapper(&Config_FilterLastPlayedTo_Set) },
+            { "FilterFinishedStates", new Config_DelegatePointerWrapper(&Config_FilterFinishedStates_Set) },
+            { "FilterRatingFrom", new Config_DelegatePointerWrapper(&Config_FilterRatingFrom_Set) },
+            { "FilterRatingTo", new Config_DelegatePointerWrapper(&Config_FilterRatingTo_Set) },
+            { "FilterTagsAnd", new Config_DelegatePointerWrapper(&Config_FilterTagsAnd_Set) },
+            { "FilterTagsOr", new Config_DelegatePointerWrapper(&Config_FilterTagsOr_Set) },
+            { "FilterTagsNot", new Config_DelegatePointerWrapper(&Config_FilterTagsNot_Set) },
 
             #endregion
 
             #region Per-game fields
 
-            { "DisabledMods", Config_DisabledMods_Set },
+            { "DisabledMods", new Config_DelegatePointerWrapper(&Config_DisabledMods_Set) },
 
-            { "Exe", Config_Exe_Set },
+            { "Exe", new Config_DelegatePointerWrapper(&Config_Exe_Set) },
 
-            { "UseSteam", Config_UseSteam_Set },
+            { "UseSteam", new Config_DelegatePointerWrapper(&Config_UseSteam_Set) },
 
-            { "GameFilterVisible", Config_GameFilterVisible_Set },
+            { "GameFilterVisible", new Config_DelegatePointerWrapper(&Config_GameFilterVisible_Set) },
 
-            { "SelFMInstDir", Config_SelFMInstDir_Set },
-            { "SelFMIndexFromTop", Config_SelFMIndexFromTop_Set },
+            { "SelFMInstDir", new Config_DelegatePointerWrapper(&Config_SelFMInstDir_Set) },
+            { "SelFMIndexFromTop", new Config_DelegatePointerWrapper(&Config_SelFMIndexFromTop_Set) },
 
             #endregion
 
-            { "ShowRecentAtTop", Config_ShowRecentAtTop_Set },
-            { "ShowUnsupported", Config_ShowUnsupported_Set },
-            { "ShowUnavailableFMs", Config_ShowUnavailableFMs_Set },
-            { "FMsListFontSizeInPoints", Config_FMsListFontSizeInPoints_Set },
+            { "ShowRecentAtTop", new Config_DelegatePointerWrapper(&Config_ShowRecentAtTop_Set) },
+            { "ShowUnsupported", new Config_DelegatePointerWrapper(&Config_ShowUnsupported_Set) },
+            { "ShowUnavailableFMs", new Config_DelegatePointerWrapper(&Config_ShowUnavailableFMs_Set) },
+            { "FMsListFontSizeInPoints", new Config_DelegatePointerWrapper(&Config_FMsListFontSizeInPoints_Set) },
 
-            { "SortedColumn", Config_SortedColumn_Set },
-            { "SortDirection", Config_SortDirection_Set },
+            { "SortedColumn", new Config_DelegatePointerWrapper(&Config_SortedColumn_Set) },
+            { "SortDirection", new Config_DelegatePointerWrapper(&Config_SortDirection_Set) },
 
             #region Columns
 
-            { "ColumnGame", Config_ColumnGame_Set },
-            { "ColumnInstalled", Config_ColumnInstalled_Set },
-            { "ColumnTitle", Config_ColumnTitle_Set },
-            { "ColumnArchive", Config_ColumnArchive_Set },
-            { "ColumnAuthor", Config_ColumnAuthor_Set },
-            { "ColumnSize", Config_ColumnSize_Set },
-            { "ColumnRating", Config_ColumnRating_Set },
-            { "ColumnFinished", Config_ColumnFinished_Set },
-            { "ColumnReleaseDate", Config_ColumnReleaseDate_Set },
-            { "ColumnLastPlayed", Config_ColumnLastPlayed_Set },
-            { "ColumnDateAdded", Config_ColumnDateAdded_Set },
-            { "ColumnDisabledMods", Config_ColumnDisabledMods_Set },
-            { "ColumnComment", Config_ColumnComment_Set },
+            { "ColumnGame", new Config_DelegatePointerWrapper(&Config_ColumnGame_Set) },
+            { "ColumnInstalled", new Config_DelegatePointerWrapper(&Config_ColumnInstalled_Set) },
+            { "ColumnTitle", new Config_DelegatePointerWrapper(&Config_ColumnTitle_Set) },
+            { "ColumnArchive", new Config_DelegatePointerWrapper(&Config_ColumnArchive_Set) },
+            { "ColumnAuthor", new Config_DelegatePointerWrapper(&Config_ColumnAuthor_Set) },
+            { "ColumnSize", new Config_DelegatePointerWrapper(&Config_ColumnSize_Set) },
+            { "ColumnRating", new Config_DelegatePointerWrapper(&Config_ColumnRating_Set) },
+            { "ColumnFinished", new Config_DelegatePointerWrapper(&Config_ColumnFinished_Set) },
+            { "ColumnReleaseDate", new Config_DelegatePointerWrapper(&Config_ColumnReleaseDate_Set) },
+            { "ColumnLastPlayed", new Config_DelegatePointerWrapper(&Config_ColumnLastPlayed_Set) },
+            { "ColumnDateAdded", new Config_DelegatePointerWrapper(&Config_ColumnDateAdded_Set) },
+            { "ColumnDisabledMods", new Config_DelegatePointerWrapper(&Config_ColumnDisabledMods_Set) },
+            { "ColumnComment", new Config_DelegatePointerWrapper(&Config_ColumnComment_Set) },
 
             #endregion
 
-            { "MainWindowState", Config_MainWindowState_Set },
-            { "MainWindowSize", Config_MainWindowSize_Set },
-            { "MainWindowLocation", Config_MainWindowLocation_Set },
+            { "MainWindowState", new Config_DelegatePointerWrapper(&Config_MainWindowState_Set) },
+            { "MainWindowSize", new Config_DelegatePointerWrapper(&Config_MainWindowSize_Set) },
+            { "MainWindowLocation", new Config_DelegatePointerWrapper(&Config_MainWindowLocation_Set) },
 
-            { "MainSplitterPercent", Config_MainSplitterPercent_Set },
-            { "TopSplitterPercent", Config_TopSplitterPercent_Set },
-            { "TopRightPanelCollapsed", Config_TopRightPanelCollapsed_Set },
-            { "GameTab", Config_GameTab_Set },
+            { "MainSplitterPercent", new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
+            { "TopSplitterPercent", new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
+            { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopRightPanelCollapsed_Set) },
+            { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
 
             #region Top-right tabs
 
-            { "TopRightTab", Config_TopRightTab_Set },
+            { "TopRightTab", new Config_DelegatePointerWrapper(&Config_TopRightTab_Set) },
 
-            { "StatsTabPosition", Config_StatsTabPosition_Set },
-            { "StatsTabVisible", Config_StatsTabVisible_Set },
+            { "StatsTabPosition", new Config_DelegatePointerWrapper(&Config_StatsTabPosition_Set) },
+            { "StatsTabVisible", new Config_DelegatePointerWrapper(&Config_StatsTabVisible_Set) },
 
-            { "EditFMTabPosition", Config_EditFMTabPosition_Set },
-            { "EditFMTabVisible", Config_EditFMTabVisible_Set },
+            { "EditFMTabPosition", new Config_DelegatePointerWrapper(&Config_EditFMTabPosition_Set) },
+            { "EditFMTabVisible", new Config_DelegatePointerWrapper(&Config_EditFMTabVisible_Set) },
 
-            { "CommentTabPosition", Config_CommentTabPosition_Set },
-            { "CommentTabVisible", Config_CommentTabVisible_Set },
+            { "CommentTabPosition", new Config_DelegatePointerWrapper(&Config_CommentTabPosition_Set) },
+            { "CommentTabVisible", new Config_DelegatePointerWrapper(&Config_CommentTabVisible_Set) },
 
-            { "TagsTabPosition", Config_TagsTabPosition_Set },
-            { "TagsTabVisible", Config_TagsTabVisible_Set },
+            { "TagsTabPosition", new Config_DelegatePointerWrapper(&Config_TagsTabPosition_Set) },
+            { "TagsTabVisible", new Config_DelegatePointerWrapper(&Config_TagsTabVisible_Set) },
 
-            { "PatchTabPosition", Config_PatchTabPosition_Set },
-            { "PatchTabVisible", Config_PatchTabVisible_Set },
+            { "PatchTabPosition", new Config_DelegatePointerWrapper(&Config_PatchTabPosition_Set) },
+            { "PatchTabVisible", new Config_DelegatePointerWrapper(&Config_PatchTabVisible_Set) },
 
-            { "ModsTabPosition", Config_ModsTabPosition_Set },
-            { "ModsTabVisible", Config_ModsTabVisible_Set },
+            { "ModsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
+            { "ModsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
 
             #endregion
 
-            { "ReadmeZoomFactor", Config_ReadmeZoomFactor_Set },
-            { "ReadmeUseFixedWidthFont", Config_ReadmeUseFixedWidthFont_Set },
-            { "EnableCharacterDetailFix", Config_EnableCharacterDetailFix_Set },
+            { "ReadmeZoomFactor", new Config_DelegatePointerWrapper(&Config_ReadmeZoomFactor_Set) },
+            { "ReadmeUseFixedWidthFont", new Config_DelegatePointerWrapper(&Config_ReadmeUseFixedWidthFont_Set) },
+            { "EnableCharacterDetailFix", new Config_DelegatePointerWrapper(&Config_EnableCharacterDetailFix_Set) },
 
-            { "PlayOriginalSeparateButtons", Config_PlayOriginalSeparateButtons_Set },
+            { "PlayOriginalSeparateButtons", new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
 
             #region Backward compatibility
 
@@ -895,15 +905,15 @@ namespace AngelLoader
             // versions that support the new games will also have the new prefixed format in the config.
             // Or else they'll be reading from an old config that won't have data for the new game(s) anyway.
 
-            { "GameFilterVisibleT1", Config_GameFilterVisibleT1_Set },
-            { "GameFilterVisibleT2", Config_GameFilterVisibleT2_Set },
-            { "GameFilterVisibleT3", Config_GameFilterVisibleT3_Set },
-            { "GameFilterVisibleSS2", Config_GameFilterVisibleSS2_Set }
+            { "GameFilterVisibleT1", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
+            { "GameFilterVisibleT2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
+            { "GameFilterVisibleT3", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT3_Set) },
+            { "GameFilterVisibleSS2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) }
 
             #endregion
         };
 
-        internal static void ReadConfigIni(string path, ConfigData config)
+        internal static unsafe void ReadConfigIni(string path, ConfigData config)
         {
             var iniLines = File_ReadAllLines_List(path);
 
@@ -963,9 +973,9 @@ namespace AngelLoader
 
                     // @GENGAMES (ConfigIni prefix detector) - End
 
-                    if (_actionDict_Config.TryGetValue(key, out var action))
+                    if (_actionDict_Config.TryGetValue(key, out var result))
                     {
-                        action.Invoke(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
+                        result.Action(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
                     }
                 }
             }
