@@ -926,7 +926,6 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
-                    string key = lineTS.Substring(0, eqIndex);
                     string valRaw = lineTS.Substring(eqIndex + 1);
                     string valTrimmed = valRaw.Trim();
 
@@ -940,40 +939,40 @@ namespace AngelLoader
                     GameIndex gameIndex = GameIndex.Thief1;
                     bool ignoreGameIndex = true;
 
-                    if (key.Length > 2)
+                    if (eqIndex >= 2)
                     {
-                        if (key[0] == 'T')
+                        if (lineTS[0] == 'T')
                         {
-                            switch (key[1])
+                            switch (lineTS[1])
                             {
                                 case '1':
                                     gameIndex = GameIndex.Thief1;
                                     ignoreGameIndex = false;
-                                    key = key.Substring(2);
+                                    lineTS = lineTS.Substring(2);
                                     break;
                                 case '2':
                                     gameIndex = GameIndex.Thief2;
                                     ignoreGameIndex = false;
-                                    key = key.Substring(2);
+                                    lineTS = lineTS.Substring(2);
                                     break;
                                 case '3':
                                     gameIndex = GameIndex.Thief3;
                                     ignoreGameIndex = false;
-                                    key = key.Substring(2);
+                                    lineTS = lineTS.Substring(2);
                                     break;
                             }
                         }
-                        else if (key.Length > 3 && key[0] == 'S' && key[1] == 'S' && key[2] == '2')
+                        else if (eqIndex >= 3 && lineTS[0] == 'S' && lineTS[1] == 'S' && lineTS[2] == '2')
                         {
                             gameIndex = GameIndex.SS2;
                             ignoreGameIndex = false;
-                            key = key.Substring(3);
+                            lineTS = lineTS.Substring(3);
                         }
                     }
 
                     // @GENGAMES (ConfigIni prefix detector) - End
 
-                    if (_actionDict_Config.TryGetValue(key, out var result))
+                    if (_actionDict_Config.TryGetValue(lineTS, out var result))
                     {
                         result.Action(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
                     }
