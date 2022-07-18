@@ -2,14 +2,6 @@
 
 /*
 NOTE(Core notes):
-
-TODO(Perfect hashes/gperf):
--The gperf-generated perfect hashes are extremely other-programmer-hostile. The rtf and language ones are the
- least offenders, cause they change extremely rarely to not at all (NewDark supported langs have never changed
- since release afaik). But the FMData one is horrible because FMData frequently changes. We could revert the
- FMData one and just keep the function pointers but in a normal dictionary like before, at the cost of more
- allocations on startup again.
-
 -We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
  But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
 

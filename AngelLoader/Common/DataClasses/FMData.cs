@@ -23,11 +23,6 @@ namespace AngelLoader.DataClasses
      etc.
     */
 
-    // IMPORTANT! If you change this, you currently have to regenerate the perfect hash table in FMDataKeyLookup.cs
-    // TODO(FMData gperf regeneration requirement):
-    // At least make a function in like FenGen or something (FenGen has the code to get the non-ignorable fields
-    // with the proper ini names and all) to generate the gperf input file.
-
     [FenGenFMDataSourceClass]
     public sealed class FanMission
     {
