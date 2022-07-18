@@ -1078,6 +1078,10 @@ namespace AngelLoader
         @FM_CFG: I _think_ we can just do the DARKMISS-at-byte-612 check and not lose accuracy
         Because if its location changes, we're going to misdetect the mission as OldDark anyway, as that's our
         only check for NewDark.
+        @FM_CFG (2022-07-17):
+        It seems OldDark T1 missions have DARKMISS at 744, and T2 at 3220. Check if this is always the case!
+        That way we could detect by presence instead of lack-of-presence, and then be safer for future NewDark
+        versions.
         */
         internal static FMDarkVersion MissionIsOldDark(FanMission fm)
         {
