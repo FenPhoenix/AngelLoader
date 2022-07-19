@@ -1085,7 +1085,7 @@ namespace AngelLoader
         But much like SKYOBJVAR, there's a handful of missions that have it at some stupid random place way far
         in. So we can't detect reliably like this.
         */
-        internal static FMDarkVersion MissionIsOldDark(FanMission fm)
+        private static FMDarkVersion MissionIsOldDark(FanMission fm)
         {
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return FMDarkVersion.NotApplicable;
 
@@ -1160,38 +1160,38 @@ namespace AngelLoader
         @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
         It's important we don't have bugs here!
         @FM_CFG: Great news: we can pass +[any config var] on the command line and it works!
-        @FM_CFG: Terrible news: we can't pass command line args to Steam, so it won't work there. ARGH!
-        @FM_CFG: Puzzling news?: Searching around the internet it almost looks like you _can_ pass exe-specific args after -applaunch?
-        But then why didn't that work back when I added Steam support?! Did I just not format it right?
-        I need to buy one of the games on Steam so I can test it myself. If we can pass exe-specific args to
-        Steam, then HALLELUJAH
+        @FM_CFG: Greater news: we _can_ pass args after -applaunch on the Steam command line.
+        Don't know why it didn't work before when I added Steam support, but oh well...
         */
-        internal static void ApplyFMPaletteFixIfRequired(FanMission fm)
+        internal static bool FMRequiresPaletteFix(FanMission fm)
         {
-            static bool FMRequiresPaletteFix(FanMission fm)
+            #region Local functions
+
+            static string GetDefaultPalName(string file)
             {
-                #region Local functions
+                if (!File.Exists(file)) return "";
 
-                static string GetDefaultPalName(string file)
+                using var sr = new StreamReader(file);
+                while (sr.ReadLine() is { } line)
                 {
-                    if (!File.Exists(file)) return "";
-
-                    using var sr = new StreamReader(file);
-                    while (sr.ReadLine() is { } line)
+                    string lineT = line.Trim();
+                    if (lineT.StartsWithIPlusWhiteSpace(key_default_game_palette))
                     {
-                        string lineT = line.Trim();
-                        if (lineT.StartsWithIPlusWhiteSpace(key_default_game_palette))
-                        {
-                            string defaultPal = lineT.Substring(key_default_game_palette.Length).Trim();
-                            if (!defaultPal.IsEmpty()) return defaultPal;
-                        }
+                        string defaultPal = lineT.Substring(key_default_game_palette.Length).Trim();
+                        if (!defaultPal.IsEmpty()) return defaultPal;
                     }
-
-                    return "";
                 }
 
-                #endregion
+                return "";
+            }
 
+            #endregion
+
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
+            if (MissionIsOldDark(fm) != FMDarkVersion.OldDark) return false;
+
+            try
+            {
                 GameIndex gameIndex = GameToGameIndex(fm.Game);
 
                 string gamePath = Config.GetGamePath(gameIndex);
@@ -1214,26 +1214,21 @@ namespace AngelLoader
                     if (defaultPal.IsEmpty()) return false;
                 }
 
-                return File.Exists(Path.Combine(palDir, defaultPal + ".pcx"));
-            }
+                if (File.Exists(Path.Combine(palDir, defaultPal + ".pcx")))
+                {
+                    // @FM_CFG: Test line, remove after final accuracy testing done
+                    Trace.WriteLine("********* FM requires palette fix: " + GetFMId(fm));
 
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return;
-            if (MissionIsOldDark(fm) != FMDarkVersion.OldDark) return;
+                    return true;
+                }
 
-            try
-            {
-                if (!FMRequiresPaletteFix(fm)) return;
+                return false;
             }
             catch (Exception ex)
             {
                 LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix", ex: ex);
-                return;
+                return false;
             }
-
-            // @FM_CFG: Test line, remove after final accuracy testing done
-            Trace.WriteLine("********* FM requires palette fix: " + GetFMId(fm));
-
-            SetPerFMValues(fm, new FMKeyValue(key_legacy_32bit_txtpal, FMValueEnabled.Enabled));
         }
 
         internal enum FMValueEnabled
