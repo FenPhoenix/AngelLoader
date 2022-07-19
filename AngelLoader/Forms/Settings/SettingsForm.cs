@@ -489,6 +489,8 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                OtherPage.OldMantleForOldDarkFMsCheckBox.Checked = config.UseOldMantlingForOldDarkFMs;
+
                 #region Installing FMs
 
                 switch (config.ConfirmBeforeInstall)
@@ -794,9 +796,11 @@ namespace AngelLoader.Forms
 
                     OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
-                    OtherPage.FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
+                    OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
                     OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
                     OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
+
+                    OtherPage.OldMantleForOldDarkFMsCheckBox.Text = LText.SettingsWindow.Other_UseOldMantlingForOldDarkFMs;
 
                     OtherPage.InstallingFMsGroupBox.Text = LText.SettingsWindow.Other_InstallingFMs;
                     OtherPage.ConfirmBeforeInstallLabel.Text = LText.SettingsWindow.Other_ConfirmBeforeInstallingFM;
@@ -1143,6 +1147,8 @@ namespace AngelLoader.Forms
                 OutConfig.ConvertOGGsToWAVsOnInstall = OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
 
                 #endregion
+
+                OutConfig.UseOldMantlingForOldDarkFMs = OtherPage.OldMantleForOldDarkFMsCheckBox.Checked;
 
                 #region Installing FMs
 

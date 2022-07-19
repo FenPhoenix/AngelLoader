@@ -26,16 +26,17 @@
             this.BackupAlwaysAskCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.BackupAllChangedDataRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.BackupSavesAndScreensOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.FMFileConversionGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.FMSettingsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PagePanel.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
             this.UninstallingFMsGroupBox.SuspendLayout();
-            this.FMFileConversionGroupBox.SuspendLayout();
+            this.FMSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -45,10 +46,10 @@
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
             this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
-            this.PagePanel.Controls.Add(this.FMFileConversionGroupBox);
+            this.PagePanel.Controls.Add(this.FMSettingsGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 602);
+            this.PagePanel.Size = new System.Drawing.Size(440, 623);
             this.PagePanel.TabIndex = 0;
             // 
             // InstallingFMsGroupBox
@@ -59,7 +60,7 @@
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmMultipleOnlyRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmAlwaysRadioButton);
             this.InstallingFMsGroupBox.Controls.Add(this.ConfirmBeforeInstallLabel);
-            this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 104);
+            this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 140);
             this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 124);
             this.InstallingFMsGroupBox.TabIndex = 1;
@@ -99,7 +100,7 @@
             this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 520);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 556);
             this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
             this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -121,7 +122,7 @@
             this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
-            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 400);
+            this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 436);
             this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
             this.WebSearchGroupBox.TabIndex = 3;
@@ -168,7 +169,7 @@
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 240);
+            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 276);
             this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
             this.UninstallingFMsGroupBox.TabIndex = 2;
@@ -212,17 +213,18 @@
             this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 2;
             this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
             // 
-            // FMFileConversionGroupBox
+            // FMSettingsGroupBox
             // 
-            this.FMFileConversionGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FMSettingsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMFileConversionGroupBox.Controls.Add(this.ConvertOGGsToWAVsOnInstallCheckBox);
-            this.FMFileConversionGroupBox.Controls.Add(this.ConvertWAVsTo16BitOnInstallCheckBox);
-            this.FMFileConversionGroupBox.Location = new System.Drawing.Point(8, 8);
-            this.FMFileConversionGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.FMFileConversionGroupBox.Size = new System.Drawing.Size(424, 84);
-            this.FMFileConversionGroupBox.TabIndex = 0;
-            this.FMFileConversionGroupBox.TabStop = false;
+            this.FMSettingsGroupBox.Controls.Add(this.OldMantleForOldDarkFMsCheckBox);
+            this.FMSettingsGroupBox.Controls.Add(this.ConvertOGGsToWAVsOnInstallCheckBox);
+            this.FMSettingsGroupBox.Controls.Add(this.ConvertWAVsTo16BitOnInstallCheckBox);
+            this.FMSettingsGroupBox.Location = new System.Drawing.Point(8, 8);
+            this.FMSettingsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+            this.FMSettingsGroupBox.Size = new System.Drawing.Size(424, 120);
+            this.FMSettingsGroupBox.TabIndex = 0;
+            this.FMSettingsGroupBox.TabStop = false;
             // 
             // ConvertOGGsToWAVsOnInstallCheckBox
             // 
@@ -249,12 +251,21 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 12;
             // 
+            // OldMantleForOldDarkFMsCheckBox
+            // 
+            this.OldMantleForOldDarkFMsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 80);
+            this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
+            this.OldMantleForOldDarkFMsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 602);
+            this.Size = new System.Drawing.Size(440, 623);
             this.PagePanel.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
@@ -264,7 +275,7 @@
             this.WebSearchGroupBox.PerformLayout();
             this.UninstallingFMsGroupBox.ResumeLayout(false);
             this.UninstallingFMsGroupBox.PerformLayout();
-            this.FMFileConversionGroupBox.ResumeLayout(false);
+            this.FMSettingsGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
         }
     }

@@ -358,10 +358,12 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
-        #region Audio conversion
+        #region FM settings
 
         internal bool ConvertWAVsTo16BitOnInstall = true;
         internal bool ConvertOGGsToWAVsOnInstall;
+
+        internal bool UseOldMantlingForOldDarkFMs;
 
         #endregion
 

@@ -461,6 +461,8 @@ namespace AngelLoader
             Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
             Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
 
+            Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
+
             Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
 
             Config.ConfirmUninstall = outConfig.ConfirmUninstall;

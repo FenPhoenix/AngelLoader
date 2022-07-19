@@ -220,6 +220,11 @@ namespace AngelLoader
             config.ConvertOGGsToWAVsOnInstall = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_UseOldMantlingForOldDarkFMs_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.UseOldMantlingForOldDarkFMs = valTrimmed.EqualsTrue();
+        }
+
         private static void Config_HideUninstallButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.HideUninstallButton = valTrimmed.EqualsTrue();
@@ -769,6 +774,7 @@ namespace AngelLoader
             { "DaysRecent", new Config_DelegatePointerWrapper(&Config_DaysRecent_Set) },
             { "ConvertWAVsTo16BitOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertWAVsTo16BitOnInstall_Set) },
             { "ConvertOGGsToWAVsOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertOGGsToWAVsOnInstall_Set) },
+            { "UseOldMantlingForOldDarkFMs", new Config_DelegatePointerWrapper(&Config_UseOldMantlingForOldDarkFMs_Set) },
             { "HideUninstallButton", new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
             { "HideFMListZoomButtons", new Config_DelegatePointerWrapper(&Config_HideFMListZoomButtons_Set) },
             { "HideExitButton", new Config_DelegatePointerWrapper(&Config_HideExitButton_Set) },
@@ -1075,6 +1081,7 @@ namespace AngelLoader
 
             sb.Append("ConvertWAVsTo16BitOnInstall=").Append(config.ConvertWAVsTo16BitOnInstall).AppendLine();
             sb.Append("ConvertOGGsToWAVsOnInstall=").Append(config.ConvertOGGsToWAVsOnInstall).AppendLine();
+            sb.Append("UseOldMantlingForOldDarkFMs=").Append(config.UseOldMantlingForOldDarkFMs).AppendLine();
             sb.Append("HideUninstallButton=").Append(config.HideUninstallButton).AppendLine();
             sb.Append("HideFMListZoomButtons=").Append(config.HideFMListZoomButtons).AppendLine();
             sb.Append("HideExitButton=").Append(config.HideExitButton).AppendLine();

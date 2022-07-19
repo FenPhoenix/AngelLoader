@@ -699,9 +699,11 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_TabText = "Other";
             [FenGenBlankLine]
-            internal readonly string Other_FMFileConversion = "FM file conversion";
+            internal readonly string Other_FMSettings = "FM settings";
             internal readonly string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
             internal readonly string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
+            [FenGenBlankLine]
+            internal readonly string Other_UseOldMantlingForOldDarkFMs = "Use old mantling for OldDark FMs";
             [FenGenBlankLine]
             internal readonly string Other_InstallingFMs = "Installing FMs";
             internal readonly string Other_ConfirmBeforeInstallingFM = "Confirm before installing:";
