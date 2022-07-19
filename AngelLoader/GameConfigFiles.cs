@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -1083,6 +1082,15 @@ namespace AngelLoader
             return true;
         }
 
+        /*
+        @FM_CFG: SS2 OldDark detect not yet implemented (need for old/new mantle option!)
+        -Note! DARKMISS check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
+         SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
+        -We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
+         so I'm just going to assume it's not supported to do the palette thing for SS2.
+        -But we _can_ do the new_mantle thing with SS2, as it has mantling. Since we want to do that, we still
+         need to detect OldDark for SS2.
+        */
         internal static bool MissionIsOldDark(FanMission fm)
         {
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
@@ -1112,10 +1120,6 @@ namespace AngelLoader
             }
         }
 
-        /*
-        @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
-        It's important we don't have bugs here!
-        */
         internal static bool FMRequiresPaletteFix(FanMission fm, bool checkForOldDark = true)
         {
             #region Local functions
@@ -1167,143 +1171,12 @@ namespace AngelLoader
                     if (defaultPal.IsEmpty()) return false;
                 }
 
-                if (File.Exists(Path.Combine(palDir, defaultPal + ".pcx")))
-                {
-                    // @FM_CFG: Test line, remove after final accuracy testing done
-                    Trace.WriteLine("********* FM requires palette fix: " + GetFMId(fm));
-
-                    return true;
-                }
-
-                return false;
+                return File.Exists(Path.Combine(palDir, defaultPal + ".pcx"));
             }
             catch (Exception ex)
             {
                 LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix", ex: ex);
                 return false;
-            }
-        }
-
-        internal enum FMValueEnabled
-        {
-            Enabled,
-            Disabled,
-            Default
-        };
-
-        /*
-        @FM_CFG: We only need 2 values currently
-        ... and they're both on/off. So get rid of the generalization attempt and just do it simple until such
-        time as we need anything more complex.
-        @FM_CFG(Automatic value set) notes:
-        -We can detect if a mission is OldDark and have the option "disable new mantle on all OldDark missions"
-         (with manual override option per-FM)
-        -Normally we wouldn't do this during a scan because we would have to search the entire .mis file, but
-         here, we can just defer until the user goes to play an FM, and then:
-        -If FM has no value in the NewDark field (true, false, n/a (T3)) then do the .mis scan from installed
-         dir. Even for large .mis files, this won't take too much time to do once, and especially when playing
-         a game since that's a "slow" operation anyway. Then, we store the NewDark value in the FM so we don't
-         have to detect again.
-        -UPDATE 2022-07-16: If we just do the fast check for "DARKMISS" at byte 612, we'll be accurate all the
-         time and it's blazing fast so we don't need to store the value in the db.
-        -Note! DARKMISS check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
-         SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
-        -We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
-         so I'm just going to assume it's not supported to do the palette thing for SS2.
-        -But we _can_ do the new_mantle thing with SS2, as it has mantling. So if we wanted to do that, we would
-         still need to detect OldDark for SS2.
-        */
-        public sealed class FMKeyValue
-        {
-            public readonly string Key;
-            public readonly FMValueEnabled Value;
-
-            public FMKeyValue(string key, FMValueEnabled value)
-            {
-                Key = key;
-                Value = value;
-            }
-        }
-
-        /*
-        @FM_CFG: We have to only call this once with the whole list of values we want to set
-        Otherwise it will just overwrite the previous single value with the latest (it erases all every time)
-        */
-        internal static void SetPerFMValues(FanMission fm, params FMKeyValue[] keys)
-        {
-            if (!GameIsDark(fm.Game) || !FMIsReallyInstalled(fm)) return;
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-            string fmCfgFile = Path.Combine(
-                Config.GetFMInstallPath(gameIndex),
-                fm.InstalledDir,
-                Paths.FMCfg
-            );
-
-            List<string>? lines;
-
-            if (File.Exists(fmCfgFile))
-            {
-                File_UnSetReadOnly(fmCfgFile);
-
-                if (!TryReadAllLines(fmCfgFile, out lines))
-                {
-                    return;
-                }
-            }
-            else
-            {
-                lines = new List<string>();
-            }
-
-            const string alSectionHeader = ";[AngelLoader]";
-
-            /*
-            -We should also use this as an opportunity to implement a robust failsafe system for file writes.
-             Use a temp file and copy and check for fail and the whole deal.
-            */
-
-            int alSectionHeaderIndex = -1;
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lt = lines[i].Trim();
-                if (lt.Length > 0 && lt[0] == ';' && (";" + RemoveLeadingSemicolons(lt)) == alSectionHeader)
-                {
-                    alSectionHeaderIndex = i;
-                    break;
-                }
-            }
-
-            if (alSectionHeaderIndex > -1)
-            {
-                for (int i = alSectionHeaderIndex; i < lines.Count; i++)
-                {
-                    lines.RemoveAt(i);
-                    i--;
-                }
-            }
-
-            while (lines.Count > 0 && lines[lines.Count - 1].IsWhiteSpace())
-            {
-                lines.RemoveAt(lines.Count - 1);
-            }
-
-            if (lines.Count > 0) lines.Add("");
-            lines.Add(alSectionHeader);
-
-            foreach (var item in keys)
-            {
-                if (item.Value != FMValueEnabled.Default)
-                {
-                    lines.Add(item.Key + " " + (item.Value == FMValueEnabled.Enabled ? "1" : "0"));
-                }
-            }
-
-            if (!TryWriteAllLines(fmCfgFile, lines))
-            {
-                Core.Dialogs.ShowError("Unable to write to " + Paths.FMCfg + "; per-FM options/fixes may not have been applied.");
             }
         }
 

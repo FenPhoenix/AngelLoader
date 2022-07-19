@@ -228,8 +228,7 @@ namespace AngelLoader
                 args += " +legacy_32bit_txtpal";
             }
 
-            // @FM_CFG: Test this with an FM that has an easy-to-test new mantling spot (crouch-mantle-able window)
-            // @FM_CFG: Should we allow old mantling for original games too?
+            // @FM_CFG: We should allow old mantling for original games too.
             if (fm.NewMantle == true)
             {
                 args += " +new_mantle";
