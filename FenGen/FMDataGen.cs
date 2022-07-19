@@ -262,7 +262,7 @@ namespace FenGen
                     _ => ""
                 };
 
-                if (field.Type != "bool" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
+                if (field.Type != "bool" && field.Type != "bool?" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
                 {
                     w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
                 }
@@ -362,7 +362,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
-                    w.WL(objDotField + " = !string.IsNullOrEmpty(" + val + ") ? " + val + ".EqualsTrue() : (bool?)null;");
+                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(eqIndex + 1) ? true : " + val + ".EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
@@ -646,7 +646,7 @@ namespace FenGen
                 {
                     w.WL("if (" + objDotField + " != null)");
                     w.WL("{");
-                    swlSBAppend(fieldIniName, obj, toString);
+                    swlSBAppend(fieldIniName, objDotField, toString);
                     w.WL("}");
                 }
                 else if (_numericTypes.Contains(field.Type))

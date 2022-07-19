@@ -250,6 +250,17 @@ namespace AL_Common
                    (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
         }
 
+        public static bool EndEqualsFalse(this string value, int indexAfterEq)
+        {
+            int valueLen = value.Length;
+            return valueLen - indexAfterEq == 5 &&
+                   (value[valueLen - 5] == 'F' || value[valueLen - 5] == 'f') &&
+                   (value[valueLen - 4] == 'A' || value[valueLen - 4] == 'a') &&
+                   (value[valueLen - 3] == 'L' || value[valueLen - 3] == 'l') &&
+                   (value[valueLen - 2] == 'S' || value[valueLen - 2] == 's') &&
+                   (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
+        }
+
         #endregion
 
         #region Contains

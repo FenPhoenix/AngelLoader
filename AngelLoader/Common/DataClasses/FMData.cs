@@ -128,5 +128,7 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new();
         internal string TagsString = "";
+
+        internal bool? NewMantle;
     }
 }

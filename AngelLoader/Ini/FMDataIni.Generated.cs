@@ -241,6 +241,12 @@ namespace AngelLoader
             fm.TagsString = val;
         }
 
+        private static void FMData_NewMantle_Set(FanMission fm, string val, int eqIndex)
+        {
+            val = val.Trim();
+            fm.NewMantle = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
+        }
+
         #region Old resource format - backward compatibility, we still have to be able to read it
 
         private static void FMData_HasMap_Set(FanMission fm, string val, int eqIndex)
@@ -345,6 +351,7 @@ namespace AngelLoader
             { "Langs", new FMData_DelegatePointerWrapper(&FMData_Langs_Set) },
             { "SelectedLang", new FMData_DelegatePointerWrapper(&FMData_SelectedLang_Set) },
             { "TagsString", new FMData_DelegatePointerWrapper(&FMData_TagsString_Set) },
+            { "NewMantle", new FMData_DelegatePointerWrapper(&FMData_NewMantle_Set) },
 
             #region Old resource format - backward compatibility, we still have to be able to read it
 
@@ -570,6 +577,11 @@ namespace AngelLoader
                 {
                     sb.Append("TagsString=");
                     sb.AppendLine(fm.TagsString);
+                }
+                if (fm.NewMantle != null)
+                {
+                    sb.Append("NewMantle=");
+                    sb.AppendLine(fm.NewMantle.ToString());
                 }
             }
 
