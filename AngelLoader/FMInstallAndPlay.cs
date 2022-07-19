@@ -221,9 +221,26 @@ namespace AngelLoader
 
             // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
             // .mis file when detecting OldDark (if there is no missflag.str)!
-            if (GameConfigFiles.FMRequiresPaletteFix(fm))
+            bool fmIsOldDark = GameConfigFiles.MissionIsOldDark(fm);
+
+            if (fmIsOldDark && GameConfigFiles.FMRequiresPaletteFix(fm, checkForOldDark: false))
             {
                 args += " +legacy_32bit_txtpal";
+            }
+
+            // @FM_CFG: Test this with an FM that has an easy-to-test new mantling spot (crouch-mantle-able window)
+            // @FM_CFG: Should we allow old mantling for original games too?
+            if (fm.NewMantle == true)
+            {
+                args += " +new_mantle";
+            }
+            else if (fm.NewMantle == false)
+            {
+                args += " -new_mantle";
+            }
+            else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
+            {
+                args += " -new_mantle";
             }
 
             WriteStubCommFile(fm, gamePath);

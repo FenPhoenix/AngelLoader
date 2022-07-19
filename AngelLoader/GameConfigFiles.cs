@@ -1083,7 +1083,7 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool MissionIsOldDark(FanMission fm)
+        internal static bool MissionIsOldDark(FanMission fm)
         {
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
 
@@ -1116,7 +1116,7 @@ namespace AngelLoader
         @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
         It's important we don't have bugs here!
         */
-        internal static bool FMRequiresPaletteFix(FanMission fm)
+        internal static bool FMRequiresPaletteFix(FanMission fm, bool checkForOldDark = true)
         {
             #region Local functions
 
@@ -1141,7 +1141,7 @@ namespace AngelLoader
             #endregion
 
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
-            if (!MissionIsOldDark(fm)) return false;
+            if (checkForOldDark && !MissionIsOldDark(fm)) return false;
 
             try
             {
