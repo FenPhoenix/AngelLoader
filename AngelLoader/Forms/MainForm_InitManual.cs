@@ -1231,6 +1231,7 @@ namespace AngelLoader.Forms
             Patch_NewMantle_CheckBox.TabIndex = 1;
             Patch_NewMantle_CheckBox.ThreeState = true;
             Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
+            Patch_NewMantle_CheckBox.CheckStateChanged += Patch_NewMantle_CheckBox_CheckStateChanged;
             // 
             // PatchMainPanel
             // 

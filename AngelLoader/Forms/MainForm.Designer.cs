@@ -1557,6 +1557,7 @@
             this.Patch_NewMantle_CheckBox.Text = "New mantle";
             this.Patch_NewMantle_CheckBox.ThreeState = true;
             this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
+            this.Patch_NewMantle_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NewMantle_CheckBox_CheckStateChanged);
             // 
             // PatchMainPanel
             // 

@@ -3312,6 +3312,22 @@ namespace AngelLoader.Forms
 
         #region Patch tab
 
+        private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            FanMission fm = FMsDGV.GetMainSelectedFM();
+
+            fm.NewMantle = Patch_NewMantle_CheckBox.CheckState switch
+            {
+                CheckState.Checked => true,
+                CheckState.Unchecked => false,
+                _ => null
+            };
+
+            Ini.WriteFullFMDataIni();
+        }
+
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {
             if (PatchDMLsListBox.SelectedIndex == -1) return;
@@ -4892,9 +4908,14 @@ namespace AngelLoader.Forms
                             c.Enabled = true;
                         }
                     }
-                }
 
-                // @FM_CFG: Load values from fm.cfg (or blank if no values or fm.cfg not found) here
+                    Patch_NewMantle_CheckBox.CheckState = fm.NewMantle switch
+                    {
+                        true => CheckState.Checked,
+                        false => CheckState.Unchecked,
+                        _ => CheckState.Indeterminate
+                    };
+                }
 
                 PatchMainPanel.Enabled = true;
 
