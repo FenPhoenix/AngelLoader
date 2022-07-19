@@ -54,9 +54,6 @@ namespace AngelLoader
         // dark.cfg
         private const string key_default_game_palette = "default_game_palette";
 
-        // fm.cfg
-        private const string key_legacy_32bit_txtpal = "legacy_32bit_txtpal";
-
 #if !ReleaseBeta && !ReleasePublic
 
         // user.cfg
