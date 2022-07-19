@@ -247,9 +247,6 @@ namespace AngelLoader
 
             StartExe(gameExe, workingPath, args);
 
-            // Don't clear the temp folder here, because the stub program will need to read from it. It will
-            // delete the temp file itself after it's done with it.
-
             return true;
         }
 
