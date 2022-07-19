@@ -66,12 +66,4 @@ namespace AngelLoader.DataClasses
         Expert = 4,
         Extreme = 8
     }
-
-    public enum FMDarkVersion
-    {
-        NotDetected,
-        OldDark,
-        NewDark,
-        NotApplicable
-    }
 }

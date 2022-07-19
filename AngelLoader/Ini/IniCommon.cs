@@ -421,16 +421,6 @@ namespace AngelLoader
 
         #region FMData
 
-        // @FM_CFG: Lazy, automate this later
-        private static void SetDarkVersion(FanMission fm, string val)
-        {
-            fm.DarkVersion =
-                val.EqualsI("OldDark") ? FMDarkVersion.OldDark :
-                val.EqualsI("NewDark") ? FMDarkVersion.NewDark :
-                val.EqualsI("NotApplicable") ? FMDarkVersion.NotApplicable :
-                FMDarkVersion.NotDetected;
-        }
-
         private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
         {
             int lastIndexOfComma = line.LastIndexOf(',');

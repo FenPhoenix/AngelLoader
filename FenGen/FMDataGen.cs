@@ -455,11 +455,6 @@ namespace FenGen
                     w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
                     w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
                 }
-                // @FM_CFG: Lazy, automate this later
-                else if (field.Type == "FMDarkVersion")
-                {
-                    w.WL("SetDarkVersion(" + obj + ", " + val + ");");
-                }
 
                 w.WL("}"); // end of setter method
                 w.WL();
@@ -756,14 +751,6 @@ namespace FenGen
                     w.WL("sb.AppendLine(\"NotScanned\");");
                     w.WL("}");
                     w.WL("#endif");
-                }
-                // @FM_CFG: Lazy, automate this later
-                else if (field.Type == "FMDarkVersion")
-                {
-                    w.WL("if (" + objDotField + " != " + field.Type + ".NotDetected)");
-                    w.WL("{");
-                    swlSBAppend(fieldIniName, objDotField, "ToString()");
-                    w.WL("}");
                 }
             }
 

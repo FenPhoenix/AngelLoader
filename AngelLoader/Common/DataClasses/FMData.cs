@@ -128,7 +128,5 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal readonly FMCategoriesCollection Tags = new();
         internal string TagsString = "";
-
-        internal FMDarkVersion DarkVersion = FMDarkVersion.NotDetected;
     }
 }

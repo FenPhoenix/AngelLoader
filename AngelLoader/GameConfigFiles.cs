@@ -67,6 +67,18 @@ namespace AngelLoader
 
         #endregion
 
+        private static readonly byte[] _DARKMISS_Bytes =
+        {
+            (byte)'D',
+            (byte)'A',
+            (byte)'R',
+            (byte)'K',
+            (byte)'M',
+            (byte)'I',
+            (byte)'S',
+            (byte)'S',
+        };
+
         #region Read
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -1074,94 +1086,38 @@ namespace AngelLoader
             return true;
         }
 
-        /*
-        @FM_CFG: I _think_ we can just do the DARKMISS-at-byte-612 check and not lose accuracy
-        Because if its location changes, we're going to misdetect the mission as OldDark anyway, as that's our
-        only check for NewDark.
-        @FM_CFG (2022-07-17):
-        The following is USUALLY true:
-        -OldDark T1 missions have DARKMISS at byte 744
-        -OldDark T2 missions have DARKMISS at byte 3220
-        But much like SKYOBJVAR, there's a handful of missions that have it at some stupid random place way far
-        in. So we can't detect reliably like this.
-        */
-        private static FMDarkVersion MissionIsOldDark(FanMission fm)
+        private static bool MissionIsOldDark(FanMission fm)
         {
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return FMDarkVersion.NotApplicable;
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
 
-            // Return "not detected" because if we're T1/T2 we're always supposed to succeed in finding at least
-            // one .mis file, so we don't want to set it to "don't try again"
-            if (!TryGetSmallestUsedMisFile(fm, out string misFile)) return FMDarkVersion.NotDetected;
+            if (!TryGetSmallestUsedMisFile(fm, out string misFile)) return false;
 
             try
             {
-                const int bufferSize = 81_920;
-
-                byte[] SKYOBJVAR = Encoding.ASCII.GetBytes("SKYOBJVAR");
-
                 using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
 
-                static bool TryReadFromLocation(BinaryReader br, int location, int count, out byte[] result)
+                const int darkMissNewDarkLocation = 612;
+
+                if (darkMissNewDarkLocation + _DARKMISS_Bytes.Length > br.BaseStream.Length)
                 {
-                    if (location + count > br.BaseStream.Length)
-                    {
-                        result = Array.Empty<byte>();
-                        return false;
-                    }
-
-                    br.BaseStream.Position = location;
-                    result = br.ReadBytes(count);
-
-                    return true;
+                    return false;
                 }
 
-                if (TryReadFromLocation(br, 772, 9, out byte[] buffer) &&
-                    buffer.SequenceEqual(SKYOBJVAR))
-                {
-                    // SKYOBJVAR at byte 772: OldDark Thief 2
-                    return FMDarkVersion.OldDark;
-                }
+                br.BaseStream.Position = darkMissNewDarkLocation;
+                byte[] buffer = br.ReadBytes(_DARKMISS_Bytes.Length);
 
-                /*
-                Full-file SKYOBJVAR search perf:
-                Test FM: Death's Turbid Veil; .mis file ~150MB; modified to not have SKYOBJVAR (so full file search)
-                ~1560ms on 5400RPM HDD (cache cold)
-                ~500ms on towards-the-faster-end SATA SSD (cache cold)
-                ~50ms cache warm
-
-                So about 1.5 seconds worst case. That's fine for a once-only thing, and the average case will be
-                way, way faster (not least because extremely large OldDark Thief 1 .mis files are probably near
-                to - if not actually - nonexistent).
-                */
-                br.BaseStream.Position = 0;
-                byte[] chunk = new byte[bufferSize + SKYOBJVAR.Length];
-                if (!StreamContainsIdentString(br.BaseStream, SKYOBJVAR, chunk, bufferSize))
-                {
-                    // No SKYOBJVAR at all: OldDark Thief 1/Gold
-                    return FMDarkVersion.OldDark;
-                }
-
-                // A very small number of T2 missions have SKYOBJVAR in a weird place, so we can't just say that
-                // if we DID find that phrase that we're definitely NewDark. So check another byte location for
-                // another string for robustness.
-                return TryReadFromLocation(br, 612, 8, out buffer) &&
-                       buffer.SequenceEqual(Encoding.ASCII.GetBytes("DARKMISS"))
-                    ? FMDarkVersion.NewDark
-                    : FMDarkVersion.OldDark;
+                return !buffer.SequenceEqual(_DARKMISS_Bytes);
             }
             catch (Exception ex)
             {
                 Log(ex: ex);
-                return FMDarkVersion.NotDetected;
+                return false;
             }
         }
 
         /*
         @FM_CFG: Do some kind of auto-install, test accuracy, then uninstall for all not-already-installed FMs in the list
         It's important we don't have bugs here!
-        @FM_CFG: Great news: we can pass +[any config var] on the command line and it works!
-        @FM_CFG: Greater news: we _can_ pass args after -applaunch on the Steam command line.
-        Don't know why it didn't work before when I added Steam support, but oh well...
         */
         internal static bool FMRequiresPaletteFix(FanMission fm)
         {
@@ -1188,7 +1144,7 @@ namespace AngelLoader
             #endregion
 
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
-            if (MissionIsOldDark(fm) != FMDarkVersion.OldDark) return false;
+            if (!MissionIsOldDark(fm)) return false;
 
             try
             {
