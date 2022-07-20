@@ -3304,12 +3304,7 @@ namespace AngelLoader.Forms
 
             FanMission fm = FMsDGV.GetMainSelectedFM();
 
-            fm.NewMantle = Patch_NewMantle_CheckBox.CheckState switch
-            {
-                CheckState.Checked => true,
-                CheckState.Unchecked => false,
-                _ => null
-            };
+            fm.NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
 
             Ini.WriteFullFMDataIni();
         }
@@ -4393,8 +4388,9 @@ namespace AngelLoader.Forms
         {
             if (GameSupportsMods(gameIndex))
             {
-                using var f = new OriginalGameModsForm(gameIndex, Config.GetDisabledMods(gameIndex));
+                using var f = new OriginalGameModsForm(gameIndex);
                 if (f.ShowDialogDark() != DialogResult.OK) return;
+                Config.SetNewMantling(gameIndex, f.NewMantling);
                 Config.SetDisabledMods(gameIndex, f.DisabledMods);
             }
             else
@@ -4895,12 +4891,7 @@ namespace AngelLoader.Forms
                         }
                     }
 
-                    Patch_NewMantle_CheckBox.CheckState = fm.NewMantle switch
-                    {
-                        true => CheckState.Checked,
-                        false => CheckState.Unchecked,
-                        _ => CheckState.Indeterminate
-                    };
+                    Patch_NewMantle_CheckBox.SetFromNullableBool(fm.NewMantle);
                 }
 
                 PatchMainPanel.Enabled = true;

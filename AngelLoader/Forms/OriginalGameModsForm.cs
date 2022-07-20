@@ -7,8 +7,9 @@ namespace AngelLoader.Forms
     public sealed partial class OriginalGameModsForm : DarkFormBase
     {
         public string DisabledMods;
+        public bool? NewMantling;
 
-        public OriginalGameModsForm(GameIndex gameIndex, string inDisabledMods)
+        public OriginalGameModsForm(GameIndex gameIndex)
         {
 #if DEBUG
             InitializeComponent();
@@ -16,8 +17,10 @@ namespace AngelLoader.Forms
             InitSlim();
 #endif
 
-            DisabledMods = inDisabledMods;
+            NewMantling = Config.GetNewMantling(gameIndex);
+            DisabledMods = Config.GetDisabledMods(gameIndex);
 
+            NewMantleCheckBox.SetFromNullableBool(NewMantling);
             OrigGameModsControl.ModsDisabledModsTextBox.Text = DisabledMods;
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
@@ -30,6 +33,7 @@ namespace AngelLoader.Forms
         private void Localize(GameIndex gameIndex)
         {
             Text = GetLocalizedGameName(gameIndex);
+            NewMantleCheckBox.Text = LText.PatchTab.NewMantle;
             OrigGameModsControl.Localize(GetLocalizedOriginalModHeaderText(gameIndex));
             OKButton.Text = LText.Global.OK;
             Cancel_Button.Text = LText.Global.Cancel;
@@ -40,6 +44,7 @@ namespace AngelLoader.Forms
             if (DialogResult == DialogResult.OK)
             {
                 DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
+                NewMantling = NewMantleCheckBox.ToNullableBool();
             }
             base.OnFormClosing(e);
         }
