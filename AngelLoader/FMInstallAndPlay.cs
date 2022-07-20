@@ -228,18 +228,21 @@ namespace AngelLoader
                 args += " +legacy_32bit_txtpal";
             }
 
-            // @FM_CFG: We should allow old mantling for original games too.
-            if (fm.NewMantle == true)
+            if (GameIsDark(fm.Game))
             {
-                args += " +new_mantle";
-            }
-            else if (fm.NewMantle == false)
-            {
-                args += " -new_mantle";
-            }
-            else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
-            {
-                args += " -new_mantle";
+                // @FM_CFG: We should allow old mantling for original games too.
+                if (fm.NewMantle == true)
+                {
+                    args += " +new_mantle";
+                }
+                else if (fm.NewMantle == false)
+                {
+                    args += " -new_mantle";
+                }
+                else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
+                {
+                    args += " -new_mantle";
+                }
             }
 
             WriteStubCommFile(fm, gamePath);

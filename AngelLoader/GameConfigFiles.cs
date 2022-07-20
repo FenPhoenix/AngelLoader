@@ -989,7 +989,7 @@ namespace AngelLoader
 
 #endif
 
-        #region Set per-FM values
+        #region Per-FM settings
 
         private static bool TryGetSmallestUsedMisFile(FanMission fm, out string smallestUsedMisFile, out List<string> usedMisFiles)
         {
