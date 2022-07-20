@@ -24,7 +24,11 @@ AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, an
 - Disable visual or other mods on a per-FM basis with a simple visual list (no more typing an arcane string into a textbox!)
 - Choose which language to play with on a per-FM basis
 - Import your FM information from DarkLoader, NewDarkLoader, or FMSel
-- Automatically fixes common problems, such as non-16-bit audio causing static, or bad values left in config files by NewDark
+- Automatically fixes common problems, such as:
+  - Non-16-bit audio causing static
+  - Custom palettes not being applied properly to FMs (Ranstall Keep etc.)
+  - Local values left in global config files by NewDark (character_detail)
+- Option to automatically use old mantling for OldDark missions
 - Supports light and dark themes
 - Plays nice with other loaders: AngelLoader doesn't store any .dlls or data files in your game folders, making it truly portable and non-intrusive
 
