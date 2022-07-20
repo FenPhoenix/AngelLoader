@@ -967,13 +967,6 @@ namespace AngelLoader
             SetResolution(gameIndex);
         }
 
-        internal static void SetPerFMDarkGameValues(FanMission fm, GameIndex gameIndex)
-        {
-            if (!GameIsDark(gameIndex)) return;
-            SetResolution(gameIndex);
-            // @FM_CFG: Call final SetPerFMValues() here
-        }
-
         private static void SetResolution(GameIndex gameIndex)
         {
             if (!Config.ForceGameResToMainMonitorRes) return;

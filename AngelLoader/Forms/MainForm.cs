@@ -4630,7 +4630,7 @@ namespace AngelLoader.Forms
         // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
         // for preventing "multi-select starts from top row even though our selection is not actually at the top
         // row"
-        // @FM_CFG: Make Even the option overrides hidden for Thief 3, as we really don't support anything for that
+        // @FM_CFG: Make even the option overrides hidden for Thief 3, as we really don't support anything for that
         // Put a label saying we don't support patch/customize stuff for Thief 3
         // @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
         // (blink tab somehow to let the user know if the tab is already shown)

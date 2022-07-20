@@ -527,8 +527,8 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string TabText = "Patch & Customize";
             [FenGenBlankLine]
-            // @FM_CFG: Finalize these and add explanatory tooltips, and ini comment explanation if needed
             internal readonly string OptionOverrides = "Option overrides:";
+            // @FM_CFG: Maybe have a tooltip here, like "Checked - force new mantle; unchecked - force old mantle; indeterminate - use default"
             internal readonly string NewMantle = "New mantle";
             internal readonly string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
