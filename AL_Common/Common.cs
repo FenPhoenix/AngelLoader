@@ -240,6 +240,8 @@ namespace AL_Common
 
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
+        public static bool EqualsFalse(this string value) => string.Equals(value, bool.FalseString, OrdinalIgnoreCase);
+
         public static bool EndEqualsTrue(this string value, int indexAfterEq)
         {
             int valueLen = value.Length;

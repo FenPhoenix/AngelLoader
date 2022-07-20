@@ -423,6 +423,11 @@ namespace AngelLoader
 
         #region Per-game fields
 
+        private static void Config_NewMantling_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.SetNewMantling(inGameIndex, valTrimmed.EqualsTrue() ? true : valTrimmed.EqualsFalse() ? false : null);
+        }
+
         private static void Config_DisabledMods_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             config.SetDisabledMods(inGameIndex, valTrimmed);
@@ -822,6 +827,8 @@ namespace AngelLoader
 
             #region Per-game fields
 
+            { "NewMantling", new Config_DelegatePointerWrapper(&Config_NewMantling_Set) },
+
             { "DisabledMods", new Config_DelegatePointerWrapper(&Config_DisabledMods_Set) },
 
             { "Exe", new Config_DelegatePointerWrapper(&Config_Exe_Set) },
@@ -1015,9 +1022,20 @@ namespace AngelLoader
 
             #endregion
 
-            #region Paths
-
-            #region Game exes
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                if (GameIsDark(gameIndex))
+                {
+                    string val = config.GetNewMantling(gameIndex) switch
+                    {
+                        true => bool.TrueString,
+                        false => bool.FalseString,
+                        _ => ""
+                    };
+                    sb.Append(GetGamePrefix(gameIndex)).Append("NewMantling=").AppendLine(val);
+                }
+            }
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
@@ -1027,6 +1045,10 @@ namespace AngelLoader
                     sb.Append(GetGamePrefix(gameIndex)).Append("DisabledMods=").AppendLine(config.GetDisabledMods(gameIndex).Trim());
                 }
             }
+
+            #region Paths
+
+            #region Game exes
 
             for (int i = 0; i < SupportedGameCount; i++)
             {

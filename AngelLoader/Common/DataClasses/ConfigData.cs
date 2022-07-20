@@ -14,6 +14,7 @@ namespace AngelLoader.DataClasses
     {
         internal ConfigData()
         {
+            _newMantling = new bool?[SupportedGameCount];
             _disabledMods = new string[SupportedGameCount];
 
             GameExes = new string[SupportedGameCount];
@@ -80,6 +81,16 @@ namespace AngelLoader.DataClasses
         internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => StartupAlwaysStartSelector[(uint)index] = value;
 
         #endregion
+
+        #endregion
+
+        #region New mantling
+
+        private readonly bool?[] _newMantling;
+
+        internal bool? GetNewMantling(GameIndex index) => GameIsDark(index) ? _newMantling[(int)index] : null;
+
+        internal void SetNewMantling(GameIndex index, bool? value) => _newMantling[(int)index] = GameIsDark(index) ? value : null;
 
         #endregion
 
