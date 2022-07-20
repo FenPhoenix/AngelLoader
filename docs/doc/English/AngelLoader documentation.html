@@ -244,8 +244,10 @@ If you have NewDark 1.27 or later and have installed the multiplayer option (mea
 <p/>
 If you've chosen to display this as multiple buttons instead, then only the buttons for games that you've provided a path to will be displayed. Otherwise it works similarly.
 
-<h4>Enabling and disabling mods when playing without an FM</h4>
-For the single-button style, you can manage mods through the Mods submenu upon clicking the button. For the multi-button style, you can manage mods by right-clicking the appropriate game button.
+<h4>Managing game settings when playing without an FM</h4>
+For the single-button style, you can manage settings through the Settings submenu upon clicking the button. For the multi-button style, you can manage settings by right-clicking the appropriate game button.
+<p/>
+Settings include disabled mods and mantling mode. These settings only apply when playing without an FM, and will not have any effect when playing FMs.
 
 <h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM(s)</h4>
 If the currently selected FM(s) are not installed, this button will install them; otherwise, it will uninstall them.
@@ -433,6 +435,13 @@ Here you can manage the FM's tags. You can click the <b>Add from list...</b> but
 
 Here you can apply patches and customizations to an FM.
 
+<h4><a name="new_mantle" />New mantle</h4>
+You can force new mantling on or off per-FM here, or set it back to "unset".
+<p/>
+If set, it will override the "<a href="#use_old_mantle_for_olddark_fms">Use old mantling for OldDark FMs</a>" option for this FM only.
+<p/>
+If unset, the mantling mode will be left alone and the game will use whatever mode is set in this FM's fm.cfg or in the global cam_ext.cfg (in other words, the default behavior).
+
 <h4><a name="dml_patches" />.dml Patches</h4>
 Some older fan missions don't quite work as they should when played with NewDark. In many cases, patches are available to fix them. If you have any .dml patch files, you can add or remove them from the FM's installed folder here. If you've enabled the <a href="#settings_backup">"All changed files" backup setting</a>, then these fixes will be backed up and restored the next time you install the FM.
 <br><b>.dml patching is not supported for Thief: Deadly Shadows.</b>
@@ -551,6 +560,9 @@ Choose what style to display the "Play without FM" controls in.
 <h3><a name="settings_other_section" />Other section</h3>
 
 <p><img src="images/setup_other_tab.png" /></p>
+
+<h4><a name="use_old_mantle_for_olddark_fms" />Use old mantling for OldDark FMs</h4>
+NewDark introduced an improved mantling (ledge climbing) system that greatly increases reliability, but also allows mantling in many places that were not originally possible or intended in OldDark. Enabling this option will allow you to play OldDark missions "as intended" with regards to mantling. You can override this option per-FM in the <a href="#patch_tab">Patch & Customize tab</a>.
 
 <h4><a name="settings_audio_conversion" />Convert .wavs to 16 bit on install</h4>
 Depending on your setup, .wav files that are higher than 16 bit may cause audio problems when played by Dark Engine games, such as intermittent or constant static noise. Converting all .wav files to 16 bit will solve this issue, and does not result in a perceptible loss of fidelity. Therefore, this option is turned on by default.<br>
