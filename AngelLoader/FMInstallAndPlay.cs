@@ -157,6 +157,20 @@ namespace AngelLoader
                 var sv = GetSteamValues(gameIndex, playMP);
                 if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
+                // @FM_CFG: Test this (Mages earth tower window)
+                if (GameIsDark(gameIndex))
+                {
+                    switch (Config.GetNewMantling(gameIndex))
+                    {
+                        case true:
+                            args += " +new_mantle";
+                            break;
+                        case false:
+                            args += " -new_mantle";
+                            break;
+                    }
+                }
+
                 WriteStubCommFile(
                     fm: null,
                     gamePath: gamePath,
@@ -230,7 +244,6 @@ namespace AngelLoader
 
             if (GameIsDark(fm.Game))
             {
-                // @FM_CFG: We should allow old mantling for original games too.
                 if (fm.NewMantle == true)
                 {
                     args += " +new_mantle";
