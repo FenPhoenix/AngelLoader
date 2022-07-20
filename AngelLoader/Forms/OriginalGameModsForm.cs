@@ -33,7 +33,15 @@ namespace AngelLoader.Forms
         private void Localize(GameIndex gameIndex)
         {
             Text = GetLocalizedGameName(gameIndex);
+
             NewMantleCheckBox.Text = LText.PatchTab.NewMantle;
+            MainToolTip.SetToolTip(
+                NewMantleCheckBox,
+                LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
+                LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
+                LText.PatchTab.NewMantle_ToolTip_NotSet
+            );
+
             OrigGameModsControl.Localize(GetLocalizedOriginalModHeaderText(gameIndex));
             OKButton.Text = LText.Global.OK;
             Cancel_Button.Text = LText.Global.Cancel;

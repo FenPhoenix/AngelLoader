@@ -528,8 +528,10 @@ namespace AngelLoader.DataClasses
             internal readonly string TabText = "Patch & Customize";
             [FenGenBlankLine]
             internal readonly string OptionOverrides = "Option overrides:";
-            // @FM_CFG: Maybe have a tooltip here, like "Checked - force new mantle; unchecked - force old mantle; indeterminate - use default"
             internal readonly string NewMantle = "New mantle";
+            internal readonly string NewMantle_ToolTip_Checked = "Checked: Force new mantle";
+            internal readonly string NewMantle_ToolTip_Unchecked = "Unchecked: Force old mantle";
+            internal readonly string NewMantle_ToolTip_NotSet = "Not set: Let the game decide based on config file(s) (default behavior)";
             internal readonly string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal readonly string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";

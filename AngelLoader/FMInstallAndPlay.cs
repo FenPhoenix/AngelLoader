@@ -157,7 +157,6 @@ namespace AngelLoader
                 var sv = GetSteamValues(gameIndex, playMP);
                 if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-                // @FM_CFG: Test this (Mages earth tower window)
                 if (GameIsDark(gameIndex))
                 {
                     switch (Config.GetNewMantling(gameIndex))

@@ -1708,6 +1708,12 @@ namespace AngelLoader.Forms
 
                 Patch_PerFMValues_Label.Text = LText.PatchTab.OptionOverrides;
                 Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
+                MainToolTip.SetToolTip(
+                    Patch_NewMantle_CheckBox,
+                    LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
+                    LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
+                    LText.PatchTab.NewMantle_ToolTip_NotSet
+                );
 
                 PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
                 MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);

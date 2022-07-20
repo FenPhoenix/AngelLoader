@@ -31,12 +31,14 @@ namespace AngelLoader.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.OrigGameModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
             this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HorizontalDivider1 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.BottomFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -139,5 +141,6 @@ namespace AngelLoader.Forms
         private CustomControls.DarkButton Cancel_Button;
         private CustomControls.DarkCheckBox NewMantleCheckBox;
         private CustomControls.DarkHorizontalDivider HorizontalDivider1;
+        private System.Windows.Forms.ToolTip MainToolTip;
     }
 }
