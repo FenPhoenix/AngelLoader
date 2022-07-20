@@ -75,6 +75,18 @@ namespace AngelLoader
             (byte)'S',
         };
 
+        private static readonly byte[] _MAPPARAM_Bytes =
+        {
+            (byte)'M',
+            (byte)'A',
+            (byte)'P',
+            (byte)'P',
+            (byte)'A',
+            (byte)'R',
+            (byte)'A',
+            (byte)'M',
+        };
+
         #region Read
 
         // @CAN_RUN_BEFORE_VIEW_INIT
@@ -986,11 +998,12 @@ namespace AngelLoader
 
         #region Set per-FM values
 
-        private static bool TryGetSmallestUsedMisFile(FanMission fm, out string misFile)
+        private static bool TryGetSmallestUsedMisFile(FanMission fm, out string smallestUsedMisFile, out List<string> usedMisFiles)
         {
-            misFile = "";
+            smallestUsedMisFile = "";
+            usedMisFiles = new List<string>();
 
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
+            if (!GameIsDark(fm.Game)) return false;
 
             if (!FMIsReallyInstalled(fm)) return false;
 
@@ -1002,70 +1015,73 @@ namespace AngelLoader
 
             if (misFiles.Length == 0) return false;
 
-            var usedMisFiles = new List<FileInfo>(misFiles.Length);
+            var usedMisFileInfos = new List<FileInfo>(misFiles.Length);
 
-            string? missFlag = null;
-
-            string loc1 = Path.Combine(fmDir, "strings", "missflag.str");
-            string loc2 = Path.Combine(fmDir, "strings", "english", "missflag.str");
-
-            if (File.Exists(loc1))
+            if (fm.Game != Game.SS2)
             {
-                missFlag = loc1;
-            }
-            else if (File.Exists(loc2))
-            {
-                missFlag = loc2;
-            }
-            else
-            {
-                string[] files = Directory.GetFiles(Path.Combine(fmDir, "strings"), "missflag.str", SearchOption.AllDirectories);
-                if (files.Length > 0) missFlag = files[0];
-            }
+                string? missFlag = null;
 
-            if (missFlag == null) return false;
+                string loc1 = Path.Combine(fmDir, "strings", "missflag.str");
+                string loc2 = Path.Combine(fmDir, "strings", "english", "missflag.str");
 
-            if (!TryReadAllLines(missFlag, out var mfLines)) return false;
-
-            for (int mfI = 0; mfI < misFiles.Length; mfI++)
-            {
-                FileInfo mf = misFiles[mfI];
-
-                // @FM_CFG: This is copied from the scanner where perf matters, but we should rewrite this to be clearer and simpler
-                // Obtuse nonsense to avoid string allocations (perf)
-                if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
+                if (File.Exists(loc1))
                 {
-                    // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
-                    // character and not get a -1 index. And since we know our file starts with "miss", the
-                    // -4 is guaranteed not to take us negative either.
-                    int count = mf.Name.IndexOf('.') - 4;
-                    for (int mflI = 0; mflI < mfLines.Count; mflI++)
+                    missFlag = loc1;
+                }
+                else if (File.Exists(loc2))
+                {
+                    missFlag = loc2;
+                }
+                else
+                {
+                    string[] files = Directory.GetFiles(Path.Combine(fmDir, "strings"), "missflag.str", SearchOption.AllDirectories);
+                    if (files.Length > 0) missFlag = files[0];
+                }
+
+                if (missFlag == null) return false;
+
+                if (!TryReadAllLines(missFlag, out var mfLines)) return false;
+
+                for (int mfI = 0; mfI < misFiles.Length; mfI++)
+                {
+                    FileInfo mf = misFiles[mfI];
+
+                    // @FM_CFG: This is copied from the scanner where perf matters, but we should rewrite this to be clearer and simpler
+                    // Obtuse nonsense to avoid string allocations (perf)
+                    if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                     {
-                        string line = mfLines[mflI];
-                        if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
+                        // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
+                        // character and not get a -1 index. And since we know our file starts with "miss", the
+                        // -4 is guaranteed not to take us negative either.
+                        int count = mf.Name.IndexOf('.') - 4;
+                        for (int mflI = 0; mflI < mfLines.Count; mflI++)
                         {
-                            bool numsMatch = true;
-                            for (int li = 4; li < 4 + count; li++)
+                            string line = mfLines[mflI];
+                            if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                             {
-                                if (line[li + 1] != mf.Name[li])
+                                bool numsMatch = true;
+                                for (int li = 4; li < 4 + count; li++)
                                 {
-                                    numsMatch = false;
-                                    break;
+                                    if (line[li + 1] != mf.Name[li])
+                                    {
+                                        numsMatch = false;
+                                        break;
+                                    }
                                 }
-                            }
-                            int qIndex;
-                            if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
-                            {
-                                if (!(line.Length > qIndex + 5 &&
-                                      // I don't think any files actually have "skip" in anything other than
-                                      // lowercase, but I'm supporting any case anyway. You never know.
-                                      (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
-                                      (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
-                                      (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
-                                      (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
-                                      line[qIndex + 5] == '\"'))
+                                int qIndex;
+                                if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
                                 {
-                                    usedMisFiles.Add(mf);
+                                    if (!(line.Length > qIndex + 5 &&
+                                          // I don't think any files actually have "skip" in anything other than
+                                          // lowercase, but I'm supporting any case anyway. You never know.
+                                          (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
+                                          (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
+                                          (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
+                                          (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
+                                          line[qIndex + 5] == '\"'))
+                                    {
+                                        usedMisFileInfos.Add(mf);
+                                    }
                                 }
                             }
                         }
@@ -1073,45 +1089,96 @@ namespace AngelLoader
                 }
             }
 
-            if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles);
+            if (usedMisFileInfos.Count == 0) usedMisFileInfos.AddRange(misFiles);
 
-            usedMisFiles = usedMisFiles.OrderBy(x => x.Length).ToList();
+            usedMisFileInfos = usedMisFileInfos.OrderBy(x => x.Length).ToList();
 
-            misFile = usedMisFiles[0].FullName;
+            smallestUsedMisFile = usedMisFileInfos[0].FullName;
+
+            foreach (FileInfo fi in usedMisFileInfos)
+            {
+                usedMisFiles.Add(fi.FullName);
+            }
 
             return true;
         }
 
         /*
-        @FM_CFG: SS2 OldDark detect not yet implemented (need for old/new mantle option!)
-        -Note! DARKMISS check only works for T1/T2. SS2 doesn't have it at all. We could try to use MAPPARAM or
-         SKYOBJVAR position for SS2 FMs, or we could just not support this feature for them for now.
         -We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
          so I'm just going to assume it's not supported to do the palette thing for SS2.
-        -But we _can_ do the new_mantle thing with SS2, as it has mantling. Since we want to do that, we still
-         need to detect OldDark for SS2.
+
+        SS2 OldDark detect notes:
+        -SS2_Zygo_Arena_ND
+         This one has earth.mis and Arena.mis, with earth.mis being OldDark and Arena.mis being NewDark.
+        -UNN Sayarath
+         Same thing as above, this one has cloaking_turret.mis (OldDark) and sayarath.mis (NewDark).
         */
         internal static bool MissionIsOldDark(FanMission fm)
         {
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
+            if (!GameIsDark(fm.Game)) return false;
 
-            if (!TryGetSmallestUsedMisFile(fm, out string misFile)) return false;
+            if (!TryGetSmallestUsedMisFile(fm, out string smallestUsedMisFile, out List<string> usedMisFiles))
+            {
+                return false;
+            }
 
             try
             {
-                using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
+                const int MAPPARAM_OldDarkLocation = 916;
+                const int MAPPARAM_NewDarkLocation = 696;
 
-                const int darkMissNewDarkLocation = 612;
+                const int DARKMISS_NewDarkLocation = 612;
 
-                if (darkMissNewDarkLocation + _DARKMISS_Bytes.Length > br.BaseStream.Length)
+                if (fm.Game == Game.SS2)
                 {
-                    return false;
+                    bool atLeastOneOldDarkMissionFound = false;
+
+                    // A couple of SS2 FMs have a mixture of OldDark and NewDark .mis files, so just return the
+                    // highest dark version found in the mission set.
+                    foreach (string misFile in usedMisFiles)
+                    {
+                        using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
+
+                        if (br.BaseStream.Length > MAPPARAM_NewDarkLocation + _MAPPARAM_Bytes.Length)
+                        {
+                            br.BaseStream.Position = MAPPARAM_NewDarkLocation;
+                            byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
+                            if (buffer.SequenceEqual(_MAPPARAM_Bytes))
+                            {
+                                return false;
+                            }
+                        }
+
+                        // Robustness - don't assume there's a MAPPARAM at the OldDark location just because
+                        // there wasn't one at the NewDark location.
+                        if (!atLeastOneOldDarkMissionFound &&
+                            br.BaseStream.Length > MAPPARAM_OldDarkLocation + _MAPPARAM_Bytes.Length)
+                        {
+                            br.BaseStream.Position = MAPPARAM_OldDarkLocation;
+                            byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
+                            if (buffer.SequenceEqual(_MAPPARAM_Bytes))
+                            {
+                                atLeastOneOldDarkMissionFound = true;
+                            }
+                        }
+                    }
+
+                    return atLeastOneOldDarkMissionFound;
                 }
+                else
+                {
+                    using var br = new BinaryReader(File.OpenRead(smallestUsedMisFile), Encoding.ASCII, leaveOpen: false);
 
-                br.BaseStream.Position = darkMissNewDarkLocation;
-                byte[] buffer = br.ReadBytes(_DARKMISS_Bytes.Length);
+                    if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > br.BaseStream.Length)
+                    {
+                        return false;
+                    }
 
-                return !buffer.SequenceEqual(_DARKMISS_Bytes);
+                    br.BaseStream.Position = DARKMISS_NewDarkLocation;
+                    byte[] buffer = br.ReadBytes(_DARKMISS_Bytes.Length);
+
+                    return !buffer.SequenceEqual(_DARKMISS_Bytes);
+                }
             }
             catch (Exception ex)
             {
