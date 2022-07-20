@@ -149,7 +149,7 @@ namespace AngelLoader
                 SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
 
 #if !ReleaseBeta && !ReleasePublic
-                string args = Config.ForceWindowed ? "+force_windowed" : "";
+                string args = Config.ForceWindowed ? "force_windowed=1" : "";
 #else
                 string args = "";
 #endif
@@ -159,13 +159,14 @@ namespace AngelLoader
 
                 if (GameIsDark(gameIndex))
                 {
+                    // @FM_CFG: Re-test this (original game)
                     switch (Config.GetNewMantling(gameIndex))
                     {
                         case true:
-                            args += " +new_mantle";
+                            args += " new_mantle=1";
                             break;
                         case false:
-                            args += " -new_mantle";
+                            args += " new_mantle=0";
                             break;
                     }
                 }
@@ -225,7 +226,7 @@ namespace AngelLoader
             // works and one that doesn't, so I can test both paths.
 
 #if !ReleaseBeta && !ReleasePublic
-            string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "+force_windowed -fm" : "-fm";
+            string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "force_windowed=1 -fm" : "-fm";
 #else
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
@@ -238,22 +239,38 @@ namespace AngelLoader
 
             if (fmIsOldDark && GameConfigFiles.FMRequiresPaletteFix(fm, checkForOldDark: false))
             {
-                args += " +legacy_32bit_txtpal";
+                // @FM_CFG: Re-test this to make sure it works
+                args += " legacy_32bit_txtpal=1";
             }
 
+            /*
+            We can say +new_mantle to enable and -new_mantle to disable, HOWEVER, if we use that syntax, the
+            following quirk occurs:
+
+            If new_mantle is ENABLED in an FM's fm.cfg, then passing the game "-new_mantle" has no effect.
+            If new_mantle is specified but DISABLED (new_mantle 0) in fm.cfg, passing the game "+new_mantle"
+            DOES have the desired effect.
+
+            So instead we use new_mantle=1 and new_mantle=0, which always override the fm.cfg value.
+
+            Phew!
+
+            @FM_CFG: Re-test this in all situations!
+            Normal and Steam; new_mantle on/off in cam_ext.cfg; new_mantle on/off in fm.cfg; no fm.cfg value; etc.
+            */
             if (GameIsDark(fm.Game))
             {
                 if (fm.NewMantle == true)
                 {
-                    args += " +new_mantle";
+                    args += " new_mantle=1";
                 }
                 else if (fm.NewMantle == false)
                 {
-                    args += " -new_mantle";
+                    args += " new_mantle=0";
                 }
                 else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
                 {
-                    args += " -new_mantle";
+                    args += " new_mantle=0";
                 }
             }
 
