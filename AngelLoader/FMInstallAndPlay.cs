@@ -159,7 +159,6 @@ namespace AngelLoader
 
                 if (GameIsDark(gameIndex))
                 {
-                    // @FM_CFG: Re-test this (original game)
                     switch (Config.GetNewMantling(gameIndex))
                     {
                         case true:
@@ -239,7 +238,6 @@ namespace AngelLoader
 
             if (fmIsOldDark && GameConfigFiles.FMRequiresPaletteFix(fm, checkForOldDark: false))
             {
-                // @FM_CFG: Re-test this to make sure it works
                 args += " legacy_32bit_txtpal=1";
             }
 
@@ -254,9 +252,6 @@ namespace AngelLoader
             So instead we use new_mantle=1 and new_mantle=0, which always override the fm.cfg value.
 
             Phew!
-
-            @FM_CFG: Re-test this in all situations!
-            Normal and Steam; new_mantle on/off in cam_ext.cfg; new_mantle on/off in fm.cfg; no fm.cfg value; etc.
             */
             if (GameIsDark(fm.Game))
             {
