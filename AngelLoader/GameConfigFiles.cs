@@ -989,6 +989,7 @@ namespace AngelLoader
 
 #endif
 
+        // @FM_CFG: Test all failure cases and re-test (auto install/uninstall each) to ensure no errors in normal case
         #region Per-FM settings
 
         private static bool TryGetSmallestUsedMisFile(FanMission fm, out string smallestUsedMisFile, out List<string> usedMisFiles)
@@ -1011,7 +1012,9 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "get .mis files in FM installed directory. " + ErrorText.RetF, ex);
+                string msg = "Error tying to get .mis files in FM installed directory.";
+                LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
             }
 
@@ -1027,7 +1030,9 @@ namespace AngelLoader
 
             if (misFileInfos.Count == 0)
             {
-                LogFMInfo(fm, "Could not find any .mis files in FM installed directory. " + ErrorText.RetF);
+                string msg = "Error detecting OldDark: could not find any .mis files in FM installed directory.";
+                LogFMInfo(fm, msg + " " + ErrorText.RetF);
+                Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
             }
 
@@ -1061,21 +1066,28 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.ExTry + "get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory. " + ErrorText.RetF, ex);
+                        string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
+                        LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                        Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                         return false;
                     }
                 }
 
                 if (missFlag == null)
                 {
-                    LogFMInfo(
-                        fm,
-                        "Expected to find " + Paths.MissFlagStr + " for this FM, but it could not be found or the search failed. " +
-                        "If it didn't exist, it should have been generated. " + ErrorText.RetF);
+                    string msg = "Expected to find " + Paths.MissFlagStr +
+                                 " for this FM, but it could not be found or the search failed. " +
+                                 "If it didn't exist, it should have been generated.";
+                    LogFMInfo(fm, msg + " " + ErrorText.RetF);
+                    Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                     return false;
                 }
 
-                if (!TryReadAllLines(missFlag, out var mfLines)) return false;
+                if (!TryReadAllLines(missFlag, out var mfLines))
+                {
+                    Core.Dialogs.ShowError("Error trying to read '" + missFlag + "'.\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
+                    return false;
+                }
 
                 for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
                 {
@@ -1217,7 +1229,9 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "detect if FM is OldDark. " + ErrorText.RetF, ex);
+                string msg = "Error trying to detect if FM is OldDark.";
+                LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
             }
         }
@@ -1277,7 +1291,12 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix. " + ErrorText.RetF, ex);
+                string msg = "Error tying to detect if FM requires palette fix.";
+                LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                Core.Dialogs.ShowError(
+                    msg + "\r\n\r\n" +
+                    "If the FM requires a palette fix (rare), the fix will not be applied. " +
+                    "This may cause black-and-white OldDark missions to have some objects in color.");
                 return false;
             }
         }

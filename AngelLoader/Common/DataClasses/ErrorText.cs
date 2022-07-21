@@ -4,6 +4,7 @@ namespace AngelLoader.DataClasses
 {
     // @Localization(ErrorText): Keep this out of LText until we decide if we want it localizable or not
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
+    [SuppressMessage("ReSharper", "ConvertToConstant.Local")]
 #pragma warning disable RCS1187 // Use constant instead of field.
     internal static class ErrorText
     {
@@ -29,6 +30,7 @@ namespace AngelLoader.DataClasses
         private static readonly string Ret = "Returning ";
         //internal static readonly string RetT = Ret + "'true'.";
         internal static readonly string RetF = Ret + "'false'.";
+        internal static readonly string OldDarkDependentFeaturesWillFail = "Features/fixes that depend on OldDark detection will not work ('Use old mantling for OldDark FMs', OldDark B&W missions palette fix).";
     }
 #pragma warning restore RCS1187 // Use constant instead of field.
 }

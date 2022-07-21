@@ -230,31 +230,31 @@ namespace AngelLoader
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
-            GenerateMissFlagFileIfRequired(fm);
-
-            // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
-            // .mis file when detecting OldDark (if there is no missflag.str)!
-            bool fmIsOldDark = GameConfigFiles.MissionIsOldDark(fm);
-
-            if (fmIsOldDark && GameConfigFiles.FMRequiresPaletteFix(fm, checkForOldDark: false))
-            {
-                args += " legacy_32bit_txtpal=1";
-            }
-
-            /*
-            We can say +new_mantle to enable and -new_mantle to disable, HOWEVER, if we use that syntax, the
-            following quirk occurs:
-
-            If new_mantle is ENABLED in an FM's fm.cfg, then passing the game "-new_mantle" has no effect.
-            If new_mantle is specified but DISABLED (new_mantle 0) in fm.cfg, passing the game "+new_mantle"
-            DOES have the desired effect.
-
-            So instead we use new_mantle=1 and new_mantle=0, which always override the fm.cfg value.
-
-            Phew!
-            */
             if (GameIsDark(fm.Game))
             {
+                GenerateMissFlagFileIfRequired(fm);
+
+                // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
+                // .mis file when detecting OldDark (if there is no missflag.str)!
+                bool fmIsOldDark = GameConfigFiles.MissionIsOldDark(fm);
+
+                if (fmIsOldDark && GameConfigFiles.FMRequiresPaletteFix(fm, checkForOldDark: false))
+                {
+                    args += " legacy_32bit_txtpal=1";
+                }
+
+                /*
+                We can say +new_mantle to enable and -new_mantle to disable, HOWEVER, if we use that syntax, the
+                following quirk occurs:
+
+                If new_mantle is ENABLED in an FM's fm.cfg, then passing the game "-new_mantle" has no effect.
+                If new_mantle is specified but DISABLED (new_mantle 0) in fm.cfg, passing the game "+new_mantle"
+                DOES have the desired effect.
+
+                So instead we use new_mantle=1 and new_mantle=0, which always override the fm.cfg value.
+
+                Phew!
+                */
                 if (fm.NewMantle == true)
                 {
                     args += " new_mantle=1";
