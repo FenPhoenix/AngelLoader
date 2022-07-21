@@ -973,7 +973,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                string msg = "Error tying to detect if this OldDark FM requires a palette fix.";
+                string msg = "Error trying to detect if this OldDark FM requires a palette fix.";
                 LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
                 Core.Dialogs.ShowError(
                     msg + "\r\n\r\n" +
