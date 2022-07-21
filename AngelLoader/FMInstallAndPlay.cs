@@ -574,13 +574,13 @@ namespace AngelLoader
                 if (!Directory.Exists(fmInstalledPath)) return;
 
                 string stringsPath = Path.Combine(fmInstalledPath, "strings");
-                string missFlagFile = Path.Combine(stringsPath, "missflag.str");
+                string missFlagFile = Path.Combine(stringsPath, Paths.MissFlagStr);
 
                 bool MissFlagFilesExist()
                 {
                     if (!Directory.Exists(stringsPath)) return false;
                     // Missflag.str could be in a subdirectory too! Don't make a new one in that case!
-                    string[] missFlag = Directory.GetFiles(stringsPath, "missflag.str", SearchOption.AllDirectories);
+                    string[] missFlag = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
                     return missFlag.Length > 0;
                 }
 

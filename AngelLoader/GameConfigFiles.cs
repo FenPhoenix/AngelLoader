@@ -72,7 +72,7 @@ namespace AngelLoader
             (byte)'M',
             (byte)'I',
             (byte)'S',
-            (byte)'S',
+            (byte)'S'
         };
 
         private static readonly byte[] _MAPPARAM_Bytes =
@@ -84,7 +84,7 @@ namespace AngelLoader
             (byte)'A',
             (byte)'R',
             (byte)'A',
-            (byte)'M',
+            (byte)'M'
         };
 
         #region Read
@@ -1028,8 +1028,8 @@ namespace AngelLoader
 
                 if (!Directory.Exists(stringsPath)) return false;
 
-                string loc1 = Path.Combine(stringsPath, "missflag.str");
-                string loc2 = Path.Combine(stringsPath, "english", "missflag.str");
+                string loc1 = Path.Combine(stringsPath, Paths.MissFlagStr);
+                string loc2 = Path.Combine(stringsPath, "english", Paths.MissFlagStr);
 
                 if (File.Exists(loc1))
                 {
@@ -1041,7 +1041,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    string[] files = Directory.GetFiles(stringsPath, "missflag.str", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
                     if (files.Length > 0) missFlag = files[0];
                 }
 
