@@ -1024,8 +1024,12 @@ namespace AngelLoader
             {
                 string? missFlag = null;
 
-                string loc1 = Path.Combine(fmDir, "strings", "missflag.str");
-                string loc2 = Path.Combine(fmDir, "strings", "english", "missflag.str");
+                string stringsPath = Path.Combine(fmDir, "strings");
+
+                if (!Directory.Exists(stringsPath)) return false;
+
+                string loc1 = Path.Combine(stringsPath, "missflag.str");
+                string loc2 = Path.Combine(stringsPath, "english", "missflag.str");
 
                 if (File.Exists(loc1))
                 {
@@ -1037,7 +1041,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    string[] files = Directory.GetFiles(Path.Combine(fmDir, "strings"), "missflag.str", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(stringsPath, "missflag.str", SearchOption.AllDirectories);
                     if (files.Length > 0) missFlag = files[0];
                 }
 
