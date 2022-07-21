@@ -672,7 +672,6 @@ namespace AngelLoader
             }
         }
 
-        // @FM_CFG: Test all failure cases and re-test (auto install/uninstall each) to ensure no errors in normal case
         private static bool TryGetSmallestUsedMisFile(FanMission fm, out string smallestUsedMisFile, out List<string> usedMisFiles)
         {
             smallestUsedMisFile = "";
@@ -693,7 +692,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                string msg = "Error tying to get .mis files in FM installed directory.";
+                string msg = "Error trying to get .mis files in FM installed directory.";
                 LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
                 Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
@@ -974,11 +973,11 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                string msg = "Error tying to detect if FM requires palette fix.";
+                string msg = "Error tying to detect if this OldDark FM requires a palette fix.";
                 LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
                 Core.Dialogs.ShowError(
                     msg + "\r\n\r\n" +
-                    "If the FM requires a palette fix (rare), the fix will not be applied. " +
+                    "If the FM requires a palette fix (rare), the fix will not be applied on this run. " +
                     "This may cause black-and-white OldDark missions to have some objects in color.");
                 return false;
             }

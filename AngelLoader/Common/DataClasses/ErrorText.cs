@@ -30,7 +30,10 @@ namespace AngelLoader.DataClasses
         private static readonly string Ret = "Returning ";
         //internal static readonly string RetT = Ret + "'true'.";
         internal static readonly string RetF = Ret + "'false'.";
-        internal static readonly string OldDarkDependentFeaturesWillFail = "Features/fixes that depend on OldDark detection will not work ('Use old mantling for OldDark FMs', OldDark B&W missions palette fix).";
+        internal static readonly string OldDarkDependentFeaturesWillFail =
+            "The following features/fixes will NOT be applied on this run:\r\n\r\n" +
+            "-Old mantling, if the FM is OldDark and \"Use old mantling for OldDark FMs\" is enabled\r\n" +
+            "-Palette fix, if the FM is OldDark and requires it";
     }
 #pragma warning restore RCS1187 // Use constant instead of field.
 }
