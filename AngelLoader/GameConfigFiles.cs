@@ -1004,11 +1004,21 @@ namespace AngelLoader
 
             string fmDir = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
 
-            var misFiles = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly);
+            var misFiles = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly).ToList();
 
-            if (misFiles.Length == 0) return false;
+            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                if (!misFiles[i].Name.EndsWithI(".mis"))
+                {
+                    misFiles.RemoveAt(i);
+                    i--;
+                }
+            }
 
-            var usedMisFileInfos = new List<FileInfo>(misFiles.Length);
+            if (misFiles.Count == 0) return false;
+
+            var usedMisFileInfos = new List<FileInfo>(misFiles.Count);
 
             if (fm.Game != Game.SS2)
             {
@@ -1035,7 +1045,7 @@ namespace AngelLoader
 
                 if (!TryReadAllLines(missFlag, out var mfLines)) return false;
 
-                for (int mfI = 0; mfI < misFiles.Length; mfI++)
+                for (int mfI = 0; mfI < misFiles.Count; mfI++)
                 {
                     FileInfo mf = misFiles[mfI];
 
