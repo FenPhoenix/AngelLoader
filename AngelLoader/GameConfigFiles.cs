@@ -1004,21 +1004,34 @@ namespace AngelLoader
 
             string fmDir = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
 
-            var misFiles = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly).ToList();
+            List<FileInfo> misFileInfos;
+            try
+            {
+                misFileInfos = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly).ToList();
+            }
+            catch (Exception ex)
+            {
+                LogFMInfo(fm, ErrorText.ExTry + "get .mis files in FM installed directory. " + ErrorText.RetF, ex);
+                return false;
+            }
 
             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-            for (int i = 0; i < misFiles.Count; i++)
+            for (int i = 0; i < misFileInfos.Count; i++)
             {
-                if (!misFiles[i].Name.EndsWithI(".mis"))
+                if (!misFileInfos[i].Name.EndsWithI(".mis"))
                 {
-                    misFiles.RemoveAt(i);
+                    misFileInfos.RemoveAt(i);
                     i--;
                 }
             }
 
-            if (misFiles.Count == 0) return false;
+            if (misFileInfos.Count == 0)
+            {
+                LogFMInfo(fm, "Could not find any .mis files in FM installed directory. " + ErrorText.RetF);
+                return false;
+            }
 
-            var usedMisFileInfos = new List<FileInfo>(misFiles.Count);
+            var usedMisFileInfos = new List<FileInfo>(misFileInfos.Count);
 
             if (fm.Game != Game.SS2)
             {
@@ -1041,17 +1054,32 @@ namespace AngelLoader
                 }
                 else
                 {
-                    string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
-                    if (files.Length > 0) missFlag = files[0];
+                    try
+                    {
+                        string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
+                        if (files.Length > 0) missFlag = files[0];
+                    }
+                    catch (Exception ex)
+                    {
+                        LogFMInfo(fm, ErrorText.ExTry + "get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory. " + ErrorText.RetF, ex);
+                        return false;
+                    }
                 }
 
-                if (missFlag == null) return false;
+                if (missFlag == null)
+                {
+                    LogFMInfo(
+                        fm,
+                        "Expected to find " + Paths.MissFlagStr + " for this FM, but it could not be found or the search failed. " +
+                        "If it didn't exist, it should have been generated. " + ErrorText.RetF);
+                    return false;
+                }
 
                 if (!TryReadAllLines(missFlag, out var mfLines)) return false;
 
-                for (int mfI = 0; mfI < misFiles.Count; mfI++)
+                for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
                 {
-                    FileInfo mf = misFiles[mfI];
+                    FileInfo mf = misFileInfos[mfI];
 
                     // @FM_CFG: This is copied from the scanner where perf matters, but we should rewrite this to be clearer and simpler
                     // Obtuse nonsense to avoid string allocations (perf)
@@ -1096,7 +1124,7 @@ namespace AngelLoader
                 }
             }
 
-            if (usedMisFileInfos.Count == 0) usedMisFileInfos.AddRange(misFiles);
+            if (usedMisFileInfos.Count == 0) usedMisFileInfos.AddRange(misFileInfos);
 
             usedMisFileInfos = usedMisFileInfos.OrderBy(x => x.Length).ToList();
 
@@ -1189,7 +1217,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(ex: ex);
+                LogFMInfo(fm, ErrorText.ExTry + "detect if FM is OldDark. " + ErrorText.RetF, ex);
                 return false;
             }
         }
@@ -1249,7 +1277,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix", ex: ex);
+                LogFMInfo(fm, ErrorText.ExTry + "detect if FM requires palette fix. " + ErrorText.RetF, ex);
                 return false;
             }
         }

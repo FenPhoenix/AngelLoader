@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using AL_Common;
@@ -312,9 +313,11 @@ namespace AngelLoader
             FanMission fm,
             string topMessage,
             Exception? ex = null,
-            bool stackTrace = false)
+            bool stackTrace = false,
+            [CallerMemberName] string callerMemberName = "")
         {
-            Log(topMessage + "\r\n" +
+            Log("Caller: " + callerMemberName + "\r\n\r\n" +
+                topMessage + "\r\n" +
                 "fm." + nameof(fm.Game) + ": " + fm.Game + "\r\n" +
                 "fm." + nameof(fm.Archive) + ": " + fm.Archive + "\r\n" +
                 "fm." + nameof(fm.InstalledDir) + ": " + fm.InstalledDir + "\r\n" +
