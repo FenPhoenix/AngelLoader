@@ -69,6 +69,12 @@ namespace AL_Common
                       + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "");
         }
 
+        /*
+        @BROKEN_ZIP: We should distinguish recoverable errors from fatal ones
+        Because sometimes the caller will abort its task if we return it an error result, but we want to still
+        work if it's just that the zip file is slightly malformed but we can still work with it.
+        */
+
         /// <summary>
         /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
         /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.

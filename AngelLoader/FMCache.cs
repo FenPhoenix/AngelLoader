@@ -414,7 +414,18 @@ namespace AngelLoader
             }
             finally
             {
-                foreach (string file in fileNamesList) File_UnSetReadOnly(file);
+                foreach (string file in fileNamesList)
+                {
+                    try
+                    {
+                        // Stupid Path.Combine might in theory throw
+                        File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
                 Core.View.HideProgressBox();
             }
         }

@@ -20,6 +20,26 @@ in like 2018 or whenever I got that big pack to test the scanner with.
 
 These files throw with "The archive entry was compressed using an unsupported compression method."
 They throw on both ZipArchiveFast() and regular built-in ZipArchive()
+
+For Uguest.zip, the compression method for each file is:
+
+MISS15.MIS:                6
+UGUEST.TXT:                6
+INTRFACE/NEWGAME.STR:      1
+INTRFACE/UGUEST/GOALS.STR: 1
+STRINGS/MISSFLAG.STR:      1
+STRINGS/TITLES.STR:        6
+
+1 = Shrink
+6 = Implode
+
+(according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+It seems unusual to have different compression methods per entry but what do I know.
+Since 7z.exe seems to handle them fine (albeit with reported errors) and since we know .NET only supports Deflate,
+maybe these are accurate and not broken values.
+We can fallback to 7z.exe if we find unsupported compression methods on the initial Entries read (fortunately
+we catch this error then, and not on entry open).
 */
 using System;
 using System.Collections.Generic;
