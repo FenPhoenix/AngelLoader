@@ -201,6 +201,8 @@ namespace AngelLoader
                         if (fmDataList != null)
                         {
                             bool errors = false;
+                            bool otherErrors = false;
+                            var unsupportedCompressionErrors = new List<(FMScanner.FMToScan FM, FMScanner.ScannedFMDataAndError ScannedFMDataAndError)>();
 
                             for (int i = 0; i < fmsToScanFiltered.Count; i++)
                             {
@@ -209,8 +211,16 @@ namespace AngelLoader
                                     item.Exception != null ||
                                     !item.ErrorInfo.IsEmpty())
                                 {
+                                    if (item.Exception is FMScanner.FastZipReader.ZipCompressionMethodException)
+                                    {
+                                        unsupportedCompressionErrors.Add((fms[i], item));
+                                    }
+                                    else
+                                    {
+                                        otherErrors = true;
+                                    }
+
                                     errors = true;
-                                    break;
                                 }
                             }
 
@@ -218,7 +228,46 @@ namespace AngelLoader
                             {
                                 // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
                                 // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                                Core.Dialogs.ShowError(ErrorText.ScanErrors);
+                                if (unsupportedCompressionErrors.Count > 0)
+                                {
+                                    if (unsupportedCompressionErrors.Count == 1)
+                                    {
+                                        Core.Dialogs.ShowError(
+                                            "The zip archive '"
+                                            + unsupportedCompressionErrors[0].FM.Path +
+                                            "' contains one or more files compressed with an unsupported compression method. " +
+                                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archive.");
+                                    }
+                                    else
+                                    {
+                                        string msg =
+                                            "One or more zip archives contain files compressed with unsupported compression methods. " +
+                                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.\r\n\r\n" +
+                                            "The following zip archives produced this error:\r\n\r\n";
+
+                                        for (int i = 0; i < Math.Min(unsupportedCompressionErrors.Count, 10); i++)
+                                        {
+                                            msg += unsupportedCompressionErrors[i].FM.Path + "\r\n";
+                                        }
+
+                                        if (unsupportedCompressionErrors.Count > 10)
+                                        {
+                                            msg += "[See the log for the rest]";
+                                        }
+
+                                        if (otherErrors)
+                                        {
+                                            msg += "\r\n\r\nIn addition, one or more other errors occurred. See the log for details.";
+                                        }
+
+                                        Core.Dialogs.ShowError(msg);
+                                    }
+                                }
+                                else
+                                {
+                                    Core.Dialogs.ShowError(
+                                        "One or more errors occurred while scanning. See the log for details.");
+                                }
                             }
                         }
                     }

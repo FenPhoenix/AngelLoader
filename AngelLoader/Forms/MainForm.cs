@@ -438,7 +438,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == Native.WM_KEYDOWN)
             {
-                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+                if ((KeyPressesDisabled || ViewBlocked) && CanFocus) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
@@ -488,7 +488,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == Native.WM_KEYUP)
             {
-                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+                if ((KeyPressesDisabled || ViewBlocked) && CanFocus) return BlockMessage;
             }
             #endregion
 

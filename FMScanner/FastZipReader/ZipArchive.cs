@@ -269,10 +269,10 @@ namespace FMScanner.FastZipReader
                                         case CompressionMethodValues.BZip2:
                                         case CompressionMethodValues.LZMA:
                                             UnopenableArchives[entry] = SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
-                                            break;
+                                            throw new ZipCompressionMethodException(SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString()));
                                         default:
                                             UnopenableArchives[entry] = SR.UnsupportedCompression;
-                                            break;
+                                            throw new ZipCompressionMethodException(SR.UnsupportedCompression);
                                     }
                                 }
                             }

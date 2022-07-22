@@ -9,6 +9,21 @@ using AL_Common;
 
 namespace FMScanner.FastZipReader
 {
+    public sealed class ZipCompressionMethodException : Exception
+    {
+        public ZipCompressionMethodException() : base()
+        {
+        }
+
+        public ZipCompressionMethodException(string message) : base(message)
+        {
+        }
+
+        public ZipCompressionMethodException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
     internal static class ThrowHelper
     {
         internal static void EndOfFile() => throw new EndOfStreamException("Environment.GetResourceString(\"IO.EOF_ReadBeyondEOF\")");

@@ -508,6 +508,18 @@ namespace FMScanner
                 ErrorInfo = errorInfo
             };
 
+            static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+            {
+                ScannedFMData = new ScannedFMData
+                {
+                    ArchiveName = Path.GetFileName(archivePath),
+                    Game = Game.Null
+                },
+                Fen7zResult = fen7zResult,
+                Exception = ex,
+                ErrorInfo = errorInfo
+            };
+
             static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
             {
                 ScannedFMData = null,
@@ -689,10 +701,22 @@ namespace FMScanner
                     catch (Exception ex)
                     {
                         // Invalid zip file, whatever, move on
-                        Log(fm.Path + ": fm is zip, exception in " +
-                            nameof(ZipArchiveFast) +
-                            " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                        return UnsupportedZip(fm.Path, null, ex, "");
+                        if (ex is ZipCompressionMethodException zipEx)
+                        {
+                            Log(fm.Path + ": fm is zip.\r\n" +
+                                "UNSUPPORTED COMPRESSION METHOD\r\n" +
+                                "Zip contains one or more files compressed with an unsupported method. " +
+                                "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
+                                "Returning 'Unknown' game type.", zipEx);
+                            return UnknownZip(fm.Path, null, zipEx, "");
+                        }
+                        else
+                        {
+                            Log(fm.Path + ": fm is zip, exception in " +
+                                nameof(ZipArchiveFast) +
+                                " construction or entries getting. Returning 'Unsupported' game type.", ex);
+                            return UnsupportedZip(fm.Path, null, ex, "");
+                        }
                     }
                 }
                 else
