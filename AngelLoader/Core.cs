@@ -10,7 +10,7 @@ NOTE(Core notes):
  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
  every time we write
 
-TODO/BUG: Semi-broken but still workable zip files throw on open (but FMSel can work with them and we can't)
+@BROKEN_ZIP: Semi-broken but still workable zip files throw on open (but FMSel can work with them and we can't)
 Known semi-broken files:
 Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
 1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
@@ -40,6 +40,24 @@ Since 7z.exe seems to handle them fine (albeit with reported errors) and since w
 maybe these are accurate and not broken values.
 We can fallback to 7z.exe if we find unsupported compression methods on the initial Entries read (fortunately
 we catch this error then, and not on entry open).
+
+2022-07-22:
+7z.exe reports:
+
+ERRORS:
+Headers Error
+
+WARNINGS:
+There are data after the end of archive
+
+So I guess 2 different problems, assuming those aren't just two ways to say the effect of the same problem.
+It also returns exit code 2 (Fatal error) even though it appears to successfully extract this one (the extracted
+dir diffs identical with the extracted dir of the working one).
+But if we're going to attempt to sometimes allow fatal errors to count as "success", I dunno how we would tell
+the difference between that and an ACTUAL fatal (ie. extract did not result in intact files on disk) error.
+If we just match by "Headers error" and/or "data past end" who knows if sometimes those might actually result
+in bad output and not others. I don't know. So we should probably just leave this one alone and continue to
+fail on this one file.
 */
 using System;
 using System.Collections.Generic;
