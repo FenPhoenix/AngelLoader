@@ -1242,5 +1242,50 @@ namespace AL_Common
 
             return false;
         }
+
+        #region Set file attributes
+
+        public static void File_UnSetReadOnly(string fileOnDiskFullPath)
+        {
+            try
+            {
+                new FileInfo(fileOnDiskFullPath).IsReadOnly = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
+            }
+        }
+
+        public static void Dir_UnSetReadOnly(string dirOnDiskFullPath)
+        {
+            try
+            {
+                _ = new DirectoryInfo(dirOnDiskFullPath) { Attributes = FileAttributes.Normal };
+                // TODO: Dir_UnSetReadOnly: More correct but possibly breaking change
+                //new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Unable to set directory attributes for " + dirOnDiskFullPath, ex);
+            }
+        }
+
+        public static void DirAndFileTree_UnSetReadOnly(string path)
+        {
+            Dir_UnSetReadOnly(path);
+
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+            {
+                File_UnSetReadOnly(f);
+            }
+
+            foreach (string d in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+            {
+                Dir_UnSetReadOnly(d);
+            }
+        }
+
+        #endregion
     }
 }

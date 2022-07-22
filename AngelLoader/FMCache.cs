@@ -59,6 +59,8 @@ namespace AngelLoader
             {
                 try
                 {
+                    DirAndFileTree_UnSetReadOnly(fmCachePath);
+
                     foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
                     foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
                     if (deleteCacheDirItself) Directory.Delete(fmCachePath);

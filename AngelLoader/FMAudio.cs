@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -130,7 +131,7 @@ namespace AngelLoader
 
                     Core.View.SetProgressBoxState_Single(
                         message2: GetFMId(fm),
-                        percent: single ? null : Common.GetPercentFromValue_Int(i + 1, fms.Count)
+                        percent: single ? null : GetPercentFromValue_Int(i + 1, fms.Count)
                     );
 
                     await ConvertToWAVs(fm, convertType);

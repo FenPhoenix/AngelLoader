@@ -59,36 +59,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Set file attributes
-
-        internal static void File_UnSetReadOnly(string fileOnDiskFullPath)
-        {
-            try
-            {
-                new FileInfo(fileOnDiskFullPath).IsReadOnly = false;
-            }
-            catch (Exception ex)
-            {
-                Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
-            }
-        }
-
-        internal static void Dir_UnSetReadOnly(string dirOnDiskFullPath)
-        {
-            try
-            {
-                _ = new DirectoryInfo(dirOnDiskFullPath) { Attributes = FileAttributes.Normal };
-                // TODO: Dir_UnSetReadOnly: More correct but possibly breaking change
-                //new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
-            }
-            catch (Exception ex)
-            {
-                Log("Unable to set directory attributes for " + dirOnDiskFullPath, ex);
-            }
-        }
-
-        #endregion
-
         #region FM utils
 
         /// <summary>

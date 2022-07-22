@@ -140,15 +140,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
-                    {
-                        new FileInfo(f).IsReadOnly = false;
-                    }
-
-                    foreach (string d in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
-                    {
-                        Misc.Dir_UnSetReadOnly(d);
-                    }
+                    DirAndFileTree_UnSetReadOnly(path);
                 }
                 catch (Exception ex)
                 {

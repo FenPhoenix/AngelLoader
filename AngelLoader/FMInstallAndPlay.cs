@@ -1809,15 +1809,7 @@ namespace AngelLoader
 
                         // FMs installed by us will not have any readonly attributes set, so we work on the
                         // assumption that this is the rarer case and only do this extra work if we need to.
-                        foreach (string f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
-                        {
-                            new FileInfo(f).IsReadOnly = false;
-                        }
-
-                        foreach (string d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
-                        {
-                            Dir_UnSetReadOnly(d);
-                        }
+                        DirAndFileTree_UnSetReadOnly(path);
 
                         triedReadOnlyRemove = true;
                     }
