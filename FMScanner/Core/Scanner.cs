@@ -9,6 +9,16 @@
 // -A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
 //  are non-nullable.
 
+/*
+@BROKEN_ZIP(Scanner):
+If we want to fall back to 7z-style for broken or unsupported compression method zips, we should:
+-Rename all references to the concept of "7z" or "sevenZip" to something more general
+-Make sure we don't depend on extension being ".7z" anywhere, allow any extension and just decide at the start
+ based on whether Entries read succeeds OR if the extension really is .7z
+-Only if Entries read fails with unsupported compression method should we do this, if we fail with any other
+ error, just return scan failed like usual.
+*/
+
 //#define ScanSynchronous
 //#define DEBUG_RANDOMIZE_DIR_SEPS
 using System;
