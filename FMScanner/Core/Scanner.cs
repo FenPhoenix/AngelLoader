@@ -3697,17 +3697,9 @@ namespace FMScanner
         /// Deletes a directory after first setting everything in it, and itself, to non-read-only.
         /// </summary>
         /// <param name="directory"></param>
-        private void DeleteDirectory(string directory)
+        private static void DeleteDirectory(string directory)
         {
-            foreach (string f in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
-            {
-                new FileInfo(f).IsReadOnly = false;
-            }
-
-            foreach (string d in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
-            {
-                _ = new DirectoryInfo(d) { Attributes = FileAttributes.Normal };
-            }
+            DirAndFileTree_UnSetReadOnly(directory);
 
             var ds = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
             for (int i = 0; i < ds.Length; i++)
@@ -3715,7 +3707,6 @@ namespace FMScanner
                 Directory.Delete(ds[i], true);
             }
 
-            _ = new DirectoryInfo(directory) { Attributes = FileAttributes.Normal };
             Directory.Delete(directory, recursive: true);
         }
 
