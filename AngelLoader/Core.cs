@@ -9,6 +9,17 @@ NOTE(Core notes):
  For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
  every time we write
+
+TODO/BUG: Semi-broken but still workable zip files throw on open (but FMSel can work with them and we can't)
+Known semi-broken files:
+Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+Note that my version of the second file (same name) is not broken, I got it from http://ladyjo1.free.fr/ back
+in like 2018 or whenever I got that big pack to test the scanner with.
+
+These files throw with "The archive entry was compressed using an unsupported compression method."
+They throw on both ZipArchiveFast() and regular built-in ZipArchive()
 */
 using System;
 using System.Collections.Generic;
