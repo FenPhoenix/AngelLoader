@@ -9,16 +9,6 @@
 // -A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
 //  are non-nullable.
 
-/*
-@BROKEN_ZIP(Scanner):
-If we want to fall back to 7z-style for broken or unsupported compression method zips, we should:
--Rename all references to the concept of "7z" or "sevenZip" to something more general
--Make sure we don't depend on extension being ".7z" anywhere, allow any extension and just decide at the start
- based on whether Entries read succeeds OR if the extension really is .7z
--Only if Entries read fails with unsupported compression method should we do this, if we fail with any other
- error, just return scan failed like usual.
-*/
-
 //#define ScanSynchronous
 //#define DEBUG_RANDOMIZE_DIR_SEPS
 using System;
@@ -700,7 +690,60 @@ namespace FMScanner
                     }
                     catch (Exception ex)
                     {
-                        // Invalid zip file, whatever, move on
+                        /*
+                        Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+                        
+                        Known semi-broken files:
+                        Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+                        1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+                        Both files are byte-identical but just with different names.
+
+                        Note that my version of the second file (same name) is not broken, I got it from
+                        http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+                        scanner with.
+
+                        These files throw with "The archive entry was compressed using an unsupported compression method."
+                        They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+                        The compression method for each file in the archive is:
+
+                        MISS15.MIS:                6
+                        UGUEST.TXT:                6
+                        INTRFACE/NEWGAME.STR:      1
+                        INTRFACE/UGUEST/GOALS.STR: 1
+                        STRINGS/MISSFLAG.STR:      1
+                        STRINGS/TITLES.STR:        6
+
+                        1 = Shrink
+                        6 = Implode
+
+                        (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+                       .NET zip (all versions AFAIK) only supports Deflate.
+
+                        There also seem to be other errors, involving "headers" and "data past the end of archive".
+                        I don't really know enough about the zip format to understand these that much.
+
+                        7z.exe can handle these files, so we could use that as a fallback, but:
+
+                        7z.exe reports:
+
+                        ERRORS:
+                        Headers Error
+
+                        WARNINGS:
+                        There are data after the end of archive
+
+                        And it considers the error to be "fatal" even though it succeeds in this case (the
+                        extracted dir diffs identical with the extracted dir of the working one).
+                        But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+                        dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+                        not result in intact files on disk) error. If we just match by "Headers error" and/or
+                        "data past end" who knows if sometimes those might actually result in bad output and not
+                        others. I don't know. So we're going to continue to fail in this case, but at least tell
+                        the user what's wrong and give them an actionable suggestion.
+                        */
                         if (ex is ZipCompressionMethodException zipEx)
                         {
                             Log(fm.Path + ": fm is zip.\r\n" +
@@ -710,6 +753,7 @@ namespace FMScanner
                                 "Returning 'Unknown' game type.", zipEx);
                             return UnknownZip(fm.Path, null, zipEx, "");
                         }
+                        // Invalid zip file, whatever, move on
                         else
                         {
                             Log(fm.Path + ": fm is zip, exception in " +
