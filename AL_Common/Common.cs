@@ -1245,7 +1245,7 @@ namespace AL_Common
 
         #region Set file attributes
 
-        public static void File_UnSetReadOnly(string fileOnDiskFullPath)
+        public static void File_UnSetReadOnly(string fileOnDiskFullPath, bool throwException = false)
         {
             try
             {
@@ -1254,10 +1254,11 @@ namespace AL_Common
             catch (Exception ex)
             {
                 Logger.Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
+                if (throwException) throw;
             }
         }
 
-        public static void Dir_UnSetReadOnly(string dirOnDiskFullPath)
+        public static void Dir_UnSetReadOnly(string dirOnDiskFullPath, bool throwException = false)
         {
             try
             {
@@ -1268,21 +1269,22 @@ namespace AL_Common
             catch (Exception ex)
             {
                 Logger.Log("Unable to set directory attributes for " + dirOnDiskFullPath, ex);
+                if (throwException) throw;
             }
         }
 
-        public static void DirAndFileTree_UnSetReadOnly(string path)
+        public static void DirAndFileTree_UnSetReadOnly(string path, bool throwException = false)
         {
-            Dir_UnSetReadOnly(path);
+            Dir_UnSetReadOnly(path, throwException);
 
             foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
             {
-                File_UnSetReadOnly(f);
+                File_UnSetReadOnly(f, throwException);
             }
 
             foreach (string d in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
             {
-                Dir_UnSetReadOnly(d);
+                Dir_UnSetReadOnly(d, throwException);
             }
         }
 

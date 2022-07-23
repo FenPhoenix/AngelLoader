@@ -1809,7 +1809,7 @@ namespace AngelLoader
 
                         // FMs installed by us will not have any readonly attributes set, so we work on the
                         // assumption that this is the rarer case and only do this extra work if we need to.
-                        DirAndFileTree_UnSetReadOnly(path);
+                        DirAndFileTree_UnSetReadOnly(path, throwException: true);
 
                         triedReadOnlyRemove = true;
                     }
