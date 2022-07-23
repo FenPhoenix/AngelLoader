@@ -217,7 +217,6 @@ namespace AngelLoader
                 CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
             if (!success) return false;
 
-            // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
@@ -230,8 +229,6 @@ namespace AngelLoader
             string workingPath = Config.GetGamePath(gameIndex);
             var sv = GetSteamValues(gameIndex, playMP);
             if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
-
-            // 2019-10-31: Always use the stub now, in prep for matching FMSel's language stuff
 
             // BUG: Possible stub comm file not being deleted in the following scenario:
             // You launch a game through Steam, but the game doesn't actually launch (because you don't have
@@ -831,9 +828,6 @@ namespace AngelLoader
         }
 
         /*
-        -We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
-         so I'm just going to assume it's not supported to do the palette thing for SS2.
-
         SS2 OldDark detect notes:
         -SS2_Zygo_Arena_ND
          This one has earth.mis and Arena.mis, with earth.mis being OldDark and Arena.mis being NewDark.
@@ -916,6 +910,10 @@ namespace AngelLoader
             }
         }
 
+        /*
+        We're not going to try the palette fix for SS2 because I don't see any pal\ dirs in any SS2 FM I have
+        so I'm just going to assume it's not supported to do the palette thing for SS2.
+        */
         private static bool FMRequiresPaletteFix(FanMission fm, bool checkForOldDark = true)
         {
             #region Local functions
