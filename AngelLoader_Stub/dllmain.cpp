@@ -51,13 +51,17 @@ namespace fs = std::filesystem;
 int show_loader_alert()
 {
     const wstring msg1 =
-        L"AngelLoader is set as the loader for this game.\r\n\r\n";
+        L"AngelLoader is set as the FM selector for this game.\r\n\r\n";
     const wstring msg2 =
-        L"To use a different loader for Thief 1, Thief 2, or System Shock 2, please open cam_mod.ini in your game folder for instructions on how to do so.\r\n\r\n";
+        L"Is AngelLoader running right now? If so, please either run this executable from within AngelLoader, OR close AngelLoader and then try again.\r\n\r\n";
     const wstring msg3 =
-        L"To use a different loader for Thief 3, please open Sneaky Tweaker and choose another loader in the \"Sneaky Upgrade -> FM Loading\" section.";
+        L"If AngelLoader is NOT running right now, then follow the below instructions:\r\n\r\n";
+    const wstring msg4 =
+        L"To use a different FM selector for Thief 1, Thief 2, or System Shock 2, please open cam_mod.ini in your game folder and change the \"fm_selector\" line.\r\n\r\n";
+    const wstring msg5 =
+        L"To use a different FM selector for Thief 3, please open Sneaky Tweaker and choose another selector in the \"Sneaky Upgrade -> FM Loading\" section.";
 
-    MessageBoxW(nullptr, (msg1 + msg2 + msg3).c_str(), L"AngelLoader", MB_OK | MB_ICONINFORMATION);
+    MessageBoxW(nullptr, (msg1 + msg2 + msg3 + msg4 + msg5).c_str(), L"AngelLoader", MB_OK | MB_ICONINFORMATION);
     return kSelFMRet_ExitGame;
 }
 // Disabled for now because I'm not sure I want to go to all this work for a message people will hopefully never
