@@ -140,7 +140,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    DirAndFileTree_UnSetReadOnly(path);
+                    DirAndFileTree_UnSetReadOnly(path, throwException: true);
                 }
                 catch (Exception ex)
                 {

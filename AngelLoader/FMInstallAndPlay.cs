@@ -22,11 +22,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    /*
-    @BetterErrors(FMInstallAndPlay):
-    -If we can't write the stub file or set ourselves as the selector, maybe we should just cancel the play operation?
-    */
-
     internal static class FMInstallAndPlay
     {
         #region Private fields
@@ -456,6 +451,8 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+
                 string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
 
                 if (fm != null)
@@ -577,9 +574,11 @@ namespace AngelLoader
                     {
                         ProcessStart_UseShellExecute(dlExe);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Core.Dialogs.ShowError("Unable to open DarkLoader.");
+                        string msg = "Unable to open DarkLoader.";
+                        Log(msg, ex);
+                        Core.Dialogs.ShowError(msg);
                     }
                     return failed;
                 }
