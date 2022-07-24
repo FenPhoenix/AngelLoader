@@ -11,7 +11,6 @@ namespace AngelLoader.DataClasses
         internal static readonly string Ex = "Exception ";
         internal static readonly string Un = "Unable to ";
         internal static readonly string UnOpenLogFile = Un + "open log file.";
-        internal static readonly string UnStartExe = Un + "start executable.";
         internal static readonly string UnOpenFMDir = Un + "open FM folder.";
         internal static readonly string UnOpenHTMLReadme = Un + "open HTML readme ";
         internal static readonly string HTMLReadmeNotFound = "The HTML readme file could not be found.";

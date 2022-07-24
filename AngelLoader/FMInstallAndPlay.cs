@@ -171,7 +171,7 @@ namespace AngelLoader
 #if !ReleaseBeta && !ReleasePublic
                 GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
 #endif
-                SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame);
+                if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame)) return false;
 
 #if !ReleaseBeta && !ReleasePublic
                 string args = Config.ForceWindowed ? "force_windowed=1" : "";
@@ -195,13 +195,16 @@ namespace AngelLoader
                     }
                 }
 
-                WriteStubCommFile(
-                    fm: null,
-                    gamePath: gamePath,
-                    originalT3: gameIndex == GameIndex.Thief3,
-                    origDisabledMods: Config.GetDisabledMods(gameIndex));
+                if (!WriteStubCommFile(
+                        fm: null,
+                        gamePath: gamePath,
+                        originalT3: gameIndex == GameIndex.Thief3,
+                        origDisabledMods: Config.GetDisabledMods(gameIndex)))
+                {
+                    return false;
+                }
 
-                StartExe(gameExe, workingPath, args);
+                if (!StartExe(gameExe, workingPath, args)) return false;
 
                 return true;
             }
@@ -223,7 +226,7 @@ namespace AngelLoader
 #if !ReleaseBeta && !ReleasePublic
             GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
 #endif
-            SetUsAsSelector(gameIndex, gamePath, PlaySource.FM);
+            if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.FM)) return false;
 
             string steamArgs = "";
             string workingPath = Config.GetGamePath(gameIndex);
@@ -291,9 +294,9 @@ namespace AngelLoader
                 }
             }
 
-            WriteStubCommFile(fm, gamePath);
+            if (!WriteStubCommFile(fm, gamePath)) return false;
 
-            StartExe(gameExe, workingPath, args);
+            if (!StartExe(gameExe, workingPath, args)) return false;
 
             return true;
         }
@@ -342,8 +345,11 @@ namespace AngelLoader
                 Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
                 GameConfigFiles.FixCharacterDetailLine(gameIndex);
+
                 // We don't need to do this here, right?
-                SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
+                // In testing, it seems that with our current logic as of 2022-07-24, we don't need to call this
+                // in practice. Leave it in, but don't fail if it fails.
+                _ = SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
                 // Since we don't use the stub currently, set this here
                 // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
@@ -353,7 +359,7 @@ namespace AngelLoader
                 GenerateMissFlagFileIfRequired(fm);
 
                 // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
-                StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
+                if (!StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"")) return false;
 
                 return true;
             }
@@ -367,29 +373,36 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static void SetUsAsSelector(GameIndex gameIndex, string gamePath, PlaySource playSource)
+        [MustUseReturnValue]
+        private static bool SetUsAsSelector(GameIndex gameIndex, string gamePath, PlaySource playSource)
         {
             bool success = GameIsDark(gameIndex)
                 ? GameConfigFiles.SetDarkFMSelector(gameIndex, gamePath)
                 : GameConfigFiles.SetT3FMSelector();
 
-            if (!success)
-            {
-                Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
-                    (GameIsDark(gameIndex) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
-                    " returned false)\r\n" +
-                    "Source: " + playSource, stackTrace: true);
+            if (success) return true;
 
+            Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
+                (GameIsDark(gameIndex) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
+                " returned false)\r\n" +
+                "Source: " + playSource, stackTrace: true);
+
+            if (playSource != PlaySource.Editor)
+            {
                 Core.Dialogs.ShowError(
-                    "Failed to set AngelLoader as the FM selector.\r\n\r\n" +
+                    "Failed to start the game.\r\n\r\n" +
+                    "Reason: Failed to set AngelLoader as the FM selector.\r\n\r\n" +
                     "Game: " + gameIndex + "\r\n" +
                     "Game exe: " + Config.GetGameExe(gameIndex) + "\r\n" +
                     "Source: " + playSource + "\r\n" +
                     "");
             }
+
+            return false;
         }
 
-        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
+        [MustUseReturnValue]
+        private static bool WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
@@ -438,19 +451,38 @@ namespace AngelLoader
                     if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
                     if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExWrite + "stub file '" + Paths.StubFileName + "'\r\n" +
-                                     (fm == null ? "Original game" : "FM"), ex);
-                Core.Dialogs.ShowError("Unable to write stub comm file. " +
-                                       (fm == null
-                                           ? "Game may not start correctly."
-                                           : "FM cannot be passed to the game and therefore cannot be played."));
+                string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
+
+                if (fm != null)
+                {
+                    LogFMInfo(fm, topMsg, ex);
+                }
+                else
+                {
+                    Log(topMsg + "\r\n" +
+                        "Game path: " + gamePath,
+                        ex);
+                }
+
+                Core.Dialogs.ShowError(
+                    "Failed to start the game.\r\n\r\n" +
+                    "Reason: Unable to write the stub comm file.\r\n\r\n" +
+                    (fm == null
+                        ? "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly."
+                        : "Without a valid stub comm file, the FM '" + GetFMId(fm) +
+                          "' cannot be passed to the game and therefore cannot be played."));
+
+                return false;
             }
         }
 
-        private static void StartExe(string exe, string workingPath, string args)
+        [MustUseReturnValue]
+        private static bool StartExe(string exe, string workingPath, string args)
         {
             try
             {
@@ -460,16 +492,18 @@ namespace AngelLoader
                     WorkingDirectory = workingPath,
                     Arguments = !args.IsEmpty() ? args : ""
                 });
+
+                return true;
             }
             catch (Exception ex)
             {
-                // @BetterErrors(FMInstallAndPlay/StartExe()):
-                // Use more specific messages depending on the exception
-                string msg = ErrorText.UnStartExe + "\r\n\r\n" + exe;
+                string msg = "Unable to start executable '" + exe + "'.";
                 Log(msg + "\r\n" +
                     "workingPath: " + workingPath + "\r\n" +
                     "args: " + args, ex);
                 Core.Dialogs.ShowError(msg);
+
+                return false;
             }
         }
 
