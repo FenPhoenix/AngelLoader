@@ -228,21 +228,23 @@ namespace AngelLoader
             var sv = GetSteamValues(gameIndex, playMP);
             if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
 
-            // BUG: Possible stub comm file not being deleted in the following scenario:
-            // You launch a game through Steam, but the game doesn't actually launch (because you don't have
-            // it in your Steam library or any other situation in which it gets cancelled). Because the game
-            // never runs, it never deletes the stub comm file. The next time the game runs, it finds the stub
-            // file and loads up whatever FM was specified. This won't happen if you launch an FM or original
-            // game from AngelLoader, as we delete or overwrite the stub file ourselves before playing anything,
-            // but if you were to run the game manually, it would load whatever FM was specified in the stub
-            // once, and then delete it, so if you ran it again it would properly start the original game and
-            // everything would be fine again.
-            // I could solve it if there was a way to detect if we were being launched through Steam. I don't
-            // know if there is, but then I could just specify a Steam=True line in the stub file, and then
-            // if we're being launched through steam we read and act on it as usual, but if we're not, then
-            // we just delete it and ignore.
-            // I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
-            // works and one that doesn't, so I can test both paths.
+            /*
+            BUG: Possible stub comm file not being deleted in the following scenario:
+            You launch a game through Steam, but the game doesn't actually launch (because you don't have
+            it in your Steam library or any other situation in which it gets cancelled). Because the game
+            never runs, it never deletes the stub comm file. The next time the game runs, it finds the stub
+            file and loads up whatever FM was specified. This won't happen if you launch an FM or original
+            game from AngelLoader, as we delete or overwrite the stub file ourselves before playing anything,
+            but if you were to run the game manually, it would load whatever FM was specified in the stub
+            once, and then delete it, so if you ran it again it would properly start the original game and
+            everything would be fine again.
+            I could solve it if there was a way to detect if we were being launched through Steam. I don't
+            know if there is, but then I could just specify a Steam=True line in the stub file, and then
+            if we're being launched through steam we read and act on it as usual, but if we're not, then
+            we just delete it and ignore.
+            I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
+            works and one that doesn't, so I can test both paths.
+            */
 
 #if !ReleaseBeta && !ReleasePublic
             string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "force_windowed=1 -fm" : "-fm";
@@ -346,14 +348,14 @@ namespace AngelLoader
                 // in practice. Leave it in, but don't fail if it fails.
                 _ = SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
 
-                // Since we don't use the stub currently, set this here
+                // Since we don't use the stub for the editor currently, set this here
                 // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
                 GameConfigFiles.SetCamCfgLanguage(gamePath, "");
 
                 // Why not
                 GenerateMissFlagFileIfRequired(fm);
 
-                // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
+                // We don't need the stub for the editor, cause we don't need to pass anything except the fm folder
                 if (!StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"")) return false;
 
                 return true;
@@ -441,8 +443,7 @@ namespace AngelLoader
                 if (fm != null)
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                    sw.WriteLine("DisabledMods=" + fm.DisabledMods);
-                    // Pass blank if we have nothing, so the stub will leave whatever was in there before
+                    if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
                     if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
                     if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
                 }
@@ -1297,6 +1298,9 @@ namespace AngelLoader
                     int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
 
                     // Framework zip extracting is much faster, so use it if possible
+                    // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
+                    // But we don't want to parse out stupid console output for error detection and junk if we
+                    // don't have to so whatever.
                     (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
                         ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
                         : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
@@ -1730,20 +1734,22 @@ namespace AngelLoader
                         atLeastOneFMMarkedUnavailable = true;
                     }
 
-                    // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
-                    // This file will be included in the search when restoring, and the newest will be taken as
-                    // usual.
+                    /*
+                    If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
+                    This file will be included in the search when restoring, and the newest will be taken as
+                    usual.
+                    
+                    fm.Archive can be blank at this point when all of the following conditions are true:
+                    -fm is installed
+                    -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
+                    -fm was not in the database on startup
+                    -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
+                     folders if that option is enabled)
 
-                    // fm.Archive can be blank at this point when all of the following conditions are true:
-                    // -fm is installed
-                    // -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
-                    // -fm was not in the database on startup
-                    // -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
-                    //  folders if that option is enabled)
-
-                    // It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
-                    // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
-                    // archive folder on initial setup, and hasn't imported from NDL by this point.
+                    It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
+                    don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
+                    archive folder on initial setup, and hasn't imported from NDL by this point.
+                    */
 
                     if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath);
 
@@ -1762,13 +1768,15 @@ namespace AngelLoader
                     fm.Installed = false;
                     if (markFMAsUnavailable) fm.MarkedUnavailable = true;
 
-                    // NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
-                    // do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
-                    // just read in the truncated names and treat them as normal for compatibility purposes. But
-                    // if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
-                    // un-truncated form for future use.
-                    // NOTE: 2022-05-17: This was a dumb glib decision that will probably just cause confusion
-                    // for the importer code and anyone else who looks at the behavior.
+                    /*
+                    NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
+                    do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
+                    just read in the truncated names and treat them as normal for compatibility purposes. But
+                    if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
+                    un-truncated form for future use.
+                    NOTE: 2022-05-17: This was a dumb glib decision that will probably just cause confusion
+                    for the importer code and anyone else who looks at the behavior.
+                    */
                     if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
                     {
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);

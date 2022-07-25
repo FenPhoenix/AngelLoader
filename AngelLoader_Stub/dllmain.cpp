@@ -1,49 +1,20 @@
-﻿// This stub is now ~200k because of statically linking the stuff.
-// I don't like it, but whatever. It's not really of any consequence, I just like minimalism.
-// I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
-// and squash this junk down some. Till then, meh.
+﻿/*
+We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
+been passed to it by AngelLoader via a temp file. We do it this way in order to support AngelLoader being
+standalone.
 
-/*
- We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
- been passed to it by AngelLoader via a temp file. We do it this way in order to support AngelLoader being
- standalone.
-
- Note: From the default cam_mod.ini file:
-
- ---snip---
-
- FM selection can also be done with command-line options (which override mod.ini)
-   -fm        : to start the FM Selector
-   -fm=name   : to start game with 'name' as active FM
-
- ---snip---
-
- If we just wanted to play FMs and be done with it, we could just pass fm=[name] on the command line and avoid
- having to have this stub altogether. But unfortunately you can't pass anything else on the command line (disabled
- mods etc.) so we have to have this.
-
- Or at least no other command-line options are listed anywhere that I can find.
-
- 2019/10/10:
- We now use the stub at all times again, due to wanting to pass language stuff. Steam support also requires the
- stub.
-
- 2019/9/28:
- This stub is now in C++ to avoid DLLExport incompatibilities and general hackiness with the .NET version.
-
- 2019/3/31:
- As of this date, we only use this stub if we actually need to pass mod excludes. Otherwise, we just call the
- game and pass it the FM on the command line, as that's much cleaner.
- */
+We can pass certain things on the command line, but one thing we can't pass is disabled mods, so we hard require
+this stub for that at the very least.
+*/
 
 #include "AngelLoader_Stub.h"
 #include <string>
 #include <fstream>
 #include <filesystem>
-#include <cstdio>
+//#include <cstdio>
 #include <Windows.h>
- //#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
- //#include <tchar.h>
+//#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
+//#include <tchar.h>
 using std::string;
 using std::wstring;
 namespace fs = std::filesystem;
@@ -64,35 +35,6 @@ int show_loader_alert()
     MessageBoxW(nullptr, (msg1 + msg2 + msg3 + msg4 + msg5).c_str(), L"AngelLoader", MB_OK | MB_ICONINFORMATION);
     return kSelFMRet_ExitGame;
 }
-// Disabled for now because I'm not sure I want to go to all this work for a message people will hopefully never
-// see. It's gotta have linebreaks in it too, which I guess means multiple lines in the lang ini... meh!
-/*
-wstring get_loader_alert_message()
-{
-    TCHAR path[MAX_PATH];
-    HMODULE hModule = nullptr;
-
-    if (!GetModuleHandleExW(
-        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-        (LPCWSTR)&SelectFM, &hModule))
-    {
-        return L"";
-    }
-
-    if (!GetModuleFileNameW(hModule, path, sizeof(path)))
-    {
-        return L"";
-    }
-
-    PathRemoveFileSpecW(path);
-
-    const wstring data_path = fs::path(fs::path(path) / "Data" / "Config.ini").wstring();
-
-    MessageBoxW(nullptr, data_path.c_str(), L"Test", MB_OK | MB_ICONINFORMATION);
-
-    return L"";
-}
-*/
 
 extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 {
@@ -104,8 +46,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
     // Never call us back; we're standalone and don't need it
     data->bRunAfterGame = 0;
-
-    //wstring localized_alert_message = get_loader_alert_message();
 
     // data->sGameVersion:
     // Might eventually use
@@ -126,7 +66,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     string force_language;
 
     // Note: We can't make this into a char* right here, because of pointer and scope weirdness. We have to convert
-    // each time later. Probably a better way to do it but whatever. C# cowboy learning the ropes.
+    // each time later. Probably a better way to do it but whatever.
     const fs::path args_file = fs::path(fs::temp_directory_path() / "AngelLoader" / "Stub" / "al_stub_args.tmp");
 
     const string play_original_game_eq = "PlayOriginalGame=";
@@ -197,7 +137,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     {
         return show_loader_alert();
     }
-    // error conditions; they can be reported through a response file if I decided to ever use that
+    // Error conditions; they can be reported through a response file if I decided to ever use that
     // Fix: we used to compare fm_name length to 30, but Thief 3 supports fm names longer than that, so we would
     // just silently exit the game in that case (ex. On The Trail of a Fence).
     else if (fm_name.length() > static_cast<unsigned int>(data->nMaxNameLen) ||

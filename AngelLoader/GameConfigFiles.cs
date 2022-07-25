@@ -11,12 +11,14 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // @BetterErrors(GameConfigFiles):
-    // Go through this whole thing and check what we want to do for each error. Some of these should maybe remain
-    // silent because they have fallbacks, like if we can't set ourselves as the loader then the user will get a
-    // dialog about it if they try to start the game executable by itself, and maybe we don't want to bother the
-    // user for that? Then again, it's an unexpected situation that shouldn't happen often if at all, so maybe we
-    // should alert the user.
+    /*
+    @BetterErrors(GameConfigFiles):
+    Go through this whole thing and check what we want to do for each error. Some of these should maybe remain
+    silent because they have fallbacks, like if we can't set ourselves as the loader then the user will get a
+    dialog about it if they try to start the game executable by itself, and maybe we don't want to bother the
+    user for that? Then again, it's an unexpected situation that shouldn't happen often if at all, so maybe we
+    should alert the user.
+    */
 
     internal static class GameConfigFiles
     {
@@ -327,19 +329,21 @@ namespace AngelLoader
             }
         }
 
-        // @BetterErrors(FixCharacterDetailLineInCamCfg)
-        // The bug:
-        // Ascend the Dim Valley has "character_detail 0" in its fm.cfg file. This file is supposed to contain
-        // values that ONLY apply to that specific FM. But, NewDark writes the character_detail value back out
-        // to the global cam.cfg after reading it from the FM-specific fm.cfg, causing the value to persist
-        // permanently for other FMs, which causes broken texture UV on many models. The fix is to just force
-        // character_detail back to 1 in cam.cfg.
-        // We also force character_detail 1 in all other config files from which that value can be read and applied.
-        // Note: this option is written and read from Config.ini, but has no UI way to change it. If a user wants
-        // to change it they can change it in Config.ini and it will be honored.
-        // We don't want to allow UI changing because the option shouldn't be disabled pretty much ever under
-        // normal circumstances.
-        // @CAN_RUN_BEFORE_VIEW_INIT
+        /*
+        @BetterErrors(FixCharacterDetailLineInCamCfg)
+        The bug:
+        Ascend the Dim Valley has "character_detail 0" in its fm.cfg file. This file is supposed to contain
+        values that ONLY apply to that specific FM. But, NewDark writes the character_detail value back out
+        to the global cam.cfg after reading it from the FM-specific fm.cfg, causing the value to persist
+        permanently for other FMs, which causes broken texture UV on many models. The fix is to just force
+        character_detail back to 1 in cam.cfg.
+        We also force character_detail 1 in all other config files from which that value can be read and applied.
+        Note: this option is written and read from Config.ini, but has no UI way to change it. If a user wants
+        to change it they can change it in Config.ini and it will be honored.
+        We don't want to allow UI changing because the option shouldn't be disabled pretty much ever under
+        normal circumstances.
+        @CAN_RUN_BEFORE_VIEW_INIT
+        */
         internal static void FixCharacterDetailLine(GameIndex gameIndex)
         {
             if (gameIndex is not GameIndex.Thief1 and not GameIndex.Thief2) return;
@@ -1082,7 +1086,6 @@ namespace AngelLoader
                 }
                 catch
                 {
-                    // ignore
                     return false;
                 }
             }
