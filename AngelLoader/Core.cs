@@ -128,6 +128,7 @@ namespace AngelLoader
             // file, so we can't show it any earlier than this.
             using var splashScreen = new SplashScreen(ViewEnv.GetSplashScreen());
 
+            // @BetterErrors (Read langs on startup)
             static void ReadLanguages(SplashScreen splashScreen)
             {
                 // We can't show a message until we've read the config file (to know which language to use) and
@@ -196,6 +197,7 @@ namespace AngelLoader
 
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
+            // @BetterErrors(Set game data on startup)
             #region Set game data
 
             for (int i = 0; i < SupportedGameCount; i++)

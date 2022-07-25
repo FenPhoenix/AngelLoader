@@ -1605,15 +1605,33 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            // @BetterErrors(Settings lang combobox select)
-            // If we fail, we should fall back to internal default English set, and switch the combobox to English
+            string lang = LangComboBox.SelectedBackingItem();
             try
             {
-                LText = Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
+                LText = Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, lang + ".ini"));
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "in language reading", ex);
+                if (!lang.EqualsI("English"))
+                {
+                    string msg = ex is FileNotFoundException
+                        ? "Language file not found."
+                        : "Unable to read language file.";
+
+                    Core.Dialogs.ShowAlert(msg + " Falling back to English.", LText.AlertMessages.Alert);
+
+                    using (new DisableEvents(this))
+                    {
+                        LangComboBox.SelectedIndex = 0;
+                    }
+
+                    Log(ErrorText.Ex + "in language reading", ex);
+                }
+
+                // @BetterErrors(Settings lang combobox select)
+                // If we wanted to be really fancy we could fall back to the previously selected language, by
+                // keeping it in memory and only switching if we know the select succeeded.
+                LText = new LText_Class();
             }
 
             try
