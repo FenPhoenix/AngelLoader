@@ -13,7 +13,7 @@ namespace AngelLoader.Forms.CustomControls
             BindingFlags.Static;
 
         private static bool? _reflectionSupported;
-        private static FieldInfo? selectionModeField;
+        private static FieldInfo? _selectionModeField;
 
         // Not strictly necessary: we work fine without it, but having it allows us to skip the reflection stuff
         // in dark mode.
@@ -77,9 +77,9 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     try
                     {
-                        selectionModeField = typeof(DataGridView).GetField(WinFormsReflection.DGV_SelectionModeBackingFieldName, _bfAll);
-                        if (selectionModeField == null ||
-                            selectionModeField.GetValue(DataGridView) is not DataGridViewSelectionMode)
+                        _selectionModeField = typeof(DataGridView).GetField(WinFormsReflection.DGV_SelectionModeBackingFieldName, _bfAll);
+                        if (_selectionModeField == null ||
+                            _selectionModeField.GetValue(DataGridView) is not DataGridViewSelectionMode)
                         {
                             CallBase(disableReflection: true);
                             return;
@@ -96,7 +96,7 @@ namespace AngelLoader.Forms.CustomControls
                     }
                 }
 
-                if (selectionModeField == null)
+                if (_selectionModeField == null)
                 {
                     CallBase(disableReflection: true);
                     return;
@@ -106,8 +106,8 @@ namespace AngelLoader.Forms.CustomControls
                 DataGridViewSelectionMode oldSelectionModeProperty = DataGridView.SelectionMode;
                 try
                 {
-                    oldSelectionMode = (DataGridViewSelectionMode)selectionModeField.GetValue(DataGridView);
-                    selectionModeField.SetValue(DataGridView, DataGridViewSelectionMode.CellSelect);
+                    oldSelectionMode = (DataGridViewSelectionMode)_selectionModeField.GetValue(DataGridView);
+                    _selectionModeField.SetValue(DataGridView, DataGridViewSelectionMode.CellSelect);
                 }
                 catch
                 {
@@ -125,7 +125,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     try
                     {
-                        selectionModeField.SetValue(DataGridView, oldSelectionMode);
+                        _selectionModeField.SetValue(DataGridView, oldSelectionMode);
                     }
                     catch
                     {
