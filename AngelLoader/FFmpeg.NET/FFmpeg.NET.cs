@@ -27,6 +27,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 
@@ -42,9 +43,20 @@ namespace AngelLoader.FFmpeg.NET
     {
         public static async Task ConvertAsync(string input, string output, ConvertType convertType)
         {
+            void LogInfo(string topMsg, Exception ex)
+            {
+                Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
+                    nameof(input) + ": " + input + "\r\n" +
+                    nameof(output) + ": " + input + "\r\n" +
+                    nameof(convertType) + ": " + convertType,
+                    ex);
+            }
+
             if (!File.Exists(Paths.FFmpegExe))
             {
-                throw new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
+                var ex = new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
+                LogInfo("", ex);
+                throw ex;
             }
 
             string arguments = convertType == ConvertType.FormatConvert
@@ -67,12 +79,11 @@ namespace AngelLoader.FFmpeg.NET
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExTry + "run or exit FFmpeg", ex);
+                LogInfo(ErrorText.ExTry + "run or exit FFmpeg", ex);
                 throw;
             }
         }
 
-        // @BetterErrors(FFmpeg.NET.Engine)
         private static Task<int> WaitForExitAsync(Process process)
         {
             var tcs = new TaskCompletionSource<int>();

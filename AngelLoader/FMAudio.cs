@@ -19,6 +19,8 @@ namespace AngelLoader
     {
         // @BetterErrors(FMAudio):
         // Lots of exceptions possible here... we need to decide which to actually bother the user about...
+        // Maybe do similar to scanner, write all errors to log and then tell user there were errors during the
+        // conversion.
 
         private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
         private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };

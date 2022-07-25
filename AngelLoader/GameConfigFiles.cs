@@ -445,9 +445,6 @@ namespace AngelLoader
 
         #region Set selectors
 
-        // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
-        // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
-
         // @CAN_RUN_BEFORE_VIEW_INIT
         // @vNext(SetDarkFMSelector): Rewrite this mess into something readable!
         internal static bool SetDarkFMSelector(GameIndex gameIndex, string gamePath, bool resetSelector = false)
