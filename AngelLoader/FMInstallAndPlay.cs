@@ -258,7 +258,7 @@ namespace AngelLoader
 
                 // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
                 // .mis file when detecting OldDark (if there is no missflag.str)!
-                bool fmIsOldDark = MissionIsOldDark(fm);
+                bool fmIsOldDark = FMIsOldDark(fm);
 
                 if (fmIsOldDark && FMRequiresPaletteFix(fm, checkForOldDark: false))
                 {
@@ -868,7 +868,7 @@ namespace AngelLoader
         -UNN Sayarath
          Same thing as above, this one has cloaking_turret.mis (OldDark) and sayarath.mis (NewDark).
         */
-        private static bool MissionIsOldDark(FanMission fm)
+        private static bool FMIsOldDark(FanMission fm)
         {
             if (!GameIsDark(fm.Game)) return false;
 
@@ -975,7 +975,8 @@ namespace AngelLoader
             #endregion
 
             if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
-            if (checkForOldDark && !MissionIsOldDark(fm)) return false;
+            if (!fm.Installed) return false;
+            if (checkForOldDark && !FMIsOldDark(fm)) return false;
 
             try
             {
