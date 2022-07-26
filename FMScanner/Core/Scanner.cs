@@ -3479,26 +3479,26 @@ namespace FMScanner
             #region Check for SKYOBJVAR in .mis (determines OldDark/NewDark; determines game type for OldDark)
 
             /*
-             SKYOBJVAR location key (byte position in file):
-                 No SKYOBJVAR           - OldDark Thief 1/G
-                 772                    - OldDark Thief 2                        Commonness: ~80%
-                 7217                   - NewDark, could be either T1/G or T2    Commonness: ~14%
-                 3093                   - NewDark, could be either T1/G or T2    Commonness: ~4%
-                 Any other location*    - OldDark Thief2
+            SKYOBJVAR location key (byte position in file):
+                No SKYOBJVAR           - OldDark Thief 1/G
+                772                    - OldDark Thief 2                        Commonness: ~80%
+                7217                   - NewDark, could be either T1/G or T2    Commonness: ~14%
+                3093                   - NewDark, could be either T1/G or T2    Commonness: ~4%
+                Any other location*    - OldDark Thief2
 
             System Shock 2 .mis files can (but may not) have the SKYOBJVAR string. If they do, it'll be at 3168
             or 7292.
-            System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916. One or the
-            other may correspond to NewDark but I dunno cause I haven't looked into it that far yet.
-            (we don't detect OldDark/NewDark for SS2 yet)
+            System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
+            696 = NewDark, 916 = OldDark.
+            (but we don't detect OldDark/NewDark for SS2 yet, see below)
 
-             * We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky
-               location, and it's faster and more reliable to simply carry on with the secondary check than to
-               try to guess where SKYOBJVAR is in this case.
+            * We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky
+              location, and it's faster and more reliable to simply carry on with the secondary check than to
+              try to guess where SKYOBJVAR is in this case.
+
+            For folder scans, we can seek to these positions directly, but for zip scans, we have to read
+            through the stream sequentially until we hit each one.
             */
-
-            // For folder scans, we can seek to these positions directly, but for zip scans, we have to read
-            // through the stream sequentially until we hit each one.
 
             // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
             // complicating things any further than they already are.
