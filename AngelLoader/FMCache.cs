@@ -37,9 +37,9 @@ namespace AngelLoader
         private static readonly string[]
         _htmlRefExcludes =
         {
-            ".osm", ".exe", ".ose", ".mis", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav", ".mp3", ".ogg",
-            ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv", ".flv", ".log",
-            ".str", ".nut", ".db", ".obj"
+            ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
+            ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
+            ".flv", ".log", ".str", ".nut", ".db", ".obj"
         };
 
         #endregion
