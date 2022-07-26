@@ -3575,8 +3575,9 @@ namespace FMScanner
                         combine OldDark and NewDark .mis files.
                         So we're leaving this disabled for now because adding a .mis read loop in here would be
                         a pain, but there's how we would add it.
-                        Also, we can detect OD/ND for T1/T2 by checking for DARKMISS at byte 612 if we wanted,
-                        although our SKYOBJVAR position checking method works fine currently.
+                        Also, we can detect NewDark for T1/T2 by checking for DARKMISS at byte 612 if we wanted
+                        (DARKMISS at byte 612 = NewDark) although our SKYOBJVAR position checking method works
+                        fine currently.
                         SS2 .mis files don't have DARKMISS in them at all.
                         */
                         return (null, Game.SS2);
