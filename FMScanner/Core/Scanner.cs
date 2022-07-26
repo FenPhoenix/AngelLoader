@@ -3562,11 +3562,23 @@ namespace FMScanner
                         buffer = sr.ReadBytes(locationBytesToRead);
                     }
 
-                    if ((_locations[i] == _ss2MapParamLoc1 ||
-                         _locations[i] == _ss2MapParamLoc2) &&
+                    if ((_locations[i] == _ss2MapParamNewDarkLoc ||
+                         _locations[i] == _ss2MapParamOldDarkLoc) &&
                         EndsWithMAPPARAM(buffer))
                     {
-                        // TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
+                        /*
+                        TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
+                        How to detect NewDark/OldDark for SS2:
+                        If MAPPARAM is at either OldDark location or NewDark location, then loop through all
+                        .mis files and check for MAPPARAM at NewDark location in each. If any found at NewDark
+                        location, we're NewDark. Unfortunately we have to do that because SS2 missions sometimes
+                        combine OldDark and NewDark .mis files.
+                        So we're leaving this disabled for now because adding a .mis read loop in here would be
+                        a pain, but there's how we would add it.
+                        Also, we can detect OD/ND for T1/T2 by checking for DARKMISS at byte 612 if we wanted,
+                        although our SKYOBJVAR position checking method works fine currently.
+                        SS2 .mis files don't have DARKMISS in them at all.
+                        */
                         return (null, Game.SS2);
                     }
                     else if ((_locations[i] == _oldDarkT2Loc ||
