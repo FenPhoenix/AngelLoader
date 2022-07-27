@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms.ThemeRenderers

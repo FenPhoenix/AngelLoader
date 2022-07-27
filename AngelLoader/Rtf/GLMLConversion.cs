@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using AL_Common;
+using AngelLoader.DataClasses;
 using static AL_Common.Common;
 
 namespace AngelLoader

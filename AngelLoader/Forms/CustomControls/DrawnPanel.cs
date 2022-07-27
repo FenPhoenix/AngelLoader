@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls

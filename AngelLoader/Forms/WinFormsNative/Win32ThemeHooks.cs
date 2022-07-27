@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
 using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;

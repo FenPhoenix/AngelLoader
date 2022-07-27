@@ -3,6 +3,7 @@
 #if DRAW_BORDER
 using System;
 #endif
+using AngelLoader.DataClasses;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;

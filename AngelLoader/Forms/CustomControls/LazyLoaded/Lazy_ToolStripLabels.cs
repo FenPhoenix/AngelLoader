@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using AngelLoader.DataClasses;
 using static AL_Common.Common;
 
 namespace AngelLoader

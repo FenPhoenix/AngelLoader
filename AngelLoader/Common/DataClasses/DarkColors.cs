@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
-namespace AngelLoader
+namespace AngelLoader.DataClasses
 {
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class DarkColors
