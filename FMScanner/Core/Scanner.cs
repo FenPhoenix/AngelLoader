@@ -3629,7 +3629,7 @@ namespace FMScanner
                 using Stream stream = smallestGamFile != null ? _archive.OpenEntry(gamFileZipEntry) : _archive.OpenEntry(misFileZipEntry);
                 ret.Game = StreamContainsIdentString(
                     stream,
-                    Thief2UniqueString,
+                    RopeyArrow,
                     GameTypeBuffer_ChunkPlusRopeyArrow,
                     _gameTypeBufferSize)
                     ? Game.Thief2
@@ -3659,7 +3659,7 @@ namespace FMScanner
                     br.BaseStream.Position = offset + 24;
 
                     byte[] content = br.ReadBytes((int)length);
-                    ret.Game = content.Contains(Thief2UniqueString)
+                    ret.Game = content.Contains(RopeyArrow)
                         ? Game.Thief2
                         : Game.Thief1;
                     break;

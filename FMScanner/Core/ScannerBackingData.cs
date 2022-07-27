@@ -387,7 +387,7 @@ namespace FMScanner
         extra strength defense against a custom RopeyArrow archetype... except that a handful of legit T2 missions
         have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
         */
-        private readonly byte[] Thief2UniqueString =
+        private readonly byte[] RopeyArrow =
         {
             (byte)'R',
             (byte)'o',
@@ -417,7 +417,7 @@ namespace FMScanner
         private const int _gameTypeBufferSize = 81_920;
 
         private byte[]? _gameTypeBuffer_ChunkPlusRopeyArrow;
-        private byte[] GameTypeBuffer_ChunkPlusRopeyArrow => _gameTypeBuffer_ChunkPlusRopeyArrow ??= new byte[_gameTypeBufferSize + Thief2UniqueString.Length];
+        private byte[] GameTypeBuffer_ChunkPlusRopeyArrow => _gameTypeBuffer_ChunkPlusRopeyArrow ??= new byte[_gameTypeBufferSize + RopeyArrow.Length];
 
         private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
         private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
