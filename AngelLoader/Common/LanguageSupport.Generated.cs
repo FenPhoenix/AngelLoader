@@ -1,3 +1,4 @@
+// Static analyzer requires this for generated files for whatever reason, even if it's also enabled in the .proj file
 #nullable enable
 
 #define FenGen_LanguageSupportDest
