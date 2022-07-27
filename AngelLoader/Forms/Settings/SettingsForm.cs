@@ -405,7 +405,7 @@ namespace AngelLoader.Forms
 
                 #region Date format
 
-                object[] dateFormatList = ValidDateFormatList.Cast<object>().ToArray();
+                object[] dateFormatList = ValidDateFormats.Cast<object>().ToArray();
                 AppearancePage.Date1ComboBox.Items.AddRange(dateFormatList);
                 AppearancePage.Date2ComboBox.Items.AddRange(dateFormatList);
                 AppearancePage.Date3ComboBox.Items.AddRange(dateFormatList);

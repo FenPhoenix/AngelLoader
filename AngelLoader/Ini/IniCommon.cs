@@ -797,10 +797,10 @@ namespace AngelLoader
                 config.DateCustomFormatString = GetFormattedDateString(config);
             }
 
-            if (!ValidDateFormatList.Contains(config.DateCustomFormat1) ||
-                !ValidDateFormatList.Contains(config.DateCustomFormat2) ||
-                !ValidDateFormatList.Contains(config.DateCustomFormat3) ||
-                !ValidDateFormatList.Contains(config.DateCustomFormat4))
+            if (!ValidDateFormats.Contains(config.DateCustomFormat1) ||
+                !ValidDateFormats.Contains(config.DateCustomFormat2) ||
+                !ValidDateFormats.Contains(config.DateCustomFormat3) ||
+                !ValidDateFormats.Contains(config.DateCustomFormat4))
             {
                 ResetCustomDate(config);
             }

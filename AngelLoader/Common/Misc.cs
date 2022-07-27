@@ -132,7 +132,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
+        internal static readonly string[] ValidDateFormats = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
         internal static class Defaults
         {
