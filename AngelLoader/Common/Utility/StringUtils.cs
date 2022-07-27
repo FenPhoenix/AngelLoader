@@ -125,6 +125,7 @@ namespace AngelLoader
         /// <returns></returns>
         internal static string ToInstDirNameFMSel(this string archiveName, bool truncate) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
 
+        // @THREADING(_toInstDirNameSB): Not thread-safe
         private static readonly StringBuilder _toInstDirNameSB = new(30);
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
