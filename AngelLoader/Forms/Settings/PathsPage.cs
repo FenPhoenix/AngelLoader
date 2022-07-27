@@ -87,7 +87,7 @@ namespace AngelLoader.Forms
                     }
                 }
 
-                Misc.AssertR(bottomMostControl != null, nameof(bottomMostControl) + " was null");
+                Utils.AssertR(bottomMostControl != null, nameof(bottomMostControl) + " was null");
 
                 ActualPathsPanel.Height = (bottomMostControl!.Top +
                                            bottomMostControl!.Height) -

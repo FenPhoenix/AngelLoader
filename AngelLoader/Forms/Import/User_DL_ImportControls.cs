@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms
 {

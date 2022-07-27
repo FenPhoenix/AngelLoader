@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms
 {

@@ -131,7 +131,7 @@ namespace FenGen
             w.WL("/// <param name=\"" + gameNameVarCase + "\"></param>");
             w.WL("public static " + gameIndexName + " " + gameName + "To" + gameIndexName + "(" + gameName + " " + gameNameVarCase + ")");
             w.WL("{");
-            w.WL("Misc.AssertR(GameIsKnownAndSupported(" + gameNameVarCase + "), nameof(" + gameNameVarCase + ") + \" was out of range: \" + " + gameNameVarCase + ");");
+            w.WL("AssertR(GameIsKnownAndSupported(" + gameNameVarCase + "), nameof(" + gameNameVarCase + ") + \" was out of range: \" + " + gameNameVarCase + ");");
             w.WL();
             w.WL("return game switch");
             w.WL("{");

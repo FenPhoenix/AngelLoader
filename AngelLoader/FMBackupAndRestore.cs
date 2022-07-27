@@ -12,7 +12,8 @@ using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
+using static AngelLoader.Utils;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace AngelLoader

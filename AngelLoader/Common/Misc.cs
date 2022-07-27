@@ -6,7 +6,7 @@ using AngelLoader.DataClasses;
 
 namespace AngelLoader
 {
-    public static partial class Misc
+    public static class Misc
     {
         //internal const int AppConfigVersion = 1;
         // Commented so that old versions of AngelLoader will ignore it
@@ -173,12 +173,10 @@ namespace AngelLoader
             internal const uint DaysRecent = 15;
             internal const uint MaxDaysRecent = 99999;
         }
+    }
 
-        // IMPORTANT: Put these AFTER every other static field has been initialized!
-        // Otherwise, these things' constructors might refer back to this class and get a field that may not have
-        // been initialized. Ugh.
-        #region Global mutable state
-
+    public static class Global
+    {
         internal static readonly ConfigData Config = new();
 
         // This one is sort of quasi-immutable: its fields are readonly (they're loaded by reflection) but the
@@ -195,8 +193,6 @@ namespace AngelLoader
         // reallocate them right away anyway.
         internal static readonly List<FanMission> FMDataIniList = new(0);
         internal static readonly List<FanMission> FMsViewList = new(0);
-
-        #endregion
 
         #endregion
     }

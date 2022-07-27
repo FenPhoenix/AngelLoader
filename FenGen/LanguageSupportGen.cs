@@ -155,7 +155,7 @@ namespace FenGen
             w.WL("/// <param name=\"language\"></param>");
             w.WL("public static " + Cache.LangsEnum.LanguageIndexName + " LanguageToLanguageIndex(" + Cache.LangsEnum.Name + " language)");
             w.WL("{");
-            w.WL("Misc.AssertR(language != " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangEnumNames[0] + ", nameof(language) + \" was out of range: \" + language);");
+            w.WL("AssertR(language != " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangEnumNames[0] + ", nameof(language) + \" was out of range: \" + language);");
             w.WL();
             w.WL("return language switch");
             w.WL("{");

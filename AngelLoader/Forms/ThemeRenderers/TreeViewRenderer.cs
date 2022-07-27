@@ -32,7 +32,7 @@ namespace AngelLoader.Forms.ThemeRenderers
                 g,
                 direction,
                 rect,
-                pen: Misc.Config.DarkMode ? DarkColors.LightTextPen : SystemPens.WindowText);
+                pen: Global.Config.DarkMode ? DarkColors.LightTextPen : SystemPens.WindowText);
 
             return true;
         }

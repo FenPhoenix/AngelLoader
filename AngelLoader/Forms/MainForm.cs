@@ -52,8 +52,10 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms
 {

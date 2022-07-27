@@ -222,7 +222,7 @@ namespace FenGen
                             ? gameIndexName + "." + Cache.GamesEnum.GameIndexEnumNames[i] + " => "
                             : "_ => ";
                         string suffix = i < count - 1 ? "," : "";
-                        string line = prefix + "Misc.LText." + game.Section + "." + game.Field + suffix;
+                        string line = prefix + "LText." + game.Section + "." + game.Field + suffix;
                         w.WL(line);
                     }
                     w.WL("};");

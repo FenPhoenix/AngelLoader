@@ -11,7 +11,7 @@ using AngelLoader.DataClasses;
 using static AngelLoader.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.LanguageSupport;
-using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

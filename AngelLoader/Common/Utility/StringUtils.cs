@@ -5,7 +5,7 @@ using static System.StringComparison;
 
 namespace AngelLoader
 {
-    public static partial class Misc
+    public static partial class Utils
     {
         #region StartsWith and EndsWith
 

@@ -14,12 +14,13 @@ using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 using static AngelLoader.LanguageSupport;
 using static AngelLoader.NativeCommon;
 
 namespace AngelLoader
 {
-    public static partial class Misc
+    public static partial class Utils
     {
         // Depend on non-defined symbol if we're in public release profile, to prevent the bloat of calls to this
 #if ReleasePublic || NoAsserts

@@ -5,6 +5,7 @@
 using System;
 using static AL_Common.Common;
 using static AngelLoader.FenGenAttributes;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {
@@ -116,7 +117,7 @@ namespace AngelLoader
         /// <param name="language"></param>
         public static LanguageIndex LanguageToLanguageIndex(Language language)
         {
-            Misc.AssertR(language != Language.Default, nameof(language) + " was out of range: " + language);
+            AssertR(language != Language.Default, nameof(language) + " was out of range: " + language);
 
             return language switch
             {

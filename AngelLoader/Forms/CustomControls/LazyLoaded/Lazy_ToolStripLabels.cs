@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 #pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 

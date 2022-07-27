@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms

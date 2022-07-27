@@ -10,7 +10,8 @@ using SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

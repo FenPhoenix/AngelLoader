@@ -24,7 +24,7 @@ namespace AngelLoader.Forms.WinFormsNative.Taskbar
         [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
         private static readonly ITaskbarList3 _instance = (ITaskbarList3)new TaskbarInstance();
 
-        private static readonly bool _taskbarSupported = Misc.WinVersionIs7OrAbove();
+        private static readonly bool _taskbarSupported = Utils.WinVersionIs7OrAbove();
 
         internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
         {

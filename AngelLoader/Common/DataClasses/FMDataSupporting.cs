@@ -1,6 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.DataClasses
 {

@@ -5,6 +5,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader

@@ -1,6 +1,7 @@
 #define FenGen_GameSupportMainGenDest
 
 using static AngelLoader.FenGenAttributes;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {
@@ -57,7 +58,7 @@ namespace AngelLoader
         /// <param name="game"></param>
         public static GameIndex GameToGameIndex(Game game)
         {
-            Misc.AssertR(GameIsKnownAndSupported(game), nameof(game) + " was out of range: " + game);
+            AssertR(GameIsKnownAndSupported(game), nameof(game) + " was out of range: " + game);
 
             return game switch
             {

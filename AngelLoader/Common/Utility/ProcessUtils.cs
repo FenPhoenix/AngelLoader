@@ -2,7 +2,7 @@
 
 namespace AngelLoader
 {
-    public static partial class Misc
+    public static partial class Utils
     {
         // These wrappers that set UseShellExecute to true are just here for compatibility with .NET Core 3 and
         // above:

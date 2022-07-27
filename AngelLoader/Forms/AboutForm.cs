@@ -3,7 +3,8 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms
 {

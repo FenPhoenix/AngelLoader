@@ -284,7 +284,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static int GetSysColor(int nIndex)
         {
-            if (!_disableHookedTheming && Misc.Config.DarkMode)
+            if (!_disableHookedTheming && Global.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {
@@ -324,7 +324,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static IntPtr GetSysColorBrush(int nIndex)
         {
-            if (!_disableHookedTheming && Misc.Config.DarkMode)
+            if (!_disableHookedTheming && Global.Config.DarkMode)
             {
                 return SysColorOverride switch
                 {

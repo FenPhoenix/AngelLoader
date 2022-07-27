@@ -7,7 +7,9 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms
 {

@@ -1,6 +1,7 @@
 #define FenGen_LocalizedGameNameGetterDest
 
 using static AngelLoader.FenGenAttributes;
+using static AngelLoader.Global;
 
 namespace AngelLoader
 {
@@ -11,42 +12,42 @@ namespace AngelLoader
 
         internal static string GetLocalizedGameName(GameIndex gameIndex) => gameIndex switch
         {
-            GameIndex.Thief1 => Misc.LText.Global.Thief1,
-            GameIndex.Thief2 => Misc.LText.Global.Thief2,
-            GameIndex.Thief3 => Misc.LText.Global.Thief3,
-            _ => Misc.LText.Global.SystemShock2
+            GameIndex.Thief1 => LText.Global.Thief1,
+            GameIndex.Thief2 => LText.Global.Thief2,
+            GameIndex.Thief3 => LText.Global.Thief3,
+            _ => LText.Global.SystemShock2
         };
 
         internal static string GetShortLocalizedGameName(GameIndex gameIndex) => gameIndex switch
         {
-            GameIndex.Thief1 => Misc.LText.Global.Thief1_Short,
-            GameIndex.Thief2 => Misc.LText.Global.Thief2_Short,
-            GameIndex.Thief3 => Misc.LText.Global.Thief3_Short,
-            _ => Misc.LText.Global.SystemShock2_Short
+            GameIndex.Thief1 => LText.Global.Thief1_Short,
+            GameIndex.Thief2 => LText.Global.Thief2_Short,
+            GameIndex.Thief3 => LText.Global.Thief3_Short,
+            _ => LText.Global.SystemShock2_Short
         };
 
         internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => gameIndex switch
         {
-            GameIndex.Thief1 => Misc.LText.Global.Thief1_Colon,
-            GameIndex.Thief2 => Misc.LText.Global.Thief2_Colon,
-            GameIndex.Thief3 => Misc.LText.Global.Thief3_Colon,
-            _ => Misc.LText.Global.SystemShock2_Colon
+            GameIndex.Thief1 => LText.Global.Thief1_Colon,
+            GameIndex.Thief2 => LText.Global.Thief2_Colon,
+            GameIndex.Thief3 => LText.Global.Thief3_Colon,
+            _ => LText.Global.SystemShock2_Colon
         };
 
         internal static string GetLocalizedGamePlayOriginalText(GameIndex gameIndex) => gameIndex switch
         {
-            GameIndex.Thief1 => Misc.LText.PlayOriginalGameMenu.Thief1_PlayOriginal,
-            GameIndex.Thief2 => Misc.LText.PlayOriginalGameMenu.Thief2_PlayOriginal,
-            GameIndex.Thief3 => Misc.LText.PlayOriginalGameMenu.Thief3_PlayOriginal,
-            _ => Misc.LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal
+            GameIndex.Thief1 => LText.PlayOriginalGameMenu.Thief1_PlayOriginal,
+            GameIndex.Thief2 => LText.PlayOriginalGameMenu.Thief2_PlayOriginal,
+            GameIndex.Thief3 => LText.PlayOriginalGameMenu.Thief3_PlayOriginal,
+            _ => LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal
         };
 
         internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex) => gameIndex switch
         {
-            GameIndex.Thief1 => Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief1,
-            GameIndex.Thief2 => Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief2,
-            GameIndex.Thief3 => Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief3,
-            _ => Misc.LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2
+            GameIndex.Thief1 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief1,
+            GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief2,
+            GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief3,
+            _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2
         };
 
         #endregion

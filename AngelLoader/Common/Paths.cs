@@ -130,7 +130,7 @@ namespace AngelLoader
             // This method is called rarely and only once in a row
             bool pathIsInTempDir = path.PathStartsWithI(baseTemp + "\\");
 
-            Misc.AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
+            Utils.AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
 
             if (!pathIsInTempDir) return;
 

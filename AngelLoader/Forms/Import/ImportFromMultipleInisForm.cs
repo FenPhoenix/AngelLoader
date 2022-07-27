@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms

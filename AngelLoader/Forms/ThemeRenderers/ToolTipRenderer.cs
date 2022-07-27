@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.ThemeRenderers
     {
         private protected override string CLSID { get; } = "ToolTip";
 
-        internal override bool Enabled => Misc.Config.DarkMode && ControlUtils.ToolTipsReflectable;
+        internal override bool Enabled => Global.Config.DarkMode && ControlUtils.ToolTipsReflectable;
 
         internal override bool TryDrawThemeBackground(
             IntPtr hTheme,

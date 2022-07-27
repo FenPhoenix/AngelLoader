@@ -4,7 +4,7 @@ using static AL_Common.Common;
 
 namespace AngelLoader
 {
-    public static partial class Misc
+    public static partial class Utils
     {
         internal static bool PathIsRelative(string path) =>
             path.Length > 1 && path[0] == '.' &&

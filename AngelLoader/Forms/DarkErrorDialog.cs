@@ -2,7 +2,9 @@
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms
 {

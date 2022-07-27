@@ -8,7 +8,9 @@ using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO;
 using static AL_Common.Logger;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 using SearchOption = System.IO.SearchOption;
 
 namespace AngelLoader

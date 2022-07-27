@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using AL_Common;
-using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

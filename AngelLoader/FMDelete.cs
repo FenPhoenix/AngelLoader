@@ -9,7 +9,9 @@ using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.FileIO;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

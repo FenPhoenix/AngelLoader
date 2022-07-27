@@ -8,7 +8,9 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using FMScanner;
 using static AL_Common.Logger;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

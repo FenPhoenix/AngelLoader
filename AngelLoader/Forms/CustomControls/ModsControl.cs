@@ -6,7 +6,7 @@ using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls
 {

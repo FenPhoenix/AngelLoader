@@ -3,7 +3,8 @@
 using System;
 using AngelLoader.DataClasses;
 using static AngelLoader.FenGenAttributes;
-using static AngelLoader.Misc;
+using static AngelLoader.Global;
+using static AngelLoader.Utils;
 
 namespace AngelLoader
 {

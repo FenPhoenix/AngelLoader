@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.ThemeRenderers
     {
         private protected override string CLSID { get; } = "Scrollbar";
 
-        internal override bool Enabled => Misc.Config.DarkMode;
+        internal override bool Enabled => Global.Config.DarkMode;
 
         internal override bool TryDrawThemeBackground(
             IntPtr hTheme,
