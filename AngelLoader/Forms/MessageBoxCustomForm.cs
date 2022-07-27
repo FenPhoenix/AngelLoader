@@ -26,7 +26,7 @@ namespace AngelLoader.Forms
             string okText,
             string cancelText,
             bool okIsDangerous,
-            string[]? choiceStrings = null,
+            IReadOnlyList<string>? choiceStrings = null,
             bool multiSelectionAllowed = true)
         {
 #if DEBUG
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms
             InitSlim();
 #endif
 
-            _multiChoice = choiceStrings?.Length > 0;
+            _multiChoice = choiceStrings?.Count > 0;
 
             #region Set fonts
 
@@ -63,7 +63,7 @@ namespace AngelLoader.Forms
 
                 ChoiceListBox.BeginUpdate();
                 // Set this first: the list is now populated
-                for (int i = 0; i < choiceStrings!.Length; i++)
+                for (int i = 0; i < choiceStrings!.Count; i++)
                 {
                     ChoiceListBox.Items.Add(choiceStrings[i]);
                 }
@@ -194,7 +194,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        // Shouldn't happen, but just in case
         private void ChoiceListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_multiChoice) OKButton.Enabled = ChoiceListBox.SelectedIndex > -1;
