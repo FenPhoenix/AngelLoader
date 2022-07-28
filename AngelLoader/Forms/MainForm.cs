@@ -4308,7 +4308,7 @@ namespace AngelLoader.Forms
 
         public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMLLButton.SetVisible(enabled);
 
-        #region Play original game
+        #region Play without FM
 
         // @GENGAMES (Play original game controls): Begin
 
@@ -4355,6 +4355,26 @@ namespace AngelLoader.Forms
             }
         }
 
+        private static void ShowPerGameModsWindow(GameIndex gameIndex)
+        {
+            if (GameSupportsMods(gameIndex))
+            {
+                using var f = new OriginalGameModsForm(gameIndex);
+                if (f.ShowDialogDark() != DialogResult.OK) return;
+                Config.SetNewMantling(gameIndex, f.NewMantling);
+                Config.SetDisabledMods(gameIndex, f.DisabledMods);
+            }
+            else
+            {
+                Core.Dialogs.ShowAlert(
+                    GetLocalizedNoModSupportText(gameIndex),
+                    LText.AlertMessages.Alert,
+                    MBoxIcon.None);
+            }
+        }
+
+        #region Single button
+
         // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
         // Just gonna have to leave this part as-is.
         internal void PlayOriginalGameButton_Click(object sender, EventArgs e)
@@ -4378,7 +4398,7 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
+        internal void PlayOriginalGameMenuItems_Click(object sender, EventArgs e)
         {
             GameIndex gameIndex = ((ToolStripMenuItemCustom)sender).GameIndex;
 
@@ -4387,32 +4407,18 @@ namespace AngelLoader.Forms
             FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
         }
 
+        internal void PlayOriginalGameModMenuItems_Click(object sender, EventArgs e)
+        {
+            ShowPerGameModsWindow(((ToolStripMenuItemCustom)sender).GameIndex);
+        }
+
+        #endregion
+
+        #region Multiple buttons
+
         internal void PlayOriginalGameButtons_Click(object sender, EventArgs e)
         {
             FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
-        }
-
-        private void ShowPerGameModsWindow(GameIndex gameIndex)
-        {
-            if (GameSupportsMods(gameIndex))
-            {
-                using var f = new OriginalGameModsForm(gameIndex);
-                if (f.ShowDialogDark() != DialogResult.OK) return;
-                Config.SetNewMantling(gameIndex, f.NewMantling);
-                Config.SetDisabledMods(gameIndex, f.DisabledMods);
-            }
-            else
-            {
-                Core.Dialogs.ShowAlert(
-                    GetLocalizedNoModSupportText(gameIndex),
-                    LText.AlertMessages.Alert,
-                    MBoxIcon.None);
-            }
-        }
-
-        internal void PlayOriginalGameModMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowPerGameModsWindow(((ToolStripMenuItemCustom)sender).GameIndex);
         }
 
         internal void PlayOriginalGameButton_MouseUp(object sender, MouseEventArgs e)
@@ -4428,10 +4434,12 @@ namespace AngelLoader.Forms
             ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
         }
 
-        internal void PlayT2InMultiplayerMenuItem_Click(object sender, EventArgs e)
+        internal void PlayT2MPMenuItem_Click(object sender, EventArgs e)
         {
             FMInstallAndPlay.PlayOriginalGame(GameIndex.Thief2, playMP: true);
         }
+
+        #endregion
 
         // @GENGAMES (Play original game controls): End
 

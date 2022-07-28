@@ -50,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 GameIndex = GameIndex.Thief2,
                 Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small()
             };
-            MenuItem.Click += _owner.PlayT2InMultiplayerMenuItem_Click;
+            MenuItem.Click += _owner.PlayT2MPMenuItem_Click;
             _menu.Items.Add(MenuItem);
 
             _menu.DarkModeEnabled = _darkModeEnabled;

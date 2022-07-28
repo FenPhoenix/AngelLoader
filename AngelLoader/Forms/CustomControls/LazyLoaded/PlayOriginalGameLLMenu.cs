@@ -97,7 +97,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             foreach (ToolStripMenuItemCustom item in _menu.Items)
             {
-                item.Click += _owner.PlayOriginalGameMenuItem_Click;
+                item.Click += _owner.PlayOriginalGameMenuItems_Click;
             }
 
             ModsSubMenu = new ToolStripMenuItemCustom
@@ -113,7 +113,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             foreach (ToolStripMenuItemCustom item in ModsSubMenu.DropDownItems)
             {
-                item.Click += _owner.PlayOriginalGameModMenuItem_Click;
+                item.Click += _owner.PlayOriginalGameModMenuItems_Click;
             }
 
             _menu.DarkModeEnabled = _darkModeEnabled;
