@@ -12,8 +12,6 @@ namespace FMScanner.FastZipReader
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
     internal static class SR
     {
-        #region Strings
-
         // Not localizable cause who the hell cares
         internal static readonly string GenericInvalidData = "Found invalid data while decoding.";
         internal static readonly string InvalidArgumentOffsetCount = "Offset plus count is larger than the length of target array.";
@@ -46,9 +44,5 @@ namespace FMScanner.FastZipReader
         internal static readonly string UnsupportedCompressionMethod = "The archive entry was compressed using {0} and is not supported.";
         internal static readonly string WritingNotSupported = "This stream from ZipArchiveEntry does not support writing.";
         internal static readonly string Zip64EOCDNotWhereExpected = "Zip 64 End of Central Directory Record not where indicated.";
-
-        #endregion
-
-        internal static string Format(string resourceFormat, object p1) => string.Format(resourceFormat, p1);
     }
 }

@@ -286,10 +286,11 @@ namespace FMScanner.FastZipReader
                                     {
                                         case CompressionMethodValues.BZip2:
                                         case CompressionMethodValues.LZMA:
-                                            UnopenableArchives[entry] = SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
+                                            string msg = string.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
+                                            UnopenableArchives[entry] = msg;
                                             if (!_allowUnsupportedEntries)
                                             {
-                                                throw new ZipCompressionMethodException(SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString()));
+                                                throw new ZipCompressionMethodException(msg);
                                             }
                                             break;
                                         default:
@@ -311,7 +312,7 @@ namespace FMScanner.FastZipReader
                     }
                     catch (EndOfStreamException ex)
                     {
-                        throw new InvalidDataException(SR.Format(SR.CentralDirectoryInvalid, ex));
+                        throw new InvalidDataException(SR.CentralDirectoryInvalid + "\r\nInner exception:\r\n" + ex);
                     }
 
                     #endregion
