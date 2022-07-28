@@ -678,7 +678,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        _archive = new ZipArchiveFast(File.OpenRead(fm.Path), _zipBundle);
+                        _archive = new ZipArchiveFast(File.OpenRead(fm.Path), _zipBundle, allowUnsupportedEntries: false);
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                         // thrown while loading them. If this passes, we're definitely good.

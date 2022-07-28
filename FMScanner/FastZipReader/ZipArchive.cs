@@ -51,6 +51,8 @@ namespace FMScanner.FastZipReader
 
         private readonly bool _disposeBundle;
 
+        private readonly bool _allowUnsupportedEntries;
+
         /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream.
         /// </summary>
@@ -58,7 +60,14 @@ namespace FMScanner.FastZipReader
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
         /// <param name="stream">The input or output stream.</param>
-        public ZipArchiveFast(Stream stream) : this(stream, new ZipReusableBundle(), disposeBundle: true)
+        /// <param name="allowUnsupportedEntries">
+        /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+        /// <br/>
+        /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+        /// entries with unsupported compression methods are found.
+        /// </param>
+        public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) : this(stream,
+            new ZipReusableBundle(), disposeBundle: true, allowUnsupportedEntries)
         {
         }
 
@@ -70,14 +79,23 @@ namespace FMScanner.FastZipReader
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
         /// <param name="stream">The input or output stream.</param>
         /// <param name="bundle"></param>
+        /// <param name="allowUnsupportedEntries">
+        /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+        /// <br/>
+        /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+        /// entries with unsupported compression methods are found.
+        /// </param>
         [PublicAPI]
-        public ZipArchiveFast(Stream stream, ZipReusableBundle bundle) : this(stream, bundle, disposeBundle: false)
+        public ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool allowUnsupportedEntries) : this(
+            stream, bundle, disposeBundle: false, allowUnsupportedEntries)
         {
         }
 
         [PublicAPI]
-        private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle)
+        private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle, bool allowUnsupportedEntries)
         {
+            _allowUnsupportedEntries = allowUnsupportedEntries;
+
             _disposeBundle = disposeBundle;
 
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -269,10 +287,18 @@ namespace FMScanner.FastZipReader
                                         case CompressionMethodValues.BZip2:
                                         case CompressionMethodValues.LZMA:
                                             UnopenableArchives[entry] = SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
-                                            throw new ZipCompressionMethodException(SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString()));
+                                            if (!_allowUnsupportedEntries)
+                                            {
+                                                throw new ZipCompressionMethodException(SR.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString()));
+                                            }
+                                            break;
                                         default:
                                             UnopenableArchives[entry] = SR.UnsupportedCompression;
-                                            throw new ZipCompressionMethodException(SR.UnsupportedCompression);
+                                            if (!_allowUnsupportedEntries)
+                                            {
+                                                throw new ZipCompressionMethodException(SR.UnsupportedCompression);
+                                            }
+                                            break;
                                     }
                                 }
                             }
