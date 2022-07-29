@@ -343,6 +343,7 @@
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
             this.MainSplitContainer.TabIndex = 0;
+            this.MainSplitContainer.FullScreenChanged += new System.EventHandler(this.MainSplitContainer_FullScreenChanged);
             // 
             // TopSplitContainer
             // 

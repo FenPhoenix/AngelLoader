@@ -5599,9 +5599,12 @@ namespace AngelLoader.Forms
 
         private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
         {
-            // Colossal hack (hiding dark tab control prevents white line on side)
-            // NOTE: The "white line" was probably from the size bug, so this probably could be removed, but meh.
             TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
+        }
+
+        private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
+        {
+            MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
         }
     }
 }

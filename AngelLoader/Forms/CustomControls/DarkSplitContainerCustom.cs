@@ -134,47 +134,37 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
-                if (suspendResume) this.SuspendDrawing();
-
-                if (FullScreenCollapsePanel == Panel.Panel1)
+                static void SetPanelMinSize(DarkSplitContainerCustom @this, Panel panel, int size)
                 {
-                    if (enabled)
+                    if (panel == Panel.Panel1)
                     {
-                        IsSplitterFixed = true;
-                        _storedCollapsiblePanelMinSize = Panel1MinSize;
-                        _storedSplitterPercent = SplitterPercent;
-                        Panel1MinSize = CollapsedSize;
-                        _sibling!.Hide();
-                        SplitterDistance = CollapsedSize;
-                        FullScreen = true;
+                        @this.Panel1MinSize = size;
                     }
                     else
                     {
-                        SplitterPercent = _storedSplitterPercent;
-                        Panel1MinSize = _storedCollapsiblePanelMinSize;
-                        _sibling!.Show();
-                        FullScreen = false;
-                        IsSplitterFixed = false;
+                        @this.Panel2MinSize = size;
                     }
+                }
+
+                if (suspendResume) this.SuspendDrawing();
+
+                bool isPanel1 = FullScreenCollapsePanel == Panel.Panel1;
+
+                if (enabled)
+                {
+                    IsSplitterFixed = true;
+                    _storedCollapsiblePanelMinSize = isPanel1 ? Panel1MinSize : Panel2MinSize;
+                    _storedSplitterPercent = SplitterPercent;
+                    SetPanelMinSize(this, FullScreenCollapsePanel, CollapsedSize);
+                    SplitterDistance = isPanel1 ? CollapsedSize : CrossLength - CollapsedSize;
+                    FullScreen = true;
                 }
                 else
                 {
-                    if (enabled)
-                    {
-                        IsSplitterFixed = true;
-                        _storedCollapsiblePanelMinSize = Panel2MinSize;
-                        _storedSplitterPercent = SplitterPercent;
-                        Panel2MinSize = CollapsedSize;
-                        SplitterDistance = CrossLength - CollapsedSize;
-                        FullScreen = true;
-                    }
-                    else
-                    {
-                        SplitterPercent = _storedSplitterPercent;
-                        Panel2MinSize = _storedCollapsiblePanelMinSize;
-                        FullScreen = false;
-                        IsSplitterFixed = false;
-                    }
+                    SplitterPercent = _storedSplitterPercent;
+                    SetPanelMinSize(this, FullScreenCollapsePanel, _storedCollapsiblePanelMinSize);
+                    FullScreen = false;
+                    IsSplitterFixed = false;
                 }
             }
             finally

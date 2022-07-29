@@ -295,6 +295,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Size = new Size(1671, 672);
             MainSplitContainer.SplitterDistance = 309;
             MainSplitContainer.TabIndex = 0;
+            MainSplitContainer.FullScreenChanged += MainSplitContainer_FullScreenChanged;
             // 
             // TopSplitContainer
             // 
