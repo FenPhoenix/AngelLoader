@@ -53,6 +53,7 @@ namespace FenGen
         [PublicAPI]
         internal static bool Contains(this string value, string substring, StringComparison comparison)
         {
+            // If substring is empty, IndexOf(string) returns 0, which would be a false "success" return
             return !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
         }
 

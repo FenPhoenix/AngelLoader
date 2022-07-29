@@ -270,6 +270,7 @@ namespace AL_Common
         public static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
         public static bool Contains(this string value, string substring, StringComparison comparison) =>
+            // If substring is empty, IndexOf(string) returns 0, which would be a false "success" return
             !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
 
         /// <summary>
