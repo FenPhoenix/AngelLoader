@@ -115,7 +115,7 @@ namespace AngelLoader
         {
             var retFail = (false, new List<string>());
 
-            var finalArchives = new List<string>();
+            var finalArchives = new List<string>(archives.Count);
             if (archives.Count > 1)
             {
                 (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(

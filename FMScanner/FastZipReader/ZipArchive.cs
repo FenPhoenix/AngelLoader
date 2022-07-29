@@ -21,16 +21,16 @@ namespace FMScanner.FastZipReader
 
         internal enum CompressionMethodValues : ushort
         {
-            Stored = 0x0,
-            Deflate = 0x8,
-            Deflate64 = 0x9,
-            BZip2 = 0xC,
-            LZMA = 0xE
+            Stored = 0,
+            Deflate = 8,
+            Deflate64 = 9,
+            BZip2 = 12,
+            LZMA = 14
         }
 
         #endregion
 
-        // We don't want to bloat the archive class with crap that's only there for error checking purposes.
+        // We don't want to bloat the archive entry class with crap that's only there for error checking purposes.
         // Since errors should be the rare case, we'll check for errors as we do the initial read, and just
         // put bad entries in here and check it when we go to open.
         private Dictionary<ZipArchiveEntry, string>? _unopenableArchives;

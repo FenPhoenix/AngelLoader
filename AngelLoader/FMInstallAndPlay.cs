@@ -649,7 +649,7 @@ namespace AngelLoader
                 if (MissFlagFilesExist()) return;
 
                 var misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
-                var misNums = new List<int>();
+                var misNums = new List<int>(misFiles.Count);
                 foreach (string mf in misFiles)
                 {
                     Match m = Regex.Match(mf, @"miss(?<Num>\d+).mis", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

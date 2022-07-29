@@ -158,7 +158,7 @@ namespace FMScanner
             /// non-English.
             /// </summary>
             internal bool Scan;
-            internal string FileName = "";
+            internal bool IsGlml;
             internal readonly List<string> Lines = new();
             internal string Text = "";
 
@@ -346,7 +346,7 @@ namespace FMScanner
 
             #endregion
 
-            var scannedFMDataList = new List<ScannedFMDataAndError>();
+            var scannedFMDataList = new List<ScannedFMDataAndError>(missions.Count);
 
             var progressReport = new ProgressReport();
 
@@ -2251,7 +2251,7 @@ namespace FMScanner
 
                 if (_fmIsZip)
                 {
-                    fileName = readmeEntry!.Name;
+                    fileName = readmeEntry!.FullName;
                     readmeSize = readmeEntry.Length;
                 }
                 else
@@ -2273,7 +2273,7 @@ namespace FMScanner
                 {
                     _readmeFiles.Add(new ReadmeInternal
                     {
-                        FileName = fileName,
+                        IsGlml = fileName.ExtIsGlml(),
                         LastModifiedDateRaw = readmeEntry!.LastWriteTime,
                         Scan = scanThisReadme
                     });
@@ -2282,7 +2282,7 @@ namespace FMScanner
                 {
                     _readmeFiles.Add(new ReadmeInternal
                     {
-                        FileName = fileName,
+                        IsGlml = fileName.ExtIsGlml(),
                         LastModifiedDate = (DateTime)lastModifiedDate!,
                         Scan = scanThisReadme
                     });
@@ -2369,7 +2369,7 @@ namespace FMScanner
 
                         // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
                         // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
-                        bool extIsGlml = last.FileName.ExtIsGlml();
+                        bool extIsGlml = last.IsGlml;
                         if (extIsGlml)
                         {
                             for (int i = 0; i < last.Lines.Count; i++)
@@ -2667,7 +2667,7 @@ namespace FMScanner
             {
                 if (!r.Scan) continue;
 
-                var lines = new List<string>();
+                var lines = new List<string>(maxTopLines);
 
                 for (int i = 0; i < r.Lines.Count; i++)
                 {
@@ -2710,7 +2710,7 @@ namespace FMScanner
             {
                 if (!r.Scan) continue;
 
-                var lines = new List<string>();
+                var lines = new List<string>(maxTopLines);
 
                 for (int i = 0; i < r.Lines.Count; i++)
                 {

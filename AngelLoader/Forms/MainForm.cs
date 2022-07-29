@@ -3516,7 +3516,7 @@ namespace AngelLoader.Forms
                 bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
                 // Must be done first, else we get wrong values
-                var widthMul = new List<double>();
+                var widthMul = new List<double>(ColumnsCount);
                 foreach (DataGridViewColumn c in FMsDGV.Columns)
                 {
                     Size size = c.HeaderCell.Size;

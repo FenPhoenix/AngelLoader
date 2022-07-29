@@ -43,13 +43,6 @@ namespace FMScanner.FastZipReader
         /// </summary>
         public readonly string FullName;
 
-        private string? _name;
-        /// <summary>
-        /// The filename of the entry. This is equivalent to the substring of <see cref="FullName"/> that follows
-        /// the final directory separator character.
-        /// </summary>
-        public string Name => _name ??= ParseFileName(FullName);
-
         #endregion
 
         // Initializes, attaches it to archive
@@ -71,22 +64,8 @@ namespace FMScanner.FastZipReader
             // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
             // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
             FullName = cd.Filename != null ? Encoding.UTF8.GetString(cd.Filename).ToForwardSlashes() : "";
-            // Lazy-load Name so we don't preemptively do a ton of Substring() calls when we don't need to.
-        }
-
-        // Since we're converting all separators to '/' to conform to spec anyway,
-        // we only need the '/' parsing version.
-        private static string ParseFileName(string path)
-        {
-            int length = path.Length;
-            for (int i = length; --i >= 0;)
-            {
-                if (path[i] == '/')
-                {
-                    return path.Substring(i + 1);
-                }
-            }
-            return path;
+            // Turns out we don't even need the Name property, as the only thing we used it for was checking
+            // the extension.
         }
     }
 }
