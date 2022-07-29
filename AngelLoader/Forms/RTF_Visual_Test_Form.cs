@@ -2,7 +2,6 @@
 
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,11 +10,12 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class RTF_Visual_Test_Form : Form
+    public sealed partial class RTF_Visual_Test_Form : DarkFormBase
     {
         private const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
@@ -57,8 +57,6 @@ namespace AngelLoader.Forms
         private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
         private static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + AppGuid);
 
-        private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
-
         private bool _broadcastEnabled = true;
 
         private const string SaveBaseDir = @"C:\AL_RTF_Color_Accuracy";
@@ -70,7 +68,7 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
-            RTFBox.InjectOwner(this);
+            RTFBox.SetOwner(this);
 
             ConfigFile = Path.Combine(ConfigDir, "Config.ini");
 
@@ -91,7 +89,7 @@ namespace AngelLoader.Forms
                     if (fs.Length >= headerLen)
                     {
                         using var br = new BinaryReader(fs, Encoding.ASCII);
-                        _ = br.ReadAll(rtfHeaderBuffer, 0, headerLen);
+                        _ = br.BaseStream.ReadAll(rtfHeaderBuffer, 0, headerLen);
                     }
                 }
 
@@ -109,7 +107,7 @@ namespace AngelLoader.Forms
             if (Config.VisualTheme == VisualTheme.Dark)
             {
                 Win32ThemeHooks.InstallHooks();
-                SetVisualTheme(VisualTheme.Dark);
+                SetThemeBase(VisualTheme.Dark);
             }
 
             if (RTFFileComboBox.Items.Count > 0)
@@ -129,8 +127,6 @@ namespace AngelLoader.Forms
                 }
             }
         }
-
-        private void SetVisualTheme(VisualTheme theme) => ControlUtils.ChangeFormThemeMode(theme, this, _controlColors);
 
         private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {

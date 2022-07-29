@@ -201,7 +201,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public methods
 
-        internal void InjectOwner(Form owner) => _owner = owner;
+        internal void SetOwner(Form owner) => _owner = owner;
 
         #region Zoom stuff
 

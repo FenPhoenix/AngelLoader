@@ -119,14 +119,13 @@ namespace AngelLoader.Forms.CustomControls
         {
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
-            _storedCollapsiblePanelMinSize = FullScreenCollapsePanel == Panel.Panel1 ? Panel1MinSize : Panel2MinSize;
         }
 
         public event EventHandler? FullScreenChanged;
 
         #region Public methods
 
-        internal void InjectSibling(DarkSplitContainerCustom sibling) => _sibling = sibling;
+        internal void SetSibling(DarkSplitContainerCustom sibling) => _sibling = sibling;
 
         internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 
@@ -312,7 +311,7 @@ namespace AngelLoader.Forms.CustomControls
                     ? _sibling.Panel1.Width
                     : _sibling.Panel1.Height;
 
-                // Don't do the both-directional-drag if the top-right panel is collapsed
+                // Don't do the both-directional-drag if the sibling has a panel collapsed
                 if (!_sibling.FullScreen &&
                     sibCursorPos >= sibSplitterPos - 7 &&
                     sibCursorPos <= sibSplitterPos + _sibling.SplitterWidth + 6)

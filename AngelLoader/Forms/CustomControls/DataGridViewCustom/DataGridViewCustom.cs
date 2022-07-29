@@ -96,7 +96,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Init
 
-        internal void InjectOwner(MainForm owner) => _owner = owner;
+        internal void SetOwner(MainForm owner) => _owner = owner;
 
         #endregion
 
