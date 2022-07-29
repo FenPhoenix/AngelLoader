@@ -438,11 +438,14 @@ namespace AngelLoader
                 // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
                 sw.WriteLine("PlayOriginalGame=" + (fm == null));
-                if (fm == null && !origDisabledMods.IsEmpty())
+                if (fm == null)
                 {
-                    sw.WriteLine("DisabledMods=" + origDisabledMods);
+                    if (!origDisabledMods.IsEmpty())
+                    {
+                        sw.WriteLine("DisabledMods=" + origDisabledMods);
+                    }
                 }
-                if (fm != null)
+                else
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                     if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);

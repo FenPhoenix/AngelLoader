@@ -903,14 +903,12 @@ namespace AngelLoader
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
-                string ltNS = RemoveLeadingSemicolons(lt);
-                if (ltNS.StartsWithIPlusWhiteSpace(key_inv_status_height))
+                if (lt.StartsWithIPlusWhiteSpace(key_inv_status_height))
                 {
-                    string[] fields = ltNS.Split(_ca_Space_Tab_Semicolon, StringSplitOptions.RemoveEmptyEntries);
+                    string[] fields = lt.Split(_ca_Space_Tab_Semicolon, StringSplitOptions.RemoveEmptyEntries);
                     ret = fields.Length >= 2 &&
                           int.TryParse(fields[1], out int result) &&
-                          result == 0 &&
-                          lt[0] != ';';
+                          result == 0;
                 }
             }
 
