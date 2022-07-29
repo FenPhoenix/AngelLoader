@@ -1463,7 +1463,7 @@ namespace AngelLoader
                     string extractedName = Path.Combine(fmInstalledPath, fileName);
                     entry.ExtractToFile(extractedName, overwrite: true);
 
-                    File_UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
+                    File_UnSetReadOnly(extractedName);
 
                     int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
