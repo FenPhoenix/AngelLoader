@@ -18,9 +18,6 @@ the scroll bar was).
 
 @X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
 
-@MULTISEL: When switching game tabs, multi-selections are not saved. Do we want this behavior or no?
-This is part of the decision of "how temporary" do we want multi-selections to be.
-
 @SEL_SYNC_HACK enlightenment:
 There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of
 bloody course), but it can be set in a roundabout way by setting CurrentCell to a cell in the current row. BUT,
