@@ -531,22 +531,36 @@ namespace FMScanner
 
                 #region Partial 7z extract
 
-                // Rather than extracting everything, we only extract files we might need. We may still end up
-                // extracting more than we need, but it's WAY less than just dumbly doing the whole thing. Over
-                // my limited set of 45 7z files, this makes us about 4x faster on average. Certain individual
-                // FMs may still be about as slow depending on their structure and content, but meh. Improvement
-                // is improvement.
+                /*
+                Rather than extracting everything, we only extract files we might need. We may still end up
+                extracting more than we need, but it's WAY less than just dumbly doing the whole thing. Over
+                my limited set of 45 7z files, this makes us about 4x faster on average. Certain individual
+                FMs may still be about as slow depending on their structure and content, but meh. Improvement
+                is improvement.
+
+                IMPORTANT(Scanner partial 7z extract):
+                The logic for deciding which files to extract (taking files and then de-duping the list) needs
+                to match the logic for using them. If we change the usage logic, we need to change this too!
+                */
 
                 try
                 {
+                    static bool EndsWithTitleFile(string fileName)
+                    {
+                        return fileName.PathEndsWithI("/titles.str") ||
+                               fileName.PathEndsWithI("/title.str");
+                    }
+
                     Directory.CreateDirectory(_fmWorkingPath);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    // We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
-                    // involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
-                    // we can get last write times in DateTime format and not have to parse possible localized
-                    // text dates out of the output stream.
+                    /*
+                    We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
+                    involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
+                    we can get last write times in DateTime format and not have to parse possible localized
+                    text dates out of the output stream.
+                    */
                     var fileNamesList = new List<string>();
                     uint extractorFilesCount;
                     using (var _sevenZipArchive = new SevenZipExtractor(fm.Path) { PreserveDirectoryStructure = true })
@@ -562,9 +576,6 @@ namespace FMScanner
                             var entry = _sevenZipArchive.ArchiveFileData[i];
                             string fn = entry.FileName;
                             int dirSeps;
-
-                            // TODO: Calculate these exactly like they are on use (eg. only get the first title.str/titles.str etc.)
-                            // That way we can shave a bit of time in theory.
 
                             // Always extract readmes no matter what, so our .7z caching is always correct.
                             // Also maybe we would need to always extract them regardless for other reasons, but
@@ -596,10 +607,16 @@ namespace FMScanner
                             {
                                 fileNamesList.Add(entry.FileName);
                             }
-                            else if (entry.FileName.PathEndsWithI(FMFiles.SMissFlag) ||
-                                     entry.FileName.PathEndsWithI(FMFiles.SNewGameStr) ||
-                                     entry.FileName.PathEndsWithI("/titles.str") ||
-                                     entry.FileName.PathEndsWithI("/title.str"))
+                            else if (entry.FileName.PathStartsWithI(FMDirs.StringsS) &&
+                                     entry.FileName.PathEndsWithI(FMFiles.SMissFlag))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
+                            else if (entry.FileName.PathEndsWithI(FMFiles.SNewGameStr))
+                            {
+                                fileNamesList.Add(entry.FileName);
+                            }
+                            else if (EndsWithTitleFile(entry.FileName))
                             {
                                 fileNamesList.Add(entry.FileName);
                             }
@@ -607,6 +624,82 @@ namespace FMScanner
                             _fmDirFileInfos.Add(new FileInfoCustom(entry));
                         }
                     }
+
+                    #region De-duplicate list
+
+                    // Some files could have multiple copies in different folders, but we only want to extract
+                    // the one we're going to use. We separate out this more complex and self-dependent logic
+                    // here. Doing this nonsense is still faster than extracting to disk.
+
+                    // TODO: 7z.exe doesn't care about the file order, does it? That would be ridiculous if it did, so uh...
+
+                    var tempList = new List<string>(fileNamesList.Count);
+
+                    static void PopulateTempList(
+                        List<string> fileNamesList,
+                        List<string> tempList,
+                        Func<string, bool> predicate)
+                    {
+                        tempList.Clear();
+
+                        for (int i = 0; i < fileNamesList.Count; i++)
+                        {
+                            string fileName = fileNamesList[i];
+                            if (predicate(fileName))
+                            {
+                                tempList.Add(fileName);
+                                fileNamesList.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                    }
+
+                    PopulateTempList(fileNamesList, tempList, x => x.PathEndsWithI(FMFiles.SMissFlag));
+
+                    // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
+                    // (from the normal logic way down there somewhere)
+                    string? missFlagToUse =
+                        tempList.Find(x =>
+                            x.PathEqualsI(FMFiles.StringsMissFlag))
+                        ?? tempList.Find(x =>
+                            x.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                        ?? tempList.Find(x =>
+                            x.PathEndsWithI(FMFiles.SMissFlag));
+
+                    if (missFlagToUse != null)
+                    {
+                        fileNamesList.Add(missFlagToUse);
+                    }
+
+                    PopulateTempList(fileNamesList, tempList, x => x.PathEndsWithI(FMFiles.SNewGameStr));
+
+                    string? newGameStrToUse =
+                        tempList.Find(x =>
+                            x.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
+                        ?? tempList.Find(x =>
+                            x.PathEqualsI(FMFiles.IntrfaceNewGameStr))
+                        ?? tempList.Find(x =>
+                            x.PathStartsWithI(FMDirs.IntrfaceS) &&
+                            x.PathEndsWithI(FMFiles.SNewGameStr));
+
+                    if (newGameStrToUse != null)
+                    {
+                        fileNamesList.Add(newGameStrToUse);
+                    }
+
+                    PopulateTempList(fileNamesList, tempList, EndsWithTitleFile);
+
+                    foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
+                    {
+                        string? titlesFileToUse = tempList.Find(x => x.PathEqualsI(titlesFileLocation));
+                        if (titlesFileToUse != null)
+                        {
+                            fileNamesList.Add(titlesFileToUse);
+                            break;
+                        }
+                    }
+
+                    #endregion
 
                     string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
