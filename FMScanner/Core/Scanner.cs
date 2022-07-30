@@ -631,8 +631,6 @@ namespace FMScanner
                     // the one we're going to use. We separate out this more complex and self-dependent logic
                     // here. Doing this nonsense is still faster than extracting to disk.
 
-                    // TODO: 7z.exe doesn't care about the file order, does it? That would be ridiculous if it did, so uh...
-
                     var tempList = new List<string>(fileNamesList.Count);
 
                     static void PopulateTempList(
