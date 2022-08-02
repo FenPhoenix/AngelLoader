@@ -130,5 +130,9 @@ namespace AngelLoader.DataClasses
         internal string TagsString = "";
 
         internal bool? NewMantle;
+
+        [FenGenNumericEmpty(0)]
+        [FenGenMaxDigits(10)]
+        internal int MisCount = 0;
     }
 }
