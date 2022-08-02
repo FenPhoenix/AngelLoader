@@ -29,6 +29,8 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 
 @MISCOUNT: We could have a horizontal divider on the stats tab to separate the mission count label more.
 @MISCOUNT: Put a "rescan" button for the mission count label on the stats tab.
+
+@vNext: Put a folder image on the "Open FM folder" menu item
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
