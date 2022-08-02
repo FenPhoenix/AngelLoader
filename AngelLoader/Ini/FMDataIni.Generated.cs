@@ -249,17 +249,9 @@ namespace AngelLoader
 
         private static void FMData_MisCount_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            bool success = int.TryParse(val, out int result);
-            if (success)
-            {
-                fm.MisCount = result;
-            }
-            else
-            {
-                fm.MisCount = null;
-            }
+            bool success = TryParseIntFromEnd(val, eqIndex + 1, 10, out int result);
+            fm.MisCount = success ? result : -1;
         }
 
         #region Old resource format - backward compatibility, we still have to be able to read it
@@ -599,7 +591,7 @@ namespace AngelLoader
                     sb.Append("NewMantle=");
                     sb.AppendLine(fm.NewMantle.ToString());
                 }
-                if (fm.MisCount != null)
+                if (fm.MisCount != -1)
                 {
                     sb.Append("MisCount=");
                     sb.AppendLine(fm.MisCount.ToString());

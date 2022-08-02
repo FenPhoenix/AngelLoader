@@ -137,7 +137,8 @@ namespace AngelLoader.DataClasses
 
         internal bool? NewMantle;
 
+        [FenGenNumericEmpty(-1)]
         [FenGenMaxDigits(10)]
-        internal int? MisCount;
+        internal int MisCount = -1;
     }
 }

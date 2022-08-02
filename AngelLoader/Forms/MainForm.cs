@@ -995,7 +995,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsViewList.Count; i++)
                 {
                     FanMission fm = FMsViewList[i];
-                    if (GameIsKnownAndSupported(fm.Game) && fm.MisCount == null)
+                    if (GameIsKnownAndSupported(fm.Game) && fm.MisCount == -1)
                     {
                         fmsNeedingMisCountScan.Add(fm);
                     }
