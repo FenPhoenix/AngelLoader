@@ -62,7 +62,7 @@ namespace AngelLoader
 
         #endregion
 
-        #region Read
+        #region Read info from game configs
 
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
@@ -272,8 +272,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        #region Write
 
         /// <summary>
         /// Remove our footprints from any config files we may have temporarily stomped on.
@@ -825,7 +823,136 @@ namespace AngelLoader
 
         #endregion
 
-        #endregion
+        internal static (bool Success, List<Mod>)
+        GetGameMods(GameIndex gameIndex)
+        {
+            var list = new List<Mod>();
+
+            if (!GameSupportsMods(gameIndex)) return (false, list);
+
+            string gamePath = Config.GetGamePath(gameIndex);
+
+            if (gamePath.IsEmpty()) return (false, list);
+
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
+            {
+                return (false, list);
+            }
+
+            if (!TryReadAllLines(camModIni, out var lines))
+            {
+                // @BetterErrors(GetGameMods): Should we show the dialog?
+                //Dialogs.ShowError(nameof(GetGameMods) + "():" +
+                //                  "Couldn't read " + camModIni + "\r\n" +
+                //                  "Game: " + gameIndex);
+                return (false, list);
+            }
+
+            int modPathLastIndex = -1;
+            int uberModPathLastIndex = -1;
+            int mpModPathLastIndex = -1;
+            int mpUberModPathLastIndex = -1;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lineT = lines[i].Trim();
+
+                if (lineT.IsEmpty() || lineT[0] == ';') continue;
+
+                if (lineT.StartsWithI(mod_path))
+                {
+                    modPathLastIndex = i;
+                }
+                else if (lineT.StartsWithI(uber_mod_path))
+                {
+                    uberModPathLastIndex = i;
+                }
+                else if (lineT.StartsWithI(mp_mod_path))
+                {
+                    mpModPathLastIndex = i;
+                }
+                else if (lineT.StartsWithI(mp_u_mod_path))
+                {
+                    mpUberModPathLastIndex = i;
+                }
+            }
+
+            static List<string>
+            GetModPaths(List<string> lines, int lastIndex, string pathKey)
+            {
+                return lastIndex > -1
+                    ? lines[lastIndex].Substring(pathKey.Length).Trim()
+                        .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                        .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+                    : new List<string>();
+            }
+
+            // Keeps the item in the hash set and removes it from the list if there are duplicates
+            static void DeDupe(HashSetI hashSet, List<string> list)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (hashSet.Contains(list[i]))
+                    {
+                        list.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            var modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
+            var uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
+            var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
+            var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
+
+            var modPathsHash = modPaths.ToHashSetI();
+            var uberModPathsHash = uberModPaths.ToHashSetI();
+
+            DeDupe(uberModPathsHash, mpUberModPaths);
+            DeDupe(uberModPathsHash, modPaths);
+            DeDupe(uberModPathsHash, mpModPaths);
+            DeDupe(modPathsHash, mpModPaths);
+
+            foreach (var modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
+            foreach (var modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
+            foreach (var modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
+            foreach (var modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
+
+            return (true, list);
+        }
+
+        internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)
+        {
+            // DarkLoader only supports T1/T2/SS2
+            if (!GameIsDark(gameIndex)) return false;
+
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (!gamePath.IsEmpty() &&
+                TryCombineFilePathAndCheckExistence(gamePath, Paths.DarkLoaderDotCurrent, out string dlFile))
+            {
+                try
+                {
+                    using var sr = new StreamReader(dlFile);
+                    string? line1 = sr.ReadLine();
+                    string? line2 = sr.ReadLine();
+                    string? line3 = sr.ReadLine();
+                    if (line1 != null &&
+                        line2 != null &&
+                        line1.Trim() != "Original" &&
+                        line2.Trim() != "-1" &&
+                        line3 != null)
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
 
 #if !ReleaseBeta && !ReleasePublic
 
@@ -960,137 +1087,6 @@ namespace AngelLoader
         }
 
 #endif
-
-        internal static (bool Success, List<Mod>)
-        GetGameMods(GameIndex gameIndex)
-        {
-            var list = new List<Mod>();
-
-            if (!GameSupportsMods(gameIndex)) return (false, list);
-
-            string gamePath = Config.GetGamePath(gameIndex);
-
-            if (gamePath.IsEmpty()) return (false, list);
-
-            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
-            {
-                return (false, list);
-            }
-
-            if (!TryReadAllLines(camModIni, out var lines))
-            {
-                // @BetterErrors(GetGameMods): Should we show the dialog?
-                //Dialogs.ShowError(nameof(GetGameMods) + "():" +
-                //                  "Couldn't read " + camModIni + "\r\n" +
-                //                  "Game: " + gameIndex);
-                return (false, list);
-            }
-
-            int modPathLastIndex = -1;
-            int uberModPathLastIndex = -1;
-            int mpModPathLastIndex = -1;
-            int mpUberModPathLastIndex = -1;
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lineT = lines[i].Trim();
-
-                if (lineT.IsEmpty() || lineT[0] == ';') continue;
-
-                if (lineT.StartsWithI(mod_path))
-                {
-                    modPathLastIndex = i;
-                }
-                else if (lineT.StartsWithI(uber_mod_path))
-                {
-                    uberModPathLastIndex = i;
-                }
-                else if (lineT.StartsWithI(mp_mod_path))
-                {
-                    mpModPathLastIndex = i;
-                }
-                else if (lineT.StartsWithI(mp_u_mod_path))
-                {
-                    mpUberModPathLastIndex = i;
-                }
-            }
-
-            static List<string>
-            GetModPaths(List<string> lines, int lastIndex, string pathKey)
-            {
-                return lastIndex > -1
-                    ? lines[lastIndex].Substring(pathKey.Length).Trim()
-                        .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                        .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
-                    : new List<string>();
-            }
-
-            // Keeps the item in the hash set and removes it from the list if there are duplicates
-            static void DeDupe(HashSetI hashSet, List<string> list)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (hashSet.Contains(list[i]))
-                    {
-                        list.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            var modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
-            var uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
-            var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
-            var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
-
-            var modPathsHash = modPaths.ToHashSetI();
-            var uberModPathsHash = uberModPaths.ToHashSetI();
-
-            DeDupe(uberModPathsHash, mpUberModPaths);
-            DeDupe(uberModPathsHash, modPaths);
-            DeDupe(uberModPathsHash, mpModPaths);
-            DeDupe(modPathsHash, mpModPaths);
-
-            foreach (var modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
-            foreach (var modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
-            foreach (var modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
-            foreach (var modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
-
-            return (true, list);
-        }
-
-        internal static bool GameHasDarkLoaderFMInstalled(GameIndex gameIndex)
-        {
-            // DarkLoader only supports T1/T2/SS2
-            if (!GameIsDark(gameIndex)) return false;
-
-            string gamePath = Config.GetGamePath(gameIndex);
-            if (!gamePath.IsEmpty() &&
-                TryCombineFilePathAndCheckExistence(gamePath, Paths.DarkLoaderDotCurrent, out string dlFile))
-            {
-                try
-                {
-                    using var sr = new StreamReader(dlFile);
-                    string? line1 = sr.ReadLine();
-                    string? line2 = sr.ReadLine();
-                    string? line3 = sr.ReadLine();
-                    if (line1 != null &&
-                        line2 != null &&
-                        line1.Trim() != "Original" &&
-                        line2.Trim() != "-1" &&
-                        line3 != null)
-                    {
-                        return true;
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-
-            return false;
-        }
 
         #region Helpers
 
