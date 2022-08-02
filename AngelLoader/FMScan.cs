@@ -381,6 +381,11 @@ namespace AngelLoader
                             }
                         }
 
+                        if (fms[i].ForceFullScan || scanOptions.ScanMissionCount)
+                        {
+                            sel.MisCount = scannedFM.MissionCount;
+                        }
+
                         sel.MarkedScanned = true;
 
                         #endregion
