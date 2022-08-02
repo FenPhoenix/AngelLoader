@@ -187,8 +187,8 @@ namespace FenGen
 
             var initializeComponentMethod = (MethodDeclarationSyntax?)formClass.DescendantNodes()
                 .FirstOrDefault(
-                    x => x is MethodDeclarationSyntax mds &&
-                         mds.Identifier.Value?.ToString() == "InitializeComponent");
+                    static x => x is MethodDeclarationSyntax mds &&
+                                mds.Identifier.Value?.ToString() == "InitializeComponent");
 
             if (initializeComponentMethod == null)
             {
@@ -286,7 +286,7 @@ namespace FenGen
                 // If it is, we can remove an additional couple of layout properties (because it will be auto-
                 // laid-out inside the FlowLayoutPanel).
 
-                var ies = (InvocationExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is InvocationExpressionSyntax);
+                var ies = (InvocationExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(static x => x is InvocationExpressionSyntax);
                 if (ies != null)
                 {
                     foreach (SyntaxNode mesN in ies.DescendantNodes())
@@ -312,7 +312,7 @@ namespace FenGen
                                         controlsInFlowLayoutPanels.Add(argStr);
                                     }
 
-                                    curNode.ControlName = ies.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
+                                    curNode.ControlName = ies.DescendantNodes().First(static x => x is IdentifierNameSyntax).ToString();
                                     CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                                     props.HasChildren = true;
 
@@ -331,7 +331,7 @@ namespace FenGen
                                     nodeType == "ToolTip" &&
                                     ies.ArgumentList.Arguments.Count == 2)
                                 {
-                                    curNode.ControlName = ies.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
+                                    curNode.ControlName = ies.DescendantNodes().First(static x => x is IdentifierNameSyntax).ToString();
                                     curNode.PropName = "SetToolTip";
                                     CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                                     props.HasSetToolTip = true;
@@ -344,10 +344,10 @@ namespace FenGen
 
                 #endregion
 
-                var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(x => x is AssignmentExpressionSyntax);
+                var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(static x => x is AssignmentExpressionSyntax);
                 if (aes?.Left is not MemberAccessExpressionSyntax left) continue;
 
-                curNode.ControlName = left.DescendantNodes().First(x => x is IdentifierNameSyntax).ToString();
+                curNode.ControlName = left.DescendantNodes().First(static x => x is IdentifierNameSyntax).ToString();
                 curNode.PropName = left.Name.ToString();
 
                 if (left.DescendantNodes().Any(
@@ -465,7 +465,7 @@ namespace FenGen
                     case "Anchor":
                     {
                         SyntaxNode[] anchorStyles = aes.Right.DescendantNodesAndSelf()
-                            .Where(x =>
+                            .Where(static x =>
                                 x is MemberAccessExpressionSyntax &&
                                 x.ToString().StartsWithO("System.Windows.Forms.AnchorStyles."))
                             .ToArray();
@@ -473,8 +473,8 @@ namespace FenGen
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                         props.HasDefaultAnchor =
                             anchorStyles.Length == 2 &&
-                            Array.Find(anchorStyles, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null &&
-                            Array.Find(anchorStyles, x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null;
+                            Array.Find(anchorStyles, static x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null &&
+                            Array.Find(anchorStyles, static x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null;
                         break;
                     }
                     case "Dock":

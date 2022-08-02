@@ -145,7 +145,7 @@ namespace AngelLoader
                 if (!accepted) return;
                 foreach (string file in returnedIniFiles) iniFiles.Add(file);
 
-                if (iniFiles.All(x => x.IsWhiteSpace()))
+                if (iniFiles.All(static x => x.IsWhiteSpace()))
                 {
                     Core.Dialogs.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
@@ -344,7 +344,7 @@ namespace AngelLoader
                                     i++;
                                 }
 
-                                if (archiveDirs.Count == 0 || archiveDirs.All(x => x.IsWhiteSpace()))
+                                if (archiveDirs.Count == 0 || archiveDirs.All(static x => x.IsWhiteSpace()))
                                 {
                                     return ImportError.NoArchiveDirsFound;
                                 }

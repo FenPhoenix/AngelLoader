@@ -654,16 +654,16 @@ namespace FMScanner
                         }
                     }
 
-                    PopulateTempList(fileNamesList, tempList, x => x.PathEndsWithI(FMFiles.SMissFlag));
+                    PopulateTempList(fileNamesList, tempList, static x => x.PathEndsWithI(FMFiles.SMissFlag));
 
                     // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
                     // (from the normal logic way down there somewhere)
                     string? missFlagToUse =
-                        tempList.Find(x =>
+                        tempList.Find(static x =>
                             x.PathEqualsI(FMFiles.StringsMissFlag))
-                        ?? tempList.Find(x =>
+                        ?? tempList.Find(static x =>
                             x.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                        ?? tempList.Find(x =>
+                        ?? tempList.Find(static x =>
                             x.PathEndsWithI(FMFiles.SMissFlag));
 
                     if (missFlagToUse != null)
@@ -671,14 +671,14 @@ namespace FMScanner
                         fileNamesList.Add(missFlagToUse);
                     }
 
-                    PopulateTempList(fileNamesList, tempList, x => x.PathEndsWithI(FMFiles.SNewGameStr));
+                    PopulateTempList(fileNamesList, tempList, static x => x.PathEndsWithI(FMFiles.SNewGameStr));
 
                     string? newGameStrToUse =
-                        tempList.Find(x =>
+                        tempList.Find(static x =>
                             x.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-                        ?? tempList.Find(x =>
+                        ?? tempList.Find(static x =>
                             x.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                        ?? tempList.Find(x =>
+                        ?? tempList.Find(static x =>
                             x.PathStartsWithI(FMDirs.IntrfaceS) &&
                             x.PathEndsWithI(FMFiles.SNewGameStr));
 
@@ -1973,11 +1973,11 @@ namespace FMScanner
             {
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 missFlag =
-                    stringsDirFiles.Find(x =>
+                    stringsDirFiles.Find(static x =>
                         x.Name.PathEqualsI(FMFiles.StringsMissFlag))
-                    ?? stringsDirFiles.Find(x =>
+                    ?? stringsDirFiles.Find(static x =>
                         x.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                    ?? stringsDirFiles.Find(x =>
+                    ?? stringsDirFiles.Find(static x =>
                         x.Name.PathEndsWithI(FMFiles.SMissFlag));
             }
 
@@ -2917,11 +2917,11 @@ namespace FMScanner
             if (intrfaceDirFiles.Count == 0) return "";
 
             NameAndIndex? newGameStrFile =
-                intrfaceDirFiles.Find(x =>
+                intrfaceDirFiles.Find(static x =>
                     x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-                ?? intrfaceDirFiles.Find(x =>
+                ?? intrfaceDirFiles.Find(static x =>
                     x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                ?? intrfaceDirFiles.Find(x =>
+                ?? intrfaceDirFiles.Find(static x =>
                     x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
                     x.Name.PathEndsWithI(FMFiles.SNewGameStr));
 
@@ -3538,7 +3538,7 @@ namespace FMScanner
 
             #region Choose smallest .gam file
 
-            NameAndIndex[] gamFiles = baseDirFiles.Where(x => x.Name.ExtIsGam()).ToArray();
+            NameAndIndex[] gamFiles = baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
             NameAndIndex? smallestGamFile = null;
 
             if (gamFiles.Length > 0)
@@ -3566,7 +3566,7 @@ namespace FMScanner
                         gamSizeList.Add((gam.Name, gam.Index, length));
                     }
 
-                    var gamToUse = gamSizeList.OrderBy(x => x.Size).First();
+                    var gamToUse = gamSizeList.OrderBy(static x => x.Size).First();
                     smallestGamFile = new NameAndIndex(gamToUse.Name, gamToUse.Index);
                 }
             }
@@ -3602,7 +3602,7 @@ namespace FMScanner
                     misSizeList.Add((mis.Name, mis.Index, length));
                 }
 
-                var misToUse = misSizeList.OrderBy(x => x.Size).First();
+                var misToUse = misSizeList.OrderBy(static x => x.Size).First();
                 smallestUsedMisFile = new NameAndIndex(misToUse.Name, misToUse.Index);
             }
 

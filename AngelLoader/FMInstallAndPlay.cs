@@ -854,7 +854,7 @@ namespace AngelLoader
 
             if (usedMisFileInfos.Count == 0) usedMisFileInfos.AddRange(misFileInfos);
 
-            usedMisFileInfos = usedMisFileInfos.OrderBy(x => x.Length).ToList();
+            usedMisFileInfos = usedMisFileInfos.OrderBy(static x => x.Length).ToList();
 
             smallestUsedMisFile = usedMisFileInfos[0].FullName;
 

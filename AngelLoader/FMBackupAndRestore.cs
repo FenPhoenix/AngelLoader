@@ -194,7 +194,7 @@ namespace AngelLoader
                 ret.Name = bakFiles.Count == 1
                     ? bakFiles[0].FullName
                     : bakFiles.Count > 1
-                        ? bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName
+                        ? bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName
                         : "";
 
                 bakFiles.Clear();
@@ -215,7 +215,7 @@ namespace AngelLoader
                     }
 
                     // Use the newest of all files found in all archive dirs
-                    ret.Name = bakFiles.OrderByDescending(x => x.LastWriteTime).ToList()[0].FullName;
+                    ret.Name = bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName;
                 }
             }
 

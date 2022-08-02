@@ -408,7 +408,7 @@ namespace FenGen
             }
             if (LangTaskActive())
             {
-                string GetTestLangPath()
+                static string GetTestLangPath()
                 {
                     try
                     {

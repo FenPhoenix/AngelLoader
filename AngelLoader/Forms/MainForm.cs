@@ -2668,7 +2668,7 @@ namespace AngelLoader.Forms
         {
             var s = (ToolStripMenuItemCustom)sender;
 
-            if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(x => !x))
+            if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(static x => !x))
             {
                 s.Checked = true;
                 return;
