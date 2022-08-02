@@ -167,6 +167,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             ColumnHeaderCheckBoxMenuItems[(int)Column.Game].Text = LText.FMsList.GameColumn;
             ColumnHeaderCheckBoxMenuItems[(int)Column.Installed].Text = LText.FMsList.InstalledColumn;
+            ColumnHeaderCheckBoxMenuItems[(int)Column.MissionCount].Text = LText.FMsList.MissionCountColumn;
             ColumnHeaderCheckBoxMenuItems[(int)Column.Title].Text = LText.FMsList.TitleColumn;
             ColumnHeaderCheckBoxMenuItems[(int)Column.Archive].Text = LText.FMsList.ArchiveColumn;
             ColumnHeaderCheckBoxMenuItems[(int)Column.Author].Text = LText.FMsList.AuthorColumn;
