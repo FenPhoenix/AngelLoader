@@ -77,16 +77,16 @@ namespace AngelLoader
         internal static bool StartsWithPlusWhiteSpace(this string str, string value)
         {
             int valLen;
-            return str.StartsWith(value) &&
+            return str.StartsWithO(value) &&
                    str.Length > (valLen = value.Length) &&
                    char.IsWhiteSpace(str[valLen]);
         }
 
         internal static bool StartsWithPlusWhiteSpace(this string str, string value, int valueLength) =>
-            str.StartsWith(value) &&
+            str.StartsWithO(value) &&
             str.Length > valueLength &&
             char.IsWhiteSpace(str[valueLength]);
-         */
+        */
 
         #endregion
 

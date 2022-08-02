@@ -213,7 +213,7 @@ namespace AL_Common
             for (int i = 0, j = 0; i < codeLines.Length; i++)
             {
                 string codeLine = codeLines[i].Trim();
-                if (codeLine.StartsWith("new " + nameof(Symbol)))
+                if (codeLine.StartsWithO("new " + nameof(Symbol)))
                 {
                     symbolLines[j] = codeLine;
                     j++;
@@ -224,7 +224,7 @@ namespace AL_Common
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
-                if (line.StartsWith("#line"))
+                if (line.StartsWithO("#line"))
                 {
                     string lineNumRaw = line.Substring(5, line.IndexOf('\"') - 5).Trim();
                     if (int.TryParse(lineNumRaw, out int result))

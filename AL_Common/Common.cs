@@ -167,6 +167,22 @@ namespace AL_Common
 
         #region String
 
+        /// <summary>
+        /// Uses <see cref="StringComparison.Ordinal"/>.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool StartsWithO(this string str, string value) => str.StartsWith(value, Ordinal);
+
+        /// <summary>
+        /// Uses <see cref="StringComparison.Ordinal"/>.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
+
         #region ASCII-specific
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -429,7 +445,7 @@ namespace AL_Common
 
         public static string ToForwardSlashes_Net(this string value)
         {
-            return value.StartsWith(@"\\") ? @"\\" + value.Substring(2).ToForwardSlashes() : value.ToForwardSlashes();
+            return value.StartsWithO(@"\\") ? @"\\" + value.Substring(2).ToForwardSlashes() : value.ToForwardSlashes();
         }
 
         public static string ToBackSlashes(this string value) => value.Replace('/', '\\');
@@ -438,10 +454,10 @@ namespace AL_Common
 
         public static string ToSystemDirSeps_Net(this string value)
         {
-            return value.StartsWith(@"\\") ? @"\\" + value.Substring(2).ToSystemDirSeps() : value.ToSystemDirSeps();
+            return value.StartsWithO(@"\\") ? @"\\" + value.Substring(2).ToSystemDirSeps() : value.ToSystemDirSeps();
         }
 
-        public static string MakeUNCPath(string path) => path.StartsWith(@"\\") ? @"\\?\UNC\" + path.Substring(2) : @"\\?\" + path;
+        public static string MakeUNCPath(string path) => path.StartsWithO(@"\\") ? @"\\?\UNC\" + path.Substring(2) : @"\\?\" + path;
 
         #endregion
 

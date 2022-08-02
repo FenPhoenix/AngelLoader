@@ -128,7 +128,7 @@ namespace FenGen
             for (int i = 0; i < sourceLines.Count; i++)
             {
                 string lineT = sourceLines[i].Trim();
-                if (lineT.StartsWith("#if DEBUG") || lineT.StartsWith("#endif"))
+                if (lineT.StartsWithO("#if DEBUG") || lineT.StartsWithO("#endif"))
                 {
                     sourceLines.RemoveAt(i);
                     i--;
@@ -296,7 +296,7 @@ namespace FenGen
                             if (mes.Name.ToString() == "Add")
                             {
                                 string nodeStr = mesN.ToString().Trim();
-                                if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
+                                if (nodeStr.StartsWithO("this.")) nodeStr = nodeStr.Substring(5);
 
                                 string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
 
@@ -308,7 +308,7 @@ namespace FenGen
                                     {
                                         var arg = ies.ArgumentList.Arguments[0];
                                         string argStr = arg.ToString().Trim();
-                                        if (argStr.StartsWith("this.")) argStr = argStr.Substring(5);
+                                        if (argStr.StartsWithO("this.")) argStr = argStr.Substring(5);
                                         controlsInFlowLayoutPanels.Add(argStr);
                                     }
 
@@ -322,7 +322,7 @@ namespace FenGen
                             else if (mes.Name.ToString() == "SetToolTip")
                             {
                                 string nodeStr = mesN.ToString().Trim();
-                                if (nodeStr.StartsWith("this.")) nodeStr = nodeStr.Substring(5);
+                                if (nodeStr.StartsWithO("this.")) nodeStr = nodeStr.Substring(5);
 
                                 string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
 
@@ -418,7 +418,7 @@ namespace FenGen
                         if (aes.Right is MemberAccessExpressionSyntax maes)
                         {
                             string val = maes.ToString();
-                            if (val.TrimEnd(';').EndsWith(".Resources.AngelLoader"))
+                            if (val.TrimEnd(';').EndsWithO(".Resources.AngelLoader"))
                             {
                                 CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                                 props.ExplicitAppIcon = true;
@@ -467,7 +467,7 @@ namespace FenGen
                         SyntaxNode[] anchorStyles = aes.Right.DescendantNodesAndSelf()
                             .Where(x =>
                                 x is MemberAccessExpressionSyntax &&
-                                x.ToString().StartsWith("System.Windows.Forms.AnchorStyles."))
+                                x.ToString().StartsWithO("System.Windows.Forms.AnchorStyles."))
                             .ToArray();
 
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);

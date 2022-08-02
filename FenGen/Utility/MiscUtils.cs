@@ -185,8 +185,8 @@ namespace FenGen
             // it for us
             const string attr = "Attribute";
 
-            if (match.EndsWith(attr)) match = match.Substring(0, match.LastIndexOf(attr, StringComparison.Ordinal));
-            if (name.EndsWith(attr)) name = name.Substring(0, name.LastIndexOf(attr, StringComparison.Ordinal));
+            if (match.EndsWithO(attr)) match = match.Substring(0, match.LastIndexOf(attr, StringComparison.Ordinal));
+            if (name.EndsWithO(attr)) name = name.Substring(0, name.LastIndexOf(attr, StringComparison.Ordinal));
 
             return name == match;
         }

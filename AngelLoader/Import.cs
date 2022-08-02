@@ -333,7 +333,7 @@ namespace AngelLoader
                                 while (i < lines.Length - 1)
                                 {
                                     string lt = lines[i + 1].Trim();
-                                    if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWith("=1"))
+                                    if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWithO("=1"))
                                     {
                                         archiveDirs.Add(lt.Substring(0, lt.Length - 2));
                                     }
@@ -414,7 +414,7 @@ namespace AngelLoader
                                     string lts = lines[i + 1].TrimStart();
                                     string ltb = lts.TrimEnd();
 
-                                    if (lts.StartsWith("comment=\""))
+                                    if (lts.StartsWithO("comment=\""))
                                     {
                                         string comment = ltb.Substring(9);
                                         if (comment.Length >= 2 && comment[comment.Length - 1] == '\"')
@@ -423,7 +423,7 @@ namespace AngelLoader
                                             fm.Comment = DLUnescapeChars(comment);
                                         }
                                     }
-                                    else if (lts.StartsWith("title=\""))
+                                    else if (lts.StartsWithO("title=\""))
                                     {
                                         string title = ltb.Substring(7);
                                         if (title.Length >= 2 && title[title.Length - 1] == '\"')
@@ -432,7 +432,7 @@ namespace AngelLoader
                                             fm.Title = DLUnescapeChars(title);
                                         }
                                     }
-                                    else if (lts.StartsWith("misdate="))
+                                    else if (lts.StartsWithO("misdate="))
                                     {
                                         ulong.TryParse(ltb.Substring(8), out ulong result);
                                         try
@@ -445,7 +445,7 @@ namespace AngelLoader
                                             fm.ReleaseDate.DateTime = null;
                                         }
                                     }
-                                    else if (lts.StartsWith("date="))
+                                    else if (lts.StartsWithO("date="))
                                     {
                                         ulong.TryParse(ltb.Substring(5), out ulong result);
                                         try
@@ -458,7 +458,7 @@ namespace AngelLoader
                                             fm.LastPlayed.DateTime = null;
                                         }
                                     }
-                                    else if (lts.StartsWith("finished="))
+                                    else if (lts.StartsWithO("finished="))
                                     {
                                         uint.TryParse(ltb.Substring(9), out uint result);
                                         // result will be 0 on fail, which is the empty value so it's fine

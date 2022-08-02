@@ -47,7 +47,7 @@ namespace FenGen
                 int curIndent = _nextIndent;
 
                 string strT = str.TrimStart();
-                if (!strT.StartsWith("//")) strT = strT.TrimEnd();
+                if (!strT.StartsWithO("//")) strT = strT.TrimEnd();
                 if (strT == "{")
                 {
                     _nextIndent++;
@@ -86,7 +86,7 @@ namespace FenGen
                 }
 
                 bool noIndent = strT.IsWhiteSpace() ||
-                                (strT.StartsWith("#") &&
+                                (strT.StartsWithO("#") &&
                                  !strT.StartsWithPlusWhiteSpace("#region") &&
                                  strT != "#region" &&
                                  !strT.StartsWithPlusWhiteSpace("#endregion") &&

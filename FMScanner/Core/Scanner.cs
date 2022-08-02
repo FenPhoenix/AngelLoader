@@ -2243,7 +2243,7 @@ namespace FMScanner
                 for (int i = 0; i < authors.Count; i++)
                 {
                     string a = authors[i];
-                    if (i > 0 && !authorString.EndsWith(", ")) authorString += ", ";
+                    if (i > 0 && !authorString.EndsWithO(", ")) authorString += ", ";
                     authorString += a.Substring(a.IndexOf(':') + 1).Trim();
                 }
 

@@ -35,7 +35,7 @@ namespace AngelLoader.Forms
         {
             string[] args = Environment.GetCommandLineArgs();
 
-            if (args.Length > 1 && args[1].StartsWith("-rtf_test_"))
+            if (args.Length > 1 && args[1].StartsWithO("-rtf_test_"))
             {
                 bool dark = args[1] switch
                 {

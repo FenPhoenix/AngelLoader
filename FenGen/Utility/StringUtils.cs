@@ -142,6 +142,22 @@ namespace FenGen
         #region StartsWith and EndsWith
 
         /// <summary>
+        /// Ordinal case-sensitive.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, Ordinal);
+
+        /// <summary>
+        /// Ordinal case-sensitive.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
+
+        /// <summary>
         /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
         /// </summary>
         /// <param name="str"></param>

@@ -321,7 +321,7 @@ namespace FenGen
                 {
                     w.WL("AddReadmeEncoding(" + obj + ", " + val + ", eqIndex + 1);");
                 }
-                else if (field.Type.StartsWith("List<"))
+                else if (field.Type.StartsWithO("List<"))
                 {
                     string listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
 
@@ -648,7 +648,7 @@ namespace FenGen
                     w.WL("sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());");
                     w.WL("}");
                 }
-                else if (field.Type.StartsWith("List<"))
+                else if (field.Type.StartsWithO("List<"))
                 {
                     bool listTypeIsString = field.Type == "List<string>";
                     if (field.ListType == ListType.MultipleLines)

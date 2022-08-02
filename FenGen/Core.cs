@@ -485,7 +485,7 @@ namespace FenGen
                 while (sr.ReadLine() is { } line)
                 {
                     string lts = line.TrimStart();
-                    if (lts.IsWhiteSpace() || lts.StartsWith("//")) continue;
+                    if (lts.IsWhiteSpace() || lts.StartsWithO("//")) continue;
 
                     if (lts[0] != '#') break;
 
