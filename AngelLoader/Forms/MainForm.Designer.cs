@@ -989,6 +989,7 @@
             // 
             this.StatisticsTabPage.AutoScroll = true;
             this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.StatisticsTabPage.Controls.Add(this.Stats_MisCountLabel);
             this.StatisticsTabPage.Controls.Add(this.StatsScanCustomResourcesButton);
             this.StatisticsTabPage.Controls.Add(this.StatsCheckBoxesPanel);
             this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
@@ -998,11 +999,20 @@
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
             // 
+            // Stats_MisCountLabel
+            // 
+            this.Stats_MisCountLabel.AutoSize = true;
+            this.Stats_MisCountLabel.Location = new System.Drawing.Point(4, 8);
+            this.Stats_MisCountLabel.Name = "Stats_MisCountLabel";
+            this.Stats_MisCountLabel.Size = new System.Drawing.Size(77, 13);
+            this.Stats_MisCountLabel.TabIndex = 0;
+            this.Stats_MisCountLabel.Text = "[mission count]";
+            // 
             // StatsScanCustomResourcesButton
             // 
             this.StatsScanCustomResourcesButton.AutoSize = true;
             this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
+            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 224);
             this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
             this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
@@ -1027,7 +1037,7 @@
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_ScriptsCheckBox);
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_SubtitlesCheckBox);
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_ObjectsCheckBox);
-            this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 32);
+            this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 56);
             this.StatsCheckBoxesPanel.Name = "StatsCheckBoxesPanel";
             this.StatsCheckBoxesPanel.Size = new System.Drawing.Size(74, 164);
             this.StatsCheckBoxesPanel.TabIndex = 1;
@@ -1146,7 +1156,7 @@
             // CustomResourcesLabel
             // 
             this.CustomResourcesLabel.AutoSize = true;
-            this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 10);
+            this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 34);
             this.CustomResourcesLabel.Name = "CustomResourcesLabel";
             this.CustomResourcesLabel.Size = new System.Drawing.Size(156, 13);
             this.CustomResourcesLabel.TabIndex = 0;
@@ -1978,5 +1988,6 @@
         internal CustomControls.ModsControl MainModsControl;
         internal CustomControls.DarkCheckBox Patch_NewMantle_CheckBox;
         internal CustomControls.DarkLabel Patch_PerFMValues_Label;
+        internal CustomControls.DarkLabel Stats_MisCountLabel;
     }
 }

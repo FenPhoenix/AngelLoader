@@ -84,6 +84,7 @@ namespace AngelLoader.Forms
             TopRightCollapseButton = new DarkArrowButton();
             TopRightTabControl = new DarkTabControl();
             StatisticsTabPage = new DarkTabPageCustom();
+            Stats_MisCountLabel = new DarkLabel();
             StatsScanCustomResourcesButton = new DarkButton();
             StatsCheckBoxesPanel = new Panel();
             CR_MapCheckBox = new DarkCheckBox();
@@ -784,17 +785,24 @@ namespace AngelLoader.Forms
             // 
             StatisticsTabPage.AutoScroll = true;
             StatisticsTabPage.BackColor = SystemColors.Control;
+            StatisticsTabPage.Controls.Add(Stats_MisCountLabel);
             StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
             StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
             StatisticsTabPage.Controls.Add(CustomResourcesLabel);
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
             // 
+            // Stats_MisCountLabel
+            // 
+            Stats_MisCountLabel.AutoSize = true;
+            Stats_MisCountLabel.Location = new Point(4, 8);
+            Stats_MisCountLabel.TabIndex = 0;
+            // 
             // StatsScanCustomResourcesButton
             // 
             StatsScanCustomResourcesButton.AutoSize = true;
             StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsScanCustomResourcesButton.Location = new Point(6, 200);
+            StatsScanCustomResourcesButton.Location = new Point(6, 224);
             StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
             StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
             StatsScanCustomResourcesButton.TabIndex = 12;
@@ -816,7 +824,7 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Controls.Add(CR_ScriptsCheckBox);
             StatsCheckBoxesPanel.Controls.Add(CR_SubtitlesCheckBox);
             StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
-            StatsCheckBoxesPanel.Location = new Point(8, 32);
+            StatsCheckBoxesPanel.Location = new Point(8, 56);
             StatsCheckBoxesPanel.TabIndex = 1;
             StatsCheckBoxesPanel.Visible = false;
             // 
@@ -902,7 +910,7 @@ namespace AngelLoader.Forms
             // CustomResourcesLabel
             // 
             CustomResourcesLabel.AutoSize = true;
-            CustomResourcesLabel.Location = new Point(4, 10);
+            CustomResourcesLabel.Location = new Point(4, 34);
             CustomResourcesLabel.TabIndex = 0;
             // 
             // EditFMTabPage

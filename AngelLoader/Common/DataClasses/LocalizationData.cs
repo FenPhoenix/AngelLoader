@@ -461,6 +461,15 @@ namespace AngelLoader.DataClasses
         {
             internal readonly string TabText = "Statistics";
             [FenGenBlankLine]
+            internal readonly string MissionCount_Single = "Single mission";
+            [FenGenComment(
+                "In English, if an FM had 3 missions for example, it would say \"3 mission campaign\".",
+                "Structure these lines as appropriate for your language. You can leave one or the other blank if the",
+                "number should go at the start or at the end of the final line.",
+                "Make sure to leave a space at the end of the first line and start of the second line if they're non-empty, as demonstrated.")]
+            internal readonly string MissionCount_BeforeNumber = "";
+            internal readonly string MissionCount_AfterNumber = " mission campaign";
+            [FenGenBlankLine]
             internal readonly string CustomResources = "Custom resources:";
             internal readonly string CustomResourcesNotScanned = "Custom resources not scanned.";
             // @GENGAMES (Localization - Custom resource detection not supported): Begin

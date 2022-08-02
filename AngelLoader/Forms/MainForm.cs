@@ -4523,7 +4523,9 @@ namespace AngelLoader.Forms
             {
                 #region Stats tab
 
-                BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
+                Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
+
+                BlankStatsPanelWithMessage("");
                 StatsScanCustomResourcesButton.Hide();
 
                 #endregion
@@ -4820,6 +4822,15 @@ namespace AngelLoader.Forms
             using (new DisableEvents(this))
             {
                 #region Stats tab
+
+                Stats_MisCountLabel.Text = fm.MisCount switch
+                {
+                    < 1 => "",
+                    1 => LText.StatisticsTab.MissionCount_Single,
+                    > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
+                           fm.MisCount.ToString(CultureInfo.CurrentCulture) +
+                           LText.StatisticsTab.MissionCount_AfterNumber
+                };
 
                 StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
