@@ -15,6 +15,12 @@ namespace AngelLoader.DataClasses
         -Keep names shortish for more performance when reading
         -I told myself to version-header ini files right from the start, but I didn't. Meh.
 
+    [FenGenMaxDigits()] is a perf/alloc optimization that's only for if numeric fields where you don't need to
+    parse negatives (because it won't work with them). If you specify a maximum number of digits with this
+    attribute, the codegen will create code that can parse the value out of the line without taking the extra
+    allocation of a substring of the value. If you don't specify this attribute, the value will still be read
+    correctly but there will be an extra allocation.
+    
     @MEM(FMData): We could get rid of some stuff in here, like TagsString is an easy candidate
     -We could also, if we're clever, get rid of some other stuff we nominally need, like MarkedRecent. We could
      have like an internal hashset where we put all "recent" FMs into and remove them from it as appropriate.

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿//#define ENABLE_ALWAYS_FAST_NUMERIC_PARSE
+
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -90,6 +93,31 @@ namespace FenGen
 
             File.WriteAllText(destFile, w.ToString());
         }
+
+#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
+
+        private static readonly Dictionary<string, int> _numericTypeToMaxDigits = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "byte", 3 },
+            { "sbyte", 3 },
+            { "short", 5 },
+            { "ushort", 5 },
+            { "int", 10 },
+            { "uint", 10 },
+            { "long", 19 },
+            { "ulong", 20 },
+
+            { "byte?", 3 },
+            { "sbyte?", 3 },
+            { "short?", 5 },
+            { "ushort?", 5 },
+            { "int?", 10 },
+            { "uint?", 10 },
+            { "long?", 19 },
+            { "ulong?", 20 }
+        };
+
+#endif
 
         [MustUseReturnValue]
         private static List<Field> ReadSourceFields(string sourceFile)
@@ -211,18 +239,28 @@ namespace FenGen
             {
                 if (item.IsKind(SyntaxKind.FieldDeclaration) || item.IsKind(SyntaxKind.PropertyDeclaration))
                 {
-                    var last = new Field();
-                    FillFieldFromAttributes((MemberDeclarationSyntax)item, last, out bool ignore);
+                    var field = new Field();
+                    FillFieldFromAttributes((MemberDeclarationSyntax)item, field, out bool ignore);
                     if (ignore) continue;
 
-                    last.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
+                    field.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
                         ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
                         : ((PropertyDeclarationSyntax)item).Identifier).Value!.ToString();
-                    last.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
+                    field.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
                         ? ((FieldDeclarationSyntax)item).Declaration.Type
                         : ((PropertyDeclarationSyntax)item).Type).ToString();
 
-                    fields.Add(last);
+#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
+
+                    if (field.MaxDigits == null &&
+                        _numericTypeToMaxDigits.TryGetValue(field.Type, out int maxDigits))
+                    {
+                        field.MaxDigits = maxDigits;
+                    }
+
+#endif
+
+                    fields.Add(field);
                 }
             }
 
@@ -254,13 +292,16 @@ namespace FenGen
                 w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
                 w.WL("{");
 
-                string parseMethodName = field.Type switch
-                {
-                    "int" => "TryParseIntFromEnd",
-                    "uint" => "TryParseUIntFromEnd",
-                    "ulong" => "TryParseULongFromEnd",
-                    _ => ""
-                };
+                string parseMethodName =
+                    field.MaxDigits == null
+                        ? ""
+                        : field.Type switch
+                        {
+                            "int" => "TryParseIntFromEnd",
+                            "uint" => "TryParseUIntFromEnd",
+                            "ulong" => "TryParseULongFromEnd",
+                            _ => ""
+                        };
 
                 if (field.Type != "bool" && field.Type != "bool?" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
                 {
