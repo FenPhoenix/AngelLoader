@@ -990,14 +990,12 @@ namespace AngelLoader.Forms
 
             if (!Config.AskedToScanForMisCounts)
             {
-                Show();
-
                 var fmsNeedingMisCountScan = new List<FanMission>();
 
                 for (int i = 0; i < FMsViewList.Count; i++)
                 {
                     FanMission fm = FMsViewList[i];
-                    if (GameIsKnownAndSupported(fm.Game) && fm.MisCount == -1)
+                    if (GameIsKnownAndSupported(fm.Game) && !fm.MarkedUnavailable && fm.MisCount == -1)
                     {
                         fmsNeedingMisCountScan.Add(fm);
                     }
@@ -1005,6 +1003,7 @@ namespace AngelLoader.Forms
 
                 if (fmsNeedingMisCountScan.Count > 0)
                 {
+                    Show();
                     await FMScan.ScanFMs(
                         fmsNeedingMisCountScan,
                         FMScanner.ScanOptions.FalseDefault(scanMissionCount: true),

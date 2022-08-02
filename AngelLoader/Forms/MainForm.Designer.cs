@@ -104,6 +104,7 @@
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
             this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
+            this.Stats_MisCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.StatsScanCustomResourcesButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
             this.CR_MapCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
