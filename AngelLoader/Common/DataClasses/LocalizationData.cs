@@ -811,6 +811,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Size = "Size";
             internal readonly string ReleaseDate = "Release date";
             internal readonly string Tags = "Tags";
+            internal readonly string MissionCount = "Mission count";
             [FenGenBlankLine]
             internal readonly string Scan = "Scan";
             [FenGenBlankLine]

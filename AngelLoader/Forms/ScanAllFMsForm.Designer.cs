@@ -45,6 +45,7 @@ namespace AngelLoader.Forms
             this.ScanAllFMsForLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.MissionCountCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.BottomFLP.SuspendLayout();
             this.SelectButtonsFLP.SuspendLayout();
             this.SuspendLayout();
@@ -207,7 +208,7 @@ namespace AngelLoader.Forms
             this.BottomFLP.Controls.Add(this.Cancel_Button);
             this.BottomFLP.Controls.Add(this.ScanButton);
             this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomFLP.Location = new System.Drawing.Point(0, 179);
+            this.BottomFLP.Location = new System.Drawing.Point(0, 203);
             this.BottomFLP.Name = "BottomFLP";
             this.BottomFLP.Size = new System.Drawing.Size(416, 40);
             this.BottomFLP.TabIndex = 0;
@@ -216,10 +217,22 @@ namespace AngelLoader.Forms
             // 
             this.SelectButtonsFLP.Controls.Add(this.SelectAllButton);
             this.SelectButtonsFLP.Controls.Add(this.SelectNoneButton);
-            this.SelectButtonsFLP.Location = new System.Drawing.Point(15, 152);
+            this.SelectButtonsFLP.Location = new System.Drawing.Point(15, 176);
             this.SelectButtonsFLP.Name = "SelectButtonsFLP";
             this.SelectButtonsFLP.Size = new System.Drawing.Size(401, 28);
-            this.SelectButtonsFLP.TabIndex = 9;
+            this.SelectButtonsFLP.TabIndex = 10;
+            // 
+            // MissionCountCheckBox
+            // 
+            this.MissionCountCheckBox.AutoSize = true;
+            this.MissionCountCheckBox.Checked = true;
+            this.MissionCountCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.MissionCountCheckBox.Location = new System.Drawing.Point(16, 152);
+            this.MissionCountCheckBox.Name = "MissionCountCheckBox";
+            this.MissionCountCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.MissionCountCheckBox.TabIndex = 9;
+            this.MissionCountCheckBox.Text = "Mission count";
+            this.MissionCountCheckBox.UseVisualStyleBackColor = true;
             // 
             // ScanAllFMsForm
             // 
@@ -227,10 +240,11 @@ namespace AngelLoader.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(416, 219);
+            this.ClientSize = new System.Drawing.Size(416, 243);
             this.Controls.Add(this.SelectButtonsFLP);
             this.Controls.Add(this.BottomFLP);
             this.Controls.Add(this.ScanAllFMsForLabel);
+            this.Controls.Add(this.MissionCountCheckBox);
             this.Controls.Add(this.TagsCheckBox);
             this.Controls.Add(this.ReleaseDateCheckBox);
             this.Controls.Add(this.SizeCheckBox);
@@ -271,5 +285,6 @@ namespace AngelLoader.Forms
         private AngelLoader.Forms.CustomControls.DarkLabel ScanAllFMsForLabel;
         private System.Windows.Forms.FlowLayoutPanel BottomFLP;
         private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
+        private CustomControls.DarkCheckBox MissionCountCheckBox;
     }
 }

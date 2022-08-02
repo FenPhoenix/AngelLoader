@@ -30,7 +30,8 @@ namespace AngelLoader.Forms
                 CustomResourcesCheckBox,
                 SizeCheckBox,
                 ReleaseDateCheckBox,
-                TagsCheckBox
+                TagsCheckBox,
+                MissionCountCheckBox
             };
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
@@ -50,6 +51,7 @@ namespace AngelLoader.Forms
             SizeCheckBox.Text = LText.ScanAllFMsBox.Size;
             ReleaseDateCheckBox.Text = LText.ScanAllFMsBox.ReleaseDate;
             TagsCheckBox.Text = LText.ScanAllFMsBox.Tags;
+            MissionCountCheckBox.Text = LText.ScanAllFMsBox.MissionCount;
 
             SelectAllButton.Text = LText.Global.SelectAll;
             SelectNoneButton.Text = LText.Global.SelectNone;
@@ -94,6 +96,7 @@ namespace AngelLoader.Forms
                     ScanOptions.ScanSize = SizeCheckBox.Checked;
                     ScanOptions.ScanReleaseDate = ReleaseDateCheckBox.Checked;
                     ScanOptions.ScanTags = TagsCheckBox.Checked;
+                    ScanOptions.ScanMissionCount = MissionCountCheckBox.Checked;
                 }
             }
 
