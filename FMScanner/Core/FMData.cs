@@ -297,7 +297,7 @@ namespace FMScanner
 #endif
         public string TagsString = "";
 
-        public int MissionCount;
+        public int? MissionCount;
 
         public bool? HasMap;
 

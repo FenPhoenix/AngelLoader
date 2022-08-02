@@ -491,7 +491,8 @@ namespace FMScanner
                 ScannedFMData = new ScannedFMData
                 {
                     ArchiveName = Path.GetFileName(archivePath),
-                    Game = Game.Unsupported
+                    Game = Game.Unsupported,
+                    MissionCount = 0
                 },
                 Fen7zResult = fen7zResult,
                 Exception = ex,
@@ -503,7 +504,8 @@ namespace FMScanner
                 ScannedFMData = new ScannedFMData
                 {
                     ArchiveName = Path.GetFileName(archivePath),
-                    Game = Game.Null
+                    Game = Game.Null,
+                    MissionCount = 0
                 },
                 Fen7zResult = fen7zResult,
                 Exception = ex,

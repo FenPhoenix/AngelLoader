@@ -612,6 +612,12 @@ namespace AngelLoader.DataClasses
             internal readonly string ReportScanningFirst = "Scanning ";
             internal readonly string ReportScanningBetweenNumAndTotal = " of ";
             internal readonly string ReportScanningLast = "...";
+            [FenGenComment(
+                "\"Mission count\" means the number of missions in an FM, which will be 1 if it's a single mission",
+                "or some greater number if it's a campaign.",
+                "Mission count detection is new for versions above 1.6.6, so we need to run an extra one-time scan",
+                "to make sure old versions' FM data is updated with the new mission count field.")]
+            internal readonly string ScanningForMissionCounts = "Scanning for mission counts...";
             [FenGenBlankLine]
             internal readonly string ImportingFromDarkLoader = "Importing from DarkLoader...";
             internal readonly string ImportingFromNewDarkLoader = "Importing from NewDarkLoader...";

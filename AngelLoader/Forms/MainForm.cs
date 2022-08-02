@@ -986,6 +986,33 @@ namespace AngelLoader.Forms
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
+            if (!Config.AskedToScanForMisCounts)
+            {
+                Show();
+
+                var fmsNeedingMisCountScan = new List<FanMission>();
+
+                for (int i = 0; i < FMsViewList.Count; i++)
+                {
+                    FanMission fm = FMsViewList[i];
+                    if (GameIsKnownAndSupported(fm.Game) && fm.MisCount == null)
+                    {
+                        fmsNeedingMisCountScan.Add(fm);
+                    }
+                }
+
+                if (fmsNeedingMisCountScan.Count > 0)
+                {
+                    await FMScan.ScanFMs(
+                        fmsNeedingMisCountScan,
+                        FMScanner.ScanOptions.FalseDefault(scanMissionCount: true),
+                        scanMessage: LText.ProgressBox.ScanningForMissionCounts
+                    );
+                }
+
+                Config.AskedToScanForMisCounts = true;
+            }
+
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
