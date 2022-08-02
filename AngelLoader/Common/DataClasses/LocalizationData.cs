@@ -405,6 +405,9 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string GameColumn = "Game";
             internal readonly string InstalledColumn = "Installed";
+            [FenGenComment(
+                "This is the number of missions in the FM. 1 for a single mission, more for a campaign.")]
+            internal readonly string MissionCountColumn = "Mission count";
             internal readonly string TitleColumn = "Title";
             internal readonly string ArchiveColumn = "Archive";
             internal readonly string AuthorColumn = "Author";

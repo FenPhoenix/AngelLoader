@@ -523,6 +523,10 @@ namespace AngelLoader
         {
             AddColumn(config, valTrimmed, Column.Installed);
         }
+        private static void Config_ColumnMisCount_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            AddColumn(config, valTrimmed, Column.MissionCount);
+        }
         private static void Config_ColumnTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
         {
             AddColumn(config, valTrimmed, Column.Title);
@@ -860,6 +864,7 @@ namespace AngelLoader
 
             { "ColumnGame", new Config_DelegatePointerWrapper(&Config_ColumnGame_Set) },
             { "ColumnInstalled", new Config_DelegatePointerWrapper(&Config_ColumnInstalled_Set) },
+            { "ColumnMissionCount", new Config_DelegatePointerWrapper(&Config_ColumnMisCount_Set) },
             { "ColumnTitle", new Config_DelegatePointerWrapper(&Config_ColumnTitle_Set) },
             { "ColumnArchive", new Config_DelegatePointerWrapper(&Config_ColumnArchive_Set) },
             { "ColumnAuthor", new Config_DelegatePointerWrapper(&Config_ColumnAuthor_Set) },

@@ -64,6 +64,7 @@
             this.FMsDGV = new AngelLoader.Forms.CustomControls.DataGridViewCustom();
             this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.MisCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ArchiveColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AuthorColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -445,6 +446,7 @@
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
             this.InstalledColumn,
+            this.MisCountColumn,
             this.TitleColumn,
             this.ArchiveColumn,
             this.AuthorColumn,
@@ -507,6 +509,14 @@
             this.InstalledColumn.ReadOnly = true;
             this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // MisCountColumn
+            // 
+            this.MisCountColumn.HeaderText = "Mission count";
+            this.MisCountColumn.MinimumWidth = 25;
+            this.MisCountColumn.Name = "MisCountColumn";
+            this.MisCountColumn.ReadOnly = true;
+            this.MisCountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // TitleColumn
             // 
@@ -1959,6 +1969,7 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
         internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn MisCountColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn ArchiveColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;

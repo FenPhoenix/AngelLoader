@@ -44,6 +44,7 @@ namespace AngelLoader.Forms
             FMsDGV = new DataGridViewCustom();
             GameTypeColumn = new DataGridViewImageColumn();
             InstalledColumn = new DataGridViewImageColumn();
+            MisCountColumn = new DataGridViewTextBoxColumn();
             TitleColumn = new DataGridViewTextBoxColumn();
             ArchiveColumn = new DataGridViewTextBoxColumn();
             AuthorColumn = new DataGridViewTextBoxColumn();
@@ -379,6 +380,7 @@ namespace AngelLoader.Forms
             FMsDGV.Columns.AddRange(
                 GameTypeColumn,
                 InstalledColumn,
+                MisCountColumn,
                 TitleColumn,
                 ArchiveColumn,
                 AuthorColumn,
@@ -423,6 +425,12 @@ namespace AngelLoader.Forms
             InstalledColumn.ReadOnly = true;
             InstalledColumn.Resizable = DataGridViewTriState.True;
             InstalledColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
+            // 
+            // MisCountColumn
+            // 
+            MisCountColumn.MinimumWidth = 25;
+            MisCountColumn.ReadOnly = true;
+            MisCountColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
             // 
             // TitleColumn
             // 

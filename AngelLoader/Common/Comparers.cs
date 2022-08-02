@@ -26,6 +26,9 @@ namespace AngelLoader
         private static FMInstalledComparer? _fmInstalledComparer;
         internal static IDirectionalSortFMComparer FMInstalled => _fmInstalledComparer ??= new FMInstalledComparer();
 
+        private static FMMisCountComparer? _fmMisCountComparer;
+        internal static IDirectionalSortFMComparer FMMisCount => _fmMisCountComparer ??= new FMMisCountComparer();
+
         private static FMArchiveComparer? _fmArchiveComparer;
         internal static IDirectionalSortFMComparer FMArchive => _fmArchiveComparer ??= new FMArchiveComparer();
 
@@ -183,6 +186,22 @@ namespace AngelLoader
                     x.Installed == y.Installed ? TitleCompare(x, y) :
                     // Installed goes on top, non-installed (blank icon) goes on bottom
                     x.Installed && !y.Installed ? -1 : 1;
+
+                return SortDirection == SortDirection.Ascending ? ret : -ret;
+            }
+        }
+
+        internal sealed class FMMisCountComparer : IDirectionalSortFMComparer
+        {
+            public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+
+            public int Compare(FanMission x, FanMission y)
+            {
+                int ret =
+                    x.MisCount == y.MisCount ? TitleCompare(x, y) :
+                    x.MisCount == 0 ? -1 :
+                    y.MisCount == 0 ? 1 :
+                    x.MisCount < y.MisCount ? -1 : 1;
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
             }

@@ -685,6 +685,7 @@ namespace AngelLoader
             {
                 Column.Game => Comparers.FMGame,
                 Column.Installed => Comparers.FMInstalled,
+                Column.MissionCount => Comparers.FMMisCount,
                 Column.Title => Comparers.FMTitle,
                 Column.Archive => Comparers.FMArchive,
                 Column.Author => Comparers.FMAuthor,

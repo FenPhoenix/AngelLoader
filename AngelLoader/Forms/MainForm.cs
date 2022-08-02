@@ -1634,6 +1634,7 @@ namespace AngelLoader.Forms
 
                 GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
                 InstalledColumn.HeaderText = LText.FMsList.InstalledColumn;
+                MisCountColumn.HeaderText = LText.FMsList.MissionCountColumn;
                 TitleColumn.HeaderText = LText.FMsList.TitleColumn;
                 ArchiveColumn.HeaderText = LText.FMsList.ArchiveColumn;
                 AuthorColumn.HeaderText = LText.FMsList.AuthorColumn;
@@ -3860,6 +3861,10 @@ namespace AngelLoader.Forms
                     e.Value = fm.Installed ? Images.GreenCheckCircle : Images.Blank;
                     break;
 
+                case Column.MissionCount:
+                    e.Value = fm.MisCount > 0 ? fm.MisCount.ToString(CultureInfo.CurrentCulture) : "";
+                    break;
+
                 case Column.Title:
                     string finalTitle;
                     if (Config.EnableArticles && Config.MoveArticlesToEnd)
@@ -3892,7 +3897,6 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Archive:
-
                     e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
                         ? pinChar + fm.Archive
                         : fm.Archive;

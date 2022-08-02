@@ -27,6 +27,7 @@ namespace AngelLoader.DataClasses
     {
         Game,
         Installed,
+        MissionCount,
         Title,
         Archive,
         Author,
