@@ -1052,7 +1052,6 @@
             this.StatsCheckBoxesPanel.Name = "StatsCheckBoxesPanel";
             this.StatsCheckBoxesPanel.Size = new System.Drawing.Size(74, 164);
             this.StatsCheckBoxesPanel.TabIndex = 1;
-            this.StatsCheckBoxesPanel.Visible = false;
             // 
             // CR_MapCheckBox
             // 

@@ -834,7 +834,6 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
             StatsCheckBoxesPanel.Location = new Point(8, 56);
             StatsCheckBoxesPanel.TabIndex = 1;
-            StatsCheckBoxesPanel.Visible = false;
             // 
             // CR_MapCheckBox
             // 

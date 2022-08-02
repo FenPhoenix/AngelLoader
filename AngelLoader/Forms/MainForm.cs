@@ -28,7 +28,6 @@ behavior that comes part and parcel with what should be a simple #$@!ing propert
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
 
 @MISCOUNT: We could have a horizontal divider on the stats tab to separate the mission count label more.
-@MISCOUNT: Put a "rescan" button for the mission count label on the stats tab.
 
 @vNext: Put a folder image on the "Open FM folder" menu item
 */
@@ -1681,7 +1680,7 @@ namespace AngelLoader.Forms
                 CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
                 CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
 
-                StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanCustomResources;
+                StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
 
                 #endregion
 
@@ -2467,7 +2466,7 @@ namespace AngelLoader.Forms
                             sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
                             sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
                             //sender == StatsScanCustomResourcesButton
-                            FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
+                            FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true);
 
                         if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
                         {
@@ -4533,8 +4532,8 @@ namespace AngelLoader.Forms
 
                 Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
 
-                BlankStatsPanelWithMessage("");
-                StatsScanCustomResourcesButton.Hide();
+                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResources);
+                StatsScanCustomResourcesButton.Enabled = false;
 
                 #endregion
 
@@ -4667,7 +4666,7 @@ namespace AngelLoader.Forms
         {
             CustomResourcesLabel.Text = message;
             foreach (CheckBox cb in StatsCheckBoxesPanel.Controls) cb.Checked = false;
-            StatsCheckBoxesPanel.Hide();
+            StatsCheckBoxesPanel.Enabled = false;
         }
 
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
@@ -4845,12 +4844,10 @@ namespace AngelLoader.Forms
                 if (fmIsT3)
                 {
                     BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
-                    StatsScanCustomResourcesButton.Hide();
                 }
                 else if (!fm.ResourcesScanned)
                 {
                     BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
-                    StatsScanCustomResourcesButton.Show();
                 }
                 else
                 {
@@ -4867,8 +4864,7 @@ namespace AngelLoader.Forms
                     CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
                     CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
 
-                    StatsCheckBoxesPanel.Show();
-                    StatsScanCustomResourcesButton.Show();
+                    StatsCheckBoxesPanel.Enabled = true;
                 }
 
                 #endregion

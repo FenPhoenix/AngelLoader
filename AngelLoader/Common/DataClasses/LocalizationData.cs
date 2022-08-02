@@ -491,7 +491,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Scripts = "Scripts";
             internal readonly string Subtitles = "Subtitles";
             [FenGenBlankLine]
-            internal readonly string RescanCustomResources = "Rescan custom resources";
+            internal readonly string RescanStatistics = "Rescan statistics";
         }
 
         internal sealed class EditFMTab_Class
