@@ -726,6 +726,11 @@ namespace AngelLoader
             config.PlayOriginalSeparateButtons = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_AskedToScanForMisCounts_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex inGameIndex, bool ignoreGameIndex)
+        {
+            config.AskedToScanForMisCounts = valTrimmed.EqualsTrue();
+        }
+
         #endregion
 
         private sealed unsafe class Config_DelegatePointerWrapper
@@ -907,6 +912,8 @@ namespace AngelLoader
             { "EnableCharacterDetailFix", new Config_DelegatePointerWrapper(&Config_EnableCharacterDetailFix_Set) },
 
             { "PlayOriginalSeparateButtons", new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
+
+            { "AskedToScanForMisCounts", new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
 
             #region Backward compatibility
 
@@ -1229,6 +1236,8 @@ namespace AngelLoader
 
             sb.Append("EnableCharacterDetailFix=").Append(config.EnableCharacterDetailFix).AppendLine();
             sb.Append("PlayOriginalSeparateButtons=").Append(config.PlayOriginalSeparateButtons).AppendLine();
+
+            sb.Append("AskedToScanForMisCounts=").Append(config.AskedToScanForMisCounts).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());
