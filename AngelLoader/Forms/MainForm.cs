@@ -27,7 +27,7 @@ It's conceptually much cleaner to use this method, but we would then have to hac
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
 
-@MISCOUNT: We could have a mission count column. That'd make it a nice ux than the stats tab text-among-other-text whatever crap.
+@MISCOUNT: We could have a mission count column. That'd make it a nicer ux than the stats tab text-among-other-text whatever crap.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
