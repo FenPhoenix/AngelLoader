@@ -48,7 +48,8 @@ namespace AngelLoader
                     scanCustomResources: true,
                     scanSize: true,
                     scanReleaseDate: true,
-                    scanTags: true);
+                    scanTags: true,
+                    scanMissionCount: true);
 
                 static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
                     message1: LText.ProgressBox.ReportScanningFirst +

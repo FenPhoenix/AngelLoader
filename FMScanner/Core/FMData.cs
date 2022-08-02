@@ -7,9 +7,57 @@ using JetBrains.Annotations;
 
 namespace FMScanner
 {
+    [Flags]
+    internal enum ScanOptionsEnum
+    {
+        None,
+        Title,
+        Author,
+        GameType,
+        CustomResources,
+        Size,
+        ReleaseDate,
+        Tags,
+        MissionCount
+#if FMScanner_FullCode
+        ,
+        CampaignMissionNames,
+        Version,
+        Languages,
+        NewDarkRequired,
+        NewDarkMinimumVersion,
+        Description
+#endif
+    }
+
     [PublicAPI]
     public sealed class ScanOptions
     {
+        // IMPORTANT: We have the temporary "scan title for author purposes" that could make this wrong in that case
+        internal ScanOptionsEnum GetOptionsEnum()
+        {
+            ScanOptionsEnum ret = ScanOptionsEnum.None;
+
+            if (ScanTitle) ret |= ScanOptionsEnum.Title;
+            if (ScanAuthor) ret |= ScanOptionsEnum.Author;
+            if (ScanGameType) ret |= ScanOptionsEnum.GameType;
+            if (ScanCustomResources) ret |= ScanOptionsEnum.CustomResources;
+            if (ScanSize) ret |= ScanOptionsEnum.Size;
+            if (ScanReleaseDate) ret |= ScanOptionsEnum.ReleaseDate;
+            if (ScanTags) ret |= ScanOptionsEnum.Tags;
+            if (ScanMissionCount) ret |= ScanOptionsEnum.MissionCount;
+#if FMScanner_FullCode
+            if (ScanCampaignMissionNames) ret |= ScanOptionsEnum.CampaignMissionNames;
+            if (ScanVersion) ret |= ScanOptionsEnum.Version;
+            if (ScanLanguages) ret |= ScanOptionsEnum.Languages;
+            if (ScanNewDarkRequired) ret |= ScanOptionsEnum.NewDarkRequired;
+            if (ScanNewDarkMinimumVersion) ret |= ScanOptionsEnum.NewDarkMinimumVersion;
+            if (ScanDescription) ret |= ScanOptionsEnum.Description;
+#endif
+
+            return ret;
+        }
+
         // Dumb looking on this side, but extremely nice and convenient on the calling side.
         // Pretty sure there must be a better way to be able to have two sets of defaults for one object...
         /// <summary>
@@ -22,7 +70,8 @@ namespace FMScanner
             bool scanCustomResources = false,
             bool scanSize = false,
             bool scanReleaseDate = false,
-            bool scanTags = false
+            bool scanTags = false,
+            bool scanMissionCount = false
 
 #if FMScanner_FullCode
             ,
@@ -43,6 +92,7 @@ namespace FMScanner
                 ScanSize = scanSize,
                 ScanReleaseDate = scanReleaseDate,
                 ScanTags = scanTags,
+                ScanMissionCount = scanMissionCount,
 #if FMScanner_FullCode
                 ScanCampaignMissionNames = scanCampaignMissionNames,
                 ScanVersion = scanVersion,
@@ -62,6 +112,7 @@ namespace FMScanner
             ScanSize = ScanSize,
             ScanReleaseDate = ScanReleaseDate,
             ScanTags = ScanTags,
+            ScanMissionCount = ScanMissionCount,
 #if FMScanner_FullCode
             ScanCampaignMissionNames = ScanCampaignMissionNames,
             ScanVersion = ScanVersion,
@@ -102,6 +153,10 @@ namespace FMScanner
         /// <see langword="true"/> to detect the mission's tags.
         /// </summary>
         public bool ScanTags = true;
+        /// <summary>
+        /// <see langword="true"/> to detect the mission count.
+        /// </summary>
+        public bool ScanMissionCount = true;
 #if FMScanner_FullCode
         /// <summary>
         /// <see langword="true"/> to detect the titles of individual campaign missions.
@@ -241,6 +296,8 @@ namespace FMScanner
         public string Description = "";
 #endif
         public string TagsString = "";
+
+        public int MissionCount;
 
         public bool? HasMap;
 

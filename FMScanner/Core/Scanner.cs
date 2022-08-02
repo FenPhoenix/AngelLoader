@@ -971,6 +971,16 @@ namespace FMScanner
 
             bool fmIsT3 = fmData.Game == Game.Thief3;
 
+            fmData.Type = usedMisFiles.Count > 1 ? FMType.Campaign : FMType.FanMission;
+
+            fmData.MissionCount = usedMisFiles.Count;
+
+            if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
+            {
+                // Early return for perf if we're not scanning anything else
+                return new ScannedFMDataAndError { ScannedFMData = fmData };
+            }
+
             var altTitles = new List<string>();
 
             string finalTitle = "";
@@ -1023,13 +1033,6 @@ namespace FMScanner
                 fmIsSS2 = fmData.Game == Game.SS2;
 
                 #endregion
-
-                // If we're Thief 3, we just skip figuring this out - I don't know how to detect if a T3 mission
-                // is a campaign, and I'm not even sure any T3 campaigns have been released (not counting ones
-                // that are just a series of separate FMs, of course).
-                // SS2 doesn't have any text files that specify which missions are "used" or not, so let's just
-                // simply use the raw .mis count (which for SS2 will be the same as the used .mis count)
-                fmData.Type = usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
 
                 #region Check info files
 
@@ -1418,9 +1421,6 @@ namespace FMScanner
                 return _readmeFiles[0].LastModifiedDate;
             }
 
-            // No first used mission file for T3: no idea how to find such a thing
-            if (fmIsT3) return null;
-
             // Look for the first used .mis file's last modified date
             DateTime misFileDate;
             if (_fmIsZip)
@@ -1553,6 +1553,7 @@ namespace FMScanner
             #region Add BaseDirFiles
 
             bool t3Found = false;
+            var t3GmpFiles = new List<NameAndIndex>();
 
             static bool MapFileExists(string path)
             {
@@ -1602,18 +1603,44 @@ namespace FMScanner
 
                     int index = _fmIsZip ? i : -1;
 
-                    if (!t3Found &&
-                        fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                        fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
-                        (fn.ExtIsIbt() ||
-                        fn.ExtIsCbt() ||
-                        fn.ExtIsGmp() ||
-                        fn.ExtIsNed() ||
-                        fn.ExtIsUnr()))
+                    if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
+                        fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
                     {
-                        fmd.Game = Game.Thief3;
-                        t3Found = true;
-                        continue;
+                        if (t3Found)
+                        {
+                            if (fn.ExtIsGmp())
+                            {
+                                if (_scanOptions.ScanMissionCount)
+                                {
+                                    // We only want the filename; we already know it's in the right folder
+                                    t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                }
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            if (fn.ExtIsIbt() ||
+                                fn.ExtIsCbt() ||
+                                fn.ExtIsNed() ||
+                                fn.ExtIsUnr())
+                            {
+                                fmd.Game = Game.Thief3;
+                                t3Found = true;
+                                continue;
+                            }
+                            else if (fn.ExtIsGmp())
+                            {
+                                fmd.Game = Game.Thief3;
+                                t3Found = true;
+                                if (_scanOptions.ScanMissionCount)
+                                {
+                                    // We only want the filename; we already know it's in the right folder
+                                    t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                }
+                                continue;
+                            }
+                        }
                     }
                     // We can't early-out if !t3Found here because if we find it after this point, we'll be
                     // missing however many of these we skipped before we detected Thief 3
@@ -1754,6 +1781,14 @@ namespace FMScanner
                     FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
                 {
                     t3Found = true;
+                    if (_scanOptions.ScanMissionCount)
+                    {
+                        foreach (string f in EnumFiles(FMDirs.T3DetectS, SearchOption.TopDirectoryOnly))
+                        {
+                            // We only want the filename; we already know it's in the right folder
+                            t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                        }
+                    }
                     fmd.Game = Game.Thief3;
                 }
 
@@ -1882,8 +1917,31 @@ namespace FMScanner
                 }
             }
 
-            // Cut it right here for Thief 3: we don't need anything else
-            if (t3Found) return true;
+            if (t3Found)
+            {
+                if (_scanOptions.ScanMissionCount)
+                {
+                    switch (t3GmpFiles.Count)
+                    {
+                        case 1:
+                            usedMisFiles.Add(t3GmpFiles[0]);
+                            break;
+                        case > 1:
+                            for (int i = 0; i < t3GmpFiles.Count; i++)
+                            {
+                                NameAndIndex item = t3GmpFiles[i];
+                                if (!item.Name.EqualsI(FMFiles.EntryGmp))
+                                {
+                                    usedMisFiles.Add(item);
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                // Cut it right here for Thief 3: we don't need anything else
+                return true;
+            }
 
             #endregion
 

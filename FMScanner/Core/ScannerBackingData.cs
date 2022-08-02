@@ -88,6 +88,10 @@ namespace FMScanner
 
             // System Shock 2 file
             internal const string ModIni = "mod.ini";
+
+            // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual
+            // missions
+            internal const string EntryGmp = "Entry.gmp";
         }
 
         #region Non-const FM Files
