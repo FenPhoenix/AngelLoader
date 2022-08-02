@@ -719,7 +719,7 @@ namespace FMScanner
                     {
                         Log(fm.Path + ": fm is 7z\r\n" +
                             "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                            result.ToString());
+                            result);
 
                         return UnsupportedZip(
                             archivePath: fm.Path,
@@ -1141,7 +1141,7 @@ namespace FMScanner
 
             if (_scanOptions.ScanReleaseDate && fmData.LastUpdateDate == null)
             {
-                fmData.LastUpdateDate = GetReleaseDate(fmIsT3, usedMisFiles);
+                fmData.LastUpdateDate = GetReleaseDate(usedMisFiles);
             }
 
             #endregion
@@ -1384,7 +1384,7 @@ namespace FMScanner
 
         // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
         // So we can do some guesswork on whether the readme dates are near enough to correct or not
-        private DateTime? GetReleaseDate(bool fmIsT3, List<NameAndIndex> usedMisFiles)
+        private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
         {
             // Look in the readme
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);

@@ -200,31 +200,29 @@ namespace AngelLoader
                     {
                         int ret = 0;
 
-                        using (var p = new Process { EnableRaisingEvents = true })
+                        using var p = new Process { EnableRaisingEvents = true };
+                        p.StartInfo.FileName = Paths.FFprobeExe;
+                        p.StartInfo.RedirectStandardOutput = true;
+                        p.StartInfo.Arguments = "-show_format -show_streams -hide_banner \"" + file + "\"";
+                        p.StartInfo.CreateNoWindow = true;
+                        p.StartInfo.UseShellExecute = false;
+
+                        p.OutputDataReceived += (_, e) =>
                         {
-                            p.StartInfo.FileName = Paths.FFprobeExe;
-                            p.StartInfo.RedirectStandardOutput = true;
-                            p.StartInfo.Arguments = "-show_format -show_streams -hide_banner \"" + file + "\"";
-                            p.StartInfo.CreateNoWindow = true;
-                            p.StartInfo.UseShellExecute = false;
+                            if (e.Data.IsEmpty()) return;
 
-                            p.OutputDataReceived += (_, e) =>
+                            string line = e.Data;
+                            if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
+                                int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
                             {
-                                if (e.Data.IsEmpty()) return;
+                                ret = result;
+                            }
+                        };
 
-                                string line = e.Data;
-                                if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
-                                    int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
-                                {
-                                    ret = result;
-                                }
-                            };
+                        p.Start();
+                        p.BeginOutputReadLine();
 
-                            p.Start();
-                            p.BeginOutputReadLine();
-
-                            p.WaitForExit();
-                        }
+                        p.WaitForExit();
                         return ret;
                     }
 
