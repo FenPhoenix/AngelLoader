@@ -119,6 +119,7 @@
             this.CR_SubtitlesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_ObjectsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CustomResourcesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.StatsHorizDiv = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
             this.EditFMTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.EditFMScanLanguagesButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EditFMLanguageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -1004,6 +1005,7 @@
             this.StatisticsTabPage.Controls.Add(this.StatsScanCustomResourcesButton);
             this.StatisticsTabPage.Controls.Add(this.StatsCheckBoxesPanel);
             this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
+            this.StatisticsTabPage.Controls.Add(this.StatsHorizDiv);
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
             this.StatisticsTabPage.Name = "StatisticsTabPage";
             this.StatisticsTabPage.Size = new System.Drawing.Size(526, 284);
@@ -1023,13 +1025,13 @@
             // 
             this.StatsScanCustomResourcesButton.AutoSize = true;
             this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 224);
+            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 232);
             this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
             this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(153, 23);
+            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(110, 23);
             this.StatsScanCustomResourcesButton.TabIndex = 12;
-            this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
+            this.StatsScanCustomResourcesButton.Text = "Rescan statistics";
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             this.StatsScanCustomResourcesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
@@ -1048,7 +1050,7 @@
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_ScriptsCheckBox);
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_SubtitlesCheckBox);
             this.StatsCheckBoxesPanel.Controls.Add(this.CR_ObjectsCheckBox);
-            this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 56);
+            this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 64);
             this.StatsCheckBoxesPanel.Name = "StatsCheckBoxesPanel";
             this.StatsCheckBoxesPanel.Size = new System.Drawing.Size(74, 164);
             this.StatsCheckBoxesPanel.TabIndex = 1;
@@ -1166,11 +1168,20 @@
             // CustomResourcesLabel
             // 
             this.CustomResourcesLabel.AutoSize = true;
-            this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 34);
+            this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 42);
             this.CustomResourcesLabel.Name = "CustomResourcesLabel";
             this.CustomResourcesLabel.Size = new System.Drawing.Size(156, 13);
             this.CustomResourcesLabel.TabIndex = 0;
             this.CustomResourcesLabel.Text = "Custom resources not scanned.";
+            // 
+            // StatsHorizDiv
+            // 
+            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
+            this.StatsHorizDiv.Name = "StatsHorizDiv";
+            this.StatsHorizDiv.Size = new System.Drawing.Size(512, 16);
+            this.StatsHorizDiv.TabIndex = 13;
             // 
             // EditFMTabPage
             // 
@@ -2000,5 +2011,6 @@
         internal CustomControls.DarkCheckBox Patch_NewMantle_CheckBox;
         internal CustomControls.DarkLabel Patch_PerFMValues_Label;
         internal CustomControls.DarkLabel Stats_MisCountLabel;
+        internal CustomControls.DarkHorizontalDivider StatsHorizDiv;
     }
 }

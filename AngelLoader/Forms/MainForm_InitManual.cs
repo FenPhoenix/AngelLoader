@@ -99,6 +99,7 @@ namespace AngelLoader.Forms
             CR_SubtitlesCheckBox = new DarkCheckBox();
             CR_ObjectsCheckBox = new DarkCheckBox();
             CustomResourcesLabel = new DarkLabel();
+            StatsHorizDiv = new DarkHorizontalDivider();
             EditFMTabPage = new DarkTabPageCustom();
             EditFMScanLanguagesButton = new DarkButton();
             EditFMLanguageLabel = new DarkLabel();
@@ -797,6 +798,7 @@ namespace AngelLoader.Forms
             StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
             StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
             StatisticsTabPage.Controls.Add(CustomResourcesLabel);
+            StatisticsTabPage.Controls.Add(StatsHorizDiv);
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
             // 
@@ -810,7 +812,7 @@ namespace AngelLoader.Forms
             // 
             StatsScanCustomResourcesButton.AutoSize = true;
             StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsScanCustomResourcesButton.Location = new Point(6, 224);
+            StatsScanCustomResourcesButton.Location = new Point(6, 232);
             StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
             StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
             StatsScanCustomResourcesButton.TabIndex = 12;
@@ -832,7 +834,7 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Controls.Add(CR_ScriptsCheckBox);
             StatsCheckBoxesPanel.Controls.Add(CR_SubtitlesCheckBox);
             StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
-            StatsCheckBoxesPanel.Location = new Point(8, 56);
+            StatsCheckBoxesPanel.Location = new Point(8, 64);
             StatsCheckBoxesPanel.TabIndex = 1;
             // 
             // CR_MapCheckBox
@@ -917,8 +919,15 @@ namespace AngelLoader.Forms
             // CustomResourcesLabel
             // 
             CustomResourcesLabel.AutoSize = true;
-            CustomResourcesLabel.Location = new Point(4, 34);
+            CustomResourcesLabel.Location = new Point(4, 42);
             CustomResourcesLabel.TabIndex = 0;
+            // 
+            // StatsHorizDiv
+            // 
+            StatsHorizDiv.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            StatsHorizDiv.Location = new Point(6, 24);
+            StatsHorizDiv.Size = new Size(512, 16);
+            StatsHorizDiv.TabIndex = 0;
             // 
             // EditFMTabPage
             // 
