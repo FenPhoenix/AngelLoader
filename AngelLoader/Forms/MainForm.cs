@@ -26,8 +26,6 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
-
-@MISCOUNT: We could always have text in the mission count label, so we never have a blank space at the top.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
