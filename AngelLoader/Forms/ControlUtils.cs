@@ -66,10 +66,6 @@ namespace AngelLoader.Forms
 
         #region Autosizing
 
-        // PERF_TODO: These are relatively expensive operations (10ms to make 3 calls from SettingsForm)
-        // See if we can manually calculate some or all of this and end up with the same result as if we let the
-        // layout do the work as we do now.
-
         /// <summary>
         /// Special case for buttons that need to be autosized but then have their width adjusted after the fact,
         /// and so are unable to have GrowAndShrink set.
