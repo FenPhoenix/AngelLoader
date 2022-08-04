@@ -959,6 +959,13 @@ namespace AngelLoader.Forms
                 ? _deleteFromDB_Dark ??= CreateDeleteFromDBImage()
                 : _deleteFromDB ??= CreateDeleteFromDBImage();
 
+        private static Bitmap? _folder;
+        private static Bitmap? _folder_Dark;
+        public static Bitmap Folder =>
+            DarkModeEnabled
+                ? _folder_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Folder16)
+                : _folder ??= Resources.Folder16;
+
         #endregion
 
         #region Misc

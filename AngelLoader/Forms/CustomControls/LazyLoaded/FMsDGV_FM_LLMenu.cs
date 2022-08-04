@@ -101,6 +101,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 PinToTopMenuItem.Image = _sayPin ? Images.Pin : Images.Unpin;
                 ExplicitPinToTopMenuItem.Image = Images.Pin;
                 ExplicitUnpinFromTopMenuItem.Image = Images.Unpin;
+                OpenFMFolderMenuItem.Image = Images.Folder;
             }
         }
 
@@ -223,7 +224,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 OpenInDromEdSep = new ToolStripSeparator(),
                 OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
                 OpenFMFolderSep = new ToolStripSeparator(),
-                OpenFMFolderMenuItem = new ToolStripMenuItemCustom(),
+                OpenFMFolderMenuItem = new ToolStripMenuItemCustom{ Image = Images.Folder },
                 new ToolStripSeparator(),
                 ScanFMMenuItem = new ToolStripMenuItemCustom(),
                 ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
