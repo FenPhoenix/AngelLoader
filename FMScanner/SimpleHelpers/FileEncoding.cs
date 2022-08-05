@@ -204,14 +204,15 @@ namespace FMScanner.SimpleHelpers
         /// Detects the encoding of textual data of the specified input data.
         /// </summary>
         /// <param name="inputData">The input data.</param>
-        /// <param name="maxSize">Size in byte of analysed data, if you want to analysed only a sample. Use 0 to read all stream data.</param>
-        /// <param name="bufferSize">Size of the buffer for the stream read.</param>
         /// <returns>Detected encoding name</returns>
         /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
-        private string? Detect(Stream inputData, int maxSize = 20 * 1024 * 1024, int bufferSize = 16 * 1024)
+        private void Detect(Stream inputData)
         {
-            if (bufferSize <= 0) throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size cannot be 0 or less.");
-            int maxIterations = maxSize <= 0 ? int.MaxValue : maxSize / bufferSize;
+            const int maxSize = 20 * 1024 * 1024;
+            const int bufferSize = 16 * 1024;
+
+            const int maxIterations = maxSize / bufferSize;
+
             int i = 0;
             _buffer.Clear();
             while (i++ < maxIterations)
@@ -223,7 +224,6 @@ namespace FMScanner.SimpleHelpers
                 if (_done) break;
             }
             Complete();
-            return _encodingName;
         }
 
         /// <summary>
@@ -233,9 +233,9 @@ namespace FMScanner.SimpleHelpers
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
         /// <returns>Detected encoding name</returns>
-        private string? Detect(byte[] inputData, int start, int count)
+        private void Detect(byte[] inputData, int start, int count)
         {
-            if (_done) return _encodingName;
+            if (_done) return;
 
             if (!_started)
             {
@@ -244,7 +244,7 @@ namespace FMScanner.SimpleHelpers
                 if (!CheckForTextualData(inputData, start, count))
                 {
                     _done = true;
-                    return _encodingName;
+                    return;
                 }
             }
 
@@ -255,7 +255,7 @@ namespace FMScanner.SimpleHelpers
             {
                 IncrementFrequency(_ude.Charset);
                 _done = true;
-                return _encodingName;
+                return;
             }
 
             // singular buffer detection
@@ -275,7 +275,6 @@ namespace FMScanner.SimpleHelpers
             // vote for best encoding
             _encodingName = GetCurrentEncoding();
             // update current encoding name
-            return _encodingName;
         }
 
         /// <summary>
