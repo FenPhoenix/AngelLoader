@@ -86,12 +86,12 @@ namespace AngelLoader.Forms.CustomControls
             base.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
-        private void SetButtonState(DarkControlState buttonState)
+        private void SetButtonState(DarkControlState buttonState, bool invalidate = true)
         {
             if (_buttonState != buttonState)
             {
                 _buttonState = buttonState;
-                InvalidateIfDark();
+                if (invalidate) InvalidateIfDark();
             }
         }
 
@@ -177,7 +177,9 @@ namespace AngelLoader.Forms.CustomControls
 
             if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
             {
-                SetButtonState(DarkControlState.Normal);
+                // Don't invalidate here, fixes the issue where if you click and move the mouse quickly onto any
+                // item in the dropdown, that item's text will become the main text somehow.
+                SetButtonState(DarkControlState.Normal, invalidate: false);
             }
         }
 
