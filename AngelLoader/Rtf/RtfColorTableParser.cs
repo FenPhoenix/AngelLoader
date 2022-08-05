@@ -25,13 +25,6 @@ namespace AngelLoader
         #region Stream
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ResetStream(byte[] rtfBytes)
-        {
-            _rtfBytes = rtfBytes;
-            base.ResetStreamBase(rtfBytes.Length);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override byte StreamReadByte() => _rtfBytes[(int)CurrentPos];
 
         #endregion
@@ -71,7 +64,7 @@ namespace AngelLoader
             finally
             {
                 // Reset after so we don't carry around any waste after running
-                Reset(rtfBytes);
+                Reset(Array.Empty<byte>());
             }
         }
 
@@ -80,8 +73,6 @@ namespace AngelLoader
         private void Reset(byte[] rtfBytes)
         {
             base.ResetBase();
-
-            _rtfBytes = Array.Empty<byte>();
 
             #region Fixed-size fields
 
@@ -93,7 +84,8 @@ namespace AngelLoader
 
             _colorTable = null;
 
-            ResetStream(rtfBytes);
+            _rtfBytes = rtfBytes;
+            base.ResetStreamBase(rtfBytes.Length);
         }
 
         private Error ParseRtf()
