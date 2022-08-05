@@ -33,20 +33,10 @@ namespace AL_Common
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Push(Scope currentScope)
-            {
-                Scope nextScope = _scopesArray[Count++];
-
-                nextScope.RtfDestinationState = currentScope.RtfDestinationState;
-                nextScope.RtfInternalState = currentScope.RtfInternalState;
-                nextScope.InFontTable = currentScope.InFontTable;
-                nextScope.SymbolFont = currentScope.SymbolFont;
-
-                Array.Copy(currentScope.Properties, 0, nextScope.Properties, 0, _propertiesLen);
-            }
+            public void Push(Scope currentScope) => currentScope.DeepCopyTo(_scopesArray[Count++]);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public Scope Pop() => _scopesArray[--Count];
+            public void Pop(Scope currentScope) => _scopesArray[--Count].DeepCopyTo(currentScope);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void ClearFast() => Count = 0;
@@ -887,7 +877,7 @@ namespace AL_Common
         {
             if (_scopeStack.Count == 0) return Error.StackUnderflow;
 
-            _scopeStack.Pop().DeepCopyTo(_currentScope);
+            _scopeStack.Pop(_currentScope);
             _groupCount--;
 
             return Error.OK;
