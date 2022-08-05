@@ -265,7 +265,7 @@ namespace FMScanner.FastZipReader
                         long numberOfEntries = 0;
 
                         //read the central directory
-                        while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, sizeOnly: false, _bundle, out var currentHeader))
+                        while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, _bundle, out var currentHeader))
                         {
                             var entry = new ZipArchiveEntry(currentHeader);
                             _entries.Add(entry);

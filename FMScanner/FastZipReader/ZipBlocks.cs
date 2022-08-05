@@ -32,7 +32,6 @@ namespace FMScanner.FastZipReader
         internal static bool TryReadBlock(
             Stream stream,
             long endExtraField,
-            bool sizeOnly,
             ZipReusableBundle bundle,
             out ZipGenericExtraField field)
         {
@@ -47,16 +46,7 @@ namespace FMScanner.FastZipReader
             // not enough bytes to read the data
             if (endExtraField - stream.Position < field.Size) return false;
 
-            if (!sizeOnly)
-            {
-                field.Data = ZipReusableBundle.ReadBytes(stream, field.Size);
-            }
-            else
-            {
-                field.Data = bundle.FieldDataSizeOnlyBuffer;
-                int num = stream.ReadAll(field.Data, 0, 28);
-                stream.Seek(field.Size - num, SeekOrigin.Current);
-            }
+            field.Data = ZipReusableBundle.ReadBytes(stream, field.Size);
 
             return true;
         }
@@ -100,14 +90,12 @@ namespace FMScanner.FastZipReader
             bool readCompressedSize,
             bool readLocalHeaderOffset,
             bool readStartDiskNumber,
-            bool sizeOnly,
             ZipReusableBundle bundle)
         {
             Zip64ExtraField zip64Field;
             while (ZipGenericExtraField.TryReadBlock(
                        extraFieldStream,
                        extraFieldStream.Length,
-                       sizeOnly,
                        bundle,
                        out var currentExtraField))
             {
@@ -293,7 +281,6 @@ namespace FMScanner.FastZipReader
         // in either case, the zip64 extra field info will be incorporated into other fields
         internal static bool TryReadBlock(
             Stream stream,
-            bool sizeOnly,
             ZipReusableBundle bundle,
             out ZipCentralDirectoryFileHeader header)
         {
@@ -318,14 +305,7 @@ namespace FMScanner.FastZipReader
             bundle.ReadUInt32(stream); // ExternalFileAttributes
             uint relativeOffsetOfLocalHeaderSmall = bundle.ReadUInt32(stream);
 
-            if (!sizeOnly)
-            {
-                header.Filename = ZipReusableBundle.ReadBytes(stream, header.FilenameLength);
-            }
-            else
-            {
-                stream.Seek(header.FilenameLength, SeekOrigin.Current);
-            }
+            header.Filename = ZipReusableBundle.ReadBytes(stream, header.FilenameLength);
 
             bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
             bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
@@ -342,7 +322,6 @@ namespace FMScanner.FastZipReader
                 compressedSizeInZip64,
                 relativeOffsetInZip64,
                 diskNumberStartInZip64,
-                sizeOnly,
                 bundle);
 
             // There are zip files that have malformed ExtraField blocks in which GetJustZip64Block() silently
