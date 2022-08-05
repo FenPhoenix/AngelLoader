@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -34,7 +33,7 @@ namespace AngelLoader
 
             #endregion
 
-            var lines = AL_Common.Common.File_ReadAllLines_List(file, Encoding.UTF8);
+            var lines = AL_Common.Common.File_ReadAllLines_List(file);
             int linesLength = lines.Count;
             for (int i = 0; i < linesLength; i++)
             {

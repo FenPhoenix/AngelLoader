@@ -466,23 +466,10 @@ namespace AL_Common
         // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
         // you get with the built-in methods
 
-        public static List<string> File_ReadAllLines_List(string path) => path switch
-        {
-            "" => throw new ArgumentException("Empty path name is not legal."),
-            null => throw new ArgumentNullException(nameof(path)),
-            _ => InternalFileReadAllLinesList(path, Encoding.UTF8)
-        };
-
-        public static List<string> File_ReadAllLines_List(string path, Encoding encoding) =>
-            path == null ? throw new ArgumentNullException(nameof(path)) :
-            encoding == null ? throw new ArgumentNullException(nameof(encoding)) :
-            path.Length == 0 ? throw new ArgumentException("Empty path name is not legal.") :
-            InternalFileReadAllLinesList(path, encoding);
-
-        private static List<string> InternalFileReadAllLinesList(string path, Encoding encoding)
+        public static List<string> File_ReadAllLines_List(string path)
         {
             var ret = new List<string>();
-            using var sr = new StreamReader(path, encoding);
+            using var sr = new StreamReader(path, Encoding.UTF8);
             while (sr.ReadLine() is { } str)
             {
                 ret.Add(str);
