@@ -90,7 +90,9 @@ namespace AL_Common
         /// </para>
         /// <para>
         /// -Only use the internal array in conjunction with the <see cref="Count"/> property.
-        ///  Using the <see cref="ItemsArray"/>.Length value will lead to catastrophe.
+        ///  Using the <see cref="ItemsArray"/>.Length value will get the array's actual length, when what you
+        ///  wanted was the list's "virtual" length. This is the same as a normal List except with a normal List
+        ///  the array is private so you can't have that problem.
         /// </para>
         /// </summary>
         /// <typeparam name="T"></typeparam>
