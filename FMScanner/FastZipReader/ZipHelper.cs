@@ -26,7 +26,7 @@ namespace FMScanner.FastZipReader
 
     internal static class ThrowHelper
     {
-        internal static void EndOfFile() => throw new EndOfStreamException("Environment.GetResourceString(\"IO.EOF_ReadBeyondEOF\")");
+        internal static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
     }
 
     // We should try to just make the zip archive classes be like the scanner, where it's one object that just
@@ -141,7 +141,7 @@ namespace FMScanner.FastZipReader
         {
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(count), "Environment.GetResourceString(\"ArgumentOutOfRange_NeedNonNegNum\")");
+                throw new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
             if (count == 0)
             {
@@ -183,7 +183,7 @@ namespace FMScanner.FastZipReader
         {
             if (numBytes < 0 || numBytes > _buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(numBytes), "Environment.GetResourceString(\"ArgumentOutOfRange_BinaryReaderFillBuffer\")");
+                throw new ArgumentOutOfRangeException(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
             }
 
             int offset = 0;
