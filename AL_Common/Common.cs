@@ -1082,10 +1082,6 @@ namespace AL_Common
             return -1;
         }
 
-#endif
-
-#if false
-
         /// <summary>
         /// What it says
         /// </summary>
@@ -1183,12 +1179,6 @@ namespace AL_Common
 
 #endif
 
-        #endregion
-
-        public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
-
-        #endregion
-
         // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
         // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
         // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
@@ -1215,6 +1205,10 @@ namespace AL_Common
 
             return false;
         }
+
+        #endregion
+
+        public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
 
         #region Set file attributes
 
@@ -1266,6 +1260,8 @@ namespace AL_Common
                 Dir_UnSetReadOnly(d, throwException);
             }
         }
+
+        #endregion
 
         #endregion
     }
