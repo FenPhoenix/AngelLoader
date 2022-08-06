@@ -23,7 +23,7 @@ namespace AngelLoader
                 FieldInfo f = sectionFields[i];
 
                 var fields = f.FieldType.GetFields(_bfLText);
-                var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length);
+                var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
                 foreach (var field in fields)
                 {
                     dict[field.Name] = (field, f.GetValue(ret));
@@ -46,8 +46,7 @@ namespace AngelLoader
                         int eqIndex = lt.IndexOf('=');
                         if (eqIndex > -1)
                         {
-                            string key = lt.Substring(0, eqIndex);
-                            if (fields.TryGetValue(key, out var value))
+                            if (fields.TryGetValue(lt, out var value))
                             {
                                 value.FieldInfo.SetValue(value.Obj, lt.Substring(eqIndex + 1));
                             }

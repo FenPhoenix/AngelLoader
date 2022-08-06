@@ -52,7 +52,7 @@ namespace AngelLoader
                     {
                         inMeta = true;
                     }
-                    else if (!lineT.IsEmpty() && lineT[0] == '[' && lineT[lineT.Length - 1] == ']')
+                    else if (!lineT.IsEmpty() && lineT[0] == '[')
                     {
                         inMeta = false;
                     }
