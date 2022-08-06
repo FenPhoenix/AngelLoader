@@ -26,6 +26,12 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
+
+@MEM(WindowText): We can use control.SetStyle(ControlStyles.CacheText, true) to slash StringBuilder allocations
+But this method is protected, so we either have to subclass every damn control and set it for each, or use
+reflection during the control dictionary filler loop.
+Despite greatly lowering StringBuilder allocations, this does not appear to improve performance to any noticeable
+degree.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
