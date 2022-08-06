@@ -56,7 +56,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width)
                 };
 
-                stringsAndLengths = stringsAndLengths.OrderByDescending(x => x.Length).ToArray();
+                stringsAndLengths = stringsAndLengths.OrderByDescending(static x => x.Length).ToArray();
 
                 string longestString = stringsAndLengths[0].Text;
 

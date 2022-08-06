@@ -43,7 +43,7 @@ namespace AL_Common
                 this.ftTimeHigh = (uint)(fileTime >> 32);
             }
 
-            public long ToTicks()
+            public readonly long ToTicks()
             {
                 return ((long)this.ftTimeHigh << 32) + (long)this.ftTimeLow;
             }

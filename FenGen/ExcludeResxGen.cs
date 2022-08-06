@@ -49,7 +49,7 @@ namespace FenGen
 
             string[] resxFilesToExclude = Directory
                 .GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
-                .Where(x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
+                .Where(static x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
 
             const string embeddedResourceName = "EmbeddedResource";
             const string conditionString = "'$(Configuration)' != 'Debug'";

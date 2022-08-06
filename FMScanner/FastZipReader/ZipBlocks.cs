@@ -4,7 +4,6 @@
 
 using System;
 using System.IO;
-using AL_Common;
 
 namespace FMScanner.FastZipReader
 {

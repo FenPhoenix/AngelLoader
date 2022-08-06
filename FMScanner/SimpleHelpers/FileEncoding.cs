@@ -321,7 +321,7 @@ namespace FMScanner.SimpleHelpers
             if (_encodingFrequency.Count == 0) return null;
             // ASCII should be the last option, since other encodings often has ASCII included...
             string? ret = _encodingFrequency
-                    .OrderByDescending(i => i.Value * (i.Key != "ASCII" ? 1 : 0))
+                    .OrderByDescending(static i => i.Value * (i.Key != "ASCII" ? 1 : 0))
                     .FirstOrDefault().Key;
 
             if (ret?.Equals("ASCII") == true)

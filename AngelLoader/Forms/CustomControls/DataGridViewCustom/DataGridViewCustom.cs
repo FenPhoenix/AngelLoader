@@ -145,7 +145,7 @@ namespace AngelLoader.Forms.CustomControls
             // Jesus christ is that really necessary? And it has no sort methods either because it's custom, so
             // it's copy with Cast and then copy with OrderBy and then copy to Array and then copy that to another
             // array of actual FM objects. Hooray. We've got a garbage collector so who cares right?
-            return SelectedRows.Cast<DataGridViewRow>().OrderBy(x => x.Index).ToArray();
+            return SelectedRows.Cast<DataGridViewRow>().OrderBy(static x => x.Index).ToArray();
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace AngelLoader.Forms.CustomControls
                 };
             }
 
-            return columns.OrderBy(x => x.Id).ToArray();
+            return columns.OrderBy(static x => x.Id).ToArray();
         }
 
         internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnDataList)
@@ -318,7 +318,7 @@ namespace AngelLoader.Forms.CustomControls
             // Right:
             // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-            var columnDataListSorted = columnDataList.OrderBy(x => x.DisplayIndex).ToArray();
+            var columnDataListSorted = columnDataList.OrderBy(static x => x.DisplayIndex).ToArray();
 
             #endregion
 

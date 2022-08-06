@@ -11,7 +11,7 @@ namespace FMScanner.FastZipReader
 {
     public sealed class ZipCompressionMethodException : Exception
     {
-        public ZipCompressionMethodException() : base()
+        public ZipCompressionMethodException()
         {
         }
 
@@ -40,7 +40,6 @@ namespace FMScanner.FastZipReader
 
         internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
         internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
-        internal readonly byte[] FieldDataSizeOnlyBuffer = new byte[28];
 
         private readonly byte[] _buffer = new byte[16];
 

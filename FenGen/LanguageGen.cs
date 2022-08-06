@@ -74,7 +74,7 @@ namespace FenGen
                 if (cn is not ClassDeclarationSyntax childClass) continue;
 
                 SyntaxNode[] members = childClass.ChildNodes()
-                    .Where(x => x.IsKind(SyntaxKind.FieldDeclaration) || x.IsKind(SyntaxKind.PropertyDeclaration))
+                    .Where(static x => x.IsKind(SyntaxKind.FieldDeclaration) || x.IsKind(SyntaxKind.PropertyDeclaration))
                     .ToArray();
 
                 if (members.Length == 0) continue;

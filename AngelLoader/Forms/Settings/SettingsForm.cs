@@ -280,7 +280,7 @@ namespace AngelLoader.Forms
 
             const string engLang = "English";
 
-            var langsList = config.LanguageNames.ToList().OrderBy(x => x.Key);
+            var langsList = config.LanguageNames.ToList().OrderBy(static x => x.Key);
 
             try
             {
@@ -621,7 +621,7 @@ namespace AngelLoader.Forms
 
                 SetThemeBase(
                     theme,
-                    x => x is SplitterPanel,
+                    static x => x is SplitterPanel,
                     capacity: 150
                 );
 

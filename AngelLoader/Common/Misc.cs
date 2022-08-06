@@ -72,7 +72,7 @@ namespace AngelLoader
             Indeterminate
         }
 
-        public static readonly Action NullAction = () => { };
+        public static readonly Action NullAction = static () => { };
 
         public enum ImportType
         {
