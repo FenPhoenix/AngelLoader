@@ -477,7 +477,7 @@ namespace FenGen
                     }
                     else
                     {
-                        w.WL("SetFMLanguages(" + obj + ", " + val + ");");
+                        w.WL("SetFMLanguages(" + obj + ", " + val + ", eqIndex + 1);");
                     }
                 }
                 else if (field.Type == "ExpandableDate")

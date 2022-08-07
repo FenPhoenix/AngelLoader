@@ -219,9 +219,8 @@ namespace AngelLoader
 
         private static void FMData_Langs_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            SetFMLanguages(fm, val);
+            SetFMLanguages(fm, val, eqIndex + 1);
         }
 
         private static void FMData_SelectedLang_Set(FanMission fm, string val, int eqIndex)

@@ -224,6 +224,16 @@ namespace AL_Common
             return true;
         }
 
+        public static bool IsAsciiLower(this string str, int start)
+        {
+            for (int i = start; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (c > 127 || (c is >= 'A' and <= 'Z')) return false;
+            }
+            return true;
+        }
+
         #endregion
 
         #region Empty / whitespace checks

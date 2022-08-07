@@ -240,7 +240,6 @@ namespace AngelLoader
                     // @MEM(FMData read): Knowable values left:
                     // -Game
                     // -Resources
-                    // -Langs (we do an alloc-free parse on the value itself, but we still substring the value)
                     // -SelectedLang
                     if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {
@@ -442,18 +441,23 @@ namespace AngelLoader
 
         // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
         // We don't write out whitespace between them anyway.
-        private static void SetFMLanguages(FanMission fm, string langsString)
+        private static void SetFMLanguages(FanMission fm, string langsString, int start)
         {
             // It's always supposed to be ascii lowercase, so only take the allocation if it's not
-            if (!langsString.IsAsciiLower()) langsString = langsString.ToLowerInvariant();
+            if (!langsString.IsAsciiLower(start))
+            {
+                // This will lowercase the key portion of the string too, but we only deal with the value so we
+                // don't care
+                langsString = langsString.ToLowerInvariant();
+            }
 
             fm.Langs = Language.Default;
 
             int len = langsString.Length;
 
-            int curStart = 0;
+            int curStart = start;
 
-            for (int i = 0; i < len; i++)
+            for (int i = start; i < len; i++)
             {
                 char c = langsString[i];
 
