@@ -230,7 +230,10 @@ namespace AngelLoader
                     return false;
                 case 1:
                     int index = item.IndexOf(':');
-                    cat = item.Substring(0, index).Trim().ToLowerInvariant();
+                    cat = item.Substring(0, index).Trim();
+                    // Save an alloc if we're ascii lowercase already (case conversion always allocs, even if
+                    // the new string is the same as the old)
+                    if (!cat.IsAsciiLower()) cat = cat.ToLowerInvariant();
                     tag = item.Substring(index + 1).Trim();
                     break;
                 default:

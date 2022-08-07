@@ -551,6 +551,7 @@ namespace AngelLoader
             {
                 string archive = item.Key;
 
+                // @MEM: Can we get rid of these allocations if we have no new archives...?
                 if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out FanMission fm) ||
                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
