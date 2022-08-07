@@ -45,31 +45,6 @@ namespace AngelLoader
             ViewEnv = viewEnv;
             Dialogs = ViewEnv.GetDialogs();
 
-            #region SevenZipSharp init
-
-            // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
-            // at any time
-            string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
-            if (!File.Exists(sevenZipDllLocation))
-            {
-                // Not localizable because we don't want to do anything until we've checked this, and getting
-                // the right language would mean trying to read multiple different files and whatever junk, and
-                // we don't want to add the potential for even more errors here.
-                Dialogs.ShowAlert_Stock(
-                    "Fatal error: 7z.dll was not found in the application startup directory.",
-                    "Error",
-                    MBoxButtons.OK,
-                    MBoxIcon.Error);
-                Environment.Exit(-1);
-            }
-
-            // Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
-            // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
-            // (so that includes our bin\x86\whatever dirs).
-            //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
-
-            #endregion
-
             bool openSettings = false;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
             bool cleanStart = false;
@@ -95,43 +70,104 @@ namespace AngelLoader
 
             #endregion
 
-            #region Read config file if it exists
+            // Perf: The only thing the splash screen needs is the theme
+            Config.VisualTheme = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
-            if (File.Exists(Paths.ConfigIni))
+            bool sevenZipDllNotFound = false;
+
+            using var startupWorkTask = Task.Run(() =>
             {
+                #region Old FMScanner log file delete
+
+                // We use just the one file now
                 try
                 {
-                    Ini.ReadConfigIni(Paths.ConfigIni, Config);
+                    File.Delete(Paths.ScannerLogFile_Old);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    string message = Paths.ConfigIni + " exists but there was an error while reading it.";
-                    Log(message, ex);
-                    openSettings = true;
+                    // ignore
+                }
 
-                    // We need to run this to have correct/valid config settings, if we didn't get to where it
-                    // runs in the config reader
+                #endregion
+
+                #region 7z.dll existence check
+
+                // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
+                // at any time
+                string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
+                if (!File.Exists(sevenZipDllLocation))
+                {
+                    sevenZipDllNotFound = true;
+                    return;
+                }
+
+                // Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
+                // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
+                // (so that includes our bin\x86\whatever dirs).
+                //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
+
+                #endregion
+
+                #region Read config ini
+
+                if (File.Exists(Paths.ConfigIni))
+                {
+                    try
+                    {
+                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        Log(message, ex);
+                        openSettings = true;
+
+                        // We need to run this to have correct/valid config settings, if we didn't get to where it
+                        // runs in the config reader
+                        Ini.FinalizeConfig(Config);
+                    }
+                }
+                else
+                {
+                    openSettings = true;
+                    // We're starting for the first time ever (assumed)
+                    cleanStart = true;
+
+                    // Ditto the above
                     Ini.FinalizeConfig(Config);
                 }
-            }
-            else
-            {
-                openSettings = true;
-                // We're starting for the first time ever (assumed)
-                cleanStart = true;
 
-                // Ditto the above
-                Ini.FinalizeConfig(Config);
-            }
-
-            #endregion
+                #endregion
+            });
 
             // We can't show the splash screen until we know our theme, which we have to get from the config
             // file, so we can't show it any earlier than this.
             using var splashScreen = new SplashScreen(ViewEnv.GetSplashScreen());
 
+            splashScreen.Show(Config.VisualTheme);
+
+            startupWorkTask.Wait();
+
+            if (sevenZipDllNotFound)
+            {
+                splashScreen.Hide();
+
+                // Not localizable because we don't want to do anything until we've checked this, and getting
+                // the right language would mean trying to read multiple different files and whatever junk, and
+                // we don't want to add the potential for even more errors here.
+                Dialogs.ShowAlert_Stock(
+                    "Fatal error: 7z.dll was not found in the application startup directory.",
+                    "Error",
+                    MBoxButtons.OK,
+                    MBoxIcon.Error);
+                Environment.Exit(-1);
+                return;
+            }
+
+            #region Read languages
+
             // @BetterErrors (Read langs on startup)
-            static void ReadLanguages(SplashScreen splashScreen)
             {
                 // We can't show a message until we've read the config file (to know which language to use) and
                 // the current language file (to get the translated message strings). So just show language dir/
@@ -171,12 +207,10 @@ namespace AngelLoader
                 }
             }
 
+            #endregion
+
             if (!openSettings)
             {
-                splashScreen.Show(Config.VisualTheme);
-
-                ReadLanguages(splashScreen);
-
                 splashScreen.SetMessage(LText.SplashScreen.CheckingRequiredSettingsFields);
 
                 bool backupPathExists = Directory.Exists(Config.FMsBackupPath);
@@ -190,11 +224,6 @@ namespace AngelLoader
                     }
                 }
                 openSettings = !backupPathExists || !allArchivePathsExist;
-            }
-            // Don't show the splash screen on first start, because it looks awkward
-            else
-            {
-                ReadLanguages(splashScreen);
             }
 
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);

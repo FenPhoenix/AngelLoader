@@ -2,7 +2,6 @@
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 
 using System;
-using System.IO;
 using System.Reflection;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
@@ -44,16 +43,6 @@ namespace AngelLoader
 #endif
                 // IMPORTANT: Set this first thing or else we won't have a log file!
                 SetLogFile(Paths.LogFile);
-
-                // We use just the one file now
-                try
-                {
-                    File.Delete(Paths.ScannerLogFile_Old);
-                }
-                catch
-                {
-                    // ignore
-                }
 
                 // We don't need to clear this log because LogStartup overwrites (no append)
                 LogStartup(viewEnv.ProductVersion + " Started session");

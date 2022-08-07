@@ -939,6 +939,34 @@ namespace AngelLoader
             #endregion
         };
 
+        // Read only the theme, hopefully from the top, for perf
+        internal static VisualTheme ReadThemeFromConfigIni(string path)
+        {
+            StreamReader? sr = null;
+            try
+            {
+                sr = new StreamReader(path);
+                while (sr.ReadLine() is { } line)
+                {
+                    string lineT = line.Trim();
+                    if (lineT.StartsWithFast_NoNullChecks("VisualTheme="))
+                    {
+                        return lineT.ValueEqualsI("Dark", 12) ? VisualTheme.Dark : VisualTheme.Classic;
+                    }
+                }
+
+                return VisualTheme.Classic;
+            }
+            catch
+            {
+                return VisualTheme.Classic;
+            }
+            finally
+            {
+                sr?.Dispose();
+            }
+        }
+
         internal static unsafe void ReadConfigIni(string path, ConfigData config)
         {
             var iniLines = File_ReadAllLines_List(path);
@@ -1020,6 +1048,10 @@ namespace AngelLoader
 #if false
             sb.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
 #endif
+
+            // Put this one first so it can be read quickly so we can get the theme quickly so we can show the
+            // themed splash screen quickly
+            sb.Append("VisualTheme=").Append(config.VisualTheme).AppendLine();
 
             #region Settings window
 
@@ -1127,8 +1159,6 @@ namespace AngelLoader
             sb.Append("Language=").AppendLine(config.Language);
             sb.Append("WebSearchUrl=").AppendLine(config.WebSearchUrl);
             sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
-
-            sb.Append("VisualTheme=").Append(config.VisualTheme).AppendLine();
 
             #endregion
 
