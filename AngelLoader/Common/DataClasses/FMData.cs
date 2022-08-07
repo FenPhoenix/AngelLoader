@@ -60,6 +60,7 @@ namespace AngelLoader.DataClasses
 
         internal string Author = "";
 
+        [FenGenDoNotSubstring]
         internal Game Game = Game.Null;
 
         internal bool Installed;

@@ -81,25 +81,24 @@ namespace AngelLoader
 
         private static void FMData_Game_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            if (val.EqualsI("Thief1"))
+            if (val.ValueEqualsI("Thief1", eqIndex + 1))
             {
                 fm.Game = Game.Thief1;
             }
-            else if (val.EqualsI("Thief2"))
+            else if (val.ValueEqualsI("Thief2", eqIndex + 1))
             {
                 fm.Game = Game.Thief2;
             }
-            else if (val.EqualsI("Thief3"))
+            else if (val.ValueEqualsI("Thief3", eqIndex + 1))
             {
                 fm.Game = Game.Thief3;
             }
-            else if (val.EqualsI("SS2"))
+            else if (val.ValueEqualsI("SS2", eqIndex + 1))
             {
                 fm.Game = Game.SS2;
             }
-            else if (val.EqualsI("Unsupported"))
+            else if (val.ValueEqualsI("Unsupported", eqIndex + 1))
             {
                 fm.Game = Game.Unsupported;
             }

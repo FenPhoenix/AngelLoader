@@ -238,7 +238,6 @@ namespace AngelLoader
                 if (eqIndex > -1)
                 {
                     // @MEM(FMData read): Knowable values left:
-                    // -Game
                     // -Resources
                     if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {

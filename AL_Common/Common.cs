@@ -289,6 +289,24 @@ namespace AL_Common
                    (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
         }
 
+        public static bool ValueEqualsI(this string str, string str2, int indexAfterEq)
+        {
+            int strLen = str.Length;
+            int str2Len = str2.Length;
+
+            if (strLen - indexAfterEq != str2Len) return false;
+
+            for (int i = indexAfterEq; i < strLen; i++)
+            {
+                if (!str[i].EqualsIAscii(str2[i - indexAfterEq]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Contains
