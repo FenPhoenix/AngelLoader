@@ -123,6 +123,7 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal bool ResourcesScanned;
         [FenGenIniName("HasResources")]
+        [FenGenDoNotSubstring]
         internal CustomResources Resources = CustomResources.None;
 
         internal bool LangsScanned;

@@ -493,8 +493,8 @@ namespace FenGen
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
-                    w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsI(\"NotScanned\", eqIndex + 1);");
+                    w.WL("FillFMHasXFields(" + obj + ", " + val + ", eqIndex + 1);");
                 }
 
                 w.WL("}"); // end of setter method

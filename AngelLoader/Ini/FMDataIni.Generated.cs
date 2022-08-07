@@ -204,10 +204,9 @@ namespace AngelLoader
 
         private static void FMData_HasResources_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            fm.ResourcesScanned = !val.EqualsI("NotScanned");
-            FillFMHasXFields(fm, val);
+            fm.ResourcesScanned = !val.ValueEqualsI("NotScanned", eqIndex + 1);
+            FillFMHasXFields(fm, val, eqIndex + 1);
         }
 
         private static void FMData_LangsScanned_Set(FanMission fm, string val, int eqIndex)

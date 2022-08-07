@@ -237,8 +237,6 @@ namespace AngelLoader
                 int eqIndex = lineTS.IndexOf('=');
                 if (eqIndex > -1)
                 {
-                    // @MEM(FMData read): Knowable values left:
-                    // -Resources
                     if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split
@@ -502,22 +500,22 @@ namespace AngelLoader
             return true;
         }
 
-        private static void FillFMHasXFields(FanMission fm, string fieldsString)
+        private static void FillFMHasXFields(FanMission fm, string fieldsString, int start)
         {
             // Resources must be cleared here
             fm.Resources = CustomResources.None;
 
-            int curStart = 0;
+            int curStart = start;
 
             int len = fieldsString.Length;
 
-            for (int i = 0; i < len; i++)
+            for (int i = start; i < len; i++)
             {
                 char c = fieldsString[i];
 
                 if (c == ',' || i == len - 1)
                 {
-                    if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
+                    if (curStart == start && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
                     {
                         return;
                     }
