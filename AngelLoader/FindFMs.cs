@@ -551,11 +551,8 @@ namespace AngelLoader
             {
                 string archive = item.Key;
 
-                // @MEM: Can we get rid of these allocations if we have no new archives...?
-                if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out FanMission fm) ||
-                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
-                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
-                    fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
+                // Do the check that doesn't require allocations first
+                if (fmDataIniArchiveDict.TryGetValue(archive, out FanMission fm))
                 {
                     fm.Archive = archive;
                     if (fm.NoArchive)
@@ -565,15 +562,18 @@ namespace AngelLoader
                     }
                     fm.NoArchive = false;
 
+                    fm.DateAdded ??= item.Value;
+
                     if (fm.InstalledDir.IsEmpty())
                     {
                         bool truncate = fm.Game != Game.Thief3;
                         fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
                     }
-
-                    fm.DateAdded ??= item.Value;
                 }
-                else if (fmDataIniArchiveDict.TryGetValue(archive, out fm))
+                else if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out fm) ||
+                         fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
+                         fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
+                         fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
                 {
                     fm.DateAdded ??= item.Value;
 
