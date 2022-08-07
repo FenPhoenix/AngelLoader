@@ -225,9 +225,8 @@ namespace AngelLoader
 
         private static void FMData_SelectedLang_Set(FanMission fm, string val, int eqIndex)
         {
-            val = val.Substring(eqIndex + 1);
             val = val.Trim();
-            if (Langs_TryGetValue(val, out var result))
+            if (Langs_TryGetValue(val, eqIndex + 1, val.Length, out var result))
             {
                 fm.SelectedLang = result;
             }

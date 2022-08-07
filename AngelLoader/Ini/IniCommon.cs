@@ -240,7 +240,6 @@ namespace AngelLoader
                     // @MEM(FMData read): Knowable values left:
                     // -Game
                     // -Resources
-                    // -SelectedLang
                     if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {
                         // If the value is an arbitrary string or other unknowable type, then we need to split

@@ -130,6 +130,7 @@ namespace AngelLoader.DataClasses
         internal Language Langs = Language.Default;
 
         [FenGenFlagsSingleAssignment]
+        [FenGenDoNotSubstring]
         internal Language SelectedLang = Language.Default;
 
         [FenGenIgnore]
