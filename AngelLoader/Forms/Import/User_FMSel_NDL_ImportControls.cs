@@ -13,7 +13,7 @@ namespace AngelLoader.Forms
 {
     public sealed class User_FMSel_NDL_ImportControls : UserControl
     {
-        private ImportType ImportType;
+        private ImportType _importType;
 
         private readonly
             (DarkGroupBox GroupBox,
@@ -101,7 +101,7 @@ namespace AngelLoader.Forms
 
         internal void Init(ImportType importType)
         {
-            ImportType = importType;
+            _importType = importType;
 
             Localize();
 
@@ -113,7 +113,7 @@ namespace AngelLoader.Forms
 
         private void Localize()
         {
-            ChooseIniFilesLabel.Text = ImportType == ImportType.NewDarkLoader
+            ChooseIniFilesLabel.Text = _importType == ImportType.NewDarkLoader
                 ? LText.Importing.ChooseNewDarkLoaderIniFiles
                 : LText.Importing.ChooseFMSelIniFiles;
 
@@ -127,7 +127,7 @@ namespace AngelLoader.Forms
 
         private void AutodetectGameIni(GameIndex game, TextBox textBox)
         {
-            string iniFile = ImportType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
+            string iniFile = _importType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
 
             string fmsPath = Config.GetFMInstallPath(game);
             textBox.Text = !fmsPath.IsWhiteSpace() && TryCombineFilePathAndCheckExistence(fmsPath, iniFile, out string iniFileFull)

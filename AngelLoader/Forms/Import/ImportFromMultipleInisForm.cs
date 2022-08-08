@@ -21,20 +21,20 @@ namespace AngelLoader.Forms
         internal bool ImportFinishedOn;
         internal bool ImportSize;
 
-        private readonly ImportType ImportType;
+        private readonly ImportType _importType;
 
         public ImportFromMultipleInisForm(ImportType importType)
         {
-            ImportType = importType;
+            _importType = importType;
 #if DEBUG
             InitializeComponent();
 #else
             InitSlim();
 #endif
 
-            ImportControls.Init(ImportType);
+            ImportControls.Init(_importType);
 
-            if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();
+            if (_importType == ImportType.FMSel) ImportSizeCheckBox.Hide();
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
@@ -49,7 +49,7 @@ namespace AngelLoader.Forms
 
         private void Localize()
         {
-            Text = ImportType == ImportType.NewDarkLoader
+            Text = _importType == ImportType.NewDarkLoader
                 ? LText.Importing.ImportFromNewDarkLoader_TitleText
                 : LText.Importing.ImportFromFMSel_TitleText;
 
