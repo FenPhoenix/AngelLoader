@@ -1566,7 +1566,6 @@ namespace AngelLoader
                 {
                     foreach (string file in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        // TODO: Unset readonly for directories too
                         File_UnSetReadOnly(file);
                     }
                 }

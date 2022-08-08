@@ -1257,15 +1257,10 @@ namespace AL_Common
         {
             try
             {
-                _ = new DirectoryInfo(dirOnDiskFullPath) { Attributes = FileAttributes.Normal };
-                // TODO: Dir_UnSetReadOnly: More correct but possibly breaking change
-                // 2022-07-27: We don't actually diff backups based on attributes, so this shouldn't be breaking
-                // and we could switch to this safely.
-                // Actually, apparently ReadOnly is ignored for directories
+                // TODO: Apparently ReadOnly is ignored for directories
                 // https://support.microsoft.com/en-us/topic/you-cannot-view-or-change-the-read-only-or-the-system-attributes-of-folders-in-windows-server-2003-in-windows-xp-in-windows-vista-or-in-windows-7-55bd5ec5-d19e-6173-0df1-8f5b49247165
                 // Says up to Win7, doesn't say anything about later versions, but have to assume it still holds...?
-                // Also we don't diff directories at all actually, so why are we even worried about this?
-                //new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
+                _ = new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
             }
             catch (Exception ex)
             {

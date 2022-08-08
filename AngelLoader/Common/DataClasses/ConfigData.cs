@@ -422,8 +422,6 @@ namespace AngelLoader.DataClasses
 
         internal ConfirmBeforeInstall ConfirmBeforeInstall = ConfirmBeforeInstall.OnlyForMultiple;
 
-        // @MISCOUNT: Maybe we should make this flags, and call it AskedForAdditionalScans
-        // In case we add more additional scans in the future
         internal bool AskedToScanForMisCounts;
 
 #if !ReleaseBeta && !ReleasePublic
