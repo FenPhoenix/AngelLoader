@@ -64,6 +64,8 @@ namespace AngelLoader
 
                     foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
                     foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
+                    // TODO(ClearCacheDir/deleteCacheDirItself): This is here to keep the same behavior as before
+                    // The cache dir itself wasn't deleted before if called internally, which may be a bug(?)
                     if (deleteCacheDirItself) Directory.Delete(fmCachePath);
                 }
                 catch (Exception ex)
