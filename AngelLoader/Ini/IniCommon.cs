@@ -33,38 +33,26 @@ namespace AngelLoader
         // file is re-generated. I could make it so it doesn't get removed, but meh.
         internal static void AddLanguageFromFile(string file, string key, DictionaryI<string> langDict)
         {
-            StreamReader? sr = null;
-            try
-            {
-                sr = new StreamReader(file, Encoding.UTF8);
+            using var sr = new StreamReader(file, Encoding.UTF8);
 
-                bool inMeta = false;
-                while (sr.ReadLine() is { } line)
+            bool inMeta = false;
+            while (sr.ReadLine() is { } line)
+            {
+                string lineT = line.Trim();
+                if (inMeta &&
+                    lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
                 {
-                    string lineT = line.Trim();
-                    if (inMeta &&
-                        lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
-                    {
-                        langDict[key] = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
-                        return;
-                    }
-                    else if (lineT == "[" + nameof(LText.Meta) + "]")
-                    {
-                        inMeta = true;
-                    }
-                    else if (!lineT.IsEmpty() && lineT[0] == '[')
-                    {
-                        inMeta = false;
-                    }
+                    langDict[key] = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.ExRead + file + ".", ex);
-            }
-            finally
-            {
-                sr?.Dispose();
+                else if (lineT == "[" + nameof(LText.Meta) + "]")
+                {
+                    inMeta = true;
+                }
+                else if (!lineT.IsEmpty() && lineT[0] == '[')
+                {
+                    inMeta = false;
+                }
             }
         }
 

@@ -167,7 +167,7 @@ namespace AngelLoader
 
             #region Read languages
 
-            // @BetterErrors (Read langs on startup)
+            static void ReadLanguages(SplashScreen splashScreen)
             {
                 // We can't show a message until we've read the config file (to know which language to use) and
                 // the current language file (to get the translated message strings). So just show language dir/
@@ -178,34 +178,62 @@ namespace AngelLoader
                 // Have to read langs here because which language to use will be stored in the config file.
                 // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
                 // name in its own language
-                var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+                List<string> langFiles;
+                try
+                {
+                    langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+                }
+                catch (Exception ex)
+                {
+                    splashScreen.Hide();
+                    LText = new LText_Class();
+                    Config.Language = "English";
+                    Config.LanguageNames.Clear();
+                    Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
+                    Dialogs.ShowError(
+                        "Couldn't get the language .ini files.\r\n\r\n" +
+                        ErrorText.LangDefault + "\r\n\r\n" +
+                        "Path: " + Paths.Languages);
+                    splashScreen.Show(Config.VisualTheme);
+                    return;
+                }
                 bool selFound = false;
 
                 // Do it ONCE here, not every loop!
                 Config.LanguageNames.Clear();
 
-                for (int i = 0; i < langFiles.Count; i++)
+                try
                 {
-                    string f = langFiles[i];
-                    string fn = f.GetFileNameFast().RemoveExtension();
-
-                    splashScreen.SetMessage(f);
-
-                    if (!selFound && fn.EqualsI(Config.Language))
+                    for (int i = 0; i < langFiles.Count; i++)
                     {
-                        try
+                        string f = langFiles[i];
+                        string fn = f.GetFileNameFast().RemoveExtension();
+
+                        splashScreen.SetMessage(f);
+
+                        if (!selFound && fn.EqualsI(Config.Language))
                         {
                             LText = Ini.ReadLocalizationIni(f);
                             selFound = true;
                         }
-                        catch (Exception ex)
-                        {
-                            Log(ErrorText.ExRead + f, ex);
-                        }
+
+                        Ini.AddLanguageFromFile(f, fn, Config.LanguageNames);
                     }
-                    Ini.AddLanguageFromFile(f, fn, Config.LanguageNames);
+                }
+                catch (Exception ex)
+                {
+                    splashScreen.Hide();
+                    LText = new LText_Class();
+                    Config.Language = "English";
+                    Config.LanguageNames.Clear();
+                    Log(ErrorText.Ex + "in language files read", ex);
+                    Dialogs.ShowError(
+                        "An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
+                    splashScreen.Show(Config.VisualTheme);
                 }
             }
+
+            ReadLanguages(splashScreen);
 
             #endregion
 

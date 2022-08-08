@@ -32,6 +32,7 @@ namespace AngelLoader.DataClasses
             "The following features/fixes will NOT be applied on this run:\r\n\r\n" +
             "-Old mantling, if the FM is OldDark and \"Use old mantling for OldDark FMs\" is enabled\r\n" +
             "-Palette fix, if the FM is OldDark and requires it";
+        internal static readonly string LangDefault = "Language will be set to English and no other languages will be available.";
     }
 #pragma warning restore RCS1187 // Use constant instead of field.
 }
