@@ -102,8 +102,6 @@ namespace AngelLoader.Forms
             InitSlim();
 #endif
 
-            if (startup) Win32ThemeHooks.InstallHooks();
-
             _selfTheme = config.VisualTheme;
 
             _startup = startup;

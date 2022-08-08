@@ -598,8 +598,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            Win32ThemeHooks.InstallHooks();
-
             TopSplitContainer.Panel2.Controls.Add(TopRightMultiSelectBlockerPanel);
             TopRightMultiSelectBlockerPanel.BringToFront();
             TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);

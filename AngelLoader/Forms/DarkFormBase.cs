@@ -39,6 +39,8 @@ namespace AngelLoader.Forms
         {
             base.Icon = AL_Icon.AngelLoader;
             base.ShowInTaskbar = false;
+
+            Win32ThemeHooks.InstallHooks();
         }
 
         #region Theming

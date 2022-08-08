@@ -61,7 +61,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 // ReSharper disable once ConvertToConstant.Local
-                string message = "Failed to create required application directories on startup.";
+                string message = "Fatal error: Failed to create required application directories on startup.";
                 Log(message, ex);
                 // We're not even close to having a theme at this point, so just use regular MessageBox
                 Dialogs.ShowAlert_Stock(message, "Error", MBoxButtons.OK, MBoxIcon.Error);
@@ -169,6 +169,13 @@ namespace AngelLoader
 
             static void ReadLanguages(SplashScreen splashScreen)
             {
+                static void ResetLanguages()
+                {
+                    LText = new LText_Class();
+                    Config.Language = "English";
+                    Config.LanguageNames.Clear();
+                }
+
                 // We can't show a message until we've read the config file (to know which language to use) and
                 // the current language file (to get the translated message strings). So just show language dir/
                 // language file names, so it's as clear as possible what we're doing without actually having to
@@ -186,9 +193,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     splashScreen.Hide();
-                    LText = new LText_Class();
-                    Config.Language = "English";
-                    Config.LanguageNames.Clear();
+                    ResetLanguages();
                     Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
                     Dialogs.ShowError(
                         "Couldn't get the language .ini files.\r\n\r\n" +
@@ -223,12 +228,9 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     splashScreen.Hide();
-                    LText = new LText_Class();
-                    Config.Language = "English";
-                    Config.LanguageNames.Clear();
+                    ResetLanguages();
                     Log(ErrorText.Ex + "in language files read", ex);
-                    Dialogs.ShowError(
-                        "An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
+                    Dialogs.ShowError("An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
                     splashScreen.Show(Config.VisualTheme);
                 }
             }

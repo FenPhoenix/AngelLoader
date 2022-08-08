@@ -142,15 +142,7 @@ namespace AngelLoader.Forms.WinFormsNative
                     "user32.dll",
                     "GetSysColorBrush",
                     GetSysColorBrush);
-            }
-            catch
-            {
-                // If we fail, oh well, just keep the classic-mode colors then... better than nothing
-                _getSysColorHook?.Dispose();
-                _getSysColorBrushHook?.Dispose();
-            }
-            try
-            {
+
                 (_drawThemeBackgroundHook, DrawThemeBackgroundOriginal) = InstallHook<DrawThemeBackgroundDelegate>(
                     "uxtheme.dll",
                     "DrawThemeBackground",
@@ -163,11 +155,16 @@ namespace AngelLoader.Forms.WinFormsNative
             }
             catch
             {
+                // If we fail, oh well, just keep the classic-mode colors then... better than nothing
+                _getSysColorHook?.Dispose();
+                _getSysColorBrushHook?.Dispose();
                 _drawThemeBackgroundHook?.Dispose();
                 _getThemeColorHook?.Dispose();
             }
-
-            _hooksInstalled = true;
+            finally
+            {
+                _hooksInstalled = true;
+            }
         }
 
         private static (LocalHook Hook, TDelegate OriginalMethod)
