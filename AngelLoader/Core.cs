@@ -829,6 +829,7 @@ namespace AngelLoader
             #endregion
         }
 
+        // @BetterErrors(RefreshFMsListFromDisk): This one ties into FindFMs (see note there)
         public static async Task RefreshFMsListFromDisk(SelectedFM? selFM = null)
         {
             selFM ??= View.GetMainSelectedFMPosInfo();

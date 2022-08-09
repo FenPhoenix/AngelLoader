@@ -10,6 +10,18 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader
 {
+    /*
+    @BetterErrors(FindFMs - All disk hits)
+    This is tricky. Should we throw on all I/O fails? If we're on startup, we currently just exit the app if we
+    throw. This hasn't been a problem yet I guess, but maybe we actually shouldn't do that? The user then doesn't
+    have the chance to go into Settings and maybe be able to fix the paths or something.
+    What we want to do here is to restore the backed up lists if we fail, so that the old lists are guaranteed
+    to either be unchanged, or new and valid.
+    But we should decide what's a hard enough fail to warrant that. Failing to write fmsel.inf definitely isn't
+    a hard enough fail, since it's really just redundancy and the user probably won't understand what the file
+    is and why it matters.
+    */
+
     // I finally randomly just tried yet again to convert the horrific quadratic searches to dictionary lookups,
     // and it just worked this time. Behavior appears to be the same as before, no removing entries it shouldn't
     // or anything. I'm... kind of speechless.
