@@ -4700,11 +4700,15 @@ namespace AngelLoader.Forms
                 allAreKnownAndSupported,
                 allSelectedAreSameInstalledState,
                 allAreSupportedAndAvailable;
+            bool multiplePinnedStates = false;
             {
                 int installedCount = 0,
                     markedUnavailableCount = 0,
                     gameIsDarkCount = 0,
                     knownAndSupportedCount = 0;
+
+                bool atLeastOnePinned = false;
+                bool atLeastOneUnpinned = false;
 
                 // We iterate the whole list looking for selected FMs, rather than get SelectedRows every time.
                 // Drag-selecting the whole ~1694 list, profiling shows that doing the full-iteration way is
@@ -4727,6 +4731,23 @@ namespace AngelLoader.Forms
                         if (sFM.MarkedUnavailable) markedUnavailableCount++;
                         if (GameIsDark(sFM.Game)) gameIsDarkCount++;
                         if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+
+                        if (!multiplePinnedStates)
+                        {
+                            if (sFM.Pinned)
+                            {
+                                atLeastOnePinned = true;
+                            }
+                            else
+                            {
+                                atLeastOneUnpinned = true;
+                            }
+
+                            if (atLeastOnePinned && atLeastOneUnpinned)
+                            {
+                                multiplePinnedStates = true;
+                            }
+                        }
                     }
                 }
                 else
@@ -4745,6 +4766,23 @@ namespace AngelLoader.Forms
                         if (sFM.MarkedUnavailable) markedUnavailableCount++;
                         if (GameIsDark(sFM.Game)) gameIsDarkCount++;
                         if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+
+                        if (!multiplePinnedStates)
+                        {
+                            if (sFM.Pinned)
+                            {
+                                atLeastOnePinned = true;
+                            }
+                            else
+                            {
+                                atLeastOneUnpinned = true;
+                            }
+
+                            if (atLeastOnePinned && atLeastOneUnpinned)
+                            {
+                                multiplePinnedStates = true;
+                            }
+                        }
                     }
                 }
 
@@ -4781,7 +4819,7 @@ namespace AngelLoader.Forms
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
             FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
-            FMsDGV_FM_LLMenu.SetPinItemsMode();
+            FMsDGV_FM_LLMenu.SetPinItemsMode(multiplePinnedStates);
 
             FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(
                 (multiSelected && !noneAreAvailable) || allAreAvailable

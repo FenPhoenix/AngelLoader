@@ -36,6 +36,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private bool _finishedOnUnknownChecked;
         private bool _webSearchMenuItemEnabled;
 
+        private bool _multiplePinnedStates;
+
         #endregion
 
         private bool _sayPin = true;
@@ -338,7 +340,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             _constructed = true;
 
             // These must come after the constructed bool gets set to true
-            SetPinItemsMode();
+            SetPinItemsMode(_multiplePinnedStates);
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
             Localize();
@@ -510,36 +512,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             PinToTopMenuItem.Image = sayPin ? Images.Pin : Images.Unpin;
         }
 
-        internal void SetPinItemsMode()
+        internal void SetPinItemsMode(bool multiplePinnedStates)
         {
+            _multiplePinnedStates = multiplePinnedStates;
+
             if (!_constructed) return;
-
-            bool atLeastOnePinned = false;
-            bool atLeastOneUnpinned = false;
-
-            bool multiplePinnedStates = false;
-
-            var selectedFMs = _owner.FMsDGV.GetSelectedFMs();
-            if (selectedFMs.Length > 1)
-            {
-                for (int i = 0; i < selectedFMs.Length; i++)
-                {
-                    if (selectedFMs[i].Pinned)
-                    {
-                        atLeastOnePinned = true;
-                    }
-                    else
-                    {
-                        atLeastOneUnpinned = true;
-                    }
-
-                    if (atLeastOnePinned && atLeastOneUnpinned)
-                    {
-                        multiplePinnedStates = true;
-                        break;
-                    }
-                }
-            }
 
             if (multiplePinnedStates)
             {
