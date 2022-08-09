@@ -199,8 +199,8 @@ namespace AngelLoader
             {
                 int ret =
                     x.MisCount == y.MisCount ? TitleCompare(x, y) :
-                    x.MisCount == 0 ? -1 :
-                    y.MisCount == 0 ? 1 :
+                    x.MisCount == -1 ? -1 :
+                    y.MisCount == -1 ? 1 :
                     x.MisCount < y.MisCount ? -1 : 1;
 
                 return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -277,8 +277,8 @@ namespace AngelLoader
                 {
                     ret =
                         x.Rating == y.Rating ? TitleCompare(x, y) :
-                        x.Rating == 0 ? -1 :
-                        y.Rating == 0 ? 1 :
+                        x.Rating == -1 ? -1 :
+                        y.Rating == -1 ? 1 :
                         x.Rating < y.Rating ? -1 : 1;
                 }
 
