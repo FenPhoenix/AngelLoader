@@ -302,6 +302,7 @@ namespace AngelLoader
                     if (ex != null)
                     {
                         splashScreen.Hide();
+                        Log(ErrorText.ExRead + Paths.FMDataIni, ex);
                         Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                         EnvironmentExitDoShutdownTasks(1);
                     }
