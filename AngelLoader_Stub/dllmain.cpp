@@ -24,7 +24,7 @@ int show_loader_alert()
     const wstring msg1 =
         L"AngelLoader is set as the FM selector for this game.\r\n\r\n";
     const wstring msg2 =
-        L"Is AngelLoader running right now? If so, please either run this executable from within AngelLoader, OR close AngelLoader and then try again.\r\n\r\n";
+        L"Is AngelLoader running right now? If so, please either run this game from within AngelLoader, OR close AngelLoader and then try again.\r\n\r\n";
     const wstring msg3 =
         L"If AngelLoader is NOT running right now, then follow the below instructions:\r\n\r\n";
     const wstring msg4 =
