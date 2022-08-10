@@ -27,10 +27,6 @@ namespace AngelLoader
 
     @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
     Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
-
-    @vNext: If we're backing up or restoring multiple FMs, we can end up calling GetFMArchivePaths() in a loop
-    in a non-obvious way. We need to allow passing of the value into here so it only gets called once out in the
-    install/uninstall method.
     */
 
     internal static class FMBackupAndRestore
@@ -69,6 +65,8 @@ namespace AngelLoader
 
         #endregion
 
+        #region Private classes
+
         private sealed class BackupFile
         {
             internal bool Found;
@@ -102,12 +100,11 @@ namespace AngelLoader
             }
         }
 
+        #endregion
+
         #region Public methods
 
-        private static BackupFile
-        GetBackupFile(
-            FanMission fm,
-            bool findDarkLoaderOnly = false)
+        private static BackupFile GetBackupFile(FanMission fm, List<string> archivePaths, bool findDarkLoaderOnly = false)
         {
             static FileNameBoth GetDarkLoaderArchiveFiles()
             {
@@ -209,7 +206,7 @@ namespace AngelLoader
                 // (for automatic use of FMSel/NDL saves)
                 if (ret.Name.IsEmpty())
                 {
-                    foreach (string path in FMArchives.GetFMArchivePaths())
+                    foreach (string path in archivePaths)
                     {
                         AddBakFilesFrom(path);
                     }
@@ -231,7 +228,7 @@ namespace AngelLoader
             return ret;
         }
 
-        internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
+        internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths)
         {
             bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
                                              (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
@@ -302,7 +299,7 @@ namespace AngelLoader
                         AddEntry(archive, f, fn);
                     }
 
-                    MoveDarkLoaderBackup(fm);
+                    MoveDarkLoaderBackup(fm, archivePaths);
                     return;
                 }
 
@@ -357,7 +354,7 @@ namespace AngelLoader
                         }
                     }
 
-                    MoveDarkLoaderBackup(fm);
+                    MoveDarkLoaderBackup(fm, archivePaths);
                 }
                 catch (Exception ex)
                 {
@@ -366,9 +363,9 @@ namespace AngelLoader
             });
         }
 
-        internal static async Task RestoreFM(FanMission fm, CancellationToken? ct = null)
+        internal static async Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct)
         {
-            static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
+            static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
             if (!GameIsKnownAndSupported(fm.Game))
             {
@@ -382,7 +379,7 @@ namespace AngelLoader
 
             await Task.Run(() =>
             {
-                BackupFile backupFile = GetBackupFile(fm);
+                BackupFile backupFile = GetBackupFile(fm, archivePaths);
                 if (!backupFile.Found) return;
 
                 if (Canceled(ct)) return;
@@ -555,9 +552,9 @@ namespace AngelLoader
         don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
         which is not at all what the user expects given we tell them that existing backups haven't been changed.
         */
-        private static void MoveDarkLoaderBackup(FanMission fm)
+        private static void MoveDarkLoaderBackup(FanMission fm, List<string> archivePaths)
         {
-            var dlBackup = GetBackupFile(fm, findDarkLoaderOnly: true);
+            var dlBackup = GetBackupFile(fm, archivePaths, findDarkLoaderOnly: true);
             if (dlBackup.Found)
             {
                 Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);

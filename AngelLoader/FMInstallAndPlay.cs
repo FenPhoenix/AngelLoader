@@ -1026,8 +1026,11 @@ namespace AngelLoader
         #region Install/Uninstall
 
         [MustUseReturnValue]
-        private static bool DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
+        private static (bool Success, List<string> ArchivePaths)
+        DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
         {
+            var fail = (false, new List<string>());
+
             static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
 
             bool single = fms.Length == 1;
@@ -1046,17 +1049,17 @@ namespace AngelLoader
                 {
                     LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                     Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
-                    return false;
+                    return fail;
                 }
 
                 GameIndex gameIndex = GameToGameIndex(fm.Game);
                 int intGameIndex = (int)gameIndex;
 
-                if (Canceled(install)) return false;
+                if (Canceled(install)) return fail;
 
                 string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
 
-                if (Canceled(install)) return false;
+                if (Canceled(install)) return fail;
 
                 string gameExe = Config.GetGameExe(gameIndex);
                 string gameName = GetLocalizedGameName(gameIndex);
@@ -1077,7 +1080,7 @@ namespace AngelLoader
                         Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
                                                LText.AlertMessages.Install_ArchiveNotFound);
 
-                        return false;
+                        return fail;
                     }
                 }
 
@@ -1093,10 +1096,10 @@ namespace AngelLoader
                                                    GetFMId(fm) + "\r\n" +
                                                    LText.AlertMessages.Install_ExecutableNotFound);
 
-                            return false;
+                            return fail;
                         }
 
-                        if (Canceled(install)) return false;
+                        if (Canceled(install)) return fail;
 
                         if (!Directory.Exists(instBasePath))
                         {
@@ -1106,11 +1109,11 @@ namespace AngelLoader
                                                    GetFMId(fm) + "\r\n" +
                                                    LText.AlertMessages.Install_FMInstallPathNotFound);
 
-                            return false;
+                            return fail;
                         }
                     }
 
-                    if (Canceled(install)) return false;
+                    if (Canceled(install)) return fail;
 
                     if (GameIsRunning(gameExe))
                     {
@@ -1122,16 +1125,16 @@ namespace AngelLoader
                                     : LText.AlertMessages.Uninstall_GameIsRunning),
                             LText.AlertMessages.Alert);
 
-                        return false;
+                        return fail;
                     }
 
-                    if (Canceled(install)) return false;
+                    if (Canceled(install)) return fail;
 
                     gamesChecked[intGameIndex] = true;
                 }
             }
 
-            return true;
+            return (true, archivePaths);
         }
 
         #region Install
@@ -1269,7 +1272,7 @@ namespace AngelLoader
 
             try
             {
-                bool success = await Task.Run(() =>
+                (bool success, List<string> archivePaths) = await Task.Run(() =>
                 {
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.PreparingToInstall,
@@ -1414,7 +1417,7 @@ namespace AngelLoader
 
                     try
                     {
-                        await RestoreFM(fm: fmData.FM, ct: _installCts.Token);
+                        await RestoreFM(fmData.FM, archivePaths, _installCts.Token);
                     }
                     catch (Exception ex)
                     {
@@ -1600,11 +1603,12 @@ namespace AngelLoader
             // Do checks first before progress box so it's not just annoyingly there while in confirmation dialogs
             #region Checks
 
+            List<string> archivePaths;
             try
             {
                 Core.View.SetWaitCursor(true);
 
-                bool success = DoPreChecks(fms, fmDataList, install: false);
+                (bool success, archivePaths) = DoPreChecks(fms, fmDataList, install: false);
 
                 if (!success) return fail;
             }
@@ -1758,7 +1762,7 @@ namespace AngelLoader
                     archive folder on initial setup, and hasn't imported from NDL by this point.
                     */
 
-                    if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath);
+                    if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath, archivePaths);
 
                     if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
