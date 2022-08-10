@@ -60,21 +60,14 @@ namespace AngelLoader
         /// </summary>
         /// <param name="fmArchive"></param>
         /// <param name="archivePaths"></param>
-        /// <param name="ct"></param>
         /// <returns></returns>
         [PublicAPI]
-        internal static string FindFirstMatch(string fmArchive, List<string>? archivePaths = null, CancellationToken? ct = null)
+        internal static string FindFirstMatch(string fmArchive, List<string> archivePaths)
         {
             if (fmArchive.IsEmpty()) return "";
 
-            var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
-            foreach (string path in paths)
+            foreach (string path in archivePaths)
             {
-                if (ct != null && ((CancellationToken)ct).IsCancellationRequested)
-                {
-                    return "";
-                }
-
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {
                     return f;
@@ -91,15 +84,13 @@ namespace AngelLoader
         /// <param name="archivePaths"></param>
         /// <returns></returns>
         [PublicAPI]
-        internal static List<string> FindAllMatches(string fmArchive, List<string>? archivePaths = null)
+        internal static List<string> FindAllMatches(string fmArchive, List<string> archivePaths)
         {
             if (fmArchive.IsEmpty()) return new List<string>();
 
-            var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
+            var list = new List<string>(archivePaths.Count);
 
-            var list = new List<string>(paths.Count);
-
-            foreach (string path in paths)
+            foreach (string path in archivePaths)
             {
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {

@@ -1034,6 +1034,8 @@ namespace AngelLoader
 
             bool[] gamesChecked = new bool[SupportedGameCount];
 
+            var archivePaths = FMArchives.GetFMArchivePaths();
+
             for (int i = 0; i < fms.Length; i++)
             {
                 FanMission fm = fms[i];
@@ -1052,7 +1054,7 @@ namespace AngelLoader
 
                 if (Canceled(install)) return false;
 
-                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
 
                 if (Canceled(install)) return false;
 

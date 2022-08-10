@@ -278,11 +278,13 @@ namespace AngelLoader
                     );
                 }
 
+                var archivePaths = FMArchives.GetFMArchivePaths();
+
                 for (int i = 0; i < fms.Count; i++)
                 {
                     FanMission fm = fms[i];
 
-                    var archives = FMArchives.FindAllMatches(fm.Archive);
+                    var archives = FMArchives.FindAllMatches(fm.Archive, archivePaths);
 
                     (bool success, List<string> finalArchives) = GetFinalArchives(archives, single);
                     if (!success)
@@ -328,7 +330,7 @@ namespace AngelLoader
                         // Do this even if we had no archives, because we're still going to set it unavailable
                         // so we need to refresh to remove it from the filtered list
                         deletedAtLeastOneFromDisk = true;
-                        var newArchives = await Task.Run(() => FMArchives.FindAllMatches(fm.Archive));
+                        var newArchives = await Task.Run(() => FMArchives.FindAllMatches(fm.Archive, archivePaths));
                         if (newArchives.Count == 0 && !fm.Installed)
                         {
                             fm.MarkedUnavailable = true;

@@ -18,14 +18,20 @@ using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace AngelLoader
 {
-    // @BetterErrors(Backup/restore): We really need to not be silent if there are problems here.
-    // We could be in a messed-up state and the user won't know and we don't even try to fix it.
+    /*
+    @BetterErrors(Backup/restore): We really need to not be silent if there are problems here.
+    We could be in a messed-up state and the user won't know and we don't even try to fix it.
 
-    // Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
-    // for writing. Even if you put it after the using block, it throws. So always set this before writing!
+    Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
+    for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
-    // @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
-    // Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
+    @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
+    Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
+
+    @vNext: If we're backing up or restoring multiple FMs, we can end up calling GetFMArchivePaths() in a loop
+    in a non-obvious way. We need to allow passing of the value into here so it only gets called once out in the
+    install/uninstall method.
+    */
 
     internal static class FMBackupAndRestore
     {

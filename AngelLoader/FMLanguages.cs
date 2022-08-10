@@ -202,7 +202,7 @@ namespace AngelLoader
 
             (bool, List<string>) failed = (false, new List<string>());
 
-            string archivePath = FMArchives.FindFirstMatch(archiveName);
+            string archivePath = FMArchives.FindFirstMatch(archiveName, FMArchives.GetFMArchivePaths());
             if (archivePath.IsEmpty()) return failed;
 
             var ret = new List<string>(SupportedLanguageCount);
