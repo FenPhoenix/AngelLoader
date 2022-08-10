@@ -47,25 +47,33 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private void ResetPropertyOnAllColumns(ColumnProperties property)
         {
-            for (int i = 0; i < _owner.FMsDGV.Columns.Count; i++)
+            try
             {
-                DataGridViewColumn c = _owner.FMsDGV.Columns[i];
-                switch (property)
+                _owner.TopSplitContainer.Panel1.SuspendDrawing();
+
+                for (int i = 0; i < _owner.FMsDGV.Columns.Count; i++)
                 {
-                    case ColumnProperties.Visible:
-                        _owner.FMsDGV.MakeColumnVisible(c, true);
-                        break;
-                    case ColumnProperties.DisplayIndex:
-                        c.DisplayIndex = c.Index;
-                        break;
-                    case ColumnProperties.Width:
-                        if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
-                        break;
+                    DataGridViewColumn c = _owner.FMsDGV.Columns[i];
+                    switch (property)
+                    {
+                        case ColumnProperties.Visible:
+                            _owner.FMsDGV.MakeColumnVisible(c, true);
+                            break;
+                        case ColumnProperties.DisplayIndex:
+                            c.DisplayIndex = c.Index;
+                            break;
+                        case ColumnProperties.Width:
+                            if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
+                            break;
+                    }
+
+                    SetColumnChecked(c.Index, c.Visible);
                 }
-
+            }
+            finally
+            {
+                _owner.TopSplitContainer.Panel1.ResumeDrawing();
                 _owner.FMsDGV.SelectProperly();
-
-                SetColumnChecked(c.Index, c.Visible);
             }
         }
 
