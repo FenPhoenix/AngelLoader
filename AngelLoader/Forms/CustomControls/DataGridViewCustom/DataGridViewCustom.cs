@@ -411,6 +411,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // Better, faster (especially with a large selection set) way of doing the hack that prevents the glitched
         // last row on first jump-to-end when the end is scrolled offscreen.
+        internal bool RefreshOnScrollHack;
         private bool _fmsListOneTimeHackRefreshDone;
         ///<inheritdoc cref="DataGridView.FirstDisplayedScrollingRowIndex"/>
         [Browsable(false)]
@@ -441,7 +442,7 @@ namespace AngelLoader.Forms.CustomControls
                     // Refresh() just causes visual issues and/or is slow
                     // But ALSO still invalidate if not refreshing because otherwise the middle-click centering
                     // breaks!
-                    if (needsResume) this.ResumeDrawing(invalidateInsteadOfRefresh: true);
+                    if (needsResume) this.ResumeDrawing(invalidateInsteadOfRefresh: !RefreshOnScrollHack);
                 }
             }
         }

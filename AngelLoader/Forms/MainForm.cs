@@ -3667,6 +3667,10 @@ namespace AngelLoader.Forms
         {
             try
             {
+                // For this codepath only, we want to refresh instead of invalidate because invalidate leaves
+                // the scroll bar in the previous position instead of the new position.
+                FMsDGV.RefreshOnScrollHack = true;
+
                 FMsDGV.FirstDisplayedScrollingRowIndex =
                     (FMsDGV.MainSelectedRow!.Index - (FMsDGV.DisplayedRowCount(true) / 2))
                     .Clamp(0, FMsDGV.RowCount - 1);
@@ -3674,6 +3678,10 @@ namespace AngelLoader.Forms
             catch
             {
                 // no room is available to display rows
+            }
+            finally
+            {
+                FMsDGV.RefreshOnScrollHack = false;
             }
         }
 
