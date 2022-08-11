@@ -385,7 +385,7 @@ namespace AngelLoader
 
                         if (fms[i].ForceFullScan || scanOptions.ScanMissionCount)
                         {
-                            sel.MisCount = scannedFM.MissionCount ?? -1;
+                            sel.MisCount = gameSup ? scannedFM.MissionCount ?? -1 : -1;
                         }
 
                         sel.MarkedScanned = true;
