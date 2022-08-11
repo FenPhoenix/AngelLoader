@@ -386,6 +386,11 @@ namespace AngelLoader
                         if (fms[i].ForceFullScan || scanOptions.ScanMissionCount)
                         {
                             sel.MisCount = gameSup ? scannedFM.MissionCount ?? -1 : -1;
+
+                            if (gameSup && scannedFM.MissionCount is > 1)
+                            {
+                                FMTags.AddTagToFM(sel, "misc:campaign", rebuildGlobalTags: false);
+                            }
                         }
 
                         sel.MarkedScanned = true;
