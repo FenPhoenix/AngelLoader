@@ -243,6 +243,7 @@ namespace AngelLoader
         /// </summary>
         /// <param name="cts"></param>
         /// <returns></returns>
+        [MustUseReturnValue]
         internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
         {
             cts.Dispose();
