@@ -4291,6 +4291,14 @@ namespace AngelLoader.Forms
             }
         }
 
+        private void ReadmeRichTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Apps)
+            {
+                ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
+            }
+        }
+
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {
             ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);

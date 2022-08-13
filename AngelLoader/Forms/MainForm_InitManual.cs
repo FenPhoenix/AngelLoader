@@ -1431,6 +1431,7 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.ReadOnly = true;
             ReadmeRichTextBox.TabIndex = 0;
+            ReadmeRichTextBox.KeyDown += ReadmeRichTextBox_KeyDown;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             ReadmeRichTextBox.MouseDown += ReadmeRichTextBox_MouseDown;

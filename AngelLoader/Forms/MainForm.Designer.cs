@@ -1801,6 +1801,7 @@
             this.ReadmeRichTextBox.Size = new System.Drawing.Size(1668, 356);
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
+            this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             this.ReadmeRichTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ReadmeRichTextBox_MouseDown);
