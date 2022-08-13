@@ -1787,8 +1787,11 @@ namespace FMScanner
                     {
                         foreach (string f in EnumFiles(FMDirs.T3DetectS, SearchOption.TopDirectoryOnly))
                         {
-                            // We only want the filename; we already know it's in the right folder
-                            t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                            if (f.ExtIsGmp())
+                            {
+                                // We only want the filename; we already know it's in the right folder
+                                t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                            }
                         }
                     }
                     fmd.Game = Game.Thief3;
