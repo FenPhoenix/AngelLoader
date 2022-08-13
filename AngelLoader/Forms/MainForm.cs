@@ -4285,7 +4285,10 @@ namespace AngelLoader.Forms
 
         private void ReadmeRichTextBox_MouseDown(object sender, MouseEventArgs e)
         {
-            ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
+            if (e.Button == MouseButtons.Right)
+            {
+                ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
+            }
         }
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
