@@ -86,6 +86,20 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        internal new void SelectAll()
+        {
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+            try
+            {
+                base.SelectAll();
+                Focus();
+            }
+            finally
+            {
+                ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
+            }
+        }
+
         public RichTextBoxCustom() => InitWorkarounds();
 
         #region Private methods

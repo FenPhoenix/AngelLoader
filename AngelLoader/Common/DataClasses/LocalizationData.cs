@@ -76,6 +76,7 @@ namespace AngelLoader.DataClasses
             internal readonly string BrowseEllipses = "Browse...";
             internal readonly string Reset = "Reset";
             internal readonly string Autodetect = "Autodetect";
+            internal readonly string Copy = "Copy";
             internal readonly string SelectAll = "Select all";
             internal readonly string SelectNone = "Select none";
             [FenGenBlankLine]

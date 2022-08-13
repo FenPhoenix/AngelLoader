@@ -1803,6 +1803,7 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
+            this.ReadmeRichTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ReadmeRichTextBox_MouseDown);
             // 
             // MainForm
             // 

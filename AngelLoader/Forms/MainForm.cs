@@ -176,6 +176,7 @@ namespace AngelLoader.Forms
         private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
+        private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
 
         #endregion
 
@@ -537,7 +538,8 @@ namespace AngelLoader.Forms
                 PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this),
                 PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
                 TopRightLLMenu = new TopRightLLMenu(this),
-                ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this)
+                ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
+                Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this)
             };
 
             #endregion
@@ -1781,6 +1783,8 @@ namespace AngelLoader.Forms
                 {
                     SetReadmeLocalizableMessage(ReadmeRichTextBox.LocalizableMessageType);
                 }
+
+                Lazy_RTFBoxMenu.Localize();
 
                 #endregion
 
@@ -4278,6 +4282,11 @@ namespace AngelLoader.Forms
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText, fixUpEmailLinks: true);
+
+        private void ReadmeRichTextBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
+        }
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {

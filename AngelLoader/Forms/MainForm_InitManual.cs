@@ -1433,6 +1433,7 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
+            ReadmeRichTextBox.MouseDown += ReadmeRichTextBox_MouseDown;
             // 
             // MainForm
             // 
