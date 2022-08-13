@@ -47,7 +47,7 @@ namespace FenGen
                     AttributeSyntax? gameAttr = member
                         .AttributeLists[0]
                         .Attributes
-                        .FirstOrDefault(x => x.Name.ToString() == GenAttributes.FenGenGame);
+                        .FirstOrDefault(static x => x.Name.ToString() == GenAttributes.FenGenGame);
 
                     if (gameAttr != null)
                     {

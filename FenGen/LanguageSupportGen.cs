@@ -52,7 +52,7 @@ namespace FenGen
                     AttributeSyntax? langAttr = member
                         .AttributeLists[0]
                         .Attributes
-                        .FirstOrDefault(x => x.Name.ToString() == GenAttributes.FenGenLanguage);
+                        .FirstOrDefault(static x => x.Name.ToString() == GenAttributes.FenGenLanguage);
 
                     if (langAttr != null)
                     {

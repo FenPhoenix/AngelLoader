@@ -1,6 +1,8 @@
 ﻿//#define ENABLE_ALWAYS_FAST_NUMERIC_PARSE
 
+#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
 using System;
+#endif
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
