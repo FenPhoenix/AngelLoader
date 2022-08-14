@@ -160,6 +160,12 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void WndProc(ref Message m)
         {
+            if (m.Msg is Native.WM_CONTEXTMENU &&
+                FindForm() is IDarkContextMenuOwner { ViewBlocked: true })
+            {
+                return;
+            }
+
             if (!_darkModeEnabled)
             {
                 base.WndProc(ref m);

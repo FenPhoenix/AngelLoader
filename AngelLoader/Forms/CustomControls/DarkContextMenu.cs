@@ -10,6 +10,8 @@ namespace AngelLoader.Forms.CustomControls
         private bool _preventClose;
         private ToolStripMenuItemCustom[]? _preventCloseItems;
 
+        private readonly IDarkContextMenuOwner _owner;
+
         private bool _darkModeEnabled;
         [PublicAPI]
         [Browsable(false)]
@@ -26,7 +28,16 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Constructors
 
-        public DarkContextMenu(IContainer container) : base(container) { }
+        public DarkContextMenu(IDarkContextMenuOwner owner) : base(owner.GetComponents())
+        {
+            _owner = owner;
+        }
+
+        protected override void OnOpening(CancelEventArgs e)
+        {
+            if (_owner.ViewBlocked) e.Cancel = true;
+            base.OnOpening(e);
+        }
 
         #endregion
 

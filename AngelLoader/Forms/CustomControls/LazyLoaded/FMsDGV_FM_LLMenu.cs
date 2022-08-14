@@ -204,8 +204,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Instantiation
 
-            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
-            FinishedOnMenu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+            FinishedOnMenu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
 
             #endregion
 
@@ -728,8 +728,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
             // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
             if (_owner.FMsDGV.RowCount == 0 ||
-                !_owner.FMsDGV.RowSelected() ||
-                _owner.ViewBlocked)
+                !_owner.FMsDGV.RowSelected())
             {
                 e.Cancel = true;
             }

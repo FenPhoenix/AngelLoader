@@ -120,7 +120,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             #region Instantiation
 
-            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
 
             #endregion
 

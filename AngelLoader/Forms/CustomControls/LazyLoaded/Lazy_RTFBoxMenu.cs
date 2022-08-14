@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
             _menu.Items.AddRange(new ToolStripItem[]
             {
                 CopyMenuItem = new ToolStripMenuItemCustom(),

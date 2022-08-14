@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
@@ -68,27 +69,11 @@ namespace AngelLoader
 
     #endregion
 
-    #region DisableKeyPresses
-
-    public interface IKeyPressDisabler
+    public interface IDarkContextMenuOwner
     {
-        bool KeyPressesDisabled { set; }
+        bool ViewBlocked { get; }
+        IContainer GetComponents();
     }
-
-    internal sealed class DisableKeyPresses : IDisposable
-    {
-        private readonly IKeyPressDisabler Obj;
-
-        internal DisableKeyPresses(IKeyPressDisabler obj)
-        {
-            Obj = obj;
-            Obj.KeyPressesDisabled = true;
-        }
-
-        public void Dispose() => Obj.KeyPressesDisabled = false;
-    }
-
-    #endregion
 
     public interface ISettingsChangeableWindow
     {
@@ -163,7 +148,7 @@ namespace AngelLoader
         (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
     }
 
-    public interface IView : ISettingsChangeableWindow, IEventDisabler, IKeyPressDisabler, IZeroSelectCodeDisabler
+    public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContextMenuOwner, IZeroSelectCodeDisabler
     {
         #region Progress box
 

@@ -26,6 +26,7 @@ namespace AngelLoader.Forms.WinFormsNative
         internal const int WM_SIZE = 0x0005;
         internal const int WM_WINDOWPOSCHANGED = 0x0047;
         internal const int WM_ENABLE = 0x000A;
+        internal const int WM_CONTEXTMENU = 0x007B;
 
         internal const uint WM_CTLCOLORLISTBOX = 0x0134;
         internal const int SWP_NOSIZE = 0x0001;

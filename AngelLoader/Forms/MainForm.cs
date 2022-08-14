@@ -138,10 +138,6 @@ namespace AngelLoader.Forms
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool KeyPressesDisabled { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ZeroSelectCodeDisabled { get; set; }
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
@@ -149,7 +145,7 @@ namespace AngelLoader.Forms
         internal bool CellValueNeededDisabled;
 
         private TransparentPanel? ViewBlockingPanel;
-        internal bool ViewBlocked { get; private set; }
+        public bool ViewBlocked { get; private set; }
 
         #endregion
 
@@ -436,7 +432,7 @@ namespace AngelLoader.Forms
                 {
                     return PassMessageOn;
                 }
-                else if (ViewBlocked || KeyPressesDisabled)
+                else if (ViewBlocked)
                 {
                     return BlockMessage;
                 }
@@ -444,7 +440,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == Native.WM_KEYDOWN)
             {
-                if ((KeyPressesDisabled || ViewBlocked) && CanFocus) return BlockMessage;
+                if (ViewBlocked && CanFocus) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
@@ -494,7 +490,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == Native.WM_KEYUP)
             {
-                if ((KeyPressesDisabled || ViewBlocked) && CanFocus) return BlockMessage;
+                if (ViewBlocked && CanFocus) return BlockMessage;
             }
             #endregion
 
@@ -1225,7 +1221,7 @@ namespace AngelLoader.Forms
             }
 #endif
 
-            if (KeyPressesDisabled) return;
+            if (ViewBlocked) return;
 
             // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
             // the FMs list
@@ -5520,7 +5516,7 @@ namespace AngelLoader.Forms
                 ReadmeRichTextBox.ZoomFactor);
         }
 
-        internal IContainer GetComponents() => components;
+        public IContainer GetComponents() => components;
 
         #region Cursor over area detection
 

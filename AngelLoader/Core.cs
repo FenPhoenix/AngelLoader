@@ -2130,12 +2130,9 @@ namespace AngelLoader
 
             if (FMNeedsScan(fm))
             {
-                using (new DisableKeyPresses(View))
+                if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
                 {
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
-                    {
-                        View.RefreshFM(fm, rowOnly: true);
-                    }
+                    View.RefreshFM(fm, rowOnly: true);
                 }
             }
 

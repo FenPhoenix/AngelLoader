@@ -118,7 +118,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             // Stupid weird code in an attempt to squeeze a little bit more perf out of this thing for faster
             // initial show
 
-            _menu = new DarkContextMenu(_owner.GetComponents()) { Tag = LoadType.Lazy };
+            _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
 
             _menu.SuspendLayout();
 
