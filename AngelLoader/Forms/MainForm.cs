@@ -4079,8 +4079,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_KeyDown(object sender, KeyEventArgs e)
         {
-            // This is in here because it doesn't really work right if we put it in MainForm_KeyDown anyway
-            if (e.KeyCode == Keys.Apps)
+            if (ControlUtils.IsMenuKey(e))
             {
                 FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
             }
@@ -4289,7 +4288,7 @@ namespace AngelLoader.Forms
 
         private void ReadmeRichTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Apps)
+            if (ControlUtils.IsMenuKey(e))
             {
                 ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
             }

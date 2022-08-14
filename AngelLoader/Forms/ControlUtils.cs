@@ -637,5 +637,7 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        internal static bool IsMenuKey(KeyEventArgs e) => e.KeyCode == Keys.Apps || (e.Shift && e.KeyCode == Keys.F10);
     }
 }
