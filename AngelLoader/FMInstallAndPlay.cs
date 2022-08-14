@@ -1159,12 +1159,11 @@ namespace AngelLoader
         {
             #region Local functions
 
-            static async Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
+            static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
             {
-                bool single = fmDataList.Length == 1;
-
-                await Task.Run(() =>
+                return Task.Run(() =>
                 {
+                    bool single = fmDataList.Length == 1;
                     static void RemoveFMFromDisk(FMData fmData)
                     {
                         string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);

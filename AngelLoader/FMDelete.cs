@@ -99,11 +99,11 @@ namespace AngelLoader
             }
         }
 
-        private static async Task DeleteFromDBRefresh()
+        private static Task DeleteFromDBRefresh()
         {
             Ini.WriteFullFMDataIni(makeBackup: true);
             SelectedFM? selFM = Core.FindNearestUnselectedFM(Core.View.GetMainSelectedRowIndex(), Core.View.GetRowCount());
-            await Core.RefreshFMsListFromDisk(selFM);
+            return Core.RefreshFMsListFromDisk(selFM);
         }
 
         #endregion

@@ -31,7 +31,7 @@ namespace AngelLoader
         /// <param name="hideBoxIfZip"></param>
         /// <param name="scanMessage"></param>
         /// <returns></returns>
-        internal static async Task<bool> ScanFMs(
+        internal static Task<bool> ScanFMs(
             List<FanMission> fmsToScan,
             FMScanner.ScanOptions? scanOptions = null,
             bool scanFullIfNew = false,
@@ -39,7 +39,7 @@ namespace AngelLoader
             string? scanMessage = null)
         {
             // Shove the whole thing into a thread, otherwise the progress box will be half-blocked still somehow
-            return await Task.Run(async () =>
+            return Task.Run(async () =>
             {
                 #region Local functions
 
