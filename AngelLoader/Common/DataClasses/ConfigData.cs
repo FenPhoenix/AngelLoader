@@ -14,30 +14,34 @@ namespace AngelLoader.DataClasses
     {
         internal ConfigData()
         {
+            #region To be left at defaults
+
             _newMantling = new bool?[SupportedGameCount];
+            GameEditorDetected = new bool[SupportedGameCount];
+            StartupAlwaysStartSelector = new bool[SupportedGameCount];
+
+            #endregion
+
+            #region To be initialized in loop
+
             _disabledMods = new string[SupportedGameCount];
 
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
 
-            // Leave all false
-            GameEditorDetected = new bool[SupportedGameCount];
-
             UseSteamSwitches = new bool[SupportedGameCount];
             StartupFMSelectorLines = new List<string>[SupportedGameCount];
 
-            // Leave all false
-            StartupAlwaysStartSelector = new bool[SupportedGameCount];
-
             GameFilterControlVisibilities = new bool[SupportedGameCount];
+
+            #endregion
+
             FilterControlVisibilities = InitializedArray(HideableFilterControlsCount, true);
 
-            // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                // bool[]s are initialized to false by default, so in that case we don't need to do anything here
-
+                // We want them empty strings, not null, for safety
                 _disabledMods[i] = "";
 
                 GameExes[i] = "";
