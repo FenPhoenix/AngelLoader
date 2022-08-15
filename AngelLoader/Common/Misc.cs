@@ -13,11 +13,15 @@ namespace AngelLoader
         // Commented so that old versions of AngelLoader will ignore it
         //internal const string ConfigVersionHeader = ";@Version:";
 
+        #region Enum counts
+
         internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
         internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
         public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
         internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
         internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
+
+        #endregion
 
         #region Enums and enum-like
 
@@ -71,8 +75,6 @@ namespace AngelLoader
             Determinate,
             Indeterminate
         }
-
-        public static readonly Action NullAction = static () => { };
 
         public enum ImportType
         {
@@ -135,6 +137,8 @@ namespace AngelLoader
 
         internal static readonly ReadOnlyCollection<string> ValidDateFormats =
             new(new[] { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" });
+
+        public static readonly Action NullAction = static () => { };
 
         internal static class Defaults
         {
