@@ -1031,7 +1031,7 @@ namespace AngelLoader.Forms
         }
 
         /*
-        @vNext: Fix multi-monitor stuff here
+        TODO: Fix multi-monitor stuff here
         -Should save/restore position no matter what monitor it's on.
         -If off the edge of the screen and there is NOT another monitor there, should reposition to be onscreen
          as usual.
@@ -5050,7 +5050,7 @@ namespace AngelLoader.Forms
                 // @VBL
                 #region Mods tab
 
-                // @vNext: We might want to just disable the whole mods tab for Thief 3
+                // TODO: We might want to just disable the whole mods tab for Thief 3
                 foreach (Control c in ModsTabPage.Controls)
                 {
                     c.Enabled = true;

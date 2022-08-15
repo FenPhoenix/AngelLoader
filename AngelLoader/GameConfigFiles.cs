@@ -99,7 +99,7 @@ namespace AngelLoader
             bool fm_language_forced = false;
 
             /*
-            @vNext: Convert this to ReadAllLines in advance style like everything else
+            TODO: Convert this to ReadAllLines in advance style like everything else
             NOTE: The issue is return value: if we can't read cam_mod.ini, do we want to create an FMs dir?
             We don't have an error return value. I think we don't want to create an FMs dir if we can't read
             cam_mod.ini because there could be a different one in there and so we would create the default
@@ -449,7 +449,7 @@ namespace AngelLoader
         #region Set selectors
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        // @vNext(SetDarkFMSelector): Rewrite this mess into something readable!
+        // TODO(SetDarkFMSelector): Rewrite this mess into something readable!
         internal static bool SetDarkFMSelector(GameIndex gameIndex, string gamePath, bool resetSelector = false)
         {
             if (!GameIsDark(gameIndex)) return false;

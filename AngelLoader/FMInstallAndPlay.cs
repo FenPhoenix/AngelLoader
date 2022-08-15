@@ -805,11 +805,15 @@ namespace AngelLoader
                     return false;
                 }
 
+                /*
+                Copied from Scanner except mis file type is different so yeah... that's why we can't just make
+                it a method. But until this actually needs to be changed - and I don't see why it ever would -
+                it's not actually a problem.
+                */
                 for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
                 {
                     FileInfo mf = misFileInfos[mfI];
 
-                    // @FM_CFG: This is copied from the scanner where perf matters, but we should rewrite this to be clearer and simpler
                     // Obtuse nonsense to avoid string allocations (perf)
                     if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                     {

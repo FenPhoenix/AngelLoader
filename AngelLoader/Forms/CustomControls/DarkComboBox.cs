@@ -379,7 +379,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             // If the dropdown is going to go off the right side of the screen, try to reposition it so it always
             // appears fully on-screen
-            // @vNext(combobox clamp): fix other sides: left, top, bottom
+            // TODO(combobox clamp): fix other sides: left, top, bottom
             if (m.Msg == Native.WM_CTLCOLORLISTBOX)
             {
                 Point p = this.PointToScreen_Fast(new Point(0, Height));
