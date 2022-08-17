@@ -1675,7 +1675,6 @@ namespace AngelLoader.Forms
 
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
 
-                // Look into the text this displays - should be blank when it isn't?
                 Stats_MisCountLabel.Text = selFM != null
                     ? selFM.MisCount switch
                     {
