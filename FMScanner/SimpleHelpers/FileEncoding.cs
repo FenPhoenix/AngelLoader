@@ -251,7 +251,7 @@ namespace FMScanner.SimpleHelpers
             // execute charset detector                
             _ude.Feed(inputData, start, count);
             _ude.DataEnd();
-            if (_ude.IsDone() && !string.IsNullOrEmpty(_ude.Charset))
+            if (_ude.IsDone() && !_ude.Charset.IsEmpty())
             {
                 IncrementFrequency(_ude.Charset);
                 _done = true;
@@ -267,7 +267,7 @@ namespace FMScanner.SimpleHelpers
                 _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step);
                 _singleUde.DataEnd();
                 // update encoding frequency
-                if (_singleUde.Confidence > 0.3 && !string.IsNullOrEmpty(_singleUde.Charset))
+                if (_singleUde.Confidence > 0.3 && !_singleUde.Charset.IsEmpty())
                 {
                     IncrementFrequency(_singleUde.Charset);
                 }
@@ -285,7 +285,7 @@ namespace FMScanner.SimpleHelpers
         {
             _done = true;
             _ude.DataEnd();
-            if (_ude.IsDone() && !string.IsNullOrEmpty(_ude.Charset))
+            if (_ude.IsDone() && !_ude.Charset.IsEmpty())
             {
                 _encodingName = _ude.Charset;
             }

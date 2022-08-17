@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms.CustomControls
@@ -60,7 +61,7 @@ namespace AngelLoader.Forms.CustomControls
             var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
             g.DrawRectangle(DarkColors.BlueHighlightPen, modRect);
 
-            if (e.Item.ImageIndex == -1 && string.IsNullOrEmpty(e.Item.ImageKey) && e.Item.Image == null)
+            if (e.Item.ImageIndex == -1 && e.Item.ImageKey.IsEmpty() && e.Item.Image == null)
             {
                 // Match Win10 light mode checkmark shape exactly
                 int left = e.ImageRectangle.Left;

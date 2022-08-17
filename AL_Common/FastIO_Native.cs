@@ -141,7 +141,7 @@ namespace AL_Common
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
+                if (path.IsWhiteSpace() || pathContainsInvalidChars)
                 {
                     throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
                 }

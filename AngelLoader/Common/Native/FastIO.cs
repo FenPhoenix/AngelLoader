@@ -116,7 +116,7 @@ namespace AngelLoader
             bool returnDateTimes,
             out List<DateTime> dateTimes)
         {
-            if (string.IsNullOrEmpty(searchPattern))
+            if (searchPattern.IsEmpty())
             {
                 throw new ArgumentException(nameof(searchPattern) + " was null or empty", nameof(searchPattern));
             }

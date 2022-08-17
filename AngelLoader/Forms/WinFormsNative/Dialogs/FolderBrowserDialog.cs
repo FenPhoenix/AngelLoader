@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AL_Common;
 
 namespace AngelLoader.Forms.WinFormsNative.Dialogs
 {
@@ -106,7 +107,7 @@ namespace AngelLoader.Forms.WinFormsNative.Dialogs
 
             dialog.SetOptions(flags);
 
-            if (!string.IsNullOrWhiteSpace(InitialDirectory))
+            if (!InitialDirectory.IsWhiteSpace())
             {
                 if (!Directory.Exists(InitialDirectory))
                 {
