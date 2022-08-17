@@ -289,6 +289,9 @@ Displays an icon based on which game the mission is for. If unknown, it will be 
 <h4>Installed</h4>
 Displays a <img src="images/green_check_21.png" /> icon if an FM is installed; otherwise remains blank.
 
+<h4>Mission Count</h4>
+Displays the number of missions in an FM. If it's a single mission, it will be 1; otherwise it's a campaign and it will be the number of missions in the campaign.
+
 <h4>Title</h4>
 Displays an FM's title, taking into account the <a href="#settings_sorting">Move article</a> setting. If no title has been scanned for, or a title otherwise can't be found, this will display the FM's archive name without the extension. If no archive name can be found then it will display the FM's installed folder name.
 
@@ -400,7 +403,7 @@ Click this to collapse (hide) the FM details section. Click it again to expand i
 
 <p><img src="images/stats_tab.png" /></p>
 
-Here you can see information on what kind of custom resources a fan mission has. If the FM has not been scanned for custom resources, none will be shown. If the FM is for Thief: Deadly Shadows, none will be shown in any case, as the custom resource scan is not supported for that game.
+Here you can see general statistics.
 
 <h4><a name="edit_fm_tab" />Edit FM tab</h4>
 
@@ -604,7 +607,7 @@ to prevent accidental playing from a stray click or key press.
 
 AngelLoader supports the localization of its user interface. New languages may be defined in language files, which must be placed in the <code>Data\Languages</code> folder. An <code>English.ini</code> file is included in that folder as an example, and other language files are available for separate download. Language files use a simple <code>ini</code> format, and must be saved with UTF8 encoding in order to guarantee correct display of text.
 
-<p>Most user interface elements will be automatically resized to accommodate translated strings, but a few will not. These include the date and rating filter windows and some of the buttons in the tags filter window. It's up to the translator to ensure everything looks correct.</p>
+<p>Most user interface elements will be automatically resized to accommodate translated strings, but a few will not (for example, some of the buttons in the tags filter window). It's up to the translator to ensure everything looks correct.</p>
 
 <h3><a name="supported_formats" />Supported formats</h3>
 
