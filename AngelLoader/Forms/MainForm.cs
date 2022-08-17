@@ -334,9 +334,16 @@ namespace AngelLoader.Forms
                             MainSplitContainer.Panel2.Focus();
                         }
                     }
-                    if (Control.FromHandle(hWnd) is DarkComboBox { SuppressScrollWheelValueChange: true, Focused: false })
+                    if (Control.FromHandle(hWnd) is DarkComboBox { SuppressScrollWheelValueChange: true, Focused: false } cb)
                     {
-                        return BlockMessage;
+                        if (cb.Parent is { IsHandleCreated: true })
+                        {
+                            Native.SendMessage(cb.Parent.Handle, m.Msg, m.WParam, m.LParam);
+                        }
+                        else
+                        {
+                            return BlockMessage;
+                        }
                     }
                     else
                     {
