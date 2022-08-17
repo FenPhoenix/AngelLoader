@@ -54,7 +54,12 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [DefaultValue(false)]
+        [PublicAPI]
         public bool FireMouseLeaveOnLeaveWindow { get; set; }
+
+        [DefaultValue(false)]
+        [PublicAPI]
+        public bool SuppressScrollWheelValueChange { get; set; }
 
 #if DEBUG
 

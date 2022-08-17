@@ -32,6 +32,7 @@ namespace AngelLoader.Forms
         private void InitializeComponent()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -84,7 +85,6 @@ namespace AngelLoader.Forms
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -116,6 +116,14 @@ namespace AngelLoader.Forms
             this.PagePanel.Name = "PagePanel";
             this.PagePanel.Size = new System.Drawing.Size(496, 1163);
             this.PagePanel.TabIndex = 0;
+            // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // PlayWithoutFMGroupBox
             // 
@@ -426,6 +434,7 @@ namespace AngelLoader.Forms
             this.Date1ComboBox.Location = new System.Drawing.Point(0, 0);
             this.Date1ComboBox.Name = "Date1ComboBox";
             this.Date1ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date1ComboBox.SuppressScrollWheelValueChange = true;
             this.Date1ComboBox.TabIndex = 0;
             // 
             // DateSeparator1TextBox
@@ -441,6 +450,7 @@ namespace AngelLoader.Forms
             this.Date4ComboBox.Location = new System.Drawing.Point(360, 0);
             this.Date4ComboBox.Name = "Date4ComboBox";
             this.Date4ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date4ComboBox.SuppressScrollWheelValueChange = true;
             this.Date4ComboBox.TabIndex = 6;
             // 
             // Date2ComboBox
@@ -449,6 +459,7 @@ namespace AngelLoader.Forms
             this.Date2ComboBox.Location = new System.Drawing.Point(120, 0);
             this.Date2ComboBox.Name = "Date2ComboBox";
             this.Date2ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date2ComboBox.SuppressScrollWheelValueChange = true;
             this.Date2ComboBox.TabIndex = 2;
             // 
             // Date3ComboBox
@@ -457,6 +468,7 @@ namespace AngelLoader.Forms
             this.Date3ComboBox.Location = new System.Drawing.Point(240, 0);
             this.Date3ComboBox.Name = "Date3ComboBox";
             this.Date3ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date3ComboBox.SuppressScrollWheelValueChange = true;
             this.Date3ComboBox.TabIndex = 4;
             // 
             // RatingUseStarsCheckBox
@@ -692,14 +704,6 @@ namespace AngelLoader.Forms
             this.LanguageComboBox.Name = "LanguageComboBox";
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
-            // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
-            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // AppearancePage
             // 

@@ -8,6 +8,7 @@
         private void InitSlim()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -60,7 +61,6 @@
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -90,6 +90,13 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Size = new System.Drawing.Size(496, 1163);
             this.PagePanel.TabIndex = 0;
+            // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // PlayWithoutFMGroupBox
             // 
@@ -346,6 +353,7 @@
             // 
             this.Date1ComboBox.FormattingEnabled = true;
             this.Date1ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date1ComboBox.SuppressScrollWheelValueChange = true;
             this.Date1ComboBox.TabIndex = 0;
             // 
             // DateSeparator1TextBox
@@ -359,6 +367,7 @@
             this.Date4ComboBox.FormattingEnabled = true;
             this.Date4ComboBox.Location = new System.Drawing.Point(360, 0);
             this.Date4ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date4ComboBox.SuppressScrollWheelValueChange = true;
             this.Date4ComboBox.TabIndex = 6;
             // 
             // Date2ComboBox
@@ -366,6 +375,7 @@
             this.Date2ComboBox.FormattingEnabled = true;
             this.Date2ComboBox.Location = new System.Drawing.Point(120, 0);
             this.Date2ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date2ComboBox.SuppressScrollWheelValueChange = true;
             this.Date2ComboBox.TabIndex = 2;
             // 
             // Date3ComboBox
@@ -373,6 +383,7 @@
             this.Date3ComboBox.FormattingEnabled = true;
             this.Date3ComboBox.Location = new System.Drawing.Point(240, 0);
             this.Date3ComboBox.Size = new System.Drawing.Size(88, 21);
+            this.Date3ComboBox.SuppressScrollWheelValueChange = true;
             this.Date3ComboBox.TabIndex = 4;
             // 
             // RatingUseStarsCheckBox
@@ -556,13 +567,6 @@
             this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
-            // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
-            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // AppearancePage
             // 
