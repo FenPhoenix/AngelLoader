@@ -1675,6 +1675,17 @@ namespace AngelLoader.Forms
 
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
 
+                Stats_MisCountLabel.Text = selFM != null
+                    ? selFM.MisCount switch
+                    {
+                        < 1 => "",
+                        1 => LText.StatisticsTab.MissionCount_Single,
+                        > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
+                               selFM.MisCount.ToString(CultureInfo.CurrentCulture) +
+                               LText.StatisticsTab.MissionCount_AfterNumber
+                    }
+                    : "";
+
                 CustomResourcesLabel.Text =
                     selFM == null ? LText.StatisticsTab.NoFMSelected :
                     selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
