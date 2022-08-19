@@ -1676,18 +1676,11 @@ namespace AngelLoader.Forms
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
 
                 Stats_MisCountLabel.Text = selFM != null
-                    ? selFM.MisCount switch
-                    {
-                        < 1 => "",
-                        1 => LText.StatisticsTab.MissionCount_Single,
-                        > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
-                               selFM.MisCount.ToString(CultureInfo.CurrentCulture) +
-                               LText.StatisticsTab.MissionCount_AfterNumber
-                    }
-                    : "";
+                    ? GetMisCountLabelText(selFM)
+                    : LText.StatisticsTab.NoFMSelected;
 
                 CustomResourcesLabel.Text =
-                    selFM == null ? LText.StatisticsTab.NoFMSelected :
+                    selFM == null ? LText.StatisticsTab.CustomResources :
                     selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
                     selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
                     LText.StatisticsTab.CustomResourcesNotScanned;
@@ -4583,6 +4576,8 @@ namespace AngelLoader.Forms
                 BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResources);
                 StatsScanCustomResourcesButton.Enabled = false;
 
+                EnableStatsPanelLabels(false);
+
                 #endregion
 
                 #region Edit FM tab
@@ -4715,6 +4710,17 @@ namespace AngelLoader.Forms
             CustomResourcesLabel.Text = message;
             foreach (CheckBox cb in StatsCheckBoxesPanel.Controls) cb.Checked = false;
             StatsCheckBoxesPanel.Enabled = false;
+        }
+
+        private void EnableStatsPanelLabels(bool enabled)
+        {
+            foreach (Control control in StatisticsTabPage.Controls)
+            {
+                if (control is DarkLabel label)
+                {
+                    label.Enabled = enabled;
+                }
+            }
         }
 
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
@@ -4898,6 +4904,15 @@ namespace AngelLoader.Forms
             WebSearchButton.Enabled = !multiSelected;
         }
 
+        private static string GetMisCountLabelText(FanMission fm) => fm.MisCount switch
+        {
+            < 1 => "",
+            1 => LText.StatisticsTab.MissionCount_Single,
+            > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
+                   fm.MisCount.ToString(CultureInfo.CurrentCulture) +
+                   LText.StatisticsTab.MissionCount_AfterNumber
+        };
+
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
         // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
@@ -4916,14 +4931,9 @@ namespace AngelLoader.Forms
             {
                 #region Stats tab
 
-                Stats_MisCountLabel.Text = fm.MisCount switch
-                {
-                    < 1 => "",
-                    1 => LText.StatisticsTab.MissionCount_Single,
-                    > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
-                           fm.MisCount.ToString(CultureInfo.CurrentCulture) +
-                           LText.StatisticsTab.MissionCount_AfterNumber
-                };
+                EnableStatsPanelLabels(true);
+
+                Stats_MisCountLabel.Text = GetMisCountLabelText(fm);
 
                 StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
