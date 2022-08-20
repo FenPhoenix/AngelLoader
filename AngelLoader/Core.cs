@@ -1631,7 +1631,7 @@ namespace AngelLoader
                     // every time until the user explicitly requests something different.
                     if (fileType == ReadmeType.PlainText && newEncoding?.CodePage > 0)
                     {
-                        UpdateFMReadmeCodePages(fm, newEncoding.CodePage);
+                        UpdateFMSelectedReadmeCodePage(fm, newEncoding.CodePage);
                     }
 
                     if (fileType == ReadmeType.PlainText && finalEncoding != null)
@@ -1659,7 +1659,7 @@ namespace AngelLoader
                 Encoding? enc = View.ChangeReadmeEncoding(null);
                 if (enc != null)
                 {
-                    UpdateFMReadmeCodePages(fm, enc.CodePage);
+                    UpdateFMSelectedReadmeCodePage(fm, enc.CodePage);
                     View.SetSelectedEncoding(enc);
                 }
             }
@@ -1677,8 +1677,13 @@ namespace AngelLoader
 
                 View.SetSelectedEncoding(enc);
                 View.ChangeReadmeEncoding(enc);
-                UpdateFMReadmeCodePages(fm, enc.CodePage);
+                UpdateFMSelectedReadmeCodePage(fm, enc.CodePage);
             }
+        }
+
+        private static void UpdateFMSelectedReadmeCodePage(FanMission fm, int codePage)
+        {
+            fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
         }
 
         #endregion
@@ -1876,40 +1881,6 @@ namespace AngelLoader
 
         #endregion
 
-        internal static (Error Error, string Version)
-        GetGameVersion(GameIndex game)
-        {
-            string gameExe = Config.GetGameExe(game);
-            if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
-            if (!File.Exists(gameExe)) return (Error.GameExeNotFound, "");
-
-            string exeToSearch;
-            if (GameIsDark(game))
-            {
-                exeToSearch = gameExe;
-            }
-            else
-            {
-                // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
-                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
-                {
-                    return (Error.SneakyDllNotFound, "");
-                }
-            }
-
-            FileVersionInfo vi;
-            try
-            {
-                vi = FileVersionInfo.GetVersionInfo(exeToSearch);
-            }
-            catch (FileNotFoundException)
-            {
-                return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, "");
-            }
-
-            return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
-        }
-
         #region Get special exes
 
         /// <summary>
@@ -1970,9 +1941,119 @@ namespace AngelLoader
 
         #endregion
 
-        private static void UpdateFMReadmeCodePages(FanMission fm, int codePage)
+        #region Dropped files
+
+        internal static bool FilesDropped(object data, [NotNullWhen(true)] out string[]? droppedItems)
         {
-            fm.ReadmeCodePages[fm.SelectedReadme] = codePage;
+            if (View.AbleToAcceptDragDrop() &&
+                data is string[] droppedItems_Internal &&
+                AtLeastOneDroppedFileValid(droppedItems_Internal))
+            {
+                droppedItems = droppedItems_Internal;
+                return true;
+            }
+            else
+            {
+                droppedItems = null;
+                return false;
+            }
+        }
+
+        private static bool AtLeastOneDroppedFileValid(string[] droppedItems)
+        {
+            for (int i = 0; i < droppedItems.Length; i++)
+            {
+                string item = droppedItems[i];
+                if (!item.IsEmpty() && item.ExtIsArchive())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region Languages
+
+        internal static void ScanAndFillLanguagesList(bool forceScan)
+        {
+            FanMission? fm = View.GetMainSelectedFMOrNull();
+            if (fm == null) return;
+
+            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
+
+            View.ClearLanguagesList();
+
+            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
+
+            if (GameIsDark(fm.Game))
+            {
+                bool doScan = forceScan || !fm.LangsScanned;
+
+                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
+
+                for (int i = 0; i < SupportedLanguageCount; i++)
+                {
+                    LanguageIndex index = (LanguageIndex)i;
+                    Language language = LanguageIndexToLanguage(index);
+                    if (fm.Langs.HasFlagFast(language))
+                    {
+                        string langStr = GetLanguageString(index);
+                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
+                    }
+                }
+            }
+
+            View.AddLanguagesToList(langPairs);
+
+            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
+        }
+
+        internal static void UpdateFMSelectedLanguage()
+        {
+            FanMission? fm = View.GetMainSelectedFMOrNull();
+            if (fm == null) return;
+
+            fm.SelectedLang = View.GetMainSelectedLanguage();
+            Ini.WriteFullFMDataIni();
+        }
+
+        #endregion
+
+        internal static (Error Error, string Version)
+        GetGameVersion(GameIndex game)
+        {
+            string gameExe = Config.GetGameExe(game);
+            if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
+            if (!File.Exists(gameExe)) return (Error.GameExeNotFound, "");
+
+            string exeToSearch;
+            if (GameIsDark(game))
+            {
+                exeToSearch = gameExe;
+            }
+            else
+            {
+                // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
+                if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
+                {
+                    return (Error.SneakyDllNotFound, "");
+                }
+            }
+
+            FileVersionInfo vi;
+            try
+            {
+                vi = FileVersionInfo.GetVersionInfo(exeToSearch);
+            }
+            catch (FileNotFoundException)
+            {
+                return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, "");
+            }
+
+            return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
         }
 
         internal static async Task PinOrUnpinFM(bool pin)
@@ -2026,36 +2107,6 @@ namespace AngelLoader
             return null;
         }
 
-        internal static bool FilesDropped(object data, [NotNullWhen(true)] out string[]? droppedItems)
-        {
-            if (View.AbleToAcceptDragDrop() &&
-                data is string[] droppedItems_Internal &&
-                AtLeastOneDroppedFileValid(droppedItems_Internal))
-            {
-                droppedItems = droppedItems_Internal;
-                return true;
-            }
-            else
-            {
-                droppedItems = null;
-                return false;
-            }
-        }
-
-        private static bool AtLeastOneDroppedFileValid(string[] droppedItems)
-        {
-            for (int i = 0; i < droppedItems.Length; i++)
-            {
-                string item = droppedItems[i];
-                if (!item.IsEmpty() && item.ExtIsArchive())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         internal static void UpdateFMComment()
         {
             FanMission? fm = View.GetMainSelectedFMOrNull_Fast();
@@ -2072,49 +2123,6 @@ namespace AngelLoader
             fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
             View.RefreshMainSelectedFMRow_Fast();
-        }
-
-        internal static void ScanAndFillLanguagesList(bool forceScan)
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
-
-            View.ClearLanguagesList();
-
-            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
-
-            if (GameIsDark(fm.Game))
-            {
-                bool doScan = forceScan || !fm.LangsScanned;
-
-                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
-
-                for (int i = 0; i < SupportedLanguageCount; i++)
-                {
-                    LanguageIndex index = (LanguageIndex)i;
-                    Language language = LanguageIndexToLanguage(index);
-                    if (fm.Langs.HasFlagFast(language))
-                    {
-                        string langStr = GetLanguageString(index);
-                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
-                    }
-                }
-            }
-
-            View.AddLanguagesToList(langPairs);
-
-            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
-        }
-
-        internal static void UpdateFMSelectedLanguage()
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            fm.SelectedLang = View.GetMainSelectedLanguage();
-            Ini.WriteFullFMDataIni();
         }
 
         // TODO(DisplayFM/sel change/int index):
@@ -2196,33 +2204,6 @@ namespace AngelLoader
             #endregion
 
             return fm;
-        }
-
-        internal static async Task HandleDelete()
-        {
-            var fms = View.GetSelectedFMs_InOrder_List();
-
-            switch (fms.Count)
-            {
-                case 0:
-                    return;
-                case 1:
-                    FanMission fm = fms[0];
-                    await (fm.MarkedUnavailable ? FMDelete.DeleteFMsFromDB(fms) : FMDelete.DeleteFMsFromDisk(fms));
-                    break;
-                default:
-                    bool allUnavailable = true;
-                    for (int i = 0; i < fms.Count; i++)
-                    {
-                        if (!fms[i].MarkedUnavailable)
-                        {
-                            allUnavailable = false;
-                            break;
-                        }
-                    }
-                    await (allUnavailable ? FMDelete.DeleteFMsFromDB(fms) : FMDelete.DeleteFMsFromDisk(fms));
-                    break;
-            }
         }
 
         #region Shutdown

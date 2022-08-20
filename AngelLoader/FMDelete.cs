@@ -24,6 +24,33 @@ namespace AngelLoader
 
         #endregion
 
+        internal static async Task HandleDelete()
+        {
+            var fms = Core.View.GetSelectedFMs_InOrder_List();
+
+            switch (fms.Count)
+            {
+                case 0:
+                    return;
+                case 1:
+                    FanMission fm = fms[0];
+                    await (fm.MarkedUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
+                    break;
+                default:
+                    bool allUnavailable = true;
+                    for (int i = 0; i < fms.Count; i++)
+                    {
+                        if (!fms[i].MarkedUnavailable)
+                        {
+                            allUnavailable = false;
+                            break;
+                        }
+                    }
+                    await (allUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
+                    break;
+            }
+        }
+
         #region Delete from database
 
         internal static async Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
