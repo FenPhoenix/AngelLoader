@@ -597,8 +597,8 @@ namespace FMScanner
 #endif
                                  ) &&
                                      !entry.FileName.Rel_ContainsDirSep() &&
-                                     (entry.FileName.EndsWithI(".mis") ||
-                                      entry.FileName.EndsWithI(".gam")))
+                                     (entry.FileName.ExtIsMis() ||
+                                      entry.FileName.ExtIsGam()))
                             {
                                 fileNamesList.Add(entry.FileName);
                             }
