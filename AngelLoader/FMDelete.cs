@@ -28,27 +28,19 @@ namespace AngelLoader
         {
             var fms = Core.View.GetSelectedFMs_InOrder_List();
 
-            switch (fms.Count)
+            if (fms.Count == 0) return;
+
+            bool allAreUnavailable = true;
+            for (int i = 0; i < fms.Count; i++)
             {
-                case 0:
-                    return;
-                case 1:
-                    FanMission fm = fms[0];
-                    await (fm.MarkedUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
+                if (!fms[i].MarkedUnavailable)
+                {
+                    allAreUnavailable = false;
                     break;
-                default:
-                    bool allUnavailable = true;
-                    for (int i = 0; i < fms.Count; i++)
-                    {
-                        if (!fms[i].MarkedUnavailable)
-                        {
-                            allUnavailable = false;
-                            break;
-                        }
-                    }
-                    await (allUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
-                    break;
+                }
             }
+
+            await (allAreUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
         }
 
         #region Delete from database
