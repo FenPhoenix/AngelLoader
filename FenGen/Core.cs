@@ -262,7 +262,7 @@ namespace FenGen
 #endif
         }
 
-        private static void ExitIfRelease() => Environment.Exit(1);
+        private static void Exit() => Environment.Exit(1);
 
         [PublicAPI]
         internal static void ReadArgsAndDoTasks()
@@ -302,7 +302,7 @@ namespace FenGen
             string[] args = Environment.GetCommandLineArgs();
 #endif
 
-            if (args.Length < 2) ExitIfRelease();
+            if (args.Length < 2) Exit();
 
             bool[] _genTasksActive = new bool[_genTaskCount];
 
@@ -333,7 +333,7 @@ namespace FenGen
 
             if (!AnyGenTasksActive())
             {
-                ExitIfRelease();
+                Exit();
                 return;
             }
 
