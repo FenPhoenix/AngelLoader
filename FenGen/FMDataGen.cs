@@ -277,6 +277,7 @@ namespace FenGen
                     : "";
 
             const string val = "val";
+            const string eqIndex = "eqIndex";
 
             w.WL("#region Generated code for reader");
             w.WL();
@@ -291,7 +292,7 @@ namespace FenGen
 
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
                 w.WL("{");
 
                 string parseMethodName =
@@ -307,7 +308,7 @@ namespace FenGen
 
                 if (field.Type != "bool" && field.Type != "bool?" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
                 {
-                    w.WL(val + " = " + val + ".Substring(eqIndex + 1);");
+                    w.WL(val + " = " + val + ".Substring(" + eqIndex + " + 1);");
                 }
 
                 if (!field.DoNotTrimValue)
@@ -321,7 +322,7 @@ namespace FenGen
 
                 if (field.IsReadmeEncoding)
                 {
-                    w.WL("AddReadmeEncoding(" + obj + ", " + val + ", eqIndex + 1);");
+                    w.WL("AddReadmeEncoding(" + obj + ", " + val + ", " + eqIndex + " + 1);");
                 }
                 else if (field.Type.StartsWithO("List<"))
                 {
@@ -401,11 +402,11 @@ namespace FenGen
                 }
                 else if (field.Type == "bool")
                 {
-                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(eqIndex + 1);");
+                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(" + eqIndex + " + 1);");
                 }
                 else if (field.Type == "bool?")
                 {
-                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(eqIndex + 1) ? true : " + val + ".EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;");
+                    w.WL(objDotField + " = " + val + ".EndEqualsTrue(" + eqIndex + " + 1) ? true : " + val + ".EndEqualsFalse(" + eqIndex + " + 1) ? false : (bool?)null;");
                 }
                 else if (_numericTypes.Contains(field.Type))
                 {
@@ -414,7 +415,7 @@ namespace FenGen
                     {
                         if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                         {
-                            w.WL("bool success = " + parseMethodName + "(" + val + ", eqIndex + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                            w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
                         }
                         else
                         {
@@ -426,7 +427,7 @@ namespace FenGen
                     {
                         if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                         {
-                            w.WL(parseMethodName + "(" + val + ", eqIndex + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                            w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
                         }
                         else
                         {
@@ -458,7 +459,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (" + val + ".ValueEqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\", eqIndex + 1))");
+                        w.WL(ifType + " (" + val + ".ValueEqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\", " + eqIndex + " + 1))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -472,14 +473,14 @@ namespace FenGen
                 {
                     if (field.IsEnumAndSingleAssignment)
                     {
-                        w.WL("if (Langs_TryGetValue(" + val + ", eqIndex + 1, " + val + ".Length, out var result))");
+                        w.WL("if (Langs_TryGetValue(" + val + ", " + eqIndex + " + 1, " + val + ".Length, out var result))");
                         w.WL("{");
                         w.WL(objDotField + " = result;");
                         w.WL("}");
                     }
                     else
                     {
-                        w.WL("SetFMLanguages(" + obj + ", " + val + ", eqIndex + 1);");
+                        w.WL("SetFMLanguages(" + obj + ", " + val + ", " + eqIndex + " + 1);");
                     }
                 }
                 else if (field.Type == "ExpandableDate")
@@ -495,8 +496,8 @@ namespace FenGen
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsI(\"NotScanned\", eqIndex + 1);");
-                    w.WL("FillFMHasXFields(" + obj + ", " + val + ", eqIndex + 1);");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsI(\"NotScanned\", " + eqIndex + " + 1);");
+                    w.WL("FillFMHasXFields(" + obj + ", " + val + ", " + eqIndex + " + 1);");
                 }
 
                 w.WL("}"); // end of setter method
@@ -521,9 +522,9 @@ namespace FenGen
             w.WL();
             foreach (string item in customResourceFieldNames)
             {
-                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int eqIndex)");
+                w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
                 w.WL("{");
-                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(eqIndex + 1));");
+                w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
                 w.WL("    " + obj + ".ResourcesScanned = true;");
                 w.WL("}");
                 w.WL();
