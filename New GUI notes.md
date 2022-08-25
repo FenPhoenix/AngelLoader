@@ -57,7 +57,9 @@ Pros:
 Cons:
 - I think it uses WinUI 3 for Windows so we're right back to that
 - ~I don't know much about this one. I don't even know how you would develop apps, I try to make a MAUI project and there's nothing, no designer and not even any reference documentation that would even tell me how to create a UI by hand. Ugh.~
-- Can't get MAUI projects to work whatsoever, all references are just errors and docs say nothing about this situation and google provides no (working) answers either
+- ~Can't get MAUI projects to work whatsoever, all references are just errors and docs say nothing about this situation and google provides no (working) answers either~
+- Now there's a new problem, MAUI apps run in Visual Studio but they fail and exit immediately when run outside. Google is no help as always, giving irrelevant answers that don't apply.
+- "Publish" app asks for Windows Store crap, so are we or are we not required to make MAUI apps Windows Store crap?!?!? I don't know! One would hope not?!
 
 ### Avalonia
 Pros:
