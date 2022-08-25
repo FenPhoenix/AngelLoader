@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static LocalHook? _getSysColorHook;
 
-        private static GetSysColorDelegate? GetSysColorOriginal;
+        private static GetSysColorDelegate? GetSysColor_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate int GetSysColorDelegate(int nIndex);
@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static LocalHook? _getSysColorBrushHook;
 
-        private static GetSysColorBrushDelegate? GetSysColorBrushOriginal;
+        private static GetSysColorBrushDelegate? GetSysColorBrush_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate IntPtr GetSysColorBrushDelegate(int nIndex);
@@ -66,7 +66,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static LocalHook? _drawThemeBackgroundHook;
 
-        private static DrawThemeBackgroundDelegate? DrawThemeBackgroundOriginal;
+        private static DrawThemeBackgroundDelegate? DrawThemeBackground_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate int DrawThemeBackgroundDelegate(
@@ -83,7 +83,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static LocalHook? _getThemeColorHook;
 
-        private static GetThemeColorDelegate? GetThemeColorOriginal;
+        private static GetThemeColorDelegate? GetThemeColor_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate int GetThemeColorDelegate(
@@ -135,25 +135,25 @@ namespace AngelLoader.Forms.WinFormsNative
 
             try
             {
-                (_getSysColorHook, GetSysColorOriginal) = InstallHook<GetSysColorDelegate>(
+                (_getSysColorHook, GetSysColor_Original) = InstallHook<GetSysColorDelegate>(
                     "user32.dll",
                     "GetSysColor",
-                    GetSysColor);
+                    GetSysColor_Hooked);
 
-                (_getSysColorBrushHook, GetSysColorBrushOriginal) = InstallHook<GetSysColorBrushDelegate>(
+                (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
                     "user32.dll",
                     "GetSysColorBrush",
-                    GetSysColorBrush);
+                    GetSysColorBrush_Hooked);
 
-                (_drawThemeBackgroundHook, DrawThemeBackgroundOriginal) = InstallHook<DrawThemeBackgroundDelegate>(
+                (_drawThemeBackgroundHook, DrawThemeBackground_Original) = InstallHook<DrawThemeBackgroundDelegate>(
                     "uxtheme.dll",
                     "DrawThemeBackground",
-                    DrawThemeBackgroundHook);
+                    DrawThemeBackground_Hooked);
 
-                (_getThemeColorHook, GetThemeColorOriginal) = InstallHook<GetThemeColorDelegate>(
+                (_getThemeColorHook, GetThemeColor_Original) = InstallHook<GetThemeColorDelegate>(
                     "uxtheme.dll",
                     "GetThemeColor",
-                    GetThemeColorHook);
+                    GetThemeColor_Hooked);
             }
             catch
             {
@@ -247,7 +247,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         #region Hooked method overrides
 
-        private static int DrawThemeBackgroundHook(
+        private static int DrawThemeBackground_Hooked(
             IntPtr hTheme,
             IntPtr hdc,
             int iPartId,
@@ -262,10 +262,10 @@ namespace AngelLoader.Forms.WinFormsNative
                    renderer.Enabled &&
                    renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
                 ? success
-                : DrawThemeBackgroundOriginal!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
+                : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
         }
 
-        private static int GetThemeColorHook(
+        private static int GetThemeColor_Hooked(
             IntPtr hTheme,
             int iPartId,
             int iStateId,
@@ -279,10 +279,10 @@ namespace AngelLoader.Forms.WinFormsNative
                    renderer.Enabled &&
                    renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
                 ? success
-                : GetThemeColorOriginal!(hTheme, iPartId, iStateId, iPropId, out pColor);
+                : GetThemeColor_Original!(hTheme, iPartId, iStateId, iPropId, out pColor);
         }
 
-        private static int GetSysColor(int nIndex)
+        private static int GetSysColor_Hooked(int nIndex)
         {
             if (!_disableHookedTheming && Global.Config.DarkMode)
             {
@@ -296,7 +296,7 @@ namespace AngelLoader.Forms.WinFormsNative
                         COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                         COLOR_3DFACE => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
                         COLOR_GRAYTEXT => ColorTranslator.ToWin32(DarkColors.DisabledText),
-                        _ => GetSysColorOriginal!(nIndex)
+                        _ => GetSysColor_Original!(nIndex)
                     },
                     Override.RichText => nIndex switch
                     {
@@ -305,7 +305,7 @@ namespace AngelLoader.Forms.WinFormsNative
                         COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground),
                         COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
                         COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
-                        _ => GetSysColorOriginal!(nIndex)
+                        _ => GetSysColor_Original!(nIndex)
                     },
                     // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                     // This is the ONLY way that works on those versions.
@@ -313,16 +313,16 @@ namespace AngelLoader.Forms.WinFormsNative
                     // this here in GetSysColor(), but let's do it for robustness because who knows what could change.)
                     _ => nIndex == COLOR_3DFACE
                         ? ColorTranslator.ToWin32(DarkColors.DarkBackground)
-                        : GetSysColorOriginal!(nIndex)
+                        : GetSysColor_Original!(nIndex)
                 };
             }
             else
             {
-                return GetSysColorOriginal!(nIndex);
+                return GetSysColor_Original!(nIndex);
             }
         }
 
-        private static IntPtr GetSysColorBrush(int nIndex)
+        private static IntPtr GetSysColorBrush_Hooked(int nIndex)
         {
             if (!_disableHookedTheming && Global.Config.DarkMode)
             {
@@ -336,7 +336,7 @@ namespace AngelLoader.Forms.WinFormsNative
                         COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
                         COLOR_3DFACE => SysColorBrush_Fen_ControlBackground,
                         COLOR_GRAYTEXT => SysColorBrush_DisabledText,
-                        _ => GetSysColorBrushOriginal!(nIndex)
+                        _ => GetSysColorBrush_Original!(nIndex)
                     },
                     Override.RichText => nIndex switch
                     {
@@ -345,18 +345,18 @@ namespace AngelLoader.Forms.WinFormsNative
                         COLOR_WINDOWTEXT => SysColorBrush_Fen_DarkForeground,
                         COLOR_HIGHLIGHT => SysColorBrush_BlueSelection,
                         COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
-                        _ => GetSysColorBrushOriginal!(nIndex)
+                        _ => GetSysColorBrush_Original!(nIndex)
                     },
                     // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                     // This is the ONLY way that works on those versions.
                     _ => nIndex == COLOR_3DFACE
                         ? SysColorBrush_DarkBackground
-                        : GetSysColorBrushOriginal!(nIndex)
+                        : GetSysColorBrush_Original!(nIndex)
                 };
             }
             else
             {
-                return GetSysColorBrushOriginal!(nIndex);
+                return GetSysColorBrush_Original!(nIndex);
             }
         }
 
