@@ -24,6 +24,8 @@ namespace AngelLoader.Forms.WinFormsNative
     -Only thing I can think of is using native C++ hook code, shoving it in a dll, and p/invoking it like "hey
      start your hook that has nothing to do with me now". Why do I suspect that wouldn't work either, just to make
      me furious for no reason. Why indeed.
+    -2022-08-25: Unfortunately, as I'd feared, the above doesn't work. It does indeed result in the same old
+     ExecutionEngineException as I snarkily suspected it would. Sigh.
     */
     internal static class Win32ThemeHooks
     {
