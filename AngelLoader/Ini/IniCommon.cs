@@ -762,6 +762,9 @@ namespace AngelLoader
 
             config.TopRightTabsData.EnsureValidity();
 
+            // TODO: Make it insert new columns at their default index (currently they just end up at the end)
+            // If we ever add new columns, which is rarely, but still...
+
             #region Date format
 
             static string GetFormattedDateString(ConfigData config) =>

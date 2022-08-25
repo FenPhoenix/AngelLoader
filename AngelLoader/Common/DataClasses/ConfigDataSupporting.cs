@@ -14,10 +14,11 @@ namespace AngelLoader.DataClasses
     {
         internal Column Id;
 
-        internal int DisplayIndex = -1;
+        private int _displayIndex;
+        internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnsCount - 1); }
 
         private int _width = Defaults.ColumnWidth;
-        internal int Width { get => _width; set => _width = value.ClampToMin(Defaults.MinColumnWidth); }
+        internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
 
         internal bool Visible = true;
     }
