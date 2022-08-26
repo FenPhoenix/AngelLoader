@@ -218,7 +218,10 @@ namespace AngelLoader
 
         #endregion
 
+        // PERF_TODO: These two 7z things are not necessarily used right away and should be lazy-loaded
+
         // Use a 64-bit version if possible for even more out-of-memory prevention...
+        // @X64: If we go x64-only, we can remove the 32-bit 7z and then we need to update this
         internal static readonly string SevenZipPath = Environment.Is64BitOperatingSystem
             ? PathCombineFast_NoChecks(Startup, "7z64")
             : PathCombineFast_NoChecks(Startup, "7z32");
