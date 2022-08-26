@@ -951,7 +951,7 @@ namespace AngelLoader
                     string lineT = line.Trim();
                     if (lineT.StartsWithFast_NoNullChecks("VisualTheme="))
                     {
-                        return lineT.ValueEqualsI("Dark", 12) ? VisualTheme.Dark : VisualTheme.Classic;
+                        return lineT.ValueEqualsIAscii("Dark", 12) ? VisualTheme.Dark : VisualTheme.Classic;
                     }
                 }
 

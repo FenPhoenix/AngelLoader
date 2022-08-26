@@ -82,23 +82,23 @@ namespace AngelLoader
         private static void FMData_Game_Set(FanMission fm, string val, int eqIndex)
         {
             val = val.Trim();
-            if (val.ValueEqualsI("Thief1", eqIndex + 1))
+            if (val.ValueEqualsIAscii("Thief1", eqIndex + 1))
             {
                 fm.Game = Game.Thief1;
             }
-            else if (val.ValueEqualsI("Thief2", eqIndex + 1))
+            else if (val.ValueEqualsIAscii("Thief2", eqIndex + 1))
             {
                 fm.Game = Game.Thief2;
             }
-            else if (val.ValueEqualsI("Thief3", eqIndex + 1))
+            else if (val.ValueEqualsIAscii("Thief3", eqIndex + 1))
             {
                 fm.Game = Game.Thief3;
             }
-            else if (val.ValueEqualsI("SS2", eqIndex + 1))
+            else if (val.ValueEqualsIAscii("SS2", eqIndex + 1))
             {
                 fm.Game = Game.SS2;
             }
-            else if (val.ValueEqualsI("Unsupported", eqIndex + 1))
+            else if (val.ValueEqualsIAscii("Unsupported", eqIndex + 1))
             {
                 fm.Game = Game.Unsupported;
             }
@@ -205,7 +205,7 @@ namespace AngelLoader
         private static void FMData_HasResources_Set(FanMission fm, string val, int eqIndex)
         {
             val = val.Trim();
-            fm.ResourcesScanned = !val.ValueEqualsI("NotScanned", eqIndex + 1);
+            fm.ResourcesScanned = !val.ValueEqualsIAscii("NotScanned", eqIndex + 1);
             FillFMHasXFields(fm, val, eqIndex + 1);
         }
 

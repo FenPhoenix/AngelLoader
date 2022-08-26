@@ -459,7 +459,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                        w.WL(ifType + " (" + val + ".ValueEqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\", " + eqIndex + " + 1))");
+                        w.WL(ifType + " (" + val + ".ValueEqualsIAscii(\"" + gamesEnum.GameEnumNames[gi] + "\", " + eqIndex + " + 1))");
                         w.WL("{");
                         w.WL(objDotField + " = " + gameDotGameType + ";");
                         w.WL("}");
@@ -496,7 +496,7 @@ namespace FenGen
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsI(\"NotScanned\", " + eqIndex + " + 1);");
+                    w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsIAscii(\"NotScanned\", " + eqIndex + " + 1);");
                     w.WL("FillFMHasXFields(" + obj + ", " + val + ", " + eqIndex + " + 1);");
                 }
 

@@ -264,10 +264,26 @@ namespace AL_Common
         /// </summary>
         public static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool EqualsFalse(this string value) => string.Equals(value, bool.FalseString, OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="indexAfterEq"></param>
+        /// <returns></returns>
         public static bool EndEqualsTrue(this string value, int indexAfterEq)
         {
             int valueLen = value.Length;
@@ -278,6 +294,12 @@ namespace AL_Common
                    (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
         }
 
+        /// <summary>
+        /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="indexAfterEq"></param>
+        /// <returns></returns>
         public static bool EndEqualsFalse(this string value, int indexAfterEq)
         {
             int valueLen = value.Length;
@@ -289,7 +311,14 @@ namespace AL_Common
                    (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
         }
 
-        public static bool ValueEqualsI(this string str, string str2, int indexAfterEq)
+        /// <summary>
+        /// Uses ASCII case-insensitivity. Should not be used with non-ASCII values!
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="str2"></param>
+        /// <param name="indexAfterEq"></param>
+        /// <returns></returns>
+        public static bool ValueEqualsIAscii(this string str, string str2, int indexAfterEq)
         {
             int strLen = str.Length;
             int str2Len = str2.Length;
@@ -1236,7 +1265,7 @@ namespace AL_Common
 
         #endregion
 
-        public static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
+        public static bool EqualsIfNotNull(this object? obj1, object? obj2) => obj1 != null && obj2 != null && obj1 == obj2;
 
         #region Set file attributes
 
