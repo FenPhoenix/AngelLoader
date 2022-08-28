@@ -26,6 +26,9 @@ namespace AngelLoader.Forms.WinFormsNative
      me furious for no reason. Why indeed.
     -2022-08-25: Unfortunately, as I'd feared, the above doesn't work. It does indeed result in the same old
      ExecutionEngineException as I snarkily suspected it would. Sigh.
+    @FenHooks: Try bringing MinHook.NET code directly in, and tracing it
+    We can compare its .NET 6 state (broken) to the state when it runs on .NET Framework (working), and maybe
+    find the problem that way...
     */
     internal static class Win32ThemeHooks
     {
