@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -195,7 +196,10 @@ namespace FenGen
 
         #region Throw and terminate
 
+        // Needed because on Framework, Environment.Exit() is not marked with a [DoesNotReturn] attribute itself.
+#pragma warning disable CS8763 // A method marked [DoesNotReturn] should not return.
         [ContractAnnotation("=> halt")]
+        [DoesNotReturn]
         internal static void ThrowErrorAndTerminate(string message)
         {
             Trace.WriteLine("FenGen: " + message + "\r\nTerminating FenGen.");
@@ -204,12 +208,14 @@ namespace FenGen
         }
 
         [ContractAnnotation("=> halt")]
+        [DoesNotReturn]
         internal static void ThrowErrorAndTerminate(Exception ex)
         {
             Trace.WriteLine("FenGen: " + ex + "\r\nTerminating FenGen.");
             using (var f = new ExceptionBox(ex.ToString())) f.ShowDialog();
             Environment.Exit(-999);
         }
+#pragma warning restore CS8763
 
         #endregion
 

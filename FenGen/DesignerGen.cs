@@ -165,7 +165,6 @@ namespace FenGen
             if (namespaceDeclaration == null)
             {
                 ThrowErrorAndTerminate("Namespace declaration (either normal or file-scoped) not found in:\r\n" + designerFile);
-                return;
             }
 
             var namespaceDeclarationLineSpan = namespaceDeclaration.GetLocation().GetLineSpan();
@@ -174,7 +173,6 @@ namespace FenGen
             if (formClass == null)
             {
                 ThrowErrorAndTerminate("Form class declaration not found in:\r\n" + designerFile);
-                return;
             }
 
             #endregion
@@ -193,7 +191,6 @@ namespace FenGen
             if (initializeComponentMethod == null)
             {
                 ThrowErrorAndTerminate("InitializeComponent() method not found in:\r\n" + designerFile);
-                return;
             }
 
             var initComponentLineSpan = initializeComponentMethod.GetLocation().GetLineSpan();
@@ -207,7 +204,6 @@ namespace FenGen
             if (block == null)
             {
                 ThrowErrorAndTerminate("Body of InitializeComponent() method not found found in:\r\n" + designerFile);
-                return;
             }
 
             #region Store control names, types, and attributes from field declarations
@@ -258,7 +254,6 @@ namespace FenGen
             if (pastConstructorStartLine == -1)
             {
                 ThrowErrorAndTerminate("Post-construction-section control comment header not found in:\r\n" + designerFile);
-                return;
             }
 
             #endregion
