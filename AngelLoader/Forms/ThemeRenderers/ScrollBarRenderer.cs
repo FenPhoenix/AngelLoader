@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.ThemeRenderers
 
             #region Background
 
-            var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
+            Rectangle rect = pRect.ToRectangle();
 
             Brush brush;
             switch (iPartId)

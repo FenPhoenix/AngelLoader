@@ -22,7 +22,7 @@ namespace AngelLoader.Forms.ThemeRenderers
             using var g = Graphics.FromHdc(hdc);
             if (iPartId is Native.TTP_STANDARD or Native.TTP_STANDARDTITLE)
             {
-                var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
+                var rect = pRect.ToRectangle();
 
                 g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
                 g.DrawRectangle(

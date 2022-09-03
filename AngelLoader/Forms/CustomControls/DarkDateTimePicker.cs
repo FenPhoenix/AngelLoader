@@ -45,12 +45,7 @@ namespace AngelLoader.Forms.CustomControls
             var dtpInfo = new Native.DATETIMEPICKERINFO { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
             Native.SendMessage(Handle, Native.DTM_GETDATETIMEPICKERINFO, IntPtr.Zero, ref dtpInfo);
 
-            return (dtpInfo, new Rectangle(
-                dtpInfo.rcButton.left,
-                dtpInfo.rcButton.top,
-                dtpInfo.rcButton.right - dtpInfo.rcButton.left,
-                dtpInfo.rcButton.bottom - dtpInfo.rcButton.top
-            ));
+            return (dtpInfo, dtpInfo.rcButton.ToRectangle());
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

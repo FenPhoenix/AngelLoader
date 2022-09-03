@@ -23,7 +23,7 @@ namespace AngelLoader.Forms.ThemeRenderers
 
             using var g = Graphics.FromHdc(hdc);
 
-            var rect = Rectangle.FromLTRB(pRect.left, pRect.top, pRect.right, pRect.bottom);
+            var rect = pRect.ToRectangle();
 
             Misc.Direction direction = iStateId is Native.GLPS_CLOSED or Native.HGLPS_CLOSED
                 ? Misc.Direction.Right

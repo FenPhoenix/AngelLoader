@@ -41,6 +41,8 @@ namespace AngelLoader.Forms.WinFormsNative
             public readonly int top;
             public readonly int right;
             public readonly int bottom;
+
+            internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -717,11 +719,7 @@ namespace AngelLoader.Forms.WinFormsNative
             bool success = GetWindowPlacement(form.Handle, ref wp);
             if (success)
             {
-                rect = Rectangle.FromLTRB(
-                    wp.NormalPosition.left,
-                    wp.NormalPosition.top,
-                    wp.NormalPosition.right,
-                    wp.NormalPosition.bottom);
+                rect = wp.NormalPosition.ToRectangle();
                 return true;
             }
             else
