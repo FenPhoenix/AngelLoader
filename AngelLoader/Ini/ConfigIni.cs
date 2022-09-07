@@ -942,10 +942,9 @@ namespace AngelLoader
         // Read only the theme, hopefully from the top, for perf
         internal static VisualTheme ReadThemeFromConfigIni(string path)
         {
-            StreamReader? sr = null;
             try
             {
-                sr = new StreamReader(path);
+                using var sr = new StreamReader(path);
                 while (sr.ReadLine() is { } line)
                 {
                     string lineT = line.Trim();
@@ -960,10 +959,6 @@ namespace AngelLoader
             catch
             {
                 return VisualTheme.Classic;
-            }
-            finally
-            {
-                sr?.Dispose();
             }
         }
 
