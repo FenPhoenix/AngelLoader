@@ -611,8 +611,6 @@ namespace AngelLoader.Forms
             // back to the passed-in theme if we cancel.
             Config.VisualTheme = theme;
 
-            bool darkMode = theme == VisualTheme.Dark;
-
             try
             {
                 if (!startup) MainSplitContainer.SuspendDrawing();
@@ -623,7 +621,6 @@ namespace AngelLoader.Forms
                     capacity: 150
                 );
 
-                Images.DarkModeEnabled = darkMode;
                 SetRatingImage();
                 for (int i = 0; i < ErrorableControls.Length; i++)
                 {

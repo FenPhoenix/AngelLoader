@@ -174,6 +174,8 @@ namespace AngelLoader.Forms
                             : (item.Value!.ForeColor, item.Value!.BackColor);
                 }
             }
+
+            Images.DarkModeEnabled = darkMode;
         }
 
         #endregion

@@ -1858,7 +1858,6 @@ namespace AngelLoader.Forms
                 SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
                 // Set these first so other controls get the right data when they reference them
-                Images.DarkModeEnabled = darkMode;
                 Images.ReloadImageArrays();
 
                 if (!startup) ControlUtils.RecreateAllToolTipHandles();
