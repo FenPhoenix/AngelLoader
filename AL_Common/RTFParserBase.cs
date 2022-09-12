@@ -16,6 +16,13 @@ namespace AL_Common
 
         #endregion
 
+        protected RTFParserBase()
+        {
+#if !NETFRAMEWORK
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
+        }
+
         #region Classes
 
         protected sealed class ScopeStack

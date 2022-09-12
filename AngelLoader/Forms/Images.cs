@@ -1317,7 +1317,7 @@ namespace AngelLoader.Forms
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            using Font font = ControlUtils.GetMicrosoftSansSerifDefault();
+            using Font font = GetMicrosoftSansSerifDefault();
             TextRenderer.DrawText(
                 dc: g,
                 text: outOfFive ? "3.5" : "7",

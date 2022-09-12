@@ -195,6 +195,10 @@ namespace FMScanner
         [PublicAPI]
         public Scanner(string sevenZipExePath)
         {
+#if !NETFRAMEWORK
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
+
             _zipBundle = new ZipReusableBundle();
 
             _sevenZipExePath = sevenZipExePath;

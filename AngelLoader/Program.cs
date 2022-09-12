@@ -27,6 +27,11 @@ namespace AngelLoader
             // anyway (even if we're the second instance), so such tricks won't help us. Oh well.
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+#if !NETFRAMEWORK
+            // It's not like we wouldn't choose a more modern font given a clean slate, but this at least gets
+            // things working without having to redo the entire set of hardcoded UI assumptions based on the font.
+            System.Windows.Forms.Application.SetDefaultFont(Utils.GetMicrosoftSansSerifDefault());
+#endif
 #endif
             new SingleInstanceManager().Run(args);
         }
@@ -37,6 +42,10 @@ namespace AngelLoader
 
             protected override bool OnStartup(StartupEventArgs eventArgs)
             {
+#if !NETFRAMEWORK
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
+
 #if !WPF
                 IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
 #else

@@ -511,8 +511,6 @@ namespace AngelLoader.Forms
             controlCollection.Clear();
         }
 
-        internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-
         internal static void SetFontStyle(this Control control, FontStyle fontStyle)
         {
             Font f = control.Font;

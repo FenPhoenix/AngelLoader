@@ -1084,15 +1084,6 @@ namespace FMScanner
 
         #region Public API
 
-        public RtfToTextConverter()
-        {
-            // .NET Framework supports all the Windows code pages out of the box, but newer .NET versions don't
-            // unless you explicitly register the provider like this.
-#if CROSS_PLATFORM
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
-        }
-
         [PublicAPI]
         public (bool Success, string Text)
         Convert(Stream stream, long streamLength)
