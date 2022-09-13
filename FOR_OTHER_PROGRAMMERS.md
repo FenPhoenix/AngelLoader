@@ -76,7 +76,7 @@ These forms are based mainly around the set of supported games, and displaying a
 
 These controls have their images, text, or other contents or attributes set programmatically (in MainForm.cs code file) for one reason or another (debloating the code-behind, putting game-related controls into a loop so we don't have duplicate code for each one, etc.)
 
-## Why aren't we on. NET 5 or greater? Why are we still on Framework?
+## Why aren't we on .NET 5 or greater? Why are we still on Framework?
 
 We're prevented from moving to modern .NET for one seemingly tiny yet showstopping reason: the GetSysColor hook.
 
