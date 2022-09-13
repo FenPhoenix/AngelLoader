@@ -8,6 +8,11 @@ namespace AngelLoader
     {
         #region Process
 
+        /*
+        We use these instead of the built-in ones because those ones won't always work right unless you have
+        Admin privileges(?!). At least on Framework anyway.
+        */
+
         internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
