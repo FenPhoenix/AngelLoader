@@ -10,26 +10,6 @@ using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
 
 namespace AngelLoader.Forms.WinFormsNative
 {
-    /*
-    @NET5: .NET 5+ hooking research:
-    -MinHook.NET works on .NET 5+ in general, but the GetSysColor hook causes an ExecutionEngineException. Even
-     if I have it literally just return 0. It DOES start executing the hooked method (confirmed by putting a
-     Trace.WriteLine() in there), but crashes with the exception on return.
-     All the other hooks work fine. It's just GetSysColor that throws the dreaded no-stack-trace-and-no-info
-     ExecutionEngineException.
-    -MinSharp (a wrapper, not a port like MinHook.NET) doesn't even get as far as loading its native dll.
-     Ever, no matter what fiddling I do. So anyway.
-    No exceptions for any hook library on Framework, they all work.
-    God only knows what the god damn hell the .NET version has to do with running A NATIVE WINDOWS PROC but hey.
-    -Only thing I can think of is using native C++ hook code, shoving it in a dll, and p/invoking it like "hey
-     start your hook that has nothing to do with me now". Why do I suspect that wouldn't work either, just to make
-     me furious for no reason. Why indeed.
-    -2022-08-25: Unfortunately, as I'd feared, the above doesn't work. It does indeed result in the same old
-     ExecutionEngineException as I snarkily suspected it would. Sigh.
-    @FenHooks: Try bringing MinHook.NET code directly in, and tracing it
-    We can compare its .NET 6 state (broken) to the state when it runs on .NET Framework (working), and maybe
-    find the problem that way...
-    */
     internal static class Win32ThemeHooks
     {
         #region Private fields
