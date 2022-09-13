@@ -4,6 +4,22 @@ AngelLoader sometimes has weird code for the sake of reducing bloat, increasing 
 
 I'm going to document stuff that might be weird here so people might have a slightly less confusing time of it iunno.
 
+## Solution configurations
+
+- **Debug**: Standard debug config, and also the only config that allows editing forms with the designer (because the designer codepaths will be activated, and the manual and "init-slim" codepaths will be dummied out, with ifdefs). See form designer section below. Also, test UI buttons, labels, key commands, and various pieces of test code will be enabled. Asserts are enabled.
+- **Release**: This is the "private" release build, which may contain features and things that I myself use but that I don't consider polished enough, or relevant enough, for general release. Test code mentioned above will **not** be enabled. Asserts are enabled.
+- **Release_Beta**: Same as **Release_Public**, except activates a single RELEASE_BETA ifdef relating to displaying the beta version after the window title (with the version string being editable manually). Asserts are enabled.
+- **Release_Public**: The public release profile. "Private" feature ifdefs will be deactivated (removed from the build) and the build will be in a state 100% ready for public release. Asserts are disabled.
+- **Release_Testing**: Like **Release** except test code is enabled. Asserts are enabled.
+- **Release_Testing_NoAsserts**: Like **Release_Testing** but asserts are disabled. Good for testing performance where asserts might mess up the measurement.
+- **RT_StartupOnly**: Like **ReleaseTesting**, but will shut down immediately after the main window is shown. Good for measuring startup time only, guaranteeing that nothing after startup will being measured. Asserts are enabled.
+
+In the **Debug** config, FenGen and FMScanner will still be in Release configs. If you want them to be in **Debug**, you'll have to change it.
+
+FenGen has a special mode where if you put it in **Debug** config, it will show a window with a test button. If you set FenGen as the startup project, you can set a breakpoint, build the solution, and then click the button in the window to debug new FenGen code. That's why FenGen is by default in **Release** config even when the solution is in **Debug**. It's all kinda awkward, but meh. Once you're done debugging, set FenGen back to **Release** when solution is in **Debug**.
+
+FMScanner is in **Release** always for reasons I can't remember. At some point in development that may have been important, or maybe it still is for weird code reasons, I dunno...
+
 ## FenGen (the code generator)
 
 This is a separate project that runs before compilation of all the other projects. It generates code into various files based on various other files. This is kinda terrible in terms of understandability, but, it prevents errors from manual modification of files, and is _EXTREMELY HELPFUL_ in making localizable string additions a breeze.
@@ -126,7 +142,7 @@ FMScanner was originally made before AngelLoader, and was made to scan all kinds
 
 ## Why use that weird custom I/O stuff when GetFiles() etc. works perfectly fine?
 
-At least on Framework, GetFiles() (and its ilk) use a slow version of getting the file info, where it asks Windows for stuff it doesn't need (or more precisely, fails to explicitly tell Windows NOT to get stuff it doesn't need), and so making a custom version ended being a _lot_ faster. The other reason is that for the scanner, it sometimes needs to know if any file with a given extension exists in a directory. With GetFiles() (and its ilk), if you told it to get "\*.mc" it would grab _all_ \*.mc files even though you only wanted to know if there was _at least one_. Our custom version can just walk the directory and return true as soon as it finds the first file. Also, we needed to use the custom version for the above reason anyway, so yeah.
+At least on Framework, GetFiles() (and its ilk) use a slow version of getting the file info, where it asks Windows for stuff it doesn't need (or more precisely, fails to explicitly tell Windows NOT to get stuff it doesn't need), and so making a custom version ended up being a _lot_ faster. The other reason is that for the scanner, it sometimes needs to know if any file with a given extension exists in a directory. With GetFiles() (and its ilk), if you told it to get "\*.mc" it would grab _all_ \*.mc files even though you only wanted to know if there was _at least one_. Our custom version can just walk the directory and return true as soon as it finds the first file. Also, we needed to use the custom version for the above reason anyway, so yeah.
 
 When you see GetFiles() (or its ilk) being used, it's probably because we want to search the entire subdirectory, and our custom version can't do that (because I just never added that capability).
 
