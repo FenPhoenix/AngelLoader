@@ -6,16 +6,25 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FenGen", "FenGen\FenGen.csproj", "{F8729702-3C79-44D3-97A0-836D30D452B4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngelLoader_Stub", "AngelLoader_Stub\AngelLoader_Stub.vcxproj", "{3CC81750-4AE0-4CEA-B69E-85F226244D8F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngelLoader", "AngelLoader\AngelLoader.csproj", "{AF85B663-5D2C-481A-B301-D9047D494C2C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
 		{3CC81750-4AE0-4CEA-B69E-85F226244D8F} = {3CC81750-4AE0-4CEA-B69E-85F226244D8F}
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FMScanner", "FMScanner\FMScanner.csproj", "{0FDE19CD-B606-4124-9151-0C711DF81363}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AL_Common", "AL_Common\AL_Common.csproj", "{C3EF0A7F-7950-423A-A6EF-03051579153B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FD8CD094-EB65-42DD-9C68-D60B6F3C8344}"
 	ProjectSection(SolutionItems) = preProject
