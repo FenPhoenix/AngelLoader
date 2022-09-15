@@ -78,6 +78,8 @@ These controls have their images, text, or other contents or attributes set prog
 
 ## Why aren't we on .NET 5 or greater? Why are we still on Framework?
 
+(for notes about .NET 5+ in the code, search it for "@NET5")
+
 We're prevented from moving to modern .NET for one seemingly tiny yet showstopping reason: the GetSysColor hook.
 
 For dark mode, certain parts of the UI can only be themed by using "hooks", which is to say overriding certain Windows theme- or color-related functions and redirecting them to our own, where we hand it back custom colors. We use four:
