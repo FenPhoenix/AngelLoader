@@ -366,7 +366,10 @@ namespace AngelLoader.Forms.CustomControls
 
             /*
             @X64 (RichTextBox workarounds - link hand cursor handler)
-            The Framework code does this. Just copied. Presuming it's required for 64-bit.
+            The Framework code does this. Not commented there, but in .NET 6 it says:
+
+            "On 64-bit, we do some custom marshalling to get this to work. The richedit control
+            unfortunately does not respect IA64 struct alignment conventions."
             */
             Native.ENLINK enlink = Environment.Is64BitProcess
                 ? ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64)))
