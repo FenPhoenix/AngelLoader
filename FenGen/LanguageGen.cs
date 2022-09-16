@@ -186,7 +186,7 @@ namespace FenGen
                         }
                     }
 
-                    section.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText });
+                    section.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer.Value).Token.ValueText });
                 }
 
                 sections.Add(section);
@@ -197,8 +197,7 @@ namespace FenGen
 
         private static void WritePerGameStringGetterFile(
             string destFile,
-            Dictionary<string, (string Field, string Section)[]> perGameSets
-            )
+            Dictionary<string, (string Field, string Section)[]> perGameSets)
         {
             var w = GetWriterForClass(destFile, GenAttributes.FenGenLocalizedGameNameGetterDestClass);
 

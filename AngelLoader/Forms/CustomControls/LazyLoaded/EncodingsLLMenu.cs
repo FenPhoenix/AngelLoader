@@ -25,26 +25,26 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private int _codePage;
 
-        private ToolStripMenuItemCustom? AutodetectMenuItem;
-        private ToolStripMenuItemCustom? ArabicMenu;
-        private ToolStripMenuItemCustom? BalticMenu;
-        private ToolStripMenuItemCustom? CentralEuropeanMenu;
-        private ToolStripMenuItemCustom? ChineseMenu;
-        private ToolStripMenuItemCustom? CyrillicMenu;
-        private ToolStripMenuItemCustom? EasternEuropeanMenu;
-        private ToolStripMenuItemCustom? GreekMenu;
-        private ToolStripMenuItemCustom? HebrewMenu;
-        private ToolStripMenuItemCustom? JapaneseMenu;
-        private ToolStripMenuItemCustom? KoreanMenu;
-        private ToolStripMenuItemCustom? LatinMenu;
-        private ToolStripMenuItemCustom? NorthernEuropeanMenu;
-        private ToolStripMenuItemCustom? TaiwanMenu;
-        private ToolStripMenuItemCustom? ThaiMenu;
-        private ToolStripMenuItemCustom? TurkishMenu;
-        private ToolStripMenuItemCustom? UnitedStatesMenu;
-        private ToolStripMenuItemCustom? VietnameseMenu;
-        private ToolStripMenuItemCustom? WesternEuropeanMenu;
-        private ToolStripMenuItemCustom? OtherMenu;
+        private ToolStripMenuItemCustom AutodetectMenuItem = null!;
+        private ToolStripMenuItemCustom ArabicMenu = null!;
+        private ToolStripMenuItemCustom BalticMenu = null!;
+        private ToolStripMenuItemCustom CentralEuropeanMenu = null!;
+        private ToolStripMenuItemCustom ChineseMenu = null!;
+        private ToolStripMenuItemCustom CyrillicMenu = null!;
+        private ToolStripMenuItemCustom EasternEuropeanMenu = null!;
+        private ToolStripMenuItemCustom GreekMenu = null!;
+        private ToolStripMenuItemCustom HebrewMenu = null!;
+        private ToolStripMenuItemCustom JapaneseMenu = null!;
+        private ToolStripMenuItemCustom KoreanMenu = null!;
+        private ToolStripMenuItemCustom LatinMenu = null!;
+        private ToolStripMenuItemCustom NorthernEuropeanMenu = null!;
+        private ToolStripMenuItemCustom TaiwanMenu = null!;
+        private ToolStripMenuItemCustom ThaiMenu = null!;
+        private ToolStripMenuItemCustom TurkishMenu = null!;
+        private ToolStripMenuItemCustom UnitedStatesMenu = null!;
+        private ToolStripMenuItemCustom VietnameseMenu = null!;
+        private ToolStripMenuItemCustom WesternEuropeanMenu = null!;
+        private ToolStripMenuItemCustom OtherMenu = null!;
 
         #endregion
 
@@ -431,26 +431,26 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             if (suspendResume) _menu.SuspendLayout();
 
-            AutodetectMenuItem!.Text = LText.CharacterEncoding.AutodetectNow;
-            ArabicMenu!.Text = LText.CharacterEncoding.Category_Arabic;
-            BalticMenu!.Text = LText.CharacterEncoding.Category_Baltic;
-            CentralEuropeanMenu!.Text = LText.CharacterEncoding.Category_CentralEuropean;
-            ChineseMenu!.Text = LText.CharacterEncoding.Category_Chinese;
-            CyrillicMenu!.Text = LText.CharacterEncoding.Category_Cyrillic;
-            EasternEuropeanMenu!.Text = LText.CharacterEncoding.Category_EasternEuropean;
-            GreekMenu!.Text = LText.CharacterEncoding.Category_Greek;
-            HebrewMenu!.Text = LText.CharacterEncoding.Category_Hebrew;
-            JapaneseMenu!.Text = LText.CharacterEncoding.Category_Japanese;
-            KoreanMenu!.Text = LText.CharacterEncoding.Category_Korean;
-            LatinMenu!.Text = LText.CharacterEncoding.Category_Latin;
-            NorthernEuropeanMenu!.Text = LText.CharacterEncoding.Category_NorthernEuropean;
-            TaiwanMenu!.Text = LText.CharacterEncoding.Category_Taiwan;
-            ThaiMenu!.Text = LText.CharacterEncoding.Category_Thai;
-            TurkishMenu!.Text = LText.CharacterEncoding.Category_Turkish;
-            UnitedStatesMenu!.Text = LText.CharacterEncoding.Category_UnitedStates;
-            VietnameseMenu!.Text = LText.CharacterEncoding.Category_Vietnamese;
-            WesternEuropeanMenu!.Text = LText.CharacterEncoding.Category_WesternEuropean;
-            OtherMenu!.Text = LText.CharacterEncoding.Category_Other;
+            AutodetectMenuItem.Text = LText.CharacterEncoding.AutodetectNow;
+            ArabicMenu.Text = LText.CharacterEncoding.Category_Arabic;
+            BalticMenu.Text = LText.CharacterEncoding.Category_Baltic;
+            CentralEuropeanMenu.Text = LText.CharacterEncoding.Category_CentralEuropean;
+            ChineseMenu.Text = LText.CharacterEncoding.Category_Chinese;
+            CyrillicMenu.Text = LText.CharacterEncoding.Category_Cyrillic;
+            EasternEuropeanMenu.Text = LText.CharacterEncoding.Category_EasternEuropean;
+            GreekMenu.Text = LText.CharacterEncoding.Category_Greek;
+            HebrewMenu.Text = LText.CharacterEncoding.Category_Hebrew;
+            JapaneseMenu.Text = LText.CharacterEncoding.Category_Japanese;
+            KoreanMenu.Text = LText.CharacterEncoding.Category_Korean;
+            LatinMenu.Text = LText.CharacterEncoding.Category_Latin;
+            NorthernEuropeanMenu.Text = LText.CharacterEncoding.Category_NorthernEuropean;
+            TaiwanMenu.Text = LText.CharacterEncoding.Category_Taiwan;
+            ThaiMenu.Text = LText.CharacterEncoding.Category_Thai;
+            TurkishMenu.Text = LText.CharacterEncoding.Category_Turkish;
+            UnitedStatesMenu.Text = LText.CharacterEncoding.Category_UnitedStates;
+            VietnameseMenu.Text = LText.CharacterEncoding.Category_Vietnamese;
+            WesternEuropeanMenu.Text = LText.CharacterEncoding.Category_WesternEuropean;
+            OtherMenu.Text = LText.CharacterEncoding.Category_Other;
 
             if (suspendResume) _menu.ResumeLayout();
         }

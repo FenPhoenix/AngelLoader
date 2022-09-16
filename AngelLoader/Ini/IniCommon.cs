@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -267,6 +268,7 @@ namespace AngelLoader
 
         // Parses from the "value" section of the string - no substring allocation needed
 
+        [PublicAPI]
         private static bool TryParseIntFromEnd(string str, int indexPastSeparator, int maxDigits, out int result)
         {
             const int intMaxDigits = 10;
@@ -312,6 +314,7 @@ namespace AngelLoader
             return true;
         }
 
+        [PublicAPI]
         private static bool TryParseULongFromEnd(string str, int indexPastSeparator, int maxDigits, out ulong result)
         {
             const int ulongMaxDigits = 20;
@@ -357,6 +360,7 @@ namespace AngelLoader
             return true;
         }
 
+        [PublicAPI]
         private static bool TryParseUIntFromEnd(string str, int indexPastSeparator, int maxDigits, out uint result)
         {
             const int uintMaxDigits = 10;

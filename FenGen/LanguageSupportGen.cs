@@ -13,10 +13,7 @@ namespace FenGen
     {
         internal static LanguageSourceEnum FillLangsEnum(string file) => ReadSourceFile(file);
 
-        internal static void Generate(string destFile)
-        {
-            WriteDestFile(destFile);
-        }
+        internal static void Generate(string destFile) => WriteDestFile(destFile);
 
         private static LanguageSourceEnum ReadSourceFile(string file)
         {

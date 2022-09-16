@@ -139,7 +139,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
 
-            foreach (Control control in base.Controls)
+            foreach (Control control in Controls)
             {
                 if (control is IDarkable darkableControl)
                 {
@@ -157,7 +157,7 @@ namespace AngelLoader.Forms.CustomControls
         // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
         internal void ClearList()
         {
-            base.Controls.DisposeAndClear();
+            Controls.DisposeAndClear();
             _checkBoxes.DisposeAll();
             _checkBoxes = Array.Empty<DarkCheckBox>();
             CheckItems = Array.Empty<CheckItem>();
@@ -205,7 +205,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     cb.DarkModeBackColor = DarkColors.Fen_RedHighlight;
                 }
-                base.Controls.Add(cb);
+                Controls.Add(cb);
                 _checkBoxes[i] = cb;
                 cb.CheckedChanged += OnItemsCheckedChanged;
             }
@@ -222,7 +222,7 @@ namespace AngelLoader.Forms.CustomControls
                     Location = new Point(4, 8 + y)
                 };
                 RefreshCautionLabelText(cautionText);
-                base.Controls.Add(_cautionLabel);
+                Controls.Add(_cautionLabel);
                 cautionLabel?.SendToBack();
 
                 _cautionPanel = new DrawnPanel
@@ -235,7 +235,7 @@ namespace AngelLoader.Forms.CustomControls
                     Location = new Point(4, 4 + firstCautionY),
                     Size = new Size(ClientRectangle.Width - 8, (4 + y) - (4 + firstCautionY))
                 };
-                base.Controls.Add(_cautionPanel);
+                Controls.Add(_cautionPanel);
                 _cautionPanel.SendToBack();
             }
 
@@ -256,7 +256,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void ShowCautionSection(bool show)
         {
-            foreach (Control c in base.Controls)
+            foreach (Control c in Controls)
             {
                 if (c.Tag is ItemType.Caution)
                 {

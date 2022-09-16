@@ -12,10 +12,7 @@ namespace FenGen
     {
         internal static GameSourceEnum FillGamesEnum(string file) => ReadGameSourceEnum(file);
 
-        internal static void Generate(string mainGenDestFile)
-        {
-            WriteGameSupportMainGen(mainGenDestFile);
-        }
+        internal static void Generate(string mainGenDestFile) => WriteGameSupportMainGen(mainGenDestFile);
 
         private static GameSourceEnum ReadGameSourceEnum(string file)
         {
