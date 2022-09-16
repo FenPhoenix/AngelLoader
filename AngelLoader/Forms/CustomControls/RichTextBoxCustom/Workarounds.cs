@@ -337,6 +337,25 @@ namespace AngelLoader.Forms.CustomControls
             // it wants to set right-arrow-pointer but is then told to set IBeam etc.
         }
 
+        private static unsafe Native.ENLINK ConvertFromENLINK64(Native.ENLINK64 es64)
+        {
+            var enlink = new Native.ENLINK();
+            fixed (byte* ptr = &es64.contents[0])
+            {
+                enlink.nmhdr = new Native.NMHDR();
+                enlink.charrange = new Native.CHARRANGE();
+                enlink.nmhdr.hwndFrom = Marshal.ReadIntPtr((IntPtr)(void*)ptr);
+                enlink.nmhdr.idFrom = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 8));
+                enlink.nmhdr.code = Marshal.ReadInt32((IntPtr)(void*)(ptr + 16));
+                enlink.msg = Marshal.ReadInt32((IntPtr)(void*)(ptr + 24));
+                enlink.wParam = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 28));
+                enlink.lParam = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 36));
+                enlink.charrange.cpMin = Marshal.ReadInt32((IntPtr)(void*)(ptr + 44));
+                enlink.charrange.cpMax = Marshal.ReadInt32((IntPtr)(void*)(ptr + 48));
+            }
+            return enlink;
+        }
+
         private void CheckAndHandleEnLinkMsg(ref Message m)
         {
             if (((Native.NMHDR)m.GetLParam(typeof(Native.NMHDR))).code != Native.EN_LINK)
@@ -345,20 +364,13 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            var enlink = (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
             /*
             @X64 (RichTextBox workarounds - link hand cursor handler)
-            If building for x64, then we have to do this instead (requires unsafe code and extra structs etc.):
-
-            if (IntPtr.Size == 8)
-            {
-                enlink = ConvertFromENLINK64((ENLINK64)m.GetLParam(typeof(ENLINK64)));
-            }
-            else
-            {
-                enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
-            }
+            The Framework code does this. Just copied. Presuming it's required for 64-bit.
             */
+            Native.ENLINK enlink = Environment.Is64BitProcess
+                ? ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64)))
+                : (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
 
             switch (enlink.msg)
             {

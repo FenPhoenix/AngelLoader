@@ -217,6 +217,14 @@ namespace AngelLoader.Forms.WinFormsNative
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         [StructLayout(LayoutKind.Sequential)]
+        public class ENLINK64
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
+            public byte[] contents = new byte[56];
+        }
+
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [StructLayout(LayoutKind.Sequential)]
         internal class CHARRANGE
         {
             internal int cpMin;
