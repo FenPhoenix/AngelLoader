@@ -31,6 +31,18 @@ Short answer, because a) I need to modify .resx files which aren't "normal code"
 
 FenGen is run from the pre_build.bat and post_build.bat files. It takes command line arguments to tell it which tasks to perform. See the FenGen code for what the args do.
 
+## FenGen attributes and define headers
+
+FenGen uses two different kinds of helpers: attributes, and define headers.
+
+FenGen attributes are located in AngelLoader/Common/FenGenAttributes.cs. They aren't compiled with the code, and are strictly for FenGen to read textually to configure its behavior. Most of them have comments explaining them. If you add a new one, you also have to add it in FenGen/Core.cs and then add the implementation code in the appropriate place.
+
+FenGen "define headers" are simply #define lines that go at the very top of FenGen-relevant .cs files to help it find those files faster. The attributes that are meant to be placed on "source" or "destination" enums or classes are also there to cut down FenGen's processing time by directing it straight to the appropriate class.
+
+Using Roslyn to perform a full-solution analysis to find files "properly" is hilariously, unacceptably slow. Whereas letting FenGen simply loop through all .cs files, read the first line for a define header, and then move on, is gargantuanly faster.
+
+Again, if you need to add a new define header, you have to add it to FenGen in addition to putting it at the top of the appropriate file(s).
+
 ## On an unsuccessful build, there are modified project files and maybe others like BuildDate.Generated.cs
 
 FenGen runs once before solution build, and once AFTER solution build to remove certain temporary changes it's made. If the build fails, it doesn't get to do its second run to clean up the changes. You can simply revert the modifications from the files it's touched, or just fix the error and build again and it will clean up the changes itself.
