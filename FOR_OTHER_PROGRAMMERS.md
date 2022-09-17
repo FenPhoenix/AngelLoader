@@ -123,6 +123,10 @@ It's unlikely anyone would not have 4.8 at this point, so we could target it if 
 
 As far as I know, yeah, I haven't done any serious testing but I've made efforts to support 64-bit in places in the code that would have differences relating to such. Search for "@X64" to find notes on it.
 
+Update 2022-09-17: With 64-bit we lose the GetSysColorBrush hook too (crashes "hooking near conditional jump not supported"), but this one - I _think_ - is literally only used as a fallback for drawing dark vertical/horizontal scroll bar corners on Windows 7 when Aero is disabled. Niche and everything else seems to look fine, so I just put a runtime 64-bit check around that hook so it just won't be enabled on x64.
+
+Other than that, x64 appears to work fine from some light testing...
+
 The reason it's 32-bit is that originally, I had it as a dll that the game calls into, FMSel-style. In that case, loaders are _required_ to be 32-bit because the game is 32-bit. However, then I made AngelLoader standalone, but never switched to x64 because I was like "meh, there's no need to and maybe one person in the world is still using 32-bit Windows or something, meh".
 
 Due to the above point, note that AngelLoader_Stub (the C++ project) can _**not**_ be made 64-bit, because that's the part that the game calls into. Not that it needs to be anyway, it barely does anything but very slightly format some data and then pass it to the game.
