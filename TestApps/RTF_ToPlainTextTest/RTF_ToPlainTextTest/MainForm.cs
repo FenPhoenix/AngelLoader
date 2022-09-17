@@ -2,7 +2,7 @@
 Unmodified, as-is local testing app. You'll need to modify the paths and maybe some other stuff if you want it
 to work. Just adding it for completeness.
 
-Public domain cause who cares, there's literally nothing of novelty whatsoever.
+Public domain/CC0 cause who cares, there's literally nothing of novelty whatsoever.
 */
 
 using System;
