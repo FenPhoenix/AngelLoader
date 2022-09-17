@@ -150,7 +150,7 @@ Fields are:
 
 Downside: They don't have CodeSense so you have to clunkily click "Show uses" or whatever
 
-I basically just use them because the idea of using something that isn't needed just because some faux-expert design patternsy website guy said so annoys me. Use properties if they're public-facing so you can change the implementation without breaking binary compatibility, sure, absolutely. I mean unless your dll is going to be recompiled with your exe always, in which case you don't even need to do that. But internally? Meh! Use the more efficient thing! >:(
+I basically just use them because logic-less properties aren't needed, and the idea of using something that isn't needed just because some faux-expert design patternsy website guy said so annoys me. Use properties if they're public-facing so you can change the implementation without breaking binary compatibility, sure, absolutely. I mean unless your dll is going to be recompiled with your exe always, in which case you don't even need to do that. But internally? Meh! Use the more efficient thing! >:(
 
 ## Properties/Resources.resx only contains some of the images? Where are the rest?
 
