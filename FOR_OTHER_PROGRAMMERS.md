@@ -101,6 +101,12 @@ If you simply turned off the GetSysColor hook, then DateTimePickers would appear
 
 If we were feeling spicy, we could try to port AngelLoader to WinUI 3 or MAUI or whatever. I've tried but constantly run into obstacles that eventually disappear in version updates but then some other one comes up. Currently, the obstacle is that MAUI apps run fine within Visual Studio, but fail to run whatsoever OUTSIDE of Visual Studio. The WinUI 3 RichTextBox seems good and fast but we'd have to parse and convert embedded .wmf images to .png and then insert them back into the stream, cause it won't display .wmf images at all.
 
+## Why Framework 4.7.2, not 4.8?
+
+4.7.2 was the latest version at the time I started development. 4.8 is an overall minor upgrade and contains nothing that would substantially benefit AngelLoader, so I saw no reason to retarget. There's also a 4.8.1, but that's mostly an ARM64-related upgrade and thus irrelevant for us, and it also cuts off older OS support.
+
+It's unlikely anyone would not have 4.8 at this point, so we could target it if we wanted and probably cause minimal to no disruption. But meh.
+
 ## Could AngelLoader be switched to 64-bit?
 
 As far as I know, yeah, I haven't done any serious testing but I've made efforts to support 64-bit in places in the code that would have differences relating to such. Search for "@X64" to find notes on it.
