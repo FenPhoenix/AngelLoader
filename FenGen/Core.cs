@@ -220,7 +220,7 @@ namespace FenGen
         }
 #endif
 
-        private static class GenFileTags
+        private static class DefineHeaders
         {
             internal const string LocalizationSource = "FenGen_LocalizationSource";
             internal const string GameSupportSource = "FenGen_GameSupportSource";
@@ -337,7 +337,7 @@ namespace FenGen
             }
 
             bool forceFindRequiredFiles = false;
-            var genFileTags = new List<string>();
+            var defineHeaders = new List<string>();
             bool gameSupportRequested = GenTaskActive(GenType.FMData) ||
                                         GenTaskActive(GenType.GameSupport) ||
                                         LangTaskActive();
@@ -347,33 +347,33 @@ namespace FenGen
 
             if (langSupportRequested)
             {
-                genFileTags.Add(GenFileTags.LanguageSupportSource);
+                defineHeaders.Add(DefineHeaders.LanguageSupportSource);
             }
 
             if (gameSupportRequested)
             {
-                genFileTags.Add(GenFileTags.GameSupportSource);
+                defineHeaders.Add(DefineHeaders.GameSupportSource);
             }
             // Only do this if we're writing out game support stuff proper, not just reading them
             if (GenTaskActive(GenType.GameSupport))
             {
-                genFileTags.Add(GenFileTags.GameSupportMainGenDest);
+                defineHeaders.Add(DefineHeaders.GameSupportMainGenDest);
             }
             if (GenTaskActive(GenType.FMData))
             {
-                genFileTags.Add(GenFileTags.FMDataSource);
-                genFileTags.Add(GenFileTags.FMDataDest);
+                defineHeaders.Add(DefineHeaders.FMDataSource);
+                defineHeaders.Add(DefineHeaders.FMDataDest);
             }
             if (LangTaskActive())
             {
-                genFileTags.Add(GenFileTags.LocalizationSource);
-                genFileTags.Add(GenFileTags.LocalizedGameNameGetterDest);
-                genFileTags.Add(GenFileTags.LanguageSupportSource);
-                genFileTags.Add(GenFileTags.LanguageSupportDest);
+                defineHeaders.Add(DefineHeaders.LocalizationSource);
+                defineHeaders.Add(DefineHeaders.LocalizedGameNameGetterDest);
+                defineHeaders.Add(DefineHeaders.LanguageSupportSource);
+                defineHeaders.Add(DefineHeaders.LanguageSupportDest);
             }
             if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
             {
-                genFileTags.Add(GenFileTags.BuildDate);
+                defineHeaders.Add(DefineHeaders.BuildDate);
             }
             if (GenTaskActive(GenType.GenSlimDesignerFiles))
             {
@@ -381,29 +381,29 @@ namespace FenGen
             }
             if (GenTaskActive(GenType.GenCopyright))
             {
-                genFileTags.Add(GenFileTags.CurrentYearDest);
+                defineHeaders.Add(DefineHeaders.CurrentYearDest);
             }
 
             var taggedFilesDict = new Dictionary<string, string>();
-            if (forceFindRequiredFiles || genFileTags.Count > 0)
+            if (forceFindRequiredFiles || defineHeaders.Count > 0)
             {
-                taggedFilesDict = FindRequiredCodeFiles(genFileTags.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+                taggedFilesDict = FindRequiredCodeFiles(defineHeaders.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
             }
 
             if (gameSupportRequested)
             {
-                Cache.SetGameSupportFile(taggedFilesDict[GenFileTags.GameSupportSource]);
+                Cache.SetGameSupportFile(taggedFilesDict[DefineHeaders.GameSupportSource]);
             }
             if (langSupportRequested)
             {
-                Cache.SetLangSupportFile(taggedFilesDict[GenFileTags.LanguageSupportSource]);
+                Cache.SetLangSupportFile(taggedFilesDict[DefineHeaders.LanguageSupportSource]);
             }
 
             if (GenTaskActive(GenType.FMData))
             {
                 FMData.Generate(
-                    taggedFilesDict[GenFileTags.FMDataSource],
-                    taggedFilesDict[GenFileTags.FMDataDest]);
+                    taggedFilesDict[DefineHeaders.FMDataSource],
+                    taggedFilesDict[DefineHeaders.FMDataDest]);
             }
             if (LangTaskActive())
             {
@@ -432,16 +432,16 @@ namespace FenGen
                     : "";
 
                 Language.Generate(
-                    sourceFile: taggedFilesDict[GenFileTags.LocalizationSource],
-                    perGameLangGetterDestFile: taggedFilesDict[GenFileTags.LocalizedGameNameGetterDest],
+                    sourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
+                    perGameLangGetterDestFile: taggedFilesDict[DefineHeaders.LocalizedGameNameGetterDest],
                     langIniFile: englishIni,
                     testLangIniFile: testLangIni);
 
-                LanguageSupport.Generate(destFile: taggedFilesDict[GenFileTags.LanguageSupportDest]);
+                LanguageSupport.Generate(destFile: taggedFilesDict[DefineHeaders.LanguageSupportDest]);
             }
             if (GenTaskActive(GenType.GameSupport))
             {
-                Games.Generate(taggedFilesDict[GenFileTags.GameSupportMainGenDest]);
+                Games.Generate(taggedFilesDict[DefineHeaders.GameSupportMainGenDest]);
             }
             if (GenTaskActive(GenType.ExcludeResx))
             {
@@ -453,11 +453,11 @@ namespace FenGen
             }
             if (GenTaskActive(GenType.AddBuildDate))
             {
-                BuildDateGen.Generate(taggedFilesDict[GenFileTags.BuildDate]);
+                BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate]);
             }
             if (GenTaskActive(GenType.RemoveBuildDate))
             {
-                BuildDateGen.Generate(taggedFilesDict[GenFileTags.BuildDate], remove: true);
+                BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate], remove: true);
             }
             if (GenTaskActive(GenType.GenSlimDesignerFiles))
             {
@@ -466,16 +466,16 @@ namespace FenGen
             if (GenTaskActive(GenType.GenCopyright))
             {
                 CopyrightGen.GenProjCopyright();
-                CopyrightGen.GenCurrentYear(taggedFilesDict[GenFileTags.CurrentYearDest]);
+                CopyrightGen.GenCurrentYear(taggedFilesDict[DefineHeaders.CurrentYearDest]);
                 CopyrightGen.GenLicenses();
             }
         }
 
         [MustUseReturnValue]
         private static Dictionary<string, string>
-        FindRequiredCodeFiles(List<string> genFileTags)
+        FindRequiredCodeFiles(List<string> defineHeaders)
         {
-            var taggedFiles = InitializedArray<List<string>>(genFileTags.Count);
+            var taggedFiles = InitializedArray<List<string>>(defineHeaders.Count);
 
             foreach (string f in Cache.CSFiles)
             {
@@ -491,7 +491,7 @@ namespace FenGen
                     if (lts.StartsWithPlusWhiteSpace("#define"))
                     {
                         string tag = lts.Substring(7).Trim();
-                        if (tag == GenFileTags.DesignerSource)
+                        if (tag == DefineHeaders.DesignerSource)
                         {
                             if (f.EndsWithI(".Designer.cs"))
                             {
@@ -499,15 +499,15 @@ namespace FenGen
                             }
                             else
                             {
-                                ThrowErrorAndTerminate(GenFileTags.DesignerSource +
+                                ThrowErrorAndTerminate(DefineHeaders.DesignerSource +
                                                        " found in a file not ending in .Designer.cs.");
                             }
                             continue;
                         }
 
-                        for (int i = 0; i < genFileTags.Count; i++)
+                        for (int i = 0; i < defineHeaders.Count; i++)
                         {
-                            if (tag == genFileTags[i])
+                            if (tag == defineHeaders[i])
                             {
                                 taggedFiles[i].Add(f);
                                 break;
@@ -526,21 +526,21 @@ namespace FenGen
             {
                 if (taggedFiles[i].Count == 0)
                 {
-                    error = AddError(error, "-No file found with '#define " + genFileTags[i] + "' at top");
+                    error = AddError(error, "-No file found with '#define " + defineHeaders[i] + "' at top");
                 }
                 else if (taggedFiles[i].Count > 1)
                 {
-                    error = AddError(error, "-Multiple files found with '#define " + genFileTags[i] + "' at top");
+                    error = AddError(error, "-Multiple files found with '#define " + defineHeaders[i] + "' at top");
                 }
             }
             if (!error.IsEmpty()) ThrowErrorAndTerminate(error);
 
             #endregion
 
-            var ret = new Dictionary<string, string>(genFileTags.Count);
-            for (int i = 0; i < genFileTags.Count; i++)
+            var ret = new Dictionary<string, string>(defineHeaders.Count);
+            for (int i = 0; i < defineHeaders.Count; i++)
             {
-                ret.Add(genFileTags[i], taggedFiles[i][0]);
+                ret.Add(defineHeaders[i], taggedFiles[i][0]);
             }
             return ret;
         }
