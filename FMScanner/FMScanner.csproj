@@ -6,9 +6,15 @@
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;DebugRTFTest;ReleaseRTFTest;DebugFullTest;ReleaseFullTest</Configurations>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRTFTest|AnyCPU'">
+    <DefineConstants>TRACE;ReleaseRTFTest</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRTFTest|x64'">
     <DefineConstants>TRACE;ReleaseRTFTest</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
@@ -18,7 +24,16 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRTFTest|x64'">
+    <DefineConstants>TRACE;DEBUG;DebugRTFTest</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
@@ -27,7 +42,17 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugFullTest|x64'">
+    <DefineConstants>TRACE;DEBUG;FMScanner_FullCode</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFullTest|AnyCPU'">
+    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFullTest|x64'">
     <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>

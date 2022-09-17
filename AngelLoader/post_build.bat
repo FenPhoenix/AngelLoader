@@ -64,6 +64,11 @@ rem Exlude "history" dir without having to copy and delete it afterwards (it's l
 "%system%xcopy" "%SolutionDir%docs\doc\English\*.html" "%TargetDir%doc\" /y /i
 "%system%xcopy" "%SolutionDir%docs\doc\English\images" "%TargetDir%doc\images" /y /i /e
 
+del /F "%TargetDir%7z64.dll"
+if %PlatformName% == x64 (
+	ren "%TargetDir%7z.dll" "7z64.dll"
+)
+
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.
 if exist "%ProjectDir%post_build_fen_personal_dev.bat" (
