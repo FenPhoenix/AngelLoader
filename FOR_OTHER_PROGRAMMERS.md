@@ -184,7 +184,7 @@ That's just a cheap hack to block input to the UI because I couldn't figure out 
 
 ## No unit tests?!
 
-Uh, yeah, kinda not really. I do use a few semi-automated tests internally (separate testing apps that aren't on github). I guess I should throw those up here for completeness...
+Uh, yeah, kinda not really. I do use a few semi-automated tests internally (separate testing apps, now on github in the TestApps folder).
 
 There's also a bit of test code ifdeffed out in the codebase, for when I need to test something I don't change often. I test the accuracy of the scanner and of the rtf-to-plaintext converter and such with external test apps. There's some ifdeffed test code for testing RTF visual accuracy that's a bit more involved too. So yeah, some things ARE semi-auto tested.
 
