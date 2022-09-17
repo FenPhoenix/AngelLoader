@@ -6,6 +6,7 @@ set ConfigurationName=%~1
 set TargetDir=%~2
 set ProjectDir=%~3
 set SolutionDir=%~4
+set PlatformName=%~5
 
 rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
 
@@ -18,7 +19,11 @@ set fenGenArgs=-resx_r -bd_r
 rem ---
 
 rem Still copy this for SevenZipSharp's use
+if %PlatformName% == x86 (
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
+) else (
+"%system%xcopy" "%TargetDir%x64\7z.dll" "%TargetDir%" /y
+)
 
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%TargetDir%\7z32\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%TargetDir%\7z64\" /y /i
@@ -32,7 +37,11 @@ del /F "%TargetDir%*xunit*.dll"
 del /F "%TargetDir%*TestPlatform*.dll"
 del /F "%TargetDir%testhost.dll"
 del /F "%TargetDir%EasyLoad*.dll"
+if %PlatformName% == x86 (
 del /F "%TargetDir%EasyHook64.dll"
+) else (
+del /F "%TargetDir%EasyHook32.dll"
+)
 del /F "%TargetDir%EasyHook32Svc.exe"
 del /F "%TargetDir%EasyHook64Svc.exe"
 del /F "%TargetDir%.gitkeep"
@@ -58,5 +67,5 @@ rem Exlude "history" dir without having to copy and delete it afterwards (it's l
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.
 if exist "%ProjectDir%post_build_fen_personal_dev.bat" (
-	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%"
+	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%" "%PlatformName%"
 )

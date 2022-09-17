@@ -6,8 +6,10 @@ set ConfigurationName=%~1
 set TargetDir=%~2
 set ProjectDir=%~3
 set SolutionDir=%~4
+set PlatformName=%~5
 
 echo SolutionDir: %SolutionDir%
+echo PlatformName: %PlatformName%
 
 rem Autogenerate code
 rem ---
