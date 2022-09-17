@@ -25,7 +25,6 @@ namespace FenGen
             internal string Name = "";
             internal string IniName = "";
             internal ListType ListType = ListType.MultipleLines;
-            internal ListDistinctType ListDistinctType = ListDistinctType.None;
             internal long? NumericEmpty;
             internal int? MaxDigits;
             internal bool DoNotTrimValue;
@@ -41,14 +40,6 @@ namespace FenGen
         {
             MultipleLines,
             CommaSeparated
-        }
-
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        private enum ListDistinctType
-        {
-            None,
-            Exact,
-            CaseInsensitive
         }
 
         private static readonly HashSet<string> _numericTypes = new()
@@ -205,16 +196,6 @@ namespace FenGen
                                 if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
                                 break;
                             }
-                            case GenAttributes.FenGenListDistinctType:
-                            {
-                                CheckParamCount(attr, 1);
-
-                                string val = GetStringValue(attr);
-
-                                FieldInfo? enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
-                                if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
-                                break;
-                            }
                             case GenAttributes.FenGenIniName:
                                 CheckParamCount(attr, 1);
 
@@ -328,22 +309,11 @@ namespace FenGen
                 {
                     string listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
 
-                    var ldt = field.ListDistinctType;
-
                     string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
                         ? val
                         : "result";
 
-                    string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
-                        ? ", StringComparer.OrdinalIgnoreCase"
-                        : "";
-
-                    string objListSet = "";
-                    if (ldt is ListDistinctType.Exact or ListDistinctType.CaseInsensitive)
-                    {
-                        objListSet = "if (!" + objDotField + ".Contains(" + varToAdd + ignoreCaseString + ")) ";
-                    }
-                    objListSet += objDotField + ".Add(" + varToAdd + ");";
+                    string objListSet = objDotField + ".Add(" + varToAdd + ");";
 
                     if (listType == "string")
                     {

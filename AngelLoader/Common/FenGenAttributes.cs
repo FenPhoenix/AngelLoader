@@ -12,17 +12,26 @@ namespace AngelLoader
     [PublicAPI]
     internal static class FenGenAttributes
     {
-        // IMPORTANT (Attributes):
-        // Do NOT change the names of any FenGen attributes without also going in to FenGen and changing their
-        // names there. Otherwise FenGen will break!
+        /*
+        IMPORTANT (Attributes):
+        Do NOT change the names of any FenGen attributes without also going in to FenGen and changing their
+        names there. Otherwise FenGen will break!
 
-        // -All attributes are marked with a conditional based on a define that doesn't exist, so they won't be
-        //  compiled (we only need these for pre-build code generation).
-        // -Conditionals are literals instead of a constant, because a constant would add something to the exe
-        //  but we don't want anything extra at all.
+        -All attributes are marked with a conditional based on a define that doesn't exist, so they won't be
+         compiled (we only need these for pre-build code generation).
+        -Conditionals are literals instead of a constant, because a constant would add something to the exe
+         but we don't want anything extra at all.
+
+        -The ones that aren't commented, hopefully you can figure out what they do by looking at where they're
+         used or whatever.
+        */
 
         #region Serialization
 
+        /// <summary>
+        /// Place this on the class that is to be the source of "FM data" generation (should be the FanMission class).
+        /// Only one instance of this attribute should be used, or else FenGen will throw an error.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal sealed class FenGenFMDataSourceClassAttribute : Attribute { }
@@ -70,6 +79,13 @@ namespace AngelLoader
             internal FenGenNumericEmptyAttribute(long value) { }
         }
 
+        /// <summary>
+        /// A perf/alloc optimization that's only for numeric fields where you don't need to parse negatives<br/>
+        /// (because it won't work with them). If you specify a maximum number of digits with this attribute,<br/>
+        /// the codegen will create code that can parse the value out of the line without taking the extra<br/>
+        /// allocation of a substring of the value. If you don't specify this attribute, the value will still<br/>
+        /// be read correctly but there will be an extra allocation.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenMaxDigitsAttribute : Attribute
@@ -89,17 +105,6 @@ namespace AngelLoader
         }
 
         /// <summary>
-        /// List type can be "None", "Exact", or "CaseInsensitive".
-        /// </summary>
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal sealed class FenGenListDistinctTypeAttribute : Attribute
-        {
-            /// <param name="value">Can be "None", "Exact", or "CaseInsensitive".</param>
-            internal FenGenListDistinctTypeAttribute(string value) { }
-        }
-
-        /// <summary>
         /// Specifies that the value of this field or property (assumed to be a string) will not have whitespace
         /// trimmed from the end of it on read.
         /// </summary>
@@ -107,18 +112,33 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotTrimValueAttribute : Attribute { }
 
+        /// <summary>
+        /// Hack: To be placed on DateTime fields that we don't have want to take the perf hit of doing anything<br/>
+        /// with until later.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
+        /// <summary>
+        /// Hack: Special case to be placed on the readme encoding field only
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenReadmeEncodingAttribute : Attribute { }
 
+        /// <summary>
+        /// Quick hack to tell FenGen not to substring the value from a key-value pair line, because it's going<br/>
+        /// to be passed to a method that's designed to work with the entire line, and we can save an allocation.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
 
+        /// <summary>
+        /// Hack: Tells FenGen to treat this Flags-enum field as if it's a single-value-at-a-time (non-flags)<br/>
+        /// field when it generates read/write code. Only applies to SelectedLang at the moment.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
         internal sealed class FenGenFlagsSingleAssignment : Attribute { }
@@ -127,6 +147,10 @@ namespace AngelLoader
 
         #region Localizable text
 
+        /// <summary>
+        /// This attribute should be placed on the class that should contain generated getter methods for localized<br/>
+        /// per-game strings. Only one instance of this attribute should be used, or else FenGen will throw an error.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal sealed class FenGenLocalizedGameNameGetterDestClassAttribute : Attribute { }
@@ -140,7 +164,9 @@ namespace AngelLoader
         internal sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
 
         /// <summary>
-        /// Places a comment before the attached field or property.
+        /// Places a comment before the attached field or property.<br/>
+        /// For multiple-line comments, each line should be a separate parameter. Concatenating parameters is<br/>
+        /// not supported and will not achieve the desired effect.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

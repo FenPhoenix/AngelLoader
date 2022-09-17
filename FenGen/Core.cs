@@ -127,7 +127,6 @@ namespace FenGen
         internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
         internal const string FenGenMaxDigits = nameof(FenGenMaxDigits);
         internal const string FenGenListType = nameof(FenGenListType);
-        internal const string FenGenListDistinctType = nameof(FenGenListDistinctType);
         internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
         internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
 
