@@ -75,6 +75,8 @@ namespace AngelLoader
 
             bool sevenZipDllNotFound = false;
 
+            string sevenZipDll = Environment.Is64BitProcess ? "7z64.dll" : "7z.dll";
+
             using var startupWorkTask = Task.Run(() =>
             {
                 #region Old FMScanner log file delete
@@ -95,7 +97,7 @@ namespace AngelLoader
 
                 // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
                 // at any time
-                string sevenZipDllLocation = Path.Combine(Paths.Startup, Environment.Is64BitProcess ? "7z64.dll" : "7z.dll");
+                string sevenZipDllLocation = Path.Combine(Paths.Startup, sevenZipDll);
                 if (!File.Exists(sevenZipDllLocation))
                 {
                     sevenZipDllNotFound = true;
@@ -157,7 +159,7 @@ namespace AngelLoader
                 // the right language would mean trying to read multiple different files and whatever junk, and
                 // we don't want to add the potential for even more errors here.
                 Dialogs.ShowAlert_Stock(
-                    "Fatal error: 7z.dll was not found in the application startup directory.",
+                    "Fatal error: " + sevenZipDll + " was not found in the application startup directory.",
                     "Error",
                     MBoxButtons.OK,
                     MBoxIcon.Error);
