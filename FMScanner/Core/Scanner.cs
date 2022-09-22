@@ -1933,6 +1933,7 @@ namespace FMScanner
                     switch (t3GmpFiles.Count)
                     {
                         case 1:
+                            misFiles.Add(t3GmpFiles[0]);
                             usedMisFiles.Add(t3GmpFiles[0]);
                             break;
                         case > 1:
@@ -1941,6 +1942,7 @@ namespace FMScanner
                                 NameAndIndex item = t3GmpFiles[i];
                                 if (!item.Name.EqualsI(FMFiles.EntryGmp))
                                 {
+                                    misFiles.Add(item);
                                     usedMisFiles.Add(item);
                                 }
                             }
@@ -1949,7 +1951,7 @@ namespace FMScanner
                 }
 
                 // Cut it right here for Thief 3: we don't need anything else
-                return true;
+                return usedMisFiles.Count > 0;
             }
 
             #endregion
