@@ -1428,43 +1428,46 @@ namespace FMScanner
             }
 
             // Look for the first used .mis file's last modified date
-            DateTime misFileDate;
-            if (_fmIsZip)
+            if (usedMisFiles.Count > 0)
             {
-                misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                    _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-            }
-            else
-            {
-                if (_fmDirFileInfos.Count > 0)
+                DateTime misFileDate;
+                if (_fmIsZip)
                 {
-                    string fn =
-                        _fmIsSevenZip ? usedMisFiles[0].Name :
-                        _fmWorkingPath + usedMisFiles[0].Name;
-                    // This loop is guaranteed to find something, because we will have quit early if we had no
-                    // used .mis files.
-                    FileInfoCustom? misFile = null;
-                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                    {
-                        FileInfoCustom f = _fmDirFileInfos[i];
-                        if (f.FullName.PathEqualsI(fn))
-                        {
-                            misFile = f;
-                            break;
-                        }
-                    }
-                    misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
+                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                        _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
                 else
                 {
-                    var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                    if (_fmDirFileInfos.Count > 0)
+                    {
+                        string fn =
+                            _fmIsSevenZip ? usedMisFiles[0].Name :
+                            _fmWorkingPath + usedMisFiles[0].Name;
+                        // This loop is guaranteed to find something, because we will have quit early if we had no
+                        // used .mis files.
+                        FileInfoCustom? misFile = null;
+                        for (int i = 0; i < _fmDirFileInfos.Count; i++)
+                        {
+                            FileInfoCustom f = _fmDirFileInfos[i];
+                            if (f.FullName.PathEqualsI(fn))
+                            {
+                                misFile = f;
+                                break;
+                            }
+                        }
+                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
+                    }
+                    else
+                    {
+                        var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
+                        misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                    }
                 }
-            }
 
-            if (misFileDate.Year > 1998)
-            {
-                return misFileDate;
+                if (misFileDate.Year > 1998)
+                {
+                    return misFileDate;
+                }
             }
 
             // If we still don't have anything, give up: we've made a good-faith effort.
@@ -1933,7 +1936,6 @@ namespace FMScanner
                     switch (t3GmpFiles.Count)
                     {
                         case 1:
-                            misFiles.Add(t3GmpFiles[0]);
                             usedMisFiles.Add(t3GmpFiles[0]);
                             break;
                         case > 1:
@@ -1942,7 +1944,6 @@ namespace FMScanner
                                 NameAndIndex item = t3GmpFiles[i];
                                 if (!item.Name.EqualsI(FMFiles.EntryGmp))
                                 {
-                                    misFiles.Add(item);
                                     usedMisFiles.Add(item);
                                 }
                             }
@@ -1951,7 +1952,7 @@ namespace FMScanner
                 }
 
                 // Cut it right here for Thief 3: we don't need anything else
-                return usedMisFiles.Count > 0;
+                return true;
             }
 
             #endregion
