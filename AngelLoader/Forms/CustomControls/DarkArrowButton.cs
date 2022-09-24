@@ -18,7 +18,7 @@ namespace AngelLoader.Forms.CustomControls
             set
             {
                 _arrowDirection = value;
-                Refresh();
+                if (Visible) Refresh();
             }
         }
 
