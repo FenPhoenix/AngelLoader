@@ -167,9 +167,19 @@ namespace AngelLoader
                 return true;
             }
 
-            // Copy of internal "non-randomized-per-app-domain" x86 string hash, but with cheap '='-is-end check
-            // because who wants to try to figure out how to get it to check for length-based end, meh.
-            // @X64: We might need to swap this out for x64!
+            /*
+            Copy of internal "non-randomized-per-app-domain" string hash, but with cheap '='-is-end check
+            because who wants to try to figure out how to get it to check for length-based end, meh.
+            @X64: KeyComparer.GetHashCode()
+            Although we got this by copy-pasting from the F12 go-to-source ReSharper thing while in x86 config,
+            this logic is apparently actually the x64 version (the ReSharper "decompiled" source is the same on
+            x86 and x64 it appears... for some reason...). The version of this method from the 4.8 reference
+            source (and the 4.7.2 reference source for that matter) is completely different, with an ifdef for
+            32-bit and 64-bit sections, but similar logic for the 64-bit section. Unsettlingly, the 32-bit
+            section is completely different and even goes like "int num1 = (5381<<16) + 5381" instead of just
+            5381, making it seem like this method might somehow break or not work right on x86. But it does
+            work, so... maybe the differences are just for performance...
+            */
             public unsafe int GetHashCode(string obj)
             {
                 fixed (char* chPtr1 = obj)
