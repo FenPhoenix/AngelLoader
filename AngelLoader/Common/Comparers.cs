@@ -108,9 +108,6 @@ namespace AngelLoader
                 return string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            // null for perf: don't create a new List<string> just to signify empty
-            List<string>? articles = Config.EnableArticles ? Config.Articles : null;
-
             if (x.Title == y.Title) return TitleOrFallback(x.Title, y.Title, x, y, compareTitles: false);
             if (x.Title.IsEmpty()) return -1;
             if (y.Title.IsEmpty()) return 1;
@@ -118,21 +115,21 @@ namespace AngelLoader
             int xStart = 0;
             int yStart = 0;
 
-            if (articles?.Count > 0)
+            if (Config.EnableArticles)
             {
                 bool xArticleSet = false;
                 bool yArticleSet = false;
 
-                foreach (string a in articles)
+                foreach (string article in Config.Articles)
                 {
-                    int aLen = a.Length;
+                    int aLen = article.Length;
 
-                    if (!xArticleSet && x.Title.StartsWithIPlusWhiteSpace(a, aLen))
+                    if (!xArticleSet && x.Title.StartsWithIPlusWhiteSpace(article, aLen))
                     {
                         xStart = aLen + 1;
                         xArticleSet = true;
                     }
-                    if (!yArticleSet && y.Title.StartsWithIPlusWhiteSpace(a, aLen))
+                    if (!yArticleSet && y.Title.StartsWithIPlusWhiteSpace(article, aLen))
                     {
                         yStart = aLen + 1;
                         yArticleSet = true;
