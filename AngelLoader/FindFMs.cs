@@ -297,6 +297,11 @@ namespace AngelLoader
 
             #endregion
 
+            // PERF: We can't know how many files we're going to find, so make the initial list capacity large
+            // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
+            var files = new List<string>(2000);
+            var dateTimes = new List<ExpandableDate_FromTicks>(2000);
+
             #region Get installed dirs from disk
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
@@ -312,10 +317,10 @@ namespace AngelLoader
                 {
                     try
                     {
-                        var dirs = FastIO.GetDirsTopOnly_FMs(instPath, "*", out List<ExpandableDate_FromTicks> dateTimes);
-                        for (int di = 0; di < dirs.Count; di++)
+                        FastIO.GetDirsTopOnly_FMs(instPath, "*", files, dateTimes);
+                        for (int di = 0; di < files.Count; di++)
                         {
-                            string d = dirs[di];
+                            string d = files[di];
                             if (!d.EqualsI(Paths.FMSelCache))
                             {
                                 var fm = new FanMission
@@ -349,7 +354,7 @@ namespace AngelLoader
                 try
                 {
                     // Returns filenames only (not full paths)
-                    var files = FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", out List<ExpandableDate_FromTicks> dateTimes);
+                    FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", files, dateTimes);
                     for (int fi = 0; fi < files.Count; fi++)
                     {
                         string f = files[fi];

@@ -35,87 +35,90 @@ namespace AngelLoader
         internal static List<string> GetDirsTopOnly(
             string path,
             string searchPattern,
-            bool initListCapacityLarge = false,
             bool ignoreReparsePoints = false,
             bool pathIsKnownValid = false,
             bool returnFullPaths = true)
         {
-            return GetFilesTopOnlyInternal(
+            var ret = new List<string>(16);
+            GetFilesTopOnlyInternal(
                 path,
                 searchPattern,
-                initListCapacityLarge,
                 FileType.Directories,
                 ignoreReparsePoints,
                 pathIsKnownValid,
                 returnFullPaths,
-                returnDateTimes: false,
-                out _);
+                ret,
+                null);
+            return ret;
         }
 
         internal static List<string> GetFilesTopOnly(
             string path,
             string searchPattern,
-            bool initListCapacityLarge = false,
             bool pathIsKnownValid = false,
             bool returnFullPaths = true)
         {
-            return GetFilesTopOnlyInternal(
+            var ret = new List<string>(16);
+            GetFilesTopOnlyInternal(
                 path,
                 searchPattern,
-                initListCapacityLarge,
                 FileType.Files,
                 ignoreReparsePoints: false,
                 pathIsKnownValid,
                 returnFullPaths,
-                returnDateTimes: false,
-                out _);
+                ret,
+                null);
+            return ret;
         }
 
-        internal static List<string> GetDirsTopOnly_FMs(
+        internal static void GetDirsTopOnly_FMs(
             string path,
             string searchPattern,
-            out List<ExpandableDate_FromTicks> dateTimes)
+            List<string> dirNames,
+            List<ExpandableDate_FromTicks> dateTimes)
         {
-            return GetFilesTopOnlyInternal(
+            dirNames.Clear();
+            dateTimes.Clear();
+            GetFilesTopOnlyInternal(
                 path,
                 searchPattern,
-                initListCapacityLarge: true,
                 FileType.Directories,
                 ignoreReparsePoints: false,
                 pathIsKnownValid: false,
                 returnFullPaths: false,
-                returnDateTimes: true,
-                out dateTimes);
+                dirNames,
+                dateTimes);
         }
 
-        internal static List<string> GetFilesTopOnly_FMs(
+        internal static void GetFilesTopOnly_FMs(
             string path,
             string searchPattern,
-            out List<ExpandableDate_FromTicks> dateTimes)
+            List<string> fileNames,
+            List<ExpandableDate_FromTicks> dateTimes)
         {
-            return GetFilesTopOnlyInternal(
+            fileNames.Clear();
+            dateTimes.Clear();
+            GetFilesTopOnlyInternal(
                 path,
                 searchPattern,
-                initListCapacityLarge: true,
                 FileType.Files,
                 ignoreReparsePoints: false,
                 pathIsKnownValid: false,
                 returnFullPaths: false,
-                returnDateTimes: true,
-                out dateTimes);
+                fileNames,
+                dateTimes);
         }
 
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
-        private static List<string> GetFilesTopOnlyInternal(
+        private static void GetFilesTopOnlyInternal(
             string path,
             string searchPattern,
-            bool initListCapacityLarge,
             FileType fileType,
             bool ignoreReparsePoints,
             bool pathIsKnownValid,
             bool returnFullPaths,
-            bool returnDateTimes,
-            out List<ExpandableDate_FromTicks> dateTimes)
+            List<string> filesOrDirs,
+            List<ExpandableDate_FromTicks>? dateTimes)
         {
             if (searchPattern.IsEmpty())
             {
@@ -124,13 +127,6 @@ namespace AngelLoader
 
             path = NormalizeAndCheckPath(path, pathIsKnownValid);
             bool searchPatternHas3CharExt = SearchPatternHas3CharExt(searchPattern);
-
-            // PERF: We can't know how many files we're going to find, so make the initial list capacity large
-            // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
-            var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
-            dateTimes =
-                !returnDateTimes ? new List<ExpandableDate_FromTicks>() :
-                initListCapacityLarge ? new List<ExpandableDate_FromTicks>(2000) : new List<ExpandableDate_FromTicks>(16);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -150,7 +146,7 @@ namespace AngelLoader
             if (findHandle.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
-                if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return ret;
+                if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return;
 
                 // Since the framework isn't here to save us, we should blanket-catch and throw on every
                 // possible error other than file-not-found (as that's an intended scenario, obviously).
@@ -173,18 +169,15 @@ namespace AngelLoader
                         ? Path.Combine(path, findData.cFileName).ToSystemDirSeps_Net()
                         : findData.cFileName;
 
-                    ret.Add(fullName);
+                    filesOrDirs.Add(fullName);
                     // PERF: 0.67ms over 1099 dirs (Ryzen 3950x)
                     // Very cheap operation all things considered, but it never hurts to skip it when we don't
                     // need it.
-                    if (returnDateTimes)
-                    {
-                        dateTimes.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
-                    }
+                    dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
                 }
             } while (FindNextFileW(findHandle, out findData));
 
-            return ret;
+            return;
         }
 
         /// <summary>
