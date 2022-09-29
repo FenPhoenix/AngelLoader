@@ -376,19 +376,18 @@ namespace AngelLoader
                 (!Config.FMArchivePaths.PathSequenceEqualI_Dir(outConfig.FMArchivePaths) ||
                  Config.FMArchivePathsIncludeSubfolders != outConfig.FMArchivePathsIncludeSubfolders);
 
-            bool gamePathsChanged =
-                !startup &&
-                !Config.GameExes.PathSequenceEqualI(outConfig.GameExes);
-
+            bool gamePathsChanged = false;
             // We need these in order to decide which, if any, startup config infos to re-read
             bool[] individualGamePathsChanged = new bool[SupportedGameCount];
-
-            for (int i = 0; i < SupportedGameCount; i++)
+            if (!startup)
             {
-                GameIndex gameIndex = (GameIndex)i;
-                individualGamePathsChanged[i] =
-                    !startup &&
-                    !Config.GetGameExe(gameIndex).PathEqualsI(outConfig.GetGameExe(gameIndex));
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    bool gamePathChanged = !Config.GetGameExe(gameIndex).PathEqualsI(outConfig.GetGameExe(gameIndex));
+                    if (gamePathChanged) gamePathsChanged = true;
+                    individualGamePathsChanged[i] = gamePathChanged;
+                }
             }
 
             bool gameOrganizationChanged =

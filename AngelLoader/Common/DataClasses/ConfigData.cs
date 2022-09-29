@@ -26,7 +26,7 @@ namespace AngelLoader.DataClasses
 
             _disabledMods = new string[SupportedGameCount];
 
-            GameExes = new string[SupportedGameCount];
+            _gameExes = new string[SupportedGameCount];
             _gamePaths = new string[SupportedGameCount];
             _fmInstallPaths = new string[SupportedGameCount];
 
@@ -44,7 +44,7 @@ namespace AngelLoader.DataClasses
                 // We want them empty strings, not null, for safety
                 _disabledMods[i] = "";
 
-                GameExes[i] = "";
+                _gameExes[i] = "";
                 _gamePaths[i] = "";
                 _fmInstallPaths[i] = "";
 
@@ -145,11 +145,11 @@ namespace AngelLoader.DataClasses
 
         #region Game exes
 
-        internal readonly string[] GameExes;
+        private readonly string[] _gameExes;
 
-        internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
+        internal string GetGameExe(GameIndex index) => _gameExes[(uint)index];
 
-        internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
+        internal void SetGameExe(GameIndex index, string value) => _gameExes[(uint)index] = value;
 
         #endregion
 
