@@ -218,6 +218,10 @@ Because I love removing bloat way too much, I've elided await where reasonable, 
 
 I use ReSharper which includes a "To-do Explorer" which lets you set certain phrases that will be highlighted and added to a list where you can browse them. It's awesome, but if you don't have ReSharper then you'll have a harder time finding notes on certain things. Most of the "todo" phrases start with an @ (except "TODO:" itself and a couple others), so if you regex search for like "@\w+" or something you can prolly find them.
 
+## Dependencies
+
+We use older versions of 7z.Libs and SevenZipSharp because they're known to work satisfactorily and performantly, and testing 7z functionality is a pain.
+
 ## SevenZipSharp and 7z.exe? There's two copies of 32-bit 7z.dll?
 
 AngelLoader originally used SevenZipSharp exclusively, but it turns out that using it with v19 of 7z.dll caused a memory leak, whereas using an earlier version didn't cause the leak but was _way_ slower. So I switched to calling 7z.exe directly, and I had to put a copy of 7z.dll in its folder too. But I had to keep the main copy in the main directory so SevenZipSharp could still find it, because we still use SZS to enumerate files in .7z archives (just not to extract them), and while you _can_ tell SZS to look in a different folder for 7z.dll, if you do that it's super slow whereas just letting it find it in its own directory is fast.
