@@ -39,7 +39,7 @@ namespace AngelLoader
             private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
             private DictionaryI<string>? _installedDirs_FromFMDataIniList;
 
-            internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<DateTime> archives, bool truncate)
+            internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<ExpandableDate_FromTicks> archives, bool truncate)
             {
                 if (truncate)
                 {
@@ -77,7 +77,7 @@ namespace AngelLoader
                 }
             }
 
-            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(DictionaryI<DateTime> archives)
+            internal DictionaryI<string> GetInstDirNDLTruncatedToArchives(DictionaryI<ExpandableDate_FromTicks> archives)
             {
                 if (_archivesToInstDirNameNDLTruncated == null)
                 {
@@ -95,7 +95,7 @@ namespace AngelLoader
                 return _archivesToInstDirNameNDLTruncated;
             }
 
-            internal DictionaryI<string> GetInstDirNameToArchives(DictionaryI<DateTime> archives)
+            internal DictionaryI<string> GetInstDirNameToArchives(DictionaryI<ExpandableDate_FromTicks> archives)
             {
                 if (_archives == null)
                 {
@@ -192,9 +192,9 @@ namespace AngelLoader
         private sealed class InstDirValueData
         {
             internal readonly FanMission FM;
-            internal readonly DateTime DateTime;
+            internal readonly ExpandableDate_FromTicks DateTime;
 
-            internal InstDirValueData(FanMission fm, DateTime dateTime)
+            internal InstDirValueData(FanMission fm, ExpandableDate_FromTicks dateTime)
             {
                 FM = fm;
                 DateTime = dateTime;
@@ -312,7 +312,7 @@ namespace AngelLoader
                 {
                     try
                     {
-                        var dirs = FastIO.GetDirsTopOnly_FMs(instPath, "*", out List<DateTime> dateTimes);
+                        var dirs = FastIO.GetDirsTopOnly_FMs(instPath, "*", out List<ExpandableDate_FromTicks> dateTimes);
                         for (int di = 0; di < dirs.Count; di++)
                         {
                             string d = dirs[di];
@@ -339,7 +339,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchivesAndDatesDict = new DictionaryI<DateTime>();
+            var fmArchivesAndDatesDict = new DictionaryI<ExpandableDate_FromTicks>();
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -349,7 +349,7 @@ namespace AngelLoader
                 try
                 {
                     // Returns filenames only (not full paths)
-                    var files = FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", out List<DateTime> dateTimes);
+                    var files = FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", out List<ExpandableDate_FromTicks> dateTimes);
                     for (int fi = 0; fi < files.Count; fi++)
                     {
                         string f = files[fi];
@@ -431,7 +431,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(DictionaryI<DateTime> fmArchives)
+        private static void SetArchiveNames(DictionaryI<ExpandableDate_FromTicks> fmArchives)
         {
             DictionaryI<FanMission>? archivesDict = null;
             DictionaryI<FanMission> GetArchivesDict()
@@ -541,7 +541,7 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(DictionaryI<DateTime> fmArchives)
+        private static void MergeNewArchiveFMs(DictionaryI<ExpandableDate_FromTicks> fmArchives)
         {
             int fmDataIniListCount = FMDataIniList.Count;
             var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
@@ -574,7 +574,7 @@ namespace AngelLoader
                     }
                     fm.NoArchive = false;
 
-                    fm.DateAdded ??= item.Value;
+                    fm.DateAdded ??= item.Value.DateTime;
 
                     if (fm.InstalledDir.IsEmpty())
                     {
@@ -587,7 +587,7 @@ namespace AngelLoader
                          fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
                          fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
                 {
-                    fm.DateAdded ??= item.Value;
+                    fm.DateAdded ??= item.Value.DateTime;
 
                     if (fm.InstalledDir.IsEmpty())
                     {
@@ -602,7 +602,7 @@ namespace AngelLoader
                         Archive = archive,
                         InstalledDir = archive.ToInstDirNameFMSel(true),
                         NoArchive = false,
-                        DateAdded = item.Value
+                        DateAdded = item.Value.DateTime
                     });
                 }
             }
@@ -620,7 +620,7 @@ namespace AngelLoader
                 {
                     fm.Game = gFM.Game;
                     fm.Installed = true;
-                    fm.DateAdded ??= item.Value.DateTime;
+                    fm.DateAdded ??= item.Value.DateTime.DateTime;
                 }
                 else
                 {
@@ -629,7 +629,7 @@ namespace AngelLoader
                         InstalledDir = gFM.InstalledDir,
                         Game = gFM.Game,
                         Installed = true,
-                        DateAdded = item.Value.DateTime
+                        DateAdded = item.Value.DateTime.DateTime
                     });
                 }
             }
@@ -638,7 +638,7 @@ namespace AngelLoader
         #endregion
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-        private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<DateTime> archives, LastResortLinkupBundle bundle)
+        private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ExpandableDate_FromTicks> archives, LastResortLinkupBundle bundle)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -737,7 +737,7 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(
-            DictionaryI<DateTime> fmArchivesDict,
+            DictionaryI<ExpandableDate_FromTicks> fmArchivesDict,
             DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
             List<FanMission> fmsViewListUnscanned)
         {

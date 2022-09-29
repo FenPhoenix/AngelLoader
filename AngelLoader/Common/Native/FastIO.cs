@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.FastIO_Native;
 
@@ -73,7 +74,7 @@ namespace AngelLoader
         internal static List<string> GetDirsTopOnly_FMs(
             string path,
             string searchPattern,
-            out List<DateTime> dateTimes)
+            out List<ExpandableDate_FromTicks> dateTimes)
         {
             return GetFilesTopOnlyInternal(
                 path,
@@ -90,7 +91,7 @@ namespace AngelLoader
         internal static List<string> GetFilesTopOnly_FMs(
             string path,
             string searchPattern,
-            out List<DateTime> dateTimes)
+            out List<ExpandableDate_FromTicks> dateTimes)
         {
             return GetFilesTopOnlyInternal(
                 path,
@@ -114,7 +115,7 @@ namespace AngelLoader
             bool pathIsKnownValid,
             bool returnFullPaths,
             bool returnDateTimes,
-            out List<DateTime> dateTimes)
+            out List<ExpandableDate_FromTicks> dateTimes)
         {
             if (searchPattern.IsEmpty())
             {
@@ -128,16 +129,8 @@ namespace AngelLoader
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
             var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
             dateTimes =
-                !returnDateTimes ? new List<DateTime>() :
-                /*
-                @MEM/PERF_TODO(List<DateTime>(2000)):
-                Default for structs is just an empty instance, rather than null like for classes.
-                This means we're fully instantiating 2000 DateTime structs. Yipe.
-                We could get rid of this dumb attempt at alloc reduction and just grow the list as normal,
-                and/or we could lazy-load the DateTimes, since they're only used if an FM doesn't have
-                its DateAdded set, which will be the uncommon case.
-                */
-                initListCapacityLarge ? new List<DateTime>(2000) : new List<DateTime>(16);
+                !returnDateTimes ? new List<ExpandableDate_FromTicks>() :
+                initListCapacityLarge ? new List<ExpandableDate_FromTicks>(2000) : new List<ExpandableDate_FromTicks>(16);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -186,7 +179,7 @@ namespace AngelLoader
                     // need it.
                     if (returnDateTimes)
                     {
-                        dateTimes.Add(DateTime.FromFileTimeUtc(findData.ftCreationTime.ToTicks()).ToLocalTime());
+                        dateTimes.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
                     }
                 }
             } while (FindNextFileW(findHandle, out findData));

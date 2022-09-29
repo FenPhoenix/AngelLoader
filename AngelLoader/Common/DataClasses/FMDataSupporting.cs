@@ -39,6 +39,23 @@ namespace AngelLoader.DataClasses
         }
     }
 
+    internal sealed class ExpandableDate_FromTicks
+    {
+        private readonly long _ticks;
+        private DateTime? _dateTime;
+
+        public ExpandableDate_FromTicks(long ticks) => _ticks = ticks;
+
+        internal DateTime DateTime
+        {
+            get
+            {
+                _dateTime ??= DateTime.FromFileTimeUtc(_ticks).ToLocalTime();
+                return (DateTime)_dateTime;
+            }
+        }
+    }
+
     // IMPORTANT: Do not rename elements or compatibility will break!
     [Flags]
     internal enum CustomResources
