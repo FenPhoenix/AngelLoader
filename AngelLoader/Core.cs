@@ -346,8 +346,6 @@ namespace AngelLoader
             (bool accepted, ConfigData outConfig) =
                 ViewEnv.ShowSettingsWindow(startup ? null : View, Config, startup, cleanStart);
 
-            // This needs to be separate so the below "always-save" stuff can work
-
             #region Save window state
 
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
