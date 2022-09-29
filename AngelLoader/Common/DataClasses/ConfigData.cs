@@ -17,8 +17,8 @@ namespace AngelLoader.DataClasses
             #region To be left at defaults
 
             _newMantling = new bool?[SupportedGameCount];
-            GameEditorDetected = new bool[SupportedGameCount];
-            StartupAlwaysStartSelector = new bool[SupportedGameCount];
+            _gameEditorDetected = new bool[SupportedGameCount];
+            _startupAlwaysStartSelector = new bool[SupportedGameCount];
 
             #endregion
 
@@ -27,11 +27,11 @@ namespace AngelLoader.DataClasses
             _disabledMods = new string[SupportedGameCount];
 
             GameExes = new string[SupportedGameCount];
-            GamePaths = new string[SupportedGameCount];
-            FMInstallPaths = new string[SupportedGameCount];
+            _gamePaths = new string[SupportedGameCount];
+            _fmInstallPaths = new string[SupportedGameCount];
 
-            UseSteamSwitches = new bool[SupportedGameCount];
-            StartupFMSelectorLines = new List<string>[SupportedGameCount];
+            _useSteamSwitches = new bool[SupportedGameCount];
+            _startupFMSelectorLines = new List<string>[SupportedGameCount];
 
             GameFilterControlVisibilities = new bool[SupportedGameCount];
 
@@ -45,11 +45,11 @@ namespace AngelLoader.DataClasses
                 _disabledMods[i] = "";
 
                 GameExes[i] = "";
-                GamePaths[i] = "";
-                FMInstallPaths[i] = "";
+                _gamePaths[i] = "";
+                _fmInstallPaths[i] = "";
 
-                UseSteamSwitches[i] = true;
-                StartupFMSelectorLines[i] = new List<string>();
+                _useSteamSwitches[i] = true;
+                _startupFMSelectorLines[i] = new List<string>();
 
                 GameFilterControlVisibilities[i] = true;
             }
@@ -68,21 +68,21 @@ namespace AngelLoader.DataClasses
 
         #region fm_selector lines
 
-        private readonly List<string>[] StartupFMSelectorLines;
+        private readonly List<string>[] _startupFMSelectorLines;
 
-        internal List<string> GetStartupFMSelectorLines(GameIndex index) => StartupFMSelectorLines[(uint)index];
+        internal List<string> GetStartupFMSelectorLines(GameIndex index) => _startupFMSelectorLines[(uint)index];
 
-        internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => StartupFMSelectorLines[(uint)index] = value;
+        internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => _startupFMSelectorLines[(uint)index] = value;
 
         #endregion
 
         #region "Always start selector" values
 
-        private readonly bool[] StartupAlwaysStartSelector;
+        private readonly bool[] _startupAlwaysStartSelector;
 
-        internal bool GetStartupAlwaysStartSelector(GameIndex index) => StartupAlwaysStartSelector[(uint)index];
+        internal bool GetStartupAlwaysStartSelector(GameIndex index) => _startupAlwaysStartSelector[(uint)index];
 
-        internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => StartupAlwaysStartSelector[(uint)index] = value;
+        internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => _startupAlwaysStartSelector[(uint)index] = value;
 
         #endregion
 
@@ -155,28 +155,28 @@ namespace AngelLoader.DataClasses
 
         #region Game exe paths
 
-        private readonly string[] GamePaths;
+        private readonly string[] _gamePaths;
 
-        internal string GetGamePath(GameIndex index) => GamePaths[(uint)index];
+        internal string GetGamePath(GameIndex index) => _gamePaths[(uint)index];
 
-        internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value;
+        internal void SetGamePath(GameIndex index, string value) => _gamePaths[(uint)index] = value;
 
         #endregion
 
         #region FM install paths
 
-        private readonly string[] FMInstallPaths;
+        private readonly string[] _fmInstallPaths;
 
-        internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
+        internal string GetFMInstallPath(GameIndex index) => _fmInstallPaths[(uint)index];
 
         /// <summary>
         /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        internal string GetFMInstallPathUnsafe(Game game) => FMInstallPaths[(uint)GameToGameIndex(game)];
+        internal string GetFMInstallPathUnsafe(Game game) => _fmInstallPaths[(uint)GameToGameIndex(game)];
 
-        internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
+        internal void SetFMInstallPath(GameIndex index, string value) => _fmInstallPaths[(uint)index] = value;
 
         #endregion
 
@@ -184,16 +184,16 @@ namespace AngelLoader.DataClasses
 
         // Session-only; don't write these out
 
-        private readonly bool[] GameEditorDetected;
+        private readonly bool[] _gameEditorDetected;
 
         /// <summary>
         /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        internal bool GetGameEditorDetectedUnsafe(Game game) => GameEditorDetected[(uint)GameToGameIndex(game)];
+        internal bool GetGameEditorDetectedUnsafe(Game game) => _gameEditorDetected[(uint)GameToGameIndex(game)];
 
-        internal void SetGameEditorDetected(GameIndex index, bool value) => GameEditorDetected[(uint)index] = value;
+        internal void SetGameEditorDetected(GameIndex index, bool value) => _gameEditorDetected[(uint)index] = value;
 
         #endregion
 
@@ -204,11 +204,11 @@ namespace AngelLoader.DataClasses
 
         internal string SteamExe = "";
 
-        private readonly bool[] UseSteamSwitches;
+        private readonly bool[] _useSteamSwitches;
 
-        internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
+        internal bool GetUseSteamSwitch(GameIndex index) => _useSteamSwitches[(uint)index];
 
-        internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
+        internal void SetUseSteamSwitch(GameIndex index, bool value) => _useSteamSwitches[(uint)index] = value;
 
         #endregion
 
