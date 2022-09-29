@@ -129,6 +129,14 @@ namespace AngelLoader
             var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
             dateTimes =
                 !returnDateTimes ? new List<DateTime>() :
+                /*
+                @MEM/PERF_TODO(List<DateTime>(2000)):
+                Default for structs is just an empty instance, rather than null like for classes.
+                This means we're fully instantiating 2000 DateTime structs. Yipe.
+                We could get rid of this dumb attempt at alloc reduction and just grow the list as normal,
+                and/or we could lazy-load the DateTimes, since they're only used if an FM doesn't have
+                its DateAdded set, which will be the uncommon case.
+                */
                 initListCapacityLarge ? new List<DateTime>(2000) : new List<DateTime>(16);
 
             // Other relevant errors (though we don't use them specifically at the moment)
