@@ -1,17 +1,13 @@
 using System.Collections.Generic;
 using System.Reflection;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 
 namespace AngelLoader
 {
     internal static partial class Ini
     {
-        [MustUseReturnValue]
-        internal static LText_Class ReadLocalizationIni(string file)
+        internal static void ReadLocalizationIni(string file, LText_Class lText)
         {
-            var ret = new LText_Class();
-
             #region Dictionary setup
 
             const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -26,7 +22,7 @@ namespace AngelLoader
                 var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
                 foreach (var field in fields)
                 {
-                    dict[field.Name] = (field, f.GetValue(ret));
+                    dict[field.Name] = (field, f.GetValue(lText));
                 }
                 sections["[" + f.Name + "]"] = dict;
             }
@@ -59,8 +55,6 @@ namespace AngelLoader
                     }
                 }
             }
-
-            return ret;
         }
     }
 }

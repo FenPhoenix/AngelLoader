@@ -220,7 +220,7 @@ namespace AngelLoader
 
                         if (!selFound && fn.EqualsI(Config.Language))
                         {
-                            LText = Ini.ReadLocalizationIni(f);
+                            Ini.ReadLocalizationIni(f, LText);
                             selFound = true;
                         }
 

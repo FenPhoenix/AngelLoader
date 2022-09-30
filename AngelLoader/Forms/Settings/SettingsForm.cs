@@ -1605,7 +1605,8 @@ namespace AngelLoader.Forms
             string lang = LangComboBox.SelectedBackingItem();
             try
             {
-                LText = Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, lang + ".ini"));
+                LText = new LText_Class();
+                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, lang + ".ini"), LText);
             }
             catch (Exception ex)
             {
