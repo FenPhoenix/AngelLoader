@@ -986,6 +986,7 @@ namespace AngelLoader.Forms
         }
 
         // This one can't be multithreaded because it depends on the FMs list
+        // @VBL
         public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
         {
             _splashScreen = splashScreen;
@@ -998,7 +999,7 @@ namespace AngelLoader.Forms
 
             if (fmsViewListUnscanned?.Count > 0)
             {
-                Show();
+                if (!Visible) Show();
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
@@ -1017,7 +1018,7 @@ namespace AngelLoader.Forms
 
                 if (fmsNeedingMisCountScan.Count > 0)
                 {
-                    Show();
+                    if (!Visible) Show();
                     await FMScan.ScanFMs(
                         fmsNeedingMisCountScan,
                         FMScanner.ScanOptions.FalseDefault(scanMissionCount: true),
@@ -1084,17 +1085,12 @@ namespace AngelLoader.Forms
             _nominalWindowLocation = loc;
         }
 
-        private new void Show()
+        public new void Show()
         {
             base.Show();
             _splashScreen?.Hide();
 
             _startupState = false;
-        }
-
-        public void ShowOnly()
-        {
-            if (!Visible) Show();
         }
 
         #endregion

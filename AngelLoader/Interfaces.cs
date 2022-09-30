@@ -272,7 +272,7 @@ namespace AngelLoader
         /// <returns></returns>
         Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
 
-        void ShowOnly();
+        void Show();
 
         #endregion
 
