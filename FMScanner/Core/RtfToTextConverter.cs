@@ -1,6 +1,4 @@
-﻿//#define CROSS_PLATFORM
-
-/*
+﻿/*
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
@@ -29,7 +27,7 @@ The goals of this RTF-to-text converter are:
  
 To that end:
 1. We use the System.Text.Encoding.CodePages package to get all Windows-supported codepages on all platforms
-   (only if CROSS_PLATFORM is defined). We don't use RichTextBox or RichEdit.
+   (only needed on .NET 5+). We don't use RichTextBox or RichEdit.
 2. We go to great lengths to detect character encoding accurately, even converting symbol fonts to their Unicode
    equivalents. We surpass even RichEdit in this respect.
 3. We support forward-only streams so we can read straight out of a compressed zip file entry with no copying.
