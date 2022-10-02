@@ -4734,8 +4734,6 @@ namespace AngelLoader.Forms
 
             #region Get attributes that apply to all items
 
-            int selectedRowCount = FMsDGV.GetRowSelectedCount();
-
             // Crap-garbage code to loop through only once in case we have a large selection set
 
             int selRowsCount = 0;
@@ -4768,7 +4766,7 @@ namespace AngelLoader.Forms
                 // will be only one long for a negligible allocation, and _way_ faster in the single-select case.
                 // Gets rid of lag from SortAndSetFilter() for example.
                 // We don't need the loop if it's just 1, but keep it in case we want to tune this number.
-                if (selectedRowCount == 1)
+                if (FMsDGV.GetRowSelectedCount() == 1)
                 {
                     var selRows = FMsDGV.SelectedRows;
                     selRowsCount = selRows.Count;
