@@ -226,6 +226,11 @@ namespace AngelLoader.Forms.CustomControls
         {
             var ret = new SelectedFM { InstalledName = "", IndexFromTop = 0 };
 
+            // TODO/BUG: GetFMPosInfoFromIndex(): This is a leftover from when this just got the selection, instead of an explicit index.
+            // I'm pretty sure this never gets hit in practice, but the Delete code ends up calling this and
+            // I haven't checked that code thoroughly. All other callsites appear to not be able to hit this.
+            // If we can determine this never gets hit, we should remove it because it's unintended logic (but
+            // we just want to know we don't accidentally depend on it).
             if (!RowSelected()) return ret;
 
             int firstDisplayed = FirstDisplayedScrollingRowIndex;
