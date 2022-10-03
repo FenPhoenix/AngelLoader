@@ -231,6 +231,8 @@ namespace AngelLoader.Forms.CustomControls
             // I haven't checked that code thoroughly. All other callsites appear to not be able to hit this.
             // If we can determine this never gets hit, we should remove it because it's unintended logic (but
             // we just want to know we don't accidentally depend on it).
+            // But we should replace it with a RowCount > 0 check, because this also implicitly guards against
+            // that, and we do want that guard check.
             if (!RowSelected()) return ret;
 
             int firstDisplayed = FirstDisplayedScrollingRowIndex;
