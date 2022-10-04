@@ -18,6 +18,7 @@ namespace AngelLoader
         {
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
             Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
+            return;
 #endif
 
 #if !WPF
