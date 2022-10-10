@@ -132,6 +132,7 @@ namespace AngelLoader.Forms
             TagsTabAutoScrollMarker = new Control();
             PatchTabPage = new DarkTabPageCustom();
             Patch_PerFMValues_Label = new DarkLabel();
+            Patch_PostProc_CheckBox = new DarkCheckBox();
             Patch_NewMantle_CheckBox = new DarkCheckBox();
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
@@ -1236,6 +1237,7 @@ namespace AngelLoader.Forms
             PatchTabPage.AutoScroll = true;
             PatchTabPage.BackColor = SystemColors.Control;
             PatchTabPage.Controls.Add(Patch_PerFMValues_Label);
+            PatchTabPage.Controls.Add(Patch_PostProc_CheckBox);
             PatchTabPage.Controls.Add(Patch_NewMantle_CheckBox);
             PatchTabPage.Controls.Add(PatchMainPanel);
             PatchTabPage.Size = new Size(526, 284);
@@ -1246,6 +1248,17 @@ namespace AngelLoader.Forms
             Patch_PerFMValues_Label.AutoSize = true;
             Patch_PerFMValues_Label.Location = new Point(6, 8);
             Patch_PerFMValues_Label.TabIndex = 0;
+            // 
+            // Patch_PostProc_CheckBox
+            // 
+            Patch_PostProc_CheckBox.AutoSize = true;
+            Patch_PostProc_CheckBox.Checked = true;
+            Patch_PostProc_CheckBox.CheckState = CheckState.Indeterminate;
+            Patch_PostProc_CheckBox.Location = new Point(8, 56);
+            Patch_PostProc_CheckBox.TabIndex = 2;
+            Patch_PostProc_CheckBox.ThreeState = true;
+            Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
+            Patch_PostProc_CheckBox.CheckStateChanged += Patch_PostProc_CheckBox_CheckStateChanged;
             // 
             // Patch_NewMantle_CheckBox
             // 
@@ -1264,7 +1277,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PatchMainPanel.Controls.Add(PatchDMLsPanel);
             PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
-            PatchMainPanel.Location = new Point(0, 56);
+            PatchMainPanel.Location = new Point(0, 80);
             PatchMainPanel.Size = new Size(311, 250);
             PatchMainPanel.TabIndex = 38;
             // 
@@ -1431,10 +1444,10 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.ReadOnly = true;
             ReadmeRichTextBox.TabIndex = 0;
-            ReadmeRichTextBox.KeyDown += ReadmeRichTextBox_KeyDown;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
-            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
+            ReadmeRichTextBox.KeyDown += ReadmeRichTextBox_KeyDown;
             ReadmeRichTextBox.MouseDown += ReadmeRichTextBox_MouseDown;
+            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // MainForm
             // 

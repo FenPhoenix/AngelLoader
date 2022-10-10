@@ -545,6 +545,10 @@ namespace AngelLoader.DataClasses
             internal readonly string NewMantle_ToolTip_Checked = "Checked: Force new mantle";
             internal readonly string NewMantle_ToolTip_Unchecked = "Unchecked: Force old mantle";
             internal readonly string NewMantle_ToolTip_NotSet = "Not set: Let the game decide based on config file(s) (default behavior)";
+            internal readonly string PostProc = "Post-processing (bloom etc.)";
+            internal readonly string PostProc_ToolTip_Checked = "Checked: Force post-processing on";
+            internal readonly string PostProc_ToolTip_Unchecked = "Unchecked: Force post-processing off";
+            internal readonly string PostProc_ToolTip_NotSet = "Not set: Let the game decide based on config file(s) (default behavior)";
             internal readonly string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal readonly string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";

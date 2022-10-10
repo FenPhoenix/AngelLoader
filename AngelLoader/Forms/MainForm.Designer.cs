@@ -152,6 +152,7 @@
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.Patch_PostProc_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
@@ -431,8 +432,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -613,7 +614,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -634,7 +635,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -713,7 +714,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -1176,7 +1177,7 @@
             // 
             // StatsHorizDiv
             // 
-            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
             this.StatsHorizDiv.Name = "StatsHorizDiv";
@@ -1300,7 +1301,7 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1560,6 +1561,7 @@
             this.PatchTabPage.AutoScroll = true;
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.PatchTabPage.Controls.Add(this.Patch_PerFMValues_Label);
+            this.PatchTabPage.Controls.Add(this.Patch_PostProc_CheckBox);
             this.PatchTabPage.Controls.Add(this.Patch_NewMantle_CheckBox);
             this.PatchTabPage.Controls.Add(this.PatchMainPanel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
@@ -1576,6 +1578,20 @@
             this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
             this.Patch_PerFMValues_Label.TabIndex = 0;
             this.Patch_PerFMValues_Label.Text = "Option overrides:";
+            // 
+            // Patch_PostProc_CheckBox
+            // 
+            this.Patch_PostProc_CheckBox.AutoSize = true;
+            this.Patch_PostProc_CheckBox.Checked = true;
+            this.Patch_PostProc_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.Patch_PostProc_CheckBox.Location = new System.Drawing.Point(8, 56);
+            this.Patch_PostProc_CheckBox.Name = "Patch_PostProc_CheckBox";
+            this.Patch_PostProc_CheckBox.Size = new System.Drawing.Size(159, 17);
+            this.Patch_PostProc_CheckBox.TabIndex = 2;
+            this.Patch_PostProc_CheckBox.Text = "Post-processing (bloom etc.)";
+            this.Patch_PostProc_CheckBox.ThreeState = true;
+            this.Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
+            this.Patch_PostProc_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_PostProc_CheckBox_CheckStateChanged);
             // 
             // Patch_NewMantle_CheckBox
             // 
@@ -1597,7 +1613,7 @@
             this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
             this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 56);
+            this.PatchMainPanel.Location = new System.Drawing.Point(0, 80);
             this.PatchMainPanel.Name = "PatchMainPanel";
             this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
             this.PatchMainPanel.TabIndex = 38;
@@ -1678,8 +1694,8 @@
             // 
             // MainModsControl
             // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainModsControl.Location = new System.Drawing.Point(0, 0);
             this.MainModsControl.Name = "MainModsControl";
@@ -1801,10 +1817,10 @@
             this.ReadmeRichTextBox.Size = new System.Drawing.Size(1668, 356);
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
-            this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
-            this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
+            this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             this.ReadmeRichTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ReadmeRichTextBox_MouseDown);
+            this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // MainForm
             // 
@@ -2014,5 +2030,6 @@
         internal CustomControls.DarkLabel Patch_PerFMValues_Label;
         internal CustomControls.DarkLabel Stats_MisCountLabel;
         internal CustomControls.DarkHorizontalDivider StatsHorizDiv;
+        internal CustomControls.DarkCheckBox Patch_PostProc_CheckBox;
     }
 }

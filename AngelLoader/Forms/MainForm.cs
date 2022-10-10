@@ -1749,12 +1749,21 @@ namespace AngelLoader.Forms
                 PatchTabPage.Text = LText.PatchTab.TabText;
 
                 Patch_PerFMValues_Label.Text = LText.PatchTab.OptionOverrides;
+
                 Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
                 MainToolTip.SetToolTip(
                     Patch_NewMantle_CheckBox,
                     LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
                     LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
                     LText.PatchTab.NewMantle_ToolTip_NotSet
+                );
+
+                Patch_PostProc_CheckBox.Text = LText.PatchTab.PostProc;
+                MainToolTip.SetToolTip(
+                    Patch_PostProc_CheckBox,
+                    LText.PatchTab.PostProc_ToolTip_Checked + "\r\n" +
+                    LText.PatchTab.PostProc_ToolTip_Unchecked + "\r\n" +
+                    LText.PatchTab.PostProc_ToolTip_NotSet
                 );
 
                 PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
@@ -3354,6 +3363,17 @@ namespace AngelLoader.Forms
             FanMission fm = FMsDGV.GetMainSelectedFM();
 
             fm.NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
+
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            FanMission fm = FMsDGV.GetMainSelectedFM();
+
+            fm.PostProc = Patch_PostProc_CheckBox.ToNullableBool();
 
             Ini.WriteFullFMDataIni();
         }
@@ -5036,6 +5056,7 @@ namespace AngelLoader.Forms
                     }
 
                     Patch_NewMantle_CheckBox.SetFromNullableBool(fm.NewMantle);
+                    Patch_PostProc_CheckBox.SetFromNullableBool(fm.PostProc);
                 }
 
                 PatchMainPanel.Enabled = true;

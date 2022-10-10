@@ -291,6 +291,15 @@ namespace AngelLoader
                 {
                     args += " new_mantle=0";
                 }
+
+                if (fm.PostProc == true)
+                {
+                    args += " postprocess=1";
+                }
+                else if (fm.PostProc == false)
+                {
+                    args += " postprocess=0";
+                }
             }
 
             if (!WriteStubCommFile(fm, gamePath)) return false;

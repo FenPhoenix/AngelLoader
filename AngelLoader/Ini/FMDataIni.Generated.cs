@@ -243,6 +243,12 @@ namespace AngelLoader
             fm.NewMantle = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
         }
 
+        private static void FMData_PostProc_Set(FanMission fm, string val, int eqIndex)
+        {
+            val = val.Trim();
+            fm.PostProc = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
+        }
+
         private static void FMData_MisCount_Set(FanMission fm, string val, int eqIndex)
         {
             val = val.Trim();
@@ -355,6 +361,7 @@ namespace AngelLoader
             { "SelectedLang", new FMData_DelegatePointerWrapper(&FMData_SelectedLang_Set) },
             { "TagsString", new FMData_DelegatePointerWrapper(&FMData_TagsString_Set) },
             { "NewMantle", new FMData_DelegatePointerWrapper(&FMData_NewMantle_Set) },
+            { "PostProc", new FMData_DelegatePointerWrapper(&FMData_PostProc_Set) },
             { "MisCount", new FMData_DelegatePointerWrapper(&FMData_MisCount_Set) },
 
             #region Old resource format - backward compatibility, we still have to be able to read it
@@ -586,6 +593,11 @@ namespace AngelLoader
                 {
                     sb.Append("NewMantle=");
                     sb.AppendLine(fm.NewMantle.ToString());
+                }
+                if (fm.PostProc != null)
+                {
+                    sb.Append("PostProc=");
+                    sb.AppendLine(fm.PostProc.ToString());
                 }
                 if (fm.MisCount != -1)
                 {

@@ -135,6 +135,7 @@ namespace AngelLoader.DataClasses
         internal string TagsString = "";
 
         internal bool? NewMantle;
+        internal bool? PostProc;
 
         [FenGenNumericEmpty(-1)]
         [FenGenMaxDigits(10)]
