@@ -556,7 +556,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Subtitles_ToolTip_Checked = "Checked: Force subtitles on";
             internal readonly string Subtitles_ToolTip_Unchecked = "Unchecked: Force subtitles off";
             internal readonly string Subtitles_ToolTip_NotSet = "Not set: Let the game decide based on config file(s) (default behavior)";
-            internal readonly string Subtitles_ToolTip_NewDarkNote = "* This only affects NewDark-style subtitles. Older FMs with non-standard custom subtitles will not be affected.";
+            internal readonly string Subtitles_ToolTip_NewDarkNote = "* This only affects standard NewDark subtitles. Older FMs with non-standard custom subtitles will not be affected.";
             [FenGenBlankLine]
             internal readonly string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
