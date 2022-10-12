@@ -3368,33 +3368,21 @@ namespace AngelLoader.Forms
         private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-
-            fm.NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
-
+            FMsDGV.GetMainSelectedFM().NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
             Ini.WriteFullFMDataIni();
         }
 
         private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-
-            fm.PostProc = Patch_PostProc_CheckBox.ToNullableBool();
-
+            FMsDGV.GetMainSelectedFM().PostProc = Patch_PostProc_CheckBox.ToNullableBool();
             Ini.WriteFullFMDataIni();
         }
 
         private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-
-            fm.NDSubs = Patch_NDSubs_CheckBox.ToNullableBool();
-
+            FMsDGV.GetMainSelectedFM().NDSubs = Patch_NDSubs_CheckBox.ToNullableBool();
             Ini.WriteFullFMDataIni();
         }
 
