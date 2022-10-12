@@ -136,6 +136,7 @@ namespace AngelLoader.DataClasses
 
         internal bool? NewMantle;
         internal bool? PostProc;
+        internal bool? NDSubs;
 
         [FenGenNumericEmpty(-1)]
         [FenGenMaxDigits(10)]

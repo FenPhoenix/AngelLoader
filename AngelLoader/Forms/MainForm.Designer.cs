@@ -152,6 +152,7 @@
             this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.Patch_NDSubs_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Patch_PostProc_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
@@ -1177,7 +1178,7 @@
             // 
             // StatsHorizDiv
             // 
-            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
             this.StatsHorizDiv.Name = "StatsHorizDiv";
@@ -1301,7 +1302,7 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1561,6 +1562,7 @@
             this.PatchTabPage.AutoScroll = true;
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.PatchTabPage.Controls.Add(this.Patch_PerFMValues_Label);
+            this.PatchTabPage.Controls.Add(this.Patch_NDSubs_CheckBox);
             this.PatchTabPage.Controls.Add(this.Patch_PostProc_CheckBox);
             this.PatchTabPage.Controls.Add(this.Patch_NewMantle_CheckBox);
             this.PatchTabPage.Controls.Add(this.PatchMainPanel);
@@ -1578,6 +1580,20 @@
             this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
             this.Patch_PerFMValues_Label.TabIndex = 0;
             this.Patch_PerFMValues_Label.Text = "Option overrides:";
+            // 
+            // Patch_NDSubs_CheckBox
+            // 
+            this.Patch_NDSubs_CheckBox.AutoSize = true;
+            this.Patch_NDSubs_CheckBox.Checked = true;
+            this.Patch_NDSubs_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.Patch_NDSubs_CheckBox.Location = new System.Drawing.Point(8, 80);
+            this.Patch_NDSubs_CheckBox.Name = "Patch_NDSubs_CheckBox";
+            this.Patch_NDSubs_CheckBox.Size = new System.Drawing.Size(125, 17);
+            this.Patch_NDSubs_CheckBox.TabIndex = 3;
+            this.Patch_NDSubs_CheckBox.Text = "Subtitles (if available)";
+            this.Patch_NDSubs_CheckBox.ThreeState = true;
+            this.Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
+            this.Patch_NDSubs_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NDSubs_CheckBox_CheckStateChanged);
             // 
             // Patch_PostProc_CheckBox
             // 
@@ -1613,7 +1629,7 @@
             this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
             this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 80);
+            this.PatchMainPanel.Location = new System.Drawing.Point(0, 104);
             this.PatchMainPanel.Name = "PatchMainPanel";
             this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
             this.PatchMainPanel.TabIndex = 38;
@@ -2031,5 +2047,6 @@
         internal CustomControls.DarkLabel Stats_MisCountLabel;
         internal CustomControls.DarkHorizontalDivider StatsHorizDiv;
         internal CustomControls.DarkCheckBox Patch_PostProc_CheckBox;
+        internal CustomControls.DarkCheckBox Patch_NDSubs_CheckBox;
     }
 }

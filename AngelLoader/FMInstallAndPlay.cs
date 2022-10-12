@@ -300,6 +300,15 @@ namespace AngelLoader
                 {
                     args += " postprocess=0";
                 }
+
+                if (fm.NDSubs == true)
+                {
+                    args += " enable_subtitles=1";
+                }
+                else if (fm.NDSubs == false)
+                {
+                    args += " enable_subtitles=0";
+                }
             }
 
             if (!WriteStubCommFile(fm, gamePath)) return false;

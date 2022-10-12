@@ -1766,6 +1766,15 @@ namespace AngelLoader.Forms
                     LText.PatchTab.PostProc_ToolTip_NotSet
                 );
 
+                Patch_NDSubs_CheckBox.Text = LText.PatchTab.Subtitles;
+                MainToolTip.SetToolTip(
+                    Patch_NDSubs_CheckBox,
+                    LText.PatchTab.Subtitles_ToolTip_Checked + "\r\n" +
+                    LText.PatchTab.Subtitles_ToolTip_Unchecked + "\r\n" +
+                    LText.PatchTab.Subtitles_ToolTip_NotSet + "\r\n\r\n" +
+                    LText.PatchTab.Subtitles_ToolTip_NewDarkNote
+                );
+
                 PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
                 MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
@@ -3374,6 +3383,17 @@ namespace AngelLoader.Forms
             FanMission fm = FMsDGV.GetMainSelectedFM();
 
             fm.PostProc = Patch_PostProc_CheckBox.ToNullableBool();
+
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            FanMission fm = FMsDGV.GetMainSelectedFM();
+
+            fm.NDSubs = Patch_NDSubs_CheckBox.ToNullableBool();
 
             Ini.WriteFullFMDataIni();
         }
@@ -5057,6 +5077,7 @@ namespace AngelLoader.Forms
 
                     Patch_NewMantle_CheckBox.SetFromNullableBool(fm.NewMantle);
                     Patch_PostProc_CheckBox.SetFromNullableBool(fm.PostProc);
+                    Patch_NDSubs_CheckBox.SetFromNullableBool(fm.NDSubs);
                 }
 
                 PatchMainPanel.Enabled = true;

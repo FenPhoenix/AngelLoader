@@ -132,6 +132,7 @@ namespace AngelLoader.Forms
             TagsTabAutoScrollMarker = new Control();
             PatchTabPage = new DarkTabPageCustom();
             Patch_PerFMValues_Label = new DarkLabel();
+            Patch_NDSubs_CheckBox = new DarkCheckBox();
             Patch_PostProc_CheckBox = new DarkCheckBox();
             Patch_NewMantle_CheckBox = new DarkCheckBox();
             PatchMainPanel = new Panel();
@@ -1237,6 +1238,7 @@ namespace AngelLoader.Forms
             PatchTabPage.AutoScroll = true;
             PatchTabPage.BackColor = SystemColors.Control;
             PatchTabPage.Controls.Add(Patch_PerFMValues_Label);
+            PatchTabPage.Controls.Add(Patch_NDSubs_CheckBox);
             PatchTabPage.Controls.Add(Patch_PostProc_CheckBox);
             PatchTabPage.Controls.Add(Patch_NewMantle_CheckBox);
             PatchTabPage.Controls.Add(PatchMainPanel);
@@ -1248,6 +1250,17 @@ namespace AngelLoader.Forms
             Patch_PerFMValues_Label.AutoSize = true;
             Patch_PerFMValues_Label.Location = new Point(6, 8);
             Patch_PerFMValues_Label.TabIndex = 0;
+            // 
+            // Patch_NDSubs_CheckBox
+            // 
+            Patch_NDSubs_CheckBox.AutoSize = true;
+            Patch_NDSubs_CheckBox.Checked = true;
+            Patch_NDSubs_CheckBox.CheckState = CheckState.Indeterminate;
+            Patch_NDSubs_CheckBox.Location = new Point(8, 80);
+            Patch_NDSubs_CheckBox.TabIndex = 3;
+            Patch_NDSubs_CheckBox.ThreeState = true;
+            Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
+            Patch_NDSubs_CheckBox.CheckStateChanged += Patch_NDSubs_CheckBox_CheckStateChanged;
             // 
             // Patch_PostProc_CheckBox
             // 
@@ -1277,7 +1290,7 @@ namespace AngelLoader.Forms
             PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             PatchMainPanel.Controls.Add(PatchDMLsPanel);
             PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
-            PatchMainPanel.Location = new Point(0, 80);
+            PatchMainPanel.Location = new Point(0, 104);
             PatchMainPanel.Size = new Size(311, 250);
             PatchMainPanel.TabIndex = 38;
             // 
