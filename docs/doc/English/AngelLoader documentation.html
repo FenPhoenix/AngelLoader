@@ -438,12 +438,21 @@ Here you can manage the FM's tags. You can click the <b>Add from list...</b> but
 
 Here you can apply patches and customizations to an FM.
 
+<h4>Option overrides</h4>
+
+If an option override is in the "unset" state, the game will use whatever is set in this FM's fm.cfg or in the global cam_ext.cfg (in other words, the default behavior).
+
 <h4><a name="new_mantle" />New mantle</h4>
 You can force new mantling on or off per-FM here, or set it back to "unset".
 <p/>
 If set, it will override the "<a href="#use_old_mantle_for_olddark_fms">Use old mantling for OldDark FMs</a>" option for this FM only.
 <p/>
-If unset, the mantling mode will be left alone and the game will use whatever mode is set in this FM's fm.cfg or in the global cam_ext.cfg (in other words, the default behavior).
+
+<h4>Post-processing</h4>
+Enable or disable post-processing effects per-FM. Currently (as of NewDark 1.27), the only type of post-processing effect is bloom.
+
+<h4>Subtitles</h4>
+Enable or disable subtitles per-FM. This only affects standard NewDark subtitles; older FMs that use non-standard custom subtitles will not be affected (eg. Broken Triad).
 
 <h4><a name="dml_patches" />.dml Patches</h4>
 Some older fan missions don't quite work as they should when played with NewDark. In many cases, patches are available to fix them. If you have any .dml patch files, you can add or remove them from the FM's installed folder here. If you've enabled the <a href="#settings_backup">"All changed files" backup setting</a>, then these fixes will be backed up and restored the next time you install the FM.
