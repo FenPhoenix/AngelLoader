@@ -146,9 +146,7 @@ namespace AngelLoader.Forms
             #endregion
 
             // If only one line of text, center the label vertically for a better look
-            // +2 fudge factor because the label height and the font height are not exactly the same (height is
-            // 1px less than font height in this case, but I don't know how consistent that is)
-            if (MessageLabel.Height <= MessageLabel.Font.Height + 2)
+            if (MessageLabel.Height <= TextRenderer.MeasureText("A", MessageLabel.Font).Height)
             {
                 MessageLabel.Location = MessageLabel.Location with
                 {
