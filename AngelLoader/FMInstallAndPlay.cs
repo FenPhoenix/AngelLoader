@@ -680,6 +680,11 @@ namespace AngelLoader
                     }
                 }
 
+                // @BetterErrors(missflag.str generator): miss*.mis name format
+                // If we find .mis files BUT none of them match the miss*.mis name format, we should throw up an
+                // error dialog saying that the game isn't going to be able to play the FM.
+                // Test this on the full set of FMs to make sure we have no false positives, and use a RAM disk
+                // for temp installs so we don't wear out our SSD...
                 if (misNums.Count == 0) return;
 
                 try
