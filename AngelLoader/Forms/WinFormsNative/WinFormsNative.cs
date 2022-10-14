@@ -114,6 +114,8 @@ namespace AngelLoader.Forms.WinFormsNative
         private const int LVM_FIRST = 0x1000;
         internal const int LVM_SETITEMA = LVM_FIRST + 6;
         internal const int LVM_SETITEMW = LVM_FIRST + 76;
+        internal const int LVM_SETITEMTEXTA = LVM_FIRST + 46;
+        internal const int LVM_SETITEMTEXTW = LVM_FIRST + 116;
         internal const int LVM_INSERTITEMA = LVM_FIRST + 7;
         internal const int LVM_INSERTITEMW = LVM_FIRST + 77;
         internal const int LVM_DELETEITEM = LVM_FIRST + 8;

@@ -368,6 +368,8 @@ namespace AngelLoader.Forms.CustomControls
                 // the max width of it.
                 case Native.LVM_SETITEMA:
                 case Native.LVM_SETITEMW:
+                case Native.LVM_SETITEMTEXTA:
+                case Native.LVM_SETITEMTEXTW:
                 case Native.LVM_INSERTITEMA:
                 case Native.LVM_INSERTITEMW:
                 case Native.LVM_DELETEITEM:
