@@ -131,23 +131,27 @@ namespace AngelLoader.Forms
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
         /// <param name="message"></param>
-        public void ShowError_ViewOwned(string message)
+        /// <param name="title"></param>
+        /// <param name="icon"></param>
+        public void ShowError_ViewOwned(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error)
         {
             AssertR(FormsViewEnvironment.ViewCreated, nameof(FormsViewEnvironment) + "." + nameof(FormsViewEnvironment.ViewCreated) + " was false");
-            InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal));
+            InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal, title, icon));
         }
 
         /// <summary>
         /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
         /// </summary>
         /// <param name="message"></param>
-        public void ShowError(string message) =>
-            InvokeIfViewExists(() => ShowError_Internal(message, null));
+        /// <param name="title"></param>
+        /// <param name="icon"></param>
+        public void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error) =>
+            InvokeIfViewExists(() => ShowError_Internal(message, null, title, icon));
 
         // Private method, not invoked because all calls are
-        private static void ShowError_Internal(string message, IWin32Window? owner)
+        private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MBoxIcon icon)
         {
-            using var d = new DarkErrorDialog(message, Paths.LogFile);
+            using var d = new DarkErrorDialog(message, Paths.LogFile, title, GetIcon(icon));
             if (owner != null)
             {
                 d.ShowDialogDark(owner);

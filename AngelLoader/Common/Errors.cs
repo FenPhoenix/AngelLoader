@@ -21,6 +21,12 @@
         GameVersionNotFound
     }
 
+    internal enum MissFlagError
+    {
+        None,
+        NoValidlyNamedMisFiles
+    }
+
     internal enum ImportError
     {
         None,

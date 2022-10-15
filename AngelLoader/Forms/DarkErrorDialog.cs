@@ -13,11 +13,15 @@ namespace AngelLoader.Forms
     {
         private readonly string _logFile;
 
-        public DarkErrorDialog(string message, string logFile) :
+        public DarkErrorDialog(
+            string message,
+            string logFile,
+            string? title = null,
+            MessageBoxIcon icon = MessageBoxIcon.Error) :
             base(
                 message: message,
-                title: LText.AlertMessages.Error,
-                icon: MessageBoxIcon.Error,
+                title: title ?? LText.AlertMessages.Error,
+                icon: icon,
                 yesText: LText.AlertMessages.Error_ViewLog,
                 noText: LText.Global.OK,
                 defaultButton: MBoxButton.Yes)

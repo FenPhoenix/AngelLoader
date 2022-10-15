@@ -256,7 +256,8 @@ namespace AngelLoader
 
             if (GameIsDark(fm.Game))
             {
-                GenerateMissFlagFileIfRequired(fm);
+                MissFlagError missFlagError = GenerateMissFlagFileIfRequired(fm, errorOnCantPlay: true);
+                if (missFlagError != MissFlagError.None) return false;
 
                 // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
                 // .mis file when detecting OldDark (if there is no missflag.str)!
@@ -644,17 +645,17 @@ namespace AngelLoader
 
         #region Per-FM fixes/patches etc.
 
-        private static void GenerateMissFlagFileIfRequired(FanMission fm)
+        private static MissFlagError GenerateMissFlagFileIfRequired(FanMission fm, bool errorOnCantPlay = false)
         {
             // Only T1 and T2 have/require missflag.str
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return;
+            if (fm.Game is not Game.Thief1 and not Game.Thief2) return MissFlagError.None;
 
             try
             {
                 string instFMsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(instFMsBasePath, fm.InstalledDir);
 
-                if (!Directory.Exists(fmInstalledPath)) return;
+                if (!Directory.Exists(fmInstalledPath)) return MissFlagError.None;
 
                 string stringsPath = Path.Combine(fmInstalledPath, "strings");
                 string missFlagFile = Path.Combine(stringsPath, Paths.MissFlagStr);
@@ -667,7 +668,7 @@ namespace AngelLoader
                     return missFlag.Length > 0;
                 }
 
-                if (MissFlagFilesExist()) return;
+                if (MissFlagFilesExist()) return MissFlagError.None;
 
                 var misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
                 var misNums = new List<int>(misFiles.Count);
@@ -680,12 +681,57 @@ namespace AngelLoader
                     }
                 }
 
-                // @BetterErrors(missflag.str generator): miss*.mis name format
-                // If we find .mis files BUT none of them match the miss*.mis name format, we should throw up an
-                // error dialog saying that the game isn't going to be able to play the FM.
-                // Test this on the full set of FMs to make sure we have no false positives, and use a RAM disk
-                // for temp installs so we don't wear out our SSD...
-                if (misNums.Count == 0) return;
+                if (misNums.Count == 0)
+                {
+                    if (errorOnCantPlay)
+                    {
+                        // @BetterErrors(missflag.str generator): miss*.mis name format: Do we want to localize this?
+                        string msg =
+                            "This FM is not correctly structured, so the game will not be able to load it.\r\n\r\n" +
+                            "This FM may be a demo, an unfinished mission, or may just be broken. It may be necessary to open it in DromEd to play it, or it may not be playable at all.\r\n\r\n" +
+                            "Details:\r\n" +
+                            "No missflag.str found. Tried to generate missflag.str, but failed because there were no correctly named .mis files. " +
+                            "Thief 1 and Thief 2 FMs are required to have at least one .mis file named in the format 'missN.mis', where N is a number. For example, 'miss20.mis' would be a valid name.";
+
+                        string logMsg = msg;
+
+                        try
+                        {
+                            string misFileNames = "";
+                            var allMisFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "*.mis");
+                            if (allMisFiles.Count == 0)
+                            {
+                                logMsg += "\r\n\r\nNo .mis files were found in FM directory.\r\n";
+                            }
+                            else
+                            {
+                                foreach (string fn in allMisFiles)
+                                {
+                                    misFileNames += "\r\n" + Path.GetFileName(fn);
+                                }
+                                misFileNames += "\r\n";
+                                logMsg += "\r\n\r\n.mis files in FM directory:" + misFileNames;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logMsg += "Exception getting .mis file names in FM directory.\r\nEXCEPTION: " + ex;
+                        }
+
+                        LogFMInfo(fm, logMsg);
+                        Core.Dialogs.ShowError(
+                            message: msg,
+                            title: LText.AlertMessages.Alert,
+                            icon: MBoxIcon.Warning
+                        );
+
+                        return MissFlagError.NoValidlyNamedMisFiles;
+                    }
+                    else
+                    {
+                        return MissFlagError.None;
+                    }
+                }
 
                 try
                 {
@@ -727,8 +773,10 @@ namespace AngelLoader
             {
                 LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file", ex);
                 // ReSharper disable once RedundantJumpStatement
-                return; // Explicit for clarity of intent
+                return MissFlagError.None; // Explicit for clarity of intent
             }
+
+            return MissFlagError.None;
         }
 
         private static bool TryGetSmallestUsedMisFile(FanMission fm, out string smallestUsedMisFile, out List<string> usedMisFiles)
