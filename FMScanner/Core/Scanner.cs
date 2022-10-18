@@ -157,25 +157,39 @@ namespace FMScanner
             /// Check this bool to see if you want to scan the file or not. Currently false if readme is HTML or
             /// non-English.
             /// </summary>
-            internal bool Scan;
-            internal bool IsGlml;
+            internal readonly bool Scan;
+            internal readonly bool IsGlml;
             internal readonly List<string> Lines = new();
             internal string Text = "";
 
             // For zips, we store this simple uint until we need it, only then do we expand it into a full DateTime
-            internal uint? LastModifiedDateRaw;
+            private uint? _lastModifiedDateRaw;
             private DateTime? _lastModifiedDate;
             internal DateTime LastModifiedDate
             {
                 get
                 {
-                    if (LastModifiedDateRaw != null)
+                    if (_lastModifiedDateRaw != null)
                     {
-                        _lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime((uint)LastModifiedDateRaw)).DateTime;
+                        _lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime((uint)_lastModifiedDateRaw)).DateTime;
+                        _lastModifiedDateRaw = null;
                     }
                     return (DateTime)_lastModifiedDate!;
                 }
-                set => _lastModifiedDate = value;
+            }
+
+            public ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan)
+            {
+                IsGlml = isGlml;
+                _lastModifiedDateRaw = lastModifiedDateRaw;
+                Scan = scan;
+            }
+
+            public ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan)
+            {
+                IsGlml = isGlml;
+                _lastModifiedDate = lastModifiedDate;
+                Scan = scan;
             }
         }
 
@@ -2432,21 +2446,19 @@ namespace FMScanner
                 // still may need to look at its last modified date.
                 if (_fmIsZip)
                 {
-                    _readmeFiles.Add(new ReadmeInternal
-                    {
-                        IsGlml = fileName.ExtIsGlml(),
-                        LastModifiedDateRaw = readmeEntry!.LastWriteTime,
-                        Scan = scanThisReadme
-                    });
+                    _readmeFiles.Add(new ReadmeInternal(
+                        isGlml: fileName.ExtIsGlml(),
+                        lastModifiedDateRaw: readmeEntry!.LastWriteTime,
+                        scan: scanThisReadme
+                    ));
                 }
                 else
                 {
-                    _readmeFiles.Add(new ReadmeInternal
-                    {
-                        IsGlml = fileName.ExtIsGlml(),
-                        LastModifiedDate = (DateTime)lastModifiedDate!,
-                        Scan = scanThisReadme
-                    });
+                    _readmeFiles.Add(new ReadmeInternal(
+                        isGlml: fileName.ExtIsGlml(),
+                        lastModifiedDate: (DateTime)lastModifiedDate!,
+                        scan: scanThisReadme
+                    ));
                 }
 
                 if (!scanThisReadme) continue;
