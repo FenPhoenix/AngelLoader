@@ -3559,7 +3559,7 @@ namespace FMScanner
                 }
                 else
                 {
-                    var gamSizeList = new List<(string Name, int Index, long Size)>(gamFiles.Length);
+                    var gamSizeList = new List<(NameAndIndex Gam, long Size)>(gamFiles.Length);
                     foreach (NameAndIndex gam in gamFiles)
                     {
                         long length;
@@ -3573,11 +3573,10 @@ namespace FMScanner
                             FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
-                        gamSizeList.Add((gam.Name, gam.Index, length));
+                        gamSizeList.Add((gam, length));
                     }
 
-                    var gamToUse = gamSizeList.OrderBy(static x => x.Size).First();
-                    smallestGamFile = new NameAndIndex(gamToUse.Name, gamToUse.Index);
+                    smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
                 }
             }
 
@@ -3585,7 +3584,7 @@ namespace FMScanner
 
             #region Choose smallest .mis file
 
-            var misSizeList = new List<(string Name, int Index, long Size)>(usedMisFiles.Count);
+            var misSizeList = new List<(NameAndIndex Mis, long Size)>(usedMisFiles.Count);
             NameAndIndex smallestUsedMisFile;
 
             if (usedMisFiles.Count == 1)
@@ -3609,11 +3608,10 @@ namespace FMScanner
                         FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
-                    misSizeList.Add((mis.Name, mis.Index, length));
+                    misSizeList.Add((mis, length));
                 }
 
-                var misToUse = misSizeList.OrderBy(static x => x.Size).First();
-                smallestUsedMisFile = new NameAndIndex(misToUse.Name, misToUse.Index);
+                smallestUsedMisFile = misSizeList.OrderBy(static x => x.Size).First().Mis;
             }
 
             #endregion
