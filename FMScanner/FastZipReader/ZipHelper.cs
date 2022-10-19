@@ -33,7 +33,7 @@ namespace FMScanner.FastZipReader
     // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
     public sealed class ZipReusableBundle : IDisposable
     {
-        public readonly SubReadStream ArchiveSubReadStream = new();
+        internal readonly SubReadStream ArchiveSubReadStream = new();
 
         private const int _backwardsSeekingBufferSize = 32;
         internal const int ThrowAwayBufferSize = 64;
@@ -48,7 +48,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public byte ReadByte(Stream stream)
+        internal byte ReadByte(Stream stream)
         {
             // Avoid calling Read() because it allocates a 1-byte buffer every time (ridiculous)
             int num = stream.Read(_buffer, 0, 1);
@@ -61,7 +61,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public ushort ReadUInt16(Stream stream)
+        internal ushort ReadUInt16(Stream stream)
         {
             FillBuffer(stream, 2);
             return (ushort)((uint)_buffer[0] | (uint)_buffer[1] << 8);
@@ -76,7 +76,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public int ReadInt32(Stream stream)
+        internal int ReadInt32(Stream stream)
         {
             FillBuffer(stream, 4);
             return (int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24;
@@ -91,7 +91,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public uint ReadUInt32(Stream stream)
+        internal uint ReadUInt32(Stream stream)
         {
             FillBuffer(stream, 4);
             return (uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -106,7 +106,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        public long ReadInt64(Stream stream)
+        internal long ReadInt64(Stream stream)
         {
             FillBuffer(stream, 8);
             return (long)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (long)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -121,7 +121,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-        public ulong ReadUInt64(Stream stream)
+        internal ulong ReadUInt64(Stream stream)
         {
             FillBuffer(stream, 8);
             return (ulong)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (ulong)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
@@ -136,7 +136,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// <paramref name="count" /> is negative.</exception>
-        public static byte[] ReadBytes(Stream stream, int count)
+        internal static byte[] ReadBytes(Stream stream, int count)
         {
             if (count < 0)
             {

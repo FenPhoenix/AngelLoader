@@ -15,7 +15,7 @@ namespace FMScanner.FastZipReader
         private long _endInSuperStream;
         private Stream _superStream = null!;
 
-        public void SetSuperStream(Stream? stream) => _superStream = stream!;
+        internal void SetSuperStream(Stream? stream) => _superStream = stream!;
 
         internal void Set(long startPosition, long maxLength)
         {
