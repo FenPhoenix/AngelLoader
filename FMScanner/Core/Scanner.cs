@@ -1400,6 +1400,8 @@ namespace FMScanner
         }
 #endif
 
+        #region Dates
+
         // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
         // So we can do some guesswork on whether the readme dates are near enough to correct or not
         private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
@@ -1487,6 +1489,166 @@ namespace FMScanner
             // If we still don't have anything, give up: we've made a good-faith effort.
             return null;
         }
+
+        private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
+        {
+            // Always false for now, because we only return dates that have month names in them currently
+            // (was I concerned about number-only dates having not enough context to be sure they're dates?)
+            isAmbiguous = false;
+
+            if (_readmeFiles.Count == 0) return null;
+
+            const int maxTopLines = 5;
+
+            foreach (ReadmeInternal r in _readmeFiles)
+            {
+                if (!r.Scan) continue;
+
+                var lines = new List<string>(maxTopLines);
+
+                for (int i = 0; i < r.Lines.Count; i++)
+                {
+                    string line = r.Lines[i];
+                    if (!line.IsWhiteSpace()) lines.Add(line);
+                    if (lines.Count == maxTopLines) break;
+                }
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string lineT = lines[i].Trim();
+                    foreach (string item in _monthNamesEnglish)
+                    {
+                        if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
+        private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
+        {
+            // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
+            // to guessing about day/month order.
+            if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
+            {
+                if (DateTime.TryParseExact(
+                    dateString,
+                    _dateFormatsEuropean,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime eurDateResult))
+                {
+                    dateTime = eurDateResult;
+                    isAmbiguous = true;
+                    return true;
+                }
+            }
+
+            dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
+            dateString = Regex.Replace(dateString, @"\s+", " ");
+            // Auldale Chess Tournament saying "March ~8, 2006"
+            dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
+            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
+            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
+            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
+            dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
+
+            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+            Match match = DaySuffixesRegex.Match(dateString);
+            if (match.Success)
+            {
+                Group suffix = match.Groups["Suffix"];
+                dateString = dateString.Substring(0, suffix.Index) +
+                             dateString.Substring(suffix.Index + suffix.Length);
+            }
+
+            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+            // want to fail, and not assume the current year.
+            bool success = false;
+            bool canBeAmbiguous = false;
+            DateTime? result = null!;
+            for (int i = 0; i < _dateFormats.Length; i++)
+            {
+                var item = _dateFormats[i];
+                success = DateTime.TryParseExact(
+                    dateString,
+                    item.Format,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime result_);
+                if (success)
+                {
+                    canBeAmbiguous = item.CanBeAmbiguous;
+                    result = result_;
+                    break;
+                }
+            }
+
+            if (!success)
+            {
+                isAmbiguous = false;
+                dateTime = null;
+                return false;
+            }
+
+            if (!checkForAmbiguity || !canBeAmbiguous)
+            {
+                isAmbiguous = false;
+                dateTime = result;
+                return true;
+            }
+
+            isAmbiguous = true;
+            foreach (char c in dateString)
+            {
+                if (c.IsAsciiAlpha())
+                {
+                    isAmbiguous = false;
+                    break;
+                }
+            }
+
+            if (isAmbiguous)
+            {
+                string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
+                if (nums.Length == 3)
+                {
+                    bool unambiguousYearFound = false;
+                    bool unambiguousDayFound = false;
+
+                    for (int i = 0; i < nums.Length; i++)
+                    {
+                        if (int.TryParse(nums[i], out int numInt))
+                        {
+                            switch (numInt)
+                            {
+                                case >= 1000 and <= 9999:
+                                    unambiguousYearFound = true;
+                                    break;
+                                case > 12 and <= 31:
+                                    unambiguousDayFound = true;
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (unambiguousYearFound && unambiguousDayFound)
+                    {
+                        isAmbiguous = false;
+                    }
+                }
+            }
+
+            dateTime = result;
+            return true;
+        }
+
+        #endregion
 
         #region Set tags
 
@@ -2826,45 +2988,6 @@ namespace FMScanner
             return ret;
         }
 
-        private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
-        {
-            // Always false for now, because we only return dates that have month names in them currently
-            // (was I concerned about number-only dates having not enough context to be sure they're dates?)
-            isAmbiguous = false;
-
-            if (_readmeFiles.Count == 0) return null;
-
-            const int maxTopLines = 5;
-
-            foreach (ReadmeInternal r in _readmeFiles)
-            {
-                if (!r.Scan) continue;
-
-                var lines = new List<string>(maxTopLines);
-
-                for (int i = 0; i < r.Lines.Count; i++)
-                {
-                    string line = r.Lines[i];
-                    if (!line.IsWhiteSpace()) lines.Add(line);
-                    if (lines.Count == maxTopLines) break;
-                }
-
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    string lineT = lines[i].Trim();
-                    foreach (string item in _monthNamesEnglish)
-                    {
-                        if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
-                        {
-                            return result;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
         #region Title(s) and mission names
 
         // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
@@ -4107,125 +4230,6 @@ namespace FMScanner
         }
 
         #endregion
-
-        // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
-        private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
-        {
-            // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
-            // to guessing about day/month order.
-            if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
-            {
-                if (DateTime.TryParseExact(
-                    dateString,
-                    _dateFormatsEuropean,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime eurDateResult))
-                {
-                    dateTime = eurDateResult;
-                    isAmbiguous = true;
-                    return true;
-                }
-            }
-
-            dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
-            dateString = Regex.Replace(dateString, @"\s+", " ");
-            // Auldale Chess Tournament saying "March ~8, 2006"
-            dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
-            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
-            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
-            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
-            dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
-
-            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-            Match match = DaySuffixesRegex.Match(dateString);
-            if (match.Success)
-            {
-                Group suffix = match.Groups["Suffix"];
-                dateString = dateString.Substring(0, suffix.Index) +
-                             dateString.Substring(suffix.Index + suffix.Length);
-            }
-
-            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
-            // want to fail, and not assume the current year.
-            bool success = false;
-            bool canBeAmbiguous = false;
-            DateTime? result = null!;
-            for (int i = 0; i < _dateFormats.Length; i++)
-            {
-                var item = _dateFormats[i];
-                success = DateTime.TryParseExact(
-                    dateString,
-                    item.Format,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime result_);
-                if (success)
-                {
-                    canBeAmbiguous = item.CanBeAmbiguous;
-                    result = result_;
-                    break;
-                }
-            }
-
-            if (!success)
-            {
-                isAmbiguous = false;
-                dateTime = null;
-                return false;
-            }
-
-            if (!checkForAmbiguity || !canBeAmbiguous)
-            {
-                isAmbiguous = false;
-                dateTime = result;
-                return true;
-            }
-
-            isAmbiguous = true;
-            foreach (char c in dateString)
-            {
-                if (c.IsAsciiAlpha())
-                {
-                    isAmbiguous = false;
-                    break;
-                }
-            }
-
-            if (isAmbiguous)
-            {
-                string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
-                if (nums.Length == 3)
-                {
-                    bool unambiguousYearFound = false;
-                    bool unambiguousDayFound = false;
-
-                    for (int i = 0; i < nums.Length; i++)
-                    {
-                        if (int.TryParse(nums[i], out int numInt))
-                        {
-                            switch (numInt)
-                            {
-                                case >= 1000 and <= 9999:
-                                    unambiguousYearFound = true;
-                                    break;
-                                case > 12 and <= 31:
-                                    unambiguousDayFound = true;
-                                    break;
-                            }
-                        }
-                    }
-
-                    if (unambiguousYearFound && unambiguousDayFound)
-                    {
-                        isAmbiguous = false;
-                    }
-                }
-            }
-
-            dateTime = result;
-            return true;
-        }
 
         #endregion
 
