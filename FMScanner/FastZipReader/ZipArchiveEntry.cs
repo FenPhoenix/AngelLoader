@@ -45,7 +45,6 @@ namespace FMScanner.FastZipReader
 
         #endregion
 
-        // Initializes, attaches it to archive
         internal ZipArchiveEntry(ZipCentralDirectoryFileHeader cd)
         {
             CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;

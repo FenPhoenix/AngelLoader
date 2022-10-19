@@ -172,7 +172,7 @@ namespace FMScanner.FastZipReader
             return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream);
         }
 
-        private static Stream GetDataDecompressor(ZipArchiveEntry entry, Stream compressedStreamToRead)
+        private static Stream GetDataDecompressor(ZipArchiveEntry entry, SubReadStream compressedStreamToRead)
         {
             Stream uncompressedStream;
             switch (entry.CompressionMethod)
