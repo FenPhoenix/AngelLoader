@@ -180,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (encoding == null)
                 {
                     var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                    encoding = fe.DetectFileEncoding(ms, Encoding.Default) ?? Encoding.Default;
+                    encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
                     retEncoding = encoding;
                     ms.Position = 0;
                 }

@@ -84,26 +84,29 @@ namespace FMScanner.SimpleHelpers
         /// Tries to detect the file encoding.
         /// </summary>
         /// <param name="inputFilename">The input filename.</param>
-        /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
-        /// <returns></returns>
-        public Encoding? DetectFileEncoding(string inputFilename, Encoding? defaultIfNotDetected = null)
+        /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
+        public Encoding? DetectFileEncoding(string inputFilename)
         {
             using var stream = new FileStream(inputFilename, FileMode.Open, FileAccess.Read, FileShare.Read, DEFAULT_BUFFER_SIZE);
-            return DetectFileEncoding(stream) ?? defaultIfNotDetected;
+            return DetectFileEncoding(stream);
         }
 
         /// <summary>
         /// Tries to detect the file encoding.
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
-        /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
-        /// <returns></returns>
-        public Encoding? DetectFileEncoding(Stream inputStream, Encoding? defaultIfNotDetected = null)
+        /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
+        public Encoding? DetectFileEncoding(Stream inputStream)
         {
-            Detect(inputStream);
-            Encoding? ret = Complete() ?? defaultIfNotDetected;
-            Reset();
-            return ret;
+            try
+            {
+                Detect(inputStream);
+                return Complete();
+            }
+            finally
+            {
+                Reset();
+            }
         }
 
         /// <summary>
