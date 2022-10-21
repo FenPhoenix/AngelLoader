@@ -14,12 +14,11 @@ namespace AL_Common
     -ParseKeyword() (the above-mentioned optional-space-after-keyword logic)
     -Hex parser (a bunch of times, mostly to do with "last char in stream corner case")
     -Field instruction parser ("rewind and skip group")
-    -Color table parser (this is totally custom and should be easy to remove it from by changing the logic)
 
     If we can get rid of the un-get buffer, we can avoid the hot-loop branch that checks if there's anything in
     said buffer every time we get a char, and associated un-getting logic (which is minimal, but still).
 
-    Counts of GetNextChar/GetNextCharFast() sources:
+    Counts of GetNextChar()/GetNextCharFast() sources:
     Stream:       172,766,662
     UnGet buffer: 996,390
 
