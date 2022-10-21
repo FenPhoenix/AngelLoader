@@ -230,8 +230,9 @@ namespace AngelLoader
                 if (!GetNextChar(out char ch)) return ClearReturnFields(Error.EndOfFile);
                 if (ch == '}')
                 {
-                    UnGetChar('}');
-                    _colorTableEndIndex = (int)CurrentPos;
+                    // No need to un-get, because we're exiting the parser immediately upon return no matter what,
+                    // and we don't make any further get-char calls.
+                    _colorTableEndIndex = ((int)CurrentPos - 1).ClampToZero();
                     break;
                 }
                 _colorTableSB.Append(ch);
