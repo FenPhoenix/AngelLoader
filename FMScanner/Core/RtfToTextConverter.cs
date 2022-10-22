@@ -35,8 +35,8 @@ To that end:
    to plaintext, simply skipping over anything that can't be converted. We thereby avoid the substantial overhead
    of a full parser.
 
--Note that we don't check for {\rtf1 at the start of the file to validate, as in FMScanner that will have been
- done already.
+-Note that we don't check for {\rtf1 at the start of the file to validate, as we assume that will have been done
+ already.
 
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
