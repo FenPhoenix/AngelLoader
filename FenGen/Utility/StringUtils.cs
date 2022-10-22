@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using static System.StringComparison;
 
@@ -16,10 +17,12 @@ namespace FenGen
         #region ASCII-specific
 
         [PublicAPI]
-        internal static bool IsAsciiUpper(this char c) => c is >= 'A' and <= 'Z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAsciiUpper(this char c) => (uint)(c - 'A') <= 'Z' - 'A';
 
         [PublicAPI]
-        internal static bool IsAsciiLower(this char c) => c is >= 'a' and <= 'z';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
         [PublicAPI]
         internal static bool EqualsIAscii(this char char1, char char2) =>

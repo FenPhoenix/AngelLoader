@@ -1466,13 +1466,13 @@ namespace FMScanner
             {
                 b += (byte)(ch - '0');
             }
-            else if (ch is >= 'a' and <= 'f')
+            else if ((uint)(ch - 'a') <= 'f' - 'a')
             {
-                b += (byte)(ch - 'a' + 10);
+                b += (byte)((ch - 'a') + 10);
             }
-            else if (ch is >= 'A' and <= 'F')
+            else if ((uint)(ch - 'A') <= 'F' - 'A')
             {
-                b += (byte)(ch - 'A' + 10);
+                b += (byte)((ch - 'A') + 10);
             }
             else
             {

@@ -186,10 +186,10 @@ namespace AL_Common
         #region ASCII-specific
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiUpper(this char c) => c is >= 'A' and <= 'Z';
+        public static bool IsAsciiUpper(this char c) => (uint)(c - 'A') <= 'Z' - 'A';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiLower(this char c) => c is >= 'a' and <= 'z';
+        public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
         public static bool EqualsIAscii(this char char1, char char2) =>
             char1 == char2 ||
@@ -197,13 +197,13 @@ namespace AL_Common
             (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
+        public static bool IsAsciiAlpha(this char c) => (((uint)c - 'A') & ~0x20) < 26;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiNumeric(this char c) => c is >= '0' and <= '9';
+        public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
+        public static bool IsAsciiAlphanumeric(this char c) => ((((uint)c - 'A') & ~0x20) < 26) || ((uint)(c - '0') <= '9' - '0');
 
         public static bool IsAsciiAlphaUpper(this string str)
         {
@@ -219,7 +219,7 @@ namespace AL_Common
             for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
-                if (c > 127 || (c is >= 'A' and <= 'Z')) return false;
+                if (c > 127 || ((uint)(c - 'A') <= 'Z' - 'A')) return false;
             }
             return true;
         }
@@ -229,7 +229,7 @@ namespace AL_Common
             for (int i = start; i < str.Length; i++)
             {
                 char c = str[i];
-                if (c > 127 || (c is >= 'A' and <= 'Z')) return false;
+                if (c > 127 || ((uint)(c - 'A') <= 'Z' - 'A')) return false;
             }
             return true;
         }
