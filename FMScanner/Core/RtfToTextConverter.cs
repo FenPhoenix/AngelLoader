@@ -110,7 +110,7 @@ namespace FMScanner
 
         #region Classes
 
-        private sealed class DictWithTopItem : Dictionary<int, FontEntry>
+        private sealed class FontDictionary : Dictionary<int, FontEntry>
         {
             private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
 
@@ -120,7 +120,7 @@ namespace FMScanner
             private const int _switchPoint = 1700;
 
             internal FontEntry Top = default!;
-            internal DictWithTopItem(int capacity) : base(capacity) { }
+            internal FontDictionary(int capacity) : base(capacity) { }
 
             internal new int Count;
 
@@ -1026,7 +1026,7 @@ namespace FMScanner
         // Highest measured was 131
         // Fonts can specify themselves as whatever number they want, so we can't just count by index
         // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-        private readonly DictWithTopItem _fontEntries = new(150);
+        private readonly FontDictionary _fontEntries = new(150);
         /*
         Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
         subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
