@@ -801,6 +801,7 @@ namespace FMScanner
                     }
                     catch (Exception ex)
                     {
+                        #region Notes about semi-broken zips
                         /*
                         Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
                         
@@ -855,6 +856,7 @@ namespace FMScanner
                         others. I don't know. So we're going to continue to fail in this case, but at least tell
                         the user what's wrong and give them an actionable suggestion.
                         */
+                        #endregion
                         if (ex is ZipCompressionMethodException zipEx)
                         {
                             Log(fm.Path + ": fm is zip.\r\n" +
