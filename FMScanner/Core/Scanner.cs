@@ -930,7 +930,6 @@ namespace FMScanner
                 {
                     if (_fmDirFileInfos.Count == 0)
                     {
-                        _fmDirFileInfos.Clear();
                         // PERF: AddRange() is a fat slug, do Add() in a loop instead
                         FileInfo[] fileInfos = new DirectoryInfo(_fmWorkingPath).GetFiles("*", SearchOption.AllDirectories);
                         // Don't reduce capacity, as that causes a reallocation
