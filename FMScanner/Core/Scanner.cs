@@ -2663,6 +2663,8 @@ namespace FMScanner
                             : null;
                     }
 
+                    ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
+
                     // file is rtf
                     if (rtfHeader?.SequenceEqual(RTFHeaderBytes) == true)
                     {
@@ -2682,9 +2684,8 @@ namespace FMScanner
 
                         if (success)
                         {
-                            ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                            last.Lines.ClearAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
                             last.Text = text;
+                            last.Lines.ClearAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
                         }
                     }
                     else // file is plain text
@@ -2698,38 +2699,24 @@ namespace FMScanner
                             es.CopyTo(readmeStream);
                         }
 
-                        ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                        last.Lines.ClearAndAdd(_fmIsZip
-                            ? ReadAllLinesE(readmeStream!, readmeFileLen, streamIsSeekable: true)
-                            : ReadAllLinesE(readmeFileOnDisk));
+                        last.Text = _fmIsZip
+                            ? ReadAllTextE(readmeStream!)
+                            : ReadAllTextE(readmeFileOnDisk);
 
                         // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
                         // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
                         bool extIsGlml = last.IsGlml;
                         if (extIsGlml)
                         {
-                            for (int i = 0; i < last.Lines.Count; i++)
+                            var sb = new StringBuilder(last.Text);
+                            foreach (Match m in GLMLTagRegex.Matches(last.Text))
                             {
-                                var matches = GLMLTagRegex.Matches(last.Lines[i]);
-                                foreach (Match m in matches)
-                                {
-                                    // We put linebreaks in the middle of lines here, but see below for the fixup
-                                    last.Lines[i] = last.Lines[i].Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
-                                }
+                                sb.Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
                             }
+                            last.Text = sb.ToString();
                         }
 
-                        last.Text = string.Join("\r\n", last.Lines);
-
-                        if (extIsGlml)
-                        {
-                            // We may have inserted CRLFs into the middle of lines, so re-split the text into
-                            // lines again to ensure no line contains CRLFs (ie. every CRLF will result in a
-                            // separate line).
-                            // This was working before out of sheer luck that [GLNL] tags were only occurring at
-                            // the end of lines, but this isn't technically guaranteed.
-                            last.Lines.ClearAndAdd(last.Text.Split(SA_CRLF, StringSplitOptions.None));
-                        }
+                        last.Lines.ClearAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                     }
                 }
                 finally
@@ -4146,7 +4133,43 @@ namespace FMScanner
 
         #endregion
 
-        #region ReadAllLines
+        #region Read plaintext
+
+        #region ReadAllText (detect encoding)
+
+        /// <summary>
+        /// Reads all the text in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
+        /// correctly.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        private string ReadAllTextE(Stream stream)
+        {
+            Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
+
+            stream.Position = 0;
+
+            using var sr = new StreamReader(stream, encoding);
+            return sr.ReadToEnd();
+        }
+
+        /// <summary>
+        /// Reads all the text in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
+        /// correctly.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        private string ReadAllTextE(string file)
+        {
+            Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
+
+            using var sr = new StreamReader(file, encoding);
+            return sr.ReadToEnd();
+        }
+
+        #endregion
+
+        #region ReadAllLines (detect encoding)
 
         /// <summary>
         /// Reads all the lines in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
@@ -4154,43 +4177,47 @@ namespace FMScanner
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="length">The length of the stream in bytes.</param>
-        /// <param name="streamIsSeekable">If true, the stream is used directly rather than copied, and is left
-        /// open.</param>
         /// <returns></returns>
-        private List<string> ReadAllLinesE(Stream stream, long length, bool streamIsSeekable = false)
+        private List<string> ReadAllLinesE(Stream stream, long length)
         {
             var lines = new List<string>();
 
-            // Quick hack
-            if (streamIsSeekable)
-            {
-                stream.Position = 0;
+            // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
+            // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
+            using var memStream = new MemoryStream((int)length);
+            stream.CopyTo(memStream);
+            stream.Dispose();
+            memStream.Position = 0;
+            Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
+            memStream.Position = 0;
 
-                Encoding? enc = _fileEncoding.DetectFileEncoding(stream);
-
-                stream.Position = 0;
-
-                // Code page 1252 = Western European (using instead of Encoding.Default)
-                using var sr = new StreamReader(stream, enc ?? Encoding.GetEncoding(1252), false, 1024, leaveOpen: true);
-                while (sr.ReadLine() is { } line) lines.Add(line);
-            }
-            else
-            {
-                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
-                // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-                using var memStream = new MemoryStream((int)length);
-                stream.CopyTo(memStream);
-                stream.Dispose();
-                memStream.Position = 0;
-                Encoding? enc = _fileEncoding.DetectFileEncoding(memStream);
-                memStream.Position = 0;
-
-                using var sr = new StreamReader(memStream, enc ?? Encoding.GetEncoding(1252), false);
-                while (sr.ReadLine() is { } line) lines.Add(line);
-            }
+            using var sr = new StreamReader(memStream, encoding, false);
+            while (sr.ReadLine() is { } line) lines.Add(line);
 
             return lines;
         }
+
+        /// <summary>
+        /// Reads all the lines in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
+        /// correctly.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <returns></returns>
+        private List<string> ReadAllLinesE(string file)
+        {
+            Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
+
+            var lines = new List<string>();
+
+            using var sr = new StreamReader(file, encoding);
+            while (sr.ReadLine() is { } line) lines.Add(line);
+
+            return lines;
+        }
+
+        #endregion
+
+        #region ReadAllLines (as is)
 
         private static List<string> ReadAllLines(Stream stream, Encoding encoding)
         {
@@ -4212,23 +4239,7 @@ namespace FMScanner
             return lines;
         }
 
-        /// <summary>
-        /// Reads all the lines in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
-        /// correctly.
-        /// </summary>
-        /// <param name="file">The file to read.</param>
-        /// <returns></returns>
-        private List<string> ReadAllLinesE(string file)
-        {
-            Encoding? enc = _fileEncoding.DetectFileEncoding(file);
-
-            var lines = new List<string>();
-
-            using var sr = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
-            while (sr.ReadLine() is { } line) lines.Add(line);
-
-            return lines;
-        }
+        #endregion
 
         #endregion
 
