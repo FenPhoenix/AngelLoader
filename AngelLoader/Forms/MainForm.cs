@@ -808,6 +808,24 @@ namespace AngelLoader.Forms
             MainMenuButton.HideFocusRectangle();
         }
 
+        private static string GetBaseTitle() => "AngelLoader " + Application.ProductVersion;
+
+        public void SetTitle()
+        {
+            string title = GetBaseTitle();
+
+            int count = 0;
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                if (!fm.MarkedUnavailable) count++;
+            }
+
+            title += " - " + count + " FMs available";
+
+            Text = title;
+        }
+
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
         // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
         // wrong or what, but I have this init method now that comfortably runs after the ctor. Shrug.
@@ -819,7 +837,7 @@ namespace AngelLoader.Forms
             const string betaVer = "4";
             Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
-            Text = "AngelLoader " + Application.ProductVersion;
+            Text = GetBaseTitle();
 #endif
 
             #region Set up form and control state
@@ -1043,6 +1061,8 @@ namespace AngelLoader.Forms
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
+
+            SetTitle();
         }
 
         /*
@@ -2440,6 +2460,7 @@ namespace AngelLoader.Forms
             else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
             {
                 await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
+                SetTitle();
             }
             else if (sender == PlayFMButton)
             {

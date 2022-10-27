@@ -443,5 +443,6 @@ namespace AngelLoader
         FanMission? GetMainSelectedFMOrNull_Fast();
         bool GetUIEnabled();
         void SetUIEnabled(bool value);
+        void SetTitle();
     }
 }

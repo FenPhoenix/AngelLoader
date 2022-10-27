@@ -744,14 +744,17 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == InstallUninstallMenuItem)
             {
                 await FMInstallAndPlay.InstallOrUninstall(_owner.GetSelectedFMs_InOrder());
+                _owner.SetTitle();
             }
             else if (sender == DeleteFMMenuItem)
             {
                 await FMDelete.DeleteFMsFromDisk(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
+                _owner.SetTitle();
             }
             else if (sender == DeleteFromDBMenuItem)
             {
                 await FMDelete.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
+                _owner.SetTitle();
             }
             else if (sender == OpenInDromEdMenuItem)
             {
