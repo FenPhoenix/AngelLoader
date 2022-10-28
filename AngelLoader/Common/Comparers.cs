@@ -10,6 +10,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
+    // TODO(Comparers): Make reverse-sort columns start with arrow down by default
+    // Also make Last Played sort reverse
+
     [PublicAPI]
     internal static class Comparers
     {
