@@ -4043,9 +4043,11 @@ namespace AngelLoader.Forms
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
             var newSortDirection =
-                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortDirection.Ascending
-                    ? SortDirection.Descending
-                    : SortDirection.Ascending;
+                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn
+                    ? FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                        ? SortDirection.Descending
+                        : SortDirection.Ascending
+                    : ColumnDefaultSortDirections[e.ColumnIndex];
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
