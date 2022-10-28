@@ -458,7 +458,8 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "When multiple FMs are selected, the FM details area (\"top-right tabs\") will be hidden and this message",
                 "will appear in its place.")]
-            internal readonly string MultipleFMsSelectedMessage = "Multiple FMs selected.";
+            internal readonly string FMsSelected_BeforeNumber = "";
+            internal readonly string FMsSelected_AfterNumber = " FMs selected.";
         }
 
         internal sealed class StatisticsTab_Class

@@ -1577,6 +1577,13 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetFMSelectedCountMessage(int count)
+        {
+            TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.FMsSelected_BeforeNumber +
+                                                   count +
+                                                   LText.FMDetailsArea.FMsSelected_AfterNumber;
+        }
+
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -1683,7 +1690,7 @@ namespace AngelLoader.Forms
 
                 #region Top-right tabs area
 
-                TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.MultipleFMsSelectedMessage;
+                SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
 
                 TopRightLLMenu.Localize();
 
@@ -4779,8 +4786,6 @@ namespace AngelLoader.Forms
         // (blink tab somehow to let the user know if the tab is already shown)
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
-            SetTopRightBlockerVisible();
-
             #region Get attributes that apply to all items
 
             // Crap-garbage code to loop through only once in case we have a large selection set
@@ -4891,6 +4896,19 @@ namespace AngelLoader.Forms
                 noneAreAvailable = markedUnavailableCount == selRowsCount;
                 allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
                 allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+            }
+
+            try
+            {
+                TopRightMultiSelectBlockerPanel.SuspendDrawing();
+
+                SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
+
+                SetTopRightBlockerVisible();
+            }
+            finally
+            {
+                TopRightMultiSelectBlockerPanel.ResumeDrawing();
             }
 
             #endregion
