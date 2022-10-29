@@ -811,18 +811,25 @@ namespace AngelLoader.Forms
         private string? _baseTitle;
         private string GetBaseTitle() => _baseTitle ??= "AngelLoader " + Application.ProductVersion;
 
+        // @vNext(Show stuff in title bar)
+        // The user with Steam on Linux who requested the Exit button (because the title bar isn't visible)
+        // reminds me that the title bar may not be visible. The bottom bar may be our least worst option
+        // to put this text in.
         public void SetTitle()
         {
             string title = GetBaseTitle();
 
-            int count = 0;
-            for (int i = 0; i < FMsViewList.Count; i++)
+            if (Config.ShowFMCountInTitle)
             {
-                if (!FMsViewList[i].MarkedUnavailable) count++;
-            }
+                int count = 0;
+                for (int i = 0; i < FMsViewList.Count; i++)
+                {
+                    if (!FMsViewList[i].MarkedUnavailable) count++;
+                }
 
-            // @vNext: Localize this
-            title += " - " + count + " FMs available";
+                // @vNext: Localize this
+                title += " - " + count + " FMs available";
+            }
 
             Text = title;
         }
