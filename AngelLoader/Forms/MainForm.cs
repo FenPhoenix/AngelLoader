@@ -808,7 +808,8 @@ namespace AngelLoader.Forms
             MainMenuButton.HideFocusRectangle();
         }
 
-        private static string GetBaseTitle() => "AngelLoader " + Application.ProductVersion;
+        private string? _baseTitle;
+        private string GetBaseTitle() => _baseTitle ??= "AngelLoader " + Application.ProductVersion;
 
         public void SetTitle()
         {
@@ -817,10 +818,10 @@ namespace AngelLoader.Forms
             int count = 0;
             for (int i = 0; i < FMsViewList.Count; i++)
             {
-                FanMission fm = FMsViewList[i];
-                if (!fm.MarkedUnavailable) count++;
+                if (!FMsViewList[i].MarkedUnavailable) count++;
             }
 
+            // @vNext: Localize this
             title += " - " + count + " FMs available";
 
             Text = title;
@@ -2467,7 +2468,6 @@ namespace AngelLoader.Forms
             else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
             {
                 await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
-                SetTitle();
             }
             else if (sender == PlayFMButton)
             {

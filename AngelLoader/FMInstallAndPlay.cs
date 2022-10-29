@@ -70,10 +70,18 @@ namespace AngelLoader
 
         #endregion
 
-        internal static Task InstallOrUninstall(params FanMission[] fms)
+        internal static async Task InstallOrUninstall(params FanMission[] fms)
         {
             AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
-            return fms[0].Installed ? Uninstall(fms) : Install(fms);
+            if (fms[0].Installed)
+            {
+                await Uninstall(fms);
+                Core.View.SetTitle();
+            }
+            else
+            {
+                await Install(fms);
+            }
         }
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)

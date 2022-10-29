@@ -744,7 +744,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == InstallUninstallMenuItem)
             {
                 await FMInstallAndPlay.InstallOrUninstall(_owner.GetSelectedFMs_InOrder());
-                _owner.SetTitle();
             }
             else if (sender == DeleteFMMenuItem)
             {

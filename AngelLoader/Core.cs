@@ -554,10 +554,6 @@ namespace AngelLoader
             if (archivePathsChanged || gamePathsChanged)
             {
                 fmsViewListUnscanned = FindFMs.Find();
-                if (fmsViewListUnscanned.Count == 0)
-                {
-                    View.SetTitle();
-                }
             }
             if (gameOrganizationChanged)
             {
@@ -632,7 +628,6 @@ namespace AngelLoader
             if (fmsViewListUnscanned?.Count > 0)
             {
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
-                View.SetTitle();
             }
 
             if (sortAndSetFilter)
