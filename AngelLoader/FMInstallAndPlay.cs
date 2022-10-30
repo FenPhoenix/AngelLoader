@@ -76,7 +76,7 @@ namespace AngelLoader
             if (fms[0].Installed)
             {
                 await Uninstall(fms);
-                Core.View.SetTitle();
+                Core.View.SetAvailableFMCount();
             }
             else
             {

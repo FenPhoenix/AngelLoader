@@ -233,7 +233,7 @@ namespace AngelLoader
             AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
             var ret = FindInternal(startup: false);
-            Core.View!.SetTitle();
+            Core.View!.SetAvailableFMCount();
             return ret;
         }
 

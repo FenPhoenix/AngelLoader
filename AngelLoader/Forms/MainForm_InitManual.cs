@@ -30,6 +30,7 @@ namespace AngelLoader.Forms
             GameTabsImageList = new ImageList(components);
             BottomPanel = new Panel();
             BottomRightFLP = new FlowLayoutPanel();
+            FMCountLabel = new DarkLabel();
             SettingsButton = new DarkButton();
             BottomLeftFLP = new FlowLayoutPanel();
             PlayFMButton = new DarkButton();
@@ -200,22 +201,30 @@ namespace AngelLoader.Forms
             BottomRightFLP.AutoSize = true;
             BottomRightFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BottomRightFLP.Controls.Add(SettingsButton);
+            BottomRightFLP.Controls.Add(FMCountLabel);
             BottomRightFLP.FlowDirection = FlowDirection.RightToLeft;
-            BottomRightFLP.Location = new Point(1563, 0);
+            BottomRightFLP.Location = new Point(1490, 0);
             // Needs width to be anchored correctly
-            BottomRightFLP.Width = 106;
+            BottomRightFLP.Width = 179;
             BottomRightFLP.TabIndex = 37;
+            BottomRightFLP.Paint += BottomRightFLP_Paint;
             // 
             // SettingsButton
             // 
             SettingsButton.AutoSize = true;
             SettingsButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SettingsButton.Margin = new Padding(15, 3, 3, 3);
             SettingsButton.MinimumSize = new Size(0, 36);
             SettingsButton.Padding = new Padding(30, 0, 6, 0);
             SettingsButton.TabIndex = 62;
             SettingsButton.UseVisualStyleBackColor = true;
             SettingsButton.PaintCustom += SettingsButton_Paint;
             SettingsButton.Click += Async_EventHandler_Main;
+            // 
+            // FMCountLabel
+            // 
+            FMCountLabel.AutoSize = true;
+            FMCountLabel.Margin = new Padding(3, 15, 0, 0);
             // 
             // BottomLeftFLP
             // 

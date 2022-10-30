@@ -41,7 +41,7 @@ namespace AngelLoader
             }
 
             await (allAreUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
-            Core.View.SetTitle();
+            Core.View.SetAvailableFMCount();
         }
 
         #region Delete from database

@@ -35,6 +35,7 @@ degree.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
+//#define HIDE_PERSONAL_CONTROLS
 
 using System;
 using System.Collections.Generic;
@@ -107,6 +108,7 @@ namespace AngelLoader.Forms
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
         private readonly Control[] _bottomAreaSeparatedItems;
+        private readonly Control[] _bottomRightAreaSeparatedItems;
 
         private readonly Component[][] _hideableFilterControls;
 
@@ -678,14 +680,18 @@ namespace AngelLoader.Forms
 
 #if !ReleaseBeta && !ReleasePublic
             ForceWindowedCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
+#if !HIDE_PERSONAL_CONTROLS
             BottomRightFLP.Controls.Add(ForceWindowedCheckBox);
+#endif
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 
             T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
             T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
             // Add in reverse order because the flow layout panel is right-to-left I guess?
+#if !HIDE_PERSONAL_CONTROLS
             BottomRightFLP.Controls.Add(T2ScreenShotModeCheckBox);
             BottomRightFLP.Controls.Add(T1ScreenShotModeCheckBox);
+#endif
             T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
             T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
 #endif
@@ -773,6 +779,11 @@ namespace AngelLoader.Forms
                 WebSearchButton
             };
 
+            _bottomRightAreaSeparatedItems = new Control[]
+            {
+                SettingsButton
+            };
+
             #endregion
 
             _hideableFilterControls = new[]
@@ -808,30 +819,16 @@ namespace AngelLoader.Forms
             MainMenuButton.HideFocusRectangle();
         }
 
-        private string? _baseTitle;
-        private string GetBaseTitle() => _baseTitle ??= "AngelLoader " + Application.ProductVersion;
-
-        // @vNext(Show stuff in title bar)
-        // The user with Steam on Linux who requested the Exit button (because the title bar isn't visible)
-        // reminds me that the title bar may not be visible. The bottom bar may be our least worst option
-        // to put this text in.
-        public void SetTitle()
+        public void SetAvailableFMCount()
         {
-            string title = GetBaseTitle();
-
-            if (Config.ShowFMCountInTitle)
+            int count = 0;
+            for (int i = 0; i < FMsViewList.Count; i++)
             {
-                int count = 0;
-                for (int i = 0; i < FMsViewList.Count; i++)
-                {
-                    if (!FMsViewList[i].MarkedUnavailable) count++;
-                }
-
-                // @vNext: Localize this
-                title += " - " + count + " FMs available";
+                if (!FMsViewList[i].MarkedUnavailable) count++;
             }
 
-            Text = title;
+            // @vNext: Localize this
+            FMCountLabel.Text = count + " FMs available";
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -845,7 +842,7 @@ namespace AngelLoader.Forms
             const string betaVer = "4";
             Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
-            Text = GetBaseTitle();
+            Text = "AngelLoader " + Application.ProductVersion;
 #endif
 
             #region Set up form and control state
@@ -1069,8 +1066,6 @@ namespace AngelLoader.Forms
 #if !ReleasePublic
             //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
-
-            SetTitle();
         }
 
         /*
@@ -1864,6 +1859,7 @@ namespace AngelLoader.Forms
 
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
 
+                SetAvailableFMCount();
                 SettingsButton.Text = LText.MainButtons.Settings;
                 ExitLLButton.Localize();
 
@@ -5376,6 +5372,8 @@ namespace AngelLoader.Forms
         }
 
         private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
+
+        private void BottomRightFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomRightAreaSeparatedItems);
 
         private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 

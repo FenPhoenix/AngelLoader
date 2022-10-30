@@ -748,12 +748,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             else if (sender == DeleteFMMenuItem)
             {
                 await FMDelete.DeleteFMsFromDisk(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
-                _owner.SetTitle();
+                _owner.SetAvailableFMCount();
             }
             else if (sender == DeleteFromDBMenuItem)
             {
                 await FMDelete.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
-                _owner.SetTitle();
+                _owner.SetAvailableFMCount();
             }
             else if (sender == OpenInDromEdMenuItem)
             {
