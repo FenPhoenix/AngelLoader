@@ -118,6 +118,11 @@ namespace AngelLoader.DataClasses
             internal readonly string InstallFMs = "Install FMs";
             internal readonly string UninstallFM = "Uninstall FM";
             internal readonly string UninstallFMs = "Uninstall FMs";
+            [FenGenBlankLine]
+            internal readonly string FMsAvailable_Single_BeforeNumber = "";
+            internal readonly string FMsAvailable_Single = " FM available";
+            internal readonly string FMsAvailable_Plural_BeforeNumber = "";
+            internal readonly string FMsAvailable_Plural = " FMs available";
         }
 
         internal sealed class SplashScreen_Class

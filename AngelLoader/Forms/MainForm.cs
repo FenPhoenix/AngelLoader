@@ -4577,8 +4577,9 @@ namespace AngelLoader.Forms
                 if (!FMsViewList[i].MarkedUnavailable) count++;
             }
 
-            // @vNext: Localize this
-            FMCountLabel.Text = count + " FMs available";
+            FMCountLabel.Text = count == 1
+                ? LText.Global.FMsAvailable_Single_BeforeNumber + count + LText.Global.FMsAvailable_Single
+                : LText.Global.FMsAvailable_Plural_BeforeNumber + count + LText.Global.FMsAvailable_Plural;
         }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
