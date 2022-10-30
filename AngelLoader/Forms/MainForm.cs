@@ -1571,7 +1571,7 @@ namespace AngelLoader.Forms
         private void SetFMSelectedCountMessage(int count)
         {
             TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.FMsSelected_BeforeNumber +
-                                                   count +
+                                                   count.ToString(CultureInfo.CurrentCulture) +
                                                    LText.FMDetailsArea.FMsSelected_AfterNumber;
         }
 
@@ -4578,8 +4578,8 @@ namespace AngelLoader.Forms
             }
 
             FMCountLabel.Text = count == 1
-                ? LText.Global.FMsAvailable_Single_BeforeNumber + count + LText.Global.FMsAvailable_Single
-                : LText.Global.FMsAvailable_Plural_BeforeNumber + count + LText.Global.FMsAvailable_Plural;
+                ? LText.Global.FMsAvailable_Single_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Single
+                : LText.Global.FMsAvailable_Plural_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Plural;
         }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
