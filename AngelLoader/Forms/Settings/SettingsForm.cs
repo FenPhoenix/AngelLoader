@@ -322,7 +322,10 @@ namespace AngelLoader.Forms
 
             PathsPage.FMArchivePathsListBox.BeginUpdate();
             PathsPage.FMArchivePathsListBox.Items.Clear();
-            foreach (string path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
+            foreach (string path in config.FMArchivePaths)
+            {
+                PathsPage.FMArchivePathsListBox.Items.Add(path);
+            }
             PathsPage.FMArchivePathsListBox.EndUpdate();
 
             PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
@@ -1027,7 +1030,10 @@ namespace AngelLoader.Forms
 
             // Manual so we can use Trim() on each
             OutConfig.FMArchivePaths.Clear();
-            foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings) OutConfig.FMArchivePaths.Add(path.Trim());
+            foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
+            {
+                OutConfig.FMArchivePaths.Add(path.Trim());
+            }
 
             OutConfig.FMArchivePathsIncludeSubfolders = PathsPage.IncludeSubfoldersCheckBox.Checked;
 
@@ -1186,7 +1192,13 @@ namespace AngelLoader.Forms
             var s = (DarkRadioButtonCustom)sender;
             if (!s.Checked) return;
 
-            using (new DisableEvents(this)) foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
+            using (new DisableEvents(this))
+            {
+                foreach (var b in PageRadioButtons)
+                {
+                    if (s != b) b.Checked = false;
+                }
+            }
 
             ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
@@ -1371,7 +1383,7 @@ namespace AngelLoader.Forms
             {
                 PathsPage.FMArchivePathsListBox.BeginUpdate();
 
-                var hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetI();
+                var hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
 
                 foreach (string dir in d.DirectoryNames)
                 {

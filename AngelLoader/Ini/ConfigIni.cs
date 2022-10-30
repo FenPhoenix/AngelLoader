@@ -1115,7 +1115,10 @@ namespace AngelLoader
             #endregion
 
             sb.Append("FMsBackupPath=").AppendLine(config.FMsBackupPath.Trim());
-            foreach (string path in config.FMArchivePaths) sb.Append("FMArchivePath=").AppendLine(path.Trim());
+            foreach (string path in config.FMArchivePaths)
+            {
+                sb.Append("FMArchivePath=").AppendLine(path.Trim());
+            }
             sb.Append("FMArchivePathsIncludeSubfolders=").Append(config.FMArchivePathsIncludeSubfolders).AppendLine();
 
             #endregion

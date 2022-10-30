@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -831,6 +832,12 @@ namespace AngelLoader
             }
 
             #endregion
+
+            // IMPORTANT: ToArray() is necessary otherwise it doesn't work (IEnumerable behavior I guess)
+            // TODO: This should really be like an "Ordered HashSet" but there's no such thing I don't think
+            // So we should make it a custom type like the cat and tags classes
+            // Because we want it to self-dedupe, but also to keep its ordering
+            config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
         }
 
         #endregion

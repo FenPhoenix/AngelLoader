@@ -47,7 +47,7 @@ namespace AL_Common
         #region Custom hash tables
 
         private static readonly PathComparer _pathComparer = new();
-        private sealed class PathComparer : StringComparer
+        public sealed class PathComparer : StringComparer
         {
             // Allocations here, but this doesn't ever seem to get hit for Add() or Contains() calls
             public override int Compare(string? x, string? y)
