@@ -135,6 +135,13 @@ namespace AngelLoader
 
         #endregion
 
+        public static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnsCount];
+
+        static Misc()
+        {
+            ColumnDefaultSortDirections[(int)Column.LastPlayed] = SortDirection.Descending;
+        }
+
         internal static readonly ReadOnlyCollection<string> ValidDateFormats =
             new(new[] { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" });
 

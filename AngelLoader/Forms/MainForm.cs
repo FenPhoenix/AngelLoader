@@ -35,6 +35,7 @@ degree.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
+//#define HIDE_PERSONAL_CONTROLS
 
 using System;
 using System.Collections.Generic;
@@ -106,7 +107,8 @@ namespace AngelLoader.Forms
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
-        private readonly Control[] _bottomAreaSeparatedItems;
+        private readonly Control[] _bottomLeftAreaSeparatedItems;
+        private readonly Control[] _bottomRightAreaSeparatedItems;
 
         private readonly Component[][] _hideableFilterControls;
 
@@ -678,14 +680,18 @@ namespace AngelLoader.Forms
 
 #if !ReleaseBeta && !ReleasePublic
             ForceWindowedCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
+#if !HIDE_PERSONAL_CONTROLS
             BottomRightFLP.Controls.Add(ForceWindowedCheckBox);
+#endif
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 
             T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
             T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
             // Add in reverse order because the flow layout panel is right-to-left I guess?
+#if !HIDE_PERSONAL_CONTROLS
             BottomRightFLP.Controls.Add(T2ScreenShotModeCheckBox);
             BottomRightFLP.Controls.Add(T1ScreenShotModeCheckBox);
+#endif
             T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
             T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
 #endif
@@ -768,9 +774,14 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton
             };
 
-            _bottomAreaSeparatedItems = new Control[]
+            _bottomLeftAreaSeparatedItems = new Control[]
             {
                 WebSearchButton
+            };
+
+            _bottomRightAreaSeparatedItems = new Control[]
+            {
+                SettingsButton
             };
 
             #endregion
@@ -1557,6 +1568,13 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetFMSelectedCountMessage(int count)
+        {
+            TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.FMsSelected_BeforeNumber +
+                                                   count.ToString(CultureInfo.CurrentCulture) +
+                                                   LText.FMDetailsArea.FMsSelected_AfterNumber;
+        }
+
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -1663,7 +1681,7 @@ namespace AngelLoader.Forms
 
                 #region Top-right tabs area
 
-                TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.MultipleFMsSelectedMessage;
+                SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
 
                 TopRightLLMenu.Localize();
 
@@ -1829,6 +1847,7 @@ namespace AngelLoader.Forms
 
                 WebSearchButton.Text = LText.MainButtons.WebSearch;
 
+                SetAvailableFMCount();
                 SettingsButton.Text = LText.MainButtons.Settings;
                 ExitLLButton.Localize();
 
@@ -4015,9 +4034,11 @@ namespace AngelLoader.Forms
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
             var newSortDirection =
-                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortDirection.Ascending
-                    ? SortDirection.Descending
-                    : SortDirection.Ascending;
+                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn
+                    ? FMsDGV.CurrentSortDirection == SortDirection.Ascending
+                        ? SortDirection.Descending
+                        : SortDirection.Ascending
+                    : ColumnDefaultSortDirections[e.ColumnIndex];
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
@@ -4548,6 +4569,19 @@ namespace AngelLoader.Forms
 
         #region Right side
 
+        public void SetAvailableFMCount()
+        {
+            int count = 0;
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                if (!FMsViewList[i].MarkedUnavailable) count++;
+            }
+
+            FMCountLabel.Text = count == 1
+                ? LText.Global.FMsAvailable_Single_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Single
+                : LText.Global.FMsAvailable_Plural_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Plural;
+        }
+
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 
         #endregion
@@ -4758,8 +4792,6 @@ namespace AngelLoader.Forms
         // (blink tab somehow to let the user know if the tab is already shown)
         internal void UpdateUIControlsForMultiSelectState(FanMission fm)
         {
-            SetTopRightBlockerVisible();
-
             #region Get attributes that apply to all items
 
             // Crap-garbage code to loop through only once in case we have a large selection set
@@ -4870,6 +4902,19 @@ namespace AngelLoader.Forms
                 noneAreAvailable = markedUnavailableCount == selRowsCount;
                 allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
                 allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+            }
+
+            try
+            {
+                TopRightMultiSelectBlockerPanel.SuspendDrawing();
+
+                SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
+
+                SetTopRightBlockerVisible();
+            }
+            finally
+            {
+                TopRightMultiSelectBlockerPanel.ResumeDrawing();
             }
 
             #endregion
@@ -5327,7 +5372,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
+        private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomLeftAreaSeparatedItems);
+
+        private void BottomRightFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomRightAreaSeparatedItems);
 
         private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 

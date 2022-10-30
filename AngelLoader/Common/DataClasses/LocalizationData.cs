@@ -118,6 +118,11 @@ namespace AngelLoader.DataClasses
             internal readonly string InstallFMs = "Install FMs";
             internal readonly string UninstallFM = "Uninstall FM";
             internal readonly string UninstallFMs = "Uninstall FMs";
+            [FenGenBlankLine]
+            internal readonly string FMsAvailable_Single_BeforeNumber = "";
+            internal readonly string FMsAvailable_Single = " FM available";
+            internal readonly string FMsAvailable_Plural_BeforeNumber = "";
+            internal readonly string FMsAvailable_Plural = " FMs available";
         }
 
         internal sealed class SplashScreen_Class
@@ -458,7 +463,8 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "When multiple FMs are selected, the FM details area (\"top-right tabs\") will be hidden and this message",
                 "will appear in its place.")]
-            internal readonly string MultipleFMsSelectedMessage = "Multiple FMs selected.";
+            internal readonly string FMsSelected_BeforeNumber = "";
+            internal readonly string FMsSelected_AfterNumber = " FMs selected.";
         }
 
         internal sealed class StatisticsTab_Class

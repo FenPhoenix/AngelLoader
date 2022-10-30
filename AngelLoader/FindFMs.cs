@@ -228,7 +228,14 @@ namespace AngelLoader
         /// Finds and merges new FMs (archives and installed) into the set.
         /// </summary>
         /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-        internal static List<FanMission> Find() => FindInternal(startup: false);
+        internal static List<FanMission> Find()
+        {
+            AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
+
+            var ret = FindInternal(startup: false);
+            Core.View!.SetAvailableFMCount();
+            return ret;
+        }
 
         // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.

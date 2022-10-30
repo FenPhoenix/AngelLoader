@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -41,6 +42,7 @@ namespace AngelLoader
             }
 
             await (allAreUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms));
+            Core.View.SetAvailableFMCount();
         }
 
         #region Delete from database
@@ -202,7 +204,7 @@ namespace AngelLoader
             (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
                 message: single
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + GetFMId(fms[0])
-                    : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount +
+                    : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount.ToString(CultureInfo.CurrentCulture) +
                       LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
                 title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
                 icon: MBoxIcon.Warning,

@@ -51,6 +51,7 @@
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.FMCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BottomLeftFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -227,17 +228,20 @@
             this.BottomRightFLP.AutoSize = true;
             this.BottomRightFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomRightFLP.Controls.Add(this.SettingsButton);
+            this.BottomRightFLP.Controls.Add(this.FMCountLabel);
             this.BottomRightFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightFLP.Location = new System.Drawing.Point(1563, 0);
+            this.BottomRightFLP.Location = new System.Drawing.Point(1490, 0);
             this.BottomRightFLP.Name = "BottomRightFLP";
-            this.BottomRightFLP.Size = new System.Drawing.Size(106, 42);
+            this.BottomRightFLP.Size = new System.Drawing.Size(179, 42);
             this.BottomRightFLP.TabIndex = 37;
+            this.BottomRightFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomRightFLP_Paint);
             // 
             // SettingsButton
             // 
             this.SettingsButton.AutoSize = true;
             this.SettingsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SettingsButton.Location = new System.Drawing.Point(3, 3);
+            this.SettingsButton.Location = new System.Drawing.Point(76, 3);
+            this.SettingsButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.SettingsButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.Padding = new System.Windows.Forms.Padding(30, 0, 6, 0);
@@ -247,6 +251,16 @@
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
             this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
+            // 
+            // FMCountLabel
+            // 
+            this.FMCountLabel.AutoSize = true;
+            this.FMCountLabel.Location = new System.Drawing.Point(3, 15);
+            this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 15, 0, 0);
+            this.FMCountLabel.Name = "FMCountLabel";
+            this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
+            this.FMCountLabel.TabIndex = 63;
+            this.FMCountLabel.Text = "[FM count]";
             // 
             // BottomLeftFLP
             // 
@@ -433,8 +447,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -615,7 +629,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -636,7 +650,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -715,7 +729,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -1710,8 +1724,8 @@
             // 
             // MainModsControl
             // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainModsControl.Location = new System.Drawing.Point(0, 0);
             this.MainModsControl.Name = "MainModsControl";
@@ -2048,5 +2062,6 @@
         internal CustomControls.DarkHorizontalDivider StatsHorizDiv;
         internal CustomControls.DarkCheckBox Patch_PostProc_CheckBox;
         internal CustomControls.DarkCheckBox Patch_NDSubs_CheckBox;
+        internal CustomControls.DarkLabel FMCountLabel;
     }
 }
