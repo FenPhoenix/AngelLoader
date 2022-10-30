@@ -107,7 +107,7 @@ namespace AngelLoader.Forms
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
-        private readonly Control[] _bottomAreaSeparatedItems;
+        private readonly Control[] _bottomLeftAreaSeparatedItems;
         private readonly Control[] _bottomRightAreaSeparatedItems;
 
         private readonly Component[][] _hideableFilterControls;
@@ -774,7 +774,7 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton
             };
 
-            _bottomAreaSeparatedItems = new Control[]
+            _bottomLeftAreaSeparatedItems = new Control[]
             {
                 WebSearchButton
             };
@@ -817,18 +817,6 @@ namespace AngelLoader.Forms
             }
 
             MainMenuButton.HideFocusRectangle();
-        }
-
-        public void SetAvailableFMCount()
-        {
-            int count = 0;
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                if (!FMsViewList[i].MarkedUnavailable) count++;
-            }
-
-            // @vNext: Localize this
-            FMCountLabel.Text = count + " FMs available";
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -4581,6 +4569,18 @@ namespace AngelLoader.Forms
 
         #region Right side
 
+        public void SetAvailableFMCount()
+        {
+            int count = 0;
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                if (!FMsViewList[i].MarkedUnavailable) count++;
+            }
+
+            // @vNext: Localize this
+            FMCountLabel.Text = count + " FMs available";
+        }
+
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 
         #endregion
@@ -5371,7 +5371,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
+        private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomLeftAreaSeparatedItems);
 
         private void BottomRightFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomRightAreaSeparatedItems);
 
