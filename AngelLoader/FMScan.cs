@@ -83,8 +83,8 @@ namespace AngelLoader
                             visible: !suppressShow,
                             message1: LText.ProgressBox.Scanning,
                             message2: LText.ProgressBox.PreparingToScanFMs,
-                            progressType: ProgressType.Determinate,
                             percent: 0,
+                            progressType: ProgressType.Determinate,
                             cancelAction: CancelToken
                         );
                     }

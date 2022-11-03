@@ -210,10 +210,10 @@ namespace AngelLoader
                 icon: MBoxIcon.Warning,
                 yes: single ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs_CertainMultiple,
                 no: LText.Global.Cancel,
+                yesIsDangerous: true,
                 checkBoxText: single
                     ? LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Single
-                    : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple,
-                yesIsDangerous: true);
+                    : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple);
 
             if (result == MBoxButton.No) return;
 
@@ -325,9 +325,8 @@ namespace AngelLoader
                         if (!single)
                         {
                             Core.View.SetProgressBoxState_Single(
-                                percent: GetPercentFromValue_Int(i + 1, fms.Count),
-                                message2: GetFMId(fm)
-                            );
+                                message2: GetFMId(fm),
+                                percent: GetPercentFromValue_Int(i + 1, fms.Count));
                         }
 
                         await Task.Run(() =>

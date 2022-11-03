@@ -69,15 +69,15 @@ namespace AngelLoader.Forms
             ((MBoxButton, bool))InvokeIfViewExists(() =>
             {
                 using var d = new DarkTaskDialog(
-                    title: title,
                     message: message,
+                    title: title,
+                    icon: GetIcon(icon),
                     yesText: yes,
                     noText: no,
                     cancelText: cancel,
                     yesIsDangerous: yesIsDangerous,
-                    defaultButton: defaultButton,
                     checkBoxText: checkBoxText,
-                    icon: GetIcon(icon));
+                    defaultButton: defaultButton);
 
                 DialogResult result = FormsViewEnvironment.ViewCreated
                     ? d.ShowDialogDark(FormsViewEnvironment.ViewInternal)

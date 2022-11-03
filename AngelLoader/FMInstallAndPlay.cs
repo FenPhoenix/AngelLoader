@@ -121,9 +121,9 @@ namespace AngelLoader
                     message: message,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.None,
-                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: LText.Global.PlayFM,
-                    no: LText.Global.Cancel);
+                    no: LText.Global.Cancel,
+                    checkBoxText: LText.AlertMessages.DontAskAgain);
 
                 if (result == MBoxButton.No) return;
 
@@ -1343,9 +1343,9 @@ namespace AngelLoader
                           LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                     title: LText.AlertMessages.Alert,
                     icon: MBoxIcon.None,
-                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: single ? fromPlay ? LText.Global.PlayFM : LText.Global.InstallFM : LText.Global.InstallFMs,
                     no: LText.Global.Cancel,
+                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     defaultButton: MBoxButton.No);
                 if (result == MBoxButton.No) return false;
 
@@ -1567,8 +1567,8 @@ namespace AngelLoader
                     {
                         Core.View.SetProgressBoxState_Double(
                             mainPercent: newMainPercent,
-                            subPercent: percent,
-                            subMessage: fmArchive
+                            subMessage: fmArchive,
+                            subPercent: percent
                         );
                     }
 
@@ -1619,8 +1619,8 @@ namespace AngelLoader
                         {
                             Core.View.SetProgressBoxState_Double(
                                 mainPercent: newMainPercent,
-                                subPercent: pr.PercentOfEntries,
-                                subMessage: fmArchive
+                                subMessage: fmArchive,
+                                subPercent: pr.PercentOfEntries
                             );
                         }
                     }
@@ -1711,9 +1711,9 @@ namespace AngelLoader
                         : LText.AlertMessages.Uninstall_Confirm_Multiple,
                     title: LText.AlertMessages.Confirm,
                     icon: MBoxIcon.Warning,
-                    checkBoxText: LText.AlertMessages.DontAskAgain,
                     yes: LText.AlertMessages.Uninstall,
-                    no: LText.Global.Cancel);
+                    no: LText.Global.Cancel,
+                    checkBoxText: LText.AlertMessages.DontAskAgain);
 
                 if (result == MBoxButton.No) return fail;
 
@@ -1878,8 +1878,8 @@ namespace AngelLoader
                     if (!single)
                     {
                         Core.View.SetProgressBoxState_Single(
-                            percent: GetPercentFromValue_Int(i + 1, fmDataList.Length),
-                            message2: GetFMId(fm)
+                            message2: GetFMId(fm),
+                            percent: GetPercentFromValue_Int(i + 1, fmDataList.Length)
                         );
                     }
 

@@ -65,7 +65,7 @@ namespace AngelLoader.Forms
 
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
-        private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
+        private readonly DateTime _exampleDate = new(DateTime.Now.Year, 8, 4);
 
         private readonly DarkComboBoxWithBackingItems LangComboBox;
         private readonly DarkGroupBox LangGroupBox;

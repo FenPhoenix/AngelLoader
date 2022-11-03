@@ -634,7 +634,7 @@ namespace AngelLoader
             {
                 // Just always force refresh of FM to make sure whatever we've changed will take.
                 // We don't care about possible unnecessary refreshes because we only happen on settings OK click.
-                await View.SortAndSetFilter(keepSelection: keepSel, forceDisplayFM: true);
+                await View.SortAndSetFilter(forceDisplayFM: true, keepSelection: keepSel);
             }
 
             return true;
@@ -2079,8 +2079,8 @@ namespace AngelLoader
             }
 
             await View.SortAndSetFilter(
-                keepSelection: pin,
                 selectedFM: selFM,
+                keepSelection: pin,
                 keepMultiSelection: !singleFMSelected && pin);
         }
 

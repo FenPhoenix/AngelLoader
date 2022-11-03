@@ -176,8 +176,6 @@ namespace AngelLoader
                     dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
                 }
             } while (FindNextFileW(findHandle, out findData));
-
-            return;
         }
 
         /// <summary>

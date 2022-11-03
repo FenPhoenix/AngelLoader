@@ -693,8 +693,8 @@ namespace FenGen
                         writer: w,
                         obj: obj,
                         enumName: Cache.GamesEnum.Name,
-                        fieldIniName: fieldIniName,
                         fieldName: field.Name,
+                        fieldIniName: fieldIniName,
                         enumNames: Cache.GamesEnum.GameEnumNames);
                 }
                 else if (field.Type == Cache.LangsEnum.Name)
