@@ -4798,7 +4798,8 @@ namespace AngelLoader.Forms
 
             int selRowsCount = 0;
 
-            bool allAreInstalled,
+            bool multiSelected,
+                allAreInstalled,
                 noneAreInstalled,
                 allAreDark,
                 noneAreDark,
@@ -4806,7 +4807,10 @@ namespace AngelLoader.Forms
                 noneAreAvailable,
                 allAreKnownAndSupported,
                 allSelectedAreSameInstalledState,
-                allAreSupportedAndAvailable;
+                allAreSupportedAndAvailable,
+                playShouldBeEnabled,
+                installShouldBeEnabled;
+
             bool multiplePinnedStates = false;
             {
                 int installedCount = 0,
@@ -4902,13 +4906,18 @@ namespace AngelLoader.Forms
                 noneAreAvailable = markedUnavailableCount == selRowsCount;
                 allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
                 allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+
+                multiSelected = selRowsCount > 1;
+                playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
+                installShouldBeEnabled = allSelectedAreSameInstalledState &&
+                                         ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable);
             }
 
             try
             {
                 TopRightMultiSelectBlockerPanel.SuspendDrawing();
 
-                SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
+                SetFMSelectedCountMessage(selRowsCount);
 
                 SetTopRightBlockerVisible();
             }
@@ -4919,18 +4928,11 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            bool multiSelected = selRowsCount > 1;
-
-            bool playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
-
             FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(playShouldBeEnabled);
             PlayFMButton.Enabled = playShouldBeEnabled;
 
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
             FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
-
-            bool installShouldBeEnabled = allSelectedAreSameInstalledState &&
-                                          ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable);
 
             FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
             InstallUninstallFMLLButton.SetEnabled(installShouldBeEnabled);
