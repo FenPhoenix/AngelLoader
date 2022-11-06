@@ -134,6 +134,8 @@ namespace AngelLoader.Forms
         {
             bool darkMode = theme == VisualTheme.Dark;
 
+            Images.DarkModeEnabled = darkMode;
+
             // @DarkModeNote(FillControlColorList): Controls might change their colors after construct
             // Remember to handle this if new controls are added that this applies to.
             if (_controlColors.Count == 0)
@@ -174,8 +176,6 @@ namespace AngelLoader.Forms
                             : (item.Value!.ForeColor, item.Value!.BackColor);
                 }
             }
-
-            Images.DarkModeEnabled = darkMode;
         }
 
         #endregion
