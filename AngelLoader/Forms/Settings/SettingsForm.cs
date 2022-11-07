@@ -535,6 +535,8 @@ namespace AngelLoader.Forms
 
                 OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
 
+                OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
+
                 #endregion
             }
 
@@ -822,6 +824,9 @@ namespace AngelLoader.Forms
 
                     OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
                     OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
+
+                    OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
+                    OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
 
                     #endregion
                 }
@@ -1178,6 +1183,8 @@ namespace AngelLoader.Forms
                 OutConfig.WebSearchUrl = OtherPage.WebSearchUrlTextBox.Text;
 
                 OutConfig.ConfirmPlayOnDCOrEnter = OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked;
+
+                OutConfig.EnableFuzzySearch = OtherPage.EnableFuzzySearchCheckBox.Checked;
 
                 #endregion
             }

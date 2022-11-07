@@ -428,6 +428,8 @@ namespace AngelLoader.DataClasses
 
         internal bool AskedToScanForMisCounts;
 
+        internal bool EnableFuzzySearch;
+
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed;

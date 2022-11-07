@@ -8,6 +8,8 @@
         private void InitSlim()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.FilteringGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -27,11 +29,12 @@
             this.BackupAllChangedDataRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.BackupSavesAndScreensOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.FMSettingsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-            this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PagePanel.SuspendLayout();
+            this.FilteringGroupBox.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
@@ -42,6 +45,7 @@
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.Controls.Add(this.FilteringGroupBox);
             this.PagePanel.Controls.Add(this.InstallingFMsGroupBox);
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
@@ -49,8 +53,28 @@
             this.PagePanel.Controls.Add(this.FMSettingsGroupBox);
             this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagePanel.Size = new System.Drawing.Size(440, 623);
+            this.PagePanel.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.TabIndex = 0;
+            // 
+            // EnableFuzzySearchCheckBox
+            // 
+            this.EnableFuzzySearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
+            this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.EnableFuzzySearchCheckBox.TabIndex = 0;
+            this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // FilteringGroupBox
+            // 
+            this.FilteringGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FilteringGroupBox.Controls.Add(this.EnableFuzzySearchCheckBox);
+            this.FilteringGroupBox.Location = new System.Drawing.Point(8, 624);
+            this.FilteringGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+            this.FilteringGroupBox.Size = new System.Drawing.Size(424, 56);
+            this.FilteringGroupBox.TabIndex = 5;
+            this.FilteringGroupBox.TabStop = false;
             // 
             // InstallingFMsGroupBox
             // 
@@ -226,6 +250,15 @@
             this.FMSettingsGroupBox.TabIndex = 0;
             this.FMSettingsGroupBox.TabStop = false;
             // 
+            // OldMantleForOldDarkFMsCheckBox
+            // 
+            this.OldMantleForOldDarkFMsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 80);
+            this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
+            this.OldMantleForOldDarkFMsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // ConvertOGGsToWAVsOnInstallCheckBox
             // 
             this.ConvertOGGsToWAVsOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -251,22 +284,14 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 12;
             // 
-            // OldMantleForOldDarkFMsCheckBox
-            // 
-            this.OldMantleForOldDarkFMsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 80);
-            this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
-            this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
-            this.OldMantleForOldDarkFMsCheckBox.UseVisualStyleBackColor = true;
-            // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Size = new System.Drawing.Size(440, 623);
+            this.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.ResumeLayout(false);
+            this.FilteringGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.ResumeLayout(false);
             this.InstallingFMsGroupBox.PerformLayout();
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);

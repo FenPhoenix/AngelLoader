@@ -735,6 +735,11 @@ namespace AngelLoader
             config.AskedToScanForMisCounts = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_EnableFuzzySearch_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+        {
+            config.EnableFuzzySearch = valTrimmed.EqualsTrue();
+        }
+
         #endregion
 
         private sealed unsafe class Config_DelegatePointerWrapper
@@ -919,6 +924,8 @@ namespace AngelLoader
             { "PlayOriginalSeparateButtons", new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
 
             { "AskedToScanForMisCounts", new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
+
+            { "EnableFuzzySearch", new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
 
             #region Backward compatibility
 
@@ -1271,6 +1278,8 @@ namespace AngelLoader
             sb.Append("PlayOriginalSeparateButtons=").Append(config.PlayOriginalSeparateButtons).AppendLine();
 
             sb.Append("AskedToScanForMisCounts=").Append(config.AskedToScanForMisCounts).AppendLine();
+
+            sb.Append("EnableFuzzySearch=").Append(config.EnableFuzzySearch).AppendLine();
 
             using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
             sw.Write(sb.ToString());

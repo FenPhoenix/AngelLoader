@@ -422,6 +422,9 @@ namespace AngelLoader
             bool playWithFMButtonStyleChanged =
                 !startup && Config.PlayOriginalSeparateButtons != outConfig.PlayOriginalSeparateButtons;
 
+            bool fuzzySearchChanged =
+                !startup && Config.EnableFuzzySearch != outConfig.EnableFuzzySearch;
+
             #endregion
 
             #region Set config data
@@ -537,6 +540,8 @@ namespace AngelLoader
 
             Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
 
+            Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
+
             #endregion
 
             // These ones MUST NOT be set on startup, because the source values won't be valid
@@ -628,6 +633,11 @@ namespace AngelLoader
             if (fmsViewListUnscanned?.Count > 0)
             {
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            }
+
+            if (fuzzySearchChanged)
+            {
+                sortAndSetFilter = true;
             }
 
             if (sortAndSetFilter)
@@ -850,15 +860,20 @@ namespace AngelLoader
             }
         }
 
+        internal static bool ContainsI_TextFilter(this string hay, string needle)
+        {
+            return Config.EnableFuzzySearch ? hay.ContainsI_Subsequence(needle) : hay.ContainsI(needle);
+        }
+
         internal static bool FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
         {
-            return fm.Title.ContainsI_Subsequence(title) ||
+            return fm.Title.ContainsI_TextFilter(title) ||
                    (fm.Archive.ExtIsArchive()
                        ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
                            ? fm.Archive.EndsWithI(titleTrimmed)
                            : titleTrimmed.EqualsI(fm.Archive) ||
                              fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-                       : fm.Archive.ContainsI_Subsequence(title));
+                       : fm.Archive.ContainsI_TextFilter(title));
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -933,7 +948,7 @@ namespace AngelLoader
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
-                        !fm.Author.ContainsI_Subsequence(viewFilter.Author))
+                        !fm.Author.ContainsI_TextFilter(viewFilter.Author))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;

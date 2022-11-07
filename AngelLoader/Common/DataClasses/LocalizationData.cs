@@ -768,6 +768,12 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal readonly string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal readonly string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
+            [FenGenBlankLine]
+            internal readonly string Other_Filtering = "Filtering";
+            [FenGenComment(
+                "\"Fuzzy search\" means, for example, you might enter \"kingstory\" and the filter would match",
+                "the FM title \"King's Story\". With this option disabled, the filter would match exact text only.")]
+            internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title/author (experimental)";
         }
 
         internal sealed class DateFilterBox_Class
