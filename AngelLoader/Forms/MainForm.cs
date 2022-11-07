@@ -3846,7 +3846,7 @@ namespace AngelLoader.Forms
                         }
 
                         if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim())) ||
-                            (!authorIsWhiteSpace && fm.Author.ContainsI(FilterAuthorTextBox.Text)))
+                            (!authorIsWhiteSpace && fm.Author.ContainsI_Subsequence(FilterAuthorTextBox.Text)))
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                             keepSel = KeepSel.True;

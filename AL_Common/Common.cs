@@ -378,6 +378,41 @@ namespace AL_Common
             return false;
         }
 
+        /// <summary>
+        /// Very simple "fuzzy" search, only finds exact strings or strings present with other chars in between.
+        /// <br/>
+        /// Does no Levenshtein or anything fancy.
+        /// </summary>
+        /// <param name="hay"></param>
+        /// <param name="needle"></param>
+        /// <returns></returns>
+        public static bool ContainsI_Subsequence(this string hay, string needle)
+        {
+            int needleUsed = 0;
+            for (int i = 0; i < hay.Length; ++i)
+            {
+                if (needleUsed == needle.Length)
+                {
+                    return true;
+                }
+
+                char hayChar = hay[i];
+                char needleChar = needle[needleUsed];
+
+                // Don't allocate unless we need to...
+                if (hayChar < 128 && needleChar < 128 && hayChar.EqualsIAscii(needleChar))
+                {
+                    ++needleUsed;
+                }
+                else if (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString()))
+                {
+                    ++needleUsed;
+                }
+            }
+
+            return needleUsed == needle.Length;
+        }
+
         #endregion
 
         #endregion

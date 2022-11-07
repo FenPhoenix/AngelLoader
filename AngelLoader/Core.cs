@@ -852,13 +852,13 @@ namespace AngelLoader
 
         internal static bool FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
         {
-            return fm.Title.ContainsI(title) ||
+            return fm.Title.ContainsI_Subsequence(title) ||
                    (fm.Archive.ExtIsArchive()
                        ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
                            ? fm.Archive.EndsWithI(titleTrimmed)
                            : titleTrimmed.EqualsI(fm.Archive) ||
                              fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-                       : fm.Archive.ContainsI(title));
+                       : fm.Archive.ContainsI_Subsequence(title));
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -933,7 +933,7 @@ namespace AngelLoader
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
-                        !fm.Author.ContainsI(viewFilter.Author))
+                        !fm.Author.ContainsI_Subsequence(viewFilter.Author))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
