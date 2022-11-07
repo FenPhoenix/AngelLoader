@@ -27,7 +27,19 @@ namespace FMScanner
                 {
                     int delCost = vec1[j + 1] + 1;
                     int insCost = vec2[j] + 1;
-                    int substCost = string1[i].ToString().Equals(string2[j].ToString(), stringComparison) ? 0 : 1;
+
+                    char str1Char = string1[i];
+                    char str2Char = string2[j];
+                    int substCost =
+                        str1Char < 128 && str2Char < 128
+                            ? str1Char.EqualsIAscii(str2Char)
+                                ? 0
+                                : 1
+                            : str1Char == str2Char ||
+                              str1Char.ToString().Equals(str2Char.ToString(), stringComparison)
+                                ? 0
+                                : 1;
+
                     vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
                 }
 
