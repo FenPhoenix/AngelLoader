@@ -394,12 +394,15 @@ namespace AL_Common
             if (needleLength > hayLength) return false;
 
             int needleUsed = 0;
+            int skippedInARow = 0;
             for (int i = 0; i < hayLength; ++i)
             {
                 if (needleUsed == needleLength)
                 {
                     return true;
                 }
+
+                if (skippedInARow > 2) return false;
 
                 char hayChar = hay[i];
                 char needleChar = needle[needleUsed];
@@ -408,10 +411,16 @@ namespace AL_Common
                 if (hayChar < 128 && needleChar < 128 && hayChar.EqualsIAscii(needleChar))
                 {
                     ++needleUsed;
+                    skippedInARow = 0;
                 }
                 else if (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString()))
                 {
                     ++needleUsed;
+                    skippedInARow = 0;
+                }
+                else if (!char.IsWhiteSpace(hayChar))
+                {
+                    ++skippedInARow;
                 }
             }
 
