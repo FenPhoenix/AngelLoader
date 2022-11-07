@@ -6,6 +6,12 @@ Perf log:
 2020-08-20:  157MB/s     211MB/s
 2020-08-19:  88.2 MB/s   97MB/s
 
+2022-11-06:
+@x64(RTF converter): Here's one genuinely good reason to consider switching to 64-bit:
+With RtfToPlainTextTest with "Any CPU" (which I believe means x64 in my case) the time taken on the test set is
+~583ms, as opposed to ~940ms on x86. That's WAY faster and gets us to ~295MB/s!
+It also explains the discrepancy up there in the perf numbers with different apps...
+
 ---
 
 Note to self:
