@@ -391,6 +391,7 @@ namespace AL_Common
             int hayLength = hay.Length;
             int needleLength = needle.Length;
 
+            if (needleLength == 0) return false;
             if (needleLength > hayLength) return false;
 
             int needleUsed = 0;
