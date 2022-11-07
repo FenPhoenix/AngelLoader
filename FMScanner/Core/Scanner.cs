@@ -118,26 +118,27 @@ namespace FMScanner
 
         private sealed class FileInfoCustom
         {
-            private string? _name;
-            internal string Name => _name ??= Path.GetFileName(FullName);
             internal readonly string FullName;
             internal readonly long Length;
 
-            private readonly ArchiveFileInfo? _archiveFileInfo;
+            private ArchiveFileInfo? _archiveFileInfo;
 
             private DateTime? _lastWriteTime;
             internal DateTime LastWriteTime
             {
                 get
                 {
-                    if (_archiveFileInfo != null) _lastWriteTime = ((ArchiveFileInfo)_archiveFileInfo).LastWriteTime;
+                    if (_archiveFileInfo != null)
+                    {
+                        _lastWriteTime = ((ArchiveFileInfo)_archiveFileInfo).LastWriteTime;
+                        _archiveFileInfo = null;
+                    }
                     return (DateTime)_lastWriteTime!;
                 }
             }
 
             internal FileInfoCustom(FileInfo fileInfo)
             {
-                _name = fileInfo.Name;
                 FullName = fileInfo.FullName;
                 Length = fileInfo.Length;
                 _lastWriteTime = fileInfo.LastWriteTime;
@@ -2568,7 +2569,7 @@ namespace FMScanner
                     for (int i = 0; i < _fmDirFileInfos.Count; i++)
                     {
                         FileInfoCustom f = _fmDirFileInfos[i];
-                        if (f.Name.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
+                        if (f.FullName.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
                         {
                             readmeFI = f;
                             break;
@@ -2583,20 +2584,20 @@ namespace FMScanner
 
                 string readmeFileOnDisk = "";
 
-                string fileName;
+                bool isGlml;
                 DateTime? lastModifiedDate = null;
                 long readmeSize;
 
                 if (_fmIsZip)
                 {
-                    fileName = readmeEntry!.FullName;
+                    isGlml = readmeEntry!.FullName.ExtIsGlml();
                     readmeSize = readmeEntry.Length;
                 }
                 else
                 {
                     readmeFileOnDisk = fullReadmeFileName ?? Path.Combine(_fmWorkingPath, readmeFile.Name);
                     FileInfoCustom fi = readmeFI ?? new FileInfoCustom(new FileInfo(readmeFileOnDisk));
-                    fileName = fi.Name;
+                    isGlml = fi.FullName.ExtIsGlml();
                     lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                     readmeSize = fi.Length;
                 }
@@ -2610,7 +2611,7 @@ namespace FMScanner
                 if (_fmIsZip)
                 {
                     _readmeFiles.Add(new ReadmeInternal(
-                        isGlml: fileName.ExtIsGlml(),
+                        isGlml: isGlml,
                         lastModifiedDateRaw: readmeEntry!.LastWriteTime,
                         scan: scanThisReadme
                     ));
@@ -2618,7 +2619,7 @@ namespace FMScanner
                 else
                 {
                     _readmeFiles.Add(new ReadmeInternal(
-                        isGlml: fileName.ExtIsGlml(),
+                        isGlml: isGlml,
                         lastModifiedDate: (DateTime)lastModifiedDate!,
                         scan: scanThisReadme
                     ));
