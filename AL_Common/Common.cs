@@ -388,10 +388,15 @@ namespace AL_Common
         /// <returns></returns>
         public static bool ContainsI_Subsequence(this string hay, string needle)
         {
+            int hayLength = hay.Length;
+            int needleLength = needle.Length;
+
+            if (needleLength > hayLength) return false;
+
             int needleUsed = 0;
-            for (int i = 0; i < hay.Length; ++i)
+            for (int i = 0; i < hayLength; ++i)
             {
-                if (needleUsed == needle.Length)
+                if (needleUsed == needleLength)
                 {
                     return true;
                 }
@@ -410,7 +415,7 @@ namespace AL_Common
                 }
             }
 
-            return needleUsed == needle.Length;
+            return needleUsed == needleLength;
         }
 
         #endregion
