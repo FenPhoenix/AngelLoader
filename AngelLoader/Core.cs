@@ -710,7 +710,32 @@ namespace AngelLoader
                     Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe_FromDisk().IsEmpty();
                 }
 
-                Config.SetModDirs(gameIndex);
+                // Stupid hash set classes don't have a capacity reset method exposed...
+                var hash = new HashSetPathI();
+                Config.SetModDirs(gameIndex, hash);
+
+                if (!gamePath.IsEmpty() && Directory.Exists(gamePath))
+                {
+                    (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
+                    if (success)
+                    {
+                        foreach (Mod mod in mods)
+                        {
+                            try
+                            {
+                                string modPath = Path.Combine(gamePath, mod.InternalName);
+                                if (Directory.Exists(modPath))
+                                {
+                                    hash.Add(mod.InternalName);
+                                }
+                            }
+                            catch
+                            {
+                                // ignore
+                            }
+                        }
+                    }
+                }
             }
             else
             {

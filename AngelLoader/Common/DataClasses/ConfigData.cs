@@ -102,40 +102,15 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        #region Mod dirs
+
         private readonly HashSetPathI[] _modDirs;
+
         internal HashSetPathI GetModDirs(GameIndex index) => _modDirs[(int)index];
 
-        internal void SetModDirs(GameIndex gameIndex)
-        {
-            // Stupid hash set classes don't have a capacity reset method exposed...
-            var hash = new HashSetPathI();
-            _modDirs[(int)gameIndex] = hash;
+        internal void SetModDirs(GameIndex gameIndex, HashSetPathI value) => _modDirs[(int)gameIndex] = value;
 
-            string gamePath = GetGamePath(gameIndex);
-            if (gamePath.IsEmpty() || !Directory.Exists(gamePath))
-            {
-                return;
-            }
-
-            (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
-            if (!success) return;
-
-            foreach (Mod mod in mods)
-            {
-                try
-                {
-                    string modPath = Path.Combine(gamePath, mod.InternalName);
-                    if (Directory.Exists(modPath))
-                    {
-                        hash.Add(mod.InternalName);
-                    }
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-        }
+        #endregion
 
         #region Disabled mods
 
