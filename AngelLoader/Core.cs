@@ -709,6 +709,8 @@ namespace AngelLoader
                 {
                     Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe_FromDisk().IsEmpty();
                 }
+
+                Config.SetModDirs(gameIndex);
             }
             else
             {
@@ -745,6 +747,8 @@ namespace AngelLoader
                     }
                     Config.T3UseCentralSaves = false;
                 }
+
+                // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
             }
         }
 

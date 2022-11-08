@@ -109,6 +109,16 @@ namespace AngelLoader.Forms.CustomControls
                     }
                 }
 
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    Mod mod = mods[i];
+                    if (!Config.GetModDirs(GameToGameIndex(game)).Contains(mod.InternalName))
+                    {
+                        mods.RemoveAt(i);
+                        i--;
+                    }
+                }
+
                 var checkItems = new DarkCheckList.CheckItem[mods.Count];
 
                 for (int i = 0; i < mods.Count; i++)

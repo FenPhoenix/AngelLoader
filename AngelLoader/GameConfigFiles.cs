@@ -823,7 +823,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal static (bool Success, List<Mod>)
+        internal static (bool Success, List<Mod> Mods)
         GetGameMods(GameIndex gameIndex)
         {
             var list = new List<Mod>();
