@@ -1690,7 +1690,7 @@ namespace AngelLoader.Forms
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
 
                 Stats_MisCountLabel.Text = selFM != null
-                    ? GetMisCountLabelText(selFM)
+                    ? CreateMisCountLabelText(selFM)
                     : LText.StatisticsTab.NoFMSelected;
 
                 CustomResourcesLabel.Text =
@@ -4837,6 +4837,9 @@ namespace AngelLoader.Forms
 
                     for (int i = 0; i < selRowsCount; i++)
                     {
+                        // @VBL(Multisel state updater):
+                        // This whole stuff is business logic but it's the direct access of the DGV rows that
+                        // prevents us from extracting it out without taking a large allocation hit
                         FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
                         if (sFM.Installed) installedCount++;
                         if (sFM.MarkedUnavailable) markedUnavailableCount++;
@@ -4973,7 +4976,7 @@ namespace AngelLoader.Forms
             WebSearchButton.Enabled = !multiSelected;
         }
 
-        private static string GetMisCountLabelText(FanMission fm) => fm.MisCount switch
+        private static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
         {
             < 1 => "",
             1 => LText.StatisticsTab.MissionCount_Single,
@@ -5002,7 +5005,7 @@ namespace AngelLoader.Forms
 
                 EnableStatsPanelLabels(true);
 
-                Stats_MisCountLabel.Text = GetMisCountLabelText(fm);
+                Stats_MisCountLabel.Text = CreateMisCountLabelText(fm);
 
                 StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 

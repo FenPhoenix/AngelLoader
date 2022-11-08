@@ -54,6 +54,8 @@ namespace AngelLoader.DataClasses
                 _startupFMSelectorLines[i] = new List<string>();
 
                 GameFilterControlVisibilities[i] = true;
+
+                _modDirs[i] = new HashSetPathI();
             }
 
             // Must set the display indexes, otherwise we crash!
