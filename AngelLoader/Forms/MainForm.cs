@@ -4913,13 +4913,14 @@ namespace AngelLoader.Forms
                                          ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable);
             }
 
+            // Exactly this order or we get the top-right tabs not being in a properly refreshed state
             try
             {
+                SetTopRightBlockerVisible();
+
                 TopRightMultiSelectBlockerPanel.SuspendDrawing();
 
                 SetFMSelectedCountMessage(selRowsCount);
-
-                SetTopRightBlockerVisible();
             }
             finally
             {
