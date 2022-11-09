@@ -103,6 +103,8 @@ For dark mode, certain parts of the UI can only be themed by using "hooks", whic
 
 On Framework, all four work fine. On modern .NET, the last three work fine, but GetSysColor crashes with an ExecutionEngineException when it returns. I've tried everything under the sun, but it stubbornly refuses to work.
 
+Update 2022-11-09: GetSysColor fails because the new runtimes have the SuppressGCTransition attribute on it. So... that's the end of the line for that.
+
 GetSysColor is reponsible for the following:
 
 - TextBox (and RichTextBox) selection color
