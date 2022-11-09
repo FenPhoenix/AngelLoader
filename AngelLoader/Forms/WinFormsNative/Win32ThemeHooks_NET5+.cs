@@ -5,6 +5,9 @@ tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something
 HOWEVER, the GetSysColor hook crashes with an ExecutionEngineException upon return, always. All other hooks
 work.
 
+With Reloaded.Hooks, I think we can bring back the GetSysColorBrush() hook for 64-bit. I think, anyway. I don't
+remember for certain.
+
 GetSysColor is necessary to theme the DateTimePicker; the selection color for textboxes; and the default text
 color for the RichTextBox (though the latter CAN be worked around - clunkily - by making the default color explicit
 in the color table and then inserting \cf0 control words after every \pard, \sectd, and \plain (I think that's
@@ -37,6 +40,8 @@ We can compare its .NET 6 state (broken) to the state when it runs on .NET Frame
 find the problem that way...
 -2022-09-12: I haven't been able to find the problem that way. Next idea: Get Microsoft Detours and make a quick
  managed wrapper for it, test again, and if GetSysColor still crashes, post a bug report on the .NET repo.
+-2022-11-09: I posted a bug report and they told me it's because GetSysColor() has the SuppressGCTransition
+ attribute on it in newer .NETs. Nothing that can be done.
 */
 
 #if ENABLE_NET5_PLUS_HOOKS
