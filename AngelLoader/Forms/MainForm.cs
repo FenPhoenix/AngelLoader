@@ -828,10 +828,13 @@ namespace AngelLoader.Forms
         {
 #if RELEASE_BETA
             const string betaVer = "4";
-            Text = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
+            string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
-            Text = "AngelLoader " + Application.ProductVersion;
+            string title = "AngelLoader " + Application.ProductVersion;
 #endif
+            if (Environment.Is64BitProcess) title += " (64-bit)";
+
+            Text = title;
 
             #region Set up form and control state
 
