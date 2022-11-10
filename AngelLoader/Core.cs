@@ -647,6 +647,8 @@ namespace AngelLoader
                 await View.SortAndSetFilter(forceDisplayFM: true, keepSelection: keepSel);
             }
 
+            Ini.WriteConfigIni();
+
             return true;
         }
 
