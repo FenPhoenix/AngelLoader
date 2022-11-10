@@ -100,7 +100,7 @@ namespace AngelLoader.Forms.WinFormsNative
         internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
+        internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
@@ -301,11 +301,11 @@ namespace AngelLoader.Forms.WinFormsNative
         {
             return Environment.Is64BitProcess
                 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
-                : SetWindowLong32(hWnd, nIndex, dwNewLong.ToUInt32());
+                : SetWindowLong32(hWnd, nIndex, dwNewLong);
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
-        private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
+        private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
