@@ -20,6 +20,8 @@ namespace AngelLoader.DataClasses
             _gameEditorDetected = new bool[SupportedGameCount];
             _startupAlwaysStartSelector = new bool[SupportedGameCount];
 
+            _modDirs = new HashSetPathI?[SupportedGameCount];
+
             #endregion
 
             #region To be initialized in loop
@@ -34,8 +36,6 @@ namespace AngelLoader.DataClasses
             _startupFMSelectorLines = new List<string>[SupportedGameCount];
 
             GameFilterControlVisibilities = new bool[SupportedGameCount];
-
-            _modDirs = new HashSetPathI[SupportedGameCount];
 
             #endregion
 
@@ -54,8 +54,6 @@ namespace AngelLoader.DataClasses
                 _startupFMSelectorLines[i] = new List<string>();
 
                 GameFilterControlVisibilities[i] = true;
-
-                _modDirs[i] = new HashSetPathI();
             }
 
             // Must set the display indexes, otherwise we crash!
@@ -104,9 +102,9 @@ namespace AngelLoader.DataClasses
 
         #region Mod dirs
 
-        private readonly HashSetPathI[] _modDirs;
+        private readonly HashSetPathI?[] _modDirs;
 
-        internal HashSetPathI GetModDirs(GameIndex index) => _modDirs[(int)index];
+        internal HashSetPathI GetModDirs(GameIndex index) => _modDirs[(int)index] ??= new HashSetPathI();
 
         internal void SetModDirs(GameIndex gameIndex, HashSetPathI value) => _modDirs[(int)gameIndex] = value;
 
