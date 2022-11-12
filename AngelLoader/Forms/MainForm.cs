@@ -274,11 +274,12 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
-            static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
+            static bool TryGetHWndFromMousePos(Message msg, out IntPtr result, [NotNullWhen(true)] out Control? control)
             {
                 var pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
                 result = Native.WindowFromPoint(pos);
-                return Control.FromHandle(result) != null;
+                control = Control.FromHandle(result);
+                return control != null;
             }
 
             // Note: CanFocus will be false if there are modal windows open
@@ -294,7 +295,7 @@ namespace AngelLoader.Forms
                 // Do this check inside each if block rather than above, because the message may not
                 // be a mousemove message, and in that case we'd be trying to get a window point from a random
                 // value, and that causes the min,max,close button flickering.
-                if (!TryGetHWndFromMousePos(m, out IntPtr hWnd)) return PassMessageOn;
+                if (!TryGetHWndFromMousePos(m, out IntPtr hWnd, out Control? controlOver)) return PassMessageOn;
 
                 if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
@@ -326,7 +327,11 @@ namespace AngelLoader.Forms
                     // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
                     if (!(AddTagLLDropDown.Visible && CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true)))
                     {
-                        if (CursorOverControl(TopSplitContainer.Panel2))
+                        if (controlOver is DarkTextBox { Multiline: true })
+                        {
+                            Native.SendMessage(controlOver.Handle, m.Msg, m.WParam, m.LParam);
+                        }
+                        else if (CursorOverControl(TopSplitContainer.Panel2))
                         {
                             TopSplitContainer.Panel2.Focus();
                         }
@@ -336,7 +341,7 @@ namespace AngelLoader.Forms
                             MainSplitContainer.Panel2.Focus();
                         }
                     }
-                    if (Control.FromHandle(hWnd) is DarkComboBox { SuppressScrollWheelValueChange: true, Focused: false } cb)
+                    if (controlOver is DarkComboBox { SuppressScrollWheelValueChange: true, Focused: false } cb)
                     {
                         if (cb.Parent is { IsHandleCreated: true })
                         {
@@ -356,7 +361,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == Native.WM_MOUSEHWHEEL)
             {
-                if (!TryGetHWndFromMousePos(m, out _)) return PassMessageOn;
+                if (!TryGetHWndFromMousePos(m, out _, out _)) return PassMessageOn;
 
                 if (ViewBlocked) return BlockMessage;
 
