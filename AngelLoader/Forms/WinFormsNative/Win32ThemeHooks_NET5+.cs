@@ -5,6 +5,9 @@ tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something
 HOWEVER, the GetSysColor hook crashes with an ExecutionEngineException upon return, always. All other hooks
 work.
 
+-2022-11-09: I posted a bug report and they told me it's because GetSysColor() has the SuppressGCTransition
+ attribute on it in newer .NETs. Nothing that can be done.
+
 With Reloaded.Hooks, I think we can bring back the GetSysColorBrush() hook for 64-bit. I think, anyway. I don't
 remember for certain.
 
@@ -15,33 +18,6 @@ all of them...)).
 
 This file is left here as a basic example of how the .NET 5+ friendly way to hook would look like, if GetSysColor
 actually worked.
-
----
-
-Detailed notes:
-
-@NET5: .NET 5+ hooking research:
--MinHook.NET works on .NET 5+ in general, but the GetSysColor hook causes an ExecutionEngineException. Even
- if I have it literally just return 0. It DOES start executing the hooked method (confirmed by putting a
- Trace.WriteLine() in there), but crashes with the exception on return.
- All the other hooks work fine. It's just GetSysColor that throws the dreaded no-stack-trace-and-no-info
- ExecutionEngineException.
--MinSharp (a wrapper, not a port like MinHook.NET) doesn't even get as far as loading its native dll.
- Ever, no matter what fiddling I do. So anyway.
-No exceptions for any hook library on Framework, they all work.
-God only knows what the god damn hell the .NET version has to do with running A NATIVE WINDOWS PROC but hey.
--Only thing I can think of is using native C++ hook code, shoving it in a dll, and p/invoking it like "hey
- start your hook that has nothing to do with me now". Why do I suspect that wouldn't work either, just to make
- me furious for no reason. Why indeed.
--2022-08-25: Unfortunately, as I'd feared, the above doesn't work. It does indeed result in the same old
- ExecutionEngineException as I snarkily suspected it would. Sigh.
-@FenHooks: Try bringing MinHook.NET code directly in, and tracing it
-We can compare its .NET 6 state (broken) to the state when it runs on .NET Framework (working), and maybe
-find the problem that way...
--2022-09-12: I haven't been able to find the problem that way. Next idea: Get Microsoft Detours and make a quick
- managed wrapper for it, test again, and if GetSysColor still crashes, post a bug report on the .NET repo.
--2022-11-09: I posted a bug report and they told me it's because GetSysColor() has the SuppressGCTransition
- attribute on it in newer .NETs. Nothing that can be done.
 */
 
 #if ENABLE_NET5_PLUS_HOOKS
