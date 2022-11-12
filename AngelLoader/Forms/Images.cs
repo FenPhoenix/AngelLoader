@@ -30,6 +30,8 @@ namespace AngelLoader.Forms
     // Also performance hack for the splash screen as above.
     public static class DarkModeImageConversion
     {
+        private static readonly object _lock = new();
+
         private static ColorMatrix MultiplyColorMatrix(float[][] matrix1, float[][] matrix2)
         {
             const int length = 5;
@@ -105,30 +107,33 @@ namespace AngelLoader.Forms
 
         public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
         {
-            using var imgAttrib = new ImageAttributes();
+            lock (_lock)
+            {
+                using var imgAttrib = new ImageAttributes();
 
-            imgAttrib.ClearColorKey();
+                imgAttrib.ClearColorKey();
 
-            DarkModeMultiplyColorMatrix.Matrix33 = disabled ? 0.273f : 0.8425f;
+                DarkModeMultiplyColorMatrix.Matrix33 = disabled ? 0.273f : 0.8425f;
 
-            imgAttrib.SetColorMatrix(DarkModeMultiplyColorMatrix);
+                imgAttrib.SetColorMatrix(DarkModeMultiplyColorMatrix);
 
-            Size size = normalImage.Size;
+                Size size = normalImage.Size;
 
-            var darkModeImage = new Bitmap(size.Width, size.Height);
+                var darkModeImage = new Bitmap(size.Width, size.Height);
 
-            using Graphics graphics = Graphics.FromImage(darkModeImage);
-            graphics.DrawImage(
-                normalImage,
-                new Rectangle(0, 0, size.Width, size.Height),
-                0,
-                0,
-                size.Width,
-                size.Height,
-                GraphicsUnit.Pixel,
-                imgAttrib);
+                using Graphics graphics = Graphics.FromImage(darkModeImage);
+                graphics.DrawImage(
+                    normalImage,
+                    new Rectangle(0, 0, size.Width, size.Height),
+                    0,
+                    0,
+                    size.Width,
+                    size.Height,
+                    GraphicsUnit.Pixel,
+                    imgAttrib);
 
-            return darkModeImage;
+                return darkModeImage;
+            }
         }
     }
 
