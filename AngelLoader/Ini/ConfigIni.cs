@@ -63,7 +63,7 @@ namespace AngelLoader
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.SettingsPathsVScrollPos = result;
+                config.SetSettingsTabVScrollPos(SettingsTab.Paths, result);
             }
         }
 
@@ -71,7 +71,7 @@ namespace AngelLoader
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.SettingsAppearanceVScrollPos = result;
+                config.SetSettingsTabVScrollPos(SettingsTab.Appearance, result);
             }
         }
 
@@ -79,7 +79,7 @@ namespace AngelLoader
         {
             if (Int_TryParseInv(valTrimmed, out int result))
             {
-                config.SettingsOtherVScrollPos = result;
+                config.SetSettingsTabVScrollPos(SettingsTab.Other, result);
             }
         }
 
@@ -1063,9 +1063,9 @@ namespace AngelLoader
             sb.Append("SettingsWindowSize=").Append(config.SettingsWindowSize.Width).Append(',').Append(config.SettingsWindowSize.Height).AppendLine();
             sb.Append("SettingsWindowSplitterDistance=").Append(config.SettingsWindowSplitterDistance).AppendLine();
 
-            sb.Append("SettingsPathsVScrollPos=").Append(config.SettingsPathsVScrollPos).AppendLine();
-            sb.Append("SettingsAppearanceVScrollPos=").Append(config.SettingsAppearanceVScrollPos).AppendLine();
-            sb.Append("SettingsOtherVScrollPos=").Append(config.SettingsOtherVScrollPos).AppendLine();
+            sb.Append("SettingsPathsVScrollPos=").Append(config.GetSettingsTabVScrollPos(SettingsTab.Paths)).AppendLine();
+            sb.Append("SettingsAppearanceVScrollPos=").Append(config.GetSettingsTabVScrollPos(SettingsTab.Appearance)).AppendLine();
+            sb.Append("SettingsOtherVScrollPos=").Append(config.GetSettingsTabVScrollPos(SettingsTab.Other)).AppendLine();
 
             #endregion
 

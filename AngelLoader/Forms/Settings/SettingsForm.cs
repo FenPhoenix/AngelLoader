@@ -41,10 +41,6 @@ namespace AngelLoader.Forms
         private readonly string _inLanguage;
         private readonly LText_Class _inLText;
 
-        private readonly int _inPathsVScrollPos;
-        private readonly int _inAppearanceVScrollPos;
-        private readonly int _inOtherVScrollPos;
-
         private readonly VisualTheme _inTheme;
 
         #endregion
@@ -53,7 +49,7 @@ namespace AngelLoader.Forms
 
         private readonly DarkRadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
-        private readonly int?[] _pageVScrollValues;
+        private readonly int?[] _pageVScrollValues = new int?[SettingsTabsCount];
 
         private readonly DarkTextBox[] ExePathTextBoxes;
         private readonly Control[] ErrorableControls;
@@ -115,10 +111,6 @@ namespace AngelLoader.Forms
             // object, it somehow does, because I guess we new up LText on read and break the reference and then
             // this copy becomes its own copy...? I don't like that I didn't know that...
             _inLText = LText;
-
-            _inPathsVScrollPos = config.SettingsPathsVScrollPos;
-            _inAppearanceVScrollPos = config.SettingsAppearanceVScrollPos;
-            _inOtherVScrollPos = config.SettingsOtherVScrollPos;
 
             _inTheme = config.VisualTheme;
 
@@ -195,14 +187,15 @@ namespace AngelLoader.Forms
 
             PageRadioButtons = new[] { PathsRadioButton, AppearanceRadioButton, OtherRadioButton };
 
+            AssertR(PageRadioButtons.Length == SettingsTabsCount, "Page button count doesn't match " + nameof(SettingsTabsCount));
+
             // These are nullable because null values get put INTO them later. So not a mistake to fill them with
             // non-nullable ints right off the bat.
-            _pageVScrollValues = new int?[]
+            for (int i = 0; i < SettingsTabsCount; i++)
             {
-                _inPathsVScrollPos,
-                _inAppearanceVScrollPos,
-                _inOtherVScrollPos
-            };
+                SettingsTab tab = (SettingsTab)i;
+                _pageVScrollValues[i] = config.GetSettingsTabVScrollPos(tab);
+            }
 
             #region Add pages
 
@@ -224,6 +217,8 @@ namespace AngelLoader.Forms
             else
             {
                 Pages = new ISettingsPage[] { PathsPage, AppearancePage, OtherPage };
+
+                AssertR(Pages.Length == SettingsTabsCount, "Page count doesn't match " + nameof(SettingsTabsCount));
 
                 PagePanel.Controls.Add(AppearancePage);
                 PagePanel.Controls.Add(OtherPage);
@@ -962,9 +957,11 @@ namespace AngelLoader.Forms
 
             // If some pages haven't had their vertical scroll value loaded, just take the value from the backing
             // store
-            OutConfig.SettingsPathsVScrollPos = _pageVScrollValues[0] ?? PathsPage.GetVScrollPos();
-            OutConfig.SettingsAppearanceVScrollPos = _pageVScrollValues[1] ?? AppearancePage.GetVScrollPos();
-            OutConfig.SettingsOtherVScrollPos = _pageVScrollValues[2] ?? OtherPage.GetVScrollPos();
+            for (int i = 0; i < SettingsTabsCount; i++)
+            {
+                SettingsTab tab = (SettingsTab)i;
+                OutConfig.SetSettingsTabVScrollPos(tab, _pageVScrollValues[i] ?? Pages[i].GetVScrollPos());
+            }
 
             #endregion
 
@@ -1210,19 +1207,6 @@ namespace AngelLoader.Forms
             ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
 
-        private void SetPageScrollPos(ISettingsPage page)
-        {
-            int? pos =
-                page == PathsPage ? _inPathsVScrollPos :
-                page == AppearancePage ? _inAppearanceVScrollPos :
-                page == OtherPage ? _inOtherVScrollPos :
-                null;
-
-            AssertR(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
-
-            page.SetVScrollPos((int)pos!);
-        }
-
         private void ShowPage(int index, bool initialCall = false)
         {
             if (Pages[index].IsVisible) return;
@@ -1248,7 +1232,7 @@ namespace AngelLoader.Forms
                     // Lazy-load for faster initial startup
                     if (pagePosWasStored)
                     {
-                        SetPageScrollPos(Pages[index]);
+                        Pages[index].SetVScrollPos((int)_pageVScrollValues[index]!);
                         if (!initialCall)
                         {
                             // Infuriating hack to get the scroll bar to show up in the right position (the content

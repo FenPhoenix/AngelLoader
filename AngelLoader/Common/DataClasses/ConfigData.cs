@@ -355,9 +355,10 @@ namespace AngelLoader.DataClasses
         internal SettingsTab SettingsTab = SettingsTab.Paths;
         internal Size SettingsWindowSize = Defaults.SettingsWindowSize;
         internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
-        internal int SettingsPathsVScrollPos = 0;
-        internal int SettingsAppearanceVScrollPos = 0;
-        internal int SettingsOtherVScrollPos = 0;
+
+        private readonly int[] _settingsVScrollPositions = new int[SettingsTabsCount];
+        internal void SetSettingsTabVScrollPos(SettingsTab tab, int value) => _settingsVScrollPositions[(int)tab] = value;
+        internal int GetSettingsTabVScrollPos(SettingsTab tab) => _settingsVScrollPositions[(int)tab];
 
         #endregion
 

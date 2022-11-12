@@ -20,6 +20,7 @@ namespace AngelLoader
         public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
         internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
         internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
+        internal static readonly int SettingsTabsCount = Enum.GetValues(typeof(SettingsTab)).Length;
 
         #endregion
 

@@ -353,9 +353,11 @@ namespace AngelLoader
             Config.SettingsWindowSize = outConfig.SettingsWindowSize;
             Config.SettingsWindowSplitterDistance = outConfig.SettingsWindowSplitterDistance;
 
-            Config.SettingsPathsVScrollPos = outConfig.SettingsPathsVScrollPos;
-            Config.SettingsAppearanceVScrollPos = outConfig.SettingsAppearanceVScrollPos;
-            Config.SettingsOtherVScrollPos = outConfig.SettingsOtherVScrollPos;
+            for (int i = 0; i < SettingsTabsCount; i++)
+            {
+                SettingsTab tab = (SettingsTab)i;
+                Config.SetSettingsTabVScrollPos(tab, outConfig.GetSettingsTabVScrollPos(tab));
+            }
 
             #endregion
 
