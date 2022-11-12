@@ -1235,21 +1235,24 @@ namespace FMScanner
             // From the spec:
             // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
             // data that follows are considered one character for skipping purposes."
-            if (symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
+            if (symbol.KeywordType == KeywordType.Special && symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
             {
-                // Rather than literally counting it as one character for skipping purposes, we just increment
-                // the chars left to skip count by the specified length of the binary run, which accomplishes
-                // the same thing and is the easiest option.
-                // Note: It seems like we should have to add 1 for the space after \binN, but it looks like the
-                // numbers somehow work out that we don't have to and it's already implicitly counted. Shrug.
-                if (param >= 0) _unicodeCharsLeftToSkip += param;
+                // Hard-skip the chars here, because if we mess around with just incrementing the chars left to
+                // skip count, we don't end up skipping control char data in the binary run (which we need to).
+                for (int i = 0; i < param; i++)
+                {
+                    bool success = GetNextChar(out _);
+                    if (!success) return Error.EndOfFile;
+                }
+                _unicodeCharsLeftToSkip--;
+                return Error.OK;
             }
 
             // From the spec:
             // "Any RTF control word or symbol is considered a single character for the purposes of counting
             // skippable characters."
             // But don't do it if it's a hex char, because we handle it elsewhere in that case.
-            if (symbol.Index != (int)SpecialType.HexEncodedChar &&
+            if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.HexEncodedChar) &&
                 _currentScope.RtfInternalState != RtfInternalState.Binary &&
                 _unicodeCharsLeftToSkip > 0)
             {
@@ -1257,7 +1260,7 @@ namespace FMScanner
                 return Error.OK;
             }
 
-            if (symbol.Index != (int)SpecialType.UnicodeChar &&
+            if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
                 _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
             {
                 ParseUnicode();
