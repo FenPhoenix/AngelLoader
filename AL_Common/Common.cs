@@ -394,6 +394,12 @@ namespace AL_Common
             if (needleLength == 0) return false;
             if (needleLength > hayLength) return false;
 
+            // This algo sometimes rejects results that have the actual exact string in them, and if you try to
+            // tune it so it doesn't, then it gets other problems. It's just too simplistic to really work that
+            // well, so do a strict check first to cover that case.
+            // @vNext(fuzzy search): Get a better algo in here, that does Levenshtein or something else fancy
+            if (hay.ContainsI(needle)) return true;
+
             int needleUsed = 0;
             int skippedInARow = 0;
             for (int i = 0; i < hayLength; ++i)
