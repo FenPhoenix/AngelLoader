@@ -409,7 +409,7 @@ namespace AL_Common
                     return true;
                 }
 
-                if (skippedInARow > 2) return false;
+                if (skippedInARow > 1) return false;
 
                 char hayChar = hay[i];
                 char needleChar = needle[needleUsed];
