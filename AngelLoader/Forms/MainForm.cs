@@ -2540,8 +2540,6 @@ namespace AngelLoader.Forms
             }
             else
             {
-                // @vNext: Make refresh after fuzzy option set cause filter to re-run
-                // So we end up on the filtered FM rather than the first
                 bool senderIsTextBox = sender == FilterTitleTextBox ||
                                        sender == FilterAuthorTextBox;
                 bool senderIsGameButton = _filterByGameButtons.Contains(sender);

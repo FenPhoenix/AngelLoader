@@ -238,8 +238,7 @@ namespace AngelLoader
                 _colorTableSB.Append(ch);
             }
 
-            string ct = _colorTableSB.ToString();
-            string[] entries = ct.Split(CA_Semicolon);
+            string[] entries = _colorTableSB.ToString().Split(CA_Semicolon);
 
             int realEntryCount = entries.Length;
             if (entries.Length == 0)
