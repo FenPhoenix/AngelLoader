@@ -428,6 +428,8 @@ namespace FMScanner
 
         #endregion
 
+        #region GLML
+
         private enum GLMLTagType
         {
             None,
@@ -569,5 +571,7 @@ namespace FMScanner
 
             return sb.ToString();
         }
+
+        #endregion
     }
 }
