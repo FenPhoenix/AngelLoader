@@ -121,6 +121,32 @@ namespace AngelLoader
 
         #region Try combine path and check existence
 
+        internal static bool TryCombineDirectoryPathAndCheckExistence(
+            string pathPart1,
+            string pathPart2,
+            out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathPart1, pathPart2);
+                if (Directory.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
         internal static bool TryCombineFilePathAndCheckExistence(
             string pathPart1,
             string pathPart2,

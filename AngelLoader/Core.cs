@@ -725,17 +725,9 @@ namespace AngelLoader
                     {
                         foreach (Mod mod in mods)
                         {
-                            try
+                            if (TryCombineDirectoryPathAndCheckExistence(gamePath, mod.InternalName, out _))
                             {
-                                string modPath = Path.Combine(gamePath, mod.InternalName);
-                                if (Directory.Exists(modPath))
-                                {
-                                    hash.Add(mod.InternalName);
-                                }
-                            }
-                            catch
-                            {
-                                // ignore
+                                hash.Add(mod.InternalName);
                             }
                         }
                     }
@@ -1747,8 +1739,8 @@ namespace AngelLoader
             }
 
             string installsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-            string fmDir;
-            if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
+            if (installsBasePath.IsEmpty() ||
+                !TryCombineDirectoryPathAndCheckExistence(installsBasePath, fm.InstalledDir, out string fmDir))
             {
                 LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
