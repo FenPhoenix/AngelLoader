@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using AL_Common;
 using static System.StringComparison;
 
@@ -425,5 +427,147 @@ namespace FMScanner
             value[value.Length - 1] == '\"' ? value.Substring(0, value.Length - 1) : value;
 
         #endregion
+
+        private enum GLMLTagType
+        {
+            None,
+            Opening,
+            Closing
+        }
+
+        internal static string GLMLToText(string glml)
+        {
+            var sb = new StringBuilder(glml.Length);
+            var subSB = new StringBuilder(16);
+
+            static bool SBEquals(StringBuilder sb, string value)
+            {
+                if (sb.Length != value.Length) return false;
+                for (int i = 0; i < sb.Length; i++)
+                {
+                    if (sb[i] != value[i]) return false;
+                }
+                return true;
+            }
+
+            GLMLTagType tagType = GLMLTagType.None;
+
+            for (int i = 0; i < glml.Length; i++)
+            {
+                char c = glml[i];
+
+                if (tagType > GLMLTagType.None)
+                {
+                    if (c == '/')
+                    {
+                        tagType = GLMLTagType.Closing;
+                    }
+                    else if (c == ']')
+                    {
+                        if (tagType != GLMLTagType.Closing &&
+                            (SBEquals(subSB, "GLNL") || SBEquals(subSB, "GLLINE")))
+                        {
+                            sb.Append("\r\n");
+                        }
+
+                        tagType = GLMLTagType.None;
+                    }
+                    else
+                    {
+                        subSB.Append(c);
+                    }
+                }
+                else if (c == '[')
+                {
+                    subSB.Clear();
+                    tagType = GLMLTagType.Opening;
+                }
+                else if (c == '&')
+                {
+                    subSB.Clear();
+
+                    // HTML Unicode numeric character references
+                    if (i < glml.Length - 4 && glml[i + 1] == '#')
+                    {
+                        int end = Math.Min(i + 12, glml.Length);
+                        for (int j = i + 2; i < end; j++)
+                        {
+                            if (j == i + 2 && glml[j] == 'x')
+                            {
+                                end = Math.Min(end + 1, glml.Length);
+                                subSB.Append(glml[j]);
+                            }
+                            else if (glml[j] == ';')
+                            {
+                                string num = subSB.ToString();
+
+                                bool success = num.Length > 0 && num[0] == 'x'
+                                    ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
+                                    : int.TryParse(num, out result);
+
+                                if (success)
+                                {
+                                    sb.Append(char.ConvertFromUtf32(result));
+                                }
+                                else
+                                {
+                                    sb.Append("&#").Append(subSB).Append(';');
+                                }
+                                i = j;
+                                break;
+                            }
+                            else
+                            {
+                                subSB.Append(glml[j]);
+                            }
+                        }
+                    }
+                    // HTML Unicode named character references
+                    else if (i < glml.Length - 3 && glml[i + 1].IsAsciiAlpha())
+                    {
+                        for (int j = i + 1; i < glml.Length; j++)
+                        {
+                            if (glml[j] == ';')
+                            {
+                                string name = subSB.ToString();
+
+                                if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
+                                    int.TryParse(value, out int result))
+                                {
+                                    sb.Append(char.ConvertFromUtf32(result));
+                                }
+                                else
+                                {
+                                    sb.Append('&').Append(subSB).Append(';');
+                                }
+                                i = j;
+                                break;
+                            }
+                            // Support named references with numbers somewhere after their first char ("blk34" for instance)
+                            else if (!glml[j].IsAsciiAlphanumeric())
+                            {
+                                sb.Append('&').Append(subSB).Append(glml[j]);
+                                i = j;
+                                break;
+                            }
+                            else
+                            {
+                                subSB.Append(glml[j]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        sb.Append('&');
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 }

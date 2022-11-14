@@ -2704,18 +2704,7 @@ namespace FMScanner
                             ? ReadAllTextE(readmeStream!)
                             : ReadAllTextE(readmeFileOnDisk);
 
-                        // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
-                        // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
-                        bool extIsGlml = last.IsGlml;
-                        if (extIsGlml)
-                        {
-                            var sb = new StringBuilder(last.Text);
-                            foreach (Match m in GLMLTagRegex.Matches(last.Text))
-                            {
-                                sb.Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
-                            }
-                            last.Text = sb.ToString();
-                        }
+                        if (last.IsGlml) last.Text = Utility.GLMLToText(last.Text);
 
                         last.Lines.ClearAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                     }
