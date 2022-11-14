@@ -736,7 +736,6 @@ namespace AngelLoader.Forms
             return ret;
         }
 
-        public static PerGameImage GetPerGameImage(int gameIndex) => PerGameImageGetters[gameIndex];
         public static PerGameImage GetPerGameImage(GameIndex gameIndex) => PerGameImageGetters[(int)gameIndex];
 
         #endregion
@@ -1006,7 +1005,7 @@ namespace AngelLoader.Forms
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                FMsList_GameIcons[i] = GetPerGameImage(i).Alternate.Large();
+                FMsList_GameIcons[i] = GetPerGameImage((GameIndex)i).Alternate.Large();
             }
 
             LoadRatingImages();

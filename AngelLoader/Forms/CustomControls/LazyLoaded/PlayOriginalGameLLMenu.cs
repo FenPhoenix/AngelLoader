@@ -49,10 +49,10 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 for (int i = 0, modI = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
-                    GameMenuItems[i].Image = Images.GetPerGameImage(i).Primary.Small();
+                    GameMenuItems[i].Image = Images.GetPerGameImage(gameIndex).Primary.Small();
                     if (GameSupportsMods(gameIndex))
                     {
-                        ModMenuItems[modI].Image = Images.GetPerGameImage(i).Primary.Small();
+                        ModMenuItems[modI].Image = Images.GetPerGameImage(gameIndex).Primary.Small();
                         modI++;
                     }
                 }
@@ -73,14 +73,14 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 GameMenuItems[i] = new ToolStripMenuItemCustom
                 {
                     GameIndex = gameIndex,
-                    Image = Images.GetPerGameImage(i).Primary.Small()
+                    Image = Images.GetPerGameImage(gameIndex).Primary.Small()
                 };
                 if (GameSupportsMods(gameIndex))
                 {
                     ModMenuItems[modI] = new ToolStripMenuItemCustom
                     {
                         GameIndex = gameIndex,
-                        Image = Images.GetPerGameImage(i).Primary.Small()
+                        Image = Images.GetPerGameImage(gameIndex).Primary.Small()
                     };
                     modI++;
                 }

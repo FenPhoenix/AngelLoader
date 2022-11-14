@@ -1927,8 +1927,9 @@ namespace AngelLoader.Forms
                 var gameTabImages = new Image[SupportedGameCount];
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    _filterByGameButtons[i].Image = Images.GetPerGameImage(i).Primary.Large();
-                    gameTabImages[i] = Images.GetPerGameImage(i).Primary.Small();
+                    GameIndex gameIndex = (GameIndex)i;
+                    _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+                    gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
                 }
 
                 GamesTabControl.SetImages(gameTabImages);
