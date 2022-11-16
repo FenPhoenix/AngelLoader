@@ -394,25 +394,43 @@ namespace AL_Common
             if (needleLength == 0) return false;
             if (needleLength > hayLength) return false;
 
-            // This algo sometimes rejects results that have the actual exact string in them, and if you try to
-            // tune it so it doesn't, then it gets other problems. It's just too simplistic to really work that
-            // well, so do a strict check first to cover that case.
-            // TODO(fuzzy search): Get a better algo in here, that does Levenshtein or something else fancy
+            /*
+            This algo sometimes rejects results that have the actual exact string in them, and if you try to
+            tune it so it doesn't, then it gets other problems. It's just too simplistic to really work that
+            well, so do a strict check first to cover that case.
+            TODO(fuzzy search): Get a better algo in here, that does Levenshtein or something else fancy
+            */
             if (hay.ContainsI(needle)) return true;
+
+            // TODO(fuzzy search): Make it land on the first closest match
+            // ie. if we have "king" then it should land on "King's Story" and not "The Awakening"
+
+            // Repetition everywhere so that we make sure only the ascii path runs if it's ascii, because with
+            // big if((this and that) or that) statements, the non-ascii path always runs even if we're ascii and
+            // blah.
 
             int needleUsed = 0;
             int skippedInARow = 0;
 
-            int startIndex = 0;
+            int startIndex = -1;
             for (int i = 0; i < hayLength; i++)
             {
-                if ((hay[i] < 128 && needle[0] < 128 && hay[i].EqualsIAscii(needle[0])) ||
-                    (hay[i] == needle[0] || hay[i].ToString().EqualsI(needle[0].ToString())))
+                if (hay[i] < 128 && needle[0] < 128)
+                {
+                    if (hay[i].EqualsIAscii(needle[0]))
+                    {
+                        startIndex = i;
+                        break;
+                    }
+                }
+                else if (hay[i] == needle[0] || hay[i].ToString().EqualsI(needle[0].ToString()))
                 {
                     startIndex = i;
                     break;
                 }
             }
+
+            if (startIndex == -1) return false;
 
             for (int i = startIndex; i < hayLength; ++i)
             {
@@ -427,20 +445,39 @@ namespace AL_Common
                 char needleChar = needle[needleUsed];
 
                 // Don't allocate unless we need to...
-                if ((hayChar < 128 && needleChar < 128 && hayChar.EqualsIAscii(needleChar)) ||
-                    (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString())))
+                if (hayChar < 128 && needleChar < 128)
                 {
-                    skippedInARow = 0;
-                    char lastChar;
-                    do
+                    if (hayChar.EqualsIAscii(needleChar))
                     {
-                        ++needleUsed;
-                        lastChar = needleChar;
-                    } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
+                        skippedInARow = 0;
+                        char lastChar;
+                        do
+                        {
+                            ++needleUsed;
+                            lastChar = needleChar;
+                        } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
+                    }
+                    else if (!char.IsWhiteSpace(hayChar))
+                    {
+                        ++skippedInARow;
+                    }
                 }
-                else if (!char.IsWhiteSpace(hayChar))
+                else
                 {
-                    ++skippedInARow;
+                    if (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString()))
+                    {
+                        skippedInARow = 0;
+                        char lastChar;
+                        do
+                        {
+                            ++needleUsed;
+                            lastChar = needleChar;
+                        } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
+                    }
+                    else if (!char.IsWhiteSpace(hayChar))
+                    {
+                        ++skippedInARow;
+                    }
                 }
             }
 
