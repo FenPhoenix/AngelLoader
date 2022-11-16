@@ -3828,17 +3828,34 @@ namespace AngelLoader.Forms
             if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
             {
                 bool foundUnTopped = false;
-                if (filterMatches.TitleExactMatchIndex > -1)
+                if (filterMatches.TitleExactMatchIndex > -1 || filterMatches.AuthorExactMatchIndex > -1)
                 {
-                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    if (filterMatches.TitleExactMatchIndex > -1)
                     {
-                        var fm = FMsDGV.GetFMFromIndex(i);
-                        if (!fm.MarkedRecent && !fm.Pinned && filterMatches.TitleExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                        for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
-                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                            keepSel = KeepSel.True;
-                            foundUnTopped = true;
-                            break;
+                            var fm = FMsDGV.GetFMFromIndex(i);
+                            if (!fm.MarkedRecent && !fm.Pinned && filterMatches.TitleExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                            {
+                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                keepSel = KeepSel.True;
+                                foundUnTopped = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (filterMatches.AuthorExactMatchIndex > -1)
+                    {
+                        for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                        {
+                            var fm = FMsDGV.GetFMFromIndex(i);
+                            if (!fm.MarkedRecent && !fm.Pinned && filterMatches.AuthorExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                            {
+                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                keepSel = KeepSel.True;
+                                foundUnTopped = true;
+                                break;
+                            }
                         }
                     }
                 }
