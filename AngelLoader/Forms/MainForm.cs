@@ -3825,6 +3825,7 @@ namespace AngelLoader.Forms
 
             var filterMatches = Core.SetFilter();
 
+            // @VBL egregious
             if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
             {
                 bool foundUnTopped = false;
