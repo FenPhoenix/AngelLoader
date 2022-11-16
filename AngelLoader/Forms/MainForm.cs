@@ -3883,6 +3883,10 @@ namespace AngelLoader.Forms
 
                 if (!foundUnTopped)
                 {
+                    string titleText = FilterTitleTextBox.Text;
+                    string titleTextTrimmed = titleText.Trim();
+                    string authorText = FilterAuthorTextBox.Text;
+
                     bool titleIsWhiteSpace = FilterTitleTextBox.Text.IsWhiteSpace();
                     bool authorIsWhiteSpace = FilterAuthorTextBox.Text.IsWhiteSpace();
 
@@ -3899,7 +3903,7 @@ namespace AngelLoader.Forms
                         {
                             if (!titleIsWhiteSpace)
                             {
-                                (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
+                                (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed);
                                 if (matched)
                                 {
                                     titleMatchIndex = i;
@@ -3914,7 +3918,7 @@ namespace AngelLoader.Forms
                             }
                             if (!authorIsWhiteSpace)
                             {
-                                (bool matched, bool exactMatch) = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
+                                (bool matched, bool exactMatch) = fm.Author.ContainsI_TextFilter(authorText);
                                 if (matched)
                                 {
                                     authorMatchIndex = i;
@@ -3930,8 +3934,8 @@ namespace AngelLoader.Forms
                         }
                         else
                         {
-                            if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim()).Matched) ||
-                                (!authorIsWhiteSpace && fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text).Matched))
+                            if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed).Matched) ||
+                                (!authorIsWhiteSpace && fm.Author.ContainsI_TextFilter(authorText).Matched))
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                 keepSel = KeepSel.True;
