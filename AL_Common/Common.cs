@@ -402,28 +402,41 @@ namespace AL_Common
 
             int needleUsed = 0;
             int skippedInARow = 0;
-            for (int i = 0; i < hayLength; ++i)
+
+            int startIndex = 0;
+            for (int i = 0; i < hayLength; i++)
+            {
+                if ((hay[i] < 128 && needle[0] < 128 && hay[i].EqualsIAscii(needle[0])) ||
+                    (hay[i] == needle[0] || hay[i].ToString().EqualsI(needle[0].ToString())))
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+
+            for (int i = startIndex; i < hayLength; ++i)
             {
                 if (needleUsed == needleLength)
                 {
                     return true;
                 }
 
-                if (skippedInARow > 1) return false;
+                if (skippedInARow > 2) return false;
 
                 char hayChar = hay[i];
                 char needleChar = needle[needleUsed];
 
                 // Don't allocate unless we need to...
-                if (hayChar < 128 && needleChar < 128 && hayChar.EqualsIAscii(needleChar))
+                if ((hayChar < 128 && needleChar < 128 && hayChar.EqualsIAscii(needleChar)) ||
+                    (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString())))
                 {
-                    ++needleUsed;
                     skippedInARow = 0;
-                }
-                else if (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString()))
-                {
-                    ++needleUsed;
-                    skippedInARow = 0;
+                    char lastChar;
+                    do
+                    {
+                        ++needleUsed;
+                        lastChar = needleChar;
+                    } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
                 }
                 else if (!char.IsWhiteSpace(hayChar))
                 {
