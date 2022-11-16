@@ -57,7 +57,7 @@ Long answer:
 
 Windows Forms lets you put text on controls in the designer, and you should, to understand how it will look and to make sure any text-based autosizing looks right etc. However, it's a massive amount of duplicated bloat to store the designer-entered text in the code-behind when it's just going to be replaced immediately with text from the chosen language file. So for MainForm.cs, I created a copy of the MainForm.Designer.cs code-behind file (MainForm_InitManual.cs) and manually removed all the '(whatever-control).Text = "Whatever text"' lines. Then I realized I didn't need the Name strings either, so I removed those too. Then I got drunk on the power of WinForms bloat removal, and went and also removed Size properties if it was AutoSize etc., and a crapton of other redundant things.
 
-I did this manual de-bloating for all other forms for a while too, until I added an auto-Designer.cs-debloater to FenGen, so that most forms can now just be designed as normal and will have a (FormName)\_InitSlim.Generated.cs added automatically. But, if you're making a new form, you're still going to have to add this bit manually to the constructor:
+I did this manual de-bloating for all other forms for a while too, until I added an auto-Designer.cs-debloater to FenGen, so that most forms can now just be designed as normal and will have a (FormName)\_InitSlim.Generated.cs added automatically (as long as their .Designer.cs file has the line "#define FenGen_DesignerSource" at the top!). But, if you're making a new form, you're still going to have to add this bit manually to the constructor:
 
 ```
 #if DEBUG
