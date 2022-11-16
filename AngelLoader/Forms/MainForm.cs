@@ -3895,34 +3895,47 @@ namespace AngelLoader.Forms
                             break;
                         }
 
-                        if (!titleIsWhiteSpace)
+                        if (Config.EnableFuzzySearch)
                         {
-                            (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
-                            if (matched)
+                            if (!titleIsWhiteSpace)
                             {
-                                titleMatchIndex = i;
-                                if (exactMatch)
+                                (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
+                                if (matched)
                                 {
-                                    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                                    keepSel = KeepSel.True;
-                                    foundExactTitleMatch = true;
-                                    break;
+                                    titleMatchIndex = i;
+                                    if (exactMatch)
+                                    {
+                                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                        keepSel = KeepSel.True;
+                                        foundExactTitleMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!authorIsWhiteSpace)
+                            {
+                                (bool matched, bool exactMatch) = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
+                                if (matched)
+                                {
+                                    authorMatchIndex = i;
+                                    if (exactMatch)
+                                    {
+                                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                        keepSel = KeepSel.True;
+                                        foundExactAuthorMatch = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                        if (!authorIsWhiteSpace)
+                        else
                         {
-                            (bool matched, bool exactMatch) = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
-                            if (matched)
+                            if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim()).Matched) ||
+                                (!authorIsWhiteSpace && fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text).Matched))
                             {
-                                authorMatchIndex = i;
-                                if (exactMatch)
-                                {
-                                    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                                    keepSel = KeepSel.True;
-                                    foundExactAuthorMatch = true;
-                                    break;
-                                }
+                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                keepSel = KeepSel.True;
+                                break;
                             }
                         }
                     }
