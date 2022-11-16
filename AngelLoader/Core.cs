@@ -885,20 +885,33 @@ namespace AngelLoader
             }
         }
 
-        internal static bool ContainsI_TextFilter(this string hay, string needle)
+        internal static (bool Matched, bool ExactMatch) ContainsI_TextFilter(this string hay, string needle)
         {
-            return Config.EnableFuzzySearch ? hay.ContainsI_Subsequence(needle) : hay.ContainsI(needle);
+            return Config.EnableFuzzySearch ? hay.ContainsI_Subsequence(needle) : (hay.ContainsI(needle), true);
         }
 
-        internal static bool FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
+        internal static (bool Matched, bool ExactMatch) FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
         {
-            return fm.Title.ContainsI_TextFilter(title) ||
-                   (fm.Archive.ExtIsArchive()
-                       ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
-                           ? fm.Archive.EndsWithI(titleTrimmed)
-                           : titleTrimmed.EqualsI(fm.Archive) ||
-                             fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-                       : fm.Archive.ContainsI_TextFilter(title));
+            //var ret = fm.Title.ContainsI_TextFilter(title) ||
+            //       (fm.Archive.ExtIsArchive()
+            //           ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
+            //               ? fm.Archive.EndsWithI(titleTrimmed)
+            //               : titleTrimmed.EqualsI(fm.Archive) ||
+            //                 fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+            //           : fm.Archive.ContainsI_TextFilter(title));
+
+            var titleContains = fm.Title.ContainsI_TextFilter(title);
+            if (titleContains.Matched)
+            {
+                return titleContains;
+            }
+            else if (fm.Archive.ExtIsArchive() && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
+            {
+                return fm.Archive.EndsWithI(titleTrimmed)
+                    ? (titleTrimmed.EqualsI(fm.Archive), true)
+                    : (fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1, true);
+            }
+            return fm.Archive.ContainsI_TextFilter(title);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -906,11 +919,13 @@ namespace AngelLoader
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        internal static void SetFilter()
+        internal static (int TitleExactMatchIndex, int AuthorExactMatchIndex) SetFilter()
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             View.SetDebug2Text(int.TryParse(View.GetDebug2Text(), out int result) ? (result + 1).ToString() : "1");
 #endif
+
+            (int titleExactMatchIndex, int authorExactMatchIndex) ret = (-1, -1);
 
             Filter viewFilter = View.GetFilter();
 
@@ -953,12 +968,23 @@ namespace AngelLoader
             {
                 var fm = FMsViewList[i];
 
+                (bool Match, bool ExactMatch) match = (false, false);
+
                 if (fm.MarkedRecent ||
                     fm.Pinned ||
                     titleIsWhitespace ||
-                    FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed))
+                    (match = FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed)).Match)
                 {
                     filterShownIndexList.Add(i);
+                    if (match.ExactMatch && ret.titleExactMatchIndex == -1)
+                    {
+                        ret.titleExactMatchIndex = i;
+                    }
+                    fm.ExactTitleMatch = match.Match && match.ExactMatch;
+                }
+                else
+                {
+                    fm.ExactTitleMatch = false;
                 }
             }
 
@@ -971,12 +997,24 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[filterShownIndexList[i]];
+
+                    (bool Match, bool ExactMatch) match = (false, false);
+
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
-                        !fm.Author.ContainsI_TextFilter(viewFilter.Author))
+                        !(match = fm.Author.ContainsI_TextFilter(viewFilter.Author)).Match)
                     {
                         filterShownIndexList.RemoveAt(i);
+                        fm.ExactAuthorMatch = false;
                         i--;
+                    }
+                    else
+                    {
+                        if (match.ExactMatch && ret.authorExactMatchIndex == -1)
+                        {
+                            ret.authorExactMatchIndex = i;
+                        }
+                        fm.ExactAuthorMatch = match.Match && match.ExactMatch;
                     }
                 }
             }
@@ -1300,6 +1338,8 @@ namespace AngelLoader
             }
 
             #endregion
+
+            return ret;
         }
 
         #region DML

@@ -386,13 +386,15 @@ namespace AL_Common
         /// <param name="hay"></param>
         /// <param name="needle"></param>
         /// <returns></returns>
-        public static bool ContainsI_Subsequence(this string hay, string needle)
+        public static (bool Matched, bool ExactMatch) ContainsI_Subsequence(this string hay, string needle)
         {
+            var fail = (false, false);
+
             int hayLength = hay.Length;
             int needleLength = needle.Length;
 
-            if (needleLength == 0) return false;
-            if (needleLength > hayLength) return false;
+            if (needleLength == 0) return fail;
+            if (needleLength > hayLength) return fail;
 
             /*
             This algo sometimes rejects results that have the actual exact string in them, and if you try to
@@ -400,7 +402,7 @@ namespace AL_Common
             well, so do a strict check first to cover that case.
             TODO(fuzzy search): Get a better algo in here, that does Levenshtein or something else fancy
             */
-            if (hay.ContainsI(needle)) return true;
+            if (hay.ContainsI(needle)) return (true, true);
 
             // TODO(fuzzy search): Make it land on the first closest match
             // ie. if we have "king" then it should land on "King's Story" and not "The Awakening"
@@ -430,16 +432,16 @@ namespace AL_Common
                 }
             }
 
-            if (startIndex == -1) return false;
+            if (startIndex == -1) return fail;
 
             for (int i = startIndex; i < hayLength; ++i)
             {
                 if (needleUsed == needleLength)
                 {
-                    return true;
+                    return (true, false);
                 }
 
-                if (skippedInARow > 2) return false;
+                if (skippedInARow > 2) return fail;
 
                 char hayChar = hay[i];
                 char needleChar = needle[needleUsed];
@@ -481,7 +483,7 @@ namespace AL_Common
                 }
             }
 
-            return needleUsed == needleLength;
+            return (needleUsed == needleLength, false);
         }
 
         #endregion

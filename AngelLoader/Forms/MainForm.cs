@@ -3823,22 +3823,45 @@ namespace AngelLoader.Forms
 
             SortFMsDGV(FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
-            Core.SetFilter();
+            var filterMatches = Core.SetFilter();
 
             if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
             {
                 bool foundUnTopped = false;
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                if (filterMatches.TitleExactMatchIndex > -1)
                 {
-                    var fm = FMsDGV.GetFMFromIndex(i);
-                    if (!fm.MarkedRecent && !fm.Pinned)
+                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                     {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                        keepSel = KeepSel.True;
-                        foundUnTopped = true;
-                        break;
+                        var fm = FMsDGV.GetFMFromIndex(i);
+                        if (!fm.MarkedRecent && !fm.Pinned && filterMatches.TitleExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                        {
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                            keepSel = KeepSel.True;
+                            foundUnTopped = true;
+                            break;
+                        }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    {
+                        var fm = FMsDGV.GetFMFromIndex(i);
+                        if (!fm.MarkedRecent && !fm.Pinned)
+                        {
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                            keepSel = KeepSel.True;
+                            foundUnTopped = true;
+                            break;
+                        }
+                    }
+                }
+
+                bool foundExactTitleMatch = false;
+                bool foundExactAuthorMatch = false;
+
+                int titleMatchIndex = -1;
+                int authorMatchIndex = -1;
 
                 if (!foundUnTopped)
                 {
@@ -3854,13 +3877,55 @@ namespace AngelLoader.Forms
                             break;
                         }
 
-                        if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim())) ||
-                            (!authorIsWhiteSpace && fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text)))
+                        if (!titleIsWhiteSpace)
                         {
-                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                            keepSel = KeepSel.True;
-                            break;
+                            var result = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
+                            if (result.Matched)
+                            {
+                                titleMatchIndex = i;
+                                if (result.ExactMatch)
+                                {
+                                    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                    keepSel = KeepSel.True;
+                                    foundExactTitleMatch = true;
+                                    break;
+                                }
+                            }
                         }
+                        if (!authorIsWhiteSpace)
+                        {
+                            var result = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
+                            if (result.Matched)
+                            {
+                                authorMatchIndex = i;
+                                if (result.ExactMatch)
+                                {
+                                    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                    keepSel = KeepSel.True;
+                                    foundExactAuthorMatch = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //if ((!titleIsWhiteSpace && ((titleMatchData = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim())).Matched)) ||
+                        //    (!authorIsWhiteSpace && (authorMatchData = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text).Matched)))
+                        //{
+                        //    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                        //    keepSel = KeepSel.True;
+                        //    break;
+                        //}
+                    }
+
+                    if (!foundExactTitleMatch && titleMatchIndex > -1)
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(titleMatchIndex);
+                        keepSel = KeepSel.True;
+                    }
+                    if (!foundExactAuthorMatch && authorMatchIndex > -1)
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(authorMatchIndex);
+                        keepSel = KeepSel.True;
                     }
                 }
             }
