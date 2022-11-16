@@ -980,11 +980,6 @@ namespace AngelLoader
                     {
                         ret.titleExactMatchIndex = i;
                     }
-                    fm.ExactTitleMatch = match.Match && match.ExactMatch;
-                }
-                else
-                {
-                    fm.ExactTitleMatch = false;
                 }
             }
 
@@ -1005,7 +1000,6 @@ namespace AngelLoader
                         !(match = fm.Author.ContainsI_TextFilter(viewFilter.Author)).Match)
                     {
                         filterShownIndexList.RemoveAt(i);
-                        fm.ExactAuthorMatch = false;
                         i--;
                     }
                     else
@@ -1014,7 +1008,6 @@ namespace AngelLoader
                         {
                             ret.authorExactMatchIndex = i;
                         }
-                        fm.ExactAuthorMatch = match.Match && match.ExactMatch;
                     }
                 }
             }

@@ -46,12 +46,6 @@ namespace AngelLoader.DataClasses
         [FenGenIgnore]
         internal bool MarkedUnavailable;
 
-        [FenGenIgnore]
-        internal bool ExactTitleMatch;
-
-        [FenGenIgnore]
-        internal bool ExactAuthorMatch;
-
         internal string Archive = "";
         internal string InstalledDir = "";
 

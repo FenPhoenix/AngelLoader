@@ -453,11 +453,12 @@ namespace AL_Common
                     {
                         skippedInARow = 0;
                         char lastChar;
+                        char currentChar;
                         do
                         {
                             ++needleUsed;
                             lastChar = needleChar;
-                        } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
+                        } while (needleUsed < needleLength - 1 && ((currentChar = needle[needleUsed]) == lastChar || char.IsWhiteSpace(currentChar)));
                     }
                     else if (!char.IsWhiteSpace(hayChar))
                     {

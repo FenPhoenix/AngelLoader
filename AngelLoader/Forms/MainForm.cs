@@ -3896,11 +3896,11 @@ namespace AngelLoader.Forms
 
                         if (!titleIsWhiteSpace)
                         {
-                            var result = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
-                            if (result.Matched)
+                            (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim());
+                            if (matched)
                             {
                                 titleMatchIndex = i;
-                                if (result.ExactMatch)
+                                if (exactMatch)
                                 {
                                     selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                     keepSel = KeepSel.True;
@@ -3911,11 +3911,11 @@ namespace AngelLoader.Forms
                         }
                         if (!authorIsWhiteSpace)
                         {
-                            var result = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
-                            if (result.Matched)
+                            (bool matched, bool exactMatch) = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text);
+                            if (matched)
                             {
                                 authorMatchIndex = i;
-                                if (result.ExactMatch)
+                                if (exactMatch)
                                 {
                                     selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                     keepSel = KeepSel.True;
@@ -3924,14 +3924,6 @@ namespace AngelLoader.Forms
                                 }
                             }
                         }
-
-                        //if ((!titleIsWhiteSpace && ((titleMatchData = Core.FMTitleContains_AllTests(fm, FilterTitleTextBox.Text, FilterTitleTextBox.Text.Trim())).Matched)) ||
-                        //    (!authorIsWhiteSpace && (authorMatchData = fm.Author.ContainsI_TextFilter(FilterAuthorTextBox.Text).Matched)))
-                        //{
-                        //    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                        //    keepSel = KeepSel.True;
-                        //    break;
-                        //}
                     }
 
                     if (!foundExactTitleMatch && titleMatchIndex > -1)
