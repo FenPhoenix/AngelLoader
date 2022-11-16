@@ -3828,7 +3828,8 @@ namespace AngelLoader.Forms
             if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
             {
                 bool foundUnTopped = false;
-                if (filterMatches.TitleExactMatchIndex > -1 || filterMatches.AuthorExactMatchIndex > -1)
+                if (Config.EnableFuzzySearch &&
+                    (filterMatches.TitleExactMatchIndex > -1 || filterMatches.AuthorExactMatchIndex > -1))
                 {
                     if (filterMatches.TitleExactMatchIndex > -1)
                     {
@@ -3926,15 +3927,18 @@ namespace AngelLoader.Forms
                         }
                     }
 
-                    if (!foundExactTitleMatch && titleMatchIndex > -1)
+                    if (Config.EnableFuzzySearch)
                     {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(titleMatchIndex);
-                        keepSel = KeepSel.True;
-                    }
-                    if (!foundExactAuthorMatch && authorMatchIndex > -1)
-                    {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(authorMatchIndex);
-                        keepSel = KeepSel.True;
+                        if (!foundExactTitleMatch && titleMatchIndex > -1)
+                        {
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(titleMatchIndex);
+                            keepSel = KeepSel.True;
+                        }
+                        if (!foundExactAuthorMatch && authorMatchIndex > -1)
+                        {
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(authorMatchIndex);
+                            keepSel = KeepSel.True;
+                        }
                     }
                 }
             }

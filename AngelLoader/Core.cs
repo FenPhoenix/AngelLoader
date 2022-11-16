@@ -887,19 +887,19 @@ namespace AngelLoader
 
         internal static (bool Matched, bool ExactMatch) ContainsI_TextFilter(this string hay, string needle)
         {
-            return Config.EnableFuzzySearch ? hay.ContainsI_Subsequence(needle) : (hay.ContainsI(needle), true);
+            if (Config.EnableFuzzySearch)
+            {
+                return hay.ContainsI_Subsequence(needle);
+            }
+            else
+            {
+                bool contains = hay.ContainsI(needle);
+                return (contains, contains);
+            }
         }
 
         internal static (bool Matched, bool ExactMatch) FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
         {
-            //var ret = fm.Title.ContainsI_TextFilter(title) ||
-            //       (fm.Archive.ExtIsArchive()
-            //           ? titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")
-            //               ? fm.Archive.EndsWithI(titleTrimmed)
-            //               : titleTrimmed.EqualsI(fm.Archive) ||
-            //                 fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-            //           : fm.Archive.ContainsI_TextFilter(title));
-
             var titleContains = fm.Title.ContainsI_TextFilter(title);
             if (titleContains.Matched)
             {

@@ -400,12 +400,8 @@ namespace AL_Common
             This algo sometimes rejects results that have the actual exact string in them, and if you try to
             tune it so it doesn't, then it gets other problems. It's just too simplistic to really work that
             well, so do a strict check first to cover that case.
-            TODO(fuzzy search): Get a better algo in here, that does Levenshtein or something else fancy
             */
             if (hay.ContainsI(needle)) return (true, true);
-
-            // TODO(fuzzy search): Make it land on the first closest match
-            // ie. if we have "king" then it should land on "King's Story" and not "The Awakening"
 
             // Repetition everywhere so that we make sure only the ascii path runs if it's ascii, because with
             // big if((this and that) or that) statements, the non-ascii path always runs even if we're ascii and
