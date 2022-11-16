@@ -3888,8 +3888,8 @@ namespace AngelLoader.Forms
                     string titleTextTrimmed = titleText.Trim();
                     string authorText = FilterAuthorTextBox.Text;
 
-                    bool titleIsWhiteSpace = FilterTitleTextBox.Text.IsWhiteSpace();
-                    bool authorIsWhiteSpace = FilterAuthorTextBox.Text.IsWhiteSpace();
+                    bool titleIsWhiteSpace = titleText.IsWhiteSpace();
+                    bool authorIsWhiteSpace = authorText.IsWhiteSpace();
 
                     for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                     {
