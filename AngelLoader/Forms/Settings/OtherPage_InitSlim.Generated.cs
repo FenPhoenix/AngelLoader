@@ -8,8 +8,8 @@
         private void InitSlim()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.FilteringGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -56,15 +56,6 @@
             this.PagePanel.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.TabIndex = 0;
             // 
-            // EnableFuzzySearchCheckBox
-            // 
-            this.EnableFuzzySearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
-            this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
-            this.EnableFuzzySearchCheckBox.TabIndex = 0;
-            this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
-            // 
             // FilteringGroupBox
             // 
             this.FilteringGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -75,6 +66,15 @@
             this.FilteringGroupBox.Size = new System.Drawing.Size(424, 56);
             this.FilteringGroupBox.TabIndex = 5;
             this.FilteringGroupBox.TabStop = false;
+            // 
+            // EnableFuzzySearchCheckBox
+            // 
+            this.EnableFuzzySearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
+            this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.EnableFuzzySearchCheckBox.TabIndex = 0;
+            this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
             // 
             // InstallingFMsGroupBox
             // 

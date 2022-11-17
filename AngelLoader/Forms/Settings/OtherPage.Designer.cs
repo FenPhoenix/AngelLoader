@@ -32,8 +32,8 @@ namespace AngelLoader.Forms
         private void InitializeComponent()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.FilteringGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.Install_ConfirmNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.Install_ConfirmMultipleOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -82,17 +82,6 @@ namespace AngelLoader.Forms
             this.PagePanel.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.TabIndex = 0;
             // 
-            // EnableFuzzySearchCheckBox
-            // 
-            this.EnableFuzzySearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
-            this.EnableFuzzySearchCheckBox.Name = "EnableFuzzySearchCheckBox";
-            this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
-            this.EnableFuzzySearchCheckBox.TabIndex = 0;
-            this.EnableFuzzySearchCheckBox.Text = "Enable fuzzy search for title/author (experimental)";
-            this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
-            // 
             // FilteringGroupBox
             // 
             this.FilteringGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -105,6 +94,17 @@ namespace AngelLoader.Forms
             this.FilteringGroupBox.TabIndex = 5;
             this.FilteringGroupBox.TabStop = false;
             this.FilteringGroupBox.Text = "Filtering";
+            // 
+            // EnableFuzzySearchCheckBox
+            // 
+            this.EnableFuzzySearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
+            this.EnableFuzzySearchCheckBox.Name = "EnableFuzzySearchCheckBox";
+            this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.EnableFuzzySearchCheckBox.TabIndex = 0;
+            this.EnableFuzzySearchCheckBox.Text = "Enable fuzzy search for title and author";
+            this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
             // 
             // InstallingFMsGroupBox
             // 

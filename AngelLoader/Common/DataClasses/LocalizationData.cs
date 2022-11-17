@@ -773,7 +773,7 @@ namespace AngelLoader.DataClasses
             [FenGenComment(
                 "\"Fuzzy search\" means, for example, you might enter \"kingstory\" and the filter would match",
                 "the FM title \"King's Story\". With this option disabled, the filter would match exact text only.")]
-            internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title/author (experimental)";
+            internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title and author";
         }
 
         internal sealed class DateFilterBox_Class
