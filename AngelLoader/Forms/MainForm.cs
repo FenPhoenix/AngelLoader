@@ -3830,14 +3830,20 @@ namespace AngelLoader.Forms
             {
                 bool foundUnTopped = false;
                 if (Config.EnableFuzzySearch &&
-                    (filterMatches.TitleExactMatchIndex > -1 || filterMatches.AuthorExactMatchIndex > -1))
+                    (filterMatches.TitleExactMatch != null || filterMatches.AuthorExactMatch != null))
                 {
-                    if (filterMatches.TitleExactMatchIndex > -1)
+                    // PERF_TODO(SortAndSetFilter()):
+                    // We're looping through when we already have our FanMission object, but what we need is a
+                    // SelectedFM object, but that requires getting the scroll position and such, so we can't
+                    // just convert a FanMission to a SelectedFM. These loops are super stupid and wasteful but
+                    // I can't think how to not have them at the moment. Look into this at some point.
+
+                    if (filterMatches.TitleExactMatch != null)
                     {
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
                             var fm = FMsDGV.GetFMFromIndex(i);
-                            if (!fm.MarkedRecent && !fm.Pinned && filterMatches.TitleExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                            if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.TitleExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                 keepSel = KeepSel.True;
@@ -3846,12 +3852,12 @@ namespace AngelLoader.Forms
                             }
                         }
                     }
-                    if (filterMatches.AuthorExactMatchIndex > -1)
+                    if (filterMatches.AuthorExactMatch != null)
                     {
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
                             var fm = FMsDGV.GetFMFromIndex(i);
-                            if (!fm.MarkedRecent && !fm.Pinned && filterMatches.AuthorExactMatchIndex == FMsDGV.FilterShownIndexList[i])
+                            if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.AuthorExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                 keepSel = KeepSel.True;

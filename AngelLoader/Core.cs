@@ -919,13 +919,13 @@ namespace AngelLoader
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        internal static (int TitleExactMatchIndex, int AuthorExactMatchIndex) SetFilter()
+        internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch) SetFilter()
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             View.SetDebug2Text(int.TryParse(View.GetDebug2Text(), out int result) ? (result + 1).ToString() : "1");
 #endif
 
-            (int titleExactMatchIndex, int authorExactMatchIndex) ret = (-1, -1);
+            (FanMission? titleExactMatch, FanMission? authorExactMatch) ret = (null, null);
 
             Filter viewFilter = View.GetFilter();
 
@@ -976,9 +976,9 @@ namespace AngelLoader
                     (match = FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed)).Match)
                 {
                     filterShownIndexList.Add(i);
-                    if (match.ExactMatch && ret.titleExactMatchIndex == -1)
+                    if (match.ExactMatch && ret.titleExactMatch == null && !fm.Pinned && !fm.MarkedRecent)
                     {
-                        ret.titleExactMatchIndex = i;
+                        ret.titleExactMatch = fm;
                     }
                 }
             }
@@ -1004,9 +1004,9 @@ namespace AngelLoader
                     }
                     else
                     {
-                        if (match.ExactMatch && ret.authorExactMatchIndex == -1)
+                        if (match.ExactMatch && ret.authorExactMatch == null && !fm.Pinned && !fm.MarkedRecent)
                         {
-                            ret.authorExactMatchIndex = i;
+                            ret.authorExactMatch = fm;
                         }
                     }
                 }
