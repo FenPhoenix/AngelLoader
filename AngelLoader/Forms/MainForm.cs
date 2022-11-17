@@ -2134,16 +2134,15 @@ namespace AngelLoader.Forms
         public string GetTitleFilter() => FilterTitleTextBox.Text;
         public string GetAuthorFilter() => FilterAuthorTextBox.Text;
 
-        public bool[] GetGameFiltersEnabledStates()
+        public Game GetGameFiltersEnabled()
         {
-            bool[] gamesChecked = new bool[SupportedGameCount];
-
+            Game games = Game.Null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                gamesChecked[i] = _filterByGameButtons[i].Checked;
+                if (_filterByGameButtons[i].Checked) games |= GameIndexToGame((GameIndex)i);
             }
 
-            return gamesChecked;
+            return games;
         }
 
         public bool GetFinishedFilter() => FilterByFinishedButton.Checked;

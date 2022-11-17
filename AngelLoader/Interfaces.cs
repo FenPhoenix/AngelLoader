@@ -298,7 +298,7 @@ namespace AngelLoader
 
         string GetAuthorFilter();
 
-        bool[] GetGameFiltersEnabledStates();
+        GameSupport.Game GetGameFiltersEnabled();
 
         bool GetFinishedFilter();
 
