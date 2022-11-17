@@ -331,6 +331,8 @@ namespace AngelLoader
 
         #region Row count
 
+        int GetRowCount();
+
         void SetRowCount(int count);
 
         #endregion
@@ -369,36 +371,58 @@ namespace AngelLoader
 
         void SetSelectedEncoding(Encoding encoding);
 
-        #endregion
-
-        void Block(bool block);
-
         void ChangeReadmeBoxFont(bool useFixed);
 
-        void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
+        void ClearReadmesList();
+
+        void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
+
+        void ShowReadmeChooser(bool visible);
+
+        void ShowInitialReadmeChooser(bool visible);
+
+        #endregion
+
+        #region Get FM info
+
+        FanMission[] GetSelectedFMs();
+
+        List<FanMission> GetSelectedFMs_InOrder_List();
 
         SelectedFM? GetMainSelectedFMPosInfo();
 
-        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
-
-#if !ReleaseBeta && !ReleasePublic
-        void UpdateGameScreenShotModes();
-#endif
-
         FanMission? GetMainSelectedFMOrNull();
-        FanMission[] GetSelectedFMs();
-        bool MultipleFMsSelected();
-        (string Category, string Tag) SelectedCategoryAndTag();
-        void DisplayFMTags(FMCategoriesCollection fmTags);
-        void ClearTagsSearchBox();
-        void SetPinnedMenuState(bool pinned);
-        int GetRowCount();
-        int GetMainSelectedRowIndex();
+
+        FanMission? GetMainSelectedFMOrNull_Fast();
+
+        FanMission? GetFMFromIndex(int index);
+
         SelectedFM? GetFMPosInfoFromIndex(int index);
+
+        bool MultipleFMsSelected();
+
         bool RowSelected(int index);
-        string GetFMCommentText();
+
+        int GetMainSelectedRowIndex();
+
+        #endregion
+
+        #region Tags
+
+        (string Category, string Tag) SelectedCategoryAndTag();
+
+        void DisplayFMTags(FMCategoriesCollection fmTags);
+
+        void ClearTagsSearchBox();
+
+        #endregion
+
+        #region Languages
+
         void ClearLanguagesList();
+
         void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs);
+
         // @LANGS(backing items): We could allow the backing items to be enum values
         // That way we don't even have to store the lang strings in the combobox backing list
         /// <summary>
@@ -407,27 +431,10 @@ namespace AngelLoader
         /// <param name="language"></param>
         /// <returns>The selected language, or default if a match was not found.</returns>
         Language SetSelectedLanguage(Language language);
+
         Language GetMainSelectedLanguage();
-        void SetPlayOriginalGameControlsState();
-        void ClearReadmesList();
-        void UpdateAllFMUIDataExceptReadme(FanMission fm);
-        void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
-        void ShowReadmeChooser(bool visible);
-        void ShowInitialReadmeChooser(bool visible);
-        void ActivateThisInstance();
-        FanMission? GetFMFromIndex(int index);
-
-        #region Disabled until needed
-
-#if false
-
-        FanMission[] GetSelectedFMs_InOrder();
-
-#endif
 
         #endregion
-
-        List<FanMission> GetSelectedFMs_InOrder_List();
 
         #region Dialogs
 
@@ -439,10 +446,36 @@ namespace AngelLoader
 
         #endregion
 
-        bool AbleToAcceptDragDrop();
-        FanMission? GetMainSelectedFMOrNull_Fast();
+        #region UI enabled
+
         bool GetUIEnabled();
+
         void SetUIEnabled(bool value);
+
+        #endregion
+
+        void Block(bool block);
+
+        void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
+
+        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
+
+        void SetPinnedMenuState(bool pinned);
+
+        string GetFMCommentText();
+
+        void SetPlayOriginalGameControlsState();
+
+        void UpdateAllFMUIDataExceptReadme(FanMission fm);
+
+        void ActivateThisInstance();
+
+        bool AbleToAcceptDragDrop();
+
         void SetAvailableFMCount();
+
+#if !ReleaseBeta && !ReleasePublic
+        void UpdateGameScreenShotModes();
+#endif
     }
 }
