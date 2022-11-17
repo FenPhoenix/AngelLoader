@@ -476,6 +476,8 @@ namespace AngelLoader
 
 #if !ReleaseBeta && !ReleasePublic
         void UpdateGameScreenShotModes();
+
+        void ShowLanguageDetectError(bool enabled);
 #endif
     }
 }

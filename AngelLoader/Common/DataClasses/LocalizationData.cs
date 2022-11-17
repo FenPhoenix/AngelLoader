@@ -519,6 +519,9 @@ namespace AngelLoader.DataClasses
             internal readonly string RescanReleaseDateToolTip = "Rescan release date";
             internal readonly string RescanLanguages = "Rescan for supported languages";
             internal readonly string RescanForReadmes = "Rescan for readmes";
+            [FenGenBlankLine]
+            [FenGenComment("There will be an error icon that can be clicked here.")]
+            internal readonly string ErrorDetectingFMSupportedLanguages_ToolTip = "There was an error detecting this FM's supported languages. Click to view the log.";
         }
 
         internal sealed class CommentTab_Class

@@ -151,7 +151,7 @@ namespace AngelLoader.Forms
         // Private method, not invoked because all calls are
         private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MBoxIcon icon)
         {
-            using var d = new DarkErrorDialog(message, Paths.LogFile, title, GetIcon(icon));
+            using var d = new DarkErrorDialog(message, title, GetIcon(icon));
             if (owner != null)
             {
                 d.ShowDialogDark(owner);

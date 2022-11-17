@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AngelLoader.DataClasses;
 using SevenZip;
@@ -100,40 +101,70 @@ namespace AngelLoader
             return (sLanguage, bForceLanguage);
         }
 
-        // @BetterErrors(FillFMSupportedLangs())
         internal static void FillFMSupportedLangs(FanMission fm)
         {
-            // We should already have checked before getting here, but just for safety...
-            if (!GameIsDark(fm.Game)) return;
+            #region Local functions
 
-            string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
-            List<string> langs;
-            if (FMIsReallyInstalled(fm))
+            static bool TrySetLangsFromArchive(FanMission fm, [NotNullWhen(true)] out List<string>? langs)
             {
                 try
                 {
+                    (_, langs) = GetFMSupportedLanguagesFromArchive(fm.Archive, earlyOutOnEnglish: false);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogFMInfo(fm, ErrorText.ExTry + "detect language folders in archive.", ex);
+                    langs = null;
+                    return false;
+                }
+            }
+
+            static bool TrySetLangsFromInstalledDir(FanMission fm, [NotNullWhen(true)] out List<string>? langs)
+            {
+                try
+                {
+                    string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
                     langs = GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish: false);
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     LogFMInfo(fm, ErrorText.ExTry + "detect language folders in installed dir.", ex);
+                    langs = null;
+                    return false;
+                }
+            }
+
+            #endregion
+
+            // We should already have checked before getting here, but just for safety...
+            if (!GameIsDark(fm.Game)) return;
+
+            List<string>? langs;
+            if (FMIsReallyInstalled(fm))
+            {
+                if (!TrySetLangsFromInstalledDir(fm, out langs) &&
+                    !TrySetLangsFromArchive(fm, out langs))
+                {
+                    Core.View.ShowLanguageDetectError(true);
+                    fm.Langs = Language.Default;
                     fm.LangsScanned = false;
                     return;
                 }
             }
             else
             {
-                try
+                if (!TrySetLangsFromArchive(fm, out langs))
                 {
-                    (_, langs) = GetFMSupportedLanguagesFromArchive(fm.Archive, earlyOutOnEnglish: false);
-                }
-                catch (Exception ex)
-                {
-                    LogFMInfo(fm, ErrorText.ExTry + "detect language folders in archive.", ex);
+                    Core.View.ShowLanguageDetectError(true);
+                    fm.Langs = Language.Default;
                     fm.LangsScanned = false;
                     return;
                 }
             }
+
+            Core.View.ShowLanguageDetectError(false);
 
             if (langs.Count > 0)
             {

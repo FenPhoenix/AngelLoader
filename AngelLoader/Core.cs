@@ -1946,6 +1946,18 @@ namespace AngelLoader
             }
         }
 
+        internal static void OpenLogFile()
+        {
+            try
+            {
+                ProcessStart_UseShellExecute(Paths.LogFile);
+            }
+            catch
+            {
+                Dialogs.ShowAlert(ErrorText.UnOpenLogFile + "\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
+            }
+        }
+
         #endregion
 
         #region Get special exes

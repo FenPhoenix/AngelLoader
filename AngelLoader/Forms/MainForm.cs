@@ -175,6 +175,7 @@ namespace AngelLoader.Forms
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
+        private readonly Lazy_LangDetectError Lazy_LangDetectError;
 
         #endregion
 
@@ -556,7 +557,8 @@ namespace AngelLoader.Forms
                 PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
                 TopRightLLMenu = new TopRightLLMenu(this),
                 ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
-                Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this)
+                Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
+                Lazy_LangDetectError = new Lazy_LangDetectError(this)
             };
 
             #endregion
@@ -1750,6 +1752,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(EditFMScanLanguagesButton, LText.EditFMTab.RescanLanguages);
 
                 EditFMLanguageLabel.Text = LText.EditFMTab.PlayFMInThisLanguage;
+                Lazy_LangDetectError.Localize();
 
                 EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
 
@@ -5926,5 +5929,7 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
         }
+
+        public void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
     }
 }
