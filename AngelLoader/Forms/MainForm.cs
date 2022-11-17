@@ -89,8 +89,8 @@ namespace AngelLoader.Forms
 
         #region FMs list
 
-        private float _fmsListDefaultFontSizeInPoints;
-        private int _fmsListDefaultRowHeight;
+        private readonly float _fmsListDefaultFontSizeInPoints;
+        private readonly int _fmsListDefaultRowHeight;
 
         // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
         // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
@@ -623,6 +623,9 @@ namespace AngelLoader.Forms
             TopRightMultiSelectBlockerPanel.BringToFront();
             TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);
 
+            _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+
             #region Construct + init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -904,9 +907,6 @@ namespace AngelLoader.Forms
             #region FMs DataGridView
 
             FMsDGV.SetOwner(this);
-
-            _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
-            _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
             #region Columns
 
