@@ -2071,7 +2071,11 @@ namespace AngelLoader
             {
                 bool doScan = forceScan || !fm.LangsScanned;
 
-                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
+                if (doScan)
+                {
+                    FMLanguages.FillFMSupportedLangs(fm);
+                    Ini.WriteFullFMDataIni();
+                }
 
                 for (int i = 0; i < SupportedLanguageCount; i++)
                 {
