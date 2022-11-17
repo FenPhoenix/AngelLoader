@@ -4310,10 +4310,9 @@ namespace AngelLoader.Forms
                 newRatingColumn.Width = newRatingColumn == RatingTextColumn
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
-                    // @NET5: "Normal zoom" cell height will change with a different font
-                    : FMsDGV.RowTemplate.Height == 22
+                    : FMsDGV.RowTemplate.Height == _fmsListDefaultRowHeight
                         ? _ratingImageColumnWidth
-                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (_ratingImageColumnWidth / 22);
+                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (_ratingImageColumnWidth / _fmsListDefaultRowHeight);
                 newRatingColumn.Visible = oldRatingColumn.Visible;
                 newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
             }
