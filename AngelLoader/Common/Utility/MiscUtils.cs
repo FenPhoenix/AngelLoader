@@ -92,9 +92,12 @@ namespace AngelLoader
         {
             fmInstalledPath = "";
 
-            if (!GameIsKnownAndSupported(fm.Game) || !fm.Installed) return false;
+            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex) || !fm.Installed)
+            {
+                return false;
+            }
 
-            string instPath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string instPath = Config.GetFMInstallPath(gameIndex);
             if (instPath.IsEmpty()) return false;
 
             return TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
@@ -288,8 +291,8 @@ namespace AngelLoader
                 "fm." + nameof(fm.Archive) + ": " + fm.Archive + "\r\n" +
                 "fm." + nameof(fm.InstalledDir) + ": " + fm.InstalledDir + "\r\n" +
                 "fm." + nameof(fm.Installed) + ": " + fm.Installed + "\r\n" +
-                (GameIsKnownAndSupported(fm.Game)
-                    ? "Base directory for installed FMs: " + Config.GetFMInstallPathUnsafe(fm.Game)
+                (ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex)
+                    ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)
                     : "Game type is not known or not supported.") +
                 (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
         }

@@ -181,13 +181,6 @@ namespace AngelLoader.DataClasses
 
         internal string GetFMInstallPath(GameIndex index) => _fmInstallPaths[(uint)index];
 
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal string GetFMInstallPathUnsafe(Game game) => _fmInstallPaths[(uint)GameToGameIndex(game)];
-
         internal void SetFMInstallPath(GameIndex index, string value) => _fmInstallPaths[(uint)index] = value;
 
         #endregion
@@ -198,12 +191,7 @@ namespace AngelLoader.DataClasses
 
         private readonly bool[] _gameEditorDetected;
 
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal bool GetGameEditorDetectedUnsafe(Game game) => _gameEditorDetected[(uint)GameToGameIndex(game)];
+        internal bool GetGameEditorDetected(GameIndex gameIndex) => _gameEditorDetected[(uint)gameIndex];
 
         internal void SetGameEditorDetected(GameIndex index, bool value) => _gameEditorDetected[(uint)index] = value;
 

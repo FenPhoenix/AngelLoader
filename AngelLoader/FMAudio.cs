@@ -377,9 +377,9 @@ namespace AngelLoader
             // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
             // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
             // assume Thief 3 doesn't need it and leave it at that.
-            if (!GameIsDark(fm.Game)) return Array.Empty<string>();
+            if (!ConvertsToDark(fm.Game, out GameIndex gameIndex)) return Array.Empty<string>();
 
-            string instPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+            string instPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
             string sndPath = Path.Combine(instPath, "snd");
             return fm.Game == Game.SS2
                 ? new[] { sndPath, Path.Combine(instPath, "snd2") }

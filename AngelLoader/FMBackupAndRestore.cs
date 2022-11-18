@@ -234,7 +234,7 @@ namespace AngelLoader
                                              (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                               (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
-            if (!GameIsKnownAndSupported(fm.Game))
+            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;
@@ -244,7 +244,7 @@ namespace AngelLoader
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
-                string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
                 string savesDir = fm.Game == Game.Thief3 ? _t3SavesDir : _darkSavesDir;
                 string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
                 string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _darkNetSavesDir);
@@ -367,7 +367,7 @@ namespace AngelLoader
         {
             static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
-            if (!GameIsKnownAndSupported(fm.Game))
+            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;
@@ -386,7 +386,7 @@ namespace AngelLoader
 
                 var fileExcludes = new HashSetPathI();
 
-                string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = GetZipArchiveCharEnc(backupFile.Name))

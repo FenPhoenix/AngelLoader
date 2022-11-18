@@ -156,9 +156,9 @@ namespace AngelLoader
                                     : ""
                             });
                         }
-                        else if (GameIsKnownAndSupported(fm.Game))
+                        else if (ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
                         {
-                            string fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
+                            string fmInstalledPath = Config.GetFMInstallPath(gameIndex);
                             if (!fmInstalledPath.IsEmpty())
                             {
                                 fmsToScanFiltered.Add(fm);

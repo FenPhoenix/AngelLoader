@@ -725,11 +725,14 @@ namespace AngelLoader
             return archiveName;
         }
 
+        // TODO(FindFMs.GetFMSelInfPath()):
+        // We should be using FMIsReallyInstalled() here, but that one swallows exceptions where this one doesn't.
+        // Keeping behavior identicality by leaving it as-is for now, but we should look into this!
         private static string? GetFMSelInfPath(FanMission fm)
         {
-            if (!GameIsKnownAndSupported(fm.Game)) return null;
+            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex)) return null;
 
-            string fmInstPath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string fmInstPath = Config.GetFMInstallPath(gameIndex);
 
             return fmInstPath.IsEmpty() ? null : Path.Combine(fmInstPath, fm.InstalledDir, Paths.FMSelInf);
         }

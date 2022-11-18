@@ -1389,10 +1389,12 @@ namespace AngelLoader
         {
             AssertR(GameIsDark(fm.Game), nameof(GetDMLFiles) + ": " + nameof(fm) + " is not Dark");
 
+            if (!ConvertsToDark(fm.Game, out GameIndex gameIndex)) return (false, new List<string>());
+
             try
             {
                 var dmlFiles = FastIO.GetFilesTopOnly(
-                    Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir), "*.dml",
+                    Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir), "*.dml",
                     returnFullPaths: false);
                 return (true, dmlFiles);
             }
@@ -1764,9 +1766,7 @@ namespace AngelLoader
                 return;
             }
 
-            string installsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-            if (installsBasePath.IsEmpty() ||
-                !TryCombineDirectoryPathAndCheckExistence(installsBasePath, fm.InstalledDir, out string fmDir))
+            if (!FMIsReallyInstalled(fm, out string fmDir))
             {
                 LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);

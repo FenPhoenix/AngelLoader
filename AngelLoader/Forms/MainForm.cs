@@ -5076,7 +5076,9 @@ namespace AngelLoader.Forms
             FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemText(multiSelected);
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
-            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected && GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
+            FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected &&
+                                                    ConvertsToDark(fm.Game, out GameIndex gameIndex)
+                                                    && Config.GetGameEditorDetected(gameIndex));
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
             FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);

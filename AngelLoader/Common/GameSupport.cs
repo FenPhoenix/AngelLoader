@@ -59,6 +59,47 @@ namespace AngelLoader
             _ => Game.Null
         };
 
+        internal static bool ConvertsToKnownAndSupported(Game game, out GameIndex gameIndex)
+        {
+            if (GameIsKnownAndSupported(game))
+            {
+                gameIndex = GameToGameIndex(game);
+                return true;
+            }
+            else
+            {
+                gameIndex = GameIndex.Thief1;
+                return false;
+            }
+        }
+        internal static bool ConvertsToDark(Game game, out GameIndex gameIndex)
+        {
+            if (GameIsDark(game))
+            {
+                gameIndex = GameToGameIndex(game);
+                return true;
+            }
+            else
+            {
+                gameIndex = GameIndex.Thief1;
+                return false;
+            }
+        }
+
+        internal static bool ConvertsToDarkThief(Game game, out GameIndex gameIndex)
+        {
+            if (game is Game.Thief1 or Game.Thief2)
+            {
+                gameIndex = GameToGameIndex(game);
+                return true;
+            }
+            else
+            {
+                gameIndex = GameIndex.Thief1;
+                return false;
+            }
+        }
+
         #endregion
 
         #region Get game-related localized strings

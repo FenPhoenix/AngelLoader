@@ -656,11 +656,11 @@ namespace AngelLoader
         private static MissFlagError GenerateMissFlagFileIfRequired(FanMission fm, bool errorOnCantPlay = false)
         {
             // Only T1 and T2 have/require missflag.str
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return MissFlagError.None;
+            if (!ConvertsToDarkThief(fm.Game, out GameIndex gameIndex)) return MissFlagError.None;
 
             try
             {
-                string instFMsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string instFMsBasePath = Config.GetFMInstallPath(gameIndex);
                 string fmInstalledPath = Path.Combine(instFMsBasePath, fm.InstalledDir);
 
                 if (!Directory.Exists(fmInstalledPath)) return MissFlagError.None;
@@ -1057,14 +1057,12 @@ namespace AngelLoader
 
             #endregion
 
-            if (fm.Game is not Game.Thief1 and not Game.Thief2) return false;
+            if (!ConvertsToDarkThief(fm.Game, out GameIndex gameIndex)) return false;
             if (!fm.Installed) return false;
             if (checkForOldDark && !FMIsOldDark(fm)) return false;
 
             try
             {
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-
                 string gamePath = Config.GetGamePath(gameIndex);
                 string fmInstallPath = Config.GetFMInstallPath(gameIndex);
 
