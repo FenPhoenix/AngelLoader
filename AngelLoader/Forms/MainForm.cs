@@ -1580,6 +1580,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        // @vNext: Since people can hide the top-right area, should we also display the count at the bottom?
+        // Like "5 FMs selected / 1696 FMs available"
+        // Maybe only display it if the top-right area is hidden?
         private void SetFMSelectedCountMessage(int count)
         {
             TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.FMsSelected_BeforeNumber +
