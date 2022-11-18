@@ -616,9 +616,8 @@ namespace AngelLoader.DataClasses
             [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
             internal readonly string Mods_EnableOrDisableModsForThief1 = "Enable or disable mods for Thief 1:";
             internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
-            // @vNext: This one is a dummy! It's just here to make there be SupportedGameCount items.
-            // Can we [FenGenIgnore] this so we can keep it here for that purpose but not write it to the file?
-            internal readonly string Mods_EnableOrDisableModsForThief3 = "Enable or disable mods for Thief 3:";
+            [FenGenDoNotWrite] // T3 is a dummy just to keep the game count the same
+            internal readonly string Mods_EnableOrDisableModsForThief3 = "";
             internal readonly string Mods_EnableOrDisableModsForSS2 = "Enable or disable mods for System Shock 2:";
             internal readonly string Mods_SubMenu = "Settings";
         }

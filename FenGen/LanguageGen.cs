@@ -14,6 +14,7 @@ namespace FenGen
     {
         private sealed class IniItem
         {
+            internal bool DoNotWrite;
             internal string Key = "";
             internal string Value = "";
             internal bool IsComment;
@@ -88,6 +89,8 @@ namespace FenGen
 
                 foreach (SyntaxNode m in members)
                 {
+                    bool doNotWriteThis = false;
+
                     var member = (MemberDeclarationSyntax)m;
                     foreach (AttributeListSyntax attrList in member.AttributeLists)
                     {
@@ -147,6 +150,9 @@ namespace FenGen
                                     }
                                     break;
                                 }
+                                case GenAttributes.FenGenDoNotWrite:
+                                    doNotWriteThis = true;
+                                    break;
                             }
                         }
                     }
@@ -186,7 +192,12 @@ namespace FenGen
                         }
                     }
 
-                    section.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer.Value).Token.ValueText });
+                    section.Add(new IniItem
+                    {
+                        Key = fName,
+                        Value = ((LiteralExpressionSyntax)initializer.Value).Token.ValueText,
+                        DoNotWrite = doNotWriteThis
+                    });
                 }
 
                 sections.Add(section);
@@ -269,7 +280,7 @@ namespace FenGen
                             sb.AppendLine(c);
                         }
                     }
-                    else
+                    else if (!item.DoNotWrite)
                     {
                         string val = test && item.Key == "TranslatedLanguageName" ? "TéstLang" : testPrefix + item.Value;
                         sb.Append(item.Key);
