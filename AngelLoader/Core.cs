@@ -2073,8 +2073,13 @@ namespace AngelLoader
 
                 if (doScan)
                 {
-                    FMLanguages.FillFMSupportedLangs(fm);
+                    bool success = FMLanguages.FillFMSupportedLangs(fm);
+                    View.ShowLanguageDetectError(!success);
                     Ini.WriteFullFMDataIni();
+                }
+                else
+                {
+                    View.ShowLanguageDetectError(false);
                 }
 
                 for (int i = 0; i < SupportedLanguageCount; i++)
@@ -2087,6 +2092,10 @@ namespace AngelLoader
                         langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
                     }
                 }
+            }
+            else
+            {
+                View.ShowLanguageDetectError(false);
             }
 
             View.AddLanguagesToList(langPairs);

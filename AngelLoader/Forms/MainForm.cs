@@ -4757,6 +4757,8 @@ namespace AngelLoader.Forms
                 EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
                 EditFMLanguageComboBox.SelectedIndex = 0;
 
+                Lazy_LangDetectError.SetVisible(false);
+
                 foreach (Control c in EditFMTabPage.Controls)
                 {
                     switch (c)
