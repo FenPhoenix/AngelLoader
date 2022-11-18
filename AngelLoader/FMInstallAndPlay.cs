@@ -693,7 +693,6 @@ namespace AngelLoader
                 {
                     if (errorOnCantPlay)
                     {
-                        // @BetterErrors(missflag.str generator): miss*.mis name format: Do we want to localize this?
                         string msg =
                             "This FM is not correctly structured, so the game will not be able to load it.\r\n\r\n" +
                             "This FM may be a demo, an unfinished mission, or may just be broken. It may be necessary to open it in DromEd to play it, or it may not be playable at all.\r\n\r\n" +
