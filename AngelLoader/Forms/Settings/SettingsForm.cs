@@ -1629,7 +1629,6 @@ namespace AngelLoader.Forms
                     Log(ErrorText.Ex + "in language reading", ex);
                 }
 
-                // @BetterErrors(Settings lang combobox select)
                 // If we wanted to be really fancy we could fall back to the previously selected language, by
                 // keeping it in memory and only switching if we know the select succeeded.
                 LText = new LText_Class();

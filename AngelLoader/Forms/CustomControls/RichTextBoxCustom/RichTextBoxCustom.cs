@@ -192,7 +192,15 @@ namespace AngelLoader.Forms.CustomControls
             }
             catch (Exception ex)
             {
-                // @BetterErrors(RTFBox/ChangeEncodingInternal())
+                /*
+                NOTE - exception handling in RTFBox/ChangeEncodingInternal():
+                It's extremely, extremely unlikely that an exception could occur here. I think the only way it
+                could happen is if the encoding detector were to throw, and/or if there were invalid bytes in the
+                readme file.
+
+                A dialog here would be obnoxious; the readme would probably be visibly broken anyway and that
+                should be indication enough that something failed.
+                */
                 Log("Couldn't set encoding", ex);
                 return retEncoding;
             }
