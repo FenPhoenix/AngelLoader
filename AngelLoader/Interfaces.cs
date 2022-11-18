@@ -150,6 +150,21 @@ namespace AngelLoader
 
     public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContextMenuOwner, IZeroSelectCodeDisabler
     {
+#if !ReleaseBeta && !ReleasePublic
+        void UpdateGameScreenShotModes();
+#endif
+
+        #region Debug
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        string GetDebug1Text();
+        string GetDebug2Text();
+        void SetDebug1Text(string value);
+        void SetDebug2Text(string value);
+#endif
+
+        #endregion
+
         #region Progress box
 
         /// <summary>
@@ -318,17 +333,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Debug
-
-#if DEBUG || (Release_Testing && !RT_StartupOnly)
-        string GetDebug1Text();
-        string GetDebug2Text();
-        void SetDebug1Text(string value);
-        void SetDebug2Text(string value);
-#endif
-
-        #endregion
-
         #region Row count
 
         int GetRowCount();
@@ -474,10 +478,6 @@ namespace AngelLoader
 
         void SetAvailableFMCount();
 
-#if !ReleaseBeta && !ReleasePublic
-        void UpdateGameScreenShotModes();
-
         void ShowLanguageDetectError(bool enabled);
-#endif
     }
 }
