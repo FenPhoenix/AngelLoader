@@ -537,7 +537,8 @@ namespace AngelLoader
                 // The above try-combine thing won't log any exceptions, so let's log this one ourselves.
                 Log(Paths.CamModIni + " not found, or game path not found, or invalid game path.\r\n" +
                     "Game path: " + gamePath + "\r\n" +
-                    "Game type: " + gameIndex
+                    "Game type: " + gameIndex,
+                    stackTrace: true
                 );
                 return false;
             }
