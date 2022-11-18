@@ -762,8 +762,8 @@ namespace AngelLoader
 
             static bool NotInPerGameList(FanMission fm, bool?[] notInList, DictionaryI<InstDirValueData>[] list, bool useBool)
             {
-                if (!GameIsKnownAndSupported(fm.Game)) return false;
-                int intGame = (int)GameToGameIndex(fm.Game);
+                if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex)) return false;
+                int intGame = (int)gameIndex;
 
                 if (!useBool)
                 {

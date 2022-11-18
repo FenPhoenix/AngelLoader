@@ -79,6 +79,14 @@ namespace AngelLoader.Forms.CustomControls
             DisabledModsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
+        [PublicAPI]
+        public (bool Success, string DisabledMods, bool DisableAllMods)
+        Set(GameIndex gameIndex, string disabledMods, bool disableAllMods)
+        {
+            return Set(GameIndexToGame(gameIndex), disabledMods, disableAllMods);
+        }
+
+        [PublicAPI]
         public (bool Success, string DisabledMods, bool DisableAllMods)
         Set(Game game, string disabledMods, bool disableAllMods)
         {
@@ -92,9 +100,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 CheckList.ClearList();
 
-                if (!GameSupportsMods(game)) return fail;
+                if (!ConvertsToModSupporting(game, out GameIndex gameIndex)) return fail;
 
-                (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
+                (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
 
                 if (!success)
                 {
@@ -126,7 +134,7 @@ namespace AngelLoader.Forms.CustomControls
                 for (int i = 0; i < mods.Count; i++)
                 {
                     Mod mod = mods[i];
-                    if (!Config.GetModDirs(GameToGameIndex(game)).Contains(mod.InternalName))
+                    if (!Config.GetModDirs(gameIndex).Contains(mod.InternalName))
                     {
                         mods.RemoveAt(i);
                         i--;

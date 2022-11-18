@@ -100,6 +100,20 @@ namespace AngelLoader
             }
         }
 
+        internal static bool ConvertsToModSupporting(Game game, out GameIndex gameIndex)
+        {
+            if (GameSupportsMods(game))
+            {
+                gameIndex = GameToGameIndex(game);
+                return true;
+            }
+            else
+            {
+                gameIndex = GameIndex.Thief1;
+                return false;
+            }
+        }
+
         #endregion
 
         #region Get game-related localized strings

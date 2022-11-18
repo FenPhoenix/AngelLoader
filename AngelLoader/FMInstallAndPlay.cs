@@ -86,14 +86,12 @@ namespace AngelLoader
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
-            if (!GameIsKnownAndSupported(fm.Game))
+            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                 return;
             }
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
 
             if (playMP && gameIndex != GameIndex.Thief2)
             {
@@ -336,14 +334,12 @@ namespace AngelLoader
                 #region Checks (specific to DromEd)
 
                 // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
-                if (!GameIsDark(fm.Game))
+                if (!ConvertsToDark(fm.Game, out GameIndex gameIndex))
                 {
                     LogFMInfo(fm, ErrorText.FMGameNotDark, stackTrace: true);
                     Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                     return false;
                 }
-
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
 
                 string gamePath = Config.GetGamePath(gameIndex);
                 if (gamePath.IsEmpty())
@@ -437,13 +433,13 @@ namespace AngelLoader
             {
                 if (!originalT3) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
             }
-            else if (GameIsDark(fm.Game))
+            else if (ConvertsToDark(fm.Game, out GameIndex gameIndex))
             {
                 bool langIsDefault = fm.SelectedLang == Language.Default;
                 if (langIsDefault)
                 {
                     // For Dark, we have to do this semi-manual stuff.
-                    (sLanguage, bForceLanguage) = FMLanguages.GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
+                    (sLanguage, bForceLanguage) = FMLanguages.GetDarkFMLanguage(gameIndex, fm.Archive, fm.InstalledDir);
                 }
                 else
                 {
@@ -1121,14 +1117,13 @@ namespace AngelLoader
 
                 AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
 
-                if (!GameIsKnownAndSupported(fm.Game))
+                if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
                 {
                     LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                     Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
                     return fail;
                 }
 
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
                 int intGameIndex = (int)gameIndex;
 
                 if (Canceled(install)) return fail;

@@ -4038,7 +4038,7 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     e.Value =
-                        GameIsKnownAndSupported(fm.Game) ? Images.FMsList_GameIcons[(int)GameToGameIndex(fm.Game)] :
+                        ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :
                         fm.Game == Game.Unsupported ? Images.RedQCircle :
                         // Can't say null, or else it sets an ugly red-x image
                         Images.Blank;
