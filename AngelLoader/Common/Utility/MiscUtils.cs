@@ -86,15 +86,18 @@ namespace AngelLoader
         /// and validly structured FM or even if it contains anything at all. Validity is assumed.
         /// </summary>
         /// <param name="fm"></param>
+        /// <param name="fmInstalledPath">If the FM exists on disk, the FM's installed path; otherwise, the empty string.</param>
         /// <returns></returns>
-        internal static bool FMIsReallyInstalled(FanMission fm)
+        internal static bool FMIsReallyInstalled(FanMission fm, out string fmInstalledPath)
         {
+            fmInstalledPath = "";
+
             if (!GameIsKnownAndSupported(fm.Game) || !fm.Installed) return false;
 
             string instPath = Config.GetFMInstallPathUnsafe(fm.Game);
             if (instPath.IsEmpty()) return false;
 
-            return TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out _);
+            return TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
         }
 
         #endregion

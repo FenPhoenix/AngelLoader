@@ -793,11 +793,7 @@ namespace AngelLoader
 
             if (!GameIsDark(fm.Game)) return false;
 
-            if (!FMIsReallyInstalled(fm)) return false;
-
-            GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-            string fmDir = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+            if (!FMIsReallyInstalled(fm, out string fmDir)) return false;
 
             List<FileInfo> misFileInfos;
             try

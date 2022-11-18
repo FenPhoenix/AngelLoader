@@ -120,11 +120,10 @@ namespace AngelLoader
                 }
             }
 
-            static bool TrySetLangsFromInstalledDir(FanMission fm, [NotNullWhen(true)] out List<string>? langs)
+            static bool TrySetLangsFromInstalledDir(FanMission fm, string fmInstPath, [NotNullWhen(true)] out List<string>? langs)
             {
                 try
                 {
-                    string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
                     langs = GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish: false);
                     return true;
                 }
@@ -142,9 +141,9 @@ namespace AngelLoader
             if (!GameIsDark(fm.Game)) return true;
 
             List<string>? langs;
-            if (FMIsReallyInstalled(fm))
+            if (FMIsReallyInstalled(fm, out string fmInstalledPath))
             {
-                if (!TrySetLangsFromInstalledDir(fm, out langs) &&
+                if (!TrySetLangsFromInstalledDir(fm, fmInstalledPath, out langs) &&
                     !TrySetLangsFromArchive(fm, out langs))
                 {
                     fm.Langs = Language.Default;

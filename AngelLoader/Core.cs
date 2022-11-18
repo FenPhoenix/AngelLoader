@@ -1336,14 +1336,13 @@ namespace AngelLoader
         {
             AssertR(GameIsDark(fm.Game), nameof(AddDML) + ": " + nameof(fm) + " is not Dark");
 
-            if (!FMIsReallyInstalled(fm))
+            if (!FMIsReallyInstalled(fm, out string installedFMPath))
             {
                 LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
                 return false;
             }
 
-            string installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
                 string dmlFile = Path.GetFileName(sourceDMLPath);
@@ -1364,14 +1363,13 @@ namespace AngelLoader
         {
             AssertR(GameIsDark(fm.Game), nameof(RemoveDML) + ": " + nameof(fm) + " is not Dark");
 
-            if (!FMIsReallyInstalled(fm))
+            if (!FMIsReallyInstalled(fm, out string installedFMPath))
             {
                 LogFMInfo(fm, "FM install directory not found.");
                 Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
                 return false;
             }
 
-            string installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
                 File.Delete(Path.Combine(installedFMPath, dmlFile));
@@ -1410,8 +1408,8 @@ namespace AngelLoader
         #region Readme
 
         private static string GetReadmeFileFullPath(FanMission fm) =>
-            FMIsReallyInstalled(fm)
-                ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
+            FMIsReallyInstalled(fm, out string fmInstalledPath)
+                ? Path.Combine(fmInstalledPath, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
         private static readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];

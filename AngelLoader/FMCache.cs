@@ -123,9 +123,8 @@ namespace AngelLoader
 
             try
             {
-                if (FMIsReallyInstalled(fm))
+                if (FMIsReallyInstalled(fm, out string fmReadmesBasePath))
                 {
-                    string fmReadmesBasePath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
                     return new CacheData(GetValidReadmes(fmReadmesBasePath));
                 }
                 else
