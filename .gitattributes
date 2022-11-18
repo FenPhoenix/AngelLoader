@@ -1,3 +1,9 @@
+AngelLoader_Stub/*.cpp linguist-language=C++
+AngelLoader_Stub/*.cxx linguist-language=C++
+AngelLoader_Stub/*.hpp linguist-language=C++
+AngelLoader_Stub/*.hxx linguist-language=C++
+AngelLoader_Stub/*.h linguist-language=C++
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
