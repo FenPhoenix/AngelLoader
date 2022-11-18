@@ -123,6 +123,9 @@ namespace AngelLoader.DataClasses
             internal readonly string FMsAvailable_Single = " FM available";
             internal readonly string FMsAvailable_Plural_BeforeNumber = "";
             internal readonly string FMsAvailable_Plural = " FMs available";
+            [FenGenBlankLine]
+            internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
+
         }
 
         internal sealed class SplashScreen_Class

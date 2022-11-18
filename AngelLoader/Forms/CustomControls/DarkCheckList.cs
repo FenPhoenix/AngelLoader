@@ -18,6 +18,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private Func<bool>? _predicate;
 
+        private PictureBox? _errorPictureBox;
+        private DarkLabel? _errorLabel;
+
         private DarkLabel? _cautionLabel;
         private DrawnPanel? _cautionPanel;
 
@@ -146,6 +149,11 @@ namespace AngelLoader.Forms.CustomControls
                     darkableControl.DarkModeEnabled = _darkModeEnabled;
                 }
             }
+
+            if (_errorPictureBox != null)
+            {
+                _errorPictureBox.Image = Images.RedExclCircle;
+            }
         }
 
         #endregion
@@ -163,8 +171,62 @@ namespace AngelLoader.Forms.CustomControls
             CheckItems = Array.Empty<CheckItem>();
         }
 
+        public bool InErrorState;
+
+        internal void SetErrorText(string text)
+        {
+            if (!text.IsEmpty())
+            {
+                ClearList();
+
+                _errorPictureBox?.Dispose();
+                _errorLabel?.Dispose();
+
+                _errorPictureBox = new PictureBox
+                {
+                    Location = new Point(16, 8),
+                    Size = new Size(14, 14),
+                    TabStop = false,
+                    Visible = false
+                };
+                _errorLabel = new DarkLabel
+                {
+                    AutoSize = true,
+                    Location = new Point(_errorPictureBox.Right + 4, 8),
+                    Visible = false
+                };
+
+                _errorPictureBox.Click += static (_, _) => Core.OpenLogFile();
+                _errorLabel.Click += static (_, _) => Core.OpenLogFile();
+
+                _errorPictureBox.Image = Images.RedExclCircle;
+                _errorLabel.Text = text;
+
+                Controls.Add(_errorPictureBox);
+                Controls.Add(_errorLabel);
+
+                _errorPictureBox.Show();
+                _errorLabel.Show();
+
+                InErrorState = true;
+            }
+            else
+            {
+                _errorPictureBox?.Hide();
+                if (_errorLabel != null)
+                {
+                    _errorLabel.Hide();
+                    _errorLabel.Text = "";
+                }
+
+                InErrorState = false;
+            }
+        }
+
         internal void FillList(CheckItem[] items, string cautionText)
         {
+            SetErrorText("");
+
             ClearList();
             _checkBoxes = new DarkCheckBox[items.Length];
 

@@ -841,10 +841,6 @@ namespace AngelLoader
 
             if (!TryReadAllLines(camModIni, out var lines))
             {
-                // @BetterErrors(GetGameMods): Should we show the dialog?
-                //Dialogs.ShowError(nameof(GetGameMods) + "():" +
-                //                  "Couldn't read " + camModIni + "\r\n" +
-                //                  "Game: " + gameIndex);
                 return (false, list);
             }
 

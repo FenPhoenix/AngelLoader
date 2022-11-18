@@ -16,6 +16,9 @@ namespace AngelLoader.Forms.CustomControls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled { get; set; }
 
+        private Func<string>? _errorTextGetter;
+        public void SetErrorTextGetter(Func<string> errorTextGetter) => _errorTextGetter = errorTextGetter;
+
 #if DEBUG
 
         [Browsable(false)]
@@ -43,6 +46,10 @@ namespace AngelLoader.Forms.CustomControls
             DisableNonImportantButton.Text = LText.ModsTab.DisableAll;
             MainToolTip.SetToolTip(DisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
             DisabledModsLabel.Text = LText.ModsTab.DisabledMods;
+            if (CheckList.InErrorState && _errorTextGetter != null)
+            {
+                CheckList.SetErrorText(_errorTextGetter.Invoke());
+            }
         }
 
         private void Commit()
@@ -89,7 +96,14 @@ namespace AngelLoader.Forms.CustomControls
 
                 (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(GameToGameIndex(game));
 
-                if (!success) return fail;
+                if (!success)
+                {
+                    if (_errorTextGetter != null)
+                    {
+                        CheckList.SetErrorText(_errorTextGetter.Invoke());
+                    }
+                    return fail;
+                }
 
                 var disabledModsList = disabledMods
                     .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)

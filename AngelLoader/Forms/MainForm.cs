@@ -890,6 +890,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
+
             #region SplitContainers
 
             MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, setIfFullScreen: true, suspendResume: false);
