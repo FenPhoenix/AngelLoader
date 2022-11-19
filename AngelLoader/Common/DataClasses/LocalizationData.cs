@@ -590,6 +590,8 @@ namespace AngelLoader.DataClasses
             internal readonly string DisableAll = "Disable all";
             internal readonly string DisableAllToolTip = "Disables all mods that are not marked \"important\"";
             internal readonly string DisabledMods = "Disabled mods:";
+            [FenGenBlankLine]
+            internal readonly string Thief3_ModsNotSupported = "Mod management is not supported for Thief: Deadly Shadows.";
         }
 
         internal sealed class ReadmeArea_Class

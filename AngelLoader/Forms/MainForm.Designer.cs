@@ -1935,6 +1935,7 @@
 
         internal AngelLoader.Forms.CustomControls.DrawnPanel TopRightMultiSelectBlockerPanel;
         internal AngelLoader.Forms.CustomControls.DarkLabel TopRightMultiSelectBlockerLabel;
+        internal AngelLoader.Forms.CustomControls.DarkLabel ModsTabNotSupportedMessageLabel;
 
         internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;

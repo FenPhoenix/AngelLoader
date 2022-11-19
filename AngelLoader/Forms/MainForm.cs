@@ -598,6 +598,15 @@ namespace AngelLoader.Forms
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
+            ModsTabNotSupportedMessageLabel = new DarkLabel
+            {
+                AutoSize = false,
+                DarkModeBackColor = DarkColors.Fen_ControlBackground,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Visible = false
+            };
+
             #endregion
 
             /*
@@ -891,6 +900,9 @@ namespace AngelLoader.Forms
             #endregion
 
             MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
+
+            ModsTabPage.Controls.Add(ModsTabNotSupportedMessageLabel);
+            ModsTabNotSupportedMessageLabel.BringToFront();
 
             #region SplitContainers
 
@@ -1822,6 +1834,8 @@ namespace AngelLoader.Forms
 
                 MainModsControl.Localize(LText.ModsTab.Header);
                 MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+
+                ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
 
                 #endregion
 
@@ -4814,23 +4828,11 @@ namespace AngelLoader.Forms
 
                 #region Mods tab
 
+                ModsTabNotSupportedMessageLabel.Visible = false;
                 MainModsControl.CheckList.ClearList();
-                MainModsControl.CheckList.Enabled = false;
+                MainModsControl.Enabled = false;
+                MainModsControl.Visible = true;
 
-                foreach (Control c in ModsTabPage.Controls)
-                {
-                    switch (c)
-                    {
-                        case TextBox tb:
-                            tb.Text = "";
-                            break;
-                        case CheckBox chk:
-                            chk.Checked = false;
-                            break;
-                    }
-
-                    c.Enabled = false;
-                }
 
                 #endregion
             }
@@ -5280,19 +5282,26 @@ namespace AngelLoader.Forms
                 // @VBL
                 #region Mods tab
 
-                // TODO: We might want to just disable the whole mods tab for Thief 3
-                foreach (Control c in ModsTabPage.Controls)
+                MainModsControl.Enabled = true;
+
+                if (fmIsT3)
                 {
-                    c.Enabled = true;
+                    MainModsControl.Visible = false;
+                    ModsTabNotSupportedMessageLabel.Visible = true;
+
+                    MainModsControl.CheckList.ClearList();
                 }
-
-                MainModsControl.CheckList.Enabled = !fmIsT3;
-
-                var modsFillResult = MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
-                if (modsFillResult.Success)
+                else
                 {
-                    fm.DisabledMods = modsFillResult.DisabledMods;
-                    fm.DisableAllMods = modsFillResult.DisableAllMods;
+                    MainModsControl.Visible = true;
+                    ModsTabNotSupportedMessageLabel.Visible = false;
+
+                    var (success, disabledMods, disableAllMods) = MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
+                    if (success)
+                    {
+                        fm.DisabledMods = disabledMods;
+                        fm.DisableAllMods = disableAllMods;
+                    }
                 }
 
                 #endregion

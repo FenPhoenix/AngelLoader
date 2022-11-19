@@ -465,7 +465,7 @@ namespace AngelLoader
                 sw.WriteLine("PlayOriginalGame=" + (fm == null));
                 if (fm == null)
                 {
-                    if (!origDisabledMods.IsEmpty())
+                    if (!originalT3 && !origDisabledMods.IsEmpty())
                     {
                         sw.WriteLine("DisabledMods=" + origDisabledMods);
                     }
@@ -473,9 +473,12 @@ namespace AngelLoader
                 else
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                    if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
-                    if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
-                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
+                    if (GameIsDark(fm.Game))
+                    {
+                        if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
+                        if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
+                        if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
+                    }
                 }
 
                 return true;
