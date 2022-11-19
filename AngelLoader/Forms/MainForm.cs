@@ -4038,7 +4038,7 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     e.Value =
-                        ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :
+                        fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :
                         fm.Game == Game.Unsupported ? Images.RedQCircle :
                         // Can't say null, or else it sets an ugly red-x image
                         Images.Blank;
@@ -5077,7 +5077,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
             FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected &&
-                                                    ConvertsToDark(fm.Game, out GameIndex gameIndex)
+                                                    fm.Game.ConvertsToDark(out GameIndex gameIndex)
                                                     && Config.GetGameEditorDetected(gameIndex));
             FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
@@ -5356,7 +5356,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                EditFMLanguageComboBox.SelectedIndex = !LangConvertsToKnown(language, out LanguageIndex langIndex)
+                EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
                     ? 0
                     : EditFMLanguageComboBox
                         .BackingItems

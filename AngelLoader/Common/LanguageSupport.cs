@@ -36,7 +36,7 @@ namespace AngelLoader
             Spanish = 1024
         }
 
-        public static bool LangConvertsToKnown(Language language, out LanguageIndex languageIndex)
+        public static bool ConvertsToKnown(this Language language, out LanguageIndex languageIndex)
         {
             if (language != Language.Default)
             {

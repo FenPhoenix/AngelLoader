@@ -59,7 +59,7 @@ namespace AngelLoader
             _ => Game.Null
         };
 
-        internal static bool ConvertsToKnownAndSupported(Game game, out GameIndex gameIndex)
+        internal static bool ConvertsToKnownAndSupported(this Game game, out GameIndex gameIndex)
         {
             if (GameIsKnownAndSupported(game))
             {
@@ -72,7 +72,7 @@ namespace AngelLoader
                 return false;
             }
         }
-        internal static bool ConvertsToDark(Game game, out GameIndex gameIndex)
+        internal static bool ConvertsToDark(this Game game, out GameIndex gameIndex)
         {
             if (GameIsDark(game))
             {
@@ -86,7 +86,7 @@ namespace AngelLoader
             }
         }
 
-        internal static bool ConvertsToDarkThief(Game game, out GameIndex gameIndex)
+        internal static bool ConvertsToDarkThief(this Game game, out GameIndex gameIndex)
         {
             if (game is Game.Thief1 or Game.Thief2)
             {
@@ -100,7 +100,7 @@ namespace AngelLoader
             }
         }
 
-        internal static bool ConvertsToModSupporting(Game game, out GameIndex gameIndex)
+        internal static bool ConvertsToModSupporting(this Game game, out GameIndex gameIndex)
         {
             if (GameSupportsMods(game))
             {

@@ -234,7 +234,7 @@ namespace AngelLoader
                                              (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                               (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
-            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
+            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;
@@ -367,7 +367,7 @@ namespace AngelLoader
         {
             static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
-            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
+            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 return;

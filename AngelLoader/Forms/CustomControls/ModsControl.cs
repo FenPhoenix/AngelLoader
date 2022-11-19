@@ -100,7 +100,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 CheckList.ClearList();
 
-                if (!ConvertsToModSupporting(game, out GameIndex gameIndex)) return fail;
+                if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return fail;
 
                 (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
 

@@ -730,7 +730,7 @@ namespace AngelLoader
         // Keeping behavior identicality by leaving it as-is for now, but we should look into this!
         private static string? GetFMSelInfPath(FanMission fm)
         {
-            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex)) return null;
+            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)) return null;
 
             string fmInstPath = Config.GetFMInstallPath(gameIndex);
 
@@ -762,7 +762,7 @@ namespace AngelLoader
 
             static bool NotInPerGameList(FanMission fm, bool?[] notInList, DictionaryI<InstDirValueData>[] list, bool useBool)
             {
-                if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex)) return false;
+                if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)) return false;
                 int intGame = (int)gameIndex;
 
                 if (!useBool)

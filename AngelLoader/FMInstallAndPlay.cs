@@ -86,7 +86,7 @@ namespace AngelLoader
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
-            if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
+            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
@@ -334,7 +334,7 @@ namespace AngelLoader
                 #region Checks (specific to DromEd)
 
                 // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
-                if (!ConvertsToDark(fm.Game, out GameIndex gameIndex))
+                if (!fm.Game.ConvertsToDark(out GameIndex gameIndex))
                 {
                     LogFMInfo(fm, ErrorText.FMGameNotDark, stackTrace: true);
                     Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
@@ -433,10 +433,10 @@ namespace AngelLoader
             {
                 if (!originalT3) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
             }
-            else if (ConvertsToDark(fm.Game, out GameIndex gameIndex))
+            else if (fm.Game.ConvertsToDark(out GameIndex gameIndex))
             {
                 string camCfgLang;
-                if (!LangConvertsToKnown(fm.SelectedLang, out LanguageIndex langIndex))
+                if (!fm.SelectedLang.ConvertsToKnown(out LanguageIndex langIndex))
                 {
                     // For Dark, we have to do this semi-manual stuff.
                     (sLanguage, bForceLanguage) = FMLanguages.GetDarkFMLanguage(gameIndex, fm.Archive, fm.InstalledDir);
@@ -654,7 +654,7 @@ namespace AngelLoader
         private static MissFlagError GenerateMissFlagFileIfRequired(FanMission fm, bool errorOnCantPlay = false)
         {
             // Only T1 and T2 have/require missflag.str
-            if (!ConvertsToDarkThief(fm.Game, out GameIndex gameIndex)) return MissFlagError.None;
+            if (!fm.Game.ConvertsToDarkThief(out GameIndex gameIndex)) return MissFlagError.None;
 
             try
             {
@@ -1055,7 +1055,7 @@ namespace AngelLoader
 
             #endregion
 
-            if (!ConvertsToDarkThief(fm.Game, out GameIndex gameIndex)) return false;
+            if (!fm.Game.ConvertsToDarkThief(out GameIndex gameIndex)) return false;
             if (!fm.Installed) return false;
             if (checkForOldDark && !FMIsOldDark(fm)) return false;
 
@@ -1119,7 +1119,7 @@ namespace AngelLoader
 
                 AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
 
-                if (!ConvertsToKnownAndSupported(fm.Game, out GameIndex gameIndex))
+                if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                 {
                     LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
                     Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);

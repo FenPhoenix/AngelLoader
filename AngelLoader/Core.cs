@@ -1389,7 +1389,7 @@ namespace AngelLoader
         {
             AssertR(GameIsDark(fm.Game), nameof(GetDMLFiles) + ": " + nameof(fm) + " is not Dark");
 
-            if (!ConvertsToDark(fm.Game, out GameIndex gameIndex)) return (false, new List<string>());
+            if (!fm.Game.ConvertsToDark(out GameIndex gameIndex)) return (false, new List<string>());
 
             try
             {
