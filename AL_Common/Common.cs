@@ -394,7 +394,8 @@ namespace AL_Common
             int needleLength = needle.Length;
 
             if (needleLength == 0) return fail;
-            if (needleLength > hayLength) return fail;
+            // Don't do a needle > hay length check, because we want to support many duplicate chars (possibly
+            // beyond the hay length) in the needle
 
             /*
             This algo sometimes rejects results that have the actual exact string in them, and if you try to
