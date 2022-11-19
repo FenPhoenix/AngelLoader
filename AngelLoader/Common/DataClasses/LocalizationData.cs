@@ -34,7 +34,7 @@ namespace AngelLoader.DataClasses
         internal readonly Difficulties_Class Difficulties = new();
         internal readonly FilterBar_Class FilterBar = new();
         internal readonly FMsList_Class FMsList = new();
-        internal readonly FMDetailsArea_Class FMDetailsArea = new();
+        internal readonly FMSelectedStats_Class FMSelectedStats = new();
         internal readonly StatisticsTab_Class StatisticsTab = new();
         internal readonly EditFMTab_Class EditFMTab = new();
         internal readonly CommentTab_Class CommentTab = new();
@@ -119,13 +119,7 @@ namespace AngelLoader.DataClasses
             internal readonly string UninstallFM = "Uninstall FM";
             internal readonly string UninstallFMs = "Uninstall FMs";
             [FenGenBlankLine]
-            internal readonly string FMsAvailable_Single_BeforeNumber = "";
-            internal readonly string FMsAvailable_Single = " FM available";
-            internal readonly string FMsAvailable_Plural_BeforeNumber = "";
-            internal readonly string FMsAvailable_Plural = " FMs available";
-            [FenGenBlankLine]
             internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
-
         }
 
         internal sealed class SplashScreen_Class
@@ -461,13 +455,17 @@ namespace AngelLoader.DataClasses
             internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
         }
 
-        internal sealed class FMDetailsArea_Class
+        internal sealed class FMSelectedStats_Class
         {
-            [FenGenComment(
-                "When multiple FMs are selected, the FM details area (\"top-right tabs\") will be hidden and this message",
-                "will appear in its place.")]
-            internal readonly string FMsSelected_BeforeNumber = "";
-            internal readonly string FMsSelected_AfterNumber = " FMs selected.";
+            internal readonly string FMsSelected_Single_BeforeNumber = "";
+            internal readonly string FMsSelected_Single_AfterNumber = " FM selected";
+            internal readonly string FMsSelected_Plural_BeforeNumber = "";
+            internal readonly string FMsSelected_Plural_AfterNumber = " FMs selected";
+            [FenGenBlankLine]
+            internal readonly string FMsAvailable_Single_BeforeNumber = "";
+            internal readonly string FMsAvailable_Single_AfterNumber = " FM available";
+            internal readonly string FMsAvailable_Plural_BeforeNumber = "";
+            internal readonly string FMsAvailable_Plural_AfterNumber = " FMs available";
         }
 
         internal sealed class StatisticsTab_Class

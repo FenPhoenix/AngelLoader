@@ -1592,14 +1592,19 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        // @vNext: Since people can hide the top-right area, should we also display the count at the bottom?
-        // Like "5 FMs selected / 1696 FMs available"
-        // Maybe only display it if the top-right area is hidden?
+        // @vNext: Maybe only display it if the top-right area is hidden?
         private void SetFMSelectedCountMessage(int count)
         {
-            TopRightMultiSelectBlockerLabel.Text = LText.FMDetailsArea.FMsSelected_BeforeNumber +
-                                                   count.ToString(CultureInfo.CurrentCulture) +
-                                                   LText.FMDetailsArea.FMsSelected_AfterNumber;
+            string text =
+                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_BeforeNumber : LText.FMSelectedStats.FMsSelected_Plural_BeforeNumber) +
+                count.ToString(CultureInfo.CurrentCulture) +
+                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
+
+            _fmSelectedCountText = text;
+
+            TopRightMultiSelectBlockerLabel.Text = text;
+
+            RefreshFMStatsLabel();
         }
 
         #region ISettingsChangeableWindow
@@ -4698,6 +4703,10 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private string _fmSelectedCountText = "";
+        private string _fmCountText = "";
+        private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" + _fmCountText;
+
         #region Right side
 
         public void SetAvailableFMCount()
@@ -4708,9 +4717,12 @@ namespace AngelLoader.Forms
                 if (!FMsViewList[i].MarkedUnavailable) count++;
             }
 
-            FMCountLabel.Text = count == 1
-                ? LText.Global.FMsAvailable_Single_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Single
-                : LText.Global.FMsAvailable_Plural_BeforeNumber + count.ToString(CultureInfo.CurrentCulture) + LText.Global.FMsAvailable_Plural;
+            _fmCountText =
+                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
+                count.ToString(CultureInfo.CurrentCulture) +
+                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
+
+            RefreshFMStatsLabel();
         }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
@@ -4742,6 +4754,8 @@ namespace AngelLoader.Forms
             PlayFMButton.Enabled = false;
 
             WebSearchButton.Enabled = false;
+
+            SetFMSelectedCountMessage(0);
 
             #endregion
 

@@ -256,7 +256,7 @@
             // 
             this.FMCountLabel.AutoSize = true;
             this.FMCountLabel.Location = new System.Drawing.Point(3, 15);
-            this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 15, 0, 0);
+            this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 7, 0, 0);
             this.FMCountLabel.Name = "FMCountLabel";
             this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
             this.FMCountLabel.TabIndex = 63;

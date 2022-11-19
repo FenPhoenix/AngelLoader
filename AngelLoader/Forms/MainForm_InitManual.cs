@@ -224,7 +224,7 @@ namespace AngelLoader.Forms
             // FMCountLabel
             // 
             FMCountLabel.AutoSize = true;
-            FMCountLabel.Margin = new Padding(3, 15, 0, 0);
+            FMCountLabel.Margin = new Padding(3, 7, 0, 0);
             // 
             // BottomLeftFLP
             // 
