@@ -189,8 +189,8 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (!_darkModeEnabled) return;
 
-            var g = e.Graphics;
-            var clipRect = Controls[0].ClientRectangle;
+            Graphics g = e.Graphics;
+            Rectangle clipRect = Controls[0].ClientRectangle;
 
             g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
 

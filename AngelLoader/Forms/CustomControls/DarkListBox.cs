@@ -236,7 +236,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // Full-width item hack part deux: We can't tell it to make the actual selection area full-width, so
             // we just draw it full-width ourselves and handle the click interaction later (see WndProc).
-            var selRect = e.Bounds with { Width = ClientRectangle.Width - e.Bounds.X };
+            Rectangle selRect = e.Bounds with { Width = ClientRectangle.Width - e.Bounds.X };
 
             using (var bcBrush = new SolidBrush(BackColor))
             {
@@ -320,7 +320,7 @@ namespace AngelLoader.Forms.CustomControls
 
             ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 
-            var item = hitTest.Item;
+            ListViewItem item = hitTest.Item;
 
             if (item != null)
             {

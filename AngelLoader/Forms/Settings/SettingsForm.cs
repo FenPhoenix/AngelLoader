@@ -7,6 +7,7 @@
 // UPDATE 2021-04-27: We have severe flickering issues with the TreeView. Reverting to old style for now.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -639,7 +640,7 @@ namespace AngelLoader.Forms
 
         protected override void OnLoad(EventArgs e)
         {
-            foreach (var button in PageRadioButtons)
+            foreach (DarkRadioButtonCustom button in PageRadioButtons)
             {
                 if (button.Checked)
                 {
@@ -843,7 +844,7 @@ namespace AngelLoader.Forms
 
             // TODO: Check for cam_mod.ini etc. to be thorough
 
-            foreach (var tb in ExePathTextBoxes)
+            foreach (DarkTextBox tb in ExePathTextBoxes)
             {
                 if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
                 {
@@ -1069,7 +1070,7 @@ namespace AngelLoader.Forms
 
                 OutConfig.EnableArticles = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
 
-                var retArticles = AppearancePage.ArticlesTextBox.Text
+                List<string> retArticles = AppearancePage.ArticlesTextBox.Text
                     .Replace(", ", ",")
                     .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                     .Distinct(StringComparer.InvariantCultureIgnoreCase)
@@ -1198,7 +1199,7 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this))
             {
-                foreach (var b in PageRadioButtons)
+                foreach (DarkRadioButtonCustom b in PageRadioButtons)
                 {
                     if (s != b) b.Checked = false;
                 }
@@ -1319,7 +1320,7 @@ namespace AngelLoader.Forms
 
         private void BackupPathBrowseButton_Click(object sender, EventArgs e)
         {
-            var tb = PathsPage.BackupPathTextBox;
+            DarkTextBox tb = PathsPage.BackupPathTextBox;
 
             using (var d = new VistaFolderBrowserDialog())
             {
@@ -1353,7 +1354,7 @@ namespace AngelLoader.Forms
         {
             using var d = new VistaFolderBrowserDialog();
 
-            var lb = PathsPage.FMArchivePathsListBox;
+            DarkListBox lb = PathsPage.FMArchivePathsListBox;
             string initDir =
                 lb.SelectedIndex > -1 ? lb.SelectedItem :
                 lb.Items.Count > 0 ? lb.ItemsAsStrings[lb.Items.Count - 1] :
@@ -1374,7 +1375,7 @@ namespace AngelLoader.Forms
             {
                 PathsPage.FMArchivePathsListBox.BeginUpdate();
 
-                var hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
+                HashSetPathI hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
 
                 foreach (string dir in d.DirectoryNames)
                 {
@@ -1699,9 +1700,9 @@ namespace AngelLoader.Forms
 
             if (!shown)
             {
-                foreach (var tb in ErrorableControls)
+                foreach (Control c in ErrorableControls)
                 {
-                    if (PathErrorIsSet(tb)) return;
+                    if (PathErrorIsSet(c)) return;
                 }
             }
 

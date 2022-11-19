@@ -19,10 +19,10 @@ namespace AngelLoader.Forms.ThemeRenderers
             ref Native.RECT pRect,
             ref Native.RECT pClipRect)
         {
-            using var g = Graphics.FromHdc(hdc);
+            using Graphics g = Graphics.FromHdc(hdc);
             if (iPartId is Native.TTP_STANDARD or Native.TTP_STANDARDTITLE)
             {
-                var rect = pRect.ToRectangle();
+                Rectangle rect = pRect.ToRectangle();
 
                 g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
                 g.DrawRectangle(

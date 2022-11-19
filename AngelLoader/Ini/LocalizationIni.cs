@@ -12,15 +12,15 @@ namespace AngelLoader
 
             const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
-            var sectionFields = typeof(LText_Class).GetFields(_bfLText);
+            FieldInfo[] sectionFields = typeof(LText_Class).GetFields(_bfLText);
             var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length);
             for (int i = 0; i < sectionFields.Length; i++)
             {
                 FieldInfo f = sectionFields[i];
 
-                var fields = f.FieldType.GetFields(_bfLText);
+                FieldInfo[] fields = f.FieldType.GetFields(_bfLText);
                 var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
-                foreach (var field in fields)
+                foreach (FieldInfo field in fields)
                 {
                     dict[field.Name] = (field, f.GetValue(lText));
                 }
@@ -29,7 +29,7 @@ namespace AngelLoader
 
             #endregion
 
-            var lines = AL_Common.Common.File_ReadAllLines_List(file);
+            List<string> lines = AL_Common.Common.File_ReadAllLines_List(file);
             int linesLength = lines.Count;
             for (int i = 0; i < linesLength; i++)
             {

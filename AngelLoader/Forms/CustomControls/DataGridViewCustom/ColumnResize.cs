@@ -77,8 +77,8 @@ namespace AngelLoader.Forms.CustomControls
             // Fix it for "the dev thought of everything" points.
             if (e.Button == MouseButtons.Left && Cursor.Current == Cursors.SizeWE)
             {
-                var ht = HitTest(e.X, e.Y);
-                var typeInternal = typeof(HitTestInfo)
+                HitTestInfo ht = HitTest(e.X, e.Y);
+                FieldInfo? typeInternal = typeof(HitTestInfo)
                     .GetField(
                         WinFormsReflection.DGV_TypeInternalBackingFieldName,
                         BindingFlags.NonPublic | BindingFlags.Instance);

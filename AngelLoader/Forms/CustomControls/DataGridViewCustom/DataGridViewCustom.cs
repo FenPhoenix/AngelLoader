@@ -171,7 +171,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         internal List<FanMission> GetSelectedFMs_InOrder_List()
         {
-            var selRows = GetOrderedRowsArray();
+            DataGridViewRow[] selRows = GetOrderedRowsArray();
 
             var ret = new List<FanMission>(selRows.Length);
             for (int i = 0; i < selRows.Length; i++)
@@ -307,9 +307,9 @@ namespace AngelLoader.Forms.CustomControls
             return columns.OrderBy(static x => x.Id).ToArray();
         }
 
-        internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnDataList)
+        internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnData)
         {
-            if (columnDataList.Length == 0) return;
+            if (columnData.Length == 0) return;
 
             #region Important
 
@@ -325,11 +325,11 @@ namespace AngelLoader.Forms.CustomControls
             // Right:
             // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-            var columnDataListSorted = columnDataList.OrderBy(static x => x.DisplayIndex).ToArray();
+            ColumnData[] columnDataSorted = columnData.OrderBy(static x => x.DisplayIndex).ToArray();
 
             #endregion
 
-            foreach (ColumnData colData in columnDataListSorted)
+            foreach (ColumnData colData in columnDataSorted)
             {
                 DataGridViewColumn col = Columns[(int)colData.Id];
 
@@ -609,7 +609,7 @@ namespace AngelLoader.Forms.CustomControls
             // default white-background cell color before it changes.
             if (!_owner.CellValueNeededDisabled && FilterShownIndexList.Count > 0)
             {
-                var fm = GetFMFromIndex(e.RowIndex);
+                FanMission fm = GetFMFromIndex(e.RowIndex);
 
                 Rows[e.RowIndex].DefaultCellStyle.BackColor =
                     fm.MarkedUnavailable
@@ -728,7 +728,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 // For now, we're just simplifying and not drawing all the fussy borders of the classic mode.
                 // This way looks perfectly fine in dark mode and saves work.
-                var selectionRect = e.CellBounds with { Height = e.CellBounds.Height - 1 };
+                Rectangle selectionRect = e.CellBounds with { Height = e.CellBounds.Height - 1 };
 
                 e.Graphics.FillRectangle(DarkColors.GreyBackgroundBrush, e.CellBounds);
 
@@ -750,7 +750,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_mouseHere && mouseOver)
                 {
-                    var b = _mouseDownOnHeader == e.ColumnIndex
+                    SolidBrush b = _mouseDownOnHeader == e.ColumnIndex
                         ? DarkColors.Fen_DGVColumnHeaderPressedBrush
                         : DarkColors.Fen_DGVColumnHeaderHighlightBrush;
                     e.Graphics.FillRectangle(b, selectionRect);
@@ -758,7 +758,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 // The classic-themed bounds are complicated and difficult to discern, so we're just using
                 // measured constants here, which match classic mode in our particular case.
-                var textRect = e.CellBounds with
+                Rectangle textRect = e.CellBounds with
                 {
                     X = e.CellBounds.X + (displayIndex == 0 ? 6 : 4),
                     Width = e.CellBounds.Width - (displayIndex == 0 ? 10 : 6)
@@ -791,7 +791,7 @@ namespace AngelLoader.Forms.CustomControls
                     if (e.ColumnIndex == (int)CurrentSortedColumn &&
                         textLength < e.CellBounds.Width - 24)
                     {
-                        var direction = CurrentSortDirection == SortDirection.Ascending
+                        Direction direction = CurrentSortDirection == SortDirection.Ascending
                             ? Direction.Up
                             : Direction.Down;
 

@@ -374,7 +374,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                     if (encItem.Field >= 0)
                     {
                         _menuItemsDict[encItem.Field] = encItem;
-                        var enc = Encoding.GetEncoding(encItem.Field);
+                        Encoding enc = Encoding.GetEncoding(encItem.Field);
                         encItem.Text = enc.EncodingName + " (" + enc.CodePage + ")";
                         encItem.CheckOnClick = true;
                     }

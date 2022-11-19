@@ -97,11 +97,12 @@ namespace AngelLoader.Forms.WinFormsNative.Dialogs
 
         private void SetDialogProperties(NativeFolderBrowserDialog dialog)
         {
-            var flags = NativeMethods.FOS.FOS_PICKFOLDERS |
-                        NativeMethods.FOS.FOS_FORCEFILESYSTEM |
-                        NativeMethods.FOS.FOS_PATHMUSTEXIST |
-                        NativeMethods.FOS.FOS_FILEMUSTEXIST |
-                        NativeMethods.FOS.FOS_NOVALIDATE;
+            NativeMethods.FOS flags =
+                NativeMethods.FOS.FOS_PICKFOLDERS |
+                NativeMethods.FOS.FOS_FORCEFILESYSTEM |
+                NativeMethods.FOS.FOS_PATHMUSTEXIST |
+                NativeMethods.FOS.FOS_FILEMUSTEXIST |
+                NativeMethods.FOS.FOS_NOVALIDATE;
 
             if (MultiSelect) flags |= NativeMethods.FOS.FOS_ALLOWMULTISELECT;
 

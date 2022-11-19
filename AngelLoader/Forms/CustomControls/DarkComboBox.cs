@@ -257,12 +257,12 @@ namespace AngelLoader.Forms.CustomControls
 
             _buffer ??= new Bitmap(ClientRectangle.Width, ClientRectangle.Height);
 
-            using var g = Graphics.FromImage(_buffer);
+            using Graphics g = Graphics.FromImage(_buffer);
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColorBrush = Enabled ? DarkColors.LightTextBrush : DarkColors.DisabledTextBrush;
-            var borderPen = DarkColors.GreySelectionPen;
-            var fillColorBrush = DarkColors.LightBackgroundBrush;
+            SolidBrush textColorBrush = Enabled ? DarkColors.LightTextBrush : DarkColors.DisabledTextBrush;
+            Pen borderPen = DarkColors.GreySelectionPen;
+            SolidBrush fillColorBrush = DarkColors.LightBackgroundBrush;
 
             if (Enabled)
             {
@@ -305,7 +305,7 @@ namespace AngelLoader.Forms.CustomControls
                 pen: DarkColors.GreyHighlightPen
             );
 
-            var text = SelectedItem != null ? SelectedItem.ToString() : Text;
+            string text = SelectedItem != null ? SelectedItem.ToString() : Text;
 
             const int padding = 1;
 
@@ -348,11 +348,11 @@ namespace AngelLoader.Forms.CustomControls
             // item, briefly overwriting the text already there but we're bumped over slightly.
             if (!DroppedDown) return;
 
-            var g = e.Graphics;
-            var rect = e.Bounds;
+            Graphics g = e.Graphics;
+            Rectangle rect = e.Bounds;
 
-            var textColorBrush = DarkColors.LightTextBrush;
-            var fillColorBrush = DarkColors.LightBackgroundBrush;
+            SolidBrush textColorBrush = DarkColors.LightTextBrush;
+            SolidBrush fillColorBrush = DarkColors.LightBackgroundBrush;
 
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
                 (e.State & DrawItemState.Focus) == DrawItemState.Focus)
@@ -364,7 +364,7 @@ namespace AngelLoader.Forms.CustomControls
 
             if (e.Index >= 0 && e.Index < Items.Count)
             {
-                var text = Items[e.Index].ToString();
+                string text = Items[e.Index].ToString();
 
                 const int padding = -1;
 
@@ -389,7 +389,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 Point p = this.PointToScreen_Fast(new Point(0, Height));
 
-                var screenBounds = Screen.FromControl(this).WorkingArea;
+                Rectangle screenBounds = Screen.FromControl(this).WorkingArea;
                 int screenWidth = screenBounds.X + screenBounds.Width;
                 bool alignRight = p.X + DropDownWidth > screenWidth;
 

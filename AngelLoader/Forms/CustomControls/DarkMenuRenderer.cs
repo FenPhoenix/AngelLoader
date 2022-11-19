@@ -47,7 +47,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
         {
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
 
             var rect = new Rectangle(
                 e.ImageRectangle.Left - 2,
@@ -100,7 +100,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
 
             e.Item.ForeColor = e.Item.Enabled ? DarkColors.LightText : DarkColors.DisabledText;
 

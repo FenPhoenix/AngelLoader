@@ -60,7 +60,7 @@ namespace AngelLoader.Forms.CustomControls
 
             for (int i = 0; i < CheckList.CheckItems.Length; i++)
             {
-                var checkItem = CheckList.CheckItems[i];
+                DarkCheckList.CheckItem checkItem = CheckList.CheckItems[i];
                 modNames[checkItem.Text] = i;
             }
 
@@ -113,7 +113,7 @@ namespace AngelLoader.Forms.CustomControls
                     return fail;
                 }
 
-                var disabledModsList = disabledMods
+                HashSetI disabledModsList = disabledMods
                     .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
                     .ToHashSetI();
 

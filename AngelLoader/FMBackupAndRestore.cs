@@ -110,7 +110,7 @@ namespace AngelLoader
             {
                 // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
                 // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-                var fullPaths = FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
+                List<string> fullPaths = FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
                 var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
 
                 for (int i = 0; i < fullPaths.Count; i++)
@@ -276,7 +276,7 @@ namespace AngelLoader
                     {
                         savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
 
-                        var ss2SaveDirs = FastIO.GetDirsTopOnly(
+                        List<string> ss2SaveDirs = FastIO.GetDirsTopOnly(
                             Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
 
                         foreach (string dir in ss2SaveDirs)
@@ -303,9 +303,9 @@ namespace AngelLoader
                     return;
                 }
 
-                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
+                HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
-                var (changedList, addedList, fullList) =
+                (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
                     GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath);
 
                 // If >90% of files are different, re-run and use only size difference
@@ -347,7 +347,7 @@ namespace AngelLoader
 
                         if (!fmSelInfString.IsEmpty())
                         {
-                            var entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
+                            ZipArchiveEntry entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
                             using var eo = entry.Open();
                             using var sw = new StreamWriter(eo, Encoding.UTF8);
                             sw.Write(fmSelInfString);
@@ -389,7 +389,7 @@ namespace AngelLoader
                 string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-                using (var archive = GetZipArchiveCharEnc(backupFile.Name))
+                using (ZipArchive archive = GetZipArchiveCharEnc(backupFile.Name))
                 {
                     if (Canceled(ct)) return;
 
@@ -448,7 +448,7 @@ namespace AngelLoader
                         }
                         else
                         {
-                            var fmSelInf = archive.GetEntry(Paths.FMSelInf);
+                            ZipArchiveEntry? fmSelInf = archive.GetEntry(Paths.FMSelInf);
 
                             if (Canceled(ct)) return;
 
@@ -554,7 +554,7 @@ namespace AngelLoader
         */
         private static void MoveDarkLoaderBackup(FanMission fm, List<string> archivePaths)
         {
-            var dlBackup = GetBackupFile(fm, archivePaths, findDarkLoaderOnly: true);
+            BackupFile dlBackup = GetBackupFile(fm, archivePaths, findDarkLoaderOnly: true);
             if (dlBackup.Found)
             {
                 Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);
@@ -565,7 +565,7 @@ namespace AngelLoader
         private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
         {
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
-            var entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
+            ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
             using var fs = File.OpenRead(fileNameOnDisk);
             using var eo = entry.Open();
@@ -594,7 +594,7 @@ namespace AngelLoader
             bool fmIsZip = fmArchivePath.ExtIsZip();
             if (fmIsZip)
             {
-                using var archive = GetZipArchiveCharEnc(fmArchivePath);
+                using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
 
                 var entries = archive.Entries;
 
@@ -680,7 +680,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < entriesCount; i++)
                 {
-                    var entry = archive.ArchiveFileData[i];
+                    ArchiveFileInfo entry = archive.ArchiveFileData[i];
                     string efn = entry.FileName.ToBackSlashes();
 
                     entriesFullNamesHash.Add(efn);

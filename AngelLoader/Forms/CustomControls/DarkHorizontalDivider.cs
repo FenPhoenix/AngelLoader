@@ -15,7 +15,7 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
 
             if (DarkModeEnabled)
             {

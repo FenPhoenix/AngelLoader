@@ -36,7 +36,7 @@ namespace AngelLoader.Forms.WinFormsNative
 {
     internal static class Win32ThemeHooks_NET5_Plus
     {
-#region Private fields
+        #region Private fields
 
         private const int COLOR_HIGHLIGHT = 13;
         private const int COLOR_HIGHLIGHT_TEXT = 14;
@@ -47,25 +47,25 @@ namespace AngelLoader.Forms.WinFormsNative
 
         private static readonly Dictionary<IntPtr, ThemeRenderer> _themeRenderers = new();
 
-#region GetSysColor
+        #region GetSysColor
 
         private static GetSysColorDelegate? GetSysColor_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate int GetSysColorDelegate(int nIndex);
 
-#endregion
+        #endregion
 
-#region GetSysColorBrush
+        #region GetSysColorBrush
 
         private static GetSysColorBrushDelegate? GetSysColorBrush_Original;
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
         private delegate IntPtr GetSysColorBrushDelegate(int nIndex);
 
-#endregion
+        #endregion
 
-#region DrawThemeBackground
+        #region DrawThemeBackground
 
         private static DrawThemeBackgroundDelegate? DrawThemeBackground_Original;
 
@@ -78,9 +78,9 @@ namespace AngelLoader.Forms.WinFormsNative
             ref Native.RECT pRect,
             ref Native.RECT pClipRect);
 
-#endregion
+        #endregion
 
-#region GetThemeColor
+        #region GetThemeColor
 
         private static GetThemeColorDelegate? GetThemeColor_Original;
 
@@ -92,7 +92,7 @@ namespace AngelLoader.Forms.WinFormsNative
             int iPropId,
             out int pColor);
 
-#endregion
+        #endregion
 
         private static bool _hooksInstalled;
 
@@ -109,7 +109,7 @@ namespace AngelLoader.Forms.WinFormsNative
         // color change
         internal static Override SysColorOverride = Override.None;
 
-#endregion
+        #endregion
 
         private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
         private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
@@ -212,7 +212,7 @@ namespace AngelLoader.Forms.WinFormsNative
                 // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
                 // dark-on-dark tooltips
                 ControlUtils.RecreateAllToolTipHandles();
-                var handles = Native.GetProcessWindowHandles();
+                List<IntPtr> handles = Native.GetProcessWindowHandles();
                 foreach (IntPtr handle in handles)
                 {
                     Control? control = Control.FromHandle(handle);
@@ -221,7 +221,7 @@ namespace AngelLoader.Forms.WinFormsNative
             }
         }
 
-#region Hooked method overrides
+        #region Hooked method overrides
 
         private static int DrawThemeBackground_Hooked(
             IntPtr hTheme,
@@ -336,7 +336,7 @@ namespace AngelLoader.Forms.WinFormsNative
             }
         }
 
-#endregion
+        #endregion
     }
 }
 #endif

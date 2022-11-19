@@ -679,7 +679,7 @@ namespace AngelLoader
 
                 if (MissFlagFilesExist()) return MissFlagError.None;
 
-                var misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
+                List<string> misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
                 var misNums = new List<int>(misFiles.Count);
                 foreach (string mf in misFiles)
                 {
@@ -706,7 +706,7 @@ namespace AngelLoader
                         try
                         {
                             string misFileNames = "";
-                            var allMisFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "*.mis");
+                            List<string> allMisFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "*.mis");
                             if (allMisFiles.Count == 0)
                             {
                                 logMsg += "\r\n\r\nNo .mis files were found in FM directory.\r\n";
@@ -1114,7 +1114,7 @@ namespace AngelLoader
 
             bool[] gamesChecked = new bool[SupportedGameCount];
 
-            var archivePaths = FMArchives.GetFMArchivePaths();
+            List<string> archivePaths = FMArchives.GetFMArchivePaths();
 
             for (int i = 0; i < fms.Length; i++)
             {
@@ -1298,7 +1298,7 @@ namespace AngelLoader
 
                             for (int j = lastInstalledFMIndex; j >= 0; j--)
                             {
-                                var fmData = fmDataList[j];
+                                FMData fmData = fmDataList[j];
 
                                 Core.View.SetProgressBoxState_Single(
                                         message2: GetFMId(fmData.FM),
@@ -1375,7 +1375,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < fmDataList.Length; i++)
                 {
-                    var fmData = fmDataList[i];
+                    FMData fmData = fmDataList[i];
 
                     if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
 
@@ -1526,12 +1526,12 @@ namespace AngelLoader
             {
                 Directory.CreateDirectory(fmInstalledPath);
 
-                using var archive = GetZipArchiveCharEnc(fmArchivePath);
+                using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
 
                 int filesCount = archive.Entries.Count;
                 for (int i = 0; i < filesCount; i++)
                 {
-                    var entry = archive.Entries[i];
+                    ZipArchiveEntry entry = archive.Entries[i];
 
                     string fileName = entry.FullName;
 
@@ -1621,7 +1621,7 @@ namespace AngelLoader
 
                 var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
-                var result = Fen7z.Extract(
+                Fen7z.Result result = Fen7z.Extract(
                     Paths.SevenZipPath,
                     Paths.SevenZipExe,
                     fmArchivePath,
@@ -1775,7 +1775,7 @@ namespace AngelLoader
                 {
                     if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
-                    var fmData = fmDataList[i];
+                    FMData fmData = fmDataList[i];
 
                     FanMission fm = fmData.FM;
 

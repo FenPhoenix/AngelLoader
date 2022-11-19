@@ -140,7 +140,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
             {
-                var item = ColumnHeaderCheckBoxMenuItems[i];
+                ToolStripMenuItemCustom item = ColumnHeaderCheckBoxMenuItems[i];
                 item.CheckOnClick = true;
                 item.Tag = (Column)i;
                 item.Checked = _columnCheckedStates[i];

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -36,7 +37,7 @@ namespace AngelLoader
 
         private static void Config_SettingsTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(SettingsTab).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(SettingsTab).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.SettingsTab = (SettingsTab)field.GetValue(null);
@@ -112,7 +113,7 @@ namespace AngelLoader
 
         private static void Config_GameOrganization_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(GameOrganization).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(GameOrganization).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.GameOrganization = (GameOrganization)field.GetValue(null);
@@ -143,7 +144,7 @@ namespace AngelLoader
 
         private static void Config_RatingDisplayStyle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(RatingDisplayStyle).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(RatingDisplayStyle).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
@@ -159,7 +160,7 @@ namespace AngelLoader
 
         private static void Config_DateFormat_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(DateFormat).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(DateFormat).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.DateFormat = (DateFormat)field.GetValue(null);
@@ -243,7 +244,7 @@ namespace AngelLoader
 
         private static void Config_ConfirmInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(ConfirmBeforeInstall).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(ConfirmBeforeInstall).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.ConfirmBeforeInstall = (ConfirmBeforeInstall)field.GetValue(null);
@@ -257,7 +258,7 @@ namespace AngelLoader
 
         private static void Config_BackupFMData_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(BackupFMData).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(BackupFMData).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.BackupFMData = (BackupFMData)field.GetValue(null);
@@ -286,7 +287,7 @@ namespace AngelLoader
 
         private static void Config_VisualTheme_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(VisualTheme).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.VisualTheme = (VisualTheme)field.GetValue(null);
@@ -346,7 +347,7 @@ namespace AngelLoader
             for (int i = 0; i < iniGames.Length; i++)
             {
                 string iniGame = iniGames[i].Trim();
-                var field = typeof(Game).GetField(iniGame, _bFlagsEnum);
+                FieldInfo? field = typeof(Game).GetField(iniGame, _bFlagsEnum);
                 if (field != null)
                 {
                     config.Filter.Games |= (Game)field.GetValue(null);
@@ -498,7 +499,7 @@ namespace AngelLoader
 
         private static void Config_SortedColumn_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(Column).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(Column).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.SortedColumn = (Column)field.GetValue(null);
@@ -506,7 +507,7 @@ namespace AngelLoader
         }
         private static void Config_SortDirection_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(SortDirection).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(SortDirection).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.SortDirection = (SortDirection)field.GetValue(null);
@@ -588,7 +589,7 @@ namespace AngelLoader
 
         private static void Config_MainWindowState_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(WindowState).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(WindowState).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.MainWindowState = (WindowState)field.GetValue(null);
@@ -629,7 +630,7 @@ namespace AngelLoader
         }
         private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(GameIndex).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(GameIndex).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.GameTab = (GameIndex)field.GetValue(null);
@@ -640,7 +641,7 @@ namespace AngelLoader
 
         private static void Config_TopRightTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
-            var field = typeof(TopRightTab).GetField(valTrimmed, _bFlagsEnum);
+            FieldInfo? field = typeof(TopRightTab).GetField(valTrimmed, _bFlagsEnum);
             if (field != null)
             {
                 config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
@@ -971,7 +972,7 @@ namespace AngelLoader
 
         internal static unsafe void ReadConfigIni(string path, ConfigData config)
         {
-            var iniLines = File_ReadAllLines_List(path);
+            List<string> iniLines = File_ReadAllLines_List(path);
 
             for (int li = 0; li < iniLines.Count; li++)
             {

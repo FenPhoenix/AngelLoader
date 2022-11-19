@@ -37,7 +37,7 @@ namespace AngelLoader
 
         internal static void RemoveTagOperation()
         {
-            var fm = Core.View.GetMainSelectedFMOrNull();
+            FanMission? fm = Core.View.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             (string catText, string tagText) = Core.View.SelectedCategoryAndTag();
@@ -127,7 +127,7 @@ namespace AngelLoader
 
             // Shut up, it works
             var list = new List<string>();
-            foreach (var gCat in GlobalTags)
+            foreach (CatAndTagsList gCat in GlobalTags)
             {
                 if (gCat.Category.ContainsI(text.First))
                 {
@@ -137,7 +137,7 @@ namespace AngelLoader
                     }
                     else
                     {
-                        foreach (var gTag in gCat.Tags)
+                        foreach (string gTag in gCat.Tags)
                         {
                             if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
                             if (gCat.Category == PresetTags.MiscCategory)
@@ -157,7 +157,7 @@ namespace AngelLoader
                 // if, not else if - we want to display found tags both categorized and uncategorized
                 if (gCat.Category == PresetTags.MiscCategory)
                 {
-                    foreach (var gTag in gCat.Tags)
+                    foreach (string gTag in gCat.Tags)
                     {
                         if (gTag.ContainsI(searchText)) list.Add(gTag);
                     }
@@ -181,7 +181,7 @@ namespace AngelLoader
 
             for (int i = 0; i < tagsList.Count; i++)
             {
-                var item = tagsList[i];
+                CatAndTagsList item = tagsList[i];
                 if (item.Tags.Count == 0 && writeEmptyCategories)
                 {
                     _tagsToStringSB.Append(item.Category).Append(':').Append(',');

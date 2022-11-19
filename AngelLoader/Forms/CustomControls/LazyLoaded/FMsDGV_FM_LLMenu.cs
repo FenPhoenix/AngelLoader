@@ -757,7 +757,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
             else if (sender == OpenInDromEdMenuItem)
             {
-                var fm = _owner.FMsDGV.GetMainSelectedFM();
+                FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
                 if (fm.Installed || await FMInstallAndPlay.Install(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
             }
             else if (sender == OpenFMFolderMenuItem)

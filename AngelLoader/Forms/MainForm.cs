@@ -1100,8 +1100,8 @@ namespace AngelLoader.Forms
 
             const int minVisible = 200;
 
-            var loc = Config.MainWindowLocation;
-            var bounds = Screen.FromControl(this).Bounds;
+            Point loc = Config.MainWindowLocation;
+            Rectangle bounds = Screen.FromControl(this).Bounds;
 
             if (loc.X < bounds.Left - (Width - minVisible) || loc.X > bounds.Right - minVisible)
             {
@@ -1327,7 +1327,7 @@ namespace AngelLoader.Forms
             {
                 if (!FMsDGV.RowSelected() || (!FMsDGV.Focused && !CursorOverControl(FMsDGV))) return;
 
-                var edgeRow = FMsDGV.Rows[home ? 0 : FMsDGV.RowCount - 1];
+                DataGridViewRow edgeRow = FMsDGV.Rows[home ? 0 : FMsDGV.RowCount - 1];
                 try
                 {
                     FMsDGV.FirstDisplayedScrollingRowIndex = edgeRow.Index;
@@ -1345,7 +1345,7 @@ namespace AngelLoader.Forms
                         {
                             for (int i = 0; i < FMsDGV.RowCount; i++)
                             {
-                                var row = FMsDGV.Rows[i];
+                                DataGridViewRow row = FMsDGV.Rows[i];
                                 if (row == edgeRow) continue;
                                 FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
                             }
@@ -1385,7 +1385,7 @@ namespace AngelLoader.Forms
                             }
                             for (int i = 0; i < FMsDGV.RowCount; i++)
                             {
-                                var row = FMsDGV.Rows[i];
+                                DataGridViewRow row = FMsDGV.Rows[i];
                                 bool sel = home
                                     ? row.Index <= mainSelectedRowIndex
                                     : row.Index >= mainSelectedRowIndex;
@@ -1419,7 +1419,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    var firstRow = FMsDGV.Rows[0];
+                    DataGridViewRow firstRow = FMsDGV.Rows[0];
                     if (firstRow.Selected)
                     {
                         if (FMsDGV.MainSelectedRow != firstRow)
@@ -1442,7 +1442,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    var lastRow = FMsDGV.Rows[FMsDGV.RowCount - 1];
+                    DataGridViewRow lastRow = FMsDGV.Rows[FMsDGV.RowCount - 1];
                     if (lastRow.Selected)
                     {
                         if (FMsDGV.MainSelectedRow != lastRow)
@@ -2083,7 +2083,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+                Rectangle lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
                 GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
             }
         }
@@ -2247,7 +2247,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
-                    var button = _filterByGameButtons[i];
+                    ToolStripButtonCustom button = _filterByGameButtons[i];
                     button.Visible = visible;
                     if (button.Checked && !visible) button.Checked = false;
                 }
@@ -2349,7 +2349,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+                Rectangle lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
                 filterBarAfterTabsX = TopBarXZero() + lastRect.X + lastRect.Width + 5;
             }
 
@@ -2430,7 +2430,7 @@ namespace AngelLoader.Forms
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
         {
-            var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
+            ToolStripButtonCustom button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
             DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
 
@@ -2644,7 +2644,9 @@ namespace AngelLoader.Forms
         private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
         {
             var senderButton = (Button)sender;
-            var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
+            DarkArrowButton otherButton = senderButton == FilterBarScrollLeftButton
+                ? FilterBarScrollRightButton
+                : FilterBarScrollLeftButton;
             if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
         }
 
@@ -2681,7 +2683,7 @@ namespace AngelLoader.Forms
                 FilterBarScrollRightButton.Show();
             }
 
-            var hs = FilterBarFLP.HorizontalScroll;
+            HScrollProperties hs = FilterBarFLP.HorizontalScroll;
             if (!hs.Visible)
             {
                 if (FilterBarScrollLeftButton.Visible || FilterBarScrollRightButton.Visible)
@@ -2814,7 +2816,7 @@ namespace AngelLoader.Forms
             {
                 FilterBarFLP.SuspendDrawing();
 
-                var filterItems = _hideableFilterControls[(int)s.Tag];
+                Component[] filterItems = _hideableFilterControls[(int)s.Tag];
                 for (int i = 0; i < filterItems.Length; i++)
                 {
                     switch (filterItems[i])
@@ -3020,7 +3022,7 @@ namespace AngelLoader.Forms
 
                     if (multiSelectedFMs != null)
                     {
-                        var hash = multiSelectedFMs.ToHashSet();
+                        HashSet<FanMission> hash = multiSelectedFMs.ToHashSet();
                         DataGridViewRow? latestRow = null;
                         try
                         {
@@ -3067,7 +3069,7 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
         {
-            var fmAltTitles = FMsDGV.GetMainSelectedFM().AltTitles;
+            List<string> fmAltTitles = FMsDGV.GetMainSelectedFM().AltTitles;
             if (fmAltTitles.Count == 0) return;
 
             var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
@@ -3246,7 +3248,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
+            List<string> list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
             if (list.Count == 0)
             {
                 AddTagLLDropDown.HideAndClear();
@@ -3463,7 +3465,7 @@ namespace AngelLoader.Forms
                 dmlFiles.AddRange(d.FileNames);
             }
 
-            var itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
+            HashSetI itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
 
             try
             {
@@ -3868,7 +3870,7 @@ namespace AngelLoader.Forms
                     {
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
-                            var fm = FMsDGV.GetFMFromIndex(i);
+                            FanMission fm = FMsDGV.GetFMFromIndex(i);
                             if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.TitleExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
@@ -3882,7 +3884,7 @@ namespace AngelLoader.Forms
                     {
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
-                            var fm = FMsDGV.GetFMFromIndex(i);
+                            FanMission fm = FMsDGV.GetFMFromIndex(i);
                             if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.AuthorExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
@@ -3897,7 +3899,7 @@ namespace AngelLoader.Forms
                 {
                     for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                     {
-                        var fm = FMsDGV.GetFMFromIndex(i);
+                        FanMission fm = FMsDGV.GetFMFromIndex(i);
                         if (!fm.MarkedRecent && !fm.Pinned)
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
@@ -3925,7 +3927,7 @@ namespace AngelLoader.Forms
 
                     for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                     {
-                        var fm = FMsDGV.GetFMFromIndex(i);
+                        FanMission fm = FMsDGV.GetFMFromIndex(i);
 
                         if (!fm.MarkedRecent && !fm.Pinned)
                         {
@@ -4029,7 +4031,7 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
-            var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
+            FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             // PERF_TODO: Test with custom - dt.ToString() might be slow?
@@ -4170,7 +4172,7 @@ namespace AngelLoader.Forms
 
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
-            var newSortDirection =
+            SortDirection newSortDirection =
                 e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn
                     ? FMsDGV.CurrentSortDirection == SortDirection.Ascending
                         ? SortDirection.Descending
@@ -4194,7 +4196,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Right) return;
 
-            var ht = FMsDGV.HitTest(e.X, e.Y);
+            DataGridView.HitTestInfo ht = FMsDGV.HitTest(e.X, e.Y);
 
             #region Right-click menu
 
@@ -4325,14 +4327,14 @@ namespace AngelLoader.Forms
 
             #region Update rating column
 
-            var newRatingColumn =
+            DataGridViewColumn newRatingColumn =
                 Config.RatingDisplayStyle == RatingDisplayStyle.FMSel && Config.RatingUseStars
                     ? (DataGridViewColumn)RatingImageColumn
                     : RatingTextColumn;
 
             if (!startup)
             {
-                var oldRatingColumn = FMsDGV.Columns[(int)Column.Rating];
+                DataGridViewColumn oldRatingColumn = FMsDGV.Columns[(int)Column.Rating];
                 newRatingColumn.Width = newRatingColumn == RatingTextColumn
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
@@ -4391,10 +4393,10 @@ namespace AngelLoader.Forms
                     bool ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
                     int rFrom = FMsDGV.Filter.RatingFrom;
                     int rTo = FMsDGV.Filter.RatingTo;
-                    var curCulture = CultureInfo.CurrentCulture;
+                    CultureInfo currentCulture = CultureInfo.CurrentCulture;
 
-                    string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
-                    string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
+                    string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(currentCulture);
+                    string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(currentCulture);
 
                     Lazy_ToolStripLabels.Show(Lazy_FilterLabel.Rating, from + " - " + to);
                 }
@@ -4425,11 +4427,11 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var fm = FMsDGV.GetMainSelectedFM();
+            FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.SelectedReadme = ChooseReadmeLLPanel.ListBox.SelectedBackingItem();
             ChooseReadmeLLPanel.ShowPanel(false);
 
-            var list = itemCount > 1
+            List<string> list = itemCount > 1
                 ? ChooseReadmeLLPanel.ListBox.BackingItems
                 : new List<string>();
 
@@ -4445,7 +4447,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var fm = FMsDGV.GetMainSelectedFM();
+            FanMission fm = FMsDGV.GetMainSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
             Core.LoadReadme(fm);
         }
@@ -5005,7 +5007,7 @@ namespace AngelLoader.Forms
                     int rowCount = rows.Count;
                     for (int i = 0; i < rowCount; i++)
                     {
-                        var row = rows[i];
+                        DataGridViewRow row = rows[i];
                         if (!row.Selected) continue;
 
                         selRowsCount++;
@@ -5310,7 +5312,8 @@ namespace AngelLoader.Forms
                     MainModsControl.Visible = true;
                     ModsTabNotSupportedMessageLabel.Visible = false;
 
-                    var (success, disabledMods, disableAllMods) = MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
+                    (bool success, string disabledMods, bool disableAllMods) =
+                        MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
                     if (success)
                     {
                         fm.DisabledMods = disabledMods;
@@ -5347,7 +5350,7 @@ namespace AngelLoader.Forms
             {
                 EditFMLanguageComboBox.BeginUpdate();
 
-                foreach (var item in langPairs)
+                foreach (KeyValuePair<string, string> item in langPairs)
                 {
                     EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
                 }
@@ -5653,7 +5656,7 @@ namespace AngelLoader.Forms
                 ? 0
                 : control.Height;
 
-            var direction = pos switch
+            ToolStripDropDownDirection direction = pos switch
             {
                 MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
                 MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,

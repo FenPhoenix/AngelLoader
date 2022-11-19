@@ -1152,7 +1152,7 @@ namespace AngelLoader.Forms
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            var gp = FinishedCheckOutlineGPath;
+            GraphicsPath gp = FinishedCheckOutlineGPath;
 
             FitRectInBounds(
                 g,
@@ -1199,7 +1199,7 @@ namespace AngelLoader.Forms
 
             FillCircle21(g, GreenCircleBrush);
 
-            var gp = CircleCheckGPath;
+            GraphicsPath gp = CircleCheckGPath;
 
             FitRectInBounds(
                 g,
@@ -1221,7 +1221,7 @@ namespace AngelLoader.Forms
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            var gp = XGPath;
+            GraphicsPath gp = XGPath;
 
             FitRectInBounds(
                 g,
@@ -1503,7 +1503,7 @@ namespace AngelLoader.Forms
 
             Brush brush = button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark;
 
-            var gPath = GetZoomImageGraphicsPath(zoomType);
+            GraphicsPath gPath = GetZoomImageGraphicsPath(zoomType);
             FitRectInBounds(e.Graphics, gPath.GetBounds(), button.ClientRectangle);
             e.Graphics.FillPath(brush, gPath);
         }
@@ -1633,7 +1633,7 @@ namespace AngelLoader.Forms
 
             Brush brush = button.Enabled ? AL_LightBlueBrush : SystemBrushes.ControlDark;
 
-            var cr = button.ClientRectangle;
+            Rectangle cr = button.ClientRectangle;
 
             FitRectInBounds(
                 e.Graphics,

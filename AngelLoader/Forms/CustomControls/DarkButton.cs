@@ -336,7 +336,7 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
 
             var rect = ButtonStyle == DarkButtonStyle.Normal
                 // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
@@ -344,8 +344,8 @@ namespace AngelLoader.Forms.CustomControls
                 ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
                 : new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            var textColorBrush = DarkColors.LightTextBrush;
-            var borderPen = DarkColors.GreySelectionPen;
+            SolidBrush textColorBrush = DarkColors.LightTextBrush;
+            Pen borderPen = DarkColors.GreySelectionPen;
             Color? fillColor = null;
             if (DarkModeBackColor != null) fillColor = DarkModeBackColor;
 
@@ -398,7 +398,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
-                var fillBrush = DarkColors.LightBackgroundBrush;
+                SolidBrush fillBrush = DarkColors.LightBackgroundBrush;
                 g.FillRectangle(fillBrush, rect);
             }
 
@@ -413,7 +413,7 @@ namespace AngelLoader.Forms.CustomControls
             int textOffsetX = 0;
             int textOffsetY = 0;
 
-            var padding = Padding;
+            Padding padding = Padding;
 
             if (Image != null)
             {

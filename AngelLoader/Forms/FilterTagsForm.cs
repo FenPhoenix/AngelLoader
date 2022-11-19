@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
@@ -127,7 +128,7 @@ namespace AngelLoader.Forms
 
         private void FillTreeView(FMCategoriesCollection tags)
         {
-            var tv =
+            DarkTreeView tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
                 tags == TagsFilter.OrTags ? OrTreeView :
                 NotTreeView;
@@ -139,7 +140,7 @@ namespace AngelLoader.Forms
 
         private void AddTagsButtons_Click(object sender, EventArgs e)
         {
-            var o = OriginTreeView;
+            DarkTreeView o = OriginTreeView;
 
             if (o.SelectedNode == null) return;
 
@@ -183,7 +184,7 @@ namespace AngelLoader.Forms
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
 
-            var tv =
+            DarkTreeView tv =
                 sender == RemoveSelectedAndButton ? AndTreeView :
                 sender == RemoveSelectedOrButton ? OrTreeView :
                 NotTreeView;
@@ -237,7 +238,7 @@ namespace AngelLoader.Forms
 
         private void CheckTagInAny()
         {
-            var o = OriginTreeView;
+            DarkTreeView o = OriginTreeView;
 
             if (o.SelectedNode == null) return;
 

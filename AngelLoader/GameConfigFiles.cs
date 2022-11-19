@@ -579,7 +579,7 @@ namespace AngelLoader
             // Confirmed NewDark can read fm_selector values with both forward and backward slashes
 
             // The loader is us, so use our saved previous loader or lacking that, make a best-effort guess
-            var startupFMSelectorLines = Config.GetStartupFMSelectorLines(gameIndex);
+            List<string> startupFMSelectorLines = Config.GetStartupFMSelectorLines(gameIndex);
             string selectorPath = resetSelector
                 ? FindPreviousSelector(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
                     Paths.StubPath, gamePath)
@@ -718,7 +718,7 @@ namespace AngelLoader
             // Probably nobody uses this feature, but maybe we should do it for completeness?
             if (resetSelector)
             {
-                var startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
+                List<string> startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
                 string prevFMSelectorValue = "";
 
                 #region Read the previous loader value
@@ -907,23 +907,23 @@ namespace AngelLoader
                 }
             }
 
-            var modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
-            var uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
-            var mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
-            var mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
+            List<string> modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
+            List<string> uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
+            List<string> mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
+            List<string> mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
 
-            var modPathsHash = modPaths.ToHashSetI();
-            var uberModPathsHash = uberModPaths.ToHashSetI();
+            HashSetI modPathsHash = modPaths.ToHashSetI();
+            HashSetI uberModPathsHash = uberModPaths.ToHashSetI();
 
             DeDupe(uberModPathsHash, mpUberModPaths);
             DeDupe(uberModPathsHash, modPaths);
             DeDupe(uberModPathsHash, mpModPaths);
             DeDupe(modPathsHash, mpModPaths);
 
-            foreach (var modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
-            foreach (var modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
-            foreach (var modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
-            foreach (var modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
+            foreach (string modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
+            foreach (string modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
+            foreach (string modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
+            foreach (string modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
 
             return (true, list);
         }
@@ -1085,7 +1085,7 @@ namespace AngelLoader
 
             RemoveKeyLine(key_game_screen_size, lines);
 
-            var res = Screen.PrimaryScreen.Bounds;
+            System.Drawing.Rectangle res = Screen.PrimaryScreen.Bounds;
             lines.Add(key_game_screen_size + " " + res.Width + " " + res.Height);
 
             RemoveConsecutiveWhiteSpace(lines);

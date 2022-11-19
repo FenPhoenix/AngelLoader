@@ -143,7 +143,7 @@ namespace AngelLoader.Forms
             };
             if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
-            var tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
+            DarkTextBox tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
             tb.Text = d.FileName;
         }
 

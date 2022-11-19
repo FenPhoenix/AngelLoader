@@ -509,11 +509,11 @@ namespace AngelLoader
                 }
             }
 
-            var error = DoImport();
+            ImportError error = DoImport();
 
             if (error != ImportError.None) return (error, fms);
 
-            var importedFMs = MergeImportedFMData(ImportType.DarkLoader, fms, fields);
+            List<FanMission> importedFMs = MergeImportedFMData(ImportType.DarkLoader, fms, fields);
 
             return (ImportError.None, importedFMs);
         }
@@ -673,7 +673,7 @@ namespace AngelLoader
 
             DoImport(lines, fms);
 
-            var importedFMs = MergeImportedFMData(ImportType.FMSel, fms, fields);
+            List<FanMission> importedFMs = MergeImportedFMData(ImportType.FMSel, fms, fields);
 
             return (ImportError.None, importedFMs);
         }
@@ -826,11 +826,11 @@ namespace AngelLoader
                 return ImportError.None;
             }
 
-            var error = DoImport(lines, fms);
+            ImportError error = DoImport(lines, fms);
 
             if (error != ImportError.None) return (error, fms);
 
-            var importedFMs = MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
+            List<FanMission> importedFMs = MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
 
             return (ImportError.None, importedFMs);
         }
@@ -847,12 +847,12 @@ namespace AngelLoader
 
             for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
             {
-                var importedFM = importedFMs[impFMi];
+                FanMission importedFM = importedFMs[impFMi];
 
                 bool existingFound = false;
                 for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
                 {
-                    var mainFM = FMDataIniList[mainFMi];
+                    FanMission mainFM = FMDataIniList[mainFMi];
 
                     if (!checkedArray[mainFMi] &&
                         // TODO: Import match-up

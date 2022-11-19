@@ -241,7 +241,7 @@ namespace AngelLoader.Forms.CustomControls
 
             for (int i = 0; i < items.Length; i++, y += 20)
             {
-                var item = items[i];
+                CheckItem item = items[i];
 
                 if (!firstCautionDone && item.Caution)
                 {

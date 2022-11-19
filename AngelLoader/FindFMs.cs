@@ -214,9 +214,9 @@ namespace AngelLoader
             // tasks or anything here... just return an exception and handle it on the main thread...
             try
             {
-                var ret = FindInternal(startup: true);
+                List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
                 splashScreen.SetCheckAtStoredMessageWidth();
-                return (ret, null);
+                return (fmsViewListUnscanned, null);
             }
             catch (Exception ex)
             {
@@ -232,9 +232,9 @@ namespace AngelLoader
         {
             AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
-            var ret = FindInternal(startup: false);
+            List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
             Core.View!.SetAvailableFMCount();
-            return ret;
+            return fmsViewListUnscanned;
         }
 
         // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
@@ -353,7 +353,7 @@ namespace AngelLoader
 
             var fmArchivesAndDatesDict = new DictionaryI<ExpandableDate_FromTicks>();
 
-            var archivePaths = FMArchives.GetFMArchivePaths();
+            List<string> archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
 
             for (int ai = 0; ai < archivePaths.Count; ai++)
@@ -396,7 +396,7 @@ namespace AngelLoader
             var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
             for (int i = 0; i < fmDataIniListCount; i++)
             {
-                var fm = FMDataIniList[i];
+                FanMission fm = FMDataIniList[i];
                 if (!fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
                 {
                     fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
@@ -453,7 +453,7 @@ namespace AngelLoader
                     archivesDict = new DictionaryI<FanMission>(FMDataIniList.Count);
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
-                        var fm = FMDataIniList[i];
+                        FanMission fm = FMDataIniList[i];
                         if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
                         {
                             archivesDict.Add(fm.Archive, fm);
@@ -518,7 +518,7 @@ namespace AngelLoader
             var hash = new HashSetI(FMDataIniList.Count);
             for (int i = 0; i < FMDataIniList.Count; i++)
             {
-                var fm = FMDataIniList[i];
+                FanMission fm = FMDataIniList[i];
                 if (!hash.Contains(fm.InstalledDir))
                 {
                     hash.Add(fm.InstalledDir);
@@ -560,7 +560,7 @@ namespace AngelLoader
             var fmDataIniArchiveDict = new DictionaryI<FanMission>(fmDataIniListCount);
             for (int i = 0; i < fmDataIniListCount; i++)
             {
-                var fm = FMDataIniList[i];
+                FanMission fm = FMDataIniList[i];
                 if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
                 {
                     fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
@@ -626,7 +626,7 @@ namespace AngelLoader
         {
             foreach (var item in installedList)
             {
-                var gFM = item.Value.FM;
+                FanMission gFM = item.Value.FM;
 
                 if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
                 {

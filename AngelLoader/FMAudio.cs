@@ -86,13 +86,13 @@ namespace AngelLoader
 
             #endregion
 
-            var fms = Core.View.GetSelectedFMs_InOrder_List();
+            List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
             if (fms.Count == 0) return;
 
             bool anyInapplicable = false;
             for (int i = 0; i < fms.Count; i++)
             {
-                var fm = fms[i];
+                FanMission fm = fms[i];
                 if (!GameIsDark(fm.Game) || !fm.Installed || fm.MarkedUnavailable)
                 {
                     anyInapplicable = true;
@@ -246,7 +246,7 @@ namespace AngelLoader
 
                     try
                     {
-                        var fmSndPaths = GetFMSoundPathsByGame(fm);
+                        string[] fmSndPaths = GetFMSoundPathsByGame(fm);
                         foreach (string fmSndPath in fmSndPaths)
                         {
                             if (!Directory.Exists(fmSndPath)) return;
@@ -257,7 +257,7 @@ namespace AngelLoader
 
                             if (Canceled(ct)) return;
 
-                            var wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+                            string[] wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
 
                             if (Canceled(ct)) return;
 
@@ -304,7 +304,7 @@ namespace AngelLoader
                         string pattern = type == AudioConvert.MP3ToWAV ? "*.mp3" : "*.ogg";
                         string ext = type == AudioConvert.MP3ToWAV ? ".mp3" : ".ogg";
 
-                        var fmSndPaths = GetFMSoundPathsByGame(fm);
+                        string[] fmSndPaths = GetFMSoundPathsByGame(fm);
                         foreach (string fmSndPath in fmSndPaths)
                         {
                             if (!Directory.Exists(fmSndPath)) return;

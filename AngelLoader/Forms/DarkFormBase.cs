@@ -101,7 +101,7 @@ namespace AngelLoader.Forms
             // backing lists rather than their Controls collection.
             if (control is DarkTabControl dtc)
             {
-                var backingPages = dtc.BackingTabPages;
+                Control[] backingPages = dtc.BackingTabPages;
                 for (int i = 0; i < backingPages.Length; i++)
                 {
                     FillControlColorList(backingPages[i], controlColors, createControlHandles

@@ -21,9 +21,9 @@ namespace AngelLoader.Forms.ThemeRenderers
         {
             if (iPartId is not Native.TVP_GLYPH and not Native.TVP_HOTGLYPH) return false;
 
-            using var g = Graphics.FromHdc(hdc);
+            using Graphics g = Graphics.FromHdc(hdc);
 
-            var rect = pRect.ToRectangle();
+            Rectangle rect = pRect.ToRectangle();
 
             Misc.Direction direction = iStateId is Native.GLPS_CLOSED or Native.HGLPS_CLOSED
                 ? Misc.Direction.Right

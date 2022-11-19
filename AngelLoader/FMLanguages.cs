@@ -55,7 +55,7 @@ namespace AngelLoader
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
             if (!fmLanguage.IsEmpty())
             {
-                var fmSupportedLangs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: false);
+                List<string> fmSupportedLangs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: false);
                 if (fmSupportedLangs.ContainsI(fmLanguage))
                 {
                     // FMSel doesn't set this because it's already getting it from the game meaning it's set
@@ -91,7 +91,7 @@ namespace AngelLoader
                 // if english is not among them then pick another, if no languages are found then no fallback language will
                 // be defined
 
-                var langs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: true);
+                List<string> langs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: true);
 
                 // Use first available language (which will be English if English is available)
                 sLanguage = langs.Count == 0 ? "" : langs[0];
@@ -182,7 +182,7 @@ namespace AngelLoader
         {
             // Get initial list of base FM dirs the normal way: we don't want to count these as lang dirs even if
             // they're named such (matching FMSel behavior)
-            var searchList = FastIO.GetDirsTopOnly(fmInstPath, "*", ignoreReparsePoints: true);
+            List<string> searchList = FastIO.GetDirsTopOnly(fmInstPath, "*", ignoreReparsePoints: true);
             if (searchList.Count == 0) return new List<string>();
 
             #region Move key dirs to end of list (priority)

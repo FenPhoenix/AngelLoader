@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.ThemeRenderers
             ref Native.RECT pRect,
             ref Native.RECT pClipRect)
         {
-            using var g = Graphics.FromHdc(hdc);
+            using Graphics g = Graphics.FromHdc(hdc);
 
             #region Background
 

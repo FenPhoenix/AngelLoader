@@ -594,7 +594,7 @@ namespace FMScanner
                         {
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            var entry = _sevenZipArchive.ArchiveFileData[i];
+                            ArchiveFileInfo entry = _sevenZipArchive.ArchiveFileData[i];
                             string fn = entry.FileName;
                             int dirSeps;
 
@@ -722,7 +722,7 @@ namespace FMScanner
 
                     string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
 
-                    var result = Fen7z.Extract(
+                    Fen7z.Result result = Fen7z.Extract(
                         sevenZipWorkingPath: Path.GetDirectoryName(_sevenZipExePath)!,
                         sevenZipPathAndExe: _sevenZipExePath,
                         archivePath: fm.Path,
@@ -1199,7 +1199,7 @@ namespace FMScanner
 
                 if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(intrfaceDirFiles));
 
-                var topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
+                List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
                 if (topOfReadmeTitles?.Count > 0)
                 {
                     for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
@@ -1228,7 +1228,7 @@ namespace FMScanner
             {
                 if (fmData.Author.IsEmpty())
                 {
-                    var titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
+                    List<string>? titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
                     if (titles != null && altTitles.Count > 0)
                     {
                         titles.AddRange(altTitles);
@@ -1687,7 +1687,7 @@ namespace FMScanner
         {
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
-            var list = fmData.TagsString.Split(CA_CommaSemicolon).ToList();
+            List<string> list = fmData.TagsString.Split(CA_CommaSemicolon).ToList();
             bool tagFound = false;
             for (int i = 0; i < list.Count; i++)
             {
@@ -2266,25 +2266,25 @@ namespace FMScanner
 
             if (_scanOptions.ScanTitle)
             {
-                var xTitle = fmInfoXml.GetElementsByTagName("title");
+                XmlNodeList xTitle = fmInfoXml.GetElementsByTagName("title");
                 if (xTitle.Count > 0) title = xTitle[0]?.InnerText ?? "";
             }
 
             if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
             {
-                var xAuthor = fmInfoXml.GetElementsByTagName("author");
+                XmlNodeList xAuthor = fmInfoXml.GetElementsByTagName("author");
                 if (xAuthor.Count > 0) author = xAuthor[0]?.InnerText ?? "";
             }
 
 #if FMScanner_FullCode
             if (_scanOptions.ScanVersion)
             {
-                var xVersion = fmInfoXml.GetElementsByTagName("version");
+                XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
                 if (xVersion.Count > 0) version = xVersion[0]?.InnerText ?? "";
             }
 #endif
 
-            var xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
+            XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
             if (xReleaseDate.Count > 0)
             {
                 string rdString = xReleaseDate[0]?.InnerText ?? "";
@@ -2314,7 +2314,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                var e = _archive.Entries[file.Index];
+                ZipArchiveEntry e = _archive.Entries[file.Index];
                 using var es = _archive.OpenEntry(e);
                 iniLines = ReadAllLinesE(es, e.Length);
             }
@@ -2494,7 +2494,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                var e = _archive.Entries[file.Index];
+                ZipArchiveEntry e = _archive.Entries[file.Index];
                 using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
@@ -3054,7 +3054,7 @@ namespace FMScanner
 
             if (_fmIsZip)
             {
-                var e = _archive.Entries[newGameStrFile.Index];
+                ZipArchiveEntry e = _archive.Entries[newGameStrFile.Index];
                 using var es = _archive.OpenEntry(e);
                 lines = ReadAllLinesE(es, e.Length);
             }
@@ -3098,7 +3098,7 @@ namespace FMScanner
         private (string TitleFrom0, string TitleFromN, List<string>? CampaignMissionNames)
         GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
         {
-            var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
+            List<string>? titlesStrLines = GetTitlesStrLines(stringsDirFiles);
             if (titlesStrLines == null || titlesStrLines.Count == 0) return ("", "", null);
 
             var ret =
@@ -3199,7 +3199,7 @@ namespace FMScanner
 
                 if (_fmIsZip)
                 {
-                    var e = _archive.Entries[titlesFile.Index];
+                    ZipArchiveEntry e = _archive.Entries[titlesFile.Index];
                     using var es = _archive.OpenEntry(e);
                     titlesStrLines = ReadAllLinesE(es, e.Length);
                 }
@@ -3559,7 +3559,7 @@ namespace FMScanner
 
             for (int dirIndex = 0; dirIndex < 3; dirIndex++)
             {
-                var dirFiles = dirIndex switch
+                List<NameAndIndex> dirFiles = dirIndex switch
                 {
                     0 => booksDirFiles,
                     1 => intrfaceDirFiles,
@@ -3644,7 +3644,7 @@ namespace FMScanner
 
             if (langs.Count > 0)
             {
-                var langsD = langs.Distinct().ToList();
+                List<string> langsD = langs.Distinct().ToList();
                 langsD.Sort();
                 return (langsD, englishIsUncertain);
             }
@@ -4097,10 +4097,10 @@ namespace FMScanner
         {
             DirAndFileTree_UnSetReadOnly(directory);
 
-            var ds = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
-            for (int i = 0; i < ds.Length; i++)
+            string[] dirs = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
+            for (int i = 0; i < dirs.Length; i++)
             {
-                Directory.Delete(ds[i], true);
+                Directory.Delete(dirs[i], recursive: true);
             }
 
             Directory.Delete(directory, recursive: true);

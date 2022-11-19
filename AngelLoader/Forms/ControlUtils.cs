@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -482,7 +483,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                var handles = Native.GetProcessWindowHandles();
+                List<IntPtr> handles = Native.GetProcessWindowHandles();
                 foreach (IntPtr handle in handles)
                 {
                     NativeWindow? nw = NativeWindow.FromHandle(handle);
@@ -552,7 +553,7 @@ namespace AngelLoader.Forms
 
         internal static void AutoSizeFilterWindow(Form form, Button okButton, Button cancelButton)
         {
-            var metrics = Native.GetNonClientMetrics();
+            Native.NONCLIENTMETRICSW metrics = Native.GetNonClientMetrics();
 
             int totalButtonsWidth = okButton.Width + okButton.Padding.Horizontal + okButton.Margin.Horizontal +
                                     cancelButton.Width + cancelButton.Padding.Horizontal + cancelButton.Margin.Horizontal;

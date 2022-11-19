@@ -14,7 +14,7 @@ namespace AngelLoader
     {
         internal static async Task BackupAndRestoreTest()
         {
-            var fm = Core.View.GetMainSelectedFMOrNull();
+            FanMission fm = Core.View.GetMainSelectedFMOrNull();
             if (fm == null)
             {
                 Core.Dialogs.ShowAlert("Safety - FM is null!", "Alert");

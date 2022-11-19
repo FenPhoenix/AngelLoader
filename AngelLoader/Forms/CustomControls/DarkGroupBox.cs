@@ -74,7 +74,7 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
             Size stringSize = TextRenderer.MeasureText(_rawText, Font);
 

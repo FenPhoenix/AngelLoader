@@ -725,7 +725,7 @@ namespace AngelLoader.Forms.WinFormsNative
 
         internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
         {
-            var wp = WINDOWPLACEMENT.Default;
+            WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
             bool success = GetWindowPlacement(form.Handle, ref wp);
             if (success)
             {

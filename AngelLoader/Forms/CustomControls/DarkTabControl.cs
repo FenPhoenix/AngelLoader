@@ -110,7 +110,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             for (int i = 0; i < TabCount; i++)
             {
-                var tabRect = GetTabRect(i);
+                Rectangle tabRect = GetTabRect(i);
 
                 bool contains =
                     xOnly
@@ -137,7 +137,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_darkModeEnabled)
             {
-                var g = e.Graphics;
+                Graphics g = e.Graphics;
 
                 if (Parent != null)
                 {
@@ -148,7 +148,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (TabPages.Count > 0)
                 {
-                    var firstTabRect = GetTabRect(0);
+                    Rectangle firstTabRect = GetTabRect(0);
                     var pageRect = new Rectangle(
                         ClientRectangle.X,
                         ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height,
@@ -175,7 +175,7 @@ namespace AngelLoader.Forms.CustomControls
                             tabRect = tabRect with { Y = tabRect.Y - 2, Height = tabRect.Height + 2 };
                         }
 
-                        var backColorBrush = focused
+                        SolidBrush backColorBrush = focused
                             ? DarkColors.LightBackgroundBrush
                             : Enabled && tabRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                             ? DarkColors.Fen_HotTabBackgroundBrush

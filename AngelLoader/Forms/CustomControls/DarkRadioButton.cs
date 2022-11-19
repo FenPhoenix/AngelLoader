@@ -240,11 +240,11 @@ namespace AngelLoader.Forms.CustomControls
                 return;
             }
 
-            var g = e.Graphics;
+            Graphics g = e.Graphics;
 
-            var textColor = DarkColors.LightText;
-            var borderColorPen = DarkColors.LightTextPen;
-            var fillColorBrush = DarkColors.LightTextBrush;
+            Color textColor = DarkColors.LightText;
+            Pen borderColorPen = DarkColors.LightTextPen;
+            SolidBrush fillColorBrush = DarkColors.LightTextBrush;
 
             if (Enabled)
             {

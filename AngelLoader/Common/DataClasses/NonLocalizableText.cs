@@ -48,7 +48,7 @@ namespace AngelLoader.DataClasses
 
             try
             {
-                var attrs = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute), false);
+                object[] attrs = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute), false);
                 if (attrs.Length == 1)
                 {
                     var fn = new FrameworkName(((TargetFrameworkAttribute)attrs[0]).FrameworkName);

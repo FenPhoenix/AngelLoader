@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms
@@ -67,8 +68,8 @@ namespace AngelLoader.Forms
 
         private void ShowDate(DateType dateType, bool shown)
         {
-            var label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;
-            var dtp = dateType == DateType.From ? FromDateTimePicker : ToDateTimePicker;
+            DarkTextBox label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;
+            DarkDateTimePicker dtp = dateType == DateType.From ? FromDateTimePicker : ToDateTimePicker;
 
             if (shown)
             {

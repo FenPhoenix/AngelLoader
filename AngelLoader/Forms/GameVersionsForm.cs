@@ -103,7 +103,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
-                var (label, textBox) = GameVersionItems[i];
+                (DarkLabel label, DarkTextBox textBox) = GameVersionItems[i];
 
                 if (!Config.GetGameExe(gameIndex).IsEmpty())
                 {
@@ -143,14 +143,14 @@ namespace AngelLoader.Forms
             int maxLabelRightSidePos = 0;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                var label = GameVersionItems[i].Label;
+                DarkLabel label = GameVersionItems[i].Label;
                 int labelRightSidePos = label.Left + label.Width;
                 if (labelRightSidePos > maxLabelRightSidePos) maxLabelRightSidePos = labelRightSidePos;
             }
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                var textBox = GameVersionItems[i].TextBox;
+                DarkTextBox textBox = GameVersionItems[i].TextBox;
                 if (maxLabelRightSidePos > textBox.Left)
                 {
                     int amount = maxLabelRightSidePos - textBox.Left;

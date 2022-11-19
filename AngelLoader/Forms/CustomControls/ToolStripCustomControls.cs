@@ -81,13 +81,13 @@ namespace AngelLoader.Forms.CustomControls
             // Take margin into account to allow drawing past the left side of the first item or the right of the
             // last
             var rectLeft = new Rectangle(0, 0, Items[0].Bounds.X - Items[0].Margin.Left, Height);
-            var last = Items[Items.Count - 1];
+            ToolStripItem last = Items[Items.Count - 1];
             int rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
             var rectRight = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
             var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
-            var brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;
-            var pen = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundPen : SystemPens.Control;
+            Brush brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;
+            Pen pen = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundPen : SystemPens.Control;
 
             e.Graphics.FillRectangle(brush, rectLeft);
             e.Graphics.FillRectangle(brush, rectRight);

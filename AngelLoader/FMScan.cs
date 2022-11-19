@@ -123,7 +123,7 @@ namespace AngelLoader
                     // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                     // cause then it will hit the actual disk rather than just going through a list of paths in
                     // memory
-                    var archivePaths = FMArchives.GetFMArchivePaths();
+                    List<string> archivePaths = FMArchives.GetFMArchivePaths();
 
                     if (_scanCts.IsCancellationRequested) return false;
 
@@ -470,7 +470,7 @@ namespace AngelLoader
 
         internal static async Task ScanSelectedFMs()
         {
-            var fms = Core.View.GetSelectedFMs_InOrder_List();
+            List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
             if (fms.Count == 1)
             {
                 if (await ScanFMs(fms, hideBoxIfZip: true))

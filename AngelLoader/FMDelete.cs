@@ -27,7 +27,7 @@ namespace AngelLoader
 
         internal static async Task HandleDelete()
         {
-            var fms = Core.View.GetSelectedFMs_InOrder_List();
+            List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
 
             if (fms.Count == 0) return;
 
@@ -97,12 +97,12 @@ namespace AngelLoader
                 }
             }
 
-            foreach (var fmToDelete in fmsToDelete)
+            foreach (FanMission fmToDelete in fmsToDelete)
             {
                 if (!fmToDelete.Archive.IsEmpty() &&
                     iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
                 {
-                    foreach (var fm in fmToDeleteIniCopies)
+                    foreach (FanMission fm in fmToDeleteIniCopies)
                     {
                         FMDataIniList.Remove(fm);
 #if !TEST_NO_DELETE_CACHE_DIR
@@ -299,13 +299,13 @@ namespace AngelLoader
                     );
                 }
 
-                var archivePaths = FMArchives.GetFMArchivePaths();
+                List<string> archivePaths = FMArchives.GetFMArchivePaths();
 
                 for (int i = 0; i < fms.Count; i++)
                 {
                     FanMission fm = fms[i];
 
-                    var archives = FMArchives.FindAllMatches(fm.Archive, archivePaths);
+                    List<string> archives = FMArchives.FindAllMatches(fm.Archive, archivePaths);
 
                     (bool success, List<string> finalArchives) = GetFinalArchives(archives, single);
                     if (!success)
@@ -350,7 +350,7 @@ namespace AngelLoader
                         // Do this even if we had no archives, because we're still going to set it unavailable
                         // so we need to refresh to remove it from the filtered list
                         deletedAtLeastOneFromDisk = true;
-                        var newArchives = await Task.Run(() => FMArchives.FindAllMatches(fm.Archive, archivePaths));
+                        List<string> newArchives = await Task.Run(() => FMArchives.FindAllMatches(fm.Archive, archivePaths));
                         if (newArchives.Count == 0 && !fm.Installed)
                         {
                             fm.MarkedUnavailable = true;

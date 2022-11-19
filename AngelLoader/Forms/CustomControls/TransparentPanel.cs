@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             get
             {
-                var cp = base.CreateParams;
+                CreateParams cp = base.CreateParams;
                 // WS_EX_TRANSPARENT will have problems if I ever host the RTFBox in a separate process
                 cp.ExStyle |= WS_EX_TRANSPARENT;
                 return cp;

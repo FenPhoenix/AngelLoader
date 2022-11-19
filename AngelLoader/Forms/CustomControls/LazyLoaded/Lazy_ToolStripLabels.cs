@@ -63,7 +63,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 _labels[li] = _label;
 
                 var container = _owner.FilterIconButtonsToolStrip;
-                var button = label switch
+                ToolStripButtonCustom button = label switch
                 {
                     Lazy_FilterLabel.ReleaseDate => _owner.FilterByReleaseDateButton,
                     Lazy_FilterLabel.LastPlayed => _owner.FilterByLastPlayedButton,

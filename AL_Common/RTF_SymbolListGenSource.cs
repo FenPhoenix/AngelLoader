@@ -188,7 +188,7 @@ namespace AL_Common
 
             for (int i = 0; i < _symbolList.Length; i++)
             {
-                var symbol = _symbolList[i];
+                Symbol symbol = _symbolList[i];
                 outLines.Add(symbol.Keyword + ", 0");
             }
             File.WriteAllLines(gperfFormatFile, outLines);

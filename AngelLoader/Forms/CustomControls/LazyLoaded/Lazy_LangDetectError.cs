@@ -33,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (_constructed) return;
 
-            var b = _owner.EditFMScanLanguagesButton;
+            DarkButton b = _owner.EditFMScanLanguagesButton;
             _pictureBox = new PictureBox
             {
                 Image = Images.RedExclCircle,

@@ -226,7 +226,7 @@ namespace AngelLoader.Forms.WinFormsNative
                 // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
                 // dark-on-dark tooltips
                 ControlUtils.RecreateAllToolTipHandles();
-                var handles = Native.GetProcessWindowHandles();
+                List<IntPtr> handles = Native.GetProcessWindowHandles();
                 foreach (IntPtr handle in handles)
                 {
                     Control? control = Control.FromHandle(handle);

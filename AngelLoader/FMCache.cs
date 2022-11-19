@@ -216,7 +216,7 @@ namespace AngelLoader
         {
             var htmlRefFiles = new List<NameAndIndex>();
 
-            using var archive = GetZipArchiveCharEnc(fmArchivePath);
+            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
 
             foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
@@ -226,7 +226,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
-                    var e = archive.Entries[i];
+                    ZipArchiveEntry e = archive.Entries[i];
                     if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
                     {
                         continue;
@@ -255,7 +255,7 @@ namespace AngelLoader
                         continue;
                     }
 
-                    var re = archive.Entries[f.Index];
+                    ZipArchiveEntry re = archive.Entries[f.Index];
 
                     // 128k is generous. Any text or markup sort of file should be WELL under that.
                     if (re.Length > ByteSize.KB * 128) continue;
@@ -269,7 +269,7 @@ namespace AngelLoader
 
                     for (int ei = 0; ei < archive.Entries.Count; ei++)
                     {
-                        var e = archive.Entries[ei];
+                        ZipArchiveEntry e = archive.Entries[ei];
                         if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
                         {
                             continue;
@@ -301,11 +301,11 @@ namespace AngelLoader
         {
             try
             {
-                using var archive = GetZipArchiveCharEnc(fmArchivePath);
+                using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
-                    var entry = archive.Entries[i];
+                    ZipArchiveEntry entry = archive.Entries[i];
                     string fn = entry.FullName;
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
@@ -366,7 +366,7 @@ namespace AngelLoader
                 int extractorFilesCount = extractor.ArchiveFileData.Count;
                 for (int i = 0; i < extractorFilesCount; i++)
                 {
-                    var entry = extractor.ArchiveFileData[i];
+                    ArchiveFileInfo entry = extractor.ArchiveFileData[i];
                     string fn = entry.FileName;
                     int dirSeps;
                     if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
@@ -397,7 +397,7 @@ namespace AngelLoader
 
                 string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
-                var result = Fen7z.Extract(
+                Fen7z.Result result = Fen7z.Extract(
                     Paths.SevenZipPath,
                     Paths.SevenZipExe,
                     fmArchivePath,

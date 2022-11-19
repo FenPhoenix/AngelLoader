@@ -77,7 +77,7 @@ namespace AngelLoader
 
             string sevenZipDll = Environment.Is64BitProcess ? "7z64.dll" : "7z.dll";
 
-            using var startupWorkTask = Task.Run(() =>
+            using Task startupWorkTask = Task.Run(() =>
             {
                 #region Old FMScanner log file delete
 
@@ -805,11 +805,11 @@ namespace AngelLoader
             if (View.GetShowRecentAtTop())
             {
                 // Store it so it doesn't change
-                var dtNow = DateTime.Now;
+                DateTime dtNow = DateTime.Now;
 
                 for (int i = 0; i < FMsViewList.Count; i++)
                 {
-                    var fm = FMsViewList[i];
+                    FanMission fm = FMsViewList[i];
                     fm.MarkedRecent = false;
 
                     if (
@@ -830,7 +830,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < tempFMs.Count; i++)
                 {
-                    var fm = tempFMs[i];
+                    FanMission fm = tempFMs[i];
                     fm.MarkedRecent = true;
                     FMsViewList.Remove(fm);
                     FMsViewList.Insert(0, fm);
@@ -849,13 +849,13 @@ namespace AngelLoader
 
             for (int i = 0; i < FMsViewList.Count; i++)
             {
-                var fm = FMsViewList[i];
+                FanMission fm = FMsViewList[i];
                 if (fm.Pinned) tempFMs.Add(fm);
             }
 
             for (int i = tempFMs.Count - 1; i >= 0; i--)
             {
-                var fm = tempFMs[i];
+                FanMission fm = tempFMs[i];
                 FMsViewList.Remove(fm);
                 FMsViewList.Insert(0, fm);
             }
@@ -874,7 +874,7 @@ namespace AngelLoader
                 View.SetWaitCursor(true);
                 using (new DisableEvents(View))
                 {
-                    var fmsViewListUnscanned = FindFMs.Find();
+                    List<FanMission> fmsViewListUnscanned = FindFMs.Find();
                     if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
                 }
                 await View.SortAndSetFilter(selFM, forceDisplayFM: true);
@@ -942,7 +942,7 @@ namespace AngelLoader
 
             #endregion
 
-            var filterShownIndexList = View.GetFilterShownIndexList();
+            List<int> filterShownIndexList = View.GetFilterShownIndexList();
 
             filterShownIndexList.Clear();
 
@@ -961,7 +961,7 @@ namespace AngelLoader
 
             for (int i = 0; i < FMsViewList.Count; i++)
             {
-                var fm = FMsViewList[i];
+                FanMission fm = FMsViewList[i];
 
                 (bool Match, bool ExactMatch) match = (false, false);
 
@@ -986,7 +986,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
 
                     (bool Match, bool ExactMatch) match = (false, false);
 
@@ -1015,7 +1015,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (fm.Game == Game.Unsupported)
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1032,7 +1032,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm.Game) &&
                         (Config.GameOrganization == GameOrganization.ByTab || (!fm.MarkedRecent && !fm.Pinned)) &&
                         !viewFilter.Games.HasFlagFast(fm.Game))
@@ -1057,7 +1057,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
 
                     if (fm.MarkedRecent || fm.Pinned) continue;
 
@@ -1075,7 +1075,7 @@ namespace AngelLoader
                     if (andTags.Count > 0)
                     {
                         bool andPass = true;
-                        foreach (var andTag in andTags)
+                        foreach (CatAndTagsList andTag in andTags)
                         {
                             if (!fm.Tags.TryGetValue(andTag.Category, out FMTagsCollection match))
                             {
@@ -1113,7 +1113,7 @@ namespace AngelLoader
                     if (orTags.Count > 0)
                     {
                         bool orPass = false;
-                        foreach (var orTag in orTags)
+                        foreach (CatAndTagsList orTag in orTags)
                         {
                             if (!fm.Tags.TryGetValue(orTag.Category, out FMTagsCollection match))
                             {
@@ -1154,7 +1154,7 @@ namespace AngelLoader
                     if (notTags.Count > 0)
                     {
                         bool notPass = true;
-                        foreach (var notTag in notTags)
+                        foreach (CatAndTagsList notTag in notTags)
                         {
                             if (!fm.Tags.TryGetValue(notTag.Category, out FMTagsCollection match))
                             {
@@ -1208,7 +1208,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
                         (fm.Rating < rf || fm.Rating > rt))
@@ -1230,7 +1230,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
                         (fm.ReleaseDate.DateTime == null ||
@@ -1256,7 +1256,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedRecent &&
                         !fm.Pinned &&
                         (fm.LastPlayed.DateTime == null ||
@@ -1279,7 +1279,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     uint fmFinished = fm.FinishedOn;
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
@@ -1304,7 +1304,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (fm.MarkedUnavailable)
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1316,7 +1316,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[filterShownIndexList[i]];
+                    FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (!fm.MarkedUnavailable)
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1393,7 +1393,7 @@ namespace AngelLoader
 
             try
             {
-                var dmlFiles = FastIO.GetFilesTopOnly(
+                List<string> dmlFiles = FastIO.GetFilesTopOnly(
                     Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir), "*.dml",
                     returnFullPaths: false);
                 return (true, dmlFiles);
@@ -1985,7 +1985,7 @@ namespace AngelLoader
 
             try
             {
-                var exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
+                List<string> exeFiles = FastIO.GetFilesTopOnly(gamePath, "*.exe");
                 for (int i = 0; i < exeFiles.Count; i++)
                 {
                     string exeFile = exeFiles[i];
@@ -2236,11 +2236,11 @@ namespace AngelLoader
 
             View.UpdateAllFMUIDataExceptReadme(fm);
 
-            var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
+            FMCache.CacheData cacheData = await FMCache.GetCacheableData(fm, refreshCache);
 
             #region Readme
 
-            var readmeFiles = cacheData.Readmes;
+            List<string> readmeFiles = cacheData.Readmes;
             readmeFiles.Sort();
 
             if (!readmeFiles.PathContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";

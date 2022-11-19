@@ -135,7 +135,7 @@ namespace AngelLoader
 
             string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
-            using var findHandle = FindFirstFileExW(
+            using SafeSearchHandle findHandle = FindFirstFileExW(
                 searchPath,
                 FindExInfoBasic,
                 out WIN32_FIND_DATAW findData,
@@ -195,7 +195,7 @@ namespace AngelLoader
             path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
 
             string searchPath = MakeUNCPath(path) + "\\*";
-            using var findHandle = FindFirstFileExW(searchPath,
+            using SafeSearchHandle findHandle = FindFirstFileExW(searchPath,
                 FindExInfoBasic, out WIN32_FIND_DATAW findData,
                 FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
