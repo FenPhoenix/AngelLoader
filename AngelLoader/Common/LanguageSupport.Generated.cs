@@ -156,8 +156,6 @@ namespace AngelLoader
 
         public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(uint)index];
 
-        public static string GetLanguageStringUnsafe(Language language) => SupportedLanguages[(uint)LanguageToLanguageIndex(language)];
-
         #endregion
     }
 }

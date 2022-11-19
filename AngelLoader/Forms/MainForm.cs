@@ -5356,11 +5356,11 @@ namespace AngelLoader.Forms
             }
             else
             {
-                EditFMLanguageComboBox.SelectedIndex = language == Language.Default
+                EditFMLanguageComboBox.SelectedIndex = !LangConvertsToKnown(language, out LanguageIndex langIndex)
                     ? 0
                     : EditFMLanguageComboBox
                         .BackingItems
-                        .FindIndex(x => x.EqualsI(GetLanguageStringUnsafe(language)))
+                        .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
                         .ClampToZero();
 
                 return EditFMLanguageComboBox.SelectedIndex > 0 &&

@@ -188,8 +188,6 @@ namespace FenGen
 
             w.WL("public static string GetLanguageString(" + Cache.LangsEnum.LanguageIndexName + " index) => SupportedLanguages[(uint)index];");
             w.WL();
-            w.WL("public static string GetLanguageStringUnsafe(" + Cache.LangsEnum.Name + " language) => SupportedLanguages[(uint)LanguageToLanguageIndex(language)];");
-            w.WL();
 
             w.WL("#endregion");
 

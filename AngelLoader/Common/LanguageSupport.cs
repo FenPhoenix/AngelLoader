@@ -36,6 +36,20 @@ namespace AngelLoader
             Spanish = 1024
         }
 
+        public static bool LangConvertsToKnown(Language language, out LanguageIndex languageIndex)
+        {
+            if (language != Language.Default)
+            {
+                languageIndex = LanguageToLanguageIndex(language);
+                return true;
+            }
+            else
+            {
+                languageIndex = LanguageIndex.English;
+                return false;
+            }
+        }
+
         public static bool LanguageIsSupported(string language) => LangStringsToEnums.TryGetValue(language, out _);
 
         public static string GetTranslatedLanguageName(LanguageIndex index) => LangTranslatedNames[(int)index];
