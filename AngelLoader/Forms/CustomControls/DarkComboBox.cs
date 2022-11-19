@@ -305,7 +305,7 @@ namespace AngelLoader.Forms.CustomControls
                 pen: DarkColors.GreyHighlightPen
             );
 
-            string text = SelectedItem != null ? SelectedItem.ToString() : Text;
+            string text = SelectedItem?.ToString() ?? Text;
 
             const int padding = 1;
 

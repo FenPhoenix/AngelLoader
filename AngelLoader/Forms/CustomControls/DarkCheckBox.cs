@@ -217,7 +217,7 @@ namespace AngelLoader.Forms.CustomControls
             Graphics g = e.Graphics;
             var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
-            Pen textColorPen = DarkColors.LightTextPen;
+            Color textColor = DarkColors.LightText;
             Pen borderPen = DarkColors.LightTextPen;
             SolidBrush fillBrush = DarkColors.LightTextBrush;
 
@@ -242,7 +242,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
-                textColorPen = DarkColors.DisabledTextPen;
+                textColor = DarkColors.DisabledText;
                 borderPen = DarkColors.GreyHighlightPen;
                 fillBrush = DarkColors.GreySelectionBrush;
             }
@@ -298,8 +298,7 @@ namespace AngelLoader.Forms.CustomControls
                 TextFormatFlags.WordBreak;
 
             var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
-            using var textPen = DarkModeForeColor != null ? new Pen((Color)DarkModeForeColor) : null;
-            TextRenderer.DrawText(g, Text, Font, textRect, textPen?.Color ?? textColorPen.Color, textFormatFlags);
+            TextRenderer.DrawText(g, Text, Font, textRect, DarkModeForeColor ?? textColor, textFormatFlags);
         }
 
         #endregion
