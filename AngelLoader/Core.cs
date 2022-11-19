@@ -900,18 +900,21 @@ namespace AngelLoader
 
         internal static (bool Matched, bool ExactMatch) FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
         {
-            var titleContains = fm.Title.ContainsI_TextFilter(title);
-            if (titleContains.Matched)
+            bool extIsArchive = fm.Archive.ExtIsArchive();
+            if (extIsArchive && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
             {
-                return titleContains;
+                bool matched = fm.Archive.EndsWithI(titleTrimmed);
+                return (matched, matched);
             }
-            else if (fm.Archive.ExtIsArchive() && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
+            else
             {
-                return fm.Archive.EndsWithI(titleTrimmed)
-                    ? (titleTrimmed.EqualsI(fm.Archive), true)
-                    : (fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1, true);
+                var titleContains = fm.Title.ContainsI_TextFilter(title);
+                return titleContains.Matched
+                    ? titleContains
+                    : extIsArchive
+                        ? (fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1, true)
+                        : (false, false);
             }
-            return fm.Archive.ContainsI_TextFilter(title);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
