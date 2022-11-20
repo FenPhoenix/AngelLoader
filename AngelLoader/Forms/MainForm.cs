@@ -1592,21 +1592,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        // @vNext: Maybe only display it if the top-right area is hidden?
-        private void SetFMSelectedCountMessage(int count)
-        {
-            string text =
-                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_BeforeNumber : LText.FMSelectedStats.FMsSelected_Plural_BeforeNumber) +
-                count.ToString(CultureInfo.CurrentCulture) +
-                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
-
-            _fmSelectedCountText = text;
-
-            TopRightMultiSelectBlockerLabel.Text = text;
-
-            RefreshFMStatsLabel();
-        }
-
         #region ISettingsChangeableWindow
 
         public void Localize() => Localize(startup: false);
@@ -4705,27 +4690,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private string _fmSelectedCountText = "";
-        private string _fmCountText = "";
-        private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" + _fmCountText;
-
         #region Right side
-
-        public void SetAvailableFMCount()
-        {
-            int count = 0;
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                if (!FMsViewList[i].MarkedUnavailable) count++;
-            }
-
-            _fmCountText =
-                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
-                count.ToString(CultureInfo.CurrentCulture) +
-                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
-
-            RefreshFMStatsLabel();
-        }
 
         public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 
@@ -5989,5 +5954,45 @@ namespace AngelLoader.Forms
         }
 
         public void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
+
+        #region FM selected stats
+
+        private string _fmSelectedCountText = "";
+        private string _fmCountText = "";
+
+        // @vNext: Maybe only display it if the top-right area is hidden?
+        private void SetFMSelectedCountMessage(int count)
+        {
+            string text =
+                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_BeforeNumber : LText.FMSelectedStats.FMsSelected_Plural_BeforeNumber) +
+                count.ToString(CultureInfo.CurrentCulture) +
+                (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
+
+            _fmSelectedCountText = text;
+
+            TopRightMultiSelectBlockerLabel.Text = text;
+
+            RefreshFMStatsLabel();
+        }
+
+        private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" + _fmCountText;
+
+        public void SetAvailableFMCount()
+        {
+            int count = 0;
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                if (!FMsViewList[i].MarkedUnavailable) count++;
+            }
+
+            _fmCountText =
+                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
+                count.ToString(CultureInfo.CurrentCulture) +
+                (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsAvailable_Plural_AfterNumber);
+
+            RefreshFMStatsLabel();
+        }
+
+        #endregion
     }
 }
