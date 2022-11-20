@@ -8,9 +8,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 {
     internal sealed class ExitLLButton : IDarkable
     {
-        private bool _constructed;
-
         private readonly MainForm _owner;
+
+        private bool _constructed;
 
         private DarkButton Button = null!;
 
@@ -36,37 +36,40 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             Button.Text = LText.Global.Exit;
         }
 
-        internal void SetVisible(bool enabled)
+        private void Construct()
         {
-            if (enabled)
+            if (_constructed) return;
+
+            var container = _owner.BottomRightFLP;
+
+            Button = new DarkButton
             {
-                if (!_constructed)
-                {
-                    var container = _owner.BottomRightFLP;
+                Tag = LoadType.Lazy,
 
-                    Button = new DarkButton
-                    {
-                        Tag = LoadType.Lazy,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                MinimumSize = new Size(36, 36),
+                TabIndex = 63,
+                UseVisualStyleBackColor = true,
 
-                        AutoSize = true,
-                        AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                        MinimumSize = new Size(36, 36),
-                        TabIndex = 63,
-                        UseVisualStyleBackColor = true,
+                DarkModeEnabled = _darkModeEnabled
+            };
 
-                        DarkModeEnabled = _darkModeEnabled
-                    };
+            Button.Click += _owner.Exit_Click;
 
-                    Button.Click += _owner.Exit_Click;
+            container.Controls.Add(Button);
+            container.Controls.SetChildIndex(Button, 0);
 
-                    container.Controls.Add(Button);
-                    container.Controls.SetChildIndex(Button, 0);
+            _constructed = true;
 
-                    _constructed = true;
+            Localize();
+        }
 
-                    Localize();
-                }
-
+        internal void SetVisible(bool visible)
+        {
+            if (visible)
+            {
+                Construct();
                 Button.Show();
             }
             else

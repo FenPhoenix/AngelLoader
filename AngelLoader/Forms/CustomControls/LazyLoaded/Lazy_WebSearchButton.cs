@@ -35,7 +35,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         internal void Localize()
         {
             if (!_constructed) return;
-
             Button.Text = LText.MainButtons.WebSearch;
         }
 
@@ -56,7 +55,6 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 Padding = new Padding(33, 0, 6, 0),
                 TabIndex = 60,
                 UseVisualStyleBackColor = true,
-                Visible = false,
                 Enabled = _enabled,
 
                 DarkModeEnabled = _darkModeEnabled
