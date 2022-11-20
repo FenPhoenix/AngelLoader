@@ -177,6 +177,7 @@ namespace AngelLoader.Forms
         private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
         private readonly Lazy_LangDetectError Lazy_LangDetectError;
         private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
+        private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
 
         #endregion
 
@@ -560,7 +561,8 @@ namespace AngelLoader.Forms
                 ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
                 Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
                 Lazy_LangDetectError = new Lazy_LangDetectError(this),
-                Lazy_WebSearchButton = new Lazy_WebSearchButton(this)
+                Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
+                Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
             };
 
             #endregion
@@ -581,23 +583,6 @@ namespace AngelLoader.Forms
                 Width = _ratingImageColumnWidth,
                 Resizable = DataGridViewTriState.False,
                 SortMode = DataGridViewColumnSortMode.Programmatic
-            };
-
-            TopRightMultiSelectBlockerPanel = new DrawnPanel
-            {
-                Visible = false,
-                Location = new Point(0, 0),
-                Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
-                Size = new Size(533, 310),
-                DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground
-            };
-
-            TopRightMultiSelectBlockerLabel = new DarkLabel
-            {
-                AutoSize = false,
-                DarkModeBackColor = DarkColors.Fen_ControlBackground,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter
             };
 
             ModsTabNotSupportedMessageLabel = new DarkLabel
@@ -629,10 +614,6 @@ namespace AngelLoader.Forms
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
             InitComponentManual();
 #endif
-
-            TopSplitContainer.Panel2.Controls.Add(TopRightMultiSelectBlockerPanel);
-            TopRightMultiSelectBlockerPanel.BringToFront();
-            TopRightMultiSelectBlockerPanel.Controls.Add(TopRightMultiSelectBlockerLabel);
 
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
@@ -3523,7 +3504,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                if (!TopRightMultiSelectBlockerPanel.Visible)
+                if (!Lazy_TopRightBlocker.Visible)
                 {
                     TopRightTabControl.Enabled = true;
                 }
@@ -4215,13 +4196,13 @@ namespace AngelLoader.Forms
             // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
             if (FMsDGV.MultipleFMsSelected())
             {
-                TopRightMultiSelectBlockerPanel.Visible = true;
+                Lazy_TopRightBlocker.Visible = true;
                 if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
             }
             else
             {
                 if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
-                TopRightMultiSelectBlockerPanel.Visible = false;
+                Lazy_TopRightBlocker.Visible = false;
             }
         }
 
@@ -5065,13 +5046,13 @@ namespace AngelLoader.Forms
             {
                 SetTopRightBlockerVisible();
 
-                TopRightMultiSelectBlockerPanel.SuspendDrawing();
+                Lazy_TopRightBlocker.SuspendDrawing();
 
                 SetFMSelectedCountMessage(selRowsCount);
             }
             finally
             {
-                TopRightMultiSelectBlockerPanel.ResumeDrawing();
+                Lazy_TopRightBlocker.ResumeDrawing();
             }
 
             #endregion
@@ -6006,7 +5987,7 @@ namespace AngelLoader.Forms
 
             _fmSelectedCountText = text;
 
-            TopRightMultiSelectBlockerLabel.Text = text;
+            Lazy_TopRightBlocker.SetText(text);
 
             RefreshFMStatsLabel();
         }

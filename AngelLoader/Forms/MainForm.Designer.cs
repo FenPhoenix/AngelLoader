@@ -1915,8 +1915,6 @@
         internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
 
-        internal AngelLoader.Forms.CustomControls.DrawnPanel TopRightMultiSelectBlockerPanel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel TopRightMultiSelectBlockerLabel;
         internal AngelLoader.Forms.CustomControls.DarkLabel ModsTabNotSupportedMessageLabel;
 
         internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
