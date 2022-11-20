@@ -107,13 +107,25 @@ namespace AngelLoader.DataClasses
         [FenGenDoNotTrimValue]
         internal string Comment = "";
 
-        internal string DisabledMods = "";
+        [FenGenIgnore]
+        private string _disabledMods = "";
+        internal string DisabledMods
+        {
+            get => Game == Game.Thief3 ? "" : _disabledMods;
+            set => _disabledMods = value;
+        }
 
+        [FenGenIgnore]
+        private bool _disableAllMods;
         /// <summary>
         /// This is for backward compatibility only. Use only for that purpose.
         /// </summary>
         [FenGenDoNotWrite]
-        internal bool DisableAllMods;
+        internal bool DisableAllMods
+        {
+            get => Game != Game.Thief3 && _disableAllMods;
+            set => _disableAllMods = value;
+        }
 
         [FenGenIgnore]
         internal bool ResourcesScanned;
