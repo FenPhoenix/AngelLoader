@@ -23,7 +23,7 @@ namespace AngelLoader.Forms
             DisabledMods = Config.GetDisabledMods(gameIndex);
 
             NewMantleCheckBox.SetFromNullableBool(NewMantling);
-            OrigGameModsControl.ModsDisabledModsTextBox.Text = DisabledMods;
+            OrigGameModsControl.DisabledModsTextBox.Text = DisabledMods;
 
             if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
@@ -53,7 +53,7 @@ namespace AngelLoader.Forms
         {
             if (DialogResult == DialogResult.OK)
             {
-                DisabledMods = OrigGameModsControl.ModsDisabledModsTextBox.Text;
+                DisabledMods = OrigGameModsControl.DisabledModsTextBox.Text;
                 NewMantling = NewMantleCheckBox.ToNullableBool();
             }
             base.OnFormClosing(e);

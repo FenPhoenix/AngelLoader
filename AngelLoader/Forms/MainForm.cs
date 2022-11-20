@@ -3481,7 +3481,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled || !FMsDGV.RowSelected()) return;
 
             FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = MainModsControl.ModsDisabledModsTextBox.Text;
+            fm.DisabledMods = MainModsControl.DisabledModsTextBox.Text;
             RefreshMainSelectedFMRow_Fast();
             if (writeIni) Ini.WriteFullFMDataIni();
         }

@@ -35,13 +35,13 @@ namespace AngelLoader.Forms.CustomControls
 #else
             InitSlim();
 #endif
-            CheckList.SetCautionVisiblePredicate(() => ShowUberCheckBox.Checked);
+            CheckList.SetCautionVisiblePredicate(() => ShowImportantCheckBox.Checked);
         }
 
         public void Localize(string headerText)
         {
             HeaderLabel.Text = headerText;
-            ShowUberCheckBox.Text = LText.ModsTab.ShowImportantMods;
+            ShowImportantCheckBox.Text = LText.ModsTab.ShowImportantMods;
             EnableAllButton.Text = LText.ModsTab.EnableAll;
             DisableNonImportantButton.Text = LText.ModsTab.DisableAll;
             MainToolTip.SetToolTip(DisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
@@ -54,7 +54,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void Commit()
         {
-            string[] disabledMods = ModsDisabledModsTextBox.Text.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
+            string[] disabledMods = DisabledModsTextBox.Text.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
 
             var modNames = new DictionaryI<int>(CheckList.CheckItems.Length);
 
@@ -96,7 +96,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 CheckList.SuspendDrawing();
 
-                ModsDisabledModsTextBox.Text = disabledMods;
+                DisabledModsTextBox.Text = disabledMods;
 
                 CheckList.ClearList();
 
@@ -160,7 +160,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (allDisabled)
                 {
-                    ModsDisabledModsTextBox.Text = disabledMods;
+                    DisabledModsTextBox.Text = disabledMods;
                     disableAllMods = false;
                 }
 
@@ -231,22 +231,22 @@ namespace AngelLoader.Forms.CustomControls
 
             using (new DisableEvents(this))
             {
-                ModsDisabledModsTextBox.Text = disabledMods;
+                DisabledModsTextBox.Text = disabledMods;
             }
 
             DisabledModsUpdated?.Invoke(CheckList, EventArgs.Empty);
         }
 
-        private void ShowUberCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void ShowImportantCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            CheckList.ShowCautionSection(ShowUberCheckBox.Checked);
+            CheckList.ShowCautionSection(ShowImportantCheckBox.Checked);
         }
 
         private void DisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            DisabledModsTextBoxTextChanged?.Invoke(ModsDisabledModsTextBox, e);
+            DisabledModsTextBoxTextChanged?.Invoke(DisabledModsTextBox, e);
         }
 
         private void DisabledModsTextBox_KeyDown(object sender, KeyEventArgs e)

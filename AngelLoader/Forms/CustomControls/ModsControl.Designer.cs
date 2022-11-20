@@ -36,8 +36,8 @@ namespace AngelLoader.Forms.CustomControls
             this.ResetFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ShowUberCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.ModsDisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.DisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
             this.AutoScrollDummyPanel = new System.Windows.Forms.Panel();
@@ -60,7 +60,7 @@ namespace AngelLoader.Forms.CustomControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetFLP.Controls.Add(this.DisableNonImportantButton);
             this.ResetFLP.Controls.Add(this.EnableAllButton);
-            this.ResetFLP.Controls.Add(this.ShowUberCheckBox);
+            this.ResetFLP.Controls.Add(this.ShowImportantCheckBox);
             this.ResetFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.ResetFLP.Location = new System.Drawing.Point(7, 216);
             this.ResetFLP.Name = "ResetFLP";
@@ -92,28 +92,28 @@ namespace AngelLoader.Forms.CustomControls
             this.EnableAllButton.UseVisualStyleBackColor = true;
             this.EnableAllButton.Click += new System.EventHandler(this.EnableAllButton_Click);
             // 
-            // ShowUberCheckBox
+            // ShowImportantCheckBox
             // 
-            this.ShowUberCheckBox.AutoSize = true;
-            this.ShowUberCheckBox.Location = new System.Drawing.Point(261, 3);
-            this.ShowUberCheckBox.Name = "ShowUberCheckBox";
-            this.ShowUberCheckBox.Size = new System.Drawing.Size(99, 17);
-            this.ShowUberCheckBox.TabIndex = 0;
-            this.ShowUberCheckBox.Text = "Show important";
-            this.ShowUberCheckBox.UseVisualStyleBackColor = true;
-            this.ShowUberCheckBox.CheckedChanged += new System.EventHandler(this.ShowUberCheckBox_CheckedChanged);
+            this.ShowImportantCheckBox.AutoSize = true;
+            this.ShowImportantCheckBox.Location = new System.Drawing.Point(261, 3);
+            this.ShowImportantCheckBox.Name = "ShowImportantCheckBox";
+            this.ShowImportantCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.ShowImportantCheckBox.TabIndex = 0;
+            this.ShowImportantCheckBox.Text = "Show important";
+            this.ShowImportantCheckBox.UseVisualStyleBackColor = true;
+            this.ShowImportantCheckBox.CheckedChanged += new System.EventHandler(this.ShowImportantCheckBox_CheckedChanged);
             // 
             // DisabledModsTextBox
             // 
-            this.ModsDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.DisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ModsDisabledModsTextBox.Location = new System.Drawing.Point(7, 256);
-            this.ModsDisabledModsTextBox.Name = "ModsDisabledModsTextBox";
-            this.ModsDisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
-            this.ModsDisabledModsTextBox.TabIndex = 9;
-            this.ModsDisabledModsTextBox.TextChanged += new System.EventHandler(this.DisabledModsTextBox_TextChanged);
-            this.ModsDisabledModsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DisabledModsTextBox_KeyDown);
-            this.ModsDisabledModsTextBox.Leave += new System.EventHandler(this.DisabledModsTextBox_Leave);
+            this.DisabledModsTextBox.Location = new System.Drawing.Point(7, 256);
+            this.DisabledModsTextBox.Name = "DisabledModsTextBox";
+            this.DisabledModsTextBox.Size = new System.Drawing.Size(512, 20);
+            this.DisabledModsTextBox.TabIndex = 9;
+            this.DisabledModsTextBox.TextChanged += new System.EventHandler(this.DisabledModsTextBox_TextChanged);
+            this.DisabledModsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DisabledModsTextBox_KeyDown);
+            this.DisabledModsTextBox.Leave += new System.EventHandler(this.DisabledModsTextBox_Leave);
             // 
             // DisabledModsLabel
             // 
@@ -152,7 +152,7 @@ namespace AngelLoader.Forms.CustomControls
             this.AutoScroll = true;
             this.Controls.Add(this.HeaderLabel);
             this.Controls.Add(this.ResetFLP);
-            this.Controls.Add(this.ModsDisabledModsTextBox);
+            this.Controls.Add(this.DisabledModsTextBox);
             this.Controls.Add(this.DisabledModsLabel);
             this.Controls.Add(this.CheckList);
             this.Controls.Add(this.AutoScrollDummyPanel);
@@ -172,8 +172,8 @@ namespace AngelLoader.Forms.CustomControls
         internal System.Windows.Forms.FlowLayoutPanel ResetFLP;
         internal DarkButton DisableNonImportantButton;
         internal DarkButton EnableAllButton;
-        internal DarkCheckBox ShowUberCheckBox;
-        internal DarkTextBox ModsDisabledModsTextBox;
+        internal DarkCheckBox ShowImportantCheckBox;
+        internal DarkTextBox DisabledModsTextBox;
         internal DarkLabel DisabledModsLabel;
         internal DarkCheckList CheckList;
         internal System.Windows.Forms.Panel AutoScrollDummyPanel;
