@@ -295,9 +295,11 @@ namespace AngelLoader
 
         void ShowFMsListZoomButtons(bool visible);
 
-        void ShowInstallUninstallButton(bool enabled);
+        void ShowInstallUninstallButton(bool enabled, bool startup = false);
 
-        void ShowExitButton(bool enabled);
+        void ShowWebSearchButton(bool enabled, bool startup = false);
+
+        void ShowExitButton(bool enabled, bool startup = false);
 
         #endregion
 

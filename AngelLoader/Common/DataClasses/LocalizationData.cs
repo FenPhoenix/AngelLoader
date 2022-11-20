@@ -734,9 +734,10 @@ namespace AngelLoader.DataClasses
             internal readonly string Appearance_RecentFMs_MaxDays = "Maximum number of days to consider an FM \"recent\":";
             [FenGenBlankLine]
             internal readonly string Appearance_ShowOrHideInterfaceElements = "Show or hide interface elements";
-            internal readonly string Appearance_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            internal readonly string Appearance_HideUninstallButton = "Hide \"Install FM / Uninstall FM\" button";
             internal readonly string Appearance_HideFMListZoomButtons = "Hide FM list zoom buttons";
             internal readonly string Appearance_HideExitButton = "Hide exit button";
+            internal readonly string Appearance_HideWebSearchButton = "Hide web search button";
             [FenGenBlankLine]
             internal readonly string Appearance_ReadmeBox = "Readme box";
             internal readonly string Appearance_ReadmeUseFixedWidthFont = "Use a fixed-width font when displaying plain text";

@@ -32,7 +32,6 @@ namespace AngelLoader.Forms
         private void InitializeComponent()
         {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -77,6 +76,7 @@ namespace AngelLoader.Forms
             this.ReadmeGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ReadmeFixedWidthFontCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ShowOrHideUIElementsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.HideWebSearchButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HideExitButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HideFMListZoomButtonsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.HideUninstallButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -85,6 +85,7 @@ namespace AngelLoader.Forms
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -114,16 +115,8 @@ namespace AngelLoader.Forms
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 1163);
+            this.PagePanel.Size = new System.Drawing.Size(496, 1185);
             this.PagePanel.TabIndex = 0;
-            // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
-            this.DummyAutoScrollPanel.TabStop = false;
             // 
             // PlayWithoutFMGroupBox
             // 
@@ -131,7 +124,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
-            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1059);
+            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1096);
             this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.PlayWithoutFMGroupBox.Name = "PlayWithoutFMGroupBox";
             this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
@@ -577,7 +570,7 @@ namespace AngelLoader.Forms
             this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
-            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 991);
+            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 1028);
             this.ReadmeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
             this.ReadmeGroupBox.Size = new System.Drawing.Size(480, 56);
@@ -602,16 +595,28 @@ namespace AngelLoader.Forms
             // 
             this.ShowOrHideUIElementsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideWebSearchButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideExitButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 872);
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
-            this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 107);
+            this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 144);
             this.ShowOrHideUIElementsGroupBox.TabIndex = 3;
             this.ShowOrHideUIElementsGroupBox.TabStop = false;
             this.ShowOrHideUIElementsGroupBox.Text = "Show or hide interface elements";
+            // 
+            // HideWebSearchButtonCheckBox
+            // 
+            this.HideWebSearchButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.HideWebSearchButtonCheckBox.Location = new System.Drawing.Point(16, 72);
+            this.HideWebSearchButtonCheckBox.Name = "HideWebSearchButtonCheckBox";
+            this.HideWebSearchButtonCheckBox.Size = new System.Drawing.Size(456, 32);
+            this.HideWebSearchButtonCheckBox.TabIndex = 2;
+            this.HideWebSearchButtonCheckBox.Text = "Hide Web Search button";
+            this.HideWebSearchButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideExitButtonCheckBox
             // 
@@ -619,21 +624,21 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HideExitButtonCheckBox.Checked = true;
             this.HideExitButtonCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 72);
+            this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 100);
             this.HideExitButtonCheckBox.Name = "HideExitButtonCheckBox";
             this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideExitButtonCheckBox.TabIndex = 2;
-            this.HideExitButtonCheckBox.Text = "Hide exit button";
+            this.HideExitButtonCheckBox.TabIndex = 3;
+            this.HideExitButtonCheckBox.Text = "Hide Exit button";
             this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // HideFMListZoomButtonsCheckBox
             // 
             this.HideFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
+            this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideFMListZoomButtonsCheckBox.TabIndex = 1;
+            this.HideFMListZoomButtonsCheckBox.TabIndex = 0;
             this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
             this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -641,11 +646,11 @@ namespace AngelLoader.Forms
             // 
             this.HideUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
+            this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-            this.HideUninstallButtonCheckBox.TabIndex = 0;
-            this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            this.HideUninstallButtonCheckBox.TabIndex = 1;
+            this.HideUninstallButtonCheckBox.Text = "Hide Install/Uninstall button";
             this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // VisualThemeGroupBox
@@ -705,13 +710,21 @@ namespace AngelLoader.Forms
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
             // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            this.DummyAutoScrollPanel.TabStop = false;
+            // 
             // AppearancePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "AppearancePage";
-            this.Size = new System.Drawing.Size(496, 1163);
+            this.Size = new System.Drawing.Size(496, 1185);
             this.PagePanel.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.PerformLayout();
@@ -795,5 +808,6 @@ namespace AngelLoader.Forms
         internal CustomControls.DarkGroupBox PlayWithoutFMGroupBox;
         internal CustomControls.DarkRadioButton PlayWithoutFM_MultipleButtonsRadioButton;
         internal CustomControls.DarkRadioButton PlayWithoutFM_SingleButtonRadioButton;
+        internal CustomControls.DarkCheckBox HideWebSearchButtonCheckBox;
     }
 }

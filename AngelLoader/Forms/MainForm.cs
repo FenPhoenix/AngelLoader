@@ -107,7 +107,7 @@ namespace AngelLoader.Forms
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
-        private readonly Control[] _bottomLeftAreaSeparatedItems;
+        internal readonly Control?[] _bottomLeftAreaSeparatedItems;
         private readonly Control[] _bottomRightAreaSeparatedItems;
 
         private readonly Component[][] _hideableFilterControls;
@@ -176,6 +176,7 @@ namespace AngelLoader.Forms
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
         private readonly Lazy_LangDetectError Lazy_LangDetectError;
+        private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
 
         #endregion
 
@@ -558,7 +559,8 @@ namespace AngelLoader.Forms
                 TopRightLLMenu = new TopRightLLMenu(this),
                 ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
                 Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
-                Lazy_LangDetectError = new Lazy_LangDetectError(this)
+                Lazy_LangDetectError = new Lazy_LangDetectError(this),
+                Lazy_WebSearchButton = new Lazy_WebSearchButton(this)
             };
 
             #endregion
@@ -793,9 +795,10 @@ namespace AngelLoader.Forms
                 FilterShowRecentAtTopButton
             };
 
-            _bottomLeftAreaSeparatedItems = new Control[]
+            _bottomLeftAreaSeparatedItems = new Control?[]
             {
-                WebSearchButton
+                // Lazy-loaded web search button will go into this on construct (terrible hack)
+                null
             };
 
             _bottomRightAreaSeparatedItems = new Control[]
@@ -990,8 +993,9 @@ namespace AngelLoader.Forms
 
             SetPlayOriginalGameControlsState();
 
-            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.SetVisible(true);
-            if (!Config.HideExitButton) ExitLLButton.SetVisible(true);
+            if (!Config.HideUninstallButton) ShowInstallUninstallButton(true, startup: true);
+            if (!Config.HideExitButton) ShowExitButton(true, startup: true);
+            if (!Config.HideWebSearchButton) ShowWebSearchButton(true, startup: true);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -1865,7 +1869,7 @@ namespace AngelLoader.Forms
 
                 InstallUninstallFMLLButton.Localize();
 
-                WebSearchButton.Text = LText.MainButtons.WebSearch;
+                Lazy_WebSearchButton.Localize();
 
                 SetAvailableFMCount();
                 SettingsButton.Text = LText.MainButtons.Settings;
@@ -4545,7 +4549,19 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMLLButton.SetVisible(enabled);
+        public void ShowInstallUninstallButton(bool enabled, bool startup = false)
+        {
+            try
+            {
+                InstallUninstallFMLLButton.SetVisible(enabled);
+            }
+            finally
+            {
+                // One time the stupid visuals didn't redraw but then they started working again even without this.
+                // Argh.
+                if (!startup) BottomLeftFLP.Refresh();
+            }
+        }
 
         #region Play without FM
 
@@ -4686,13 +4702,35 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetMainSelectedFM().Title);
+        public void ShowWebSearchButton(bool enabled, bool startup = false)
+        {
+            try
+            {
+                Lazy_WebSearchButton.SetVisible(enabled);
+            }
+            finally
+            {
+                if (!startup) BottomLeftFLP.Refresh();
+            }
+        }
+
+        internal void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetMainSelectedFM().Title);
 
         #endregion
 
         #region Right side
 
-        public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
+        public void ShowExitButton(bool enabled, bool startup = false)
+        {
+            try
+            {
+                ExitLLButton.SetVisible(enabled);
+            }
+            finally
+            {
+                if (!startup) BottomRightFLP.Refresh();
+            }
+        }
 
         #endregion
 
@@ -4720,7 +4758,7 @@ namespace AngelLoader.Forms
 
             PlayFMButton.Enabled = false;
 
-            WebSearchButton.Enabled = false;
+            Lazy_WebSearchButton.SetEnabled(false);
 
             SetFMSelectedCountMessage(0);
 
@@ -5081,7 +5119,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
 
-            WebSearchButton.Enabled = !multiSelected;
+            Lazy_WebSearchButton.SetEnabled(!multiSelected);
         }
 
         private static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
@@ -5573,8 +5611,6 @@ namespace AngelLoader.Forms
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
         private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
-
-        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => Images.PaintWebSearchButton(WebSearchButton, e);
 
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 

@@ -242,6 +242,11 @@ namespace AngelLoader
             config.HideExitButton = valTrimmed.EqualsTrue();
         }
 
+        private static void Config_HideWebSearchButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+        {
+            config.HideWebSearchButton = valTrimmed.EqualsTrue();
+        }
+
         private static void Config_ConfirmInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
         {
             FieldInfo? field = typeof(ConfirmBeforeInstall).GetField(valTrimmed, _bFlagsEnum);
@@ -799,6 +804,7 @@ namespace AngelLoader
             { "HideUninstallButton", new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
             { "HideFMListZoomButtons", new Config_DelegatePointerWrapper(&Config_HideFMListZoomButtons_Set) },
             { "HideExitButton", new Config_DelegatePointerWrapper(&Config_HideExitButton_Set) },
+            { "HideWebSearchButton", new Config_DelegatePointerWrapper(&Config_HideWebSearchButton_Set) },
             { "ConfirmBeforeInstall", new Config_DelegatePointerWrapper(&Config_ConfirmInstall_Set) },
             { "ConfirmUninstall", new Config_DelegatePointerWrapper(&Config_ConfirmUninstall_Set) },
             { "BackupFMData", new Config_DelegatePointerWrapper(&Config_BackupFMData_Set) },
@@ -1158,6 +1164,7 @@ namespace AngelLoader
             sb.Append("HideUninstallButton=").Append(config.HideUninstallButton).AppendLine();
             sb.Append("HideFMListZoomButtons=").Append(config.HideFMListZoomButtons).AppendLine();
             sb.Append("HideExitButton=").Append(config.HideExitButton).AppendLine();
+            sb.Append("HideWebSearchButton=").Append(config.HideWebSearchButton).AppendLine();
             sb.Append("ConfirmBeforeInstall=").Append(config.ConfirmBeforeInstall).AppendLine();
             sb.Append("ConfirmUninstall=").Append(config.ConfirmUninstall).AppendLine();
             sb.Append("BackupFMData=").Append(config.BackupFMData).AppendLine();

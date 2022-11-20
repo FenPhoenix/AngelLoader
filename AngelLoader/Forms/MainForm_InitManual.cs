@@ -35,7 +35,6 @@ namespace AngelLoader.Forms
             BottomLeftFLP = new FlowLayoutPanel();
             PlayFMButton = new DarkButton();
             PlayOriginalFLP = new FlowLayoutPanel();
-            WebSearchButton = new DarkButton();
             EverythingPanel = new Panel();
             MainSplitContainer = new DarkSplitContainerCustom();
             TopSplitContainer = new DarkSplitContainerCustom();
@@ -232,7 +231,6 @@ namespace AngelLoader.Forms
             BottomLeftFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BottomLeftFLP.Controls.Add(PlayFMButton);
             BottomLeftFLP.Controls.Add(PlayOriginalFLP);
-            BottomLeftFLP.Controls.Add(WebSearchButton);
             BottomLeftFLP.Location = new Point(2, 0);
             BottomLeftFLP.TabIndex = 36;
             BottomLeftFLP.Paint += BottomLeftFLP_Paint;
@@ -254,18 +252,6 @@ namespace AngelLoader.Forms
             PlayOriginalFLP.AutoSize = true;
             PlayOriginalFLP.Margin = new Padding(6, 3, 0, 3);
             PlayOriginalFLP.TabIndex = 58;
-            // 
-            // WebSearchButton
-            // 
-            WebSearchButton.AutoSize = true;
-            WebSearchButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            WebSearchButton.Margin = new Padding(15, 3, 3, 3);
-            WebSearchButton.MinimumSize = new Size(116, 36);
-            WebSearchButton.Padding = new Padding(33, 0, 6, 0);
-            WebSearchButton.TabIndex = 60;
-            WebSearchButton.UseVisualStyleBackColor = true;
-            WebSearchButton.PaintCustom += WebSearchButton_Paint;
-            WebSearchButton.Click += WebSearchButton_Click;
             // 
             // EverythingPanel
             // 

@@ -1676,19 +1676,28 @@ namespace AngelLoader.Forms
         internal static void PaintControlSeparators(
             PaintEventArgs e,
             int pixelsFromVerticalEdges,
-            Control[] items,
+            Control?[] items,
             int topOverride = -1,
             int bottomOverride = -1)
         {
-            Rectangle sizeBounds = items[0].Bounds;
+            Rectangle sizeBounds = Rectangle.Empty;
+            for (int i = 0; i < items.Length; i++)
+            {
+                Control? item = items[i];
+                if (item != null)
+                {
+                    sizeBounds = item.Bounds;
+                    break;
+                }
+            }
 
             int y1 = topOverride > -1 ? topOverride : sizeBounds.Top + pixelsFromVerticalEdges;
             int y2 = bottomOverride > -1 ? bottomOverride : (sizeBounds.Bottom - pixelsFromVerticalEdges) - 1;
 
             for (int i = 0; i < items.Length; i++)
             {
-                Control item = items[i];
-                if (!item.Visible) continue;
+                Control? item = items[i];
+                if (item is not { Visible: true }) continue;
                 int l1s = (int)Math.Ceiling((double)item.Margin.Left / 2);
                 DrawSeparator(e, Sep1Pen, l1s, y1, y2, item.Bounds.Location.X);
             }

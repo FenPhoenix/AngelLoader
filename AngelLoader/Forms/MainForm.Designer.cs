@@ -55,7 +55,6 @@
             this.BottomLeftFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.PlayOriginalFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.WebSearchButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
@@ -268,7 +267,6 @@
             this.BottomLeftFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomLeftFLP.Controls.Add(this.PlayFMButton);
             this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
-            this.BottomLeftFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftFLP.Name = "BottomLeftFLP";
             this.BottomLeftFLP.Size = new System.Drawing.Size(234, 42);
@@ -299,22 +297,6 @@
             this.PlayOriginalFLP.Name = "PlayOriginalFLP";
             this.PlayOriginalFLP.Size = new System.Drawing.Size(0, 0);
             this.PlayOriginalFLP.TabIndex = 57;
-            // 
-            // WebSearchButton
-            // 
-            this.WebSearchButton.AutoSize = true;
-            this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WebSearchButton.Location = new System.Drawing.Point(115, 3);
-            this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
-            this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
-            this.WebSearchButton.Name = "WebSearchButton";
-            this.WebSearchButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
-            this.WebSearchButton.Size = new System.Drawing.Size(116, 36);
-            this.WebSearchButton.TabIndex = 60;
-            this.WebSearchButton.Text = "Web search";
-            this.WebSearchButton.UseVisualStyleBackColor = true;
-            this.WebSearchButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchButton_Paint);
-            this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             // 
             // EverythingPanel
             // 
@@ -1991,7 +1973,6 @@
         internal AngelLoader.Forms.CustomControls.DarkLabel EditFMRatingLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton EditFMFinishedOnButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeFullScreenButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton WebSearchButton;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollRightButton;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollLeftButton;
         internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMTitleTextBox;
