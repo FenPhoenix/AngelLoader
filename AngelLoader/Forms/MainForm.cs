@@ -4788,6 +4788,10 @@ namespace AngelLoader.Forms
 
                 EditFMRatingComboBox.SelectedIndex = 0;
 
+                // Always enable the combobox when modifying its items, to prevent the white flicker.
+                // We'll disable it again in the disable-all-controls loop.
+                EditFMLanguageComboBox.Enabled = true;
+
                 EditFMLanguageComboBox.ClearFullItems();
                 EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
                 EditFMLanguageComboBox.SelectedIndex = 0;
@@ -5178,14 +5182,35 @@ namespace AngelLoader.Forms
 
                 #region Edit FM tab
 
+                void SetLanguageEnabledState()
+                {
+                    EditFMLanguageLabel.Enabled = !fmIsT3;
+                    EditFMLanguageComboBox.Enabled = !fmIsT3;
+                }
+
+                // Adding/removing items from the combobox while disabled and in dark mode appears to be the
+                // cause of the white flickering, so always make sure we're in an enabled state when setting
+                // the items.
+                if (fmIsT3)
+                {
+                    if (EditFMLanguageComboBox.Items.Count == 0)
+                    {
+                        AddLanguagesToList(new() { new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage) });
+                    }
+                    SetSelectedLanguage(Language.Default);
+
+                    SetLanguageEnabledState();
+                }
+                else
+                {
+                    SetLanguageEnabledState();
+                    Core.ScanAndFillLanguagesList(forceScan: false);
+                }
+
                 foreach (Control c in EditFMTabPage.Controls)
                 {
-                    if (c == EditFMLanguageLabel ||
-                        c == EditFMLanguageComboBox)
-                    {
-                        c.Enabled = !fmIsT3;
-                    }
-                    else
+                    if (c != EditFMLanguageLabel &&
+                        c != EditFMLanguageComboBox)
                     {
                         c.Enabled = true;
                     }
@@ -5216,8 +5241,6 @@ namespace AngelLoader.Forms
                 EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
 
                 UpdateRatingMenus(fm.Rating, disableEvents: false);
-
-                Core.ScanAndFillLanguagesList(forceScan: false);
 
                 #endregion
 
