@@ -19,6 +19,7 @@ namespace AngelLoader.Forms.CustomControls
     @vNext: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
     @vNext: Test lazy-loaded lang error functionality
     @vNext: Mark any new business logic that's been moved back into the view (@VBL) for later review
+    @vNext: Set tab indexes on all these when we're done
     */
 
     public sealed class EditFMTabPage : Lazy_TabsBase
