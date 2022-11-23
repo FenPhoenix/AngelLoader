@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms.CustomControls
+﻿#define FenGen_DesignerSource
+
+namespace AngelLoader.Forms.CustomControls
 {
     sealed partial class Lazy_CommentPage
     {
@@ -22,6 +24,7 @@
 
         #region Component Designer generated code
 
+#if DEBUG
         /// <summary> 
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
@@ -54,6 +57,7 @@
             this.PerformLayout();
 
         }
+#endif
 
         #endregion
 
