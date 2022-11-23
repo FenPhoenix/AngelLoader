@@ -72,6 +72,8 @@ namespace AngelLoader.Forms.CustomControls
             UpdatePage();
 
             if (DarkModeEnabled) RefreshTheme();
+
+            Localize();
         }
 
         private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
