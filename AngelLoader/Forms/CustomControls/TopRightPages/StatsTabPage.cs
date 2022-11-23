@@ -22,7 +22,7 @@ namespace AngelLoader.Forms.CustomControls
     public sealed class StatsTabPage : DarkTabPageCustom
     {
         private MainForm _owner = null!;
-        private StatsPage? _statsPage;
+        private Lazy_StatsPage? _statsPage;
 
         internal object? Sender_ScanCustomResources;
 
@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls
         public void Construct(MainForm owner)
         {
             _owner = owner;
-            _statsPage = new StatsPage(owner)
+            _statsPage = new Lazy_StatsPage
             {
                 Dock = DockStyle.Fill,
                 Tag = LoadType.Lazy
@@ -160,7 +160,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private static void BlankStatsPanelWithMessage(StatsPage statsPage, string message)
+        private static void BlankStatsPanelWithMessage(Lazy_StatsPage statsPage, string message)
         {
             statsPage.CustomResourcesLabel.Text = message;
             foreach (CheckBox cb in statsPage.StatsCheckBoxesPanel.Controls)
@@ -170,7 +170,7 @@ namespace AngelLoader.Forms.CustomControls
             statsPage.StatsCheckBoxesPanel.Enabled = false;
         }
 
-        private static void EnableStatsPanelLabels(StatsPage statsPage, bool enabled)
+        private static void EnableStatsPanelLabels(Lazy_StatsPage statsPage, bool enabled)
         {
             foreach (Control control in statsPage.Controls)
             {

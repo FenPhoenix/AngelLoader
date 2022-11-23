@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls
 {
-    partial class StatsPage
+    sealed partial class Lazy_StatsPage
     {
         /// <summary> 
         /// Required designer variable.
