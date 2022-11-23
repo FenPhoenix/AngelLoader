@@ -84,22 +84,7 @@ namespace AngelLoader.Forms
             TopRightMenuButton = new DarkButton();
             TopRightCollapseButton = new DarkArrowButton();
             TopRightTabControl = new DarkTabControl();
-            StatisticsTabPage = new DarkTabPageCustom();
-            Stats_MisCountLabel = new DarkLabel();
-            StatsScanCustomResourcesButton = new DarkButton();
-            StatsCheckBoxesPanel = new Panel();
-            CR_MapCheckBox = new DarkCheckBox();
-            CR_MoviesCheckBox = new DarkCheckBox();
-            CR_MotionsCheckBox = new DarkCheckBox();
-            CR_SoundsCheckBox = new DarkCheckBox();
-            CR_CreaturesCheckBox = new DarkCheckBox();
-            CR_TexturesCheckBox = new DarkCheckBox();
-            CR_AutomapCheckBox = new DarkCheckBox();
-            CR_ScriptsCheckBox = new DarkCheckBox();
-            CR_SubtitlesCheckBox = new DarkCheckBox();
-            CR_ObjectsCheckBox = new DarkCheckBox();
-            CustomResourcesLabel = new DarkLabel();
-            StatsHorizDiv = new DarkHorizontalDivider();
+            StatisticsTabPage = new StatsTabPage();
             EditFMTabPage = new DarkTabPageCustom();
             EditFMScanLanguagesButton = new DarkButton();
             EditFMLanguageLabel = new DarkLabel();
@@ -171,7 +156,6 @@ namespace AngelLoader.Forms
             RefreshAreaToolStrip.SuspendLayout();
             TopRightTabControl.SuspendLayout();
             StatisticsTabPage.SuspendLayout();
-            StatsCheckBoxesPanel.SuspendLayout();
             EditFMTabPage.SuspendLayout();
             CommentTabPage.SuspendLayout();
             TagsTabPage.SuspendLayout();
@@ -791,140 +775,8 @@ namespace AngelLoader.Forms
             // 
             StatisticsTabPage.AutoScroll = true;
             StatisticsTabPage.BackColor = SystemColors.Control;
-            StatisticsTabPage.Controls.Add(Stats_MisCountLabel);
-            StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
-            StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
-            StatisticsTabPage.Controls.Add(CustomResourcesLabel);
-            StatisticsTabPage.Controls.Add(StatsHorizDiv);
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
-            // 
-            // Stats_MisCountLabel
-            // 
-            Stats_MisCountLabel.AutoSize = true;
-            Stats_MisCountLabel.Location = new Point(4, 8);
-            Stats_MisCountLabel.TabIndex = 0;
-            // 
-            // StatsScanCustomResourcesButton
-            // 
-            StatsScanCustomResourcesButton.AutoSize = true;
-            StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsScanCustomResourcesButton.Location = new Point(6, 232);
-            StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
-            StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
-            StatsScanCustomResourcesButton.TabIndex = 12;
-            StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
-            StatsScanCustomResourcesButton.PaintCustom += ScanIconButtons_Paint;
-            StatsScanCustomResourcesButton.Click += Async_EventHandler_Main;
-            // 
-            // StatsCheckBoxesPanel
-            // 
-            StatsCheckBoxesPanel.AutoSize = true;
-            StatsCheckBoxesPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsCheckBoxesPanel.Controls.Add(CR_MapCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_MoviesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_MotionsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_SoundsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_CreaturesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_TexturesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_AutomapCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_ScriptsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_SubtitlesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
-            StatsCheckBoxesPanel.Location = new Point(8, 64);
-            StatsCheckBoxesPanel.TabIndex = 1;
-            // 
-            // CR_MapCheckBox
-            // 
-            CR_MapCheckBox.AutoCheck = false;
-            CR_MapCheckBox.AutoSize = true;
-            CR_MapCheckBox.TabIndex = 2;
-            CR_MapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MoviesCheckBox
-            // 
-            CR_MoviesCheckBox.AutoCheck = false;
-            CR_MoviesCheckBox.AutoSize = true;
-            CR_MoviesCheckBox.Location = new Point(0, 64);
-            CR_MoviesCheckBox.TabIndex = 6;
-            CR_MoviesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MotionsCheckBox
-            // 
-            CR_MotionsCheckBox.AutoCheck = false;
-            CR_MotionsCheckBox.AutoSize = true;
-            CR_MotionsCheckBox.Location = new Point(0, 112);
-            CR_MotionsCheckBox.TabIndex = 9;
-            CR_MotionsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SoundsCheckBox
-            // 
-            CR_SoundsCheckBox.AutoCheck = false;
-            CR_SoundsCheckBox.AutoSize = true;
-            CR_SoundsCheckBox.Location = new Point(0, 48);
-            CR_SoundsCheckBox.TabIndex = 5;
-            CR_SoundsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_CreaturesCheckBox
-            // 
-            CR_CreaturesCheckBox.AutoCheck = false;
-            CR_CreaturesCheckBox.AutoSize = true;
-            CR_CreaturesCheckBox.Location = new Point(0, 96);
-            CR_CreaturesCheckBox.TabIndex = 8;
-            CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_TexturesCheckBox
-            // 
-            CR_TexturesCheckBox.AutoCheck = false;
-            CR_TexturesCheckBox.AutoSize = true;
-            CR_TexturesCheckBox.Location = new Point(0, 32);
-            CR_TexturesCheckBox.TabIndex = 4;
-            CR_TexturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_AutomapCheckBox
-            // 
-            CR_AutomapCheckBox.AutoCheck = false;
-            CR_AutomapCheckBox.AutoSize = true;
-            CR_AutomapCheckBox.Location = new Point(0, 16);
-            CR_AutomapCheckBox.TabIndex = 3;
-            CR_AutomapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ScriptsCheckBox
-            // 
-            CR_ScriptsCheckBox.AutoCheck = false;
-            CR_ScriptsCheckBox.AutoSize = true;
-            CR_ScriptsCheckBox.Location = new Point(0, 128);
-            CR_ScriptsCheckBox.TabIndex = 10;
-            CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SubtitlesCheckBox
-            // 
-            CR_SubtitlesCheckBox.AutoCheck = false;
-            CR_SubtitlesCheckBox.AutoSize = true;
-            CR_SubtitlesCheckBox.Location = new Point(0, 144);
-            CR_SubtitlesCheckBox.TabIndex = 11;
-            CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ObjectsCheckBox
-            // 
-            CR_ObjectsCheckBox.AutoCheck = false;
-            CR_ObjectsCheckBox.AutoSize = true;
-            CR_ObjectsCheckBox.Location = new Point(0, 80);
-            CR_ObjectsCheckBox.TabIndex = 7;
-            CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CustomResourcesLabel
-            // 
-            CustomResourcesLabel.AutoSize = true;
-            CustomResourcesLabel.Location = new Point(4, 42);
-            CustomResourcesLabel.TabIndex = 0;
-            // 
-            // StatsHorizDiv
-            // 
-            StatsHorizDiv.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            StatsHorizDiv.Location = new Point(6, 24);
-            StatsHorizDiv.Size = new Size(512, 16);
-            StatsHorizDiv.TabIndex = 0;
             // 
             // EditFMTabPage
             // 
@@ -1496,8 +1348,6 @@ namespace AngelLoader.Forms
             TopRightTabControl.ResumeLayout(false);
             StatisticsTabPage.ResumeLayout(false);
             StatisticsTabPage.PerformLayout();
-            StatsCheckBoxesPanel.ResumeLayout(false);
-            StatsCheckBoxesPanel.PerformLayout();
             EditFMTabPage.ResumeLayout(false);
             EditFMTabPage.PerformLayout();
             CommentTabPage.ResumeLayout(false);

@@ -1690,29 +1690,7 @@ namespace AngelLoader.Forms
                 #region Statistics tab
 
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
-
-                Stats_MisCountLabel.Text = selFM != null
-                    ? CreateMisCountLabelText(selFM)
-                    : LText.StatisticsTab.NoFMSelected;
-
-                CustomResourcesLabel.Text =
-                    selFM == null ? LText.StatisticsTab.CustomResources :
-                    selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-                    selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
-                    LText.StatisticsTab.CustomResourcesNotScanned;
-
-                CR_MapCheckBox.Text = LText.StatisticsTab.Map;
-                CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
-                CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
-                CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
-                CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
-                CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
-                CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
-                CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
-                CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
-                CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
-
-                StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
+                StatisticsTabPage.Localize();
 
                 #endregion
 
@@ -2488,7 +2466,7 @@ namespace AngelLoader.Forms
                      sender == EditFMScanTitleButton ||
                      sender == EditFMScanAuthorButton ||
                      sender == EditFMScanReleaseDateButton ||
-                     sender == StatsScanCustomResourcesButton)
+                     sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources))
             {
                 if (sender == EditFMScanForReadmesButton)
                 {
@@ -4759,12 +4737,7 @@ namespace AngelLoader.Forms
             {
                 #region Stats tab
 
-                Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
-
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResources);
-                StatsScanCustomResourcesButton.Enabled = false;
-
-                EnableStatsPanelLabels(false);
+                StatisticsTabPage.UpdatePage();
 
                 #endregion
 
@@ -4885,24 +4858,6 @@ namespace AngelLoader.Forms
             PatchDMLsListBox.Items.Clear();
             PatchMainPanel.Show();
             PatchMainPanel.Enabled = enable;
-        }
-
-        private void BlankStatsPanelWithMessage(string message)
-        {
-            CustomResourcesLabel.Text = message;
-            foreach (CheckBox cb in StatsCheckBoxesPanel.Controls) cb.Checked = false;
-            StatsCheckBoxesPanel.Enabled = false;
-        }
-
-        private void EnableStatsPanelLabels(bool enabled)
-        {
-            foreach (Control control in StatisticsTabPage.Controls)
-            {
-                if (control is DarkLabel label)
-                {
-                    label.Enabled = enabled;
-                }
-            }
         }
 
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
@@ -5103,7 +5058,7 @@ namespace AngelLoader.Forms
             Lazy_WebSearchButton.SetEnabled(!multiSelected);
         }
 
-        private static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
+        internal static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
         {
             < 1 => "",
             1 => LText.StatisticsTab.MissionCount_Single,
@@ -5130,37 +5085,7 @@ namespace AngelLoader.Forms
             {
                 #region Stats tab
 
-                EnableStatsPanelLabels(true);
-
-                Stats_MisCountLabel.Text = CreateMisCountLabelText(fm);
-
-                StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
-
-                if (fmIsT3)
-                {
-                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
-                }
-                else if (!fm.ResourcesScanned)
-                {
-                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
-                }
-                else
-                {
-                    CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
-
-                    CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
-                    CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
-                    CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
-                    CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
-                    CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
-                    CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
-                    CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
-                    CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
-                    CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
-                    CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
-
-                    StatsCheckBoxesPanel.Enabled = true;
-                }
+                StatisticsTabPage.UpdatePage();
 
                 #endregion
 

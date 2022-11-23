@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public sealed class DarkTabPageCustom : TabPage, IDarkable
+    public class DarkTabPageCustom : TabPage, IDarkable
     {
         private Color? _origBackColor;
 
