@@ -60,6 +60,8 @@ namespace AngelLoader.Forms.CustomControls
             _statsPage.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
             _statsPage.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
+            ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
+
             UpdatePage();
 
             if (DarkModeEnabled) RefreshTheme();
