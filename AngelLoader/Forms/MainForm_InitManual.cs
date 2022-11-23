@@ -105,8 +105,7 @@ namespace AngelLoader.Forms
             EditFMAuthorTextBox = new DarkTextBox();
             EditFMAuthorLabel = new DarkLabel();
             EditFMTitleLabel = new DarkLabel();
-            CommentTabPage = new DarkTabPageCustom();
-            CommentTextBox = new DarkTextBox();
+            CommentTabPage = new CommentTabPage();
             TagsTabPage = new DarkTabPageCustom();
             AddTagButton = new DarkButton();
             AddTagTextBox = new DarkTextBoxCustom();
@@ -774,7 +773,6 @@ namespace AngelLoader.Forms
             // 
             // StatisticsTabPage
             // 
-            StatisticsTabPage.AutoScroll = true;
             StatisticsTabPage.BackColor = SystemColors.Control;
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
@@ -984,20 +982,8 @@ namespace AngelLoader.Forms
             // CommentTabPage
             // 
             CommentTabPage.BackColor = SystemColors.Control;
-            CommentTabPage.Controls.Add(CommentTextBox);
             CommentTabPage.Size = new Size(526, 284);
             CommentTabPage.TabIndex = 0;
-            // 
-            // CommentTextBox
-            // 
-            CommentTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            CommentTextBox.Location = new Point(8, 8);
-            CommentTextBox.Multiline = true;
-            CommentTextBox.ScrollBars = ScrollBars.Vertical;
-            CommentTextBox.Size = new Size(510, 266);
-            CommentTextBox.TabIndex = 32;
-            CommentTextBox.TextChanged += CommentTextBox_TextChanged;
-            CommentTextBox.Leave += CommentTextBox_Leave;
             // 
             // TagsTabPage
             // 

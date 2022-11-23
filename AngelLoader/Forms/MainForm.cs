@@ -3026,6 +3026,7 @@ namespace AngelLoader.Forms
             }
             else if (tabPage == CommentTabPage)
             {
+                CommentTabPage.Construct(this);
             }
             else if (tabPage == TagsTabPage)
             {
@@ -3196,15 +3197,15 @@ namespace AngelLoader.Forms
 
         #region Comment tab
 
-        public string GetFMCommentText() => CommentTextBox.Text;
+        public string GetFMCommentText() => CommentTabPage.GetCommentBoxText();
 
-        private void CommentTextBox_TextChanged(object sender, EventArgs e)
+        internal void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             Core.UpdateFMComment();
         }
 
-        private void CommentTextBox_Leave(object sender, EventArgs e)
+        internal void CommentTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             Ini.WriteFullFMDataIni();
@@ -4813,8 +4814,7 @@ namespace AngelLoader.Forms
 
                 #region Comment tab
 
-                CommentTextBox.Text = "";
-                CommentTextBox.Enabled = false;
+                CommentTabPage.UpdatePage();
 
                 #endregion
 
@@ -5188,8 +5188,7 @@ namespace AngelLoader.Forms
 
                 #region Comment tab
 
-                CommentTextBox.Enabled = true;
-                CommentTextBox.Text = fm.Comment.FromRNEscapes();
+                CommentTabPage.UpdatePage();
 
                 #endregion
 

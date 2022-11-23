@@ -125,8 +125,7 @@
             this.EditFMAuthorTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.CommentTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.CommentTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
             this.TagsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
@@ -176,7 +175,6 @@
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
             this.EditFMTabPage.SuspendLayout();
-            this.CommentTabPage.SuspendLayout();
             this.TagsTabPage.SuspendLayout();
             this.AddRemoveTagFLP.SuspendLayout();
             this.PatchTabPage.SuspendLayout();
@@ -979,6 +977,15 @@
             this.TopRightTabControl.TabIndex = 15;
             this.TopRightTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TopRightTabControl_Selected);
             // 
+            // StatisticsTabPage
+            // 
+            this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
+            this.StatisticsTabPage.Name = "StatisticsTabPage";
+            this.StatisticsTabPage.Size = new System.Drawing.Size(526, 284);
+            this.StatisticsTabPage.TabIndex = 0;
+            this.StatisticsTabPage.Text = "Statistics";
+            // 
             // EditFMTabPage
             // 
             this.EditFMTabPage.AutoScroll = true;
@@ -1220,30 +1227,15 @@
             this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
             this.EditFMTitleLabel.TabIndex = 13;
             this.EditFMTitleLabel.Text = "Title:";
-            //
+            // 
             // CommentTabPage
             // 
             this.CommentTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.CommentTabPage.Controls.Add(this.CommentTextBox);
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
             this.CommentTabPage.Size = new System.Drawing.Size(526, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
-            // 
-            // CommentTextBox
-            // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
-            this.CommentTextBox.Multiline = true;
-            this.CommentTextBox.Name = "CommentTextBox";
-            this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(510, 266);
-            this.CommentTextBox.TabIndex = 32;
-            this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
-            this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
             // 
             // TagsTabPage
             // 
@@ -1674,8 +1666,6 @@
             this.TopRightTabControl.ResumeLayout(false);
             this.EditFMTabPage.ResumeLayout(false);
             this.EditFMTabPage.PerformLayout();
-            this.CommentTabPage.ResumeLayout(false);
-            this.CommentTabPage.PerformLayout();
             this.TagsTabPage.ResumeLayout(false);
             this.TagsTabPage.PerformLayout();
             this.AddRemoveTagFLP.ResumeLayout(false);
@@ -1727,8 +1717,7 @@
         internal System.Windows.Forms.ImageList GameTabsImageList;
         internal AngelLoader.Forms.CustomControls.DarkTabControl TopRightTabControl;
         internal AngelLoader.Forms.CustomControls.StatsTabPage StatisticsTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom CommentTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox CommentTextBox;
+        internal AngelLoader.Forms.CustomControls.CommentTabPage CommentTabPage;
         internal AngelLoader.Forms.CustomControls.DarkTabPageCustom TagsTabPage;
         internal AngelLoader.Forms.CustomControls.DarkTreeView TagsTreeView;
         internal AngelLoader.Forms.CustomControls.DarkButton ResetLayoutButton;
