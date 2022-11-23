@@ -21,12 +21,7 @@ namespace AngelLoader.Forms.CustomControls
 
             using (new DisableEvents(_owner))
             {
-                SuspendLayout();
-
                 Controls.Add(_page);
-
-                ResumeLayout(false);
-                PerformLayout();
 
                 _page.CommentTextBox.Leave += _owner.CommentTextBox_Leave;
                 _page.CommentTextBox.TextChanged += _owner.CommentTextBox_TextChanged;

@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public partial class Lazy_CommentPage : UserControl
+    public sealed partial class Lazy_CommentPage : UserControl
     {
         public Lazy_CommentPage()
         {
