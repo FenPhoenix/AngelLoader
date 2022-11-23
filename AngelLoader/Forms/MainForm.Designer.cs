@@ -105,26 +105,7 @@
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
             this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.StatsTabPage();
-            this.EditFMTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.EditFMScanLanguagesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMLanguageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.EditFMScanForReadmesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanReleaseDateButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanAuthorButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanTitleButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMAltTitlesArrowButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-            this.EditFMTitleTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.EditFMFinishedOnButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMLastPlayedDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
-            this.EditFMReleaseDateDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
-            this.EditFMLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.EditFMReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.EditFMAuthorTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
             this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
             this.TagsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -174,7 +155,6 @@
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
-            this.EditFMTabPage.SuspendLayout();
             this.TagsTabPage.SuspendLayout();
             this.AddRemoveTagFLP.SuspendLayout();
             this.PatchTabPage.SuspendLayout();
@@ -410,8 +390,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -592,7 +572,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -613,7 +593,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -692,7 +672,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -990,243 +970,11 @@
             // 
             this.EditFMTabPage.AutoScroll = true;
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.EditFMTabPage.Controls.Add(this.EditFMScanLanguagesButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMLanguageLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMLanguageComboBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanForReadmesButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanReleaseDateButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanAuthorButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanTitleButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMAltTitlesArrowButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMTitleTextBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMFinishedOnButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMRatingComboBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMRatingLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMLastPlayedDateTimePicker);
-            this.EditFMTabPage.Controls.Add(this.EditFMReleaseDateDateTimePicker);
-            this.EditFMTabPage.Controls.Add(this.EditFMLastPlayedCheckBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMReleaseDateCheckBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMAuthorTextBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMAuthorLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMTitleLabel);
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
             this.EditFMTabPage.Size = new System.Drawing.Size(526, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
-            // 
-            // EditFMScanLanguagesButton
-            // 
-            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 200);
-            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
-            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
-            this.EditFMScanLanguagesButton.TabIndex = 33;
-            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanLanguagesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
-            // 
-            // EditFMLanguageLabel
-            // 
-            this.EditFMLanguageLabel.AutoSize = true;
-            this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 185);
-            this.EditFMLanguageLabel.Name = "EditFMLanguageLabel";
-            this.EditFMLanguageLabel.Size = new System.Drawing.Size(125, 13);
-            this.EditFMLanguageLabel.TabIndex = 31;
-            this.EditFMLanguageLabel.Text = "Play FM in this language:";
-            // 
-            // EditFMLanguageComboBox
-            // 
-            this.EditFMLanguageComboBox.FormattingEnabled = true;
-            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 201);
-            this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
-            this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
-            this.EditFMLanguageComboBox.TabIndex = 32;
-            this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
-            // 
-            // EditFMScanForReadmesButton
-            // 
-            this.EditFMScanForReadmesButton.AutoSize = true;
-            this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 238);
-            this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
-            this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
-            this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(130, 23);
-            this.EditFMScanForReadmesButton.TabIndex = 34;
-            this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
-            this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanForReadmesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanReleaseDateButton
-            // 
-            this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
-            this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
-            this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanReleaseDateButton.TabIndex = 22;
-            this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
-            this.EditFMScanReleaseDateButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanAuthorButton
-            // 
-            this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
-            this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
-            this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanAuthorButton.TabIndex = 19;
-            this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
-            this.EditFMScanAuthorButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanTitleButton
-            // 
-            this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
-            this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
-            this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanTitleButton.TabIndex = 16;
-            this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
-            this.EditFMScanTitleButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanTitleButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMAltTitlesArrowButton
-            // 
-            this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
-            this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
-            this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
-            this.EditFMAltTitlesArrowButton.TabIndex = 15;
-            this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
-            this.EditFMAltTitlesArrowButton.Click += new System.EventHandler(this.EditFMAltTitlesArrowButton_Click);
-            // 
-            // EditFMTitleTextBox
-            // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
-            this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
-            this.EditFMTitleTextBox.TabIndex = 14;
-            this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
-            this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
-            // 
-            // EditFMFinishedOnButton
-            // 
-            this.EditFMFinishedOnButton.AutoSize = true;
-            this.EditFMFinishedOnButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
-            this.EditFMFinishedOnButton.MinimumSize = new System.Drawing.Size(138, 23);
-            this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
-            this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
-            this.EditFMFinishedOnButton.TabIndex = 27;
-            this.EditFMFinishedOnButton.Text = "Finished on...";
-            this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
-            this.EditFMFinishedOnButton.Click += new System.EventHandler(this.EditFMFinishedOnButton_Click);
-            // 
-            // EditFMRatingComboBox
-            // 
-            this.EditFMRatingComboBox.FormattingEnabled = true;
-            this.EditFMRatingComboBox.Items.AddRange(new object[] {
-            "Unrated",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            this.EditFMRatingComboBox.Location = new System.Drawing.Point(185, 104);
-            this.EditFMRatingComboBox.Name = "EditFMRatingComboBox";
-            this.EditFMRatingComboBox.Size = new System.Drawing.Size(136, 21);
-            this.EditFMRatingComboBox.TabIndex = 26;
-            this.EditFMRatingComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMRatingComboBox_SelectedIndexChanged);
-            // 
-            // EditFMRatingLabel
-            // 
-            this.EditFMRatingLabel.AutoSize = true;
-            this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
-            this.EditFMRatingLabel.Name = "EditFMRatingLabel";
-            this.EditFMRatingLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMRatingLabel.TabIndex = 25;
-            this.EditFMRatingLabel.Text = "Rating:";
-            // 
-            // EditFMLastPlayedDateTimePicker
-            // 
-            this.EditFMLastPlayedDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.EditFMLastPlayedDateTimePicker.Location = new System.Drawing.Point(8, 148);
-            this.EditFMLastPlayedDateTimePicker.Name = "EditFMLastPlayedDateTimePicker";
-            this.EditFMLastPlayedDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMLastPlayedDateTimePicker.TabIndex = 24;
-            this.EditFMLastPlayedDateTimePicker.Visible = false;
-            this.EditFMLastPlayedDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMLastPlayedDateTimePicker_ValueChanged);
-            // 
-            // EditFMReleaseDateDateTimePicker
-            // 
-            this.EditFMReleaseDateDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.EditFMReleaseDateDateTimePicker.Location = new System.Drawing.Point(8, 106);
-            this.EditFMReleaseDateDateTimePicker.Name = "EditFMReleaseDateDateTimePicker";
-            this.EditFMReleaseDateDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMReleaseDateDateTimePicker.TabIndex = 21;
-            this.EditFMReleaseDateDateTimePicker.Visible = false;
-            this.EditFMReleaseDateDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMReleaseDateDateTimePicker_ValueChanged);
-            // 
-            // EditFMLastPlayedCheckBox
-            // 
-            this.EditFMLastPlayedCheckBox.AutoSize = true;
-            this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
-            this.EditFMLastPlayedCheckBox.Name = "EditFMLastPlayedCheckBox";
-            this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
-            this.EditFMLastPlayedCheckBox.TabIndex = 23;
-            this.EditFMLastPlayedCheckBox.Text = "Last played:";
-            this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
-            this.EditFMLastPlayedCheckBox.CheckedChanged += new System.EventHandler(this.EditFMLastPlayedCheckBox_CheckedChanged);
-            // 
-            // EditFMReleaseDateCheckBox
-            // 
-            this.EditFMReleaseDateCheckBox.AutoSize = true;
-            this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
-            this.EditFMReleaseDateCheckBox.Name = "EditFMReleaseDateCheckBox";
-            this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);
-            this.EditFMReleaseDateCheckBox.TabIndex = 20;
-            this.EditFMReleaseDateCheckBox.Text = "Release date:";
-            this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
-            this.EditFMReleaseDateCheckBox.CheckedChanged += new System.EventHandler(this.EditFMReleaseDateCheckBox_CheckedChanged);
-            // 
-            // EditFMAuthorTextBox
-            // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
-            this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(485, 20);
-            this.EditFMAuthorTextBox.TabIndex = 18;
-            this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
-            this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
-            // 
-            // EditFMAuthorLabel
-            // 
-            this.EditFMAuthorLabel.AutoSize = true;
-            this.EditFMAuthorLabel.Location = new System.Drawing.Point(8, 48);
-            this.EditFMAuthorLabel.Name = "EditFMAuthorLabel";
-            this.EditFMAuthorLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMAuthorLabel.TabIndex = 17;
-            this.EditFMAuthorLabel.Text = "Author:";
-            // 
-            // EditFMTitleLabel
-            // 
-            this.EditFMTitleLabel.AutoSize = true;
-            this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
-            this.EditFMTitleLabel.Name = "EditFMTitleLabel";
-            this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
-            this.EditFMTitleLabel.TabIndex = 13;
-            this.EditFMTitleLabel.Text = "Title:";
             // 
             // CommentTabPage
             // 
@@ -1664,8 +1412,6 @@
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
             this.TopRightTabControl.ResumeLayout(false);
-            this.EditFMTabPage.ResumeLayout(false);
-            this.EditFMTabPage.PerformLayout();
             this.TagsTabPage.ResumeLayout(false);
             this.TagsTabPage.PerformLayout();
             this.AddRemoveTagFLP.ResumeLayout(false);
@@ -1728,24 +1474,12 @@
         internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom AddTagTextBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom EditFMTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMLastPlayedDateTimePicker;
-        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMReleaseDateDateTimePicker;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMTitleLabel;
+        internal AngelLoader.Forms.CustomControls.EditFMTabPage EditFMTabPage;
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMLastPlayedCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMReleaseDateCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems EditFMRatingComboBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMRatingLabel;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMFinishedOnButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeFullScreenButton;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollRightButton;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollLeftButton;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMTitleTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton EditFMAltTitlesArrowButton;
         internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByFinishedButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
@@ -1761,10 +1495,6 @@
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;
         internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanReleaseDateButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanAuthorButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanTitleButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanForReadmesButton;
         internal AngelLoader.Forms.CustomControls.DarkTabPageCustom PatchTabPage;
         internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
         internal AngelLoader.Forms.CustomControls.DarkButton PatchRemoveDMLButton;
@@ -1793,10 +1523,7 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems EditFMLanguageComboBox;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanLanguagesButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMLanguageLabel;
         internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
         internal CustomControls.DarkButton ReadmeEncodingButton;

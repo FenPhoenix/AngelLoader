@@ -1698,34 +1698,7 @@ namespace AngelLoader.Forms
                 #region Edit FM tab
 
                 EditFMTabPage.Text = LText.EditFMTab.TabText;
-                EditFMTitleLabel.Text = LText.EditFMTab.Title;
-                EditFMAuthorLabel.Text = LText.EditFMTab.Author;
-                EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
-                EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
-                EditFMRatingLabel.Text = LText.EditFMTab.Rating;
-
-                // For some reason this counts as a selected index change?!
-                using (new DisableEvents(this))
-                {
-                    EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
-                    if (EditFMLanguageComboBox.Items.Count > 0 &&
-                        EditFMLanguageComboBox.BackingItems[0].EqualsI(FMLanguages.DefaultLangKey))
-                    {
-                        EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
-                    }
-                }
-
-                EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
-
-                MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
-                MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
-                MainToolTip.SetToolTip(EditFMScanReleaseDateButton, LText.EditFMTab.RescanReleaseDateToolTip);
-                MainToolTip.SetToolTip(EditFMScanLanguagesButton, LText.EditFMTab.RescanLanguages);
-
-                EditFMLanguageLabel.Text = LText.EditFMTab.PlayFMInThisLanguage;
-                Lazy_LangDetectError.Localize();
-
-                EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
+                EditFMTabPage.Localize();
 
                 #endregion
 
