@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
-using static AngelLoader.Forms.DarkFormBase;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -19,38 +15,13 @@ namespace AngelLoader.Forms.CustomControls
 
     Solution: use IDarkable controls always. Like DrawnPanel instead of Panel. Meh.
     */
-    public sealed class StatsTabPage : DarkTabPageCustom
+    public sealed class StatsTabPage : Lazy_TabsBase
     {
-        private MainForm _owner = null!;
         private Lazy_StatsPage? _statsPage;
 
         internal object? Sender_ScanCustomResources;
 
         public event EventHandler? ScanCustomResourcesClick;
-
-        private readonly List<KeyValuePair<Control, ControlOriginalColors?>> _controlColors = new();
-
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override bool DarkModeEnabled
-        {
-            get => base.DarkModeEnabled;
-            set
-            {
-                if (base.DarkModeEnabled == value) return;
-                base.DarkModeEnabled = value;
-
-                if (_statsPage == null) return;
-
-                RefreshTheme();
-            }
-        }
-
-        private void RefreshTheme()
-        {
-            SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
-        }
 
         public void Construct(MainForm owner)
         {
@@ -72,6 +43,8 @@ namespace AngelLoader.Forms.CustomControls
                 _statsPage.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
                 ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
+
+                _constructed = true;
 
                 UpdatePage();
 
