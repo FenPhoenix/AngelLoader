@@ -770,6 +770,7 @@ namespace AngelLoader.Forms
             TopRightTabControl.Controls.Add(ModsTabPage);
             TopRightTabControl.Size = new Size(535, 310);
             TopRightTabControl.TabIndex = 15;
+            TopRightTabControl.Selected += TopRightTabControl_Selected;
             // 
             // StatisticsTabPage
             // 

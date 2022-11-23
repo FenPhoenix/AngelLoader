@@ -237,7 +237,7 @@
             // FMCountLabel
             // 
             this.FMCountLabel.AutoSize = true;
-            this.FMCountLabel.Location = new System.Drawing.Point(3, 7);
+            this.FMCountLabel.Location = new System.Drawing.Point(3, 15);
             this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 7, 0, 0);
             this.FMCountLabel.Name = "FMCountLabel";
             this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
@@ -252,7 +252,7 @@
             this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
             this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftFLP.Name = "BottomLeftFLP";
-            this.BottomLeftFLP.Size = new System.Drawing.Size(100, 42);
+            this.BottomLeftFLP.Size = new System.Drawing.Size(234, 42);
             this.BottomLeftFLP.TabIndex = 36;
             this.BottomLeftFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftFLP_Paint);
             // 
@@ -412,8 +412,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -594,7 +594,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -615,7 +615,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -694,7 +694,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -725,7 +725,7 @@
             this.FilterByReleaseDateButton.AutoSize = false;
             this.FilterByReleaseDateButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByReleaseDateButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByReleaseDateButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByReleaseDateButton.Image")));
+            this.FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
             this.FilterByReleaseDateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByReleaseDateButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
@@ -738,7 +738,7 @@
             this.FilterByLastPlayedButton.AutoSize = false;
             this.FilterByLastPlayedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByLastPlayedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByLastPlayedButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByLastPlayedButton.Image")));
+            this.FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
             this.FilterByLastPlayedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByLastPlayedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
@@ -751,7 +751,7 @@
             this.FilterByTagsButton.AutoSize = false;
             this.FilterByTagsButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByTagsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByTagsButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByTagsButton.Image")));
+            this.FilterByTagsButton.Image = Images.FilterByTags;
             this.FilterByTagsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByTagsButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByTagsButton.Name = "FilterByTagsButton";
@@ -765,7 +765,7 @@
             this.FilterByFinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByFinishedButton.CheckOnClick = true;
             this.FilterByFinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByFinishedButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByFinishedButton.Image")));
+            this.FilterByFinishedButton.Image = Images.FilterByFinished;
             this.FilterByFinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByFinishedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByFinishedButton.Name = "FilterByFinishedButton";
@@ -779,7 +779,7 @@
             this.FilterByUnfinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByUnfinishedButton.CheckOnClick = true;
             this.FilterByUnfinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByUnfinishedButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByUnfinishedButton.Image")));
+            this.FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
             this.FilterByUnfinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByUnfinishedButton.Margin = new System.Windows.Forms.Padding(0);
             this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";
@@ -792,7 +792,7 @@
             this.FilterByRatingButton.AutoSize = false;
             this.FilterByRatingButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByRatingButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByRatingButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterByRatingButton.Image")));
+            this.FilterByRatingButton.Image = Images.FilterByRating;
             this.FilterByRatingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByRatingButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByRatingButton.Name = "FilterByRatingButton";
@@ -832,7 +832,7 @@
             this.FilterShowRecentAtTopButton.AutoSize = false;
             this.FilterShowRecentAtTopButton.CheckOnClick = true;
             this.FilterShowRecentAtTopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterShowRecentAtTopButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterShowRecentAtTopButton.Image")));
+            this.FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
             this.FilterShowRecentAtTopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterShowRecentAtTopButton.Margin = new System.Windows.Forms.Padding(6, 0, 2, 0);
             this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
@@ -853,7 +853,7 @@
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -877,7 +877,7 @@
             this.RefreshFromDiskButton.AutoSize = false;
             this.RefreshFromDiskButton.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshFromDiskButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RefreshFromDiskButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshFromDiskButton.Image")));
+            this.RefreshFromDiskButton.Image = Images.Refresh;
             this.RefreshFromDiskButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RefreshFromDiskButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.RefreshFromDiskButton.Name = "RefreshFromDiskButton";
@@ -890,7 +890,7 @@
             this.RefreshFiltersButton.AutoSize = false;
             this.RefreshFiltersButton.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RefreshFiltersButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshFiltersButton.Image")));
+            this.RefreshFiltersButton.Image = Images.RefreshFilters;
             this.RefreshFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RefreshFiltersButton.Margin = new System.Windows.Forms.Padding(0);
             this.RefreshFiltersButton.Name = "RefreshFiltersButton";
@@ -903,7 +903,7 @@
             this.ClearFiltersButton.AutoSize = false;
             this.ClearFiltersButton.BackColor = System.Drawing.SystemColors.Control;
             this.ClearFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ClearFiltersButton.Image = ((System.Drawing.Image)(resources.GetObject("ClearFiltersButton.Image")));
+            this.ClearFiltersButton.Image = Images.ClearFilters;
             this.ClearFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ClearFiltersButton.Margin = new System.Windows.Forms.Padding(0, 0, 9, 1);
             this.ClearFiltersButton.Name = "ClearFiltersButton";
@@ -930,7 +930,6 @@
             this.GamesTabControl.ImageList = this.GameTabsImageList;
             this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
             this.GamesTabControl.Name = "GamesTabControl";
-            this.GamesTabControl.SelectedIndex = 0;
             this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
             this.GamesTabControl.TabIndex = 1;
             // 
@@ -949,7 +948,7 @@
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
@@ -964,8 +963,8 @@
             // TopRightTabControl
             // 
             this.TopRightTabControl.AllowReordering = true;
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -979,16 +978,6 @@
             this.TopRightTabControl.Size = new System.Drawing.Size(535, 310);
             this.TopRightTabControl.TabIndex = 15;
             this.TopRightTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TopRightTabControl_Selected);
-            // 
-            // StatisticsTabPage
-            // 
-            this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
-            this.StatisticsTabPage.Name = "StatisticsTabPage";
-            this.StatisticsTabPage.Size = new System.Drawing.Size(527, 284);
-            this.StatisticsTabPage.TabIndex = 0;
-            this.StatisticsTabPage.Text = "Statistics";
-            this.StatisticsTabPage.ScanCustomResourcesClick += new System.EventHandler(this.Async_EventHandler_Main);
             // 
             // EditFMTabPage
             // 
@@ -1015,7 +1004,7 @@
             this.EditFMTabPage.Controls.Add(this.EditFMTitleLabel);
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
-            this.EditFMTabPage.Size = new System.Drawing.Size(527, 284);
+            this.EditFMTabPage.Size = new System.Drawing.Size(526, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
@@ -1075,7 +1064,7 @@
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(494, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1086,7 +1075,7 @@
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(494, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1098,7 +1087,7 @@
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(478, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
@@ -1107,11 +1096,11 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(470, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
@@ -1205,11 +1194,11 @@
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(486, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(485, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -1231,27 +1220,27 @@
             this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
             this.EditFMTitleLabel.TabIndex = 13;
             this.EditFMTitleLabel.Text = "Title:";
-            // 
+            //
             // CommentTabPage
             // 
             this.CommentTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.CommentTabPage.Controls.Add(this.CommentTextBox);
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
-            this.CommentTabPage.Size = new System.Drawing.Size(527, 284);
+            this.CommentTabPage.Size = new System.Drawing.Size(526, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
             this.CommentTextBox.Name = "CommentTextBox";
             this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(511, 266);
+            this.CommentTextBox.Size = new System.Drawing.Size(510, 266);
             this.CommentTextBox.TabIndex = 32;
             this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
             this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
@@ -1267,7 +1256,7 @@
             this.TagsTabPage.Controls.Add(this.TagsTabAutoScrollMarker);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
-            this.TagsTabPage.Size = new System.Drawing.Size(527, 284);
+            this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
@@ -1276,7 +1265,7 @@
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagButton.Location = new System.Drawing.Point(454, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
             this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -1288,12 +1277,12 @@
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(441, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(440, 20);
             this.AddTagTextBox.StrictTextChangedEvent = false;
             this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
@@ -1307,7 +1296,7 @@
             this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
             this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
             this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFLP.Location = new System.Drawing.Point(1, 248);
+            this.AddRemoveTagFLP.Location = new System.Drawing.Point(0, 248);
             this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
             this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
             this.AddRemoveTagFLP.TabIndex = 3;
@@ -1346,13 +1335,13 @@
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(511, 216);
+            this.TagsTreeView.Size = new System.Drawing.Size(510, 216);
             this.TagsTreeView.TabIndex = 2;
             // 
             // TagsTabAutoScrollMarker
@@ -1373,7 +1362,7 @@
             this.PatchTabPage.Controls.Add(this.PatchMainPanel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
-            this.PatchTabPage.Size = new System.Drawing.Size(527, 284);
+            this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 
@@ -1515,8 +1504,8 @@
             // 
             // MainModsControl
             // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainModsControl.Location = new System.Drawing.Point(0, 0);
             this.MainModsControl.Name = "MainModsControl";
