@@ -6,7 +6,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         public Lazy_StatsPage()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitSlim();
+#endif
         }
     }
 }
