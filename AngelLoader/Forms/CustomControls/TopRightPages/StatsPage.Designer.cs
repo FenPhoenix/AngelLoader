@@ -30,7 +30,7 @@
         {
             this.Stats_MisCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.StatsScanCustomResourcesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
+            this.StatsCheckBoxesPanel = new DrawnPanel();
             this.CR_MapCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_MoviesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_MotionsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -251,7 +251,7 @@
 
         internal DarkLabel Stats_MisCountLabel;
         internal DarkButton StatsScanCustomResourcesButton;
-        internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
+        internal DrawnPanel StatsCheckBoxesPanel;
         internal DarkCheckBox CR_MapCheckBox;
         internal DarkCheckBox CR_MoviesCheckBox;
         internal DarkCheckBox CR_MotionsCheckBox;

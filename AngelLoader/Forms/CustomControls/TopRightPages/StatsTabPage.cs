@@ -16,6 +16,8 @@ namespace AngelLoader.Forms.CustomControls
     @vNext: Dark mode doesn't work quite right with these lazy-loaded tab pages here.
     Non-IDarkable controls keep their dark colors if we do the non-affected tab, switch to affected tab, then
     switch to light mode thing. We need to modify our theming system to fix it.
+
+    Solution: use IDarkable controls always. Like DrawnPanel instead of Panel. Meh.
     */
     public sealed class StatsTabPage : DarkTabPageCustom
     {
@@ -69,8 +71,7 @@ namespace AngelLoader.Forms.CustomControls
 
             UpdatePage();
 
-            //if (DarkModeEnabled)
-            RefreshTheme();
+            if (DarkModeEnabled) RefreshTheme();
         }
 
         private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
