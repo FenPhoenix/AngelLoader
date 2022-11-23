@@ -54,6 +54,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Construct(MainForm owner)
         {
+            if (_statsPage != null) return;
+
             _owner = owner;
             _statsPage = new Lazy_StatsPage
             {
