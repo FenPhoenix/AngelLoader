@@ -978,6 +978,7 @@
             this.TopRightTabControl.SelectedIndex = 0;
             this.TopRightTabControl.Size = new System.Drawing.Size(535, 310);
             this.TopRightTabControl.TabIndex = 15;
+            this.TopRightTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TopRightTabControl_Selected);
             // 
             // StatisticsTabPage
             // 

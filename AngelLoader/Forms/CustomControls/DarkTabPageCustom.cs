@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.CustomControls
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+        public virtual bool DarkModeEnabled
         {
             set
             {

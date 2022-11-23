@@ -877,6 +877,7 @@ namespace AngelLoader.Forms
                 if ((int)Config.TopRightTabsData.SelectedTab == i)
                 {
                     TopRightTabControl.SelectedTab = _topRightTabs[i];
+                    ConstructTopRightTabPage(TopRightTabControl.SelectedTab);
                     break;
                 }
             }
@@ -3012,6 +3013,38 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Top-right area
+
+        private void ConstructTopRightTabPage(TabPage tabPage)
+        {
+            // @vNext: Temp if block just while we're working on converting all tab pages to lazy-loaded
+            if (tabPage == StatisticsTabPage)
+            {
+                StatisticsTabPage.Construct(this);
+            }
+            else if (tabPage == EditFMTabPage)
+            {
+            }
+            else if (tabPage == CommentTabPage)
+            {
+            }
+            else if (tabPage == TagsTabPage)
+            {
+            }
+            else if (tabPage == PatchTabPage)
+            {
+            }
+            else if (tabPage == ModsTabPage)
+            {
+            }
+        }
+
+        private void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.Action == TabControlAction.Selected)
+            {
+                ConstructTopRightTabPage(e.TabPage);
+            }
+        }
 
         #region Edit FM tab
 

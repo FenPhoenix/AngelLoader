@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -7,8 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls
@@ -22,10 +25,30 @@ namespace AngelLoader.Forms.CustomControls
 
         public event EventHandler? ScanCustomResourcesClick;
 
+        private bool _darkModeEnabled;
+        [PublicAPI]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public override bool DarkModeEnabled
+        {
+            set
+            {
+                base.DarkModeEnabled = value;
+                if (_darkModeEnabled == value) return;
+                _darkModeEnabled = value;
+            }
+        }
+
         public void Construct(MainForm owner)
         {
             _owner = owner;
-            _statsPage = new StatsPage(owner);
+            _statsPage = new StatsPage(owner)
+            {
+                Dock = DockStyle.Fill,
+                Tag = LoadType.Lazy
+            };
+
+            Controls.Add(_statsPage);
 
             Sender_ScanCustomResources = new object();
             _statsPage.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
