@@ -17,7 +17,7 @@ namespace AngelLoader.Forms.CustomControls
     */
     public sealed class StatsTabPage : Lazy_TabsBase
     {
-        private Lazy_StatsPage? _statsPage;
+        private Lazy_StatsPage? _page;
 
         internal object? Sender_ScanCustomResources;
 
@@ -25,10 +25,10 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Construct(MainForm owner)
         {
-            if (_statsPage != null) return;
+            if (_page != null) return;
 
             _owner = owner;
-            _statsPage = new Lazy_StatsPage
+            _page = new Lazy_StatsPage
             {
                 Dock = DockStyle.Fill,
                 Tag = LoadType.Lazy
@@ -36,11 +36,11 @@ namespace AngelLoader.Forms.CustomControls
 
             using (new DisableEvents(_owner))
             {
-                Controls.Add(_statsPage);
+                Controls.Add(_page);
 
                 Sender_ScanCustomResources = new object();
-                _statsPage.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
-                _statsPage.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
+                _page.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
+                _page.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
                 ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
 
@@ -61,82 +61,82 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Localize()
         {
-            if (_statsPage == null) return;
+            if (_page == null) return;
             FanMission? selFM = _owner.GetMainSelectedFMOrNull();
 
-            _statsPage.Stats_MisCountLabel.Text = selFM != null
+            _page.Stats_MisCountLabel.Text = selFM != null
                 ? MainForm.CreateMisCountLabelText(selFM)
                 : LText.StatisticsTab.NoFMSelected;
 
-            _statsPage.CustomResourcesLabel.Text =
+            _page.CustomResourcesLabel.Text =
                 selFM == null ? LText.StatisticsTab.CustomResources :
                 selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
                 selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
                 LText.StatisticsTab.CustomResourcesNotScanned;
 
-            _statsPage.CR_MapCheckBox.Text = LText.StatisticsTab.Map;
-            _statsPage.CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
-            _statsPage.CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
-            _statsPage.CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
-            _statsPage.CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
-            _statsPage.CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
-            _statsPage.CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
-            _statsPage.CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
-            _statsPage.CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
-            _statsPage.CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
+            _page.CR_MapCheckBox.Text = LText.StatisticsTab.Map;
+            _page.CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
+            _page.CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
+            _page.CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
+            _page.CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
+            _page.CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
+            _page.CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
+            _page.CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
+            _page.CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
+            _page.CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
 
-            _statsPage.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
+            _page.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
         }
 
         public void UpdatePage()
         {
-            if (_statsPage == null) return;
+            if (_page == null) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
             {
                 bool fmIsT3 = fm.Game == Game.Thief3;
 
-                EnableStatsPanelLabels(_statsPage, true);
+                EnableStatsPanelLabels(_page, true);
 
-                _statsPage.Stats_MisCountLabel.Text = MainForm.CreateMisCountLabelText(fm);
+                _page.Stats_MisCountLabel.Text = MainForm.CreateMisCountLabelText(fm);
 
-                _statsPage.StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
+                _page.StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
                 if (fmIsT3)
                 {
-                    BlankStatsPanelWithMessage(_statsPage, LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                    BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
                 }
                 else if (!fm.ResourcesScanned)
                 {
-                    BlankStatsPanelWithMessage(_statsPage, LText.StatisticsTab.CustomResourcesNotScanned);
+                    BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResourcesNotScanned);
                 }
                 else
                 {
-                    _statsPage.CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
+                    _page.CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
 
-                    _statsPage.CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
-                    _statsPage.CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
-                    _statsPage.CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
-                    _statsPage.CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
-                    _statsPage.CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
-                    _statsPage.CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
-                    _statsPage.CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
-                    _statsPage.CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
-                    _statsPage.CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
-                    _statsPage.CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
+                    _page.CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
+                    _page.CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
+                    _page.CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
+                    _page.CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
+                    _page.CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
+                    _page.CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
+                    _page.CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
+                    _page.CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
+                    _page.CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
+                    _page.CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
 
-                    _statsPage.StatsCheckBoxesPanel.Enabled = true;
+                    _page.StatsCheckBoxesPanel.Enabled = true;
                 }
             }
             else
             {
-                _statsPage.Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
+                _page.Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
 
-                BlankStatsPanelWithMessage(_statsPage, LText.StatisticsTab.CustomResources);
-                _statsPage.StatsScanCustomResourcesButton.Enabled = false;
+                BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResources);
+                _page.StatsScanCustomResourcesButton.Enabled = false;
 
-                EnableStatsPanelLabels(_statsPage, false);
+                EnableStatsPanelLabels(_page, false);
             }
         }
 
