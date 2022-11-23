@@ -50,6 +50,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -57,7 +58,6 @@ using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
@@ -157,13 +157,12 @@ namespace AngelLoader.Forms
 
         private readonly AddTagLLDropDown AddTagLLDropDown;
         private readonly DynamicItemsLLMenu AddTagLLMenu;
-        private readonly DynamicItemsLLMenu AltTitlesLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ExitLLButton ExitLLButton;
         private readonly FilterControlsLLMenu FilterControlsLLMenu;
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
-        private readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
+        internal readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
         private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
@@ -175,7 +174,6 @@ namespace AngelLoader.Forms
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
-        private readonly Lazy_LangDetectError Lazy_LangDetectError;
         private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
         private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
 
@@ -542,7 +540,6 @@ namespace AngelLoader.Forms
             {
                 AddTagLLDropDown = new AddTagLLDropDown(this),
                 AddTagLLMenu = new DynamicItemsLLMenu(this),
-                AltTitlesLLMenu = new DynamicItemsLLMenu(this),
                 ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
                 EncodingsLLMenu = new EncodingsLLMenu(this),
                 ExitLLButton = new ExitLLButton(this),
@@ -560,7 +557,6 @@ namespace AngelLoader.Forms
                 TopRightLLMenu = new TopRightLLMenu(this),
                 ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
                 Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
-                Lazy_LangDetectError = new Lazy_LangDetectError(this),
                 Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
                 Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
             };
@@ -877,7 +873,6 @@ namespace AngelLoader.Forms
                 if ((int)Config.TopRightTabsData.SelectedTab == i)
                 {
                     TopRightTabControl.SelectedTab = _topRightTabs[i];
-                    ConstructTopRightTabPage(TopRightTabControl.SelectedTab);
                     break;
                 }
             }
@@ -1108,6 +1103,10 @@ namespace AngelLoader.Forms
 
         public new void Show()
         {
+            // @vNext: Test this with when we show to scan on startup or whatever
+            ConstructTopRightTabPage(TopRightTabControl.SelectedTab);
+            TopRightTabControl.Selected += TopRightTabControl_Selected;
+
             base.Show();
             _splashScreen?.Hide();
 
@@ -2436,13 +2435,13 @@ namespace AngelLoader.Forms
 
                 await Import.ImportFrom(importType);
             }
-            else if (sender == EditFMScanForReadmesButton ||
-                     sender == EditFMScanTitleButton ||
-                     sender == EditFMScanAuthorButton ||
-                     sender == EditFMScanReleaseDateButton ||
+            else if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ||
                      sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources))
             {
-                if (sender == EditFMScanForReadmesButton)
+                if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes))
                 {
                     try
                     {
@@ -2469,10 +2468,10 @@ namespace AngelLoader.Forms
                         }
 
                         var scanOptions =
-                            sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
-                            sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
-                            sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
-                            //sender == StatsScanCustomResourcesButton
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
+                            //sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources)
                             FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true);
 
                         if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
@@ -2996,6 +2995,7 @@ namespace AngelLoader.Forms
             }
             else if (tabPage == EditFMTabPage)
             {
+                EditFMTabPage.Construct(this);
             }
             else if (tabPage == CommentTabPage)
             {
@@ -3021,150 +3021,6 @@ namespace AngelLoader.Forms
         }
 
         #region Edit FM tab
-
-        private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
-        {
-            List<string> fmAltTitles = FMsDGV.GetMainSelectedFM().AltTitles;
-            if (fmAltTitles.Count == 0) return;
-
-            var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
-            for (int i = 0; i < fmAltTitles.Count; i++)
-            {
-                var item = new ToolStripMenuItemWithBackingText(fmAltTitles[i]);
-                item.Click += EditFMAltTitlesMenuItems_Click;
-                altTitlesMenuItems[i] = item;
-            }
-
-            AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
-
-            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
-        }
-
-        private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
-        {
-            EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Title = EditFMTitleTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-        }
-
-        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Author = EditFMAuthorTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-        }
-
-        private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
-                ? EditFMReleaseDateDateTimePicker.Value
-                : null;
-
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
-                ? EditFMLastPlayedDateTimePicker.Value
-                : null;
-
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            UpdateRatingForSelectedFMs(EditFMRatingComboBox.SelectedIndex - 1);
-        }
-
-        internal void UpdateRatingForSelectedFMs(int rating)
-        {
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Rating = rating;
-            RefreshMainSelectedFMRow_Fast();
-
-            UpdateRatingMenus(rating, disableEvents: true);
-
-            FanMission[] sFMs = FMsDGV.GetSelectedFMs();
-            if (sFMs.Length > 1)
-            {
-                foreach (FanMission sFM in sFMs)
-                {
-                    sFM.Rating = rating;
-                }
-                RefreshFMsListRowsOnlyKeepSelection();
-            }
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.UpdateFMSelectedLanguage();
-        }
-
-        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
-        {
-            ShowMenu(FMsDGV_FM_LLMenu.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
-        }
-
-        private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
-        {
-            using (new DisableEvents(this))
-            {
-                Core.ScanAndFillLanguagesList(forceScan: true);
-            }
-            Ini.WriteFullFMDataIni();
-        }
 
         #endregion
 
@@ -4267,14 +4123,7 @@ namespace AngelLoader.Forms
         {
             #region Update rating lists
 
-            // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
-            using (new DisableEvents(this))
-            {
-                for (int i = 0; i <= 10; i++)
-                {
-                    EditFMRatingComboBox.Items[i + 1] = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                }
-            }
+            EditFMTabPage.UpdateRatingStrings(fmSelStyle);
 
             FMsDGV_FM_LLMenu.UpdateRatingList(fmSelStyle);
 
@@ -4750,38 +4599,7 @@ namespace AngelLoader.Forms
 
                 #region Edit FM tab
 
-                EditFMRatingComboBox.SelectedIndex = 0;
-
-                // Always enable the combobox when modifying its items, to prevent the white flicker.
-                // We'll disable it again in the disable-all-controls loop.
-                EditFMLanguageComboBox.Enabled = true;
-
-                EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
-                EditFMLanguageComboBox.SelectedIndex = 0;
-
-                Lazy_LangDetectError.SetVisible(false);
-
-                foreach (Control c in EditFMTabPage.Controls)
-                {
-                    switch (c)
-                    {
-                        case TextBox tb:
-                            tb.Text = "";
-                            break;
-                        case DateTimePicker dtp:
-                            dtp.Value = DateTime.Now;
-                            dtp.Hide();
-                            break;
-                        case CheckBox chk:
-                            chk.Checked = false;
-                            break;
-                    }
-
-                    c.Enabled = false;
-                }
-
-                FMsDGV_FM_LLMenu.ClearFinishedOnMenuItemChecks();
+                EditFMTabPage.UpdatePage();
 
                 #endregion
 
@@ -5097,65 +4915,7 @@ namespace AngelLoader.Forms
 
                 #region Edit FM tab
 
-                void SetLanguageEnabledState()
-                {
-                    EditFMLanguageLabel.Enabled = !fmIsT3;
-                    EditFMLanguageComboBox.Enabled = !fmIsT3;
-                }
-
-                // Adding/removing items from the combobox while disabled and in dark mode appears to be the
-                // cause of the white flickering, so always make sure we're in an enabled state when setting
-                // the items.
-                if (fmIsT3)
-                {
-                    if (EditFMLanguageComboBox.Items.Count == 0)
-                    {
-                        AddLanguagesToList(new() { new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage) });
-                    }
-                    SetSelectedLanguage(Language.Default);
-
-                    SetLanguageEnabledState();
-                }
-                else
-                {
-                    SetLanguageEnabledState();
-                    Core.ScanAndFillLanguagesList(forceScan: false);
-                }
-
-                foreach (Control c in EditFMTabPage.Controls)
-                {
-                    if (c != EditFMLanguageLabel &&
-                        c != EditFMLanguageComboBox)
-                    {
-                        c.Enabled = true;
-                    }
-                }
-
-                EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
-                EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
-
-                EditFMTitleTextBox.Text = fm.Title;
-
-                // FM AltTitles is nominally always supposed to be non-empty (because the scan puts at least a
-                // copy of the title in it), but it can be empty if all AltTitles lines for the FM have been
-                // removed manually from the entry in the ini file. "Won't happen but could happen so we have to
-                // handle it" scenario.
-                EditFMAltTitlesArrowButton.Enabled = fm.AltTitles.Count > 0;
-
-                EditFMAuthorTextBox.Text = fm.Author;
-
-                EditFMReleaseDateCheckBox.Checked = fm.ReleaseDate.DateTime != null;
-                EditFMReleaseDateDateTimePicker.Value = fm.ReleaseDate.DateTime ?? DateTime.Now;
-                EditFMReleaseDateDateTimePicker.Visible = fm.ReleaseDate.DateTime != null;
-
-                EditFMLastPlayedCheckBox.Checked = fm.LastPlayed.DateTime != null;
-                EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
-                EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
-
-                UpdateRatingMenus(fm.Rating, disableEvents: false);
+                EditFMTabPage.UpdatePage();
 
                 #endregion
 
@@ -5262,74 +5022,11 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void UpdateRatingMenus(int rating, bool disableEvents = false)
-        {
-            using (disableEvents ? new DisableEvents(this) : null)
-            {
-                FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                EditFMRatingComboBox.SelectedIndex = rating + 1;
-            }
-        }
-
         public void ClearReadmesList()
         {
             using (new DisableEvents(this))
             {
                 ChooseReadmeComboBox.ClearFullItems();
-            }
-        }
-
-        public void ClearLanguagesList() => EditFMLanguageComboBox.ClearFullItems();
-
-        public void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
-        {
-            try
-            {
-                EditFMLanguageComboBox.BeginUpdate();
-
-                foreach (KeyValuePair<string, string> item in langPairs)
-                {
-                    EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
-                }
-            }
-            finally
-            {
-                EditFMLanguageComboBox.EndUpdate();
-            }
-        }
-
-        public Language GetMainSelectedLanguage()
-        {
-            if (EditFMLanguageComboBox.SelectedIndex <= 0)
-            {
-                return Language.Default;
-            }
-            else
-            {
-                string backingItem = EditFMLanguageComboBox.SelectedBackingItem();
-                return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
-            }
-        }
-
-        public Language SetSelectedLanguage(Language language)
-        {
-            if (EditFMLanguageComboBox.Items.Count == 0)
-            {
-                return Language.Default;
-            }
-            else
-            {
-                EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
-                    ? 0
-                    : EditFMLanguageComboBox
-                        .BackingItems
-                        .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
-                        .ClampToZero();
-
-                return EditFMLanguageComboBox.SelectedIndex > 0 &&
-                       LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
-                    ? returnLanguage
-                    : Language.Default;
             }
         }
 
@@ -5573,9 +5270,10 @@ namespace AngelLoader.Forms
 
         #region Show menu
 
-        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+        // @vNext: Put these in ControlUtils or something
+        internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
 
-        private static void ShowMenu(
+        internal static void ShowMenu(
             ContextMenuStrip menu,
             Control control,
             MenuPos pos,
@@ -5899,8 +5597,6 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
         }
-
-        public void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
 
         #region FM selected stats
 

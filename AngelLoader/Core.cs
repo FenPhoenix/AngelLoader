@@ -2057,66 +2057,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Languages
-
-        internal static void ScanAndFillLanguagesList(bool forceScan)
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
-
-            View.ClearLanguagesList();
-
-            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
-
-            if (GameIsDark(fm.Game))
-            {
-                bool doScan = forceScan || !fm.LangsScanned;
-
-                if (doScan)
-                {
-                    bool success = FMLanguages.FillFMSupportedLangs(fm);
-                    View.ShowLanguageDetectError(!success);
-                    Ini.WriteFullFMDataIni();
-                }
-                else
-                {
-                    View.ShowLanguageDetectError(false);
-                }
-
-                for (int i = 0; i < SupportedLanguageCount; i++)
-                {
-                    LanguageIndex index = (LanguageIndex)i;
-                    Language language = LanguageIndexToLanguage(index);
-                    if (fm.Langs.HasFlagFast(language))
-                    {
-                        string langStr = GetLanguageString(index);
-                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
-                    }
-                }
-            }
-            else
-            {
-                View.ShowLanguageDetectError(false);
-            }
-
-            View.AddLanguagesToList(langPairs);
-
-            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
-        }
-
-        internal static void UpdateFMSelectedLanguage()
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            fm.SelectedLang = View.GetMainSelectedLanguage();
-            Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
         internal static (Error Error, string Version)
         GetGameVersion(GameIndex game)
         {

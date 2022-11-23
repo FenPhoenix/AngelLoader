@@ -22,6 +22,11 @@ namespace AngelLoader.Forms.CustomControls
         internal object? Sender_ScanCustomResources;
 
         public event EventHandler? ScanCustomResourcesClick;
+        
+        private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
+        {
+            ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
+        }
 
         public void Construct(MainForm owner)
         {
@@ -38,10 +43,10 @@ namespace AngelLoader.Forms.CustomControls
             {
                 Controls.Add(_page);
 
+                _page.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
+                
                 Sender_ScanCustomResources = new object();
                 _page.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
-                _page.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
-
                 ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
 
                 _constructed = true;
@@ -52,11 +57,6 @@ namespace AngelLoader.Forms.CustomControls
 
                 Localize();
             }
-        }
-
-        private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
-        {
-            ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
         }
 
         public void Localize()

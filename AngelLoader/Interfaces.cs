@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
@@ -423,25 +422,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Languages
-
-        void ClearLanguagesList();
-
-        void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs);
-
-        // @LANGS(backing items): We could allow the backing items to be enum values
-        // That way we don't even have to store the lang strings in the combobox backing list
-        /// <summary>
-        /// Sets the selected item in the language list.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns>The selected language, or default if a match was not found.</returns>
-        Language SetSelectedLanguage(Language language);
-
-        Language GetMainSelectedLanguage();
-
-        #endregion
-
         #region Dialogs
 
         (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
@@ -479,7 +459,5 @@ namespace AngelLoader
         bool AbleToAcceptDragDrop();
 
         void SetAvailableFMCount();
-
-        void ShowLanguageDetectError(bool enabled);
     }
 }
