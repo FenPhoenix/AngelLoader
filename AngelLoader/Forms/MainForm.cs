@@ -5557,7 +5557,7 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
+        internal void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
 
         private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
 

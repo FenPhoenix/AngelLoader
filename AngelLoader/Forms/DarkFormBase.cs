@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
 
         #region Theming
 
-        private sealed class ControlOriginalColors
+        internal sealed class ControlOriginalColors
         {
             internal readonly Color ForeColor;
             internal readonly Color BackColor;
@@ -124,9 +124,21 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static void CreateAllControlsHandles(Control control) => FillControlColorList(control, null, createControlHandles: true);
+        protected static void CreateAllControlsHandles(Control control) => FillControlColorList(control, null, createControlHandles: true);
 
         internal void SetThemeBase(
+            VisualTheme theme,
+            Func<Component, bool>? excludePredicate = null,
+            bool createControlHandles = false,
+            int capacity = -1)
+        {
+            SetTheme(this, _controlColors, theme, excludePredicate, createControlHandles, capacity);
+        }
+
+        // @vNext: Move this out into ControlUtils or something
+        internal static void SetTheme(
+            Control baseControl,
+            List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
             VisualTheme theme,
             Func<Component, bool>? excludePredicate = null,
             bool createControlHandles = false,
@@ -138,13 +150,13 @@ namespace AngelLoader.Forms
 
             // @DarkModeNote(FillControlColorList): Controls might change their colors after construct
             // Remember to handle this if new controls are added that this applies to.
-            if (_controlColors.Count == 0)
+            if (controlColors.Count == 0)
             {
-                if (capacity >= 0) _controlColors.Capacity = capacity;
-                FillControlColorList(this, (List<KeyValuePair<Control, ControlOriginalColors?>>?)_controlColors, createControlHandles);
+                if (capacity >= 0) controlColors.Capacity = capacity;
+                FillControlColorList(baseControl, (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors, createControlHandles);
             }
 
-            foreach (var item in _controlColors)
+            foreach (var item in controlColors)
             {
                 Control control = item.Key;
 
