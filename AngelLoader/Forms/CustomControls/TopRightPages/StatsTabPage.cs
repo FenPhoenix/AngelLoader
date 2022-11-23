@@ -63,19 +63,22 @@ namespace AngelLoader.Forms.CustomControls
                 Tag = LoadType.Lazy
             };
 
-            Controls.Add(_statsPage);
+            using (new DisableEvents(_owner))
+            {
+                Controls.Add(_statsPage);
 
-            Sender_ScanCustomResources = new object();
-            _statsPage.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
-            _statsPage.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
+                Sender_ScanCustomResources = new object();
+                _statsPage.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
+                _statsPage.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
-            ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
+                ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
 
-            UpdatePage();
+                UpdatePage();
 
-            if (DarkModeEnabled) RefreshTheme();
+                if (DarkModeEnabled) RefreshTheme();
 
-            Localize();
+                Localize();
+            }
         }
 
         private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
