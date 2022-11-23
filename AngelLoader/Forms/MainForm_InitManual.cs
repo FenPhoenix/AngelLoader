@@ -757,6 +757,12 @@ namespace AngelLoader.Forms
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
             // 
+            // EditFMTabPage
+            // 
+            EditFMTabPage.BackColor = SystemColors.Control;
+            EditFMTabPage.Size = new Size(526, 284);
+            EditFMTabPage.TabIndex = 0;
+            // 
             // CommentTabPage
             // 
             CommentTabPage.BackColor = SystemColors.Control;

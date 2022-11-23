@@ -20,6 +20,7 @@ namespace AngelLoader.Forms.CustomControls
     @vNext: Test lazy-loaded lang error functionality
     @vNext: Mark any new business logic that's been moved back into the view (@VBL) for later review
     @vNext: Set tab indexes on all these when we're done
+    @vNext: These tab pages may not need their explicit Size properties set in InitManual
     */
 
     public sealed class EditFMTabPage : Lazy_TabsBase
