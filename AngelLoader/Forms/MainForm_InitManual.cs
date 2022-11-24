@@ -88,18 +88,7 @@ namespace AngelLoader.Forms
             EditFMTabPage = new EditFMTabPage();
             CommentTabPage = new CommentTabPage();
             TagsTabPage = new TagsTabPage();
-            PatchTabPage = new DarkTabPageCustom();
-            Patch_PerFMValues_Label = new DarkLabel();
-            Patch_NDSubs_CheckBox = new DarkCheckBox();
-            Patch_PostProc_CheckBox = new DarkCheckBox();
-            Patch_NewMantle_CheckBox = new DarkCheckBox();
-            PatchMainPanel = new Panel();
-            PatchDMLsPanel = new Panel();
-            PatchDMLPatchesLabel = new DarkLabel();
-            PatchDMLsListBox = new DarkListBox();
-            PatchRemoveDMLButton = new DarkButton();
-            PatchAddDMLButton = new DarkButton();
-            PatchOpenFMFolderButton = new DarkButton();
+            PatchTabPage = new PatchTabPage();
             ModsTabPage = new DarkTabPageCustom();
             MainModsControl = new ModsControl();
             ReadmeEncodingButton = new DarkButton();
@@ -133,8 +122,6 @@ namespace AngelLoader.Forms
             CommentTabPage.SuspendLayout();
             TagsTabPage.SuspendLayout();
             PatchTabPage.SuspendLayout();
-            PatchMainPanel.SuspendLayout();
-            PatchDMLsPanel.SuspendLayout();
             ModsTabPage.SuspendLayout();
             SuspendLayout();
             // 
@@ -769,116 +756,9 @@ namespace AngelLoader.Forms
             // 
             // PatchTabPage
             // 
-            PatchTabPage.AutoScroll = true;
             PatchTabPage.BackColor = SystemColors.Control;
-            PatchTabPage.Controls.Add(Patch_PerFMValues_Label);
-            PatchTabPage.Controls.Add(Patch_NDSubs_CheckBox);
-            PatchTabPage.Controls.Add(Patch_PostProc_CheckBox);
-            PatchTabPage.Controls.Add(Patch_NewMantle_CheckBox);
-            PatchTabPage.Controls.Add(PatchMainPanel);
             PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
-            // 
-            // Patch_PerFMValues_Label
-            // 
-            Patch_PerFMValues_Label.AutoSize = true;
-            Patch_PerFMValues_Label.Location = new Point(6, 8);
-            Patch_PerFMValues_Label.TabIndex = 0;
-            // 
-            // Patch_NDSubs_CheckBox
-            // 
-            Patch_NDSubs_CheckBox.AutoSize = true;
-            Patch_NDSubs_CheckBox.Checked = true;
-            Patch_NDSubs_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_NDSubs_CheckBox.Location = new Point(8, 80);
-            Patch_NDSubs_CheckBox.TabIndex = 3;
-            Patch_NDSubs_CheckBox.ThreeState = true;
-            Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
-            Patch_NDSubs_CheckBox.CheckStateChanged += Patch_NDSubs_CheckBox_CheckStateChanged;
-            // 
-            // Patch_PostProc_CheckBox
-            // 
-            Patch_PostProc_CheckBox.AutoSize = true;
-            Patch_PostProc_CheckBox.Checked = true;
-            Patch_PostProc_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_PostProc_CheckBox.Location = new Point(8, 56);
-            Patch_PostProc_CheckBox.TabIndex = 2;
-            Patch_PostProc_CheckBox.ThreeState = true;
-            Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
-            Patch_PostProc_CheckBox.CheckStateChanged += Patch_PostProc_CheckBox_CheckStateChanged;
-            // 
-            // Patch_NewMantle_CheckBox
-            // 
-            Patch_NewMantle_CheckBox.AutoSize = true;
-            Patch_NewMantle_CheckBox.Checked = true;
-            Patch_NewMantle_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_NewMantle_CheckBox.Location = new Point(8, 32);
-            Patch_NewMantle_CheckBox.TabIndex = 1;
-            Patch_NewMantle_CheckBox.ThreeState = true;
-            Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
-            Patch_NewMantle_CheckBox.CheckStateChanged += Patch_NewMantle_CheckBox_CheckStateChanged;
-            // 
-            // PatchMainPanel
-            // 
-            PatchMainPanel.AutoSize = true;
-            PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchMainPanel.Controls.Add(PatchDMLsPanel);
-            PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
-            PatchMainPanel.Location = new Point(0, 104);
-            PatchMainPanel.Size = new Size(311, 250);
-            PatchMainPanel.TabIndex = 38;
-            // 
-            // PatchDMLsPanel
-            // 
-            PatchDMLsPanel.AutoSize = true;
-            PatchDMLsPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchDMLsPanel.Controls.Add(PatchDMLPatchesLabel);
-            PatchDMLsPanel.Controls.Add(PatchDMLsListBox);
-            PatchDMLsPanel.Controls.Add(PatchRemoveDMLButton);
-            PatchDMLsPanel.Controls.Add(PatchAddDMLButton);
-            PatchDMLsPanel.Size = new Size(308, 218);
-            PatchDMLsPanel.TabIndex = 39;
-            // 
-            // PatchDMLPatchesLabel
-            // 
-            PatchDMLPatchesLabel.AutoSize = true;
-            PatchDMLPatchesLabel.Location = new Point(8, 8);
-            PatchDMLPatchesLabel.TabIndex = 40;
-            // 
-            // PatchDMLsListBox
-            // 
-            PatchDMLsListBox.Location = new Point(8, 24);
-            PatchDMLsListBox.MultiSelect = false;
-            PatchDMLsListBox.Size = new Size(296, 168);
-            PatchDMLsListBox.TabIndex = 41;
-            // 
-            // PatchRemoveDMLButton
-            // 
-            PatchRemoveDMLButton.Location = new Point(258, 192);
-            PatchRemoveDMLButton.Size = new Size(23, 23);
-            PatchRemoveDMLButton.TabIndex = 42;
-            PatchRemoveDMLButton.UseVisualStyleBackColor = true;
-            PatchRemoveDMLButton.PaintCustom += PatchRemoveDMLButton_Paint;
-            PatchRemoveDMLButton.Click += PatchRemoveDMLButton_Click;
-            // 
-            // PatchAddDMLButton
-            // 
-            PatchAddDMLButton.Location = new Point(282, 192);
-            PatchAddDMLButton.Size = new Size(23, 23);
-            PatchAddDMLButton.TabIndex = 43;
-            PatchAddDMLButton.UseVisualStyleBackColor = true;
-            PatchAddDMLButton.PaintCustom += PatchAddDMLButton_Paint;
-            PatchAddDMLButton.Click += PatchAddDMLButton_Click;
-            // 
-            // PatchOpenFMFolderButton
-            // 
-            PatchOpenFMFolderButton.AutoSize = true;
-            PatchOpenFMFolderButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchOpenFMFolderButton.Location = new Point(7, 224);
-            PatchOpenFMFolderButton.MinimumSize = new Size(162, 23);
-            PatchOpenFMFolderButton.TabIndex = 44;
-            PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
-            PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;
             // 
             // ModsTabPage
             // 
@@ -1043,10 +923,6 @@ namespace AngelLoader.Forms
             TagsTabPage.PerformLayout();
             PatchTabPage.ResumeLayout(false);
             PatchTabPage.PerformLayout();
-            PatchMainPanel.ResumeLayout(false);
-            PatchMainPanel.PerformLayout();
-            PatchDMLsPanel.ResumeLayout(false);
-            PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
             ResumeLayout(false);

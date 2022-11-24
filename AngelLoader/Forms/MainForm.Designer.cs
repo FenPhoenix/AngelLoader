@@ -108,18 +108,7 @@
             this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
             this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
             this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
-            this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.Patch_NDSubs_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Patch_PostProc_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.PatchMainPanel = new System.Windows.Forms.Panel();
-            this.PatchDMLsPanel = new System.Windows.Forms.Panel();
-            this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-            this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
             this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.MainModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -148,9 +137,6 @@
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
-            this.PatchTabPage.SuspendLayout();
-            this.PatchMainPanel.SuspendLayout();
-            this.PatchDMLsPanel.SuspendLayout();
             this.ModsTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -985,143 +971,12 @@
             // 
             // PatchTabPage
             // 
-            this.PatchTabPage.AutoScroll = true;
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.PatchTabPage.Controls.Add(this.Patch_PerFMValues_Label);
-            this.PatchTabPage.Controls.Add(this.Patch_NDSubs_CheckBox);
-            this.PatchTabPage.Controls.Add(this.Patch_PostProc_CheckBox);
-            this.PatchTabPage.Controls.Add(this.Patch_NewMantle_CheckBox);
-            this.PatchTabPage.Controls.Add(this.PatchMainPanel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
             this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
-            // 
-            // Patch_PerFMValues_Label
-            // 
-            this.Patch_PerFMValues_Label.AutoSize = true;
-            this.Patch_PerFMValues_Label.Location = new System.Drawing.Point(6, 8);
-            this.Patch_PerFMValues_Label.Name = "Patch_PerFMValues_Label";
-            this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
-            this.Patch_PerFMValues_Label.TabIndex = 0;
-            this.Patch_PerFMValues_Label.Text = "Option overrides:";
-            // 
-            // Patch_NDSubs_CheckBox
-            // 
-            this.Patch_NDSubs_CheckBox.AutoSize = true;
-            this.Patch_NDSubs_CheckBox.Checked = true;
-            this.Patch_NDSubs_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_NDSubs_CheckBox.Location = new System.Drawing.Point(8, 80);
-            this.Patch_NDSubs_CheckBox.Name = "Patch_NDSubs_CheckBox";
-            this.Patch_NDSubs_CheckBox.Size = new System.Drawing.Size(125, 17);
-            this.Patch_NDSubs_CheckBox.TabIndex = 3;
-            this.Patch_NDSubs_CheckBox.Text = "Subtitles (if available)";
-            this.Patch_NDSubs_CheckBox.ThreeState = true;
-            this.Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_NDSubs_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NDSubs_CheckBox_CheckStateChanged);
-            // 
-            // Patch_PostProc_CheckBox
-            // 
-            this.Patch_PostProc_CheckBox.AutoSize = true;
-            this.Patch_PostProc_CheckBox.Checked = true;
-            this.Patch_PostProc_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_PostProc_CheckBox.Location = new System.Drawing.Point(8, 56);
-            this.Patch_PostProc_CheckBox.Name = "Patch_PostProc_CheckBox";
-            this.Patch_PostProc_CheckBox.Size = new System.Drawing.Size(159, 17);
-            this.Patch_PostProc_CheckBox.TabIndex = 2;
-            this.Patch_PostProc_CheckBox.Text = "Post-processing (bloom etc.)";
-            this.Patch_PostProc_CheckBox.ThreeState = true;
-            this.Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_PostProc_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_PostProc_CheckBox_CheckStateChanged);
-            // 
-            // Patch_NewMantle_CheckBox
-            // 
-            this.Patch_NewMantle_CheckBox.AutoSize = true;
-            this.Patch_NewMantle_CheckBox.Checked = true;
-            this.Patch_NewMantle_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_NewMantle_CheckBox.Location = new System.Drawing.Point(8, 32);
-            this.Patch_NewMantle_CheckBox.Name = "Patch_NewMantle_CheckBox";
-            this.Patch_NewMantle_CheckBox.Size = new System.Drawing.Size(82, 17);
-            this.Patch_NewMantle_CheckBox.TabIndex = 1;
-            this.Patch_NewMantle_CheckBox.Text = "New mantle";
-            this.Patch_NewMantle_CheckBox.ThreeState = true;
-            this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_NewMantle_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NewMantle_CheckBox_CheckStateChanged);
-            // 
-            // PatchMainPanel
-            // 
-            this.PatchMainPanel.AutoSize = true;
-            this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
-            this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 104);
-            this.PatchMainPanel.Name = "PatchMainPanel";
-            this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
-            this.PatchMainPanel.TabIndex = 38;
-            // 
-            // PatchDMLsPanel
-            // 
-            this.PatchDMLsPanel.AutoSize = true;
-            this.PatchDMLsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchDMLsPanel.Controls.Add(this.PatchDMLPatchesLabel);
-            this.PatchDMLsPanel.Controls.Add(this.PatchDMLsListBox);
-            this.PatchDMLsPanel.Controls.Add(this.PatchRemoveDMLButton);
-            this.PatchDMLsPanel.Controls.Add(this.PatchAddDMLButton);
-            this.PatchDMLsPanel.Location = new System.Drawing.Point(0, 0);
-            this.PatchDMLsPanel.Name = "PatchDMLsPanel";
-            this.PatchDMLsPanel.Size = new System.Drawing.Size(308, 218);
-            this.PatchDMLsPanel.TabIndex = 39;
-            // 
-            // PatchDMLPatchesLabel
-            // 
-            this.PatchDMLPatchesLabel.AutoSize = true;
-            this.PatchDMLPatchesLabel.Location = new System.Drawing.Point(8, 8);
-            this.PatchDMLPatchesLabel.Name = "PatchDMLPatchesLabel";
-            this.PatchDMLPatchesLabel.Size = new System.Drawing.Size(156, 13);
-            this.PatchDMLPatchesLabel.TabIndex = 40;
-            this.PatchDMLPatchesLabel.Text = ".dml patches applied to this FM:";
-            // 
-            // PatchDMLsListBox
-            // 
-            this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
-            this.PatchDMLsListBox.MultiSelect = false;
-            this.PatchDMLsListBox.Name = "PatchDMLsListBox";
-            this.PatchDMLsListBox.Size = new System.Drawing.Size(296, 168);
-            this.PatchDMLsListBox.TabIndex = 41;
-            // 
-            // PatchRemoveDMLButton
-            // 
-            this.PatchRemoveDMLButton.Location = new System.Drawing.Point(258, 192);
-            this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
-            this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchRemoveDMLButton.TabIndex = 42;
-            this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
-            this.PatchRemoveDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchRemoveDMLButton_Paint);
-            this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
-            // 
-            // PatchAddDMLButton
-            // 
-            this.PatchAddDMLButton.Location = new System.Drawing.Point(282, 192);
-            this.PatchAddDMLButton.Name = "PatchAddDMLButton";
-            this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchAddDMLButton.TabIndex = 43;
-            this.PatchAddDMLButton.UseVisualStyleBackColor = true;
-            this.PatchAddDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchAddDMLButton_Paint);
-            this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
-            // 
-            // PatchOpenFMFolderButton
-            // 
-            this.PatchOpenFMFolderButton.AutoSize = true;
-            this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 224);
-            this.PatchOpenFMFolderButton.MinimumSize = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
-            this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.TabIndex = 44;
-            this.PatchOpenFMFolderButton.Text = "Open FM folder";
-            this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
-            this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
             // 
             // ModsTabPage
             // 
@@ -1304,12 +1159,6 @@
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
             this.TopRightTabControl.ResumeLayout(false);
-            this.PatchTabPage.ResumeLayout(false);
-            this.PatchTabPage.PerformLayout();
-            this.PatchMainPanel.ResumeLayout(false);
-            this.PatchMainPanel.PerformLayout();
-            this.PatchDMLsPanel.ResumeLayout(false);
-            this.PatchDMLsPanel.PerformLayout();
             this.ModsTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1377,14 +1226,7 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom PatchTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchRemoveDMLButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchAddDMLButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel PatchDMLPatchesLabel;
-        internal System.Windows.Forms.Panel PatchDMLsPanel;
-        internal System.Windows.Forms.Panel PatchMainPanel;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchOpenFMFolderButton;
+        internal AngelLoader.Forms.CustomControls.PatchTabPage PatchTabPage;
         internal AngelLoader.Forms.CustomControls.DarkArrowButton TopRightCollapseButton;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
@@ -1414,10 +1256,6 @@
         internal CustomControls.DarkTabPageCustom ModsTabPage;
         internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
         internal CustomControls.ModsControl MainModsControl;
-        internal CustomControls.DarkCheckBox Patch_NewMantle_CheckBox;
-        internal CustomControls.DarkLabel Patch_PerFMValues_Label;
-        internal CustomControls.DarkCheckBox Patch_PostProc_CheckBox;
-        internal CustomControls.DarkCheckBox Patch_NDSubs_CheckBox;
         internal CustomControls.DarkLabel FMCountLabel;
     }
 }

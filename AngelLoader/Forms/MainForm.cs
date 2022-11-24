@@ -620,6 +620,7 @@ namespace AngelLoader.Forms
             EditFMTabPage.SetOwner(this);
             CommentTabPage.SetOwner(this);
             TagsTabPage.SetOwner(this);
+            PatchTabPage.SetOwner(this);
 
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
@@ -1730,37 +1731,7 @@ namespace AngelLoader.Forms
 
                 PatchTabPage.Text = LText.PatchTab.TabText;
 
-                Patch_PerFMValues_Label.Text = LText.PatchTab.OptionOverrides;
-
-                Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
-                MainToolTip.SetToolTip(
-                    Patch_NewMantle_CheckBox,
-                    LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.NewMantle_ToolTip_NotSet
-                );
-
-                Patch_PostProc_CheckBox.Text = LText.PatchTab.PostProc;
-                MainToolTip.SetToolTip(
-                    Patch_PostProc_CheckBox,
-                    LText.PatchTab.PostProc_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.PostProc_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.PostProc_ToolTip_NotSet
-                );
-
-                Patch_NDSubs_CheckBox.Text = LText.PatchTab.Subtitles;
-                MainToolTip.SetToolTip(
-                    Patch_NDSubs_CheckBox,
-                    LText.PatchTab.Subtitles_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_NotSet + "\r\n\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_NewDarkNote
-                );
-
-                PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
-                MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
-                MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
-                PatchOpenFMFolderButton.Text = LText.PatchTab.OpenFMFolder;
+                PatchTabPage.Localize();
 
                 #endregion
 
@@ -3023,6 +2994,7 @@ namespace AngelLoader.Forms
             }
             else if (tabPage == PatchTabPage)
             {
+                PatchTabPage.Construct();
             }
             else if (tabPage == ModsTabPage)
             {
@@ -3056,81 +3028,6 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             Ini.WriteFullFMDataIni();
         }
-
-        #endregion
-
-        #region Patch tab
-
-        private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().PostProc = Patch_PostProc_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().NDSubs = Patch_NDSubs_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
-        {
-            if (PatchDMLsListBox.SelectedIndex == -1) return;
-
-            bool success = Core.RemoveDML(FMsDGV.GetMainSelectedFM(), PatchDMLsListBox.SelectedItem);
-            if (!success) return;
-
-            PatchDMLsListBox.RemoveAndSelectNearest();
-        }
-
-        // @VBL
-        private void PatchAddDMLButton_Click(object sender, EventArgs e)
-        {
-            var dmlFiles = new List<string>();
-
-            using (var d = new OpenFileDialog())
-            {
-                d.Multiselect = true;
-                d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
-                if (d.ShowDialogDark(this) != DialogResult.OK || d.FileNames.Length == 0) return;
-                dmlFiles.AddRange(d.FileNames);
-            }
-
-            HashSetI itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
-
-            try
-            {
-                PatchDMLsListBox.BeginUpdate();
-                foreach (string f in dmlFiles)
-                {
-                    if (f.IsEmpty()) continue;
-
-                    bool success = Core.AddDML(FMsDGV.GetMainSelectedFM(), f);
-                    if (!success) return;
-
-                    string dmlFileName = Path.GetFileName(f);
-                    if (!itemsHashSet.Contains(dmlFileName))
-                    {
-                        PatchDMLsListBox.Items.Add(dmlFileName);
-                    }
-                }
-            }
-            finally
-            {
-                PatchDMLsListBox.EndUpdate();
-            }
-        }
-
-        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetMainSelectedFM());
 
         #endregion
 
@@ -4446,9 +4343,7 @@ namespace AngelLoader.Forms
 
                 #region Patch tab
 
-                DisablePatchNonDMLSection();
-
-                ShowPatchInstalledOnlySection(enable: false);
+                PatchTabPage.UpdatePage();
 
                 #endregion
 
@@ -4466,47 +4361,6 @@ namespace AngelLoader.Forms
             _displayedFM = null;
 
             SetTopRightBlockerVisible();
-        }
-
-        private void DisablePatchNonDMLSection()
-        {
-            foreach (Control c in PatchTabPage.Controls)
-            {
-                if (c != PatchMainPanel)
-                {
-                    c.Enabled = false;
-                }
-
-                switch (c)
-                {
-                    case TextBox tb:
-                        tb.Text = "";
-                        break;
-                    case CheckBox chk:
-                        if (chk.ThreeState)
-                        {
-                            chk.CheckState = CheckState.Indeterminate;
-                        }
-                        else
-                        {
-                            chk.Checked = false;
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void HidePatchInstalledOnlySection()
-        {
-            PatchDMLsListBox.Items.Clear();
-            PatchMainPanel.Hide();
-        }
-
-        private void ShowPatchInstalledOnlySection(bool enable)
-        {
-            PatchDMLsListBox.Items.Clear();
-            PatchMainPanel.Show();
-            PatchMainPanel.Enabled = enable;
         }
 
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
@@ -4740,63 +4594,7 @@ namespace AngelLoader.Forms
 
                 TagsTabPage.UpdatePage();
 
-                #region Patch tab
-
-                if (fmIsT3)
-                {
-                    DisablePatchNonDMLSection();
-                }
-                else
-                {
-                    foreach (Control c in PatchTabPage.Controls)
-                    {
-                        if (c != PatchMainPanel)
-                        {
-                            c.Enabled = true;
-                        }
-                    }
-
-                    Patch_NewMantle_CheckBox.SetFromNullableBool(fm.NewMantle);
-                    Patch_PostProc_CheckBox.SetFromNullableBool(fm.PostProc);
-                    Patch_NDSubs_CheckBox.SetFromNullableBool(fm.NDSubs);
-                }
-
-                PatchMainPanel.Enabled = true;
-
-                if (fm.Installed && !fmIsT3)
-                {
-                    ShowPatchInstalledOnlySection(enable: true);
-                }
-                else
-                {
-                    HidePatchInstalledOnlySection();
-                }
-
-                PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
-
-                if (GameIsDark(fm.Game) && fm.Installed)
-                {
-                    PatchMainPanel.Show();
-                    try
-                    {
-                        PatchDMLsListBox.BeginUpdate();
-                        PatchDMLsListBox.Items.Clear();
-                        (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
-                        if (success)
-                        {
-                            foreach (string f in dmlFiles)
-                            {
-                                if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        PatchDMLsListBox.EndUpdate();
-                    }
-                }
-
-                #endregion
+                PatchTabPage.UpdatePage();
 
                 // @VBL
                 #region Mods tab
@@ -5012,10 +4810,6 @@ namespace AngelLoader.Forms
             e,
             SettingsButton.Enabled ? Images.Settings : Images.GetDisabledImage(Images.Settings),
             x: 10);
-
-        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(PatchAddDMLButton, e);
-
-        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(PatchRemoveDMLButton, e);
 
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
