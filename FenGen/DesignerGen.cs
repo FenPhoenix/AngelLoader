@@ -95,7 +95,7 @@ namespace FenGen
 
         internal static void Generate()
         {
-            foreach (var designerFile in Cache.DesignerCSFiles)
+            foreach (DesignerCSFile designerFile in Cache.DesignerCSFiles)
             {
                 GenerateDesignerFile(designerFile);
             }
@@ -107,7 +107,7 @@ namespace FenGen
         -Have some way to manually specify things, like specify lines not to overwrite because they're manually
          set up.
         */
-        private static void GenerateDesignerFile(string designerFile)
+        private static void GenerateDesignerFile(DesignerCSFile designerFile)
         {
             var controlTypes = new Dictionary<string, string>();
             var controlAttributes = new Dictionary<string, string>();
@@ -115,10 +115,10 @@ namespace FenGen
             var controlProperties = new Dictionary<string, CProps>();
             var destNodes = new List<NodeCustom>();
 
-            string formFileName = Path.GetFileName(designerFile);
-            string destFile = Path.Combine(Path.GetDirectoryName(designerFile)!, formFileName.Substring(0, formFileName.Length - ".Designer.cs".Length) + "_InitSlim.Generated.cs");
+            string formFileName = Path.GetFileName(designerFile.FileName);
+            string destFile = Path.Combine(Path.GetDirectoryName(designerFile.FileName)!, formFileName.Substring(0, formFileName.Length - ".Designer.cs".Length) + "_InitSlim.Generated.cs");
 
-            string code = File.ReadAllText(designerFile);
+            string code = File.ReadAllText(designerFile.FileName);
 
             List<string> sourceLines = code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
 
@@ -657,6 +657,22 @@ namespace FenGen
                         ? node.OverrideLine
                         : node.Node.ToFullString().TrimEnd('\r', '\n');
 
+                    if (designerFile.SplashScreen)
+                    {
+                        string line = finalLine;
+
+                        if (line.StartsWithO("this.")) line = line.Substring(5);
+                        int index = line.IndexOf('(');
+                        if (index > -1)
+                        {
+                            line = line.Substring(0, index);
+                        }
+                        if (line == "ResumeLayout")
+                        {
+                            continue;
+                        }
+                    }
+
                     string[] finalLineSplit = finalLine.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     for (int i = 0; i < finalLineSplit.Length; i++)
                     {
@@ -712,7 +728,7 @@ namespace FenGen
             }
 
             // Designer.cs files want UTF8 with BOM I guess...
-            File.WriteAllLines(designerFile, sourceLines, Encoding.UTF8);
+            File.WriteAllLines(designerFile.FileName, sourceLines, Encoding.UTF8);
         }
     }
 }

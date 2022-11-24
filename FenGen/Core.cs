@@ -74,6 +74,18 @@ namespace FenGen
         internal readonly List<string> LangTranslatedNames = new();
     }
 
+    internal sealed class DesignerCSFile
+    {
+        internal readonly string FileName;
+        internal readonly bool SplashScreen;
+
+        public DesignerCSFile(string fileName, bool splashScreen = false)
+        {
+            FileName = fileName;
+            SplashScreen = splashScreen;
+        }
+    }
+
     // Nasty global state that's really just here to avoid over-parameterization.
     internal static class Cache
     {
@@ -98,7 +110,7 @@ namespace FenGen
         private static List<string>? _csFiles;
         internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
 
-        internal static readonly List<string> DesignerCSFiles = new();
+        internal static readonly List<DesignerCSFile> DesignerCSFiles = new();
 
         internal static void Clear()
         {
@@ -229,6 +241,7 @@ namespace FenGen
             internal const string FMDataSource = "FenGen_FMDataSource";
             internal const string FMDataDest = "FenGen_FMDataDest";
             internal const string DesignerSource = "FenGen_DesignerSource";
+            internal const string DesignerSource_SplashScreen = "FenGen_DesignerSource_SplashScreen";
             internal const string BuildDate = "FenGen_BuildDateDest";
             internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
             internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
@@ -491,11 +504,17 @@ namespace FenGen
                     if (lts.StartsWithPlusWhiteSpace("#define"))
                     {
                         string tag = lts.Substring(7).Trim();
-                        if (tag == DefineHeaders.DesignerSource)
+                        if (tag
+                            is DefineHeaders.DesignerSource
+                            or DefineHeaders.DesignerSource_SplashScreen)
                         {
                             if (f.EndsWithI(".Designer.cs"))
                             {
-                                Cache.DesignerCSFiles.Add(f);
+                                Cache.DesignerCSFiles.Add(
+                                    new DesignerCSFile(
+                                        fileName: f,
+                                        splashScreen: tag == DefineHeaders.DesignerSource_SplashScreen
+                                    ));
                             }
                             else
                             {

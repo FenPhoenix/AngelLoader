@@ -105,11 +105,21 @@ namespace AngelLoader.Forms
             _foreColorCached = ForeColor;
             _backColorCached = BackColor;
 
-            base.Show();
+            try
+            {
+                // Prevent double-calling of DrawMain()!
+                _lockPainting = true;
 
-            // Must draw these after Show(), or they don't show up.
-            // These will stay visible for the life of the form, due to our setup.
-            DrawMain();
+                base.Show();
+
+                // Must draw these after Show(), or they don't show up.
+                // These will stay visible for the life of the form, due to our setup.
+                DrawMain();
+            }
+            finally
+            {
+                _lockPainting = false;
+            }
         }
 
         private void DrawMain()

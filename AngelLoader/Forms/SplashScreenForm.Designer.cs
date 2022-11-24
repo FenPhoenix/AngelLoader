@@ -1,4 +1,4 @@
-﻿#define FenGen_DesignerSource
+﻿#define FenGen_DesignerSource_SplashScreen
 
 namespace AngelLoader.Forms
 {
