@@ -144,7 +144,11 @@ namespace AngelLoader.Forms
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool ZeroSelectCodeDisabled { get; set; }
+        public bool ZeroSelectCodeDisabled => ZeroSelectCodeDisabledCount > 0;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int ZeroSelectCodeDisabledCount { get; set; }
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation

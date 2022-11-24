@@ -53,7 +53,8 @@ namespace AngelLoader
 
     public interface IZeroSelectCodeDisabler
     {
-        bool ZeroSelectCodeDisabled { set; }
+        bool ZeroSelectCodeDisabled { get; }
+        int ZeroSelectCodeDisabledCount { get; set; }
     }
 
     internal sealed class DisableZeroSelectCode : IDisposable
@@ -62,10 +63,10 @@ namespace AngelLoader
         internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
         {
             Obj = obj;
-            Obj.ZeroSelectCodeDisabled = true;
+            Obj.ZeroSelectCodeDisabledCount++;
         }
 
-        public void Dispose() => Obj.ZeroSelectCodeDisabled = false;
+        public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
     }
 
     #endregion
