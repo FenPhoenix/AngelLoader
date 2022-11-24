@@ -190,7 +190,7 @@
             // FMCountLabel
             // 
             this.FMCountLabel.AutoSize = true;
-            this.FMCountLabel.Location = new System.Drawing.Point(3, 15);
+            this.FMCountLabel.Location = new System.Drawing.Point(3, 7);
             this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 7, 0, 0);
             this.FMCountLabel.Name = "FMCountLabel";
             this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
@@ -205,7 +205,7 @@
             this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
             this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftFLP.Name = "BottomLeftFLP";
-            this.BottomLeftFLP.Size = new System.Drawing.Size(234, 42);
+            this.BottomLeftFLP.Size = new System.Drawing.Size(100, 42);
             this.BottomLeftFLP.TabIndex = 36;
             this.BottomLeftFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftFLP_Paint);
             // 
@@ -936,7 +936,7 @@
             this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
             this.StatisticsTabPage.Name = "StatisticsTabPage";
-            this.StatisticsTabPage.Size = new System.Drawing.Size(526, 284);
+            this.StatisticsTabPage.Size = new System.Drawing.Size(527, 284);
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
             // 
@@ -945,7 +945,7 @@
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
-            this.EditFMTabPage.Size = new System.Drawing.Size(526, 284);
+            this.EditFMTabPage.Size = new System.Drawing.Size(527, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
@@ -954,7 +954,7 @@
             this.CommentTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
-            this.CommentTabPage.Size = new System.Drawing.Size(526, 284);
+            this.CommentTabPage.Size = new System.Drawing.Size(527, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
             // 
@@ -963,7 +963,7 @@
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
-            this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
+            this.TagsTabPage.Size = new System.Drawing.Size(527, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
@@ -972,7 +972,7 @@
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
-            this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
+            this.PatchTabPage.Size = new System.Drawing.Size(527, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 

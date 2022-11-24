@@ -732,37 +732,31 @@ namespace AngelLoader.Forms
             // StatisticsTabPage
             // 
             StatisticsTabPage.BackColor = SystemColors.Control;
-            StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
             // 
             // EditFMTabPage
             // 
             EditFMTabPage.BackColor = SystemColors.Control;
-            EditFMTabPage.Size = new Size(526, 284);
             EditFMTabPage.TabIndex = 0;
             // 
             // CommentTabPage
             // 
             CommentTabPage.BackColor = SystemColors.Control;
-            CommentTabPage.Size = new Size(526, 284);
             CommentTabPage.TabIndex = 0;
             // 
             // TagsTabPage
             // 
             TagsTabPage.BackColor = SystemColors.Control;
-            TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
             // 
             // PatchTabPage
             // 
             PatchTabPage.BackColor = SystemColors.Control;
-            PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
             // 
             // ModsTabPage
             // 
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
             // 
             // ReadmeEncodingButton
