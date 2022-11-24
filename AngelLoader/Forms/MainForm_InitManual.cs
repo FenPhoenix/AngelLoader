@@ -87,14 +87,7 @@ namespace AngelLoader.Forms
             StatisticsTabPage = new StatsTabPage();
             EditFMTabPage = new EditFMTabPage();
             CommentTabPage = new CommentTabPage();
-            TagsTabPage = new DarkTabPageCustom();
-            AddTagButton = new DarkButton();
-            AddTagTextBox = new DarkTextBoxCustom();
-            AddRemoveTagFLP = new FlowLayoutPanel();
-            RemoveTagButton = new DarkButton();
-            AddTagFromListButton = new DarkButton();
-            TagsTreeView = new DarkTreeView();
-            TagsTabAutoScrollMarker = new Control();
+            TagsTabPage = new TagsTabPage();
             PatchTabPage = new DarkTabPageCustom();
             Patch_PerFMValues_Label = new DarkLabel();
             Patch_NDSubs_CheckBox = new DarkCheckBox();
@@ -139,7 +132,6 @@ namespace AngelLoader.Forms
             EditFMTabPage.SuspendLayout();
             CommentTabPage.SuspendLayout();
             TagsTabPage.SuspendLayout();
-            AddRemoveTagFLP.SuspendLayout();
             PatchTabPage.SuspendLayout();
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
@@ -771,85 +763,9 @@ namespace AngelLoader.Forms
             // 
             // TagsTabPage
             // 
-            TagsTabPage.AutoScroll = true;
             TagsTabPage.BackColor = SystemColors.Control;
-            TagsTabPage.Controls.Add(AddTagButton);
-            TagsTabPage.Controls.Add(AddTagTextBox);
-            TagsTabPage.Controls.Add(AddRemoveTagFLP);
-            TagsTabPage.Controls.Add(TagsTreeView);
-            TagsTabPage.Controls.Add(TagsTabAutoScrollMarker);
             TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
-            // 
-            // AddTagButton
-            // 
-            AddTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            AddTagButton.AutoSize = true;
-            AddTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            AddTagButton.Location = new Point(453, 7);
-            AddTagButton.MinimumSize = new Size(0, 23);
-            AddTagButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagButton.Size = new Size(66, 23);
-            AddTagButton.TabIndex = 1;
-            AddTagButton.UseVisualStyleBackColor = true;
-            AddTagButton.Click += AddTagButton_Click;
-            // 
-            // AddTagTextBox
-            // 
-            AddTagTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            AddTagTextBox.DisallowedCharacters = ",;";
-            AddTagTextBox.Location = new Point(8, 8);
-            AddTagTextBox.Size = new Size(440, 20);
-            AddTagTextBox.StrictTextChangedEvent = false;
-            AddTagTextBox.TabIndex = 0;
-            AddTagTextBox.TextChanged += AddTagTextBox_TextChanged;
-            AddTagTextBox.KeyDown += AddTagTextBoxOrListBox_KeyDown;
-            AddTagTextBox.Leave += AddTagTextBoxOrListBox_Leave;
-            // 
-            // AddRemoveTagFLP
-            // 
-            AddRemoveTagFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            AddRemoveTagFLP.AutoSize = true;
-            AddRemoveTagFLP.Controls.Add(RemoveTagButton);
-            AddRemoveTagFLP.Controls.Add(AddTagFromListButton);
-            AddRemoveTagFLP.FlowDirection = FlowDirection.RightToLeft;
-            AddRemoveTagFLP.Location = new Point(0, 248);
-            AddRemoveTagFLP.Size = new Size(525, 24);
-            AddRemoveTagFLP.TabIndex = 3;
-            // 
-            // RemoveTagButton
-            // 
-            RemoveTagButton.AutoSize = true;
-            RemoveTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            RemoveTagButton.Margin = new Padding(0, 0, 6, 0);
-            RemoveTagButton.MinimumSize = new Size(0, 23);
-            RemoveTagButton.Padding = new Padding(6, 0, 6, 0);
-            RemoveTagButton.TabIndex = 1;
-            RemoveTagButton.UseVisualStyleBackColor = true;
-            RemoveTagButton.Click += RemoveTagButton_Click;
-            // 
-            // AddTagFromListButton
-            // 
-            AddTagFromListButton.AutoSize = true;
-            AddTagFromListButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            AddTagFromListButton.Margin = new Padding(0);
-            AddTagFromListButton.MinimumSize = new Size(0, 23);
-            AddTagFromListButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagFromListButton.TabIndex = 0;
-            AddTagFromListButton.UseVisualStyleBackColor = true;
-            AddTagFromListButton.Click += AddTagFromListButton_Click;
-            // 
-            // TagsTreeView
-            // 
-            TagsTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TagsTreeView.HideSelection = false;
-            TagsTreeView.Location = new Point(8, 32);
-            TagsTreeView.Size = new Size(510, 216);
-            TagsTreeView.TabIndex = 2;
-            // 
-            // TagsTabAutoScrollMarker
-            // 
-            TagsTabAutoScrollMarker.Size = new Size(240, 152);
             // 
             // PatchTabPage
             // 
@@ -1125,8 +1041,6 @@ namespace AngelLoader.Forms
             CommentTabPage.PerformLayout();
             TagsTabPage.ResumeLayout(false);
             TagsTabPage.PerformLayout();
-            AddRemoveTagFLP.ResumeLayout(false);
-            AddRemoveTagFLP.PerformLayout();
             PatchTabPage.ResumeLayout(false);
             PatchTabPage.PerformLayout();
             PatchMainPanel.ResumeLayout(false);

@@ -11,7 +11,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
     {
         private bool _constructed;
 
-        private readonly MainForm _owner;
+        private readonly MainForm _form;
+        private readonly TagsTabPage _page;
+        private readonly Lazy_TagsPage _realPage;
 
         private DarkListBox _listBox = null!;
         internal DarkListBox ListBox
@@ -38,7 +40,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal AddTagLLDropDown(MainForm owner) => _owner = owner;
+        internal AddTagLLDropDown(MainForm form, TagsTabPage page, Lazy_TagsPage realPage)
+        {
+            _form = form;
+            _page = page;
+            _realPage = realPage;
+        }
 
         private void Construct()
         {
@@ -55,12 +62,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 DarkModeEnabled = _darkModeEnabled
             };
 
-            _listBox.SelectedIndexChanged += _owner.AddTagListBox_SelectedIndexChanged;
-            _listBox.KeyDown += _owner.AddTagTextBoxOrListBox_KeyDown;
-            _listBox.Leave += _owner.AddTagTextBoxOrListBox_Leave;
-            _listBox.MouseUp += _owner.AddTagListBox_MouseUp;
+            _listBox.SelectedIndexChanged += _page.AddTagListBox_SelectedIndexChanged;
+            _listBox.KeyDown += _page.AddTagTextBoxOrListBox_KeyDown;
+            _listBox.Leave += _page.AddTagTextBoxOrListBox_Leave;
+            _listBox.MouseUp += _page.AddTagListBox_MouseUp;
 
-            _owner.EverythingPanel.Controls.Add(_listBox);
+            _form.EverythingPanel.Controls.Add(_listBox);
 
             _constructed = true;
         }
@@ -74,9 +81,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             foreach (string item in list) _listBox.Items.Add(item);
             _listBox.EndUpdate();
 
-            Point p = _owner.PointToClient_Fast(_owner.AddTagTextBox.PointToScreen_Fast(new Point(0, 0)));
-            _listBox.Location = p with { Y = p.Y + _owner.AddTagTextBox.Height };
-            _listBox.Size = new Size(Math.Max(_owner.AddTagTextBox.Width, 256), 225);
+            Point p = _form.PointToClient_Fast(_realPage.AddTagTextBox.PointToScreen_Fast(new Point(0, 0)));
+            _listBox.Location = p with { Y = p.Y + _realPage.AddTagTextBox.Height };
+            _listBox.Size = new Size(Math.Max(_realPage.AddTagTextBox.Width, 256), 225);
 
             _listBox.BringToFront();
             _listBox.Show();

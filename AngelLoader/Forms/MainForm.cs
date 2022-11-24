@@ -155,8 +155,6 @@ namespace AngelLoader.Forms
 
         private readonly IDarkable[] _lazyLoadedControls;
 
-        private readonly AddTagLLDropDown AddTagLLDropDown;
-        private readonly DynamicItemsLLMenu AddTagLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ExitLLButton ExitLLButton;
@@ -326,7 +324,7 @@ namespace AngelLoader.Forms
                     // Stupid hack to fix "send mousewheel to underlying control and block further messages"
                     // functionality still not being fully reliable. We need to focus the parent control sometimes
                     // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
-                    if (!(AddTagLLDropDown.Visible && CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true)))
+                    if (!(TagsTabPage.AddTagLLDropDownVisible() && TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true)))
                     {
                         if (controlOver is DarkTextBox { Multiline: true })
                         {
@@ -415,7 +413,7 @@ namespace AngelLoader.Forms
                 }
                 else if (CursorOutsideAddTagsDropDownArea())
                 {
-                    AddTagLLDropDown.HideAndClear();
+                    TagsTabPage.HideAndClearAddTagLLDropDown();
                     if (m.Msg != Native.WM_LBUTTONUP &&
                         m.Msg != Native.WM_MBUTTONUP &&
                         m.Msg != Native.WM_RBUTTONUP &&
@@ -498,7 +496,7 @@ namespace AngelLoader.Forms
                         AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
                         AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
                         // Add tag dropdown is in EverythingPanel, not tags tab page
-                        AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
+                        AnyControlFocusedInTabPage(TagsTabPage) || TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.TagsTab :
                         AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
                         AnyControlFocusedInTabPage(ModsTabPage) ? HelpSections.ModsTab :
                         AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
@@ -538,8 +536,6 @@ namespace AngelLoader.Forms
 
             _lazyLoadedControls = new IDarkable[]
             {
-                AddTagLLDropDown = new AddTagLLDropDown(this),
-                AddTagLLMenu = new DynamicItemsLLMenu(this),
                 ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
                 EncodingsLLMenu = new EncodingsLLMenu(this),
                 ExitLLButton = new ExitLLButton(this),
@@ -1224,8 +1220,10 @@ namespace AngelLoader.Forms
                 }
             }
 
-            // Industrial strength protection against stupid event handler firing in the component init method...
-            if (AddTagLLDropDown != null! && AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
+            if (TagsTabPage.AddTagLLDropDownVisible())
+            {
+                TagsTabPage.HideAndClearAddTagLLDropDown();
+            }
 
             base.OnSizeChanged(e);
         }
@@ -1472,7 +1470,7 @@ namespace AngelLoader.Forms
             {
                 CancelResizables();
 
-                AddTagLLDropDown.HideAndClear();
+                TagsTabPage.HideAndClearAddTagLLDropDown();
 
                 // Easy way to "get out" of the filter if you want to use Home and End again
                 if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
@@ -1710,9 +1708,7 @@ namespace AngelLoader.Forms
                 #region Tags tab
 
                 TagsTabPage.Text = LText.TagsTab.TabText;
-                AddTagButton.SetTextForTextBoxButtonCombo(AddTagTextBox, LText.TagsTab.AddTag);
-                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
-                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
+                TagsTabPage.Localize();
 
                 #endregion
 
@@ -3003,6 +2999,7 @@ namespace AngelLoader.Forms
             }
             else if (tabPage == TagsTabPage)
             {
+                TagsTabPage.Construct(this);
             }
             else if (tabPage == PatchTabPage)
             {
@@ -3039,194 +3036,6 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             Ini.WriteFullFMDataIni();
         }
-
-        #endregion
-
-        #region Tags tab
-
-        // Robustness for if the user presses tab to get away, rather than clicking
-        internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
-        {
-            if ((sender == AddTagTextBox && !AddTagLLDropDown.Focused) ||
-                (AddTagLLDropDown.Visible &&
-                 sender == AddTagLLDropDown.ListBox && !AddTagTextBox.Focused))
-            {
-                AddTagLLDropDown.HideAndClear();
-            }
-        }
-
-        private void AddTagTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-
-            List<string> list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
-            if (list.Count == 0)
-            {
-                AddTagLLDropDown.HideAndClear();
-            }
-            else
-            {
-                AddTagLLDropDown.SetItemsAndShow(list);
-            }
-        }
-
-        internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            DarkListBox box = AddTagLLDropDown.ListBox;
-
-            switch (e.KeyCode)
-            {
-                case Keys.Up when box.Items.Count > 0:
-                    // We can't do a switch expression on the second one, so keep them both the same for consistency
-                    // ReSharper disable once ConvertConditionalTernaryExpressionToSwitchExpression
-                    box.SelectedIndex =
-                        box.SelectedIndex == -1 ? box.Items.Count - 1 :
-                        box.SelectedIndex == 0 ? -1 :
-                        box.SelectedIndex - 1;
-                    // We need this call to make the thing scroll...
-                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
-                    e.Handled = true;
-                    break;
-                case Keys.Down when box.Items.Count > 0:
-                    box.SelectedIndex =
-                        box.SelectedIndex == -1 ? 0 :
-                        box.SelectedIndex == box.Items.Count - 1 ? -1 :
-                        box.SelectedIndex + 1;
-                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
-                    e.Handled = true;
-                    break;
-                case Keys.Enter:
-                    string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem;
-                    FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), catAndTag);
-                    break;
-                default:
-                    if (sender == box) AddTagTextBox.Focus();
-                    break;
-            }
-        }
-
-        internal void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (AddTagLLDropDown.ListBox.SelectedIndex == -1) return;
-
-            using (new DisableEvents(this))
-            {
-                AddTagTextBox.Text = AddTagLLDropDown.ListBox.SelectedItem;
-            }
-
-            if (AddTagTextBox.Text.Length > 0)
-            {
-                AddTagTextBox.SelectionStart = AddTagTextBox.Text.Length;
-            }
-        }
-
-        public (string Category, string Tag)
-        SelectedCategoryAndTag()
-        {
-            TreeNode selNode = TagsTreeView.SelectedNode;
-            TreeNode parent;
-
-            return selNode == null
-                ? ("", "")
-                : (parent = selNode.Parent) == null
-                ? (selNode.Text, "")
-                : (parent.Text, selNode.Text);
-        }
-
-        private void RemoveTagButton_Click(object sender, EventArgs e) => FMTags.RemoveTagOperation();
-
-        internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left) return;
-
-            if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
-            {
-                FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
-            }
-        }
-
-        public void ClearTagsSearchBox()
-        {
-            AddTagTextBox.Clear();
-            AddTagLLDropDown.HideAndClear();
-        }
-
-        private void AddTagButton_Click(object sender, EventArgs e)
-        {
-            FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), AddTagTextBox.Text);
-        }
-
-        // @VBL (AddTagFromListButton_Click - lots of menu items and event hookups)
-        private void AddTagFromListButton_Click(object sender, EventArgs e)
-        {
-            GlobalTags.SortAndMoveMiscToEnd();
-
-            var addTagMenuItems = new ToolStripItem[GlobalTags.Count];
-            for (int i = 0; i < GlobalTags.Count; i++)
-            {
-                CatAndTagsList item = GlobalTags[i];
-
-                if (item.Tags.Count == 0)
-                {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":");
-                    catItem.Click += AddTagMenuEmptyItem_Click;
-                    addTagMenuItems[i] = catItem;
-                }
-                else
-                {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category);
-                    addTagMenuItems[i] = catItem;
-
-                    if (item.Category != PresetTags.MiscCategory)
-                    {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
-                        customItem.Click += AddTagMenuCustomItem_Click;
-                        catItem.DropDownItems.Add(customItem);
-                        catItem.DropDownItems.Add(new ToolStripSeparator());
-                    }
-
-                    foreach (string tag in item.Tags)
-                    {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag);
-
-                        tagItem.Click += item.Category == PresetTags.MiscCategory
-                            ? AddTagMenuMiscItem_Click
-                            : AddTagMenuItem_Click;
-
-                        catItem.DropDownItems.Add(tagItem);
-                    }
-                }
-            }
-
-            AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
-
-            ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
-        }
-
-        private void AddTagMenuItem_Click(object sender, EventArgs e)
-        {
-            var item = (ToolStripMenuItemWithBackingText)sender;
-            if (item.HasDropDownItems) return;
-
-            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
-            if (cat == null) return;
-
-            FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), cat.BackingText + ": " + item.BackingText);
-        }
-
-        private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
-        {
-            var item = (ToolStripMenuItemWithBackingText)sender;
-
-            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
-            if (cat == null) return;
-
-            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.BackingText + ": ");
-        }
-
-        private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText);
-
-        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
 
         #endregion
 
@@ -4611,11 +4420,7 @@ namespace AngelLoader.Forms
 
                 #region Tags tab
 
-                AddTagTextBox.Text = "";
-
-                TagsTreeView.Nodes.Clear();
-
-                foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
+                TagsTabPage.UpdatePage();
 
                 #endregion
 
@@ -4927,10 +4732,7 @@ namespace AngelLoader.Forms
 
                 #region Tags tab
 
-                foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
-
-                AddTagTextBox.Text = "";
-                DisplayFMTags(fm.Tags);
+                TagsTabPage.UpdatePage();
 
                 #endregion
 
@@ -5132,7 +4934,7 @@ namespace AngelLoader.Forms
 
         public void DisplayFMTags(FMCategoriesCollection fmTags)
         {
-            ControlUtils.FillTreeViewFromTags_Sorted(TagsTreeView, fmTags);
+            TagsTabPage.FillFMTags(fmTags);
         }
 
         #endregion
@@ -5420,14 +5222,14 @@ namespace AngelLoader.Forms
         private bool CursorOutsideAddTagsDropDownArea()
         {
             // Check Visible first, otherwise we might be passing a null ref!
-            return AddTagLLDropDown.Visible &&
+            return TagsTabPage.AddTagLLDropDownVisible() &&
                    // Check Size instead of ClientSize in order to support clicking the scroll bar
-                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
-                   !CursorOverControl(AddTagTextBox) &&
-                   !CursorOverControl(AddTagButton);
+                   !TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true) &&
+                   !TagsTabPage.CursorOverAddTagTextBox() &&
+                   !TagsTabPage.CursorOverAddTagButton();
         }
 
-        private bool CursorOverControl(Control control, bool fullArea = false)
+        internal bool CursorOverControl(Control control, bool fullArea = false)
         {
             if (!control.Visible || !control.Enabled) return false;
 

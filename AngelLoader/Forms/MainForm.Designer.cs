@@ -107,14 +107,7 @@
             this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.StatsTabPage();
             this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
             this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
-            this.TagsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
-            this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
-            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
+            this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
             this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.Patch_NDSubs_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -155,8 +148,6 @@
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
-            this.TagsTabPage.SuspendLayout();
-            this.AddRemoveTagFLP.SuspendLayout();
             this.PatchTabPage.SuspendLayout();
             this.PatchMainPanel.SuspendLayout();
             this.PatchDMLsPanel.SuspendLayout();
@@ -390,8 +381,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FMsDGV.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -572,7 +563,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -593,7 +584,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -672,7 +663,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -967,7 +958,6 @@
             // 
             // EditFMTabPage
             // 
-            this.EditFMTabPage.AutoScroll = true;
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
@@ -986,109 +976,12 @@
             // 
             // TagsTabPage
             // 
-            this.TagsTabPage.AutoScroll = true;
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.TagsTabPage.Controls.Add(this.AddTagButton);
-            this.TagsTabPage.Controls.Add(this.AddTagTextBox);
-            this.TagsTabPage.Controls.Add(this.AddRemoveTagFLP);
-            this.TagsTabPage.Controls.Add(this.TagsTreeView);
-            this.TagsTabPage.Controls.Add(this.TagsTabAutoScrollMarker);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
             this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
-            // 
-            // AddTagButton
-            // 
-            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagButton.AutoSize = true;
-            this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
-            this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagButton.Name = "AddTagButton";
-            this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagButton.Size = new System.Drawing.Size(66, 23);
-            this.AddTagButton.TabIndex = 1;
-            this.AddTagButton.Text = "Add tag";
-            this.AddTagButton.UseVisualStyleBackColor = true;
-            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
-            // 
-            // AddTagTextBox
-            // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagTextBox.DisallowedCharacters = ",;";
-            this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
-            this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(440, 20);
-            this.AddTagTextBox.StrictTextChangedEvent = false;
-            this.AddTagTextBox.TabIndex = 0;
-            this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
-            this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
-            this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
-            // 
-            // AddRemoveTagFLP
-            // 
-            this.AddRemoveTagFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddRemoveTagFLP.AutoSize = true;
-            this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
-            this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
-            this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFLP.Location = new System.Drawing.Point(0, 248);
-            this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
-            this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
-            this.AddRemoveTagFLP.TabIndex = 3;
-            // 
-            // RemoveTagButton
-            // 
-            this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveTagButton.AutoSize = true;
-            this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.RemoveTagButton.Location = new System.Drawing.Point(432, 0);
-            this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
-            this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.RemoveTagButton.Name = "RemoveTagButton";
-            this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
-            this.RemoveTagButton.TabIndex = 1;
-            this.RemoveTagButton.Text = "Remove tag";
-            this.RemoveTagButton.UseVisualStyleBackColor = true;
-            this.RemoveTagButton.Click += new System.EventHandler(this.RemoveTagButton_Click);
-            // 
-            // AddTagFromListButton
-            // 
-            this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagFromListButton.AutoSize = true;
-            this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(337, 0);
-            this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
-            this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagFromListButton.Name = "AddTagFromListButton";
-            this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
-            this.AddTagFromListButton.TabIndex = 0;
-            this.AddTagFromListButton.Text = "Add from list...";
-            this.AddTagFromListButton.UseVisualStyleBackColor = true;
-            this.AddTagFromListButton.Click += new System.EventHandler(this.AddTagFromListButton_Click);
-            // 
-            // TagsTreeView
-            // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TagsTreeView.HideSelection = false;
-            this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
-            this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(510, 216);
-            this.TagsTreeView.TabIndex = 2;
-            // 
-            // TagsTabAutoScrollMarker
-            // 
-            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
-            this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
-            this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
-            this.TagsTabAutoScrollMarker.TabIndex = 5;
             // 
             // PatchTabPage
             // 
@@ -1411,10 +1304,6 @@
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
             this.TopRightTabControl.ResumeLayout(false);
-            this.TagsTabPage.ResumeLayout(false);
-            this.TagsTabPage.PerformLayout();
-            this.AddRemoveTagFLP.ResumeLayout(false);
-            this.AddRemoveTagFLP.PerformLayout();
             this.PatchTabPage.ResumeLayout(false);
             this.PatchTabPage.PerformLayout();
             this.PatchMainPanel.ResumeLayout(false);
@@ -1463,14 +1352,9 @@
         internal AngelLoader.Forms.CustomControls.DarkTabControl TopRightTabControl;
         internal AngelLoader.Forms.CustomControls.StatsTabPage StatisticsTabPage;
         internal AngelLoader.Forms.CustomControls.CommentTabPage CommentTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom TagsTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTreeView TagsTreeView;
+        internal AngelLoader.Forms.CustomControls.TagsTabPage TagsTabPage;
         internal AngelLoader.Forms.CustomControls.DarkButton ResetLayoutButton;
         internal System.Windows.Forms.ToolTip MainToolTip;
-        internal AngelLoader.Forms.CustomControls.DarkButton RemoveTagButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton AddTagButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton AddTagFromListButton;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom AddTagTextBox;
         internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
         internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
         internal AngelLoader.Forms.CustomControls.EditFMTabPage EditFMTabPage;
@@ -1493,7 +1377,6 @@
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
         internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;
-        internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
         internal AngelLoader.Forms.CustomControls.DarkTabPageCustom PatchTabPage;
         internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
         internal AngelLoader.Forms.CustomControls.DarkButton PatchRemoveDMLButton;
@@ -1521,7 +1404,6 @@
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
-        internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
         internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
         internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;

@@ -414,11 +414,7 @@ namespace AngelLoader
 
         #region Tags
 
-        (string Category, string Tag) SelectedCategoryAndTag();
-
         void DisplayFMTags(FMCategoriesCollection fmTags);
-
-        void ClearTagsSearchBox();
 
         #endregion
 
