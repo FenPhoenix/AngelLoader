@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
@@ -24,8 +25,8 @@ namespace AngelLoader.Forms.CustomControls
             {
                 Controls.Add(_page);
 
-                _page.CommentTextBox.Leave += _owner.CommentTextBox_Leave;
-                _page.CommentTextBox.TextChanged += _owner.CommentTextBox_TextChanged;
+                _page.CommentTextBox.Leave += CommentTextBox_Leave;
+                _page.CommentTextBox.TextChanged += CommentTextBox_TextChanged;
 
                 _constructed = true;
 
@@ -52,7 +53,37 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal string GetCommentBoxText()
+        private void CommentTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            UpdateFMComment();
+        }
+
+        private void CommentTextBox_Leave(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            Ini.WriteFullFMDataIni();
+        }
+
+        private void UpdateFMComment()
+        {
+            FanMission? fm = _owner.GetMainSelectedFMOrNull_Fast();
+            if (fm == null) return;
+
+            string commentText = GetCommentBoxText();
+
+            // Converting a multiline comment to single line:
+            // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
+            // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
+            // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
+            // 25,000+ character strings with nothing but slashes and linebreaks in them.
+            fm.Comment = commentText.ToRNEscapes();
+            fm.CommentSingleLine = commentText.ToSingleLineComment(100);
+
+            _owner.RefreshMainSelectedFMRow_Fast();
+        }
+
+        private string GetCommentBoxText()
         {
             Utils.AssertR(_page != null, nameof(_page) + " is null!");
             return _page!.CommentTextBox.Text;

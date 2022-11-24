@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AngelLoader.Forms.DarkFormBase;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -13,7 +12,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private protected bool _constructed;
 
-        private readonly List<KeyValuePair<Control, ControlOriginalColors?>> _controlColors = new();
+        private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
         [PublicAPI]
         [Browsable(false)]
@@ -34,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private protected void RefreshTheme()
         {
-            SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
+            ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
         }
 
         private protected bool OnStartupAndThisTabIsSelected()

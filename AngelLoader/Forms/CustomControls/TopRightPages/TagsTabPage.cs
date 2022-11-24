@@ -125,7 +125,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private void FillFMTags(FMCategoriesCollection fmTags)
         {
-            // @TopLazy: When we return here, tags won't be sorted. Does this matter?
             if (!_constructed) return;
             ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
         }
@@ -316,7 +315,7 @@ namespace AngelLoader.Forms.CustomControls
 
             AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
 
-            ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, MenuPos.LeftDown);
+            ControlUtils.ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, ControlUtils.MenuPos.LeftDown);
         }
 
         private void AddTagMenuItem_Click(object sender, EventArgs e)

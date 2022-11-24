@@ -2142,24 +2142,6 @@ namespace AngelLoader
             return null;
         }
 
-        internal static void UpdateFMComment()
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull_Fast();
-            if (fm == null) return;
-
-            string commentText = View.GetFMCommentText();
-
-            // Converting a multiline comment to single line:
-            // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
-            // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
-            // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
-            // 25,000+ character strings with nothing but slashes and linebreaks in them.
-            fm.Comment = commentText.ToRNEscapes();
-            fm.CommentSingleLine = commentText.ToSingleLineComment(100);
-
-            View.RefreshMainSelectedFMRow_Fast();
-        }
-
         // TODO(DisplayFM/sel change/int index):
         // Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
         // it always is >-1 and matches the currently selected FM/row. Can probably be removed.

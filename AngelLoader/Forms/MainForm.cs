@@ -1787,7 +1787,7 @@ namespace AngelLoader.Forms
 
                 if (startup && !darkMode)
                 {
-                    CreateAllControlsHandles(this);
+                    ControlUtils.CreateAllControlsHandles(this);
                 }
                 else
                 {
@@ -1859,7 +1859,7 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
+            ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, ControlUtils.MenuPos.BottomRight, xOffset: 0, yOffset: 2);
         }
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
@@ -2621,9 +2621,9 @@ namespace AngelLoader.Forms
 
         private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(GameFilterControlsLLMenu.Menu,
+            ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
                 GameFilterControlsShowHideButtonToolStrip,
-                MenuPos.RightDown,
+                ControlUtils.MenuPos.RightDown,
                 -GameFilterControlsShowHideButton.Width,
                 GameFilterControlsShowHideButton.Height);
         }
@@ -2680,9 +2680,9 @@ namespace AngelLoader.Forms
 
         private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(FilterControlsLLMenu.Menu,
+            ControlUtils.ShowMenu(FilterControlsLLMenu.Menu,
                 FilterIconButtonsToolStrip,
-                MenuPos.RightDown,
+                ControlUtils.MenuPos.RightDown,
                 -FilterControlsShowHideButton.Width,
                 FilterIconButtonsToolStrip.Height);
         }
@@ -2987,28 +2987,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        #region Edit FM tab
-
-        #endregion
-
-        #region Comment tab
-
-        public string GetFMCommentText() => CommentTabPage.GetCommentBoxText();
-
-        internal void CommentTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.UpdateFMComment();
-        }
-
-        internal void CommentTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
         private void TopRightCollapseButton_Click(object sender, EventArgs e)
         {
             TopSplitContainer.ToggleFullScreen();
@@ -3036,7 +3014,7 @@ namespace AngelLoader.Forms
 
         private void TopRightMenuButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
+            ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, ControlUtils.MenuPos.BottomLeft);
         }
 
         internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
@@ -3980,7 +3958,7 @@ namespace AngelLoader.Forms
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
+            ControlUtils.ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, ControlUtils.MenuPos.LeftDown);
         }
 
         public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
@@ -4144,7 +4122,7 @@ namespace AngelLoader.Forms
             }
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
-            ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
+            ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, ControlUtils.MenuPos.TopRight);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -4181,7 +4159,8 @@ namespace AngelLoader.Forms
 
         internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
+            ControlUtils.ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu,
+                Lazy_PlayOriginalControls.T2MPMenuButton, ControlUtils.MenuPos.TopRight);
         }
 
         internal void PlayT2MPMenuItem_Click(object sender, EventArgs e)
@@ -4747,48 +4726,6 @@ namespace AngelLoader.Forms
                 }
             }
         }
-
-        #region Show menu
-
-        // @TopLazy: Put these in ControlUtils or something
-        internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
-        internal static void ShowMenu(
-            ContextMenuStrip menu,
-            Control control,
-            MenuPos pos,
-            int xOffset = 0,
-            int yOffset = 0,
-            bool unstickMenu = false)
-        {
-            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
-                ? 0
-                : control.Width;
-
-            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
-                ? 0
-                : control.Height;
-
-            ToolStripDropDownDirection direction = pos switch
-            {
-                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
-                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
-                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
-                _ => ToolStripDropDownDirection.BelowRight
-            };
-
-            if (unstickMenu)
-            {
-                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
-                // then carry on with the final show below
-                menu.Show();
-                menu.Hide();
-            }
-
-            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
-        }
-
-        #endregion
 
         public void Block(bool block) => Invoke(() =>
         {

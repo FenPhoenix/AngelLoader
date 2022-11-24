@@ -441,8 +441,6 @@ namespace AngelLoader
 
         void SetPinnedMenuState(bool pinned);
 
-        string GetFMCommentText();
-
         void SetPlayOriginalGameControlsState();
 
         void UpdateAllFMUIDataExceptReadme(FanMission fm);

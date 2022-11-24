@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -637,5 +638,189 @@ namespace AngelLoader.Forms
         #endregion
 
         internal static bool IsMenuKey(KeyEventArgs e) => e.KeyCode == Keys.Apps || (e.Shift && e.KeyCode == Keys.F10);
+
+        #region Show menu
+
+        internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
+        internal static void ShowMenu(
+            ContextMenuStrip menu,
+            Control control,
+            MenuPos pos,
+            int xOffset = 0,
+            int yOffset = 0,
+            bool unstickMenu = false)
+        {
+            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
+                ? 0
+                : control.Width;
+
+            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
+                ? 0
+                : control.Height;
+
+            ToolStripDropDownDirection direction = pos switch
+            {
+                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
+                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
+                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
+                _ => ToolStripDropDownDirection.BelowRight
+            };
+
+            if (unstickMenu)
+            {
+                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
+                // then carry on with the final show below
+                menu.Show();
+                menu.Hide();
+            }
+
+            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
+        }
+
+        #endregion
+
+        #region Theming
+
+        internal sealed class ControlOriginalColors
+        {
+            internal readonly Color ForeColor;
+            internal readonly Color BackColor;
+
+            internal ControlOriginalColors(Color foreColor, Color backColor)
+            {
+                ForeColor = foreColor;
+                BackColor = backColor;
+            }
+        }
+
+        private static void FillControlColorList(
+            Control control,
+            List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
+            bool createControlHandles
+#if !ReleasePublic && !NoAsserts
+            , int stackCounter = 0
+#endif
+        )
+        {
+#if !ReleasePublic && !NoAsserts
+            const int maxStackCount = 100;
+#endif
+
+            if (controlColors != null && control.Tag is not LoadType.Lazy)
+            {
+                ControlOriginalColors? origColors = control is IDarkable
+                    ? null
+                    : new ControlOriginalColors(control.ForeColor, control.BackColor);
+                controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
+            }
+
+            if (createControlHandles && !control.IsHandleCreated)
+            {
+                IntPtr dummy = control.Handle;
+            }
+
+#if !ReleasePublic && !NoAsserts
+            stackCounter++;
+
+            AssertR(
+                stackCounter <= maxStackCount,
+                nameof(FillControlColorList) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
+#endif
+
+            // Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
+            // implemented by actually adding and removing the tab pages from the control and keeping them in a
+            // backing list (that's the only way to do it). So we can run into problems where if a tab page is
+            // not part of the control (because it's hidden), it will not be hit by this method and therefore
+            // will never be themed correctly. So handle custom tab controls separately and go through their
+            // backing lists rather than their Controls collection.
+            if (control is DarkTabControl dtc)
+            {
+                Control[] backingPages = dtc.BackingTabPages;
+                for (int i = 0; i < backingPages.Length; i++)
+                {
+                    FillControlColorList(
+                        backingPages[i],
+                        controlColors,
+                        createControlHandles
+#if !ReleasePublic && !NoAsserts
+                        , stackCounter
+#endif
+                    );
+                }
+            }
+            else
+            {
+                for (int i = 0; i < control.Controls.Count; i++)
+                {
+                    FillControlColorList(
+                        control.Controls[i],
+                        controlColors,
+                        createControlHandles
+#if !ReleasePublic && !NoAsserts
+                        , stackCounter
+#endif
+                    );
+                }
+            }
+        }
+
+        internal static void CreateAllControlsHandles(Control control) => FillControlColorList(control, null, createControlHandles: true);
+
+        internal static void SetTheme(
+            Control baseControl,
+            List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
+            VisualTheme theme,
+            Func<Component, bool>? excludePredicate = null,
+            bool createControlHandles = false,
+            int capacity = -1)
+        {
+            bool darkMode = theme == VisualTheme.Dark;
+
+            Images.DarkModeEnabled = darkMode;
+
+            // @DarkModeNote(FillControlColorList): Controls might change their colors after construct
+            // Remember to handle this if new controls are added that this applies to.
+            if (controlColors.Count == 0)
+            {
+                if (capacity >= 0) controlColors.Capacity = capacity;
+                FillControlColorList(baseControl, (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors, createControlHandles);
+            }
+
+            foreach (var item in controlColors)
+            {
+                Control control = item.Key;
+
+                // Separate if because a control could be IDarkable AND be a ToolStrip
+                if (control is ToolStrip ts)
+                {
+                    foreach (ToolStripItem tsItem in ts.Items)
+                    {
+                        if (tsItem is IDarkable darkableTSItem && (excludePredicate == null || !excludePredicate(tsItem)))
+                        {
+                            darkableTSItem.DarkModeEnabled = darkMode;
+                        }
+                    }
+                }
+
+                // We might want to exclude a ToolStrip but not its subcomponents, so we put this check after the
+                // ToolStrip component check
+                if (excludePredicate?.Invoke(control) == true) continue;
+
+                if (control is IDarkable darkableControl)
+                {
+                    darkableControl.DarkModeEnabled = darkMode;
+                }
+                else
+                {
+                    (control.ForeColor, control.BackColor) =
+                        darkMode
+                            ? (DarkColors.LightText, DarkColors.Fen_ControlBackground)
+                            : (item.Value!.ForeColor, item.Value!.BackColor);
+                }
+            }
+        }
+
+        #endregion
     }
 }

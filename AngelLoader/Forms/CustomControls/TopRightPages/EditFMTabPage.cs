@@ -16,11 +16,8 @@ namespace AngelLoader.Forms.CustomControls
 {
     /*
     @TopLazy: Focus tab pages after tab drag, because a control in the page gets focus
-    @TopLazy: ALL TABS: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
-    @TopLazy: Test lazy-loaded lang error functionality
     @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
     @TopLazy: Set tab indexes on all these when we're done
-    @TopLazy: These tab pages may not need their explicit Size properties set in InitManual
     @TopLazy: Organize code in all tab pages
     */
 
@@ -316,7 +313,10 @@ namespace AngelLoader.Forms.CustomControls
 
             AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
 
-            MainForm.ShowMenu(AltTitlesLLMenu.Menu, _page.EditFMAltTitlesArrowButton, MainForm.MenuPos.BottomLeft);
+            ControlUtils.ShowMenu(
+                AltTitlesLLMenu.Menu,
+                _page.EditFMAltTitlesArrowButton,
+                ControlUtils.MenuPos.BottomLeft);
         }
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
@@ -411,8 +411,6 @@ namespace AngelLoader.Forms.CustomControls
             fm.Rating = rating;
             _owner.RefreshMainSelectedFMRow_Fast();
 
-            // @TopLazy: This event disabling is getting out of hand - we can't tell if we should or not
-            // Rework it so it's safe to call multiple times nested!
             UpdateRatingMenus(rating);
 
             FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
@@ -435,7 +433,11 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
-            MainForm.ShowMenu(_owner.FMsDGV_FM_LLMenu.GetFinishedOnMenu(), _page.EditFMFinishedOnButton, MainForm.MenuPos.BottomRight, unstickMenu: true);
+            ControlUtils.ShowMenu(
+                _owner.FMsDGV_FM_LLMenu.GetFinishedOnMenu(),
+                _page.EditFMFinishedOnButton,
+                ControlUtils.MenuPos.BottomRight,
+                unstickMenu: true);
         }
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
