@@ -6,7 +6,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using JetBrains.Annotations;
-using static AngelLoader.Forms.MainForm;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
@@ -20,8 +19,14 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_TagsPage _page = null!;
 
+        #region Lazy-loaded subcontrols
+
         private AddTagLLDropDown AddTagLLDropDown = null!;
         private DynamicItemsLLMenu AddTagLLMenu = null!;
+
+        #endregion
+
+        #region Theme
 
         [PublicAPI]
         [Browsable(false)]
@@ -43,40 +48,9 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        // null! checks - industrial strength protection against stupid event handler firing in the component init method...
-        // (But now that we've reorganized to be lazy-loaded, it might well not matter. Still, does no harm.)
-        internal bool AddTagLLDropDownVisible()
-        {
-            return _constructed && AddTagLLDropDown != null! && AddTagLLDropDown.Visible;
-        }
+        #endregion
 
-        internal void HideAndClearAddTagLLDropDown()
-        {
-            if (_constructed && AddTagLLDropDown != null!)
-            {
-                AddTagLLDropDown.HideAndClear();
-            }
-        }
-
-        internal bool AddTagLLDropDownFocused()
-        {
-            return _constructed && AddTagLLDropDown.Focused;
-        }
-
-        internal bool CursorOverAddTagLLDropDown(bool fullArea = false)
-        {
-            return _constructed && _owner.CursorOverControl(AddTagLLDropDown.ListBox, fullArea);
-        }
-
-        internal bool CursorOverAddTagTextBox(bool fullArea = false)
-        {
-            return _constructed && _owner.CursorOverControl(_page.AddTagTextBox, fullArea);
-        }
-
-        internal bool CursorOverAddTagButton(bool fullArea = false)
-        {
-            return _constructed && _owner.CursorOverControl(_page.AddTagButton, fullArea);
-        }
+        #region Public common
 
         public override void SetOwner(MainForm owner) => _owner = owner;
 
@@ -151,13 +125,50 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        #endregion
+
+        #region Page
+
         private void FillFMTags(FMCategoriesCollection fmTags)
         {
             if (!_constructed) return;
             ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
         }
 
-        #region Tags tab
+        // null! checks - industrial strength protection against stupid event handler firing in the component init method...
+        // (But now that we've reorganized to be lazy-loaded, it might well not matter. Still, does no harm.)
+        internal bool AddTagLLDropDownVisible()
+        {
+            return _constructed && AddTagLLDropDown != null! && AddTagLLDropDown.Visible;
+        }
+
+        internal void HideAndClearAddTagLLDropDown()
+        {
+            if (_constructed && AddTagLLDropDown != null!)
+            {
+                AddTagLLDropDown.HideAndClear();
+            }
+        }
+
+        internal bool AddTagLLDropDownFocused()
+        {
+            return _constructed && AddTagLLDropDown.Focused;
+        }
+
+        internal bool CursorOverAddTagLLDropDown(bool fullArea = false)
+        {
+            return _constructed && _owner.CursorOverControl(AddTagLLDropDown.ListBox, fullArea);
+        }
+
+        internal bool CursorOverAddTagTextBox(bool fullArea = false)
+        {
+            return _constructed && _owner.CursorOverControl(_page.AddTagTextBox, fullArea);
+        }
+
+        internal bool CursorOverAddTagButton(bool fullArea = false)
+        {
+            return _constructed && _owner.CursorOverControl(_page.AddTagButton, fullArea);
+        }
 
         // Robustness for if the user presses tab to get away, rather than clicking
         internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
@@ -343,8 +354,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => _page.AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
 
-        #endregion
-
         private void AddTagOperation(FanMission fm, string catAndTag)
         {
             if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
@@ -372,5 +381,7 @@ namespace AngelLoader.Forms.CustomControls
                 FillFMTags(fm.Tags);
             }
         }
+
+        #endregion
     }
 }

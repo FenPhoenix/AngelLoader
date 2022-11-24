@@ -9,6 +9,8 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_CommentPage _page = null!;
 
+        #region Public common
+
         public override void SetOwner(MainForm owner) => _owner = owner;
 
         public override void Construct()
@@ -55,6 +57,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        #endregion
+
+        #region Page
+
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
@@ -72,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
             FanMission? fm = _owner.GetMainSelectedFMOrNull_Fast();
             if (fm == null) return;
 
-            string commentText = GetCommentBoxText();
+            string commentText = _page.CommentTextBox.Text;
 
             // Converting a multiline comment to single line:
             // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
@@ -85,10 +91,6 @@ namespace AngelLoader.Forms.CustomControls
             _owner.RefreshMainSelectedFMRow_Fast();
         }
 
-        private string GetCommentBoxText()
-        {
-            Utils.AssertR(_page != null, nameof(_page) + " is null!");
-            return _page!.CommentTextBox.Text;
-        }
+        #endregion
     }
 }

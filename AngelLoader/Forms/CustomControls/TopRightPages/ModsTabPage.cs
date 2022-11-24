@@ -12,7 +12,13 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_ModsPage _page = null!;
 
+        #region Lazy-loaded subcontrols
+
         private DarkLabel ModsTabNotSupportedMessageLabel = null!;
+
+        #endregion
+
+        #region Public common
 
         public override void SetOwner(MainForm owner) => _owner = owner;
 
@@ -125,6 +131,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        #endregion
+
+        #region Page
+
         private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             UpdateFMDisabledMods(writeIni: false);
@@ -144,5 +154,7 @@ namespace AngelLoader.Forms.CustomControls
             _owner.RefreshMainSelectedFMRow_Fast();
             if (writeIni) Ini.WriteFullFMDataIni();
         }
+
+        #endregion
     }
 }

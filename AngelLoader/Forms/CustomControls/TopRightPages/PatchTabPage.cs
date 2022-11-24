@@ -15,6 +15,8 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_PatchPage _page = null!;
 
+        #region Public common
+
         public override void SetOwner(MainForm owner) => _owner = owner;
 
         public override void Construct()
@@ -161,7 +163,9 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        #region Patch tab
+        #endregion
+
+        #region Page
 
         private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
         {
@@ -237,7 +241,6 @@ namespace AngelLoader.Forms.CustomControls
         private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(_page.PatchAddDMLButton, e);
 
         private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(_page.PatchRemoveDMLButton, e);
-
 
         private void DisablePatchNonDMLSection()
         {

@@ -12,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_StatsPage _page = null!;
 
+        #region Event sending
+
         internal object? Sender_ScanCustomResources;
 
         public event EventHandler? ScanCustomResourcesClick;
@@ -20,6 +22,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
         }
+
+        #endregion
+
+        #region Public common
 
         public override void SetOwner(MainForm owner) => _owner = owner;
 
@@ -134,6 +140,10 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        #endregion
+
+        #region Page
+
         private static void BlankStatsPanelWithMessage(Lazy_StatsPage statsPage, string message)
         {
             statsPage.CustomResourcesLabel.Text = message;
@@ -154,5 +164,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
         }
+
+        #endregion
     }
 }

@@ -14,18 +14,18 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    /*
-    @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
-    @TopLazy: Set tab indexes on all these when we're done
-    @TopLazy: Organize code in all tab pages
-    */
-
     public sealed class EditFMTabPage : Lazy_TabsBase
     {
         private Lazy_EditFMPage _page = null!;
 
+        #region Lazy-loaded subcontrols
+
         private DynamicItemsLLMenu AltTitlesLLMenu = null!;
         private Lazy_LangDetectError Lazy_LangDetectError = null!;
+
+        #endregion
+
+        #region Event sending
 
         internal object? Sender_ScanForReadmes;
         internal object? Sender_ScanTitle;
@@ -57,6 +57,10 @@ namespace AngelLoader.Forms.CustomControls
             ScanReleaseDateClick?.Invoke(Sender_ScanReleaseDate, e);
         }
 
+        #endregion
+
+        #region Theme
+
         [PublicAPI]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -76,6 +80,10 @@ namespace AngelLoader.Forms.CustomControls
                 base.DarkModeEnabled = value;
             }
         }
+
+        #endregion
+
+        #region Public common
 
         public override void SetOwner(MainForm owner) => _owner = owner;
 
@@ -295,7 +303,25 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        #region Edit FM tab
+        #endregion
+
+        #region Page
+
+        #region Title
+
+        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+            fm.Title = _page.EditFMTitleTextBox.Text;
+            _owner.RefreshMainSelectedFMRow_Fast();
+        }
+
+        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            Ini.WriteFullFMDataIni();
+        }
 
         private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
         {
@@ -324,19 +350,9 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (_owner.EventsDisabled) return;
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Title = _page.EditFMTitleTextBox.Text;
-            _owner.RefreshMainSelectedFMRow_Fast();
-        }
+        #endregion
 
-        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
-        {
-            if (_owner.EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
+        #region Author
 
         private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -351,6 +367,10 @@ namespace AngelLoader.Forms.CustomControls
             if (_owner.EventsDisabled) return;
             Ini.WriteFullFMDataIni();
         }
+
+        #endregion
+
+        #region Release date
 
         private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
         {
@@ -375,6 +395,10 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
+        #endregion
+
+        #region Last played
+
         private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
@@ -398,37 +422,19 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
+        #endregion
+
+        #region Rating
+
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
             UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1);
         }
 
-        internal void UpdateRatingForSelectedFMs(int rating)
-        {
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Rating = rating;
-            _owner.RefreshMainSelectedFMRow_Fast();
+        #endregion
 
-            UpdateRatingMenus(rating);
-
-            FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
-            if (sFMs.Length > 1)
-            {
-                foreach (FanMission sFM in sFMs)
-                {
-                    sFM.Rating = rating;
-                }
-                _owner.RefreshFMsListRowsOnlyKeepSelection();
-            }
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (_owner.EventsDisabled) return;
-            UpdateFMSelectedLanguage();
-        }
+        #region Finished on
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
@@ -437,6 +443,16 @@ namespace AngelLoader.Forms.CustomControls
                 _page.EditFMFinishedOnButton,
                 ControlUtils.MenuPos.BottomRight,
                 unstickMenu: true);
+        }
+
+        #endregion
+
+        #region Languages
+
+        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            UpdateFMSelectedLanguage();
         }
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
@@ -467,7 +483,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        #region Languages
+        #region Language methods
 
         private void ClearLanguagesList() => _page.EditFMLanguageComboBox.ClearFullItems();
 
@@ -562,6 +578,12 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
+        private void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
+
+        #endregion
+
+        #region Rating methods
+
         private void UpdateRatingMenus(int rating)
         {
             using (new DisableEvents(_owner))
@@ -573,8 +595,6 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
         }
-
-        private void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
 
         internal void UpdateRatingStrings(bool fmSelStyle)
         {
@@ -589,6 +609,28 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
         }
+
+        internal void UpdateRatingForSelectedFMs(int rating)
+        {
+            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+            fm.Rating = rating;
+            _owner.RefreshMainSelectedFMRow_Fast();
+
+            UpdateRatingMenus(rating);
+
+            FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
+            if (sFMs.Length > 1)
+            {
+                foreach (FanMission sFM in sFMs)
+                {
+                    sFM.Rating = rating;
+                }
+                _owner.RefreshFMsListRowsOnlyKeepSelection();
+            }
+            Ini.WriteFullFMDataIni();
+        }
+
+        #endregion
 
         #endregion
     }
