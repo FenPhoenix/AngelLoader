@@ -585,15 +585,6 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
-            ModsTabNotSupportedMessageLabel = new DarkLabel
-            {
-                AutoSize = false,
-                DarkModeBackColor = DarkColors.Fen_ControlBackground,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Visible = false
-            };
-
             #endregion
 
             /*
@@ -621,6 +612,7 @@ namespace AngelLoader.Forms
             CommentTabPage.SetOwner(this);
             TagsTabPage.SetOwner(this);
             PatchTabPage.SetOwner(this);
+            ModsTabPage.SetOwner(this);
 
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
@@ -889,11 +881,6 @@ namespace AngelLoader.Forms
             }
 
             #endregion
-
-            MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
-
-            ModsTabPage.Controls.Add(ModsTabNotSupportedMessageLabel);
-            ModsTabNotSupportedMessageLabel.BringToFront();
 
             #region SplitContainers
 
@@ -1730,7 +1717,6 @@ namespace AngelLoader.Forms
                 #region Patch tab
 
                 PatchTabPage.Text = LText.PatchTab.TabText;
-
                 PatchTabPage.Localize();
 
                 #endregion
@@ -1738,11 +1724,7 @@ namespace AngelLoader.Forms
                 #region Mods tab
 
                 ModsTabPage.Text = LText.ModsTab.TabText;
-
-                MainModsControl.Localize(LText.ModsTab.Header);
-                MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
-
-                ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
+                ModsTabPage.Localize();
 
                 #endregion
 
@@ -2998,6 +2980,7 @@ namespace AngelLoader.Forms
             }
             else if (tabPage == ModsTabPage)
             {
+                ModsTabPage.Construct();
             }
         }
 
@@ -3027,30 +3010,6 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
-        #region Mods tab
-
-        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
-        {
-            UpdateFMDisabledMods(writeIni: false);
-        }
-
-        private void Mods_DisabledModsUpdated(object sender, EventArgs e)
-        {
-            UpdateFMDisabledMods(writeIni: true);
-        }
-
-        private void UpdateFMDisabledMods(bool writeIni)
-        {
-            if (EventsDisabled || !FMsDGV.RowSelected()) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = MainModsControl.DisabledModsTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-            if (writeIni) Ini.WriteFullFMDataIni();
         }
 
         #endregion
@@ -4315,48 +4274,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            using (new DisableEvents(this))
-            {
-                #region Stats tab
-
-                StatisticsTabPage.UpdatePage();
-
-                #endregion
-
-                #region Edit FM tab
-
-                EditFMTabPage.UpdatePage();
-
-                #endregion
-
-                #region Comment tab
-
-                CommentTabPage.UpdatePage();
-
-                #endregion
-
-                #region Tags tab
-
-                TagsTabPage.UpdatePage();
-
-                #endregion
-
-                #region Patch tab
-
-                PatchTabPage.UpdatePage();
-
-                #endregion
-
-                #region Mods tab
-
-                ModsTabNotSupportedMessageLabel.Visible = false;
-                MainModsControl.CheckList.ClearList();
-                MainModsControl.Enabled = false;
-                MainModsControl.Visible = true;
-
-
-                #endregion
-            }
+            UpdateTopRightTabs();
 
             _displayedFM = null;
 
@@ -4570,13 +4488,24 @@ namespace AngelLoader.Forms
                    LText.StatisticsTab.MissionCount_AfterNumber
         };
 
+        private void UpdateTopRightTabs()
+        {
+            using (new DisableEvents(this))
+            {
+                StatisticsTabPage.UpdatePage();
+                EditFMTabPage.UpdatePage();
+                CommentTabPage.UpdatePage();
+                TagsTabPage.UpdatePage();
+                PatchTabPage.UpdatePage();
+                ModsTabPage.UpdatePage();
+            }
+        }
+
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
         // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
         public void UpdateAllFMUIDataExceptReadme(FanMission fm)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
-
             UpdateUIControlsForMultiSelectState(fm);
 
             // We should never get here when the view list count is 0, but hey
@@ -4584,46 +4513,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
-            using (new DisableEvents(this))
-            {
-                StatisticsTabPage.UpdatePage();
-
-                EditFMTabPage.UpdatePage();
-
-                CommentTabPage.UpdatePage();
-
-                TagsTabPage.UpdatePage();
-
-                PatchTabPage.UpdatePage();
-
-                // @VBL
-                #region Mods tab
-
-                MainModsControl.Enabled = true;
-
-                if (fmIsT3)
-                {
-                    MainModsControl.Visible = false;
-                    ModsTabNotSupportedMessageLabel.Visible = true;
-
-                    MainModsControl.CheckList.ClearList();
-                }
-                else
-                {
-                    MainModsControl.Visible = true;
-                    ModsTabNotSupportedMessageLabel.Visible = false;
-
-                    (bool success, string disabledMods, bool disableAllMods) =
-                        MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
-                    if (success)
-                    {
-                        fm.DisabledMods = disabledMods;
-                        fm.DisableAllMods = disableAllMods;
-                    }
-                }
-
-                #endregion
-            }
+            UpdateTopRightTabs();
         }
 
         public void ClearReadmesList()

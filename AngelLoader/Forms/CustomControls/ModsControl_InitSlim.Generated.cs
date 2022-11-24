@@ -9,14 +9,14 @@
         {
             this.components = new System.ComponentModel.Container();
             this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ResetFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.ResetFLP = new DarkFlowLayoutPanel();
             this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.DisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
-            this.AutoScrollDummyPanel = new System.Windows.Forms.Panel();
+            this.AutoScrollDummyPanel = new DrawnPanel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ResetFLP.SuspendLayout();
             this.SuspendLayout();

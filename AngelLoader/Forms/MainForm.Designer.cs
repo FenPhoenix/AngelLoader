@@ -109,8 +109,7 @@
             this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
             this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
             this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
-            this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.MainModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
+            this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -137,7 +136,6 @@
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
-            this.ModsTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -980,26 +978,12 @@
             // 
             // ModsTabPage
             // 
-            this.ModsTabPage.AutoScroll = true;
             this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.ModsTabPage.Controls.Add(this.MainModsControl);
             this.ModsTabPage.Location = new System.Drawing.Point(4, 22);
             this.ModsTabPage.Name = "ModsTabPage";
             this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
             this.ModsTabPage.TabIndex = 4;
             this.ModsTabPage.Text = "Mods";
-            // 
-            // MainModsControl
-            // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainModsControl.Location = new System.Drawing.Point(0, 0);
-            this.MainModsControl.Name = "MainModsControl";
-            this.MainModsControl.Size = new System.Drawing.Size(527, 284);
-            this.MainModsControl.TabIndex = 6;
-            this.MainModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
-            this.MainModsControl.DisabledModsUpdated += new System.EventHandler(this.Mods_DisabledModsUpdated);
             // 
             // ReadmeEncodingButton
             // 
@@ -1159,7 +1143,6 @@
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
             this.TopRightTabControl.ResumeLayout(false);
-            this.ModsTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1181,8 +1164,6 @@
         internal AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
         internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
-
-        internal AngelLoader.Forms.CustomControls.DarkLabel ModsTabNotSupportedMessageLabel;
 
         internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
         internal System.Windows.Forms.Panel BottomPanel;
@@ -1253,9 +1234,8 @@
         internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
         internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
         internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
-        internal CustomControls.DarkTabPageCustom ModsTabPage;
+        internal CustomControls.ModsTabPage ModsTabPage;
         internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
-        internal CustomControls.ModsControl MainModsControl;
         internal CustomControls.DarkLabel FMCountLabel;
     }
 }

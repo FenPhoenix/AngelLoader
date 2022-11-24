@@ -33,14 +33,14 @@ namespace AngelLoader.Forms.CustomControls
         {
             this.components = new System.ComponentModel.Container();
             this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ResetFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.ResetFLP = new DarkFlowLayoutPanel();
             this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.DisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
-            this.AutoScrollDummyPanel = new System.Windows.Forms.Panel();
+            this.AutoScrollDummyPanel = new DrawnPanel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ResetFLP.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // ResetFLP
             // 
-            this.ResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.ResetFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ResetFLP.Controls.Add(this.DisableNonImportantButton);
             this.ResetFLP.Controls.Add(this.EnableAllButton);
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // DisabledModsTextBox
             // 
-            this.DisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.DisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DisabledModsTextBox.Location = new System.Drawing.Point(7, 256);
             this.DisabledModsTextBox.Name = "DisabledModsTextBox";
@@ -127,8 +127,8 @@ namespace AngelLoader.Forms.CustomControls
             // 
             // CheckList
             // 
-            this.CheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.CheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CheckList.AutoScroll = true;
             this.CheckList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -169,14 +169,14 @@ namespace AngelLoader.Forms.CustomControls
         #endregion
 
         internal DarkLabel HeaderLabel;
-        internal System.Windows.Forms.FlowLayoutPanel ResetFLP;
+        internal DarkFlowLayoutPanel ResetFLP;
         internal DarkButton DisableNonImportantButton;
         internal DarkButton EnableAllButton;
         internal DarkCheckBox ShowImportantCheckBox;
         internal DarkTextBox DisabledModsTextBox;
         internal DarkLabel DisabledModsLabel;
         internal DarkCheckList CheckList;
-        internal System.Windows.Forms.Panel AutoScrollDummyPanel;
+        internal DrawnPanel AutoScrollDummyPanel;
         internal System.Windows.Forms.ToolTip MainToolTip;
     }
 }

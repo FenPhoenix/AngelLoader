@@ -89,8 +89,7 @@ namespace AngelLoader.Forms
             CommentTabPage = new CommentTabPage();
             TagsTabPage = new TagsTabPage();
             PatchTabPage = new PatchTabPage();
-            ModsTabPage = new DarkTabPageCustom();
-            MainModsControl = new ModsControl();
+            ModsTabPage = new ModsTabPage();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -762,23 +761,9 @@ namespace AngelLoader.Forms
             // 
             // ModsTabPage
             // 
-            ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(MainModsControl);
             ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
-            // 
-            // MainModsControl
-            // 
-            MainModsControl.Anchor = AnchorStyles.Top |
-                                     AnchorStyles.Bottom |
-                                     AnchorStyles.Left |
-                                     AnchorStyles.Right;
-            MainModsControl.Location = new Point(0, 0);
-            MainModsControl.Size = new Size(527, 284);
-            MainModsControl.TabIndex = 6;
-            MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
-            MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
             // 
             // ReadmeEncodingButton
             // 
