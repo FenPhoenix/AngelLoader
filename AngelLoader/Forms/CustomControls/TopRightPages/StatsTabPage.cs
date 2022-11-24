@@ -28,11 +28,12 @@ namespace AngelLoader.Forms.CustomControls
             ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
         }
 
-        public void Construct(MainForm owner)
+        public void SetOwner(MainForm owner) => _owner = owner;
+
+        public void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
             _page = new Lazy_StatsPage
             {
                 Dock = DockStyle.Fill,

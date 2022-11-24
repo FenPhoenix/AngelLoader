@@ -607,6 +607,12 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
+            // @TopLazy: Put these into an array when we're done
+            StatisticsTabPage.SetOwner(this);
+            EditFMTabPage.SetOwner(this);
+            CommentTabPage.SetOwner(this);
+            TagsTabPage.SetOwner(this);
+
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
@@ -2987,19 +2993,19 @@ namespace AngelLoader.Forms
             // @TopLazy: Temp if block just while we're working on converting all tab pages to lazy-loaded
             if (tabPage == StatisticsTabPage)
             {
-                StatisticsTabPage.Construct(this);
+                StatisticsTabPage.Construct();
             }
             else if (tabPage == EditFMTabPage)
             {
-                EditFMTabPage.Construct(this);
+                EditFMTabPage.Construct();
             }
             else if (tabPage == CommentTabPage)
             {
-                CommentTabPage.Construct(this);
+                CommentTabPage.Construct();
             }
             else if (tabPage == TagsTabPage)
             {
-                TagsTabPage.Construct(this);
+                TagsTabPage.Construct();
             }
             else if (tabPage == PatchTabPage)
             {

@@ -80,11 +80,12 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void Construct(MainForm owner)
+        public void SetOwner(MainForm owner) => _owner = owner;
+
+        public void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
             _page = new Lazy_EditFMPage
             {
                 Dock = DockStyle.Fill,
@@ -191,11 +192,14 @@ namespace AngelLoader.Forms.CustomControls
 
         public void UpdatePage()
         {
-            if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
             {
+                UpdateRatingForSelectedFMs(fm.Rating);
+
+                if (!_constructed) return;
+
                 bool fmIsT3 = fm.Game == Game.Thief3;
 
                 void SetLanguageEnabledState()
@@ -260,6 +264,8 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
+                if (!_constructed) return;
+
                 _page.EditFMRatingComboBox.SelectedIndex = 0;
 
                 // Always enable the combobox when modifying its items, to prevent the white flicker.
@@ -401,11 +407,8 @@ namespace AngelLoader.Forms.CustomControls
             UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1);
         }
 
-        internal void UpdateRatingForSelectedFMs(int rating, bool fromMenu = false)
+        internal void UpdateRatingForSelectedFMs(int rating)
         {
-            // @TopLazy: Hack because we've mixed in control updating with fm updating, make this more elegant later
-            if (fromMenu) Construct((MainForm)FindForm()!);
-
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
             fm.Rating = rating;
             _owner.RefreshMainSelectedFMRow_Fast();
@@ -560,13 +563,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void UpdateRatingMenus(int rating, bool disableEvents = false)
         {
-            if (!_constructed) return;
-
             using (disableEvents ? new DisableEvents(_owner) : null)
             {
-                // @TopLazy: We need to do this regardless of construction! Pass _owner sooner than Construct()!
                 _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                _page.EditFMRatingComboBox.SelectedIndex = rating + 1;
+                if (_constructed)
+                {
+                    _page.EditFMRatingComboBox.SelectedIndex = rating + 1;
+                }
             }
         }
 

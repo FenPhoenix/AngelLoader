@@ -78,11 +78,12 @@ namespace AngelLoader.Forms.CustomControls
             return _constructed && _owner.CursorOverControl(_page.AddTagButton, fullArea);
         }
 
-        public void Construct(MainForm owner)
+        public void SetOwner(MainForm owner) => _owner = owner;
+
+        public void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
             _page = new Lazy_TagsPage
             {
                 Dock = DockStyle.Fill,

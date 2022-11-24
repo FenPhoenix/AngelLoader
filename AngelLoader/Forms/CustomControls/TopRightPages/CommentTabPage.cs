@@ -8,11 +8,12 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_CommentPage _page = null!;
 
-        public void Construct(MainForm owner)
+        public void SetOwner(MainForm owner) => _owner = owner;
+
+        public void Construct()
         {
             if (_constructed) return;
 
-            _owner = owner;
             _page = new Lazy_CommentPage
             {
                 Dock = DockStyle.Fill,
