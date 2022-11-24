@@ -141,10 +141,8 @@ namespace AngelLoader.Forms.CustomControls
                     _page.AddTagTextBox.Text = "";
                     FillFMTags(fm.Tags);
                 }
-                else
+                else if (!OnStartupAndThisTabIsSelected())
                 {
-                    // @TopLazy: This will be run on startup even when we're selected due to whatever dumb details
-                    // Which means in that case we'll sort here, and then sort again when we show. Meh.
                     fm.Tags.SortAndMoveMiscToEnd();
                 }
             }

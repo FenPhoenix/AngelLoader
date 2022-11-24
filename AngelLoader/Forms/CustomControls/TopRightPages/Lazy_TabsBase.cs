@@ -36,5 +36,10 @@ namespace AngelLoader.Forms.CustomControls
         {
             SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
         }
+
+        private protected bool OnStartupAndThisTabIsSelected()
+        {
+            return !_constructed && !_owner.Visible && _owner.TopRightTabControl.SelectedTab == this;
+        }
     }
 }

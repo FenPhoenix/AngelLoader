@@ -101,9 +101,8 @@ namespace AngelLoader.Forms.CustomControls
                         }
                     }
                 }
-                else
+                else if (!OnStartupAndThisTabIsSelected())
                 {
-                    // @TopLazy Another thing that runs duplicate if we're actually selected on startup
                     if (!fmIsT3)
                     {
                         (bool success, string disabledMods, bool disableAllMods) =
