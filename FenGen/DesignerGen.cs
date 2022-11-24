@@ -298,7 +298,7 @@ namespace FenGen
                                 if (nodeStr == nodeControlName + ".Controls.Add")
                                 {
                                     if (controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
-                                        nodeType == "FlowLayoutPanel" &&
+                                        (nodeType is "FlowLayoutPanel" or "DarkFlowLayoutPanel") &&
                                         ies.ArgumentList.Arguments.Count == 1)
                                     {
                                         var arg = ies.ArgumentList.Arguments[0];

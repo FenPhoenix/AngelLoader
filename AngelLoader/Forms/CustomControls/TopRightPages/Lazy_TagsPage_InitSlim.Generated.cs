@@ -52,10 +52,8 @@
             // 
             // RemoveTagButton
             // 
-            this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
             this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.RemoveTagButton.Location = new System.Drawing.Point(432, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -65,10 +63,8 @@
             // 
             // AddTagFromListButton
             // 
-            this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
             this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(337, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
