@@ -14,7 +14,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         public Lazy_ModsPage()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitSlim();
+#endif
         }
     }
 }

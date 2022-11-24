@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms.CustomControls
+﻿#define FenGen_DesignerSource
+
+namespace AngelLoader.Forms.CustomControls
 {
     partial class Lazy_ModsPage
     {
@@ -22,6 +24,7 @@
 
         #region Component Designer generated code
 
+#if DEBUG
         /// <summary> 
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
@@ -33,8 +36,8 @@
             // 
             // MainModsControl
             // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainModsControl.Location = new System.Drawing.Point(0, 0);
             this.MainModsControl.Name = "MainModsControl";
@@ -52,6 +55,7 @@
             this.ResumeLayout(false);
 
         }
+#endif
 
         #endregion
 
