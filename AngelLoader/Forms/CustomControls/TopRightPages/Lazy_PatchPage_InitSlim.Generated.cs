@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls
 {
-    partial class Lazy_PatchPage
+    public sealed partial class Lazy_PatchPage
     {
         /// <summary>
         /// Custom generated component initializer with cruft removed.

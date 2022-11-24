@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public partial class Lazy_TagsPage : UserControl
+    public sealed partial class Lazy_TagsPage : UserControl
     {
         public Lazy_TagsPage()
         {

@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public bool EventsDisabled => EventsDisabledCount > 0;
 
         #region Private fields
 

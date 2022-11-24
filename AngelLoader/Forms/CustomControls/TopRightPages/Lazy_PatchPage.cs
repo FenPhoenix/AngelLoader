@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public partial class Lazy_PatchPage : UserControl
+    public sealed partial class Lazy_PatchPage : UserControl
     {
         public Lazy_PatchPage()
         {

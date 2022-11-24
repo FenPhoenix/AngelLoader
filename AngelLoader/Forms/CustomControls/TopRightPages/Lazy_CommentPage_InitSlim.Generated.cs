@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls
 {
-    sealed partial class Lazy_CommentPage
+    public sealed partial class Lazy_CommentPage
     {
         /// <summary>
         /// Custom generated component initializer with cruft removed.

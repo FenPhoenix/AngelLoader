@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    partial class Lazy_ModsPage
+    public sealed partial class Lazy_ModsPage
     {
         /// <summary> 
         /// Required designer variable.

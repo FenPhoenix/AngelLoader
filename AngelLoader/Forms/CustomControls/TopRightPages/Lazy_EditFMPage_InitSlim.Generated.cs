@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls
 {
-    sealed partial class Lazy_EditFMPage
+    public sealed partial class Lazy_EditFMPage
     {
         /// <summary>
         /// Custom generated component initializer with cruft removed.

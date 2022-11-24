@@ -21,6 +21,7 @@ namespace AngelLoader.Forms.CustomControls
     @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
     @TopLazy: Set tab indexes on all these when we're done
     @TopLazy: These tab pages may not need their explicit Size properties set in InitManual
+    @TopLazy: Organize code in all tab pages
     */
 
     public sealed class EditFMTabPage : Lazy_TabsBase
@@ -446,7 +447,7 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        internal void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
+        private void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
         {
             try
             {
@@ -467,9 +468,9 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Languages
 
-        public void ClearLanguagesList() => _page.EditFMLanguageComboBox.ClearFullItems();
+        private void ClearLanguagesList() => _page.EditFMLanguageComboBox.ClearFullItems();
 
-        public Language GetMainSelectedLanguage()
+        private Language GetMainSelectedLanguage()
         {
             if (_page.EditFMLanguageComboBox.SelectedIndex <= 0)
             {
@@ -482,7 +483,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public Language SetSelectedLanguage(Language language)
+        private Language SetSelectedLanguage(Language language)
         {
             if (_page.EditFMLanguageComboBox.Items.Count == 0)
             {
@@ -504,7 +505,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void ScanAndFillLanguagesList(bool forceScan)
+        private void ScanAndFillLanguagesList(bool forceScan)
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm == null) return;
@@ -551,7 +552,7 @@ namespace AngelLoader.Forms.CustomControls
             fm.SelectedLang = SetSelectedLanguage(fm.SelectedLang);
         }
 
-        internal void UpdateFMSelectedLanguage()
+        private void UpdateFMSelectedLanguage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm == null) return;
@@ -560,7 +561,7 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        internal void UpdateRatingMenus(int rating)
+        private void UpdateRatingMenus(int rating)
         {
             using (new DisableEvents(_owner))
             {
@@ -572,7 +573,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
+        private void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
 
         internal void UpdateRatingStrings(bool fmSelStyle)
         {

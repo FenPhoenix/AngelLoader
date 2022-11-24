@@ -98,9 +98,8 @@ namespace AngelLoader
             }
 
             string instPath = Config.GetFMInstallPath(gameIndex);
-            if (instPath.IsEmpty()) return false;
-
-            return TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
+            return !instPath.IsEmpty() &&
+                   TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
         }
 
         #endregion

@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    sealed partial class Lazy_EditFMPage
+    public sealed partial class Lazy_EditFMPage
     {
         /// <summary> 
         /// Required designer variable.

@@ -45,7 +45,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 Location = new Point(b.Left + b.Width + 2, b.Top + 4),
                 Size = new Size(14, 14),
                 TabStop = false,
-                Visible = false,
+                Visible = false
             };
 
             _pictureBox.Click += static (_, _) => Core.OpenLogFile();

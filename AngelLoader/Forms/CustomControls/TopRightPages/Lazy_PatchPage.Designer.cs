@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    partial class Lazy_PatchPage
+    public sealed partial class Lazy_PatchPage
     {
         /// <summary> 
         /// Required designer variable.

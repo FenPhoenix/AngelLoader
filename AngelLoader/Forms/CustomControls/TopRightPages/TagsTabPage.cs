@@ -236,7 +236,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public (string Category, string Tag)
+        private (string Category, string Tag)
         SelectedCategoryAndTag()
         {
             TreeNode selNode = _page.TagsTreeView.SelectedNode;
@@ -261,7 +261,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void ClearTagsSearchBox()
+        private void ClearTagsSearchBox()
         {
             _page.AddTagTextBox.Clear();
             AddTagLLDropDown.HideAndClear();

@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls
 {
-    sealed partial class Lazy_CommentPage
+    public sealed partial class Lazy_CommentPage
     {
         /// <summary> 
         /// Required designer variable.

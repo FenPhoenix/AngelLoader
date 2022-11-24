@@ -43,7 +43,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -1583,10 +1582,6 @@ namespace AngelLoader.Forms
 
         private void Localize(bool startup)
         {
-            // Certain controls' text depends on FM state. Because this could be run after startup, we need to
-            // make sure those controls' text is set correctly.
-            FanMission? selFM = GetMainSelectedFMOrNull();
-
             try
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
