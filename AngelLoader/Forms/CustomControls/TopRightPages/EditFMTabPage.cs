@@ -68,13 +68,15 @@ namespace AngelLoader.Forms.CustomControls
             get => base.DarkModeEnabled;
             set
             {
+                // Putting these up here just in case they also need to be for theming to work right
+                if (_constructed)
+                {
+                    Lazy_LangDetectError.DarkModeEnabled = DarkModeEnabled;
+                    AltTitlesLLMenu.DarkModeEnabled = DarkModeEnabled;
+                }
+
                 if (DarkModeEnabled == value) return;
                 base.DarkModeEnabled = value;
-
-                if (!_constructed) return;
-
-                Lazy_LangDetectError.DarkModeEnabled = DarkModeEnabled;
-                AltTitlesLLMenu.DarkModeEnabled = DarkModeEnabled;
             }
         }
 
