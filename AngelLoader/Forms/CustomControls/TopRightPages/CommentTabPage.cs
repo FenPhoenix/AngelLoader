@@ -6,11 +6,11 @@ namespace AngelLoader.Forms.CustomControls
 {
     public sealed class CommentTabPage : Lazy_TabsBase
     {
-        private Lazy_CommentPage? _page;
+        private Lazy_CommentPage _page = null!;
 
         public void Construct(MainForm owner)
         {
-            if (_page != null) return;
+            if (_constructed) return;
 
             _owner = owner;
             _page = new Lazy_CommentPage
@@ -31,18 +31,12 @@ namespace AngelLoader.Forms.CustomControls
                 UpdatePage();
 
                 if (DarkModeEnabled) RefreshTheme();
-
-                Localize();
             }
-        }
-
-        public void Localize()
-        {
         }
 
         public void UpdatePage()
         {
-            if (_page == null) return;
+            if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)

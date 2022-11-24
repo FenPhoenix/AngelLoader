@@ -17,12 +17,12 @@ namespace AngelLoader.Forms.CustomControls
     */
     public sealed class StatsTabPage : Lazy_TabsBase
     {
-        private Lazy_StatsPage? _page;
+        private Lazy_StatsPage _page = null!;
 
         internal object? Sender_ScanCustomResources;
 
         public event EventHandler? ScanCustomResourcesClick;
-        
+
         private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
         {
             ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
@@ -30,7 +30,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Construct(MainForm owner)
         {
-            if (_page != null) return;
+            if (_constructed) return;
 
             _owner = owner;
             _page = new Lazy_StatsPage
@@ -44,7 +44,7 @@ namespace AngelLoader.Forms.CustomControls
                 Controls.Add(_page);
 
                 _page.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
-                
+
                 Sender_ScanCustomResources = new object();
                 _page.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
                 ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
@@ -61,7 +61,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Localize()
         {
-            if (_page == null) return;
+            if (!_constructed) return;
             FanMission? selFM = _owner.GetMainSelectedFMOrNull();
 
             _page.Stats_MisCountLabel.Text = selFM != null
@@ -90,7 +90,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void UpdatePage()
         {
-            if (_page == null) return;
+            if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
