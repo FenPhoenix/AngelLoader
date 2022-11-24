@@ -15,7 +15,11 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public int EventsDisabledCount { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EventsDisabled => EventsDisabledCount > 0;
 
         private bool _constructed;
 

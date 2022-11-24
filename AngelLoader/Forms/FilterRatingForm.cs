@@ -10,7 +10,11 @@ namespace AngelLoader.Forms
     {
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public int EventsDisabledCount { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EventsDisabled => EventsDisabledCount > 0;
 
         internal int RatingFrom;
         internal int RatingTo;

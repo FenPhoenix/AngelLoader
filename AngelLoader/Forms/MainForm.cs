@@ -136,7 +136,11 @@ namespace AngelLoader.Forms
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public int EventsDisabledCount { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EventsDisabled => EventsDisabledCount > 0;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -2930,7 +2934,13 @@ namespace AngelLoader.Forms
                     bool selectDoneAtLeastOnce = false;
                     void DoSelect()
                     {
-                        if (keepSelection != KeepSel.False) EventsDisabled = true;
+                        if (keepSelection != KeepSel.False)
+                        {
+                            // @TopLazy: Is this right? Ugh...
+                            if (EventsDisabledCount == 0) EventsDisabledCount++;
+                            // Old line
+                            //EventsDisabled = true;
+                        }
                         FMsDGV.SelectSingle(row, suppressSelectionChangedEvent: !selectDoneAtLeastOnce);
                         FMsDGV.SelectProperly(suspendResume: startup);
                         selectDoneAtLeastOnce = true;

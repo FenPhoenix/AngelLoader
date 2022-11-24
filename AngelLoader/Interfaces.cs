@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
@@ -30,7 +31,8 @@ namespace AngelLoader
 
     public interface IEventDisabler
     {
-        bool EventsDisabled { set; }
+        bool EventsDisabled { get; }
+        int EventsDisabledCount { get; set; }
     }
 
     internal sealed class DisableEvents : IDisposable
@@ -39,10 +41,10 @@ namespace AngelLoader
         internal DisableEvents(IEventDisabler obj)
         {
             Obj = obj;
-            Obj.EventsDisabled = true;
+            Obj.EventsDisabledCount++;
         }
 
-        public void Dispose() => Obj.EventsDisabled = false;
+        public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
     }
 
     #endregion

@@ -258,8 +258,6 @@ namespace AngelLoader.Forms.CustomControls
                 _page.EditFMLastPlayedCheckBox.Checked = fm.LastPlayed.DateTime != null;
                 _page.EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
                 _page.EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
-
-                UpdateRatingMenus(fm.Rating, disableEvents: false);
             }
             else
             {
@@ -414,7 +412,7 @@ namespace AngelLoader.Forms.CustomControls
 
             // @TopLazy: This event disabling is getting out of hand - we can't tell if we should or not
             // Rework it so it's safe to call multiple times nested!
-            UpdateRatingMenus(rating, disableEvents: true);
+            UpdateRatingMenus(rating);
 
             FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
             if (sFMs.Length > 1)
@@ -562,9 +560,9 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        internal void UpdateRatingMenus(int rating, bool disableEvents = false)
+        internal void UpdateRatingMenus(int rating)
         {
-            using (disableEvents ? new DisableEvents(_owner) : null)
+            using (new DisableEvents(_owner))
             {
                 _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
                 if (_constructed)
