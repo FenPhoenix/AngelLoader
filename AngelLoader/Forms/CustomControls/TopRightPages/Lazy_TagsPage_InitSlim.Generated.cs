@@ -1,35 +1,11 @@
-﻿#define FenGen_DesignerSource
-
-namespace AngelLoader.Forms.CustomControls
+﻿namespace AngelLoader.Forms.CustomControls
 {
     partial class Lazy_TagsPage
     {
-        /// <summary> 
-        /// Required designer variable.
+        /// <summary>
+        /// Custom generated component initializer with cruft removed.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        #region Component Designer generated code
-
-#if DEBUG
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void InitSlim()
         {
             this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
@@ -48,11 +24,9 @@ namespace AngelLoader.Forms.CustomControls
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.AddTagButton.Location = new System.Drawing.Point(454, 7);
             this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(66, 23);
             this.AddTagButton.TabIndex = 7;
-            this.AddTagButton.Text = "Add tag";
             this.AddTagButton.UseVisualStyleBackColor = true;
             // 
             // AddTagTextBox
@@ -61,7 +35,6 @@ namespace AngelLoader.Forms.CustomControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
-            this.AddTagTextBox.Name = "AddTagTextBox";
             this.AddTagTextBox.Size = new System.Drawing.Size(441, 20);
             this.AddTagTextBox.StrictTextChangedEvent = false;
             this.AddTagTextBox.TabIndex = 6;
@@ -74,7 +47,6 @@ namespace AngelLoader.Forms.CustomControls
             this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
             this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.AddRemoveTagFLP.Location = new System.Drawing.Point(1, 248);
-            this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
             this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
             this.AddRemoveTagFLP.TabIndex = 9;
             // 
@@ -86,11 +58,9 @@ namespace AngelLoader.Forms.CustomControls
             this.RemoveTagButton.Location = new System.Drawing.Point(432, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
             this.RemoveTagButton.TabIndex = 1;
-            this.RemoveTagButton.Text = "Remove tag";
             this.RemoveTagButton.UseVisualStyleBackColor = true;
             // 
             // AddTagFromListButton
@@ -101,11 +71,9 @@ namespace AngelLoader.Forms.CustomControls
             this.AddTagFromListButton.Location = new System.Drawing.Point(337, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
             this.AddTagFromListButton.TabIndex = 0;
-            this.AddTagFromListButton.Text = "Add from list...";
             this.AddTagFromListButton.UseVisualStyleBackColor = true;
             // 
             // TagsTreeView
@@ -115,14 +83,11 @@ namespace AngelLoader.Forms.CustomControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
-            this.TagsTreeView.Name = "TagsTreeView";
             this.TagsTreeView.Size = new System.Drawing.Size(511, 216);
             this.TagsTreeView.TabIndex = 8;
             // 
             // TagsTabAutoScrollMarker
             // 
-            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
-            this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
             this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
             this.TagsTabAutoScrollMarker.TabIndex = 10;
             // 
@@ -136,24 +101,11 @@ namespace AngelLoader.Forms.CustomControls
             this.Controls.Add(this.AddRemoveTagFLP);
             this.Controls.Add(this.TagsTreeView);
             this.Controls.Add(this.TagsTabAutoScrollMarker);
-            this.Name = "Lazy_TagsPage";
             this.Size = new System.Drawing.Size(526, 284);
             this.AddRemoveTagFLP.ResumeLayout(false);
             this.AddRemoveTagFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
-#endif
-
-        #endregion
-
-        internal DarkButton AddTagButton;
-        internal DarkTextBoxCustom AddTagTextBox;
-        internal DarkFlowLayoutPanel AddRemoveTagFLP;
-        internal DarkButton RemoveTagButton;
-        internal DarkButton AddTagFromListButton;
-        internal DarkTreeView TagsTreeView;
-        internal DarkControl TagsTabAutoScrollMarker;
     }
 }

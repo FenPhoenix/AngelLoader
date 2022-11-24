@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -14,7 +6,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         public Lazy_TagsPage()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitSlim();
+#endif
         }
     }
 }
