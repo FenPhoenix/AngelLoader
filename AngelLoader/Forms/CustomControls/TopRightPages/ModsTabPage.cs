@@ -70,39 +70,56 @@ namespace AngelLoader.Forms.CustomControls
 
         public void UpdatePage()
         {
-            if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
             {
                 bool fmIsT3 = fm.Game == Game.Thief3;
-                // @VBL
-                _page.MainModsControl.Enabled = true;
 
-                if (fmIsT3)
+                if (_constructed)
                 {
-                    _page.MainModsControl.Visible = false;
-                    ModsTabNotSupportedMessageLabel.Visible = true;
+                    _page.MainModsControl.Enabled = true;
 
-                    _page.MainModsControl.CheckList.ClearList();
+                    if (fmIsT3)
+                    {
+                        _page.MainModsControl.Visible = false;
+                        ModsTabNotSupportedMessageLabel.Visible = true;
+
+                        _page.MainModsControl.CheckList.ClearList();
+                    }
+                    else
+                    {
+                        _page.MainModsControl.Visible = true;
+                        ModsTabNotSupportedMessageLabel.Visible = false;
+
+                        (bool success, string disabledMods, bool disableAllMods) =
+                            _page.MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
+                        if (success)
+                        {
+                            fm.DisabledMods = disabledMods;
+                            fm.DisableAllMods = disableAllMods;
+                        }
+                    }
                 }
                 else
                 {
-                    _page.MainModsControl.Visible = true;
-                    ModsTabNotSupportedMessageLabel.Visible = false;
-
-                    // @TopLazy: Make a cleaner way to modify the FM like in here, but without calling the concrete control
-                    (bool success, string disabledMods, bool disableAllMods) =
-                        _page.MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
-                    if (success)
+                    // @TopLazy Another thing that runs duplicate if we're actually selected on startup
+                    if (!fmIsT3)
                     {
-                        fm.DisabledMods = disabledMods;
-                        fm.DisableAllMods = disableAllMods;
+                        (bool success, string disabledMods, bool disableAllMods) =
+                            Core.CanonicalizeFMDisabledMods(fm.Game, fm.DisabledMods, fm.DisableAllMods);
+                        if (success)
+                        {
+                            fm.DisabledMods = disabledMods;
+                            fm.DisableAllMods = disableAllMods;
+                        }
                     }
                 }
             }
             else
             {
+                if (!_constructed) return;
+
                 ModsTabNotSupportedMessageLabel.Visible = false;
                 _page.MainModsControl.CheckList.ClearList();
                 _page.MainModsControl.Enabled = false;

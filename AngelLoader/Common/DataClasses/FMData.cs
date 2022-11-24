@@ -120,7 +120,6 @@ namespace AngelLoader.DataClasses
         /// <summary>
         /// This is for backward compatibility only. Use only for that purpose.
         /// </summary>
-        [FenGenDoNotWrite]
         internal bool DisableAllMods
         {
             get => Game != Game.Thief3 && _disableAllMods;

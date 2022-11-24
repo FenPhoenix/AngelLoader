@@ -2389,5 +2389,57 @@ namespace AngelLoader
                 return false;
             }
         }
+
+        [PublicAPI]
+        public static (bool Success, string DisabledMods, bool DisableAllMods)
+        CanonicalizeFMDisabledMods(Game game, string disabledMods, bool disableAllMods)
+        {
+            var fail = (false, "", false);
+
+            if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return fail;
+
+            (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
+
+            if (!success) return fail;
+
+            bool allDisabled = disableAllMods;
+
+            if (allDisabled) disabledMods = "";
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (mod.IsUber)
+                {
+                    mods.RemoveAt(i);
+                    mods.Add(mod);
+                }
+            }
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (!Config.GetModDirs(gameIndex).Contains(mod.InternalName))
+                {
+                    mods.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+
+                if (allDisabled && !mod.IsUber)
+                {
+                    if (!disabledMods.IsEmpty()) disabledMods += "+";
+                    disabledMods += mod.InternalName;
+                }
+            }
+
+            if (allDisabled) disableAllMods = false;
+
+            return (true, disabledMods, disableAllMods);
+        }
     }
 }
