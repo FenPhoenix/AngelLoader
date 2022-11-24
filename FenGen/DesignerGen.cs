@@ -659,7 +659,7 @@ namespace FenGen
 
                     if (designerFile.SplashScreen)
                     {
-                        string line = finalLine;
+                        string line = finalLine.Trim();
 
                         if (line.StartsWithO("this.")) line = line.Substring(5);
                         int index = line.IndexOf('(');
