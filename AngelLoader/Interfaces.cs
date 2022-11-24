@@ -412,12 +412,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Tags
-
-        void DisplayFMTags(FMCategoriesCollection fmTags);
-
-        #endregion
-
         #region Dialogs
 
         (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);

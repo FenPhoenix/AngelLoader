@@ -4938,11 +4938,6 @@ namespace AngelLoader.Forms
 
         public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
 
-        public void DisplayFMTags(FMCategoriesCollection fmTags)
-        {
-            TagsTabPage.FillFMTags(fmTags);
-        }
-
         #endregion
 
         #region Control painting

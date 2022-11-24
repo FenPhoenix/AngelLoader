@@ -123,7 +123,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.RemoveTagButton.Text = LText.TagsTab.RemoveTag;
         }
 
-        public void FillFMTags(FMCategoriesCollection fmTags)
+        private void FillFMTags(FMCategoriesCollection fmTags)
         {
             // @TopLazy: When we return here, tags won't be sorted. Does this matter?
             if (!_constructed) return;
@@ -132,18 +132,26 @@ namespace AngelLoader.Forms.CustomControls
 
         public void UpdatePage()
         {
-            if (!_constructed) return;
-
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm != null)
             {
-                foreach (Control c in _page.Controls) c.Enabled = true;
-
-                _page.AddTagTextBox.Text = "";
-                FillFMTags(fm.Tags);
+                if (_constructed)
+                {
+                    foreach (Control c in _page.Controls) c.Enabled = true;
+                    _page.AddTagTextBox.Text = "";
+                    FillFMTags(fm.Tags);
+                }
+                else
+                {
+                    // @TopLazy: This will be run on startup even when we're selected due to whatever dumb details
+                    // Which means in that case we'll sort here, and then sort again when we show. Meh.
+                    fm.Tags.SortAndMoveMiscToEnd();
+                }
             }
             else
             {
+                if (!_constructed) return;
+
                 _page.AddTagTextBox.Text = "";
 
                 _page.TagsTreeView.Nodes.Clear();
@@ -346,7 +354,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 FMTags.AddTagToFM(fm, catAndTag);
                 Ini.WriteFullFMDataIni();
-                Core.View.DisplayFMTags(fm.Tags);
+                FillFMTags(fm.Tags);
             }
 
             ClearTagsSearchBox();
@@ -354,7 +362,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void RemoveTagOperation()
         {
-            FanMission? fm = Core.View.GetMainSelectedFMOrNull();
+            FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm == null) return;
 
             (string catText, string tagText) = SelectedCategoryAndTag();
@@ -364,7 +372,7 @@ namespace AngelLoader.Forms.CustomControls
             bool success = FMTags.RemoveTagFromFM(fm, catText, tagText, isCategory);
             if (success)
             {
-                Core.View.DisplayFMTags(fm.Tags);
+                FillFMTags(fm.Tags);
             }
         }
     }
