@@ -11,10 +11,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    /*
-    @TopLazy: Thoroughly test add tag dropdown behavior
-    */
-
     public sealed class TagsTabPage : Lazy_TabsBase
     {
         private Lazy_TagsPage _page = null!;

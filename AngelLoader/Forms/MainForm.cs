@@ -1097,7 +1097,6 @@ namespace AngelLoader.Forms
 
         public new void Show()
         {
-            // @TopLazy: Test this with when we show to scan on startup or whatever
             if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
             {
                 lazyTab.Construct();
