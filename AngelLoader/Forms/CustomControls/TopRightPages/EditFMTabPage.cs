@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     /*
     @TopLazy: Focus tab pages after construct, because a control in the page gets focus
-    @TopLazy: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
+    @TopLazy: ALL TABS: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
     @TopLazy: Test lazy-loaded lang error functionality
     @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
     @TopLazy: Set tab indexes on all these when we're done
@@ -25,7 +25,7 @@ namespace AngelLoader.Forms.CustomControls
 
     public sealed class EditFMTabPage : Lazy_TabsBase
     {
-        private Lazy_EditFMPage? _page;
+        private Lazy_EditFMPage _page = null!;
 
         private DynamicItemsLLMenu AltTitlesLLMenu = null!;
         private Lazy_LangDetectError Lazy_LangDetectError = null!;
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Construct(MainForm owner)
         {
-            if (_page != null) return;
+            if (_constructed) return;
 
             _owner = owner;
             _page = new Lazy_EditFMPage
@@ -157,7 +157,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void Localize()
         {
-            if (_page == null) return;
+            if (!_constructed) return;
 
             _page.EditFMTitleLabel.Text = LText.EditFMTab.Title;
             _page.EditFMAuthorLabel.Text = LText.EditFMTab.Author;
@@ -191,7 +191,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void UpdatePage()
         {
-            if (_page == null) return;
+            if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
@@ -312,12 +312,12 @@ namespace AngelLoader.Forms.CustomControls
 
             AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
 
-            MainForm.ShowMenu(AltTitlesLLMenu.Menu, _page!.EditFMAltTitlesArrowButton, MainForm.MenuPos.BottomLeft);
+            MainForm.ShowMenu(AltTitlesLLMenu.Menu, _page.EditFMAltTitlesArrowButton, MainForm.MenuPos.BottomLeft);
         }
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
-            _page!.EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
+            _page.EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
             Ini.WriteFullFMDataIni();
         }
 
@@ -325,7 +325,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_owner.EventsDisabled) return;
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Title = _page!.EditFMTitleTextBox.Text;
+            fm.Title = _page.EditFMTitleTextBox.Text;
             _owner.RefreshMainSelectedFMRow_Fast();
         }
 
@@ -339,7 +339,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_owner.EventsDisabled) return;
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Author = _page!.EditFMAuthorTextBox.Text;
+            fm.Author = _page.EditFMAuthorTextBox.Text;
             _owner.RefreshMainSelectedFMRow_Fast();
         }
 
@@ -352,11 +352,11 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            _page!.EditFMReleaseDateDateTimePicker.Visible = _page!.EditFMReleaseDateCheckBox.Checked;
+            _page.EditFMReleaseDateDateTimePicker.Visible = _page.EditFMReleaseDateCheckBox.Checked;
 
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = _page!.EditFMReleaseDateCheckBox.Checked
-                ? _page!.EditFMReleaseDateDateTimePicker.Value
+            fm.ReleaseDate.DateTime = _page.EditFMReleaseDateCheckBox.Checked
+                ? _page.EditFMReleaseDateDateTimePicker.Value
                 : null;
 
             _owner.RefreshMainSelectedFMRow_Fast();
@@ -367,7 +367,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_owner.EventsDisabled) return;
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = _page!.EditFMReleaseDateDateTimePicker.Value;
+            fm.ReleaseDate.DateTime = _page.EditFMReleaseDateDateTimePicker.Value;
             _owner.RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
@@ -375,11 +375,11 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            _page!.EditFMLastPlayedDateTimePicker.Visible = _page!.EditFMLastPlayedCheckBox.Checked;
+            _page.EditFMLastPlayedDateTimePicker.Visible = _page.EditFMLastPlayedCheckBox.Checked;
 
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = _page!.EditFMLastPlayedCheckBox.Checked
-                ? _page!.EditFMLastPlayedDateTimePicker.Value
+            fm.LastPlayed.DateTime = _page.EditFMLastPlayedCheckBox.Checked
+                ? _page.EditFMLastPlayedDateTimePicker.Value
                 : null;
 
             _owner.RefreshMainSelectedFMRow_Fast();
@@ -390,7 +390,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_owner.EventsDisabled) return;
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = _page!.EditFMLastPlayedDateTimePicker.Value;
+            fm.LastPlayed.DateTime = _page.EditFMLastPlayedDateTimePicker.Value;
             _owner.RefreshMainSelectedFMRow_Fast();
             Ini.WriteFullFMDataIni();
         }
@@ -398,7 +398,7 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            UpdateRatingForSelectedFMs(_page!.EditFMRatingComboBox.SelectedIndex - 1);
+            UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1);
         }
 
         internal void UpdateRatingForSelectedFMs(int rating, bool fromMenu = false)
@@ -448,16 +448,16 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
-                _page!.EditFMLanguageComboBox.BeginUpdate();
+                _page.EditFMLanguageComboBox.BeginUpdate();
 
                 foreach (KeyValuePair<string, string> item in langPairs)
                 {
-                    _page!.EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
+                    _page.EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
                 }
             }
             finally
             {
-                _page!.EditFMLanguageComboBox.EndUpdate();
+                _page.EditFMLanguageComboBox.EndUpdate();
             }
         }
 
@@ -465,38 +465,38 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Languages
 
-        public void ClearLanguagesList() => _page!.EditFMLanguageComboBox.ClearFullItems();
+        public void ClearLanguagesList() => _page.EditFMLanguageComboBox.ClearFullItems();
 
         public Language GetMainSelectedLanguage()
         {
-            if (_page!.EditFMLanguageComboBox.SelectedIndex <= 0)
+            if (_page.EditFMLanguageComboBox.SelectedIndex <= 0)
             {
                 return Language.Default;
             }
             else
             {
-                string backingItem = _page!.EditFMLanguageComboBox.SelectedBackingItem();
+                string backingItem = _page.EditFMLanguageComboBox.SelectedBackingItem();
                 return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
             }
         }
 
         public Language SetSelectedLanguage(Language language)
         {
-            if (_page!.EditFMLanguageComboBox.Items.Count == 0)
+            if (_page.EditFMLanguageComboBox.Items.Count == 0)
             {
                 return Language.Default;
             }
             else
             {
-                _page!.EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
+                _page.EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
                     ? 0
-                    : _page!.EditFMLanguageComboBox
+                    : _page.EditFMLanguageComboBox
                         .BackingItems
                         .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
                         .ClampToZero();
 
-                return _page!.EditFMLanguageComboBox.SelectedIndex > 0 &&
-                       LangStringsToEnums.TryGetValue(_page!.EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
+                return _page.EditFMLanguageComboBox.SelectedIndex > 0 &&
+                       LangStringsToEnums.TryGetValue(_page.EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
                     ? returnLanguage
                     : Language.Default;
             }
@@ -560,12 +560,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void UpdateRatingMenus(int rating, bool disableEvents = false)
         {
-            if (_page == null) return;
+            if (!_constructed) return;
 
             using (disableEvents ? new DisableEvents(_owner) : null)
             {
+                // @TopLazy: We might need to do this regardless of construction? Pass _owner sooner than Construct()!
                 _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                _page!.EditFMRatingComboBox.SelectedIndex = rating + 1;
+                _page.EditFMRatingComboBox.SelectedIndex = rating + 1;
             }
         }
 
@@ -573,7 +574,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void UpdateRatingStrings(bool fmSelStyle)
         {
-            if (_page == null) return;
+            if (!_constructed) return;
 
             // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
             using (new DisableEvents(_owner))
