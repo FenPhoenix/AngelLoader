@@ -1407,7 +1407,7 @@ namespace AngelLoader.Forms
                     {
                         if (FMsDGV.MainSelectedRow != firstRow)
                         {
-                            using (!e.Shift ? new DisableEvents(this) : null)
+                            using (new DisableEvents(this, !e.Shift))
                             {
                                 SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
@@ -1430,7 +1430,7 @@ namespace AngelLoader.Forms
                     {
                         if (FMsDGV.MainSelectedRow != lastRow)
                         {
-                            using (!e.Shift ? new DisableEvents(this) : null)
+                            using (new DisableEvents(this, !e.Shift))
                             {
                                 SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }

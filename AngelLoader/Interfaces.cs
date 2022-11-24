@@ -35,10 +35,10 @@ namespace AngelLoader
         int EventsDisabledCount { get; set; }
     }
 
-    internal sealed class DisableEvents : IDisposable
+    internal sealed class DisableEvents_Reference : IDisposable
     {
         private readonly IEventDisabler Obj;
-        internal DisableEvents(IEventDisabler obj)
+        internal DisableEvents_Reference(IEventDisabler obj)
         {
             Obj = obj;
             Obj.EventsDisabledCount++;
@@ -47,6 +47,23 @@ namespace AngelLoader
         public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
     }
 
+    internal readonly ref struct DisableEvents
+    {
+        private readonly bool _active;
+        private readonly IEventDisabler Obj;
+        public DisableEvents(IEventDisabler obj, bool active = true)
+        {
+            _active = active;
+            Obj = obj;
+
+            if (_active) Obj.EventsDisabledCount++;
+        }
+
+        public void Dispose()
+        {
+            if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
+        }
+    }
     #endregion
 
     #region DisableZeroSelectCode

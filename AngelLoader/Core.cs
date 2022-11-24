@@ -874,7 +874,7 @@ namespace AngelLoader
                 // Cursor here instead of in Find(), so we can keep it over the case where we load an RTF readme
                 // and it also sets the wait cursor, to avoid flickering it on and off twice.
                 View.SetWaitCursor(true);
-                using (new DisableEvents(View))
+                using (new DisableEvents_Reference(View))
                 {
                     List<FanMission> fmsViewListUnscanned = FindFMs.Find();
                     if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
