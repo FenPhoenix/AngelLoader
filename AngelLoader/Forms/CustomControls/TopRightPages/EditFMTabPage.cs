@@ -15,7 +15,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @TopLazy: Focus tab pages after construct, because a control in the page gets focus
+    @TopLazy: Focus tab pages after tab drag, because a control in the page gets focus
     @TopLazy: ALL TABS: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
     @TopLazy: Test lazy-loaded lang error functionality
     @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
