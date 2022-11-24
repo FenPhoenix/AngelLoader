@@ -15,7 +15,6 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @TopLazy: Focus tab pages after tab drag, because a control in the page gets focus
     @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
     @TopLazy: Set tab indexes on all these when we're done
     @TopLazy: Organize code in all tab pages
