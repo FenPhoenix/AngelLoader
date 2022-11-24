@@ -7,6 +7,11 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls
 {
     // @VBL: Lots of it in the lazy-loaded top-right tabs now.
+    /*
+    @TopLazy(hide the entire tab control when top-right is collapsed):
+    We could just hide the tab control and then say don't construct the selected tab if the tab control is not
+    visible. Then on tab control Visible changed to true, we then construct the selected tab.
+    */
     public class Lazy_TabsBase : DarkTabPageCustom
     {
         private protected MainForm _owner = null!;
