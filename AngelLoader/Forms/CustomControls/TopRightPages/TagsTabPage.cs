@@ -13,8 +13,8 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @vNext: Thoroughly test add tag dropdown behavior
-    @vNext: Make Panels into DrawnPanels
+    @TopLazy: Thoroughly test add tag dropdown behavior
+    @TopLazy: Make Panels into DrawnPanels
     */
 
     public sealed class TagsTabPage : Lazy_TabsBase
@@ -125,7 +125,7 @@ namespace AngelLoader.Forms.CustomControls
 
         public void FillFMTags(FMCategoriesCollection fmTags)
         {
-            // @vNext: When we return here, tags won't be sorted. Does this matter?
+            // @TopLazy: When we return here, tags won't be sorted. Does this matter?
             if (!_constructed) return;
             ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
         }

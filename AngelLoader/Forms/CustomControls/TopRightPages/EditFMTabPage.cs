@@ -15,12 +15,12 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @vNext: Focus tab pages after construct, because a control in the page gets focus
-    @vNext: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
-    @vNext: Test lazy-loaded lang error functionality
-    @vNext: Mark any new business logic that's been moved back into the view (@VBL) for later review
-    @vNext: Set tab indexes on all these when we're done
-    @vNext: These tab pages may not need their explicit Size properties set in InitManual
+    @TopLazy: Focus tab pages after construct, because a control in the page gets focus
+    @TopLazy: Use _constructed check instead of _page != null check, so _page doesn't need ! after it all the time
+    @TopLazy: Test lazy-loaded lang error functionality
+    @TopLazy: Mark any new business logic that's been moved back into the view (@VBL) for later review
+    @TopLazy: Set tab indexes on all these when we're done
+    @TopLazy: These tab pages may not need their explicit Size properties set in InitManual
     */
 
     public sealed class EditFMTabPage : Lazy_TabsBase
@@ -401,7 +401,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void UpdateRatingForSelectedFMs(int rating, bool fromMenu = false)
         {
-            // @vNext: Hack because we've mixed in control updating with fm updating, make this more elegant later
+            // @TopLazy: Hack because we've mixed in control updating with fm updating, make this more elegant later
             if (fromMenu) Construct((MainForm)FindForm()!);
 
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();

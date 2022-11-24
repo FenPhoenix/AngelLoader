@@ -1099,7 +1099,7 @@ namespace AngelLoader.Forms
 
         public new void Show()
         {
-            // @vNext: Test this with when we show to scan on startup or whatever
+            // @TopLazy: Test this with when we show to scan on startup or whatever
             ConstructTopRightTabPage(TopRightTabControl.SelectedTab);
             TopRightTabControl.Selected += TopRightTabControl_Selected;
 
@@ -2984,7 +2984,7 @@ namespace AngelLoader.Forms
 
         private void ConstructTopRightTabPage(TabPage tabPage)
         {
-            // @vNext: Temp if block just while we're working on converting all tab pages to lazy-loaded
+            // @TopLazy: Temp if block just while we're working on converting all tab pages to lazy-loaded
             if (tabPage == StatisticsTabPage)
             {
                 StatisticsTabPage.Construct(this);
@@ -5072,7 +5072,7 @@ namespace AngelLoader.Forms
 
         #region Show menu
 
-        // @vNext: Put these in ControlUtils or something
+        // @TopLazy: Put these in ControlUtils or something
         internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
 
         internal static void ShowMenu(

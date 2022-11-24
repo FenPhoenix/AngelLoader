@@ -9,7 +9,7 @@ using static AngelLoader.Utils;
 namespace AngelLoader.Forms.CustomControls
 {
     /*
-    @vNext: Dark mode doesn't work quite right with these lazy-loaded tab pages here.
+    @TopLazy: Dark mode doesn't work quite right with these lazy-loaded tab pages here.
     Non-IDarkable controls keep their dark colors if we do the non-affected tab, switch to affected tab, then
     switch to light mode thing. We need to modify our theming system to fix it.
 
