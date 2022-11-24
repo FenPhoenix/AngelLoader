@@ -154,6 +154,7 @@ namespace AngelLoader
         IDialogs GetDialogs();
         ISplashScreen GetSplashScreen();
         IView GetView();
+        void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
         (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
     }
 

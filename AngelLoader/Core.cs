@@ -293,7 +293,14 @@ namespace AngelLoader
                     splashScreen.LockPainting(true);
 
                     Exception? ex = null;
-                    using Task findFMsTask = Task.Run(() => (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen));
+                    using Task findFMsTask = Task.Run(() =>
+                    {
+                        (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                        if (ex == null)
+                        {
+                            ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                        }
+                    });
 
                     // Construct and init the view both right here, because they're both heavy operations and
                     // we want them both to run in parallel with Find() to the greatest extent possible.
@@ -1419,8 +1426,7 @@ namespace AngelLoader
                 ? Path.Combine(fmInstalledPath, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
-        private static readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
-        private static (string ReadmePath, ReadmeType ReadmeType)
+        internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
             string readmeOnDisk = GetReadmeFileFullPath(fm);
@@ -1442,8 +1448,10 @@ namespace AngelLoader
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    int bytesRead = fs.ReadAll(_rtfHeaderBuffer.Cleared(), 0, headerLen);
-                    if (bytesRead >= headerLen && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
+                    // This method can run in a thread now, so let's just allocate this locally and not be stupid
+                    byte[] header = new byte[headerLen];
+                    int bytesRead = fs.ReadAll(header, 0, headerLen);
+                    if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
                     {
                         return (readmeOnDisk, ReadmeType.RichText);
                     }
