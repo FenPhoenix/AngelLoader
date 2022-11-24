@@ -564,7 +564,7 @@ namespace AngelLoader.Forms.CustomControls
 
             using (disableEvents ? new DisableEvents(_owner) : null)
             {
-                // @TopLazy: We might need to do this regardless of construction? Pass _owner sooner than Construct()!
+                // @TopLazy: We need to do this regardless of construction! Pass _owner sooner than Construct()!
                 _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
                 _page.EditFMRatingComboBox.SelectedIndex = rating + 1;
             }
