@@ -9,9 +9,9 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_CommentPage _page = null!;
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -36,7 +36,9 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void UpdatePage()
+        public override void Localize() { }
+
+        public override void UpdatePage()
         {
             if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();

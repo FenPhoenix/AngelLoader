@@ -15,9 +15,9 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_PatchPage _page = null!;
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -53,7 +53,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void Localize()
+        public override void Localize()
         {
             if (!_constructed) return;
 
@@ -90,7 +90,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.PatchOpenFMFolderButton.Text = LText.PatchTab.OpenFMFolder;
         }
 
-        public void UpdatePage()
+        public override void UpdatePage()
         {
             if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();

@@ -21,9 +21,9 @@ namespace AngelLoader.Forms.CustomControls
             ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
         }
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -53,7 +53,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void Localize()
+        public override void Localize()
         {
             if (!_constructed) return;
             FanMission? selFM = _owner.GetMainSelectedFMOrNull();
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
         }
 
-        public void UpdatePage()
+        public override void UpdatePage()
         {
             if (!_constructed) return;
             FanMission? fm = _owner.GetMainSelectedFMOrNull();

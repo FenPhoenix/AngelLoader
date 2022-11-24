@@ -78,9 +78,9 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -153,7 +153,7 @@ namespace AngelLoader.Forms.CustomControls
             Localize();
         }
 
-        public void Localize()
+        public override void Localize()
         {
             if (!_constructed) return;
 
@@ -187,7 +187,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
         }
 
-        public void UpdatePage()
+        public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 

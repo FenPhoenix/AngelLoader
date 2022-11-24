@@ -14,9 +14,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private DarkLabel ModsTabNotSupportedMessageLabel = null!;
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -57,7 +57,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void Localize()
+        public override void Localize()
         {
             if (!_constructed) return;
 
@@ -67,7 +67,7 @@ namespace AngelLoader.Forms.CustomControls
             ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
         }
 
-        public void UpdatePage()
+        public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 

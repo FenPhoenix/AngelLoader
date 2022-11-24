@@ -78,9 +78,9 @@ namespace AngelLoader.Forms.CustomControls
             return _constructed && _owner.CursorOverControl(_page.AddTagButton, fullArea);
         }
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+        public override void SetOwner(MainForm owner) => _owner = owner;
 
-        public void Construct()
+        public override void Construct()
         {
             if (_constructed) return;
 
@@ -114,7 +114,7 @@ namespace AngelLoader.Forms.CustomControls
             Localize();
         }
 
-        public void Localize()
+        public override void Localize()
         {
             if (!_constructed) return;
 
@@ -123,13 +123,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.RemoveTagButton.Text = LText.TagsTab.RemoveTag;
         }
 
-        private void FillFMTags(FMCategoriesCollection fmTags)
-        {
-            if (!_constructed) return;
-            ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
-        }
-
-        public void UpdatePage()
+        public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm != null)
@@ -155,6 +149,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 foreach (Control c in _page.Controls) c.Enabled = false;
             }
+        }
+
+        private void FillFMTags(FMCategoriesCollection fmTags)
+        {
+            if (!_constructed) return;
+            ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
         }
 
         #region Tags tab

@@ -102,7 +102,7 @@ namespace AngelLoader.Forms
 
         private readonly TabPage[] _gameTabs;
         private readonly ToolStripButtonCustom[] _filterByGameButtons;
-        private readonly TabPage[] _topRightTabs;
+        private readonly Lazy_TabsBase[] _topRightTabs;
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -605,14 +605,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            // @TopLazy: Put these into an array when we're done
-            StatisticsTabPage.SetOwner(this);
-            EditFMTabPage.SetOwner(this);
-            CommentTabPage.SetOwner(this);
-            TagsTabPage.SetOwner(this);
-            PatchTabPage.SetOwner(this);
-            ModsTabPage.SetOwner(this);
-
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
@@ -745,7 +737,7 @@ namespace AngelLoader.Forms
             GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
             GamesTabControl.Deselecting += GamesTabControl_Deselecting;
 
-            _topRightTabs = new TabPage[]
+            _topRightTabs = new Lazy_TabsBase[]
             {
                 StatisticsTabPage,
                 EditFMTabPage,
@@ -754,6 +746,11 @@ namespace AngelLoader.Forms
                 PatchTabPage,
                 ModsTabPage
             };
+
+            for (int i = 0; i < _topRightTabs.Length; i++)
+            {
+                _topRightTabs[i].SetOwner(this);
+            }
 
             #region Separated items
 
@@ -1101,7 +1098,10 @@ namespace AngelLoader.Forms
         public new void Show()
         {
             // @TopLazy: Test this with when we show to scan on startup or whatever
-            ConstructTopRightTabPage(TopRightTabControl.SelectedTab);
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            {
+                lazyTab.Construct();
+            }
             TopRightTabControl.Selected += TopRightTabControl_Selected;
 
             base.Show();
@@ -1682,46 +1682,17 @@ namespace AngelLoader.Forms
 
                 TopRightLLMenu.Localize();
 
-                #region Statistics tab
-
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
-                StatisticsTabPage.Localize();
-
-                #endregion
-
-                #region Edit FM tab
-
                 EditFMTabPage.Text = LText.EditFMTab.TabText;
-                EditFMTabPage.Localize();
-
-                #endregion
-
-                #region Comment tab
-
                 CommentTabPage.Text = LText.CommentTab.TabText;
-
-                #endregion
-
-                #region Tags tab
-
                 TagsTabPage.Text = LText.TagsTab.TabText;
-                TagsTabPage.Localize();
-
-                #endregion
-
-                #region Patch tab
-
                 PatchTabPage.Text = LText.PatchTab.TabText;
-                PatchTabPage.Localize();
-
-                #endregion
-
-                #region Mods tab
-
                 ModsTabPage.Text = LText.ModsTab.TabText;
-                ModsTabPage.Localize();
 
-                #endregion
+                for (int i = 0; i < _topRightTabs.Length; i++)
+                {
+                    _topRightTabs[i].Localize();
+                }
 
                 #endregion
 
@@ -2950,40 +2921,11 @@ namespace AngelLoader.Forms
 
         #region Top-right area
 
-        private void ConstructTopRightTabPage(TabPage tabPage)
-        {
-            // @TopLazy: Temp if block just while we're working on converting all tab pages to lazy-loaded
-            if (tabPage == StatisticsTabPage)
-            {
-                StatisticsTabPage.Construct();
-            }
-            else if (tabPage == EditFMTabPage)
-            {
-                EditFMTabPage.Construct();
-            }
-            else if (tabPage == CommentTabPage)
-            {
-                CommentTabPage.Construct();
-            }
-            else if (tabPage == TagsTabPage)
-            {
-                TagsTabPage.Construct();
-            }
-            else if (tabPage == PatchTabPage)
-            {
-                PatchTabPage.Construct();
-            }
-            else if (tabPage == ModsTabPage)
-            {
-                ModsTabPage.Construct();
-            }
-        }
-
         private void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
         {
-            if (e.Action == TabControlAction.Selected)
+            if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
             {
-                ConstructTopRightTabPage(e.TabPage);
+                lazyTab.Construct();
             }
         }
 
@@ -4466,12 +4408,10 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                StatisticsTabPage.UpdatePage();
-                EditFMTabPage.UpdatePage();
-                CommentTabPage.UpdatePage();
-                TagsTabPage.UpdatePage();
-                PatchTabPage.UpdatePage();
-                ModsTabPage.UpdatePage();
+                for (int i = 0; i < _topRightTabs.Length; i++)
+                {
+                    _topRightTabs[i].UpdatePage();
+                }
             }
         }
 
