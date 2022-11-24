@@ -4718,29 +4718,13 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this))
             {
-                #region Stats tab
-
                 StatisticsTabPage.UpdatePage();
-
-                #endregion
-
-                #region Edit FM tab
 
                 EditFMTabPage.UpdatePage();
 
-                #endregion
-
-                #region Comment tab
-
                 CommentTabPage.UpdatePage();
 
-                #endregion
-
-                #region Tags tab
-
                 TagsTabPage.UpdatePage();
-
-                #endregion
 
                 #region Patch tab
 
