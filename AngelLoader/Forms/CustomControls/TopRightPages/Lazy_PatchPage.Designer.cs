@@ -35,8 +35,8 @@ namespace AngelLoader.Forms.CustomControls
             this.Patch_NDSubs_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Patch_PostProc_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.PatchMainPanel = new DrawnPanel();
-            this.PatchDMLsPanel = new DrawnPanel();
+            this.PatchMainPanel = new AngelLoader.Forms.CustomControls.DrawnPanel();
+            this.PatchDMLsPanel = new AngelLoader.Forms.CustomControls.DrawnPanel();
             this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -174,7 +174,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Controls.Add(this.Patch_NewMantle_CheckBox);
             this.Controls.Add(this.PatchMainPanel);
             this.Name = "Lazy_PatchPage";
-            this.Size = new System.Drawing.Size(526, 362);
+            this.Size = new System.Drawing.Size(527, 362);
             this.PatchMainPanel.ResumeLayout(false);
             this.PatchMainPanel.PerformLayout();
             this.PatchDMLsPanel.ResumeLayout(false);

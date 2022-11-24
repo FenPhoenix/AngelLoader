@@ -9,11 +9,11 @@
         {
             this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
-            this.AddRemoveTagFLP = new DarkFlowLayoutPanel();
+            this.AddRemoveTagFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
             this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
-            this.TagsTabAutoScrollMarker = new DarkControl();
+            this.TagsTabAutoScrollMarker = new AngelLoader.Forms.CustomControls.DarkControl();
             this.AddRemoveTagFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -22,7 +22,7 @@
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagButton.Location = new System.Drawing.Point(454, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(455, 7);
             this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(66, 23);
@@ -35,7 +35,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
-            this.AddTagTextBox.Size = new System.Drawing.Size(441, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(442, 20);
             this.AddTagTextBox.StrictTextChangedEvent = false;
             this.AddTagTextBox.TabIndex = 6;
             // 
@@ -46,7 +46,7 @@
             this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
             this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
             this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFLP.Location = new System.Drawing.Point(1, 248);
+            this.AddRemoveTagFLP.Location = new System.Drawing.Point(2, 248);
             this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
             this.AddRemoveTagFLP.TabIndex = 9;
             // 
@@ -79,7 +79,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
-            this.TagsTreeView.Size = new System.Drawing.Size(511, 216);
+            this.TagsTreeView.Size = new System.Drawing.Size(512, 216);
             this.TagsTreeView.TabIndex = 8;
             // 
             // TagsTabAutoScrollMarker
@@ -97,7 +97,7 @@
             this.Controls.Add(this.AddRemoveTagFLP);
             this.Controls.Add(this.TagsTreeView);
             this.Controls.Add(this.TagsTabAutoScrollMarker);
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.AddRemoveTagFLP.ResumeLayout(false);
             this.AddRemoveTagFLP.PerformLayout();
             this.ResumeLayout(false);

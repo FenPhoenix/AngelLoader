@@ -58,7 +58,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
             this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
             this.EditFMScanLanguagesButton.TabIndex = 52;
-            this.EditFMScanLanguagesButton.UseMnemonic = false;
             this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
             // 
             // EditFMLanguageLabel
@@ -69,11 +68,9 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMLanguageLabel.Size = new System.Drawing.Size(125, 13);
             this.EditFMLanguageLabel.TabIndex = 50;
             this.EditFMLanguageLabel.Text = "Play FM in this language:";
-            this.EditFMLanguageLabel.UseMnemonic = false;
             // 
             // EditFMLanguageComboBox
             // 
-            this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMLanguageComboBox.FormattingEnabled = true;
             this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 201);
             this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
@@ -91,7 +88,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.TabIndex = 53;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
-            this.EditFMScanForReadmesButton.UseMnemonic = false;
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanReleaseDateButton
@@ -100,38 +96,34 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanReleaseDateButton.TabIndex = 44;
-            this.EditFMScanReleaseDateButton.UseMnemonic = false;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(494, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(495, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 41;
-            this.EditFMScanAuthorButton.UseMnemonic = false;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(494, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(495, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 38;
-            this.EditFMScanTitleButton.UseMnemonic = false;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             // 
             // EditFMAltTitlesArrowButton
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(478, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(479, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 37;
-            this.EditFMAltTitlesArrowButton.UseMnemonic = false;
             this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
             // 
             // EditFMTitleTextBox
@@ -140,7 +132,7 @@ namespace AngelLoader.Forms.CustomControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(470, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(471, 20);
             this.EditFMTitleTextBox.TabIndex = 36;
             // 
             // EditFMFinishedOnButton
@@ -154,12 +146,10 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
             this.EditFMFinishedOnButton.TabIndex = 49;
             this.EditFMFinishedOnButton.Text = "Finished on...";
-            this.EditFMFinishedOnButton.UseMnemonic = false;
             this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             // 
             // EditFMRatingComboBox
             // 
-            this.EditFMRatingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMRatingComboBox.FormattingEnabled = true;
             this.EditFMRatingComboBox.Items.AddRange(new object[] {
             "Unrated",
@@ -187,7 +177,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMRatingLabel.Size = new System.Drawing.Size(41, 13);
             this.EditFMRatingLabel.TabIndex = 47;
             this.EditFMRatingLabel.Text = "Rating:";
-            this.EditFMRatingLabel.UseMnemonic = false;
             // 
             // EditFMLastPlayedDateTimePicker
             // 
@@ -215,7 +204,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
             this.EditFMLastPlayedCheckBox.TabIndex = 45;
             this.EditFMLastPlayedCheckBox.Text = "Last played:";
-            this.EditFMLastPlayedCheckBox.UseMnemonic = false;
             this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
             // 
             // EditFMReleaseDateCheckBox
@@ -226,7 +214,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);
             this.EditFMReleaseDateCheckBox.TabIndex = 42;
             this.EditFMReleaseDateCheckBox.Text = "Release date:";
-            this.EditFMReleaseDateCheckBox.UseMnemonic = false;
             this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
             // EditFMAuthorTextBox
@@ -235,7 +222,7 @@ namespace AngelLoader.Forms.CustomControls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(486, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(487, 20);
             this.EditFMAuthorTextBox.TabIndex = 40;
             // 
             // EditFMAuthorLabel
@@ -246,7 +233,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMAuthorLabel.Size = new System.Drawing.Size(41, 13);
             this.EditFMAuthorLabel.TabIndex = 39;
             this.EditFMAuthorLabel.Text = "Author:";
-            this.EditFMAuthorLabel.UseMnemonic = false;
             // 
             // EditFMTitleLabel
             // 
@@ -256,7 +242,6 @@ namespace AngelLoader.Forms.CustomControls
             this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
             this.EditFMTitleLabel.TabIndex = 35;
             this.EditFMTitleLabel.Text = "Title:";
-            this.EditFMTitleLabel.UseMnemonic = false;
             // 
             // Lazy_EditFMPage
             // 
@@ -283,7 +268,7 @@ namespace AngelLoader.Forms.CustomControls
             this.Controls.Add(this.EditFMAuthorLabel);
             this.Controls.Add(this.EditFMTitleLabel);
             this.Name = "Lazy_EditFMPage";
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.ResumeLayout(false);
             this.PerformLayout();
 

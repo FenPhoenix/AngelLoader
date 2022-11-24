@@ -9,7 +9,7 @@
         {
             this.Stats_MisCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.StatsScanCustomResourcesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.StatsCheckBoxesPanel = new DrawnPanel();
+            this.StatsCheckBoxesPanel = new AngelLoader.Forms.CustomControls.DrawnPanel();
             this.CR_MapCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_MoviesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.CR_MotionsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -30,7 +30,6 @@
             this.Stats_MisCountLabel.AutoSize = true;
             this.Stats_MisCountLabel.Location = new System.Drawing.Point(4, 8);
             this.Stats_MisCountLabel.TabIndex = 14;
-            this.Stats_MisCountLabel.UseMnemonic = false;
             // 
             // StatsScanCustomResourcesButton
             // 
@@ -40,7 +39,6 @@
             this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.StatsScanCustomResourcesButton.TabIndex = 17;
-            this.StatsScanCustomResourcesButton.UseMnemonic = false;
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             // 
             // StatsCheckBoxesPanel
@@ -66,7 +64,6 @@
             this.CR_MapCheckBox.AutoCheck = false;
             this.CR_MapCheckBox.AutoSize = true;
             this.CR_MapCheckBox.TabIndex = 2;
-            this.CR_MapCheckBox.UseMnemonic = false;
             this.CR_MapCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_MoviesCheckBox
@@ -75,7 +72,6 @@
             this.CR_MoviesCheckBox.AutoSize = true;
             this.CR_MoviesCheckBox.Location = new System.Drawing.Point(0, 64);
             this.CR_MoviesCheckBox.TabIndex = 6;
-            this.CR_MoviesCheckBox.UseMnemonic = false;
             this.CR_MoviesCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_MotionsCheckBox
@@ -84,7 +80,6 @@
             this.CR_MotionsCheckBox.AutoSize = true;
             this.CR_MotionsCheckBox.Location = new System.Drawing.Point(0, 112);
             this.CR_MotionsCheckBox.TabIndex = 9;
-            this.CR_MotionsCheckBox.UseMnemonic = false;
             this.CR_MotionsCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_SoundsCheckBox
@@ -93,7 +88,6 @@
             this.CR_SoundsCheckBox.AutoSize = true;
             this.CR_SoundsCheckBox.Location = new System.Drawing.Point(0, 48);
             this.CR_SoundsCheckBox.TabIndex = 5;
-            this.CR_SoundsCheckBox.UseMnemonic = false;
             this.CR_SoundsCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_CreaturesCheckBox
@@ -102,7 +96,6 @@
             this.CR_CreaturesCheckBox.AutoSize = true;
             this.CR_CreaturesCheckBox.Location = new System.Drawing.Point(0, 96);
             this.CR_CreaturesCheckBox.TabIndex = 8;
-            this.CR_CreaturesCheckBox.UseMnemonic = false;
             this.CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_TexturesCheckBox
@@ -111,7 +104,6 @@
             this.CR_TexturesCheckBox.AutoSize = true;
             this.CR_TexturesCheckBox.Location = new System.Drawing.Point(0, 32);
             this.CR_TexturesCheckBox.TabIndex = 4;
-            this.CR_TexturesCheckBox.UseMnemonic = false;
             this.CR_TexturesCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_AutomapCheckBox
@@ -120,7 +112,6 @@
             this.CR_AutomapCheckBox.AutoSize = true;
             this.CR_AutomapCheckBox.Location = new System.Drawing.Point(0, 16);
             this.CR_AutomapCheckBox.TabIndex = 3;
-            this.CR_AutomapCheckBox.UseMnemonic = false;
             this.CR_AutomapCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_ScriptsCheckBox
@@ -129,7 +120,6 @@
             this.CR_ScriptsCheckBox.AutoSize = true;
             this.CR_ScriptsCheckBox.Location = new System.Drawing.Point(0, 128);
             this.CR_ScriptsCheckBox.TabIndex = 10;
-            this.CR_ScriptsCheckBox.UseMnemonic = false;
             this.CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_SubtitlesCheckBox
@@ -138,7 +128,6 @@
             this.CR_SubtitlesCheckBox.AutoSize = true;
             this.CR_SubtitlesCheckBox.Location = new System.Drawing.Point(0, 144);
             this.CR_SubtitlesCheckBox.TabIndex = 11;
-            this.CR_SubtitlesCheckBox.UseMnemonic = false;
             this.CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
             // 
             // CR_ObjectsCheckBox
@@ -147,7 +136,6 @@
             this.CR_ObjectsCheckBox.AutoSize = true;
             this.CR_ObjectsCheckBox.Location = new System.Drawing.Point(0, 80);
             this.CR_ObjectsCheckBox.TabIndex = 7;
-            this.CR_ObjectsCheckBox.UseMnemonic = false;
             this.CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
             // 
             // CustomResourcesLabel
@@ -155,17 +143,16 @@
             this.CustomResourcesLabel.AutoSize = true;
             this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 42);
             this.CustomResourcesLabel.TabIndex = 15;
-            this.CustomResourcesLabel.UseMnemonic = false;
             // 
             // StatsHorizDiv
             // 
             this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
-            this.StatsHorizDiv.Size = new System.Drawing.Size(513, 16);
+            this.StatsHorizDiv.Size = new System.Drawing.Size(514, 16);
             this.StatsHorizDiv.TabIndex = 18;
             // 
-            // StatsPage
+            // Lazy_StatsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -175,7 +162,7 @@
             this.Controls.Add(this.StatsCheckBoxesPanel);
             this.Controls.Add(this.CustomResourcesLabel);
             this.Controls.Add(this.StatsHorizDiv);
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.StatsCheckBoxesPanel.ResumeLayout(false);
             this.StatsCheckBoxesPanel.PerformLayout();
             this.ResumeLayout(false);

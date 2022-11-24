@@ -43,7 +43,7 @@ namespace AngelLoader.Forms.CustomControls
             this.CommentTextBox.Multiline = true;
             this.CommentTextBox.Name = "CommentTextBox";
             this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(511, 266);
+            this.CommentTextBox.Size = new System.Drawing.Size(512, 266);
             this.CommentTextBox.TabIndex = 33;
             // 
             // Lazy_CommentPage
@@ -52,7 +52,7 @@ namespace AngelLoader.Forms.CustomControls
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.Controls.Add(this.CommentTextBox);
             this.Name = "Lazy_CommentPage";
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.ResumeLayout(false);
             this.PerformLayout();
 

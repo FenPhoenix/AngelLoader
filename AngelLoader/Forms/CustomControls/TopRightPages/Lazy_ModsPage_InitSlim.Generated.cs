@@ -15,8 +15,9 @@
             this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainModsControl.Size = new System.Drawing.Size(526, 284);
+            this.MainModsControl.Size = new System.Drawing.Size(527, 284);
             this.MainModsControl.TabIndex = 7;
+            this.MainModsControl.Tag = AngelLoader.Misc.LoadType.Lazy;
             // 
             // Lazy_ModsPage
             // 
@@ -24,7 +25,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.Controls.Add(this.MainModsControl);
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.ResumeLayout(false);
         }
     }

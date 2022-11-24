@@ -33,7 +33,6 @@
             this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 200);
             this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
             this.EditFMScanLanguagesButton.TabIndex = 52;
-            this.EditFMScanLanguagesButton.UseMnemonic = false;
             this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
             // 
             // EditFMLanguageLabel
@@ -41,11 +40,9 @@
             this.EditFMLanguageLabel.AutoSize = true;
             this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 185);
             this.EditFMLanguageLabel.TabIndex = 50;
-            this.EditFMLanguageLabel.UseMnemonic = false;
             // 
             // EditFMLanguageComboBox
             // 
-            this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMLanguageComboBox.FormattingEnabled = true;
             this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 201);
             this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
@@ -59,7 +56,6 @@
             this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.EditFMScanForReadmesButton.TabIndex = 53;
-            this.EditFMScanForReadmesButton.UseMnemonic = false;
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanReleaseDateButton
@@ -67,35 +63,31 @@
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanReleaseDateButton.TabIndex = 44;
-            this.EditFMScanReleaseDateButton.UseMnemonic = false;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(494, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(495, 63);
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 41;
-            this.EditFMScanAuthorButton.UseMnemonic = false;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             // 
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(494, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(495, 23);
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 38;
-            this.EditFMScanTitleButton.UseMnemonic = false;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             // 
             // EditFMAltTitlesArrowButton
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(478, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(479, 23);
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 37;
-            this.EditFMAltTitlesArrowButton.UseMnemonic = false;
             this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
             // 
             // EditFMTitleTextBox
@@ -103,7 +95,7 @@
             this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(470, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(471, 20);
             this.EditFMTitleTextBox.TabIndex = 36;
             // 
             // EditFMFinishedOnButton
@@ -114,12 +106,10 @@
             this.EditFMFinishedOnButton.MinimumSize = new System.Drawing.Size(138, 23);
             this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.EditFMFinishedOnButton.TabIndex = 49;
-            this.EditFMFinishedOnButton.UseMnemonic = false;
             this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             // 
             // EditFMRatingComboBox
             // 
-            this.EditFMRatingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMRatingComboBox.FormattingEnabled = true;
             this.EditFMRatingComboBox.Items.AddRange(new object[] {
             "Unrated",
@@ -143,7 +133,6 @@
             this.EditFMRatingLabel.AutoSize = true;
             this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
             this.EditFMRatingLabel.TabIndex = 47;
-            this.EditFMRatingLabel.UseMnemonic = false;
             // 
             // EditFMLastPlayedDateTimePicker
             // 
@@ -166,7 +155,6 @@
             this.EditFMLastPlayedCheckBox.AutoSize = true;
             this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
             this.EditFMLastPlayedCheckBox.TabIndex = 45;
-            this.EditFMLastPlayedCheckBox.UseMnemonic = false;
             this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
             // 
             // EditFMReleaseDateCheckBox
@@ -174,7 +162,6 @@
             this.EditFMReleaseDateCheckBox.AutoSize = true;
             this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
             this.EditFMReleaseDateCheckBox.TabIndex = 42;
-            this.EditFMReleaseDateCheckBox.UseMnemonic = false;
             this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
             // EditFMAuthorTextBox
@@ -182,7 +169,7 @@
             this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(486, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(487, 20);
             this.EditFMAuthorTextBox.TabIndex = 40;
             // 
             // EditFMAuthorLabel
@@ -190,14 +177,12 @@
             this.EditFMAuthorLabel.AutoSize = true;
             this.EditFMAuthorLabel.Location = new System.Drawing.Point(8, 48);
             this.EditFMAuthorLabel.TabIndex = 39;
-            this.EditFMAuthorLabel.UseMnemonic = false;
             // 
             // EditFMTitleLabel
             // 
             this.EditFMTitleLabel.AutoSize = true;
             this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
             this.EditFMTitleLabel.TabIndex = 35;
-            this.EditFMTitleLabel.UseMnemonic = false;
             // 
             // Lazy_EditFMPage
             // 
@@ -223,7 +208,7 @@
             this.Controls.Add(this.EditFMAuthorTextBox);
             this.Controls.Add(this.EditFMAuthorLabel);
             this.Controls.Add(this.EditFMTitleLabel);
-            this.Size = new System.Drawing.Size(526, 284);
+            this.Size = new System.Drawing.Size(527, 284);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
