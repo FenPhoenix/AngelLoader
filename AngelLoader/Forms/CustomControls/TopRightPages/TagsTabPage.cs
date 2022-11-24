@@ -14,7 +14,6 @@ namespace AngelLoader.Forms.CustomControls
 {
     /*
     @TopLazy: Thoroughly test add tag dropdown behavior
-    @TopLazy: Make Panels into DrawnPanels
     */
 
     public sealed class TagsTabPage : Lazy_TabsBase

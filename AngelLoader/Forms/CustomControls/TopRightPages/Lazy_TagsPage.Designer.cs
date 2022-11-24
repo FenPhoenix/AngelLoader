@@ -30,11 +30,11 @@
         {
             this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
-            this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.AddRemoveTagFLP = new DarkFlowLayoutPanel();
             this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
-            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
+            this.TagsTabAutoScrollMarker = new DarkControl();
             this.AddRemoveTagFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,10 +146,10 @@
 
         internal DarkButton AddTagButton;
         internal DarkTextBoxCustom AddTagTextBox;
-        internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
+        internal DarkFlowLayoutPanel AddRemoveTagFLP;
         internal DarkButton RemoveTagButton;
         internal DarkButton AddTagFromListButton;
         internal DarkTreeView TagsTreeView;
-        internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
+        internal DarkControl TagsTabAutoScrollMarker;
     }
 }
