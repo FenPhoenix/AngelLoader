@@ -12,7 +12,6 @@ namespace AngelLoader.Forms.CustomControls
     {
         private Lazy_ModsPage _page = null!;
 
-        // @TopLazy: Test this with text and theme
         private DarkLabel ModsTabNotSupportedMessageLabel = null!;
 
         public void SetOwner(MainForm owner) => _owner = owner;
