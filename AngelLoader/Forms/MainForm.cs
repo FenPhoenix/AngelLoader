@@ -608,6 +608,21 @@ namespace AngelLoader.Forms
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
+            _topRightTabs = new Lazy_TabsBase[]
+            {
+                StatisticsTabPage,
+                EditFMTabPage,
+                CommentTabPage,
+                TagsTabPage,
+                PatchTabPage,
+                ModsTabPage
+            };
+
+            for (int i = 0; i < _topRightTabs.Length; i++)
+            {
+                _topRightTabs[i].SetOwner(this);
+            }
+
             #region Construct + init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -736,21 +751,6 @@ namespace AngelLoader.Forms
             // Do this only after adding so they don't fire from the adds
             GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
             GamesTabControl.Deselecting += GamesTabControl_Deselecting;
-
-            _topRightTabs = new Lazy_TabsBase[]
-            {
-                StatisticsTabPage,
-                EditFMTabPage,
-                CommentTabPage,
-                TagsTabPage,
-                PatchTabPage,
-                ModsTabPage
-            };
-
-            for (int i = 0; i < _topRightTabs.Length; i++)
-            {
-                _topRightTabs[i].SetOwner(this);
-            }
 
             #region Separated items
 
@@ -1097,11 +1097,12 @@ namespace AngelLoader.Forms
 
         public new void Show()
         {
-            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
             {
                 lazyTab.Construct();
             }
             TopRightTabControl.Selected += TopRightTabControl_Selected;
+            TopRightTabControl.VisibleChanged += TopRightTabControl_VisibleChanged;
 
             base.Show();
             _splashScreen?.Hide();
@@ -1110,6 +1111,14 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        private void TopRightTabControl_VisibleChanged(object sender, EventArgs e)
+        {
+            if (TopRightTabControl.Visible && TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            {
+                lazyTab.Construct();
+            }
+        }
 
         #region Form events
 
@@ -2940,13 +2949,13 @@ namespace AngelLoader.Forms
 
             if (collapsed)
             {
-                TopRightTabControl.Enabled = false;
+                TopRightTabControl.Visible = false;
             }
             else
             {
                 if (!Lazy_TopRightBlocker.Visible)
                 {
-                    TopRightTabControl.Enabled = true;
+                    TopRightTabControl.Visible = true;
                 }
             }
 
@@ -3637,11 +3646,11 @@ namespace AngelLoader.Forms
             if (FMsDGV.MultipleFMsSelected())
             {
                 Lazy_TopRightBlocker.Visible = true;
-                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Visible = false;
             }
             else
             {
-                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Visible = true;
                 Lazy_TopRightBlocker.Visible = false;
             }
         }
