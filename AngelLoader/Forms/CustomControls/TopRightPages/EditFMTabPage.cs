@@ -150,7 +150,6 @@ namespace AngelLoader.Forms.CustomControls
                 UpdatePage();
 
                 if (DarkModeEnabled) RefreshTheme();
-
             }
 
             Localize();
@@ -413,6 +412,8 @@ namespace AngelLoader.Forms.CustomControls
             fm.Rating = rating;
             _owner.RefreshMainSelectedFMRow_Fast();
 
+            // @TopLazy: This event disabling is getting out of hand - we can't tell if we should or not
+            // Rework it so it's safe to call multiple times nested!
             UpdateRatingMenus(rating, disableEvents: true);
 
             FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
