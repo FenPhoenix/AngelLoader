@@ -14,6 +14,8 @@ namespace AngelLoader.Forms.CustomControls
     switch to light mode thing. We need to modify our theming system to fix it.
 
     Solution: use IDarkable controls always. Like DrawnPanel instead of Panel. Meh.
+
+    @TopLazy: Test with tabs hidden!
     */
     public sealed class StatsTabPage : Lazy_TabsBase
     {
