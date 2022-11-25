@@ -4948,7 +4948,7 @@ namespace AngelLoader.Forms
 
         private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
         {
-            TopRightTabControl.Enabled = !TopSplitContainer.FullScreen;
+            TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
         }
 
         private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
