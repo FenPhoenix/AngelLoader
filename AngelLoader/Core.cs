@@ -261,6 +261,7 @@ namespace AngelLoader
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
             // @BetterErrors(Set game data on startup)
+            // PERF_TODO: Startup SetGameData() can run in a thread if we can guarantee that nothing it calls will put up a dialog.
             #region Set game data
 
             for (int i = 0; i < SupportedGameCount; i++)
