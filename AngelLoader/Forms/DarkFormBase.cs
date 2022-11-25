@@ -44,7 +44,7 @@ namespace AngelLoader.Forms
 
         private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
-        internal void SetThemeBase(
+        private protected void SetThemeBase(
             VisualTheme theme,
             Func<Component, bool>? excludePredicate = null,
             bool createControlHandles = false,
