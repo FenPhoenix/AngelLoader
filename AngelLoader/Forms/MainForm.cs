@@ -1102,6 +1102,7 @@ namespace AngelLoader.Forms
 
             base.Show();
             _splashScreen?.Hide();
+            _splashScreen = null;
 
             _startupState = false;
         }
