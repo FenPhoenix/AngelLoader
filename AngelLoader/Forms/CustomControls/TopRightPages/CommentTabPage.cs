@@ -64,17 +64,6 @@ namespace AngelLoader.Forms.CustomControls
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            UpdateFMComment();
-        }
-
-        private void CommentTextBox_Leave(object sender, EventArgs e)
-        {
-            if (_owner.EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void UpdateFMComment()
-        {
             FanMission? fm = _owner.GetMainSelectedFMOrNull_Fast();
             if (fm == null) return;
 
@@ -89,6 +78,12 @@ namespace AngelLoader.Forms.CustomControls
             fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
             _owner.RefreshMainSelectedFMRow_Fast();
+        }
+
+        private void CommentTextBox_Leave(object sender, EventArgs e)
+        {
+            if (_owner.EventsDisabled) return;
+            Ini.WriteFullFMDataIni();
         }
 
         #endregion

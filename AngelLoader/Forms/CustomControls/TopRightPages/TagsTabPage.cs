@@ -93,6 +93,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.RemoveTagButton.Text = LText.TagsTab.RemoveTag;
         }
 
+        // @TopLazy(Tags): Can affect the FM
         public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();

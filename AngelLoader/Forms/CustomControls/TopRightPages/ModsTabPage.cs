@@ -73,6 +73,7 @@ namespace AngelLoader.Forms.CustomControls
             ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
         }
 
+        // @TopLazy(Mods): Can affect the FM
         public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();

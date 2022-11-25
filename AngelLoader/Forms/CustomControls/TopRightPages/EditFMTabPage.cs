@@ -194,6 +194,7 @@ namespace AngelLoader.Forms.CustomControls
             _page.EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
         }
 
+        // @TopLazy(EditFM): Can affect the FM
         public override void UpdatePage()
         {
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
@@ -206,10 +207,12 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (!_constructed)
                 {
-                    if (!fmIsT3) ScanAndFillLanguagesList(forceScan: false);
+                    if (!fmIsT3 && !OnStartupAndThisTabIsSelected())
+                    {
+                        ScanAndFillLanguagesList(forceScan: false);
+                    }
                     return;
                 }
-
 
                 ShowLanguageDetectError(_showingLangDetectError);
 
@@ -459,7 +462,11 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            UpdateFMSelectedLanguage();
+            FanMission? fm = _owner.GetMainSelectedFMOrNull();
+            if (fm == null) return;
+
+            fm.SelectedLang = GetMainSelectedLanguage();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
@@ -576,15 +583,6 @@ namespace AngelLoader.Forms.CustomControls
                 AddLanguagesToList(langPairs);
                 fm.SelectedLang = SetSelectedLanguage(fm.SelectedLang);
             }
-        }
-
-        private void UpdateFMSelectedLanguage()
-        {
-            FanMission? fm = _owner.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            fm.SelectedLang = GetMainSelectedLanguage();
-            Ini.WriteFullFMDataIni();
         }
 
         private bool _showingLangDetectError;
