@@ -979,15 +979,6 @@ namespace AngelLoader.Forms
             // Set these here because they depend on the splitter positions
             Localize(startup: true);
 
-
-            if (!Config.LazyLoadTopRightTabs)
-            {
-                for (int i = 0; i < _topRightTabs.Length; i++)
-                {
-                    _topRightTabs[i].Construct();
-                }
-            }
-
             if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
             {
                 ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
@@ -1110,7 +1101,6 @@ namespace AngelLoader.Forms
                 lazyTab.Construct();
             }
             TopRightTabControl.Selected += TopRightTabControl_Selected;
-            TopRightTabControl.VisibleChanged += TopRightTabControl_VisibleChanged;
 
             base.Show();
             _splashScreen?.Hide();
@@ -1119,14 +1109,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private void TopRightTabControl_VisibleChanged(object sender, EventArgs e)
-        {
-            if (TopRightTabControl.Visible && TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
-            {
-                lazyTab.Construct();
-            }
-        }
 
         #region Form events
 
@@ -2957,17 +2939,22 @@ namespace AngelLoader.Forms
 
             if (collapsed)
             {
-                TopRightTabControl.Visible = false;
+                TopRightTabControl.Enabled = false;
             }
             else
             {
                 if (!Lazy_TopRightBlocker.Visible)
                 {
-                    TopRightTabControl.Visible = true;
+                    TopRightTabControl.Enabled = true;
                 }
             }
 
             TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
+
+            if (!collapsed && TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            {
+                lazyTab.ConstructWithSuspendResume();
+            }
         }
 
         private void TopRightMenuButton_Click(object sender, EventArgs e)
@@ -3654,11 +3641,11 @@ namespace AngelLoader.Forms
             if (FMsDGV.MultipleFMsSelected())
             {
                 Lazy_TopRightBlocker.Visible = true;
-                if (!TopSplitContainer.FullScreen) TopRightTabControl.Visible = false;
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
             }
             else
             {
-                if (!TopSplitContainer.FullScreen) TopRightTabControl.Visible = true;
+                if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
                 Lazy_TopRightBlocker.Visible = false;
             }
         }
@@ -4963,7 +4950,7 @@ namespace AngelLoader.Forms
 
         private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
         {
-            TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
+            TopRightTabControl.Enabled = !TopSplitContainer.FullScreen;
         }
 
         private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)

@@ -34,6 +34,8 @@ namespace AngelLoader.Forms.CustomControls
 
         public virtual void SetOwner(MainForm owner) { }
 
+        public virtual void ConstructWithSuspendResume() { }
+
         public virtual void Construct() { }
 
         public virtual void Localize() { }
