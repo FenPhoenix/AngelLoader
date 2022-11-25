@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -1085,7 +1084,7 @@ namespace AngelLoader
 
             RemoveKeyLine(key_game_screen_size, lines);
 
-            System.Drawing.Rectangle res = Screen.PrimaryScreen.Bounds;
+            System.Drawing.Rectangle res = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
             lines.Add(key_game_screen_size + " " + res.Width + " " + res.Height);
 
             RemoveConsecutiveWhiteSpace(lines);
