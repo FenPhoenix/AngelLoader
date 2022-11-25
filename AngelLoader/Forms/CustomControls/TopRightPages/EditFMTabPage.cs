@@ -200,11 +200,18 @@ namespace AngelLoader.Forms.CustomControls
 
             if (fm != null)
             {
+                bool fmIsT3 = fm.Game == Game.Thief3;
+
                 UpdateRatingForSelectedFMs(fm.Rating);
 
-                if (!_constructed) return;
+                if (!_constructed)
+                {
+                    if (!fmIsT3) ScanAndFillLanguagesList(forceScan: false);
+                    return;
+                }
 
-                bool fmIsT3 = fm.Game == Game.Thief3;
+
+                ShowLanguageDetectError(_showingLangDetectError);
 
                 void SetLanguageEnabledState()
                 {
@@ -529,7 +536,7 @@ namespace AngelLoader.Forms.CustomControls
 
             var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
 
-            ClearLanguagesList();
+            if (_constructed) ClearLanguagesList();
 
             langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
 
@@ -564,9 +571,11 @@ namespace AngelLoader.Forms.CustomControls
                 ShowLanguageDetectError(false);
             }
 
-            AddLanguagesToList(langPairs);
-
-            fm.SelectedLang = SetSelectedLanguage(fm.SelectedLang);
+            if (_constructed)
+            {
+                AddLanguagesToList(langPairs);
+                fm.SelectedLang = SetSelectedLanguage(fm.SelectedLang);
+            }
         }
 
         private void UpdateFMSelectedLanguage()
@@ -578,7 +587,19 @@ namespace AngelLoader.Forms.CustomControls
             Ini.WriteFullFMDataIni();
         }
 
-        private void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
+        private bool _showingLangDetectError;
+
+        private void ShowLanguageDetectError(bool enabled)
+        {
+            if (_constructed)
+            {
+                Lazy_LangDetectError.SetVisible(enabled);
+            }
+            else
+            {
+                _showingLangDetectError = enabled;
+            }
+        }
 
         #endregion
 

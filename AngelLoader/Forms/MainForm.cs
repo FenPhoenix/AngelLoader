@@ -4723,7 +4723,7 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs.Cast<TabPage>().ToArray(), TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
