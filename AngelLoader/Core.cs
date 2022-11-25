@@ -261,25 +261,26 @@ namespace AngelLoader
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
             // @BetterErrors(Set game data on startup)
-            // PERF_TODO: Startup SetGameData() can run in a thread if we can guarantee that nothing it calls will put up a dialog.
-            #region Set game data
-
-            for (int i = 0; i < SupportedGameCount; i++)
+            static Error[] SetGameDataInitial()
             {
-                GameIndex gameIndex = (GameIndex)i;
-                // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                // set them if we don't have a game exe
-                string gameExe = Config.GetGameExe(gameIndex);
-                if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                Error[] errors = InitializedArray(SupportedGameCount, Error.None);
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    GameConfigFiles.FixCharacterDetailLine(gameIndex);
+                    GameIndex gameIndex = (GameIndex)i;
+                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                    // set them if we don't have a game exe
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                    {
+                        errors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                        GameConfigFiles.FixCharacterDetailLine(gameIndex);
+                    }
                 }
+
+                return errors;
             }
 
-            #endregion
-
-            Task DoParallelLoad()
+            Task DoParallelLoad(bool setGameData)
             {
                 splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                         LText.SplashScreen.LoadingMainApp);
@@ -293,9 +294,11 @@ namespace AngelLoader
                 {
                     splashScreen.LockPainting(true);
 
+                    Error[]? gameDataErrors = null;
                     Exception? ex = null;
                     using Task findFMsTask = Task.Run(() =>
                     {
+                        if (setGameData) gameDataErrors = SetGameDataInitial();
                         (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
                         if (ex == null)
                         {
@@ -309,6 +312,13 @@ namespace AngelLoader
                     View.InitThreadable();
 
                     findFMsTask.Wait();
+
+                    if (gameDataErrors != null)
+                    {
+                        splashScreen.LockPainting(false);
+                        ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
+                    }
+
                     if (ex != null)
                     {
                         splashScreen.Hide();
@@ -328,16 +338,27 @@ namespace AngelLoader
 
             if (!openSettings)
             {
-                await DoParallelLoad();
+                await DoParallelLoad(setGameData: true);
             }
             else
             {
+                Error[] errors = SetGameDataInitial();
+                ThrowDialogIfSneakyOptionsIniNotFound(errors);
+
                 splashScreen.Hide();
                 if (await OpenSettings(startup: true, cleanStart: cleanStart))
                 {
                     splashScreen.Show(Config.VisualTheme);
-                    await DoParallelLoad();
+                    await DoParallelLoad(setGameData: false);
                 }
+            }
+        }
+
+        private static void ThrowDialogIfSneakyOptionsIniNotFound(Error[] errors)
+        {
+            if (errors[(int)GameIndex.Thief3] == Error.SneakyOptionsNotFound)
+            {
+                Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
             }
         }
 
@@ -450,6 +471,7 @@ namespace AngelLoader
             if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
             // Game paths should have been checked and verified before OK was clicked, so assume they're good here
+            Error[] setGameDataErrors = new Error[SupportedGameCount];
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
@@ -458,10 +480,12 @@ namespace AngelLoader
                 Config.SetGameExe(gameIndex, outConfig.GetGameExe(gameIndex));
 
                 // Set it regardless of game existing, because we want to blank the data
-                SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+                setGameDataErrors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
 
                 Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
             }
+
+            ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
 
             #endregion
 
@@ -670,8 +694,9 @@ namespace AngelLoader
         /// </summary>
         /// <param name="gameIndex"></param>
         /// <param name="storeConfigInfo"></param>
-        private static void SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
+        private static Error SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
         {
+            Error error = Error.None;
             string gameExe = Config.GetGameExe(gameIndex);
             bool gameExeSpecified = !gameExe.IsWhiteSpace();
 
@@ -748,13 +773,14 @@ namespace AngelLoader
                 if (gameExeSpecified)
                 {
                     var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
-                    if (t3Data.Success)
+                    if (t3Data.Error == Error.None)
                     {
                         Config.SetFMInstallPath(GameIndex.Thief3, t3Data.FMInstallPath);
                         Config.T3UseCentralSaves = t3Data.UseCentralSaves;
                     }
                     else
                     {
+                        error = t3Data.Error;
                         Config.SetFMInstallPath(GameIndex.Thief3, "");
                     }
                     // Do this even if there was an error, because we could still have a valid selector line
@@ -781,6 +807,8 @@ namespace AngelLoader
 
                 // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
             }
+
+            return error;
         }
 
         internal static void SortFMsViewList(Column column, SortDirection sortDirection)

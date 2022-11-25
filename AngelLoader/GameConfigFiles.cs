@@ -79,6 +79,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
+                    // But return an error code, don't put up a dialog here! (thread safety)
                     Log(ErrorText.ExCreate + "FM installed base dir", ex);
                 }
 
@@ -178,15 +179,14 @@ namespace AngelLoader
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static (bool Success, bool UseCentralSaves, string FMInstallPath,
-                        string PrevFMSelectorValue, bool AlwaysShowLoader)
+        internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
+                         string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromSneakyOptionsIni()
         {
             string soIni = Paths.GetSneakyOptionsIni();
             if (soIni.IsEmpty())
             {
-                Core.Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
-                return (false, false, "", "", false);
+                return (Error.SneakyOptionsNotFound, false, "", "", false);
             }
 
             bool ignoreSavesKeyFound = false;
@@ -203,7 +203,7 @@ namespace AngelLoader
 
             if (!TryReadAllLines(soIni, out var lines))
             {
-                return (false, false, "", "", false);
+                return (Error.GeneralSneakyOptionsIniError, false, "", "", false);
             }
 
             for (int i = 0; i < lines.Count; i++)
@@ -267,8 +267,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (true, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
-                : (false, false, "", prevFMSelectorValue, alwaysShowLoader);
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
+                : (Error.GeneralSneakyOptionsIniError, false, "", prevFMSelectorValue, alwaysShowLoader);
         }
 
         #endregion

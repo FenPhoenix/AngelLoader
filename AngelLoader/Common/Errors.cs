@@ -12,9 +12,10 @@
         CamModIniNotFound,
         CamModIniCouldNotBeRead,
         SneakyOptionsNoRegKey,
-        SneakyOptionsNotFound,
         T3FMInstPathNotFound,
         */
+        GeneralSneakyOptionsIniError,
+        SneakyOptionsNotFound,
         GameExeNotSpecified,
         GameExeNotFound,
         SneakyDllNotFound,
