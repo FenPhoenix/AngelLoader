@@ -148,11 +148,11 @@ namespace AngelLoader.Forms
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool ZeroSelectCodeDisabled => ZeroSelectCodeDisabledCount > 0;
+        public int ZeroSelectCodeDisabledCount { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int ZeroSelectCodeDisabledCount { get; set; }
+        public bool ZeroSelectCodeDisabled => ZeroSelectCodeDisabledCount > 0;
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
@@ -591,13 +591,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            /*
-            Font loading speed:
-            We can't try to be clever and set the form's font to a loaded-from-disk one in order to make it never
-            load the built-in default one (super slow if you have a ton of fonts installed like I do), because
-            the Font property setter checks the default font anyway, meaning it loads the damn thing anyway so
-            it's pointless.
-            */
 #if DEBUG
             // The debug path - the standard designer-generated method with tons of bloat and redundant value
             // setting, immediate initialization, etc.
