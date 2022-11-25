@@ -439,5 +439,7 @@ namespace AngelLoader.DataClasses
         internal bool ForceGameResToMainMonitorRes = true;
         //internal bool CheckForUpdatesOnStartup = true;
 #endif
+
+        internal bool LazyLoadTopRightTabs;
     }
 }

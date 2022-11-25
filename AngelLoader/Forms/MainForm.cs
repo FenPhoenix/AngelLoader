@@ -974,11 +974,19 @@ namespace AngelLoader.Forms
                 TopSplitContainer.SetFullScreen(true, suspendResume: false);
                 SetTopRightCollapsedState();
             }
-
             #endregion
 
             // Set these here because they depend on the splitter positions
             Localize(startup: true);
+
+
+            if (!Config.LazyLoadTopRightTabs)
+            {
+                for (int i = 0; i < _topRightTabs.Length; i++)
+                {
+                    _topRightTabs[i].Construct();
+                }
+            }
 
             if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
             {
