@@ -8,6 +8,8 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    // @TopLazy: DarkComboBoxes are noticeably slower to "load" / draw / whatever compared to standard ComboBoxes
+    // Look into it and see if we can improve things.
     public class DarkComboBox : ComboBox, IDarkable
     {
         private const int _padding = 10;
