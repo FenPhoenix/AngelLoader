@@ -72,7 +72,8 @@ namespace AngelLoader.Forms.CustomControls
             _page = new Lazy_TagsPage
             {
                 Dock = DockStyle.Fill,
-                Tag = LoadType.Lazy
+                Tag = LoadType.Lazy,
+                Visible = false
             };
 
             AddTagLLDropDown = new AddTagLLDropDown(_owner, this, _page);
@@ -97,6 +98,8 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             Localize();
+
+            _page.Show();
         }
 
         public override void Localize()

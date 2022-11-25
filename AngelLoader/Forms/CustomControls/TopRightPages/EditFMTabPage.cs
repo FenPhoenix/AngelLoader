@@ -109,7 +109,8 @@ namespace AngelLoader.Forms.CustomControls
             _page = new Lazy_EditFMPage
             {
                 Dock = DockStyle.Fill,
-                Tag = LoadType.Lazy
+                Tag = LoadType.Lazy,
+                Visible = false
             };
 
             AltTitlesLLMenu = new DynamicItemsLLMenu(_owner);
@@ -173,6 +174,8 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             Localize();
+
+            _page.Show();
         }
 
         public override void Localize()

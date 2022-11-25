@@ -51,7 +51,8 @@ namespace AngelLoader.Forms.CustomControls
             _page = new Lazy_StatsPage
             {
                 Dock = DockStyle.Fill,
-                Tag = LoadType.Lazy
+                Tag = LoadType.Lazy,
+                Visible = false
             };
 
             using (new DisableEvents(_owner))
@@ -72,6 +73,8 @@ namespace AngelLoader.Forms.CustomControls
 
                 Localize();
             }
+
+            _page.Show();
         }
 
         public override void Localize()

@@ -35,7 +35,8 @@ namespace AngelLoader.Forms.CustomControls
             _page = new Lazy_CommentPage
             {
                 Dock = DockStyle.Fill,
-                Tag = LoadType.Lazy
+                Tag = LoadType.Lazy,
+                Visible = false
             };
 
             using (new DisableEvents(_owner))
@@ -51,6 +52,8 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (DarkModeEnabled) RefreshTheme();
             }
+
+            _page.Show();
         }
 
         public override void Localize() { }
