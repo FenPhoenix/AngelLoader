@@ -1151,65 +1151,77 @@
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        internal AngelLoader.Forms.CustomControls.DarkButton TestButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test2Button;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test3Button;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test4Button;
-        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel2;
+        internal CustomControls.DarkButton TestButton;
+        internal CustomControls.DarkButton Test2Button;
+        internal CustomControls.DarkButton Test3Button;
+        internal CustomControls.DarkButton Test4Button;
+        internal CustomControls.DarkLabel DebugLabel;
+        internal CustomControls.DarkLabel DebugLabel2;
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
+        internal CustomControls.DarkCheckBox ForceWindowedCheckBox;
+        internal CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
+        internal CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
 
-        internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
-        internal System.Windows.Forms.Panel BottomPanel;
-        internal AngelLoader.Forms.CustomControls.DataGridViewCustom FMsDGV;
-        internal AngelLoader.Forms.CustomControls.DarkButton PlayFMButton;
-        internal AngelLoader.Forms.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom TopSplitContainer;
         internal System.Windows.Forms.Panel EverythingPanel;
-        internal AngelLoader.Forms.CustomControls.DarkButton SettingsButton;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems ChooseReadmeComboBox;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeResetZoomButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel FilterTitleLabel;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterTitleTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkTabControl GamesTabControl;
-        internal System.Windows.Forms.ImageList GameTabsImageList;
-        internal AngelLoader.Forms.CustomControls.DarkTabControl TopRightTabControl;
-        internal AngelLoader.Forms.CustomControls.StatsTabPage StatisticsTabPage;
-        internal AngelLoader.Forms.CustomControls.CommentTabPage CommentTabPage;
-        internal AngelLoader.Forms.CustomControls.TagsTabPage TagsTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkButton ResetLayoutButton;
+        internal CustomControls.DarkSplitContainerCustom MainSplitContainer;
+        internal CustomControls.DarkSplitContainerCustom TopSplitContainer;
+
         internal System.Windows.Forms.ToolTip MainToolTip;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.EditFMTabPage EditFMTabPage;
+
+        #region Top bar
+
+        internal CustomControls.DarkButton MainMenuButton;
+
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeFullScreenButton;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollRightButton;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollLeftButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByFinishedButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByRatingButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByTagsButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFiltersButton;
-        internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
-        internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;
-        internal AngelLoader.Forms.CustomControls.PatchTabPage PatchTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton TopRightCollapseButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
+
+        internal CustomControls.DarkArrowButton FilterBarScrollLeftButton;
+        internal CustomControls.DarkArrowButton FilterBarScrollRightButton;
+
+        internal CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
+        internal CustomControls.DarkTabControl GamesTabControl;
+        internal System.Windows.Forms.ImageList GameTabsImageList;
+        internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
+        internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
+
+        internal CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
+        internal CustomControls.DarkLabel FilterTitleLabel;
+        internal CustomControls.DarkTextBoxCustom FilterTitleTextBox;
+        internal CustomControls.DarkLabel FilterAuthorLabel;
+        internal CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
+
+        internal CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
+        internal CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByTagsButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByFinishedButton;
+        internal CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByRatingButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
+        internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
+        internal CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
+
+        internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
+
+        internal CustomControls.ToolStripCustom RefreshAreaToolStrip;
+
+        internal CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
+        internal CustomControls.ToolStripButtonCustom RefreshFiltersButton;
+        internal CustomControls.ToolStripButtonCustom ClearFiltersButton;
+
+        internal CustomControls.DarkButton ResetLayoutButton;
+
+        #endregion
+
+        #region FMsDGV
+
+        internal CustomControls.DataGridViewCustom FMsDGV;
+
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
         internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn MisCountColumn;
@@ -1225,17 +1237,49 @@
         internal System.Windows.Forms.DataGridViewTextBoxColumn DateAddedColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
-        internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
-        internal CustomControls.DarkButton ReadmeEncodingButton;
-        internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
-        internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
-        internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
+
+        #endregion
+
+        #region Top-right
+
+        internal CustomControls.DarkTabControl TopRightTabControl;
+        internal CustomControls.StatsTabPage StatisticsTabPage;
+        internal CustomControls.EditFMTabPage EditFMTabPage;
+        internal CustomControls.CommentTabPage CommentTabPage;
+        internal CustomControls.TagsTabPage TagsTabPage;
+        internal CustomControls.PatchTabPage PatchTabPage;
         internal CustomControls.ModsTabPage ModsTabPage;
+
+        internal CustomControls.DarkButton TopRightMenuButton;
+        internal CustomControls.DarkArrowButton TopRightCollapseButton;
+
+        #endregion
+
+        #region Readme
+
+        internal CustomControls.RichTextBoxCustom ReadmeRichTextBox;
+
+        internal CustomControls.DarkComboBoxWithBackingItems ChooseReadmeComboBox;
+        internal CustomControls.DarkButton ReadmeEncodingButton;
+        internal CustomControls.DarkButton ReadmeZoomInButton;
+        internal CustomControls.DarkButton ReadmeZoomOutButton;
+        internal CustomControls.DarkButton ReadmeResetZoomButton;
+        internal CustomControls.DarkButton ReadmeFullScreenButton;
+
+        #endregion
+
+        #region Bottom
+
+        internal System.Windows.Forms.Panel BottomPanel;
+
+        internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
+        internal CustomControls.DarkButton PlayFMButton;
         internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
+
+        internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
         internal CustomControls.DarkLabel FMCountLabel;
+        internal CustomControls.DarkButton SettingsButton;
+
+        #endregion
     }
 }
