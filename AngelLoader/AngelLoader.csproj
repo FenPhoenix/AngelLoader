@@ -36,13 +36,13 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release</DefineConstants>
+    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release</DefineConstants>
+    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
 
@@ -96,13 +96,13 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x86'">
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
+    <DefineConstants>TRACE;Release,Release_Public,RT_StartupOnly</DefineConstants>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x64'">
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
+    <DefineConstants>TRACE;Release,Release_Public,RT_StartupOnly</DefineConstants>
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
 
