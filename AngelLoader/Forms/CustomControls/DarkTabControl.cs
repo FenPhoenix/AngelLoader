@@ -334,6 +334,9 @@ namespace AngelLoader.Forms.CustomControls
             _backingTabList[bNewTabIndex].TabPage = _dragTab;
 
             SelectedTab = _dragTab;
+
+            // Otherwise the first control within the tab page gets selected
+            SelectedTab.Focus();
         }
 
         #endregion
