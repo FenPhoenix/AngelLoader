@@ -1,11 +1,16 @@
 ﻿/* NOTE: MainForm notes:
--Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
-in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
-Things to lazy load:
--Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
- controls on each tab page (in case the tabs are visible but not selected on startup)
+@LazyLoad: Controls that can be lazy-loaded in principle:
 -Game buttons and game tabs (one or the other will be invisible on startup)
+-Game tabs image list
+-Individual game buttons or tabs (they're hideable)
+-Filter bar scroll buttons, but see this old comment:
+ "Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+ in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then."
+-All filter controls (they're hideable)
+-Top-right tab pages themselves (even though they're blank containers of lazy-loaded contents now)
+-Top-right tab control (the container of the tab pages)
+-Rating columns (text or image) - one or the other will not be shown
 
 @NET5: Fonts will change and control sizes will all change too.
 -.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
