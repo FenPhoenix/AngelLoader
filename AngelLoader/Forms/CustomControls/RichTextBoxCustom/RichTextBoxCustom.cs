@@ -364,13 +364,14 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.RichText:
                         _currentReadmeSupportsEncodingChange = false;
 
-                        if (fileType != ReadmeType.RichText || !InPreloadedState(path, _darkModeEnabled))
+                        bool inPreloadedState = false;
+                        if (fileType != ReadmeType.RichText || !(inPreloadedState = InPreloadedState(path, _darkModeEnabled)))
                         {
                             _currentReadmeBytes = File.ReadAllBytes(path);
                         }
 
                         // We control the format of GLML-converted files, so no need to do this for those
-                        if (fileType == ReadmeType.RichText && !InPreloadedState(path, _darkModeEnabled))
+                        if (fileType == ReadmeType.RichText && !inPreloadedState)
                         {
                             GlobalPreProcessRTF(_currentReadmeBytes);
                         }
@@ -378,7 +379,7 @@ namespace AngelLoader.Forms.CustomControls
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
 
-                        RefreshDarkModeState(path, skipSuspend: true);
+                        RefreshDarkModeState(preProcessedRtf: _preProcessedRTF, skipSuspend: true);
 
                         break;
                     case ReadmeType.PlainText:

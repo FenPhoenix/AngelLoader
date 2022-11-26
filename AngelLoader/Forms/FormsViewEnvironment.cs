@@ -49,6 +49,8 @@ namespace AngelLoader.Forms
                 ? config.SelFM
                 : config.GameTabsState.GetSelectedFM(config.GameTab);
 
+            if (selFM.InstalledName.IsWhiteSpace()) return;
+
             FanMission? fm = fmsViewList.Find(x => x.InstalledDir.EqualsI(selFM.InstalledName));
             if (fm == null) return;
             if (fmsViewListUnscanned.Contains(fm)) return;

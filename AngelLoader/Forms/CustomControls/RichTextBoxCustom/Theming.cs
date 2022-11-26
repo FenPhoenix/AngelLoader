@@ -48,7 +48,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void RefreshDarkModeState(string readmeFile = "", bool skipSuspend = false)
+        private void RefreshDarkModeState(PreProcessedRTF? preProcessedRtf = null, bool skipSuspend = false)
         {
             // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
             // our scroll position bump itself slightly. Weird.
@@ -69,9 +69,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (_currentReadmeType == ReadmeType.RichText)
                 {
-                    if (InPreloadedState(readmeFile, _darkModeEnabled))
+                    if (preProcessedRtf != null)
                     {
-                        using var ms = new MemoryStream(_preProcessedRTF.Bytes);
+                        using var ms = new MemoryStream(preProcessedRtf.Bytes);
                         LoadFile(ms, RichTextBoxStreamType.RichText);
                     }
                     else

@@ -6,9 +6,9 @@ namespace AngelLoader.Forms.CustomControls
     {
         private sealed class PreProcessedRTF
         {
-            private readonly string FileName;
+            private readonly string _fileName;
             internal readonly byte[] Bytes;
-            private readonly bool DarkMode;
+            private readonly bool _darkMode;
 
             /*
             It's possible for us to preload a readme but then end up on a different FM. It could happen if we
@@ -19,15 +19,15 @@ namespace AngelLoader.Forms.CustomControls
             internal bool Identical(string fileName, bool darkMode) =>
                 // Ultra paranoid checks
                 !fileName.IsWhiteSpace() &&
-                !FileName.IsWhiteSpace() &&
-                FileName.PathEqualsI(fileName) &&
-                DarkMode == darkMode;
+                !_fileName.IsWhiteSpace() &&
+                _fileName.PathEqualsI(fileName) &&
+                _darkMode == darkMode;
 
             internal PreProcessedRTF(string fileName, byte[] bytes, bool darkMode)
             {
-                FileName = fileName;
+                _fileName = fileName;
                 Bytes = bytes;
-                DarkMode = darkMode;
+                _darkMode = darkMode;
             }
         }
 
@@ -55,7 +55,7 @@ namespace AngelLoader.Forms.CustomControls
         [MemberNotNullWhen(true, nameof(_preProcessedRTF))]
         private static bool InPreloadedState(string readmeFile, bool darkMode)
         {
-            if (_preProcessedRTF != null && _preProcessedRTF.Identical(readmeFile, darkMode))
+            if (_preProcessedRTF?.Identical(readmeFile, darkMode) == true)
             {
                 return true;
             }
