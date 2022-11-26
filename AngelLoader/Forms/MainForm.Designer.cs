@@ -104,66 +104,12 @@
             this.TopRightMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
-            this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.Stats_MisCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.StatsScanCustomResourcesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
-            this.CR_MapCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_MoviesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_MotionsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_SoundsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_CreaturesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_TexturesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_AutomapCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_ScriptsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_SubtitlesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CR_ObjectsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.CustomResourcesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.StatsHorizDiv = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
-            this.EditFMTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.EditFMScanLanguagesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMLanguageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.EditFMScanForReadmesButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanReleaseDateButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanAuthorButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMScanTitleButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMAltTitlesArrowButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-            this.EditFMTitleTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.EditFMFinishedOnButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMLastPlayedDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
-            this.EditFMReleaseDateDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
-            this.EditFMLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.EditFMReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.EditFMAuthorTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.CommentTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.CommentTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.TagsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
-            this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
-            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
-            this.PatchTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.Patch_PerFMValues_Label = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.Patch_NDSubs_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Patch_PostProc_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.PatchMainPanel = new System.Windows.Forms.Panel();
-            this.PatchDMLsPanel = new System.Windows.Forms.Panel();
-            this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.PatchDMLsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-            this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.PatchOpenFMFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.ModsTabPage = new AngelLoader.Forms.CustomControls.DarkTabPageCustom();
-            this.MainModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
+            this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.StatsTabPage();
+            this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
+            this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
+            this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
+            this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
+            this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
             this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -190,16 +136,6 @@
             this.FilterIconButtonsToolStrip.SuspendLayout();
             this.RefreshAreaToolStrip.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
-            this.StatisticsTabPage.SuspendLayout();
-            this.StatsCheckBoxesPanel.SuspendLayout();
-            this.EditFMTabPage.SuspendLayout();
-            this.CommentTabPage.SuspendLayout();
-            this.TagsTabPage.SuspendLayout();
-            this.AddRemoveTagFLP.SuspendLayout();
-            this.PatchTabPage.SuspendLayout();
-            this.PatchMainPanel.SuspendLayout();
-            this.PatchDMLsPanel.SuspendLayout();
-            this.ModsTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -254,7 +190,7 @@
             // FMCountLabel
             // 
             this.FMCountLabel.AutoSize = true;
-            this.FMCountLabel.Location = new System.Drawing.Point(3, 15);
+            this.FMCountLabel.Location = new System.Drawing.Point(3, 7);
             this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 7, 0, 0);
             this.FMCountLabel.Name = "FMCountLabel";
             this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
@@ -269,7 +205,7 @@
             this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
             this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftFLP.Name = "BottomLeftFLP";
-            this.BottomLeftFLP.Size = new System.Drawing.Size(234, 42);
+            this.BottomLeftFLP.Size = new System.Drawing.Size(100, 42);
             this.BottomLeftFLP.TabIndex = 36;
             this.BottomLeftFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftFLP_Paint);
             // 
@@ -997,724 +933,57 @@
             // 
             // StatisticsTabPage
             // 
-            this.StatisticsTabPage.AutoScroll = true;
             this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.StatisticsTabPage.Controls.Add(this.Stats_MisCountLabel);
-            this.StatisticsTabPage.Controls.Add(this.StatsScanCustomResourcesButton);
-            this.StatisticsTabPage.Controls.Add(this.StatsCheckBoxesPanel);
-            this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
-            this.StatisticsTabPage.Controls.Add(this.StatsHorizDiv);
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
             this.StatisticsTabPage.Name = "StatisticsTabPage";
-            this.StatisticsTabPage.Size = new System.Drawing.Size(526, 284);
+            this.StatisticsTabPage.Size = new System.Drawing.Size(527, 284);
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
             // 
-            // Stats_MisCountLabel
-            // 
-            this.Stats_MisCountLabel.AutoSize = true;
-            this.Stats_MisCountLabel.Location = new System.Drawing.Point(4, 8);
-            this.Stats_MisCountLabel.Name = "Stats_MisCountLabel";
-            this.Stats_MisCountLabel.Size = new System.Drawing.Size(77, 13);
-            this.Stats_MisCountLabel.TabIndex = 0;
-            this.Stats_MisCountLabel.Text = "[mission count]";
-            // 
-            // StatsScanCustomResourcesButton
-            // 
-            this.StatsScanCustomResourcesButton.AutoSize = true;
-            this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 232);
-            this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
-            this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(110, 23);
-            this.StatsScanCustomResourcesButton.TabIndex = 12;
-            this.StatsScanCustomResourcesButton.Text = "Rescan statistics";
-            this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
-            this.StatsScanCustomResourcesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // StatsCheckBoxesPanel
-            // 
-            this.StatsCheckBoxesPanel.AutoSize = true;
-            this.StatsCheckBoxesPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_MapCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_MoviesCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_MotionsCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_SoundsCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_CreaturesCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_TexturesCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_AutomapCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_ScriptsCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_SubtitlesCheckBox);
-            this.StatsCheckBoxesPanel.Controls.Add(this.CR_ObjectsCheckBox);
-            this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 64);
-            this.StatsCheckBoxesPanel.Name = "StatsCheckBoxesPanel";
-            this.StatsCheckBoxesPanel.Size = new System.Drawing.Size(74, 164);
-            this.StatsCheckBoxesPanel.TabIndex = 1;
-            // 
-            // CR_MapCheckBox
-            // 
-            this.CR_MapCheckBox.AutoCheck = false;
-            this.CR_MapCheckBox.AutoSize = true;
-            this.CR_MapCheckBox.Location = new System.Drawing.Point(0, 0);
-            this.CR_MapCheckBox.Name = "CR_MapCheckBox";
-            this.CR_MapCheckBox.Size = new System.Drawing.Size(47, 17);
-            this.CR_MapCheckBox.TabIndex = 2;
-            this.CR_MapCheckBox.Text = "Map";
-            this.CR_MapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MoviesCheckBox
-            // 
-            this.CR_MoviesCheckBox.AutoCheck = false;
-            this.CR_MoviesCheckBox.AutoSize = true;
-            this.CR_MoviesCheckBox.Location = new System.Drawing.Point(0, 64);
-            this.CR_MoviesCheckBox.Name = "CR_MoviesCheckBox";
-            this.CR_MoviesCheckBox.Size = new System.Drawing.Size(60, 17);
-            this.CR_MoviesCheckBox.TabIndex = 6;
-            this.CR_MoviesCheckBox.Text = "Movies";
-            this.CR_MoviesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MotionsCheckBox
-            // 
-            this.CR_MotionsCheckBox.AutoCheck = false;
-            this.CR_MotionsCheckBox.AutoSize = true;
-            this.CR_MotionsCheckBox.Location = new System.Drawing.Point(0, 112);
-            this.CR_MotionsCheckBox.Name = "CR_MotionsCheckBox";
-            this.CR_MotionsCheckBox.Size = new System.Drawing.Size(63, 17);
-            this.CR_MotionsCheckBox.TabIndex = 9;
-            this.CR_MotionsCheckBox.Text = "Motions";
-            this.CR_MotionsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SoundsCheckBox
-            // 
-            this.CR_SoundsCheckBox.AutoCheck = false;
-            this.CR_SoundsCheckBox.AutoSize = true;
-            this.CR_SoundsCheckBox.Location = new System.Drawing.Point(0, 48);
-            this.CR_SoundsCheckBox.Name = "CR_SoundsCheckBox";
-            this.CR_SoundsCheckBox.Size = new System.Drawing.Size(62, 17);
-            this.CR_SoundsCheckBox.TabIndex = 5;
-            this.CR_SoundsCheckBox.Text = "Sounds";
-            this.CR_SoundsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_CreaturesCheckBox
-            // 
-            this.CR_CreaturesCheckBox.AutoCheck = false;
-            this.CR_CreaturesCheckBox.AutoSize = true;
-            this.CR_CreaturesCheckBox.Location = new System.Drawing.Point(0, 96);
-            this.CR_CreaturesCheckBox.Name = "CR_CreaturesCheckBox";
-            this.CR_CreaturesCheckBox.Size = new System.Drawing.Size(71, 17);
-            this.CR_CreaturesCheckBox.TabIndex = 8;
-            this.CR_CreaturesCheckBox.Text = "Creatures";
-            this.CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_TexturesCheckBox
-            // 
-            this.CR_TexturesCheckBox.AutoCheck = false;
-            this.CR_TexturesCheckBox.AutoSize = true;
-            this.CR_TexturesCheckBox.Location = new System.Drawing.Point(0, 32);
-            this.CR_TexturesCheckBox.Name = "CR_TexturesCheckBox";
-            this.CR_TexturesCheckBox.Size = new System.Drawing.Size(67, 17);
-            this.CR_TexturesCheckBox.TabIndex = 4;
-            this.CR_TexturesCheckBox.Text = "Textures";
-            this.CR_TexturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_AutomapCheckBox
-            // 
-            this.CR_AutomapCheckBox.AutoCheck = false;
-            this.CR_AutomapCheckBox.AutoSize = true;
-            this.CR_AutomapCheckBox.Location = new System.Drawing.Point(0, 16);
-            this.CR_AutomapCheckBox.Name = "CR_AutomapCheckBox";
-            this.CR_AutomapCheckBox.Size = new System.Drawing.Size(68, 17);
-            this.CR_AutomapCheckBox.TabIndex = 3;
-            this.CR_AutomapCheckBox.Text = "Automap";
-            this.CR_AutomapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ScriptsCheckBox
-            // 
-            this.CR_ScriptsCheckBox.AutoCheck = false;
-            this.CR_ScriptsCheckBox.AutoSize = true;
-            this.CR_ScriptsCheckBox.Location = new System.Drawing.Point(0, 128);
-            this.CR_ScriptsCheckBox.Name = "CR_ScriptsCheckBox";
-            this.CR_ScriptsCheckBox.Size = new System.Drawing.Size(58, 17);
-            this.CR_ScriptsCheckBox.TabIndex = 10;
-            this.CR_ScriptsCheckBox.Text = "Scripts";
-            this.CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SubtitlesCheckBox
-            // 
-            this.CR_SubtitlesCheckBox.AutoCheck = false;
-            this.CR_SubtitlesCheckBox.AutoSize = true;
-            this.CR_SubtitlesCheckBox.Location = new System.Drawing.Point(0, 144);
-            this.CR_SubtitlesCheckBox.Name = "CR_SubtitlesCheckBox";
-            this.CR_SubtitlesCheckBox.Size = new System.Drawing.Size(66, 17);
-            this.CR_SubtitlesCheckBox.TabIndex = 11;
-            this.CR_SubtitlesCheckBox.Text = "Subtitles";
-            this.CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ObjectsCheckBox
-            // 
-            this.CR_ObjectsCheckBox.AutoCheck = false;
-            this.CR_ObjectsCheckBox.AutoSize = true;
-            this.CR_ObjectsCheckBox.Location = new System.Drawing.Point(0, 80);
-            this.CR_ObjectsCheckBox.Name = "CR_ObjectsCheckBox";
-            this.CR_ObjectsCheckBox.Size = new System.Drawing.Size(62, 17);
-            this.CR_ObjectsCheckBox.TabIndex = 7;
-            this.CR_ObjectsCheckBox.Text = "Objects";
-            this.CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CustomResourcesLabel
-            // 
-            this.CustomResourcesLabel.AutoSize = true;
-            this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 42);
-            this.CustomResourcesLabel.Name = "CustomResourcesLabel";
-            this.CustomResourcesLabel.Size = new System.Drawing.Size(156, 13);
-            this.CustomResourcesLabel.TabIndex = 0;
-            this.CustomResourcesLabel.Text = "Custom resources not scanned.";
-            // 
-            // StatsHorizDiv
-            // 
-            this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
-            this.StatsHorizDiv.Name = "StatsHorizDiv";
-            this.StatsHorizDiv.Size = new System.Drawing.Size(512, 16);
-            this.StatsHorizDiv.TabIndex = 13;
-            // 
             // EditFMTabPage
             // 
-            this.EditFMTabPage.AutoScroll = true;
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.EditFMTabPage.Controls.Add(this.EditFMScanLanguagesButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMLanguageLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMLanguageComboBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanForReadmesButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanReleaseDateButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanAuthorButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMScanTitleButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMAltTitlesArrowButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMTitleTextBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMFinishedOnButton);
-            this.EditFMTabPage.Controls.Add(this.EditFMRatingComboBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMRatingLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMLastPlayedDateTimePicker);
-            this.EditFMTabPage.Controls.Add(this.EditFMReleaseDateDateTimePicker);
-            this.EditFMTabPage.Controls.Add(this.EditFMLastPlayedCheckBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMReleaseDateCheckBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMAuthorTextBox);
-            this.EditFMTabPage.Controls.Add(this.EditFMAuthorLabel);
-            this.EditFMTabPage.Controls.Add(this.EditFMTitleLabel);
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
-            this.EditFMTabPage.Size = new System.Drawing.Size(526, 284);
+            this.EditFMTabPage.Size = new System.Drawing.Size(527, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
-            // EditFMScanLanguagesButton
-            // 
-            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 200);
-            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
-            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
-            this.EditFMScanLanguagesButton.TabIndex = 33;
-            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanLanguagesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
-            // 
-            // EditFMLanguageLabel
-            // 
-            this.EditFMLanguageLabel.AutoSize = true;
-            this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 185);
-            this.EditFMLanguageLabel.Name = "EditFMLanguageLabel";
-            this.EditFMLanguageLabel.Size = new System.Drawing.Size(125, 13);
-            this.EditFMLanguageLabel.TabIndex = 31;
-            this.EditFMLanguageLabel.Text = "Play FM in this language:";
-            // 
-            // EditFMLanguageComboBox
-            // 
-            this.EditFMLanguageComboBox.FormattingEnabled = true;
-            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 201);
-            this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
-            this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
-            this.EditFMLanguageComboBox.TabIndex = 32;
-            this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
-            // 
-            // EditFMScanForReadmesButton
-            // 
-            this.EditFMScanForReadmesButton.AutoSize = true;
-            this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 238);
-            this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
-            this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
-            this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(130, 23);
-            this.EditFMScanForReadmesButton.TabIndex = 34;
-            this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
-            this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
-            this.EditFMScanForReadmesButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanReleaseDateButton
-            // 
-            this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
-            this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
-            this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanReleaseDateButton.TabIndex = 22;
-            this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
-            this.EditFMScanReleaseDateButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanAuthorButton
-            // 
-            this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
-            this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
-            this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanAuthorButton.TabIndex = 19;
-            this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
-            this.EditFMScanAuthorButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanAuthorButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMScanTitleButton
-            // 
-            this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
-            this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
-            this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanTitleButton.TabIndex = 16;
-            this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
-            this.EditFMScanTitleButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
-            this.EditFMScanTitleButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
-            // 
-            // EditFMAltTitlesArrowButton
-            // 
-            this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
-            this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
-            this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
-            this.EditFMAltTitlesArrowButton.TabIndex = 15;
-            this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
-            this.EditFMAltTitlesArrowButton.Click += new System.EventHandler(this.EditFMAltTitlesArrowButton_Click);
-            // 
-            // EditFMTitleTextBox
-            // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
-            this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
-            this.EditFMTitleTextBox.TabIndex = 14;
-            this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
-            this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
-            // 
-            // EditFMFinishedOnButton
-            // 
-            this.EditFMFinishedOnButton.AutoSize = true;
-            this.EditFMFinishedOnButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
-            this.EditFMFinishedOnButton.MinimumSize = new System.Drawing.Size(138, 23);
-            this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
-            this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
-            this.EditFMFinishedOnButton.TabIndex = 27;
-            this.EditFMFinishedOnButton.Text = "Finished on...";
-            this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
-            this.EditFMFinishedOnButton.Click += new System.EventHandler(this.EditFMFinishedOnButton_Click);
-            // 
-            // EditFMRatingComboBox
-            // 
-            this.EditFMRatingComboBox.FormattingEnabled = true;
-            this.EditFMRatingComboBox.Items.AddRange(new object[] {
-            "Unrated",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            this.EditFMRatingComboBox.Location = new System.Drawing.Point(185, 104);
-            this.EditFMRatingComboBox.Name = "EditFMRatingComboBox";
-            this.EditFMRatingComboBox.Size = new System.Drawing.Size(136, 21);
-            this.EditFMRatingComboBox.TabIndex = 26;
-            this.EditFMRatingComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMRatingComboBox_SelectedIndexChanged);
-            // 
-            // EditFMRatingLabel
-            // 
-            this.EditFMRatingLabel.AutoSize = true;
-            this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
-            this.EditFMRatingLabel.Name = "EditFMRatingLabel";
-            this.EditFMRatingLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMRatingLabel.TabIndex = 25;
-            this.EditFMRatingLabel.Text = "Rating:";
-            // 
-            // EditFMLastPlayedDateTimePicker
-            // 
-            this.EditFMLastPlayedDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.EditFMLastPlayedDateTimePicker.Location = new System.Drawing.Point(8, 148);
-            this.EditFMLastPlayedDateTimePicker.Name = "EditFMLastPlayedDateTimePicker";
-            this.EditFMLastPlayedDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMLastPlayedDateTimePicker.TabIndex = 24;
-            this.EditFMLastPlayedDateTimePicker.Visible = false;
-            this.EditFMLastPlayedDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMLastPlayedDateTimePicker_ValueChanged);
-            // 
-            // EditFMReleaseDateDateTimePicker
-            // 
-            this.EditFMReleaseDateDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.EditFMReleaseDateDateTimePicker.Location = new System.Drawing.Point(8, 106);
-            this.EditFMReleaseDateDateTimePicker.Name = "EditFMReleaseDateDateTimePicker";
-            this.EditFMReleaseDateDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMReleaseDateDateTimePicker.TabIndex = 21;
-            this.EditFMReleaseDateDateTimePicker.Visible = false;
-            this.EditFMReleaseDateDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMReleaseDateDateTimePicker_ValueChanged);
-            // 
-            // EditFMLastPlayedCheckBox
-            // 
-            this.EditFMLastPlayedCheckBox.AutoSize = true;
-            this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
-            this.EditFMLastPlayedCheckBox.Name = "EditFMLastPlayedCheckBox";
-            this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
-            this.EditFMLastPlayedCheckBox.TabIndex = 23;
-            this.EditFMLastPlayedCheckBox.Text = "Last played:";
-            this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
-            this.EditFMLastPlayedCheckBox.CheckedChanged += new System.EventHandler(this.EditFMLastPlayedCheckBox_CheckedChanged);
-            // 
-            // EditFMReleaseDateCheckBox
-            // 
-            this.EditFMReleaseDateCheckBox.AutoSize = true;
-            this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
-            this.EditFMReleaseDateCheckBox.Name = "EditFMReleaseDateCheckBox";
-            this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);
-            this.EditFMReleaseDateCheckBox.TabIndex = 20;
-            this.EditFMReleaseDateCheckBox.Text = "Release date:";
-            this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
-            this.EditFMReleaseDateCheckBox.CheckedChanged += new System.EventHandler(this.EditFMReleaseDateCheckBox_CheckedChanged);
-            // 
-            // EditFMAuthorTextBox
-            // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
-            this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(485, 20);
-            this.EditFMAuthorTextBox.TabIndex = 18;
-            this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
-            this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
-            // 
-            // EditFMAuthorLabel
-            // 
-            this.EditFMAuthorLabel.AutoSize = true;
-            this.EditFMAuthorLabel.Location = new System.Drawing.Point(8, 48);
-            this.EditFMAuthorLabel.Name = "EditFMAuthorLabel";
-            this.EditFMAuthorLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMAuthorLabel.TabIndex = 17;
-            this.EditFMAuthorLabel.Text = "Author:";
-            // 
-            // EditFMTitleLabel
-            // 
-            this.EditFMTitleLabel.AutoSize = true;
-            this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
-            this.EditFMTitleLabel.Name = "EditFMTitleLabel";
-            this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
-            this.EditFMTitleLabel.TabIndex = 13;
-            this.EditFMTitleLabel.Text = "Title:";
-            //
             // CommentTabPage
             // 
             this.CommentTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.CommentTabPage.Controls.Add(this.CommentTextBox);
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
-            this.CommentTabPage.Size = new System.Drawing.Size(526, 284);
+            this.CommentTabPage.Size = new System.Drawing.Size(527, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
             // 
-            // CommentTextBox
-            // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
-            this.CommentTextBox.Multiline = true;
-            this.CommentTextBox.Name = "CommentTextBox";
-            this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(510, 266);
-            this.CommentTextBox.TabIndex = 32;
-            this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
-            this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
-            // 
             // TagsTabPage
             // 
-            this.TagsTabPage.AutoScroll = true;
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.TagsTabPage.Controls.Add(this.AddTagButton);
-            this.TagsTabPage.Controls.Add(this.AddTagTextBox);
-            this.TagsTabPage.Controls.Add(this.AddRemoveTagFLP);
-            this.TagsTabPage.Controls.Add(this.TagsTreeView);
-            this.TagsTabPage.Controls.Add(this.TagsTabAutoScrollMarker);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
-            this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
+            this.TagsTabPage.Size = new System.Drawing.Size(527, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
-            // AddTagButton
-            // 
-            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagButton.AutoSize = true;
-            this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
-            this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagButton.Name = "AddTagButton";
-            this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagButton.Size = new System.Drawing.Size(66, 23);
-            this.AddTagButton.TabIndex = 1;
-            this.AddTagButton.Text = "Add tag";
-            this.AddTagButton.UseVisualStyleBackColor = true;
-            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
-            // 
-            // AddTagTextBox
-            // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagTextBox.DisallowedCharacters = ",;";
-            this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
-            this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(440, 20);
-            this.AddTagTextBox.StrictTextChangedEvent = false;
-            this.AddTagTextBox.TabIndex = 0;
-            this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
-            this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
-            this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
-            // 
-            // AddRemoveTagFLP
-            // 
-            this.AddRemoveTagFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddRemoveTagFLP.AutoSize = true;
-            this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
-            this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
-            this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFLP.Location = new System.Drawing.Point(0, 248);
-            this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
-            this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
-            this.AddRemoveTagFLP.TabIndex = 3;
-            // 
-            // RemoveTagButton
-            // 
-            this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveTagButton.AutoSize = true;
-            this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.RemoveTagButton.Location = new System.Drawing.Point(432, 0);
-            this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
-            this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.RemoveTagButton.Name = "RemoveTagButton";
-            this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
-            this.RemoveTagButton.TabIndex = 1;
-            this.RemoveTagButton.Text = "Remove tag";
-            this.RemoveTagButton.UseVisualStyleBackColor = true;
-            this.RemoveTagButton.Click += new System.EventHandler(this.RemoveTagButton_Click);
-            // 
-            // AddTagFromListButton
-            // 
-            this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagFromListButton.AutoSize = true;
-            this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(337, 0);
-            this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
-            this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
-            this.AddTagFromListButton.Name = "AddTagFromListButton";
-            this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
-            this.AddTagFromListButton.TabIndex = 0;
-            this.AddTagFromListButton.Text = "Add from list...";
-            this.AddTagFromListButton.UseVisualStyleBackColor = true;
-            this.AddTagFromListButton.Click += new System.EventHandler(this.AddTagFromListButton_Click);
-            // 
-            // TagsTreeView
-            // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TagsTreeView.HideSelection = false;
-            this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
-            this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(510, 216);
-            this.TagsTreeView.TabIndex = 2;
-            // 
-            // TagsTabAutoScrollMarker
-            // 
-            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
-            this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
-            this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
-            this.TagsTabAutoScrollMarker.TabIndex = 5;
-            // 
             // PatchTabPage
             // 
-            this.PatchTabPage.AutoScroll = true;
             this.PatchTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.PatchTabPage.Controls.Add(this.Patch_PerFMValues_Label);
-            this.PatchTabPage.Controls.Add(this.Patch_NDSubs_CheckBox);
-            this.PatchTabPage.Controls.Add(this.Patch_PostProc_CheckBox);
-            this.PatchTabPage.Controls.Add(this.Patch_NewMantle_CheckBox);
-            this.PatchTabPage.Controls.Add(this.PatchMainPanel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
-            this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
+            this.PatchTabPage.Size = new System.Drawing.Size(527, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 
-            // Patch_PerFMValues_Label
-            // 
-            this.Patch_PerFMValues_Label.AutoSize = true;
-            this.Patch_PerFMValues_Label.Location = new System.Drawing.Point(6, 8);
-            this.Patch_PerFMValues_Label.Name = "Patch_PerFMValues_Label";
-            this.Patch_PerFMValues_Label.Size = new System.Drawing.Size(87, 13);
-            this.Patch_PerFMValues_Label.TabIndex = 0;
-            this.Patch_PerFMValues_Label.Text = "Option overrides:";
-            // 
-            // Patch_NDSubs_CheckBox
-            // 
-            this.Patch_NDSubs_CheckBox.AutoSize = true;
-            this.Patch_NDSubs_CheckBox.Checked = true;
-            this.Patch_NDSubs_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_NDSubs_CheckBox.Location = new System.Drawing.Point(8, 80);
-            this.Patch_NDSubs_CheckBox.Name = "Patch_NDSubs_CheckBox";
-            this.Patch_NDSubs_CheckBox.Size = new System.Drawing.Size(125, 17);
-            this.Patch_NDSubs_CheckBox.TabIndex = 3;
-            this.Patch_NDSubs_CheckBox.Text = "Subtitles (if available)";
-            this.Patch_NDSubs_CheckBox.ThreeState = true;
-            this.Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_NDSubs_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NDSubs_CheckBox_CheckStateChanged);
-            // 
-            // Patch_PostProc_CheckBox
-            // 
-            this.Patch_PostProc_CheckBox.AutoSize = true;
-            this.Patch_PostProc_CheckBox.Checked = true;
-            this.Patch_PostProc_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_PostProc_CheckBox.Location = new System.Drawing.Point(8, 56);
-            this.Patch_PostProc_CheckBox.Name = "Patch_PostProc_CheckBox";
-            this.Patch_PostProc_CheckBox.Size = new System.Drawing.Size(159, 17);
-            this.Patch_PostProc_CheckBox.TabIndex = 2;
-            this.Patch_PostProc_CheckBox.Text = "Post-processing (bloom etc.)";
-            this.Patch_PostProc_CheckBox.ThreeState = true;
-            this.Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_PostProc_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_PostProc_CheckBox_CheckStateChanged);
-            // 
-            // Patch_NewMantle_CheckBox
-            // 
-            this.Patch_NewMantle_CheckBox.AutoSize = true;
-            this.Patch_NewMantle_CheckBox.Checked = true;
-            this.Patch_NewMantle_CheckBox.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.Patch_NewMantle_CheckBox.Location = new System.Drawing.Point(8, 32);
-            this.Patch_NewMantle_CheckBox.Name = "Patch_NewMantle_CheckBox";
-            this.Patch_NewMantle_CheckBox.Size = new System.Drawing.Size(82, 17);
-            this.Patch_NewMantle_CheckBox.TabIndex = 1;
-            this.Patch_NewMantle_CheckBox.Text = "New mantle";
-            this.Patch_NewMantle_CheckBox.ThreeState = true;
-            this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
-            this.Patch_NewMantle_CheckBox.CheckStateChanged += new System.EventHandler(this.Patch_NewMantle_CheckBox_CheckStateChanged);
-            // 
-            // PatchMainPanel
-            // 
-            this.PatchMainPanel.AutoSize = true;
-            this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
-            this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 104);
-            this.PatchMainPanel.Name = "PatchMainPanel";
-            this.PatchMainPanel.Size = new System.Drawing.Size(311, 250);
-            this.PatchMainPanel.TabIndex = 38;
-            // 
-            // PatchDMLsPanel
-            // 
-            this.PatchDMLsPanel.AutoSize = true;
-            this.PatchDMLsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchDMLsPanel.Controls.Add(this.PatchDMLPatchesLabel);
-            this.PatchDMLsPanel.Controls.Add(this.PatchDMLsListBox);
-            this.PatchDMLsPanel.Controls.Add(this.PatchRemoveDMLButton);
-            this.PatchDMLsPanel.Controls.Add(this.PatchAddDMLButton);
-            this.PatchDMLsPanel.Location = new System.Drawing.Point(0, 0);
-            this.PatchDMLsPanel.Name = "PatchDMLsPanel";
-            this.PatchDMLsPanel.Size = new System.Drawing.Size(308, 218);
-            this.PatchDMLsPanel.TabIndex = 39;
-            // 
-            // PatchDMLPatchesLabel
-            // 
-            this.PatchDMLPatchesLabel.AutoSize = true;
-            this.PatchDMLPatchesLabel.Location = new System.Drawing.Point(8, 8);
-            this.PatchDMLPatchesLabel.Name = "PatchDMLPatchesLabel";
-            this.PatchDMLPatchesLabel.Size = new System.Drawing.Size(156, 13);
-            this.PatchDMLPatchesLabel.TabIndex = 40;
-            this.PatchDMLPatchesLabel.Text = ".dml patches applied to this FM:";
-            // 
-            // PatchDMLsListBox
-            // 
-            this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
-            this.PatchDMLsListBox.MultiSelect = false;
-            this.PatchDMLsListBox.Name = "PatchDMLsListBox";
-            this.PatchDMLsListBox.Size = new System.Drawing.Size(296, 168);
-            this.PatchDMLsListBox.TabIndex = 41;
-            // 
-            // PatchRemoveDMLButton
-            // 
-            this.PatchRemoveDMLButton.Location = new System.Drawing.Point(258, 192);
-            this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
-            this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchRemoveDMLButton.TabIndex = 42;
-            this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
-            this.PatchRemoveDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchRemoveDMLButton_Paint);
-            this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
-            // 
-            // PatchAddDMLButton
-            // 
-            this.PatchAddDMLButton.Location = new System.Drawing.Point(282, 192);
-            this.PatchAddDMLButton.Name = "PatchAddDMLButton";
-            this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchAddDMLButton.TabIndex = 43;
-            this.PatchAddDMLButton.UseVisualStyleBackColor = true;
-            this.PatchAddDMLButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PatchAddDMLButton_Paint);
-            this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
-            // 
-            // PatchOpenFMFolderButton
-            // 
-            this.PatchOpenFMFolderButton.AutoSize = true;
-            this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 224);
-            this.PatchOpenFMFolderButton.MinimumSize = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
-            this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.TabIndex = 44;
-            this.PatchOpenFMFolderButton.Text = "Open FM folder";
-            this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
-            this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
-            // 
             // ModsTabPage
             // 
-            this.ModsTabPage.AutoScroll = true;
             this.ModsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.ModsTabPage.Controls.Add(this.MainModsControl);
             this.ModsTabPage.Location = new System.Drawing.Point(4, 22);
             this.ModsTabPage.Name = "ModsTabPage";
             this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
             this.ModsTabPage.TabIndex = 4;
             this.ModsTabPage.Text = "Mods";
-            // 
-            // MainModsControl
-            // 
-            this.MainModsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainModsControl.Location = new System.Drawing.Point(0, 0);
-            this.MainModsControl.Name = "MainModsControl";
-            this.MainModsControl.Size = new System.Drawing.Size(527, 284);
-            this.MainModsControl.TabIndex = 6;
-            this.MainModsControl.DisabledModsTextBoxTextChanged += new System.EventHandler(this.ModsDisabledModsTextBox_TextChanged);
-            this.MainModsControl.DisabledModsUpdated += new System.EventHandler(this.Mods_DisabledModsUpdated);
             // 
             // ReadmeEncodingButton
             // 
@@ -1874,25 +1143,6 @@
             this.RefreshAreaToolStrip.ResumeLayout(false);
             this.RefreshAreaToolStrip.PerformLayout();
             this.TopRightTabControl.ResumeLayout(false);
-            this.StatisticsTabPage.ResumeLayout(false);
-            this.StatisticsTabPage.PerformLayout();
-            this.StatsCheckBoxesPanel.ResumeLayout(false);
-            this.StatsCheckBoxesPanel.PerformLayout();
-            this.EditFMTabPage.ResumeLayout(false);
-            this.EditFMTabPage.PerformLayout();
-            this.CommentTabPage.ResumeLayout(false);
-            this.CommentTabPage.PerformLayout();
-            this.TagsTabPage.ResumeLayout(false);
-            this.TagsTabPage.PerformLayout();
-            this.AddRemoveTagFLP.ResumeLayout(false);
-            this.AddRemoveTagFLP.PerformLayout();
-            this.PatchTabPage.ResumeLayout(false);
-            this.PatchTabPage.PerformLayout();
-            this.PatchMainPanel.ResumeLayout(false);
-            this.PatchMainPanel.PerformLayout();
-            this.PatchDMLsPanel.ResumeLayout(false);
-            this.PatchDMLsPanel.PerformLayout();
-            this.ModsTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1901,110 +1151,77 @@
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        internal AngelLoader.Forms.CustomControls.DarkButton TestButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test2Button;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test3Button;
-        internal AngelLoader.Forms.CustomControls.DarkButton Test4Button;
-        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel DebugLabel2;
+        internal CustomControls.DarkButton TestButton;
+        internal CustomControls.DarkButton Test2Button;
+        internal CustomControls.DarkButton Test3Button;
+        internal CustomControls.DarkButton Test4Button;
+        internal CustomControls.DarkLabel DebugLabel;
+        internal CustomControls.DarkLabel DebugLabel2;
 #endif
 
 #if !ReleaseBeta && !ReleasePublic
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox ForceWindowedCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
+        internal CustomControls.DarkCheckBox ForceWindowedCheckBox;
+        internal CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
+        internal CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
 #endif
 
-        internal AngelLoader.Forms.CustomControls.DarkLabel ModsTabNotSupportedMessageLabel;
-
-        internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
-        internal System.Windows.Forms.Panel BottomPanel;
-        internal AngelLoader.Forms.CustomControls.DataGridViewCustom FMsDGV;
-        internal AngelLoader.Forms.CustomControls.DarkButton PlayFMButton;
-        internal AngelLoader.Forms.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkSplitContainerCustom TopSplitContainer;
         internal System.Windows.Forms.Panel EverythingPanel;
-        internal AngelLoader.Forms.CustomControls.DarkButton SettingsButton;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems ChooseReadmeComboBox;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeResetZoomButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel FilterTitleLabel;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterTitleTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkTabControl GamesTabControl;
-        internal System.Windows.Forms.ImageList GameTabsImageList;
-        internal AngelLoader.Forms.CustomControls.DarkTabControl TopRightTabControl;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom StatisticsTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkLabel CustomResourcesLabel;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_MotionsCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_CreaturesCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_MapCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_ScriptsCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_ObjectsCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_SubtitlesCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_AutomapCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_TexturesCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_SoundsCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox CR_MoviesCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom CommentTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox CommentTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom TagsTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkTreeView TagsTreeView;
-        internal AngelLoader.Forms.CustomControls.DarkButton ResetLayoutButton;
+        internal CustomControls.DarkSplitContainerCustom MainSplitContainer;
+        internal CustomControls.DarkSplitContainerCustom TopSplitContainer;
+
         internal System.Windows.Forms.ToolTip MainToolTip;
-        internal AngelLoader.Forms.CustomControls.DarkButton RemoveTagButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton AddTagButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton AddTagFromListButton;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom AddTagTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel FilterAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom EditFMTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMLastPlayedDateTimePicker;
-        internal AngelLoader.Forms.CustomControls.DarkDateTimePicker EditFMReleaseDateDateTimePicker;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMAuthorTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMAuthorLabel;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMTitleLabel;
+
+        #region Top bar
+
+        internal CustomControls.DarkButton MainMenuButton;
+
         internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
-        internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMLastPlayedCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkCheckBox EditFMReleaseDateCheckBox;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems EditFMRatingComboBox;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMRatingLabel;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMFinishedOnButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeFullScreenButton;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollRightButton;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton FilterBarScrollLeftButton;
-        internal AngelLoader.Forms.CustomControls.DarkTextBox EditFMTitleTextBox;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton EditFMAltTitlesArrowButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByFinishedButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByRatingButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByTagsButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripCustom RefreshAreaToolStrip;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom ClearFiltersButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFiltersButton;
-        internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
-        internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomInButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton ReadmeZoomOutButton;
-        internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanReleaseDateButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanAuthorButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanTitleButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanForReadmesButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton StatsScanCustomResourcesButton;
-        internal AngelLoader.Forms.CustomControls.DarkTabPageCustom PatchTabPage;
-        internal AngelLoader.Forms.CustomControls.DarkListBox PatchDMLsListBox;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchRemoveDMLButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchAddDMLButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel PatchDMLPatchesLabel;
-        internal System.Windows.Forms.Panel PatchDMLsPanel;
-        internal System.Windows.Forms.Panel PatchMainPanel;
-        internal AngelLoader.Forms.CustomControls.DarkButton PatchOpenFMFolderButton;
-        internal AngelLoader.Forms.CustomControls.DarkArrowButton TopRightCollapseButton;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
+
+        internal CustomControls.DarkArrowButton FilterBarScrollLeftButton;
+        internal CustomControls.DarkArrowButton FilterBarScrollRightButton;
+
+        internal CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
+        internal CustomControls.DarkTabControl GamesTabControl;
+        internal System.Windows.Forms.ImageList GameTabsImageList;
+        internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
+        internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
+
+        internal CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
+        internal CustomControls.DarkLabel FilterTitleLabel;
+        internal CustomControls.DarkTextBoxCustom FilterTitleTextBox;
+        internal CustomControls.DarkLabel FilterAuthorLabel;
+        internal CustomControls.DarkTextBoxCustom FilterAuthorTextBox;
+
+        internal CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
+        internal CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByTagsButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByFinishedButton;
+        internal CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterByRatingButton;
+
+        internal CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
+        internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
+        internal CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
+
+        internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
+
+        internal CustomControls.ToolStripCustom RefreshAreaToolStrip;
+
+        internal CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
+        internal CustomControls.ToolStripButtonCustom RefreshFiltersButton;
+        internal CustomControls.ToolStripButtonCustom ClearFiltersButton;
+
+        internal CustomControls.DarkButton ResetLayoutButton;
+
+        #endregion
+
+        #region FMsDGV
+
+        internal CustomControls.DataGridViewCustom FMsDGV;
+
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
         internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn MisCountColumn;
@@ -2020,28 +1237,49 @@
         internal System.Windows.Forms.DataGridViewTextBoxColumn DateAddedColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton TopRightMenuButton;
-        internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
-        internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems EditFMLanguageComboBox;
-        internal AngelLoader.Forms.CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
-        internal AngelLoader.Forms.CustomControls.DarkButton EditFMScanLanguagesButton;
-        internal AngelLoader.Forms.CustomControls.DarkLabel EditFMLanguageLabel;
-        internal AngelLoader.Forms.CustomControls.DarkButton MainMenuButton;
-        internal CustomControls.ToolStripArrowButton FilterControlsShowHideButton;
+
+        #endregion
+
+        #region Top-right
+
+        internal CustomControls.DarkTabControl TopRightTabControl;
+        internal CustomControls.StatsTabPage StatisticsTabPage;
+        internal CustomControls.EditFMTabPage EditFMTabPage;
+        internal CustomControls.CommentTabPage CommentTabPage;
+        internal CustomControls.TagsTabPage TagsTabPage;
+        internal CustomControls.PatchTabPage PatchTabPage;
+        internal CustomControls.ModsTabPage ModsTabPage;
+
+        internal CustomControls.DarkButton TopRightMenuButton;
+        internal CustomControls.DarkArrowButton TopRightCollapseButton;
+
+        #endregion
+
+        #region Readme
+
+        internal CustomControls.RichTextBoxCustom ReadmeRichTextBox;
+
+        internal CustomControls.DarkComboBoxWithBackingItems ChooseReadmeComboBox;
         internal CustomControls.DarkButton ReadmeEncodingButton;
-        internal CustomControls.ToolStripButtonCustom FilterShowUnavailableButton;
-        internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
-        internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
-        internal CustomControls.DarkTabPageCustom ModsTabPage;
+        internal CustomControls.DarkButton ReadmeZoomInButton;
+        internal CustomControls.DarkButton ReadmeZoomOutButton;
+        internal CustomControls.DarkButton ReadmeResetZoomButton;
+        internal CustomControls.DarkButton ReadmeFullScreenButton;
+
+        #endregion
+
+        #region Bottom
+
+        internal System.Windows.Forms.Panel BottomPanel;
+
+        internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
+        internal CustomControls.DarkButton PlayFMButton;
         internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
-        internal CustomControls.ModsControl MainModsControl;
-        internal CustomControls.DarkCheckBox Patch_NewMantle_CheckBox;
-        internal CustomControls.DarkLabel Patch_PerFMValues_Label;
-        internal CustomControls.DarkLabel Stats_MisCountLabel;
-        internal CustomControls.DarkHorizontalDivider StatsHorizDiv;
-        internal CustomControls.DarkCheckBox Patch_PostProc_CheckBox;
-        internal CustomControls.DarkCheckBox Patch_NDSubs_CheckBox;
+
+        internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
         internal CustomControls.DarkLabel FMCountLabel;
+        internal CustomControls.DarkButton SettingsButton;
+
+        #endregion
     }
 }

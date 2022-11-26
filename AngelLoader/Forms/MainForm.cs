@@ -1,11 +1,16 @@
 ﻿/* NOTE: MainForm notes:
--Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
-in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
-Things to lazy load:
--Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
- controls on each tab page (in case the tabs are visible but not selected on startup)
+@LazyLoad: Controls that can be lazy-loaded in principle:
 -Game buttons and game tabs (one or the other will be invisible on startup)
+-Game tabs image list
+-Individual game buttons or tabs (they're hideable)
+-Filter bar scroll buttons, but see this old comment:
+ "Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+ in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then."
+-All filter controls (they're hideable)
+-Top-right tab pages themselves (even though they're blank containers of lazy-loaded contents now)
+-Top-right tab control (the container of the tab pages)
+-Rating columns (text or image) - one or the other will not be shown
 
 @NET5: Fonts will change and control sizes will all change too.
 -.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
@@ -43,13 +48,13 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -57,7 +62,6 @@ using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
@@ -103,7 +107,7 @@ namespace AngelLoader.Forms
 
         private readonly TabPage[] _gameTabs;
         private readonly ToolStripButtonCustom[] _filterByGameButtons;
-        private readonly TabPage[] _topRightTabs;
+        private readonly Lazy_TabsBase[] _topRightTabs;
 
         private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -136,11 +140,19 @@ namespace AngelLoader.Forms
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public int EventsDisabledCount { get; set; }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool ZeroSelectCodeDisabled { get; set; }
+        public bool EventsDisabled => EventsDisabledCount > 0;
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int ZeroSelectCodeDisabledCount { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool ZeroSelectCodeDisabled => ZeroSelectCodeDisabledCount > 0;
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
@@ -155,15 +167,12 @@ namespace AngelLoader.Forms
 
         private readonly IDarkable[] _lazyLoadedControls;
 
-        private readonly AddTagLLDropDown AddTagLLDropDown;
-        private readonly DynamicItemsLLMenu AddTagLLMenu;
-        private readonly DynamicItemsLLMenu AltTitlesLLMenu;
         private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
         private readonly EncodingsLLMenu EncodingsLLMenu;
         private readonly ExitLLButton ExitLLButton;
         private readonly FilterControlsLLMenu FilterControlsLLMenu;
         private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
-        private readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
+        internal readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
         private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
         private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
         private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
@@ -175,7 +184,6 @@ namespace AngelLoader.Forms
         private readonly TopRightLLMenu TopRightLLMenu;
         private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
         private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
-        private readonly Lazy_LangDetectError Lazy_LangDetectError;
         private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
         private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
 
@@ -328,7 +336,7 @@ namespace AngelLoader.Forms
                     // Stupid hack to fix "send mousewheel to underlying control and block further messages"
                     // functionality still not being fully reliable. We need to focus the parent control sometimes
                     // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
-                    if (!(AddTagLLDropDown.Visible && CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true)))
+                    if (!(TagsTabPage.AddTagLLDropDownVisible() && TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true)))
                     {
                         if (controlOver is DarkTextBox { Multiline: true })
                         {
@@ -417,7 +425,7 @@ namespace AngelLoader.Forms
                 }
                 else if (CursorOutsideAddTagsDropDownArea())
                 {
-                    AddTagLLDropDown.HideAndClear();
+                    TagsTabPage.HideAndClearAddTagLLDropDown();
                     if (m.Msg != Native.WM_LBUTTONUP &&
                         m.Msg != Native.WM_MBUTTONUP &&
                         m.Msg != Native.WM_RBUTTONUP &&
@@ -500,7 +508,7 @@ namespace AngelLoader.Forms
                         AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
                         AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
                         // Add tag dropdown is in EverythingPanel, not tags tab page
-                        AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
+                        AnyControlFocusedInTabPage(TagsTabPage) || TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.TagsTab :
                         AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
                         AnyControlFocusedInTabPage(ModsTabPage) ? HelpSections.ModsTab :
                         AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
@@ -540,9 +548,6 @@ namespace AngelLoader.Forms
 
             _lazyLoadedControls = new IDarkable[]
             {
-                AddTagLLDropDown = new AddTagLLDropDown(this),
-                AddTagLLMenu = new DynamicItemsLLMenu(this),
-                AltTitlesLLMenu = new DynamicItemsLLMenu(this),
                 ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
                 EncodingsLLMenu = new EncodingsLLMenu(this),
                 ExitLLButton = new ExitLLButton(this),
@@ -560,7 +565,6 @@ namespace AngelLoader.Forms
                 TopRightLLMenu = new TopRightLLMenu(this),
                 ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
                 Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
-                Lazy_LangDetectError = new Lazy_LangDetectError(this),
                 Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
                 Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
             };
@@ -585,24 +589,8 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
-            ModsTabNotSupportedMessageLabel = new DarkLabel
-            {
-                AutoSize = false,
-                DarkModeBackColor = DarkColors.Fen_ControlBackground,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Visible = false
-            };
-
             #endregion
 
-            /*
-            Font loading speed:
-            We can't try to be clever and set the form's font to a loaded-from-disk one in order to make it never
-            load the built-in default one (super slow if you have a ton of fonts installed like I do), because
-            the Font property setter checks the default font anyway, meaning it loads the damn thing anyway so
-            it's pointless.
-            */
 #if DEBUG
             // The debug path - the standard designer-generated method with tons of bloat and redundant value
             // setting, immediate initialization, etc.
@@ -617,6 +605,21 @@ namespace AngelLoader.Forms
 
             _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+
+            _topRightTabs = new Lazy_TabsBase[]
+            {
+                StatisticsTabPage,
+                EditFMTabPage,
+                CommentTabPage,
+                TagsTabPage,
+                PatchTabPage,
+                ModsTabPage
+            };
+
+            for (int i = 0; i < _topRightTabs.Length; i++)
+            {
+                _topRightTabs[i].SetOwner(this);
+            }
 
             #region Construct + init non-public-release controls
 
@@ -747,16 +750,6 @@ namespace AngelLoader.Forms
             GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
             GamesTabControl.Deselecting += GamesTabControl_Deselecting;
 
-            _topRightTabs = new TabPage[]
-            {
-                StatisticsTabPage,
-                EditFMTabPage,
-                CommentTabPage,
-                TagsTabPage,
-                PatchTabPage,
-                ModsTabPage
-            };
-
             #region Separated items
 
             _filterLabels = new Control[]
@@ -883,11 +876,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
-
-            ModsTabPage.Controls.Add(ModsTabNotSupportedMessageLabel);
-            ModsTabNotSupportedMessageLabel.BringToFront();
-
             #region SplitContainers
 
             MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, setIfFullScreen: true, suspendResume: false);
@@ -984,7 +972,6 @@ namespace AngelLoader.Forms
                 TopSplitContainer.SetFullScreen(true, suspendResume: false);
                 SetTopRightCollapsedState();
             }
-
             #endregion
 
             // Set these here because they depend on the splitter positions
@@ -1107,8 +1094,15 @@ namespace AngelLoader.Forms
 
         public new void Show()
         {
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+            {
+                lazyTab.Construct();
+            }
+            TopRightTabControl.Selected += TopRightTabControl_Selected;
+
             base.Show();
             _splashScreen?.Hide();
+            _splashScreen = null;
 
             _startupState = false;
         }
@@ -1224,8 +1218,10 @@ namespace AngelLoader.Forms
                 }
             }
 
-            // Industrial strength protection against stupid event handler firing in the component init method...
-            if (AddTagLLDropDown != null! && AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
+            if (TagsTabPage.AddTagLLDropDownVisible())
+            {
+                TagsTabPage.HideAndClearAddTagLLDropDown();
+            }
 
             base.OnSizeChanged(e);
         }
@@ -1409,7 +1405,7 @@ namespace AngelLoader.Forms
                     {
                         if (FMsDGV.MainSelectedRow != firstRow)
                         {
-                            using (!e.Shift ? new DisableEvents(this) : null)
+                            using (new DisableEvents(this, !e.Shift))
                             {
                                 SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
@@ -1432,7 +1428,7 @@ namespace AngelLoader.Forms
                     {
                         if (FMsDGV.MainSelectedRow != lastRow)
                         {
-                            using (!e.Shift ? new DisableEvents(this) : null)
+                            using (new DisableEvents(this, !e.Shift))
                             {
                                 SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                             }
@@ -1472,7 +1468,7 @@ namespace AngelLoader.Forms
             {
                 CancelResizables();
 
-                AddTagLLDropDown.HideAndClear();
+                TagsTabPage.HideAndClearAddTagLLDropDown();
 
                 // Easy way to "get out" of the filter if you want to use Home and End again
                 if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
@@ -1583,10 +1579,6 @@ namespace AngelLoader.Forms
 
         private void Localize(bool startup)
         {
-            // Certain controls' text depends on FM state. Because this could be run after startup, we need to
-            // make sure those controls' text is set correctly.
-            FanMission? selFM = GetMainSelectedFMOrNull();
-
             try
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
@@ -1687,132 +1679,17 @@ namespace AngelLoader.Forms
 
                 TopRightLLMenu.Localize();
 
-                #region Statistics tab
-
                 StatisticsTabPage.Text = LText.StatisticsTab.TabText;
-
-                Stats_MisCountLabel.Text = selFM != null
-                    ? CreateMisCountLabelText(selFM)
-                    : LText.StatisticsTab.NoFMSelected;
-
-                CustomResourcesLabel.Text =
-                    selFM == null ? LText.StatisticsTab.CustomResources :
-                    selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-                    selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
-                    LText.StatisticsTab.CustomResourcesNotScanned;
-
-                CR_MapCheckBox.Text = LText.StatisticsTab.Map;
-                CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
-                CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
-                CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
-                CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
-                CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
-                CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
-                CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
-                CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
-                CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
-
-                StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
-
-                #endregion
-
-                #region Edit FM tab
-
                 EditFMTabPage.Text = LText.EditFMTab.TabText;
-                EditFMTitleLabel.Text = LText.EditFMTab.Title;
-                EditFMAuthorLabel.Text = LText.EditFMTab.Author;
-                EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
-                EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
-                EditFMRatingLabel.Text = LText.EditFMTab.Rating;
-
-                // For some reason this counts as a selected index change?!
-                using (new DisableEvents(this))
-                {
-                    EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
-                    if (EditFMLanguageComboBox.Items.Count > 0 &&
-                        EditFMLanguageComboBox.BackingItems[0].EqualsI(FMLanguages.DefaultLangKey))
-                    {
-                        EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
-                    }
-                }
-
-                EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
-
-                MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
-                MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
-                MainToolTip.SetToolTip(EditFMScanReleaseDateButton, LText.EditFMTab.RescanReleaseDateToolTip);
-                MainToolTip.SetToolTip(EditFMScanLanguagesButton, LText.EditFMTab.RescanLanguages);
-
-                EditFMLanguageLabel.Text = LText.EditFMTab.PlayFMInThisLanguage;
-                Lazy_LangDetectError.Localize();
-
-                EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
-
-                #endregion
-
-                #region Comment tab
-
                 CommentTabPage.Text = LText.CommentTab.TabText;
-
-                #endregion
-
-                #region Tags tab
-
                 TagsTabPage.Text = LText.TagsTab.TabText;
-                AddTagButton.SetTextForTextBoxButtonCombo(AddTagTextBox, LText.TagsTab.AddTag);
-                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
-                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
-
-                #endregion
-
-                #region Patch tab
-
                 PatchTabPage.Text = LText.PatchTab.TabText;
-
-                Patch_PerFMValues_Label.Text = LText.PatchTab.OptionOverrides;
-
-                Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
-                MainToolTip.SetToolTip(
-                    Patch_NewMantle_CheckBox,
-                    LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.NewMantle_ToolTip_NotSet
-                );
-
-                Patch_PostProc_CheckBox.Text = LText.PatchTab.PostProc;
-                MainToolTip.SetToolTip(
-                    Patch_PostProc_CheckBox,
-                    LText.PatchTab.PostProc_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.PostProc_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.PostProc_ToolTip_NotSet
-                );
-
-                Patch_NDSubs_CheckBox.Text = LText.PatchTab.Subtitles;
-                MainToolTip.SetToolTip(
-                    Patch_NDSubs_CheckBox,
-                    LText.PatchTab.Subtitles_ToolTip_Checked + "\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_Unchecked + "\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_NotSet + "\r\n\r\n" +
-                    LText.PatchTab.Subtitles_ToolTip_NewDarkNote
-                );
-
-                PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
-                MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
-                MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
-                PatchOpenFMFolderButton.Text = LText.PatchTab.OpenFMFolder;
-
-                #endregion
-
-                #region Mods tab
-
                 ModsTabPage.Text = LText.ModsTab.TabText;
 
-                MainModsControl.Localize(LText.ModsTab.Header);
-                MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
-
-                ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
-
-                #endregion
+                for (int i = 0; i < _topRightTabs.Length; i++)
+                {
+                    _topRightTabs[i].Localize();
+                }
 
                 #endregion
 
@@ -1878,7 +1755,7 @@ namespace AngelLoader.Forms
 
                 if (startup && !darkMode)
                 {
-                    CreateAllControlsHandles(this);
+                    ControlUtils.CreateAllControlsHandles(this);
                 }
                 else
                 {
@@ -1950,7 +1827,7 @@ namespace AngelLoader.Forms
 
         private void MainMenuButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
+            ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, ControlUtils.MenuPos.BottomRight, xOffset: 0, yOffset: 2);
         }
 
         private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
@@ -2484,13 +2361,13 @@ namespace AngelLoader.Forms
 
                 await Import.ImportFrom(importType);
             }
-            else if (sender == EditFMScanForReadmesButton ||
-                     sender == EditFMScanTitleButton ||
-                     sender == EditFMScanAuthorButton ||
-                     sender == EditFMScanReleaseDateButton ||
-                     sender == StatsScanCustomResourcesButton)
+            else if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ||
+                     sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ||
+                     sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources))
             {
-                if (sender == EditFMScanForReadmesButton)
+                if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes))
                 {
                     try
                     {
@@ -2517,10 +2394,10 @@ namespace AngelLoader.Forms
                         }
 
                         var scanOptions =
-                            sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
-                            sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
-                            sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
-                            //sender == StatsScanCustomResourcesButton
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
+                            sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
+                            //sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources)
                             FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true);
 
                         if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
@@ -2712,9 +2589,9 @@ namespace AngelLoader.Forms
 
         private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(GameFilterControlsLLMenu.Menu,
+            ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
                 GameFilterControlsShowHideButtonToolStrip,
-                MenuPos.RightDown,
+                ControlUtils.MenuPos.RightDown,
                 -GameFilterControlsShowHideButton.Width,
                 GameFilterControlsShowHideButton.Height);
         }
@@ -2771,9 +2648,9 @@ namespace AngelLoader.Forms
 
         private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(FilterControlsLLMenu.Menu,
+            ControlUtils.ShowMenu(FilterControlsLLMenu.Menu,
                 FilterIconButtonsToolStrip,
-                MenuPos.RightDown,
+                ControlUtils.MenuPos.RightDown,
                 -FilterControlsShowHideButton.Width,
                 FilterIconButtonsToolStrip.Height);
         }
@@ -2977,7 +2854,13 @@ namespace AngelLoader.Forms
                     bool selectDoneAtLeastOnce = false;
                     void DoSelect()
                     {
-                        if (keepSelection != KeepSel.False) EventsDisabled = true;
+                        if (keepSelection != KeepSel.False)
+                        {
+                            // @TopLazy: Is this right? Ugh...
+                            if (EventsDisabledCount == 0) EventsDisabledCount++;
+                            // Old line
+                            //EventsDisabled = true;
+                        }
                         FMsDGV.SelectSingle(row, suppressSelectionChangedEvent: !selectDoneAtLeastOnce);
                         FMsDGV.SelectProperly(suspendResume: startup);
                         selectDoneAtLeastOnce = true;
@@ -3035,458 +2918,13 @@ namespace AngelLoader.Forms
 
         #region Top-right area
 
-        #region Edit FM tab
-
-        private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
+        private void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
         {
-            List<string> fmAltTitles = FMsDGV.GetMainSelectedFM().AltTitles;
-            if (fmAltTitles.Count == 0) return;
-
-            var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
-            for (int i = 0; i < fmAltTitles.Count; i++)
+            if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
             {
-                var item = new ToolStripMenuItemWithBackingText(fmAltTitles[i]);
-                item.Click += EditFMAltTitlesMenuItems_Click;
-                altTitlesMenuItems[i] = item;
-            }
-
-            AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
-
-            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
-        }
-
-        private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
-        {
-            EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Title = EditFMTitleTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-        }
-
-        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Author = EditFMAuthorTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-        }
-
-        private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
-                ? EditFMReleaseDateDateTimePicker.Value
-                : null;
-
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
-                ? EditFMLastPlayedDateTimePicker.Value
-                : null;
-
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
-            RefreshMainSelectedFMRow_Fast();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            UpdateRatingForSelectedFMs(EditFMRatingComboBox.SelectedIndex - 1);
-        }
-
-        internal void UpdateRatingForSelectedFMs(int rating)
-        {
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.Rating = rating;
-            RefreshMainSelectedFMRow_Fast();
-
-            UpdateRatingMenus(rating, disableEvents: true);
-
-            FanMission[] sFMs = FMsDGV.GetSelectedFMs();
-            if (sFMs.Length > 1)
-            {
-                foreach (FanMission sFM in sFMs)
-                {
-                    sFM.Rating = rating;
-                }
-                RefreshFMsListRowsOnlyKeepSelection();
-            }
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.UpdateFMSelectedLanguage();
-        }
-
-        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
-        {
-            ShowMenu(FMsDGV_FM_LLMenu.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
-        }
-
-        private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
-        {
-            using (new DisableEvents(this))
-            {
-                Core.ScanAndFillLanguagesList(forceScan: true);
-            }
-            Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
-        #region Comment tab
-
-        public string GetFMCommentText() => CommentTextBox.Text;
-
-        private void CommentTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.UpdateFMComment();
-        }
-
-        private void CommentTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
-        #region Tags tab
-
-        // Robustness for if the user presses tab to get away, rather than clicking
-        internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
-        {
-            if ((sender == AddTagTextBox && !AddTagLLDropDown.Focused) ||
-                (AddTagLLDropDown.Visible &&
-                 sender == AddTagLLDropDown.ListBox && !AddTagTextBox.Focused))
-            {
-                AddTagLLDropDown.HideAndClear();
+                lazyTab.Construct();
             }
         }
-
-        private void AddTagTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-
-            List<string> list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
-            if (list.Count == 0)
-            {
-                AddTagLLDropDown.HideAndClear();
-            }
-            else
-            {
-                AddTagLLDropDown.SetItemsAndShow(list);
-            }
-        }
-
-        internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            DarkListBox box = AddTagLLDropDown.ListBox;
-
-            switch (e.KeyCode)
-            {
-                case Keys.Up when box.Items.Count > 0:
-                    // We can't do a switch expression on the second one, so keep them both the same for consistency
-                    // ReSharper disable once ConvertConditionalTernaryExpressionToSwitchExpression
-                    box.SelectedIndex =
-                        box.SelectedIndex == -1 ? box.Items.Count - 1 :
-                        box.SelectedIndex == 0 ? -1 :
-                        box.SelectedIndex - 1;
-                    // We need this call to make the thing scroll...
-                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
-                    e.Handled = true;
-                    break;
-                case Keys.Down when box.Items.Count > 0:
-                    box.SelectedIndex =
-                        box.SelectedIndex == -1 ? 0 :
-                        box.SelectedIndex == box.Items.Count - 1 ? -1 :
-                        box.SelectedIndex + 1;
-                    if (box.SelectedIndex > -1) box.EnsureVisible(box.SelectedIndex);
-                    e.Handled = true;
-                    break;
-                case Keys.Enter:
-                    string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem;
-                    FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), catAndTag);
-                    break;
-                default:
-                    if (sender == box) AddTagTextBox.Focus();
-                    break;
-            }
-        }
-
-        internal void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (AddTagLLDropDown.ListBox.SelectedIndex == -1) return;
-
-            using (new DisableEvents(this))
-            {
-                AddTagTextBox.Text = AddTagLLDropDown.ListBox.SelectedItem;
-            }
-
-            if (AddTagTextBox.Text.Length > 0)
-            {
-                AddTagTextBox.SelectionStart = AddTagTextBox.Text.Length;
-            }
-        }
-
-        public (string Category, string Tag)
-        SelectedCategoryAndTag()
-        {
-            TreeNode selNode = TagsTreeView.SelectedNode;
-            TreeNode parent;
-
-            return selNode == null
-                ? ("", "")
-                : (parent = selNode.Parent) == null
-                ? (selNode.Text, "")
-                : (parent.Text, selNode.Text);
-        }
-
-        private void RemoveTagButton_Click(object sender, EventArgs e) => FMTags.RemoveTagOperation();
-
-        internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left) return;
-
-            if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
-            {
-                FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
-            }
-        }
-
-        public void ClearTagsSearchBox()
-        {
-            AddTagTextBox.Clear();
-            AddTagLLDropDown.HideAndClear();
-        }
-
-        private void AddTagButton_Click(object sender, EventArgs e)
-        {
-            FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), AddTagTextBox.Text);
-        }
-
-        // @VBL (AddTagFromListButton_Click - lots of menu items and event hookups)
-        private void AddTagFromListButton_Click(object sender, EventArgs e)
-        {
-            GlobalTags.SortAndMoveMiscToEnd();
-
-            var addTagMenuItems = new ToolStripItem[GlobalTags.Count];
-            for (int i = 0; i < GlobalTags.Count; i++)
-            {
-                CatAndTagsList item = GlobalTags[i];
-
-                if (item.Tags.Count == 0)
-                {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":");
-                    catItem.Click += AddTagMenuEmptyItem_Click;
-                    addTagMenuItems[i] = catItem;
-                }
-                else
-                {
-                    var catItem = new ToolStripMenuItemWithBackingText(item.Category);
-                    addTagMenuItems[i] = catItem;
-
-                    if (item.Category != PresetTags.MiscCategory)
-                    {
-                        var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
-                        customItem.Click += AddTagMenuCustomItem_Click;
-                        catItem.DropDownItems.Add(customItem);
-                        catItem.DropDownItems.Add(new ToolStripSeparator());
-                    }
-
-                    foreach (string tag in item.Tags)
-                    {
-                        var tagItem = new ToolStripMenuItemWithBackingText(tag);
-
-                        tagItem.Click += item.Category == PresetTags.MiscCategory
-                            ? AddTagMenuMiscItem_Click
-                            : AddTagMenuItem_Click;
-
-                        catItem.DropDownItems.Add(tagItem);
-                    }
-                }
-            }
-
-            AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
-
-            ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
-        }
-
-        private void AddTagMenuItem_Click(object sender, EventArgs e)
-        {
-            var item = (ToolStripMenuItemWithBackingText)sender;
-            if (item.HasDropDownItems) return;
-
-            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
-            if (cat == null) return;
-
-            FMTags.AddTagOperation(FMsDGV.GetMainSelectedFM(), cat.BackingText + ": " + item.BackingText);
-        }
-
-        private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
-        {
-            var item = (ToolStripMenuItemWithBackingText)sender;
-
-            var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
-            if (cat == null) return;
-
-            AddTagTextBox.SetTextAndMoveCursorToEnd(cat.BackingText + ": ");
-        }
-
-        private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText);
-
-        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
-
-        #endregion
-
-        #region Patch tab
-
-        private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().NewMantle = Patch_NewMantle_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().PostProc = Patch_PostProc_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetMainSelectedFM().NDSubs = Patch_NDSubs_CheckBox.ToNullableBool();
-            Ini.WriteFullFMDataIni();
-        }
-
-        private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
-        {
-            if (PatchDMLsListBox.SelectedIndex == -1) return;
-
-            bool success = Core.RemoveDML(FMsDGV.GetMainSelectedFM(), PatchDMLsListBox.SelectedItem);
-            if (!success) return;
-
-            PatchDMLsListBox.RemoveAndSelectNearest();
-        }
-
-        // @VBL
-        private void PatchAddDMLButton_Click(object sender, EventArgs e)
-        {
-            var dmlFiles = new List<string>();
-
-            using (var d = new OpenFileDialog())
-            {
-                d.Multiselect = true;
-                d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
-                if (d.ShowDialogDark(this) != DialogResult.OK || d.FileNames.Length == 0) return;
-                dmlFiles.AddRange(d.FileNames);
-            }
-
-            HashSetI itemsHashSet = PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
-
-            try
-            {
-                PatchDMLsListBox.BeginUpdate();
-                foreach (string f in dmlFiles)
-                {
-                    if (f.IsEmpty()) continue;
-
-                    bool success = Core.AddDML(FMsDGV.GetMainSelectedFM(), f);
-                    if (!success) return;
-
-                    string dmlFileName = Path.GetFileName(f);
-                    if (!itemsHashSet.Contains(dmlFileName))
-                    {
-                        PatchDMLsListBox.Items.Add(dmlFileName);
-                    }
-                }
-            }
-            finally
-            {
-                PatchDMLsListBox.EndUpdate();
-            }
-        }
-
-        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetMainSelectedFM());
-
-        #endregion
-
-        #region Mods tab
-
-        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
-        {
-            UpdateFMDisabledMods(writeIni: false);
-        }
-
-        private void Mods_DisabledModsUpdated(object sender, EventArgs e)
-        {
-            UpdateFMDisabledMods(writeIni: true);
-        }
-
-        private void UpdateFMDisabledMods(bool writeIni)
-        {
-            if (EventsDisabled || !FMsDGV.RowSelected()) return;
-
-            FanMission fm = FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = MainModsControl.DisabledModsTextBox.Text;
-            RefreshMainSelectedFMRow_Fast();
-            if (writeIni) Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
 
         private void TopRightCollapseButton_Click(object sender, EventArgs e)
         {
@@ -3511,11 +2949,16 @@ namespace AngelLoader.Forms
             }
 
             TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
+
+            if (!collapsed && TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            {
+                lazyTab.ConstructWithSuspendResume();
+            }
         }
 
         private void TopRightMenuButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
+            ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, ControlUtils.MenuPos.BottomLeft);
         }
 
         internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
@@ -4282,14 +3725,7 @@ namespace AngelLoader.Forms
         {
             #region Update rating lists
 
-            // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
-            using (new DisableEvents(this))
-            {
-                for (int i = 0; i <= 10; i++)
-                {
-                    EditFMRatingComboBox.Items[i + 1] = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                }
-            }
+            EditFMTabPage.UpdateRatingStrings(fmSelStyle);
 
             FMsDGV_FM_LLMenu.UpdateRatingList(fmSelStyle);
 
@@ -4466,7 +3902,7 @@ namespace AngelLoader.Forms
 
         private void ReadmeEncodingButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
+            ControlUtils.ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, ControlUtils.MenuPos.LeftDown);
         }
 
         public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
@@ -4630,7 +4066,7 @@ namespace AngelLoader.Forms
             }
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
-            ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
+            ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, ControlUtils.MenuPos.TopRight);
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -4667,7 +4103,8 @@ namespace AngelLoader.Forms
 
         internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
         {
-            ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu, Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
+            ControlUtils.ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu,
+                Lazy_PlayOriginalControls.T2MPMenuButton, ControlUtils.MenuPos.TopRight);
         }
 
         internal void PlayT2MPMenuItem_Click(object sender, EventArgs e)
@@ -4755,154 +4192,11 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            using (new DisableEvents(this))
-            {
-                #region Stats tab
-
-                Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
-
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResources);
-                StatsScanCustomResourcesButton.Enabled = false;
-
-                EnableStatsPanelLabels(false);
-
-                #endregion
-
-                #region Edit FM tab
-
-                EditFMRatingComboBox.SelectedIndex = 0;
-
-                // Always enable the combobox when modifying its items, to prevent the white flicker.
-                // We'll disable it again in the disable-all-controls loop.
-                EditFMLanguageComboBox.Enabled = true;
-
-                EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
-                EditFMLanguageComboBox.SelectedIndex = 0;
-
-                Lazy_LangDetectError.SetVisible(false);
-
-                foreach (Control c in EditFMTabPage.Controls)
-                {
-                    switch (c)
-                    {
-                        case TextBox tb:
-                            tb.Text = "";
-                            break;
-                        case DateTimePicker dtp:
-                            dtp.Value = DateTime.Now;
-                            dtp.Hide();
-                            break;
-                        case CheckBox chk:
-                            chk.Checked = false;
-                            break;
-                    }
-
-                    c.Enabled = false;
-                }
-
-                FMsDGV_FM_LLMenu.ClearFinishedOnMenuItemChecks();
-
-                #endregion
-
-                #region Comment tab
-
-                CommentTextBox.Text = "";
-                CommentTextBox.Enabled = false;
-
-                #endregion
-
-                #region Tags tab
-
-                AddTagTextBox.Text = "";
-
-                TagsTreeView.Nodes.Clear();
-
-                foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
-
-                #endregion
-
-                #region Patch tab
-
-                DisablePatchNonDMLSection();
-
-                ShowPatchInstalledOnlySection(enable: false);
-
-                #endregion
-
-                #region Mods tab
-
-                ModsTabNotSupportedMessageLabel.Visible = false;
-                MainModsControl.CheckList.ClearList();
-                MainModsControl.Enabled = false;
-                MainModsControl.Visible = true;
-
-
-                #endregion
-            }
+            UpdateTopRightTabs();
 
             _displayedFM = null;
 
             SetTopRightBlockerVisible();
-        }
-
-        private void DisablePatchNonDMLSection()
-        {
-            foreach (Control c in PatchTabPage.Controls)
-            {
-                if (c != PatchMainPanel)
-                {
-                    c.Enabled = false;
-                }
-
-                switch (c)
-                {
-                    case TextBox tb:
-                        tb.Text = "";
-                        break;
-                    case CheckBox chk:
-                        if (chk.ThreeState)
-                        {
-                            chk.CheckState = CheckState.Indeterminate;
-                        }
-                        else
-                        {
-                            chk.Checked = false;
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void HidePatchInstalledOnlySection()
-        {
-            PatchDMLsListBox.Items.Clear();
-            PatchMainPanel.Hide();
-        }
-
-        private void ShowPatchInstalledOnlySection(bool enable)
-        {
-            PatchDMLsListBox.Items.Clear();
-            PatchMainPanel.Show();
-            PatchMainPanel.Enabled = enable;
-        }
-
-        private void BlankStatsPanelWithMessage(string message)
-        {
-            CustomResourcesLabel.Text = message;
-            foreach (CheckBox cb in StatsCheckBoxesPanel.Controls) cb.Checked = false;
-            StatsCheckBoxesPanel.Enabled = false;
-        }
-
-        private void EnableStatsPanelLabels(bool enabled)
-        {
-            foreach (Control control in StatisticsTabPage.Controls)
-            {
-                if (control is DarkLabel label)
-                {
-                    label.Enabled = enabled;
-                }
-            }
         }
 
         // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
@@ -5103,7 +4397,7 @@ namespace AngelLoader.Forms
             Lazy_WebSearchButton.SetEnabled(!multiSelected);
         }
 
-        private static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
+        internal static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
         {
             < 1 => "",
             1 => LText.StatisticsTab.MissionCount_Single,
@@ -5112,13 +4406,22 @@ namespace AngelLoader.Forms
                    LText.StatisticsTab.MissionCount_AfterNumber
         };
 
+        private void UpdateTopRightTabs()
+        {
+            using (new DisableEvents(this))
+            {
+                for (int i = 0; i < _topRightTabs.Length; i++)
+                {
+                    _topRightTabs[i].UpdatePage();
+                }
+            }
+        }
+
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
         // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
         public void UpdateAllFMUIDataExceptReadme(FanMission fm)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
-
             UpdateUIControlsForMultiSelectState(fm);
 
             // We should never get here when the view list count is 0, but hey
@@ -5126,219 +4429,7 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
-            using (new DisableEvents(this))
-            {
-                #region Stats tab
-
-                EnableStatsPanelLabels(true);
-
-                Stats_MisCountLabel.Text = CreateMisCountLabelText(fm);
-
-                StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
-
-                if (fmIsT3)
-                {
-                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
-                }
-                else if (!fm.ResourcesScanned)
-                {
-                    BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
-                }
-                else
-                {
-                    CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
-
-                    CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
-                    CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
-                    CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
-                    CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
-                    CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
-                    CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
-                    CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
-                    CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
-                    CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
-                    CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
-
-                    StatsCheckBoxesPanel.Enabled = true;
-                }
-
-                #endregion
-
-                #region Edit FM tab
-
-                void SetLanguageEnabledState()
-                {
-                    EditFMLanguageLabel.Enabled = !fmIsT3;
-                    EditFMLanguageComboBox.Enabled = !fmIsT3;
-                }
-
-                // Adding/removing items from the combobox while disabled and in dark mode appears to be the
-                // cause of the white flickering, so always make sure we're in an enabled state when setting
-                // the items.
-                if (fmIsT3)
-                {
-                    if (EditFMLanguageComboBox.Items.Count == 0)
-                    {
-                        AddLanguagesToList(new() { new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage) });
-                    }
-                    SetSelectedLanguage(Language.Default);
-
-                    SetLanguageEnabledState();
-                }
-                else
-                {
-                    SetLanguageEnabledState();
-                    Core.ScanAndFillLanguagesList(forceScan: false);
-                }
-
-                foreach (Control c in EditFMTabPage.Controls)
-                {
-                    if (c != EditFMLanguageLabel &&
-                        c != EditFMLanguageComboBox)
-                    {
-                        c.Enabled = true;
-                    }
-                }
-
-                EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
-                EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
-                EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
-
-                EditFMTitleTextBox.Text = fm.Title;
-
-                // FM AltTitles is nominally always supposed to be non-empty (because the scan puts at least a
-                // copy of the title in it), but it can be empty if all AltTitles lines for the FM have been
-                // removed manually from the entry in the ini file. "Won't happen but could happen so we have to
-                // handle it" scenario.
-                EditFMAltTitlesArrowButton.Enabled = fm.AltTitles.Count > 0;
-
-                EditFMAuthorTextBox.Text = fm.Author;
-
-                EditFMReleaseDateCheckBox.Checked = fm.ReleaseDate.DateTime != null;
-                EditFMReleaseDateDateTimePicker.Value = fm.ReleaseDate.DateTime ?? DateTime.Now;
-                EditFMReleaseDateDateTimePicker.Visible = fm.ReleaseDate.DateTime != null;
-
-                EditFMLastPlayedCheckBox.Checked = fm.LastPlayed.DateTime != null;
-                EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
-                EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
-
-                UpdateRatingMenus(fm.Rating, disableEvents: false);
-
-                #endregion
-
-                #region Comment tab
-
-                CommentTextBox.Enabled = true;
-                CommentTextBox.Text = fm.Comment.FromRNEscapes();
-
-                #endregion
-
-                #region Tags tab
-
-                foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
-
-                AddTagTextBox.Text = "";
-                DisplayFMTags(fm.Tags);
-
-                #endregion
-
-                #region Patch tab
-
-                if (fmIsT3)
-                {
-                    DisablePatchNonDMLSection();
-                }
-                else
-                {
-                    foreach (Control c in PatchTabPage.Controls)
-                    {
-                        if (c != PatchMainPanel)
-                        {
-                            c.Enabled = true;
-                        }
-                    }
-
-                    Patch_NewMantle_CheckBox.SetFromNullableBool(fm.NewMantle);
-                    Patch_PostProc_CheckBox.SetFromNullableBool(fm.PostProc);
-                    Patch_NDSubs_CheckBox.SetFromNullableBool(fm.NDSubs);
-                }
-
-                PatchMainPanel.Enabled = true;
-
-                if (fm.Installed && !fmIsT3)
-                {
-                    ShowPatchInstalledOnlySection(enable: true);
-                }
-                else
-                {
-                    HidePatchInstalledOnlySection();
-                }
-
-                PatchDMLsPanel.Enabled = GameIsDark(fm.Game);
-
-                if (GameIsDark(fm.Game) && fm.Installed)
-                {
-                    PatchMainPanel.Show();
-                    try
-                    {
-                        PatchDMLsListBox.BeginUpdate();
-                        PatchDMLsListBox.Items.Clear();
-                        (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
-                        if (success)
-                        {
-                            foreach (string f in dmlFiles)
-                            {
-                                if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        PatchDMLsListBox.EndUpdate();
-                    }
-                }
-
-                #endregion
-
-                // @VBL
-                #region Mods tab
-
-                MainModsControl.Enabled = true;
-
-                if (fmIsT3)
-                {
-                    MainModsControl.Visible = false;
-                    ModsTabNotSupportedMessageLabel.Visible = true;
-
-                    MainModsControl.CheckList.ClearList();
-                }
-                else
-                {
-                    MainModsControl.Visible = true;
-                    ModsTabNotSupportedMessageLabel.Visible = false;
-
-                    (bool success, string disabledMods, bool disableAllMods) =
-                        MainModsControl.Set(fm.Game, fm.DisabledMods, fm.DisableAllMods);
-                    if (success)
-                    {
-                        fm.DisabledMods = disabledMods;
-                        fm.DisableAllMods = disableAllMods;
-                    }
-                }
-
-                #endregion
-            }
-        }
-
-        private void UpdateRatingMenus(int rating, bool disableEvents = false)
-        {
-            using (disableEvents ? new DisableEvents(this) : null)
-            {
-                FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                EditFMRatingComboBox.SelectedIndex = rating + 1;
-            }
+            UpdateTopRightTabs();
         }
 
         public void ClearReadmesList()
@@ -5346,60 +4437,6 @@ namespace AngelLoader.Forms
             using (new DisableEvents(this))
             {
                 ChooseReadmeComboBox.ClearFullItems();
-            }
-        }
-
-        public void ClearLanguagesList() => EditFMLanguageComboBox.ClearFullItems();
-
-        public void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
-        {
-            try
-            {
-                EditFMLanguageComboBox.BeginUpdate();
-
-                foreach (KeyValuePair<string, string> item in langPairs)
-                {
-                    EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
-                }
-            }
-            finally
-            {
-                EditFMLanguageComboBox.EndUpdate();
-            }
-        }
-
-        public Language GetMainSelectedLanguage()
-        {
-            if (EditFMLanguageComboBox.SelectedIndex <= 0)
-            {
-                return Language.Default;
-            }
-            else
-            {
-                string backingItem = EditFMLanguageComboBox.SelectedBackingItem();
-                return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
-            }
-        }
-
-        public Language SetSelectedLanguage(Language language)
-        {
-            if (EditFMLanguageComboBox.Items.Count == 0)
-            {
-                return Language.Default;
-            }
-            else
-            {
-                EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
-                    ? 0
-                    : EditFMLanguageComboBox
-                        .BackingItems
-                        .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
-                        .ClampToZero();
-
-                return EditFMLanguageComboBox.SelectedIndex > 0 &&
-                       LangStringsToEnums.TryGetValue(EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
-                    ? returnLanguage
-                    : Language.Default;
             }
         }
 
@@ -5503,11 +4540,6 @@ namespace AngelLoader.Forms
 
         public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
 
-        public void DisplayFMTags(FMCategoriesCollection fmTags)
-        {
-            ControlUtils.FillTreeViewFromTags_Sorted(TagsTreeView, fmTags);
-        }
-
         #endregion
 
         #region Control painting
@@ -5585,10 +4617,6 @@ namespace AngelLoader.Forms
             SettingsButton.Enabled ? Images.Settings : Images.GetDisabledImage(Images.Settings),
             x: 10);
 
-        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(PatchAddDMLButton, e);
-
-        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(PatchRemoveDMLButton, e);
-
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
         private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
@@ -5599,7 +4627,7 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
+        internal void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
 
         private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
 
@@ -5640,47 +4668,6 @@ namespace AngelLoader.Forms
                 }
             }
         }
-
-        #region Show menu
-
-        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
-        private static void ShowMenu(
-            ContextMenuStrip menu,
-            Control control,
-            MenuPos pos,
-            int xOffset = 0,
-            int yOffset = 0,
-            bool unstickMenu = false)
-        {
-            int x = pos is MenuPos.LeftUp or MenuPos.LeftDown or MenuPos.TopRight or MenuPos.BottomRight
-                ? 0
-                : control.Width;
-
-            int y = pos is MenuPos.LeftDown or MenuPos.TopLeft or MenuPos.TopRight or MenuPos.RightDown
-                ? 0
-                : control.Height;
-
-            ToolStripDropDownDirection direction = pos switch
-            {
-                MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
-                MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
-                MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
-                _ => ToolStripDropDownDirection.BelowRight
-            };
-
-            if (unstickMenu)
-            {
-                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
-                // then carry on with the final show below
-                menu.Show();
-                menu.Hide();
-            }
-
-            menu.Show(control, new Point(x + xOffset, y + yOffset), direction);
-        }
-
-        #endregion
 
         public void Block(bool block) => Invoke(() =>
         {
@@ -5730,7 +4717,7 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs.Cast<TabPage>().ToArray(), TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
@@ -5792,14 +4779,14 @@ namespace AngelLoader.Forms
         private bool CursorOutsideAddTagsDropDownArea()
         {
             // Check Visible first, otherwise we might be passing a null ref!
-            return AddTagLLDropDown.Visible &&
+            return TagsTabPage.AddTagLLDropDownVisible() &&
                    // Check Size instead of ClientSize in order to support clicking the scroll bar
-                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
-                   !CursorOverControl(AddTagTextBox) &&
-                   !CursorOverControl(AddTagButton);
+                   !TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true) &&
+                   !TagsTabPage.CursorOverAddTagTextBox() &&
+                   !TagsTabPage.CursorOverAddTagButton();
         }
 
-        private bool CursorOverControl(Control control, bool fullArea = false)
+        internal bool CursorOverControl(Control control, bool fullArea = false)
         {
             if (!control.Visible || !control.Enabled) return false;
 
@@ -5969,8 +4956,6 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
         }
-
-        public void ShowLanguageDetectError(bool enabled) => Lazy_LangDetectError.SetVisible(enabled);
 
         #region FM selected stats
 

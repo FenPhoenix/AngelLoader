@@ -12,18 +12,6 @@ namespace AngelLoader
     {
         #region Add tag
 
-        internal static void AddTagOperation(FanMission fm, string catAndTag)
-        {
-            if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
-            {
-                AddTagToFM(fm, catAndTag);
-                Ini.WriteFullFMDataIni();
-                Core.View.DisplayFMTags(fm.Tags);
-            }
-
-            Core.View.ClearTagsSearchBox();
-        }
-
         internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
         {
             AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
@@ -35,23 +23,7 @@ namespace AngelLoader
 
         #region Remove tag
 
-        internal static void RemoveTagOperation()
-        {
-            FanMission? fm = Core.View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            (string catText, string tagText) = Core.View.SelectedCategoryAndTag();
-            if (catText.IsEmpty() && tagText.IsEmpty()) return;
-
-            bool isCategory = tagText.IsEmpty();
-            bool success = RemoveTagFromFM(fm, catText, tagText, isCategory);
-            if (success)
-            {
-                Core.View.DisplayFMTags(fm.Tags);
-            }
-        }
-
-        private static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
+        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
         {
             if (isCategory ? catText.IsWhiteSpace() : tagText.IsWhiteSpace()) return false;
 

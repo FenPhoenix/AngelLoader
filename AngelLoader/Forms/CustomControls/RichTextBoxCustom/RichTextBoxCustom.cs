@@ -73,7 +73,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private byte[] _currentReadmeBytes = Array.Empty<byte>();
+        private static byte[] _currentReadmeBytes = Array.Empty<byte>();
 
         private ReadmeType _currentReadmeType = ReadmeType.PlainText;
         // Despite it _usually_ being the case that plaintext type supports encoding change and everything else
@@ -287,6 +287,8 @@ namespace AngelLoader.Forms.CustomControls
         {
             try
             {
+                SwitchOffPreloadState();
+
                 _currentReadmeSupportsEncodingChange = false;
                 _currentReadmeBytes = Array.Empty<byte>();
 
@@ -318,6 +320,8 @@ namespace AngelLoader.Forms.CustomControls
         /// </returns>
         internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding = null)
         {
+            if (fileType is not ReadmeType.RichText) SwitchOffPreloadState();
+
             AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
             Encoding? retEncoding = null;
@@ -360,28 +364,22 @@ namespace AngelLoader.Forms.CustomControls
                     case ReadmeType.RichText:
                         _currentReadmeSupportsEncodingChange = false;
 
-                        _currentReadmeBytes = File.ReadAllBytes(path);
+                        bool inPreloadedState = false;
+                        if (fileType != ReadmeType.RichText || !(inPreloadedState = InPreloadedState(path, _darkModeEnabled)))
+                        {
+                            _currentReadmeBytes = File.ReadAllBytes(path);
+                        }
 
                         // We control the format of GLML-converted files, so no need to do this for those
-                        if (fileType == ReadmeType.RichText)
+                        if (fileType == ReadmeType.RichText && !inPreloadedState)
                         {
-                            /*
-                            It's six of one half a dozen of the other - each method causes rare cases of images
-                            not showing, but for different files.
-                            And trying to get too clever and specific about it (if shppict says pngblip, and
-                            nonshppict says wmetafile, then DON'T patch shppict, otherwise do, etc.) is making
-                            me uncomfortable. I don't even know what Win7 or Win11 will do with that kind of
-                            overly-specific meddling. Microsoft have changed their RichEdit control before, and
-                            they might again, in which case I'm screwed either way.
-                            */
-                            ReplaceByteSequence(_currentReadmeBytes, _shppict, _shppictBlanked);
-                            ReplaceByteSequence(_currentReadmeBytes, _nonshppict, _nonshppictBlanked);
+                            GlobalPreProcessRTF(_currentReadmeBytes);
                         }
 
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
 
-                        RefreshDarkModeState(skipSuspend: true);
+                        RefreshDarkModeState(preProcessedRtf: _preProcessedRTF, skipSuspend: true);
 
                         break;
                     case ReadmeType.PlainText:

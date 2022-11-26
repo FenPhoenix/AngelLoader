@@ -470,7 +470,7 @@ Here you can enable or disable mods per-FM. Checked mods will be enabled and unc
 
 <p/>
 
-Note that the list simply displays all mods that are specified in <code>cam_mod.ini</code>; you may or may not actually have all of them installed. If a mod is not actually installed, then enabling it will do nothing.
+The mods list displays mods that are specified in the game's <code>cam_mod.ini</code> <i>and</i> whose folders exist on disk. This is to avoid confusion with thinking you have a mod installed when you may not.
 
 <h4>Show important mods</h4>
 There are some mods that are vital to the normal functioning of an up-to-date Thief install, and should not be disabled under normal circumstances. Check this box to display those mods in the list anyway.
@@ -556,6 +556,10 @@ For extra-strength misclick prevention, enable this. You will still be able to i
 Since you can zoom the FMs list with the keyboard or Ctrl+mousewheel, you can hide these buttons to free up room.
 <p/>
 
+<b>Hide web search button:</b><br>
+This option is also available in the <a href="#fm_context_menu">FM context menu</a>, so you can hide the button for tidiness.
+<p/>
+
 <b>Hide exit button:</b><br>
 Allows you to show or hide an Exit button in the bottom-right corner of the main window, similar to FMSel.
 <p/>
@@ -607,6 +611,11 @@ Here you can edit the URL that will be used when searching for FMs on the web. T
 When you double-click on an FM in the list or press Enter when the list is focused,
 the selected FM will be played. Check this box to enable asking for confirmation in that case,
 to prevent accidental playing from a stray click or key press.
+
+<h4>Enable fuzzy search for title and author</h4>
+When this option is enabled, the title and author filters will match approximately. For example, "kinstory" would match "King's Story". When this option is disabled, the filters will match exact text only.
+
+<p/>
 
 <hr>
 

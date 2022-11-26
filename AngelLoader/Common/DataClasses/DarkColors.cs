@@ -103,7 +103,7 @@ namespace AngelLoader.DataClasses
         public static readonly Pen LighterBorderPen = new Pen(LighterBorder);
         //public static readonly Pen DarkBorderPen = new Pen(DarkBorder);
         public static readonly Pen LightTextPen = new Pen(LightText);
-        public static readonly Pen DisabledTextPen = new Pen(DisabledText);
+        //public static readonly Pen DisabledTextPen = new Pen(DisabledText);
         public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
         //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
         public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);

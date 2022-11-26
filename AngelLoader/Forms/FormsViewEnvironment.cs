@@ -1,5 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -38,5 +42,45 @@ namespace AngelLoader.Forms
         }
 
         public string ProductVersion => Application.ProductVersion;
+
+        public void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned)
+        {
+            SelectedFM selFM = config.GameOrganization == GameOrganization.OneList
+                ? config.SelFM
+                : config.GameTabsState.GetSelectedFM(config.GameTab);
+
+            if (selFM.InstalledName.IsWhiteSpace()) return;
+
+            FanMission? fm = fmsViewList.Find(x => x.InstalledDir.EqualsI(selFM.InstalledName));
+            if (fm == null) return;
+            if (fmsViewListUnscanned.Contains(fm)) return;
+
+            string readmeFile;
+            try
+            {
+                (readmeFile, Misc.ReadmeType readmeType) = Core.GetReadmeFileAndType(fm);
+                if (readmeType != Misc.ReadmeType.RichText || readmeFile.IsWhiteSpace())
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                return;
+            }
+
+
+            byte[] bytes;
+            try
+            {
+                bytes = File.ReadAllBytes(readmeFile);
+            }
+            catch
+            {
+                return;
+            }
+
+            RichTextBoxCustom.PreloadRichFormat(readmeFile, bytes, config.DarkMode);
+        }
     }
 }

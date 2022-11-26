@@ -261,24 +261,26 @@ namespace AngelLoader
             splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
             // @BetterErrors(Set game data on startup)
-            #region Set game data
-
-            for (int i = 0; i < SupportedGameCount; i++)
+            static Error[] SetGameDataInitial()
             {
-                GameIndex gameIndex = (GameIndex)i;
-                // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                // set them if we don't have a game exe
-                string gameExe = Config.GetGameExe(gameIndex);
-                if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                Error[] errors = InitializedArray(SupportedGameCount, Error.None);
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    GameConfigFiles.FixCharacterDetailLine(gameIndex);
+                    GameIndex gameIndex = (GameIndex)i;
+                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                    // set them if we don't have a game exe
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                    {
+                        errors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                        GameConfigFiles.FixCharacterDetailLine(gameIndex);
+                    }
                 }
+
+                return errors;
             }
 
-            #endregion
-
-            Task DoParallelLoad()
+            Task DoParallelLoad(bool setGameData)
             {
                 splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                         LText.SplashScreen.LoadingMainApp);
@@ -292,8 +294,17 @@ namespace AngelLoader
                 {
                     splashScreen.LockPainting(true);
 
+                    Error[]? gameDataErrors = null;
                     Exception? ex = null;
-                    using Task findFMsTask = Task.Run(() => (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen));
+                    using Task findFMsTask = Task.Run(() =>
+                    {
+                        if (setGameData) gameDataErrors = SetGameDataInitial();
+                        (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                        if (ex == null)
+                        {
+                            ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                        }
+                    });
 
                     // Construct and init the view both right here, because they're both heavy operations and
                     // we want them both to run in parallel with Find() to the greatest extent possible.
@@ -301,6 +312,13 @@ namespace AngelLoader
                     View.InitThreadable();
 
                     findFMsTask.Wait();
+
+                    if (gameDataErrors != null)
+                    {
+                        splashScreen.LockPainting(false);
+                        ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
+                    }
+
                     if (ex != null)
                     {
                         splashScreen.Hide();
@@ -320,16 +338,27 @@ namespace AngelLoader
 
             if (!openSettings)
             {
-                await DoParallelLoad();
+                await DoParallelLoad(setGameData: true);
             }
             else
             {
+                Error[] errors = SetGameDataInitial();
+                ThrowDialogIfSneakyOptionsIniNotFound(errors);
+
                 splashScreen.Hide();
                 if (await OpenSettings(startup: true, cleanStart: cleanStart))
                 {
                     splashScreen.Show(Config.VisualTheme);
-                    await DoParallelLoad();
+                    await DoParallelLoad(setGameData: false);
                 }
+            }
+        }
+
+        private static void ThrowDialogIfSneakyOptionsIniNotFound(Error[] errors)
+        {
+            if (errors[(int)GameIndex.Thief3] == Error.SneakyOptionsNotFound)
+            {
+                Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
             }
         }
 
@@ -442,6 +471,7 @@ namespace AngelLoader
             if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
             // Game paths should have been checked and verified before OK was clicked, so assume they're good here
+            Error[] setGameDataErrors = new Error[SupportedGameCount];
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
@@ -450,10 +480,12 @@ namespace AngelLoader
                 Config.SetGameExe(gameIndex, outConfig.GetGameExe(gameIndex));
 
                 // Set it regardless of game existing, because we want to blank the data
-                SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+                setGameDataErrors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
 
                 Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
             }
+
+            ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
 
             #endregion
 
@@ -662,8 +694,9 @@ namespace AngelLoader
         /// </summary>
         /// <param name="gameIndex"></param>
         /// <param name="storeConfigInfo"></param>
-        private static void SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
+        private static Error SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
         {
+            Error error = Error.None;
             string gameExe = Config.GetGameExe(gameIndex);
             bool gameExeSpecified = !gameExe.IsWhiteSpace();
 
@@ -740,13 +773,14 @@ namespace AngelLoader
                 if (gameExeSpecified)
                 {
                     var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
-                    if (t3Data.Success)
+                    if (t3Data.Error == Error.None)
                     {
                         Config.SetFMInstallPath(GameIndex.Thief3, t3Data.FMInstallPath);
                         Config.T3UseCentralSaves = t3Data.UseCentralSaves;
                     }
                     else
                     {
+                        error = t3Data.Error;
                         Config.SetFMInstallPath(GameIndex.Thief3, "");
                     }
                     // Do this even if there was an error, because we could still have a valid selector line
@@ -773,6 +807,8 @@ namespace AngelLoader
 
                 // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
             }
+
+            return error;
         }
 
         internal static void SortFMsViewList(Column column, SortDirection sortDirection)
@@ -874,7 +910,7 @@ namespace AngelLoader
                 // Cursor here instead of in Find(), so we can keep it over the case where we load an RTF readme
                 // and it also sets the wait cursor, to avoid flickering it on and off twice.
                 View.SetWaitCursor(true);
-                using (new DisableEvents(View))
+                using (new DisableEvents_Reference(View))
                 {
                     List<FanMission> fmsViewListUnscanned = FindFMs.Find();
                     if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
@@ -1419,8 +1455,7 @@ namespace AngelLoader
                 ? Path.Combine(fmInstalledPath, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
-        private static readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
-        private static (string ReadmePath, ReadmeType ReadmeType)
+        internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
             string readmeOnDisk = GetReadmeFileFullPath(fm);
@@ -1442,8 +1477,10 @@ namespace AngelLoader
                 // end up with an "unable to load readme" error.
                 if (fs.Length >= headerLen)
                 {
-                    int bytesRead = fs.ReadAll(_rtfHeaderBuffer.Cleared(), 0, headerLen);
-                    if (bytesRead >= headerLen && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
+                    // This method can run in a thread now, so let's just allocate this locally and not be stupid
+                    byte[] header = new byte[headerLen];
+                    int bytesRead = fs.ReadAll(header, 0, headerLen);
+                    if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
                     {
                         return (readmeOnDisk, ReadmeType.RichText);
                     }
@@ -2057,66 +2094,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Languages
-
-        internal static void ScanAndFillLanguagesList(bool forceScan)
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
-
-            View.ClearLanguagesList();
-
-            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
-
-            if (GameIsDark(fm.Game))
-            {
-                bool doScan = forceScan || !fm.LangsScanned;
-
-                if (doScan)
-                {
-                    bool success = FMLanguages.FillFMSupportedLangs(fm);
-                    View.ShowLanguageDetectError(!success);
-                    Ini.WriteFullFMDataIni();
-                }
-                else
-                {
-                    View.ShowLanguageDetectError(false);
-                }
-
-                for (int i = 0; i < SupportedLanguageCount; i++)
-                {
-                    LanguageIndex index = (LanguageIndex)i;
-                    Language language = LanguageIndexToLanguage(index);
-                    if (fm.Langs.HasFlagFast(language))
-                    {
-                        string langStr = GetLanguageString(index);
-                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
-                    }
-                }
-            }
-            else
-            {
-                View.ShowLanguageDetectError(false);
-            }
-
-            View.AddLanguagesToList(langPairs);
-
-            fm.SelectedLang = View.SetSelectedLanguage(fm.SelectedLang);
-        }
-
-        internal static void UpdateFMSelectedLanguage()
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            fm.SelectedLang = View.GetMainSelectedLanguage();
-            Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
-
         internal static (Error Error, string Version)
         GetGameVersion(GameIndex game)
         {
@@ -2200,24 +2177,6 @@ namespace AngelLoader
             }
 
             return null;
-        }
-
-        internal static void UpdateFMComment()
-        {
-            FanMission? fm = View.GetMainSelectedFMOrNull_Fast();
-            if (fm == null) return;
-
-            string commentText = View.GetFMCommentText();
-
-            // Converting a multiline comment to single line:
-            // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
-            // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
-            // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
-            // 25,000+ character strings with nothing but slashes and linebreaks in them.
-            fm.Comment = commentText.ToRNEscapes();
-            fm.CommentSingleLine = commentText.ToSingleLineComment(100);
-
-            View.RefreshMainSelectedFMRow_Fast();
         }
 
         // TODO(DisplayFM/sel change/int index):
@@ -2448,6 +2407,58 @@ namespace AngelLoader
                 fm = null;
                 return false;
             }
+        }
+
+        [PublicAPI]
+        public static (bool Success, string DisabledMods, bool DisableAllMods)
+        CanonicalizeFMDisabledMods(Game game, string disabledMods, bool disableAllMods)
+        {
+            var fail = (false, "", false);
+
+            if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return fail;
+
+            (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
+
+            if (!success) return fail;
+
+            bool allDisabled = disableAllMods;
+
+            if (allDisabled) disabledMods = "";
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (mod.IsUber)
+                {
+                    mods.RemoveAt(i);
+                    mods.Add(mod);
+                }
+            }
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (!Config.GetModDirs(gameIndex).Contains(mod.InternalName))
+                {
+                    mods.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+
+                if (allDisabled && !mod.IsUber)
+                {
+                    if (!disabledMods.IsEmpty()) disabledMods += "+";
+                    disabledMods += mod.InternalName;
+                }
+            }
+
+            if (allDisabled) disableAllMods = false;
+
+            return (true, disabledMods, disableAllMods);
         }
     }
 }

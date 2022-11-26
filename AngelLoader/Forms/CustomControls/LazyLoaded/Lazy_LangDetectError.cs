@@ -9,7 +9,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
     {
         private bool _constructed;
 
-        private readonly MainForm _owner;
+        private readonly MainForm _form;
+        private readonly Lazy_EditFMPage _page;
 
         private PictureBox _pictureBox = null!;
 
@@ -27,25 +28,29 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             }
         }
 
-        internal Lazy_LangDetectError(MainForm owner) => _owner = owner;
+        internal Lazy_LangDetectError(MainForm form, Lazy_EditFMPage page)
+        {
+            _form = form;
+            _page = page;
+        }
 
         private void Construct()
         {
             if (_constructed) return;
 
-            DarkButton b = _owner.EditFMScanLanguagesButton;
+            DarkButton b = _page.EditFMScanLanguagesButton;
             _pictureBox = new PictureBox
             {
                 Image = Images.RedExclCircle,
                 Location = new Point(b.Left + b.Width + 2, b.Top + 4),
                 Size = new Size(14, 14),
                 TabStop = false,
-                Visible = false,
+                Visible = false
             };
 
             _pictureBox.Click += static (_, _) => Core.OpenLogFile();
 
-            _owner.EditFMTabPage.Controls.Add(_pictureBox);
+            _page.Controls.Add(_pictureBox);
 
             _constructed = true;
         }
@@ -68,7 +73,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             if (!_constructed) return;
 
-            _owner.MainToolTip.SetToolTip(_pictureBox, LText.EditFMTab.ErrorDetectingFMSupportedLanguages_ToolTip);
+            _form.MainToolTip.SetToolTip(_pictureBox, LText.EditFMTab.ErrorDetectingFMSupportedLanguages_ToolTip);
         }
     }
 }

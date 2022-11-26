@@ -7,7 +7,7 @@ namespace AngelLoader
     // ProgrammaticClose() call on the form).
     internal sealed class SplashScreen : IDisposable, ISplashScreen_Safe
     {
-        private readonly ISplashScreen _splashScreenView;
+        private ISplashScreen _splashScreenView;
 
         public SplashScreen(ISplashScreen splashScreenView)
         {
@@ -38,6 +38,7 @@ namespace AngelLoader
         {
             _splashScreenView.ProgrammaticClose();
             _splashScreenView.Dispose();
+            _splashScreenView = null!;
         }
     }
 }

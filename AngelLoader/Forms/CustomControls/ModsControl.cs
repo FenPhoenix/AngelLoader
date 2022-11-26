@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -14,7 +15,11 @@ namespace AngelLoader.Forms.CustomControls
     {
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled { get; set; }
+        public int EventsDisabledCount { get; set; }
+
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool EventsDisabled => EventsDisabledCount > 0;
 
         private Func<string>? _errorTextGetter;
         public void SetErrorTextGetter(Func<string> errorTextGetter) => _errorTextGetter = errorTextGetter;
@@ -35,6 +40,8 @@ namespace AngelLoader.Forms.CustomControls
 #else
             InitSlim();
 #endif
+            Tag = LoadType.Lazy;
+
             CheckList.SetCautionVisiblePredicate(() => ShowImportantCheckBox.Checked);
         }
 

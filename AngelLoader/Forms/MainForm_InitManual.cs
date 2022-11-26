@@ -84,66 +84,12 @@ namespace AngelLoader.Forms
             TopRightMenuButton = new DarkButton();
             TopRightCollapseButton = new DarkArrowButton();
             TopRightTabControl = new DarkTabControl();
-            StatisticsTabPage = new DarkTabPageCustom();
-            Stats_MisCountLabel = new DarkLabel();
-            StatsScanCustomResourcesButton = new DarkButton();
-            StatsCheckBoxesPanel = new Panel();
-            CR_MapCheckBox = new DarkCheckBox();
-            CR_MoviesCheckBox = new DarkCheckBox();
-            CR_MotionsCheckBox = new DarkCheckBox();
-            CR_SoundsCheckBox = new DarkCheckBox();
-            CR_CreaturesCheckBox = new DarkCheckBox();
-            CR_TexturesCheckBox = new DarkCheckBox();
-            CR_AutomapCheckBox = new DarkCheckBox();
-            CR_ScriptsCheckBox = new DarkCheckBox();
-            CR_SubtitlesCheckBox = new DarkCheckBox();
-            CR_ObjectsCheckBox = new DarkCheckBox();
-            CustomResourcesLabel = new DarkLabel();
-            StatsHorizDiv = new DarkHorizontalDivider();
-            EditFMTabPage = new DarkTabPageCustom();
-            EditFMScanLanguagesButton = new DarkButton();
-            EditFMLanguageLabel = new DarkLabel();
-            EditFMLanguageComboBox = new DarkComboBoxWithBackingItems();
-            EditFMScanForReadmesButton = new DarkButton();
-            EditFMScanReleaseDateButton = new DarkButton();
-            EditFMScanAuthorButton = new DarkButton();
-            EditFMScanTitleButton = new DarkButton();
-            EditFMAltTitlesArrowButton = new DarkArrowButton();
-            EditFMTitleTextBox = new DarkTextBox();
-            EditFMFinishedOnButton = new DarkButton();
-            EditFMRatingComboBox = new DarkComboBoxWithBackingItems();
-            EditFMRatingLabel = new DarkLabel();
-            EditFMLastPlayedDateTimePicker = new DarkDateTimePicker();
-            EditFMReleaseDateDateTimePicker = new DarkDateTimePicker();
-            EditFMLastPlayedCheckBox = new DarkCheckBox();
-            EditFMReleaseDateCheckBox = new DarkCheckBox();
-            EditFMAuthorTextBox = new DarkTextBox();
-            EditFMAuthorLabel = new DarkLabel();
-            EditFMTitleLabel = new DarkLabel();
-            CommentTabPage = new DarkTabPageCustom();
-            CommentTextBox = new DarkTextBox();
-            TagsTabPage = new DarkTabPageCustom();
-            AddTagButton = new DarkButton();
-            AddTagTextBox = new DarkTextBoxCustom();
-            AddRemoveTagFLP = new FlowLayoutPanel();
-            RemoveTagButton = new DarkButton();
-            AddTagFromListButton = new DarkButton();
-            TagsTreeView = new DarkTreeView();
-            TagsTabAutoScrollMarker = new Control();
-            PatchTabPage = new DarkTabPageCustom();
-            Patch_PerFMValues_Label = new DarkLabel();
-            Patch_NDSubs_CheckBox = new DarkCheckBox();
-            Patch_PostProc_CheckBox = new DarkCheckBox();
-            Patch_NewMantle_CheckBox = new DarkCheckBox();
-            PatchMainPanel = new Panel();
-            PatchDMLsPanel = new Panel();
-            PatchDMLPatchesLabel = new DarkLabel();
-            PatchDMLsListBox = new DarkListBox();
-            PatchRemoveDMLButton = new DarkButton();
-            PatchAddDMLButton = new DarkButton();
-            PatchOpenFMFolderButton = new DarkButton();
-            ModsTabPage = new DarkTabPageCustom();
-            MainModsControl = new ModsControl();
+            StatisticsTabPage = new StatsTabPage();
+            EditFMTabPage = new EditFMTabPage();
+            CommentTabPage = new CommentTabPage();
+            TagsTabPage = new TagsTabPage();
+            PatchTabPage = new PatchTabPage();
+            ModsTabPage = new ModsTabPage();
             ReadmeEncodingButton = new DarkButton();
             ReadmeFullScreenButton = new DarkButton();
             ReadmeZoomInButton = new DarkButton();
@@ -171,14 +117,10 @@ namespace AngelLoader.Forms
             RefreshAreaToolStrip.SuspendLayout();
             TopRightTabControl.SuspendLayout();
             StatisticsTabPage.SuspendLayout();
-            StatsCheckBoxesPanel.SuspendLayout();
             EditFMTabPage.SuspendLayout();
             CommentTabPage.SuspendLayout();
             TagsTabPage.SuspendLayout();
-            AddRemoveTagFLP.SuspendLayout();
             PatchTabPage.SuspendLayout();
-            PatchMainPanel.SuspendLayout();
-            PatchDMLsPanel.SuspendLayout();
             ModsTabPage.SuspendLayout();
             SuspendLayout();
             // 
@@ -789,577 +731,33 @@ namespace AngelLoader.Forms
             // 
             // StatisticsTabPage
             // 
-            StatisticsTabPage.AutoScroll = true;
             StatisticsTabPage.BackColor = SystemColors.Control;
-            StatisticsTabPage.Controls.Add(Stats_MisCountLabel);
-            StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
-            StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
-            StatisticsTabPage.Controls.Add(CustomResourcesLabel);
-            StatisticsTabPage.Controls.Add(StatsHorizDiv);
-            StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
-            // 
-            // Stats_MisCountLabel
-            // 
-            Stats_MisCountLabel.AutoSize = true;
-            Stats_MisCountLabel.Location = new Point(4, 8);
-            Stats_MisCountLabel.TabIndex = 0;
-            // 
-            // StatsScanCustomResourcesButton
-            // 
-            StatsScanCustomResourcesButton.AutoSize = true;
-            StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsScanCustomResourcesButton.Location = new Point(6, 232);
-            StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
-            StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
-            StatsScanCustomResourcesButton.TabIndex = 12;
-            StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
-            StatsScanCustomResourcesButton.PaintCustom += ScanIconButtons_Paint;
-            StatsScanCustomResourcesButton.Click += Async_EventHandler_Main;
-            // 
-            // StatsCheckBoxesPanel
-            // 
-            StatsCheckBoxesPanel.AutoSize = true;
-            StatsCheckBoxesPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            StatsCheckBoxesPanel.Controls.Add(CR_MapCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_MoviesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_MotionsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_SoundsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_CreaturesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_TexturesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_AutomapCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_ScriptsCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_SubtitlesCheckBox);
-            StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
-            StatsCheckBoxesPanel.Location = new Point(8, 64);
-            StatsCheckBoxesPanel.TabIndex = 1;
-            // 
-            // CR_MapCheckBox
-            // 
-            CR_MapCheckBox.AutoCheck = false;
-            CR_MapCheckBox.AutoSize = true;
-            CR_MapCheckBox.TabIndex = 2;
-            CR_MapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MoviesCheckBox
-            // 
-            CR_MoviesCheckBox.AutoCheck = false;
-            CR_MoviesCheckBox.AutoSize = true;
-            CR_MoviesCheckBox.Location = new Point(0, 64);
-            CR_MoviesCheckBox.TabIndex = 6;
-            CR_MoviesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_MotionsCheckBox
-            // 
-            CR_MotionsCheckBox.AutoCheck = false;
-            CR_MotionsCheckBox.AutoSize = true;
-            CR_MotionsCheckBox.Location = new Point(0, 112);
-            CR_MotionsCheckBox.TabIndex = 9;
-            CR_MotionsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SoundsCheckBox
-            // 
-            CR_SoundsCheckBox.AutoCheck = false;
-            CR_SoundsCheckBox.AutoSize = true;
-            CR_SoundsCheckBox.Location = new Point(0, 48);
-            CR_SoundsCheckBox.TabIndex = 5;
-            CR_SoundsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_CreaturesCheckBox
-            // 
-            CR_CreaturesCheckBox.AutoCheck = false;
-            CR_CreaturesCheckBox.AutoSize = true;
-            CR_CreaturesCheckBox.Location = new Point(0, 96);
-            CR_CreaturesCheckBox.TabIndex = 8;
-            CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_TexturesCheckBox
-            // 
-            CR_TexturesCheckBox.AutoCheck = false;
-            CR_TexturesCheckBox.AutoSize = true;
-            CR_TexturesCheckBox.Location = new Point(0, 32);
-            CR_TexturesCheckBox.TabIndex = 4;
-            CR_TexturesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_AutomapCheckBox
-            // 
-            CR_AutomapCheckBox.AutoCheck = false;
-            CR_AutomapCheckBox.AutoSize = true;
-            CR_AutomapCheckBox.Location = new Point(0, 16);
-            CR_AutomapCheckBox.TabIndex = 3;
-            CR_AutomapCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ScriptsCheckBox
-            // 
-            CR_ScriptsCheckBox.AutoCheck = false;
-            CR_ScriptsCheckBox.AutoSize = true;
-            CR_ScriptsCheckBox.Location = new Point(0, 128);
-            CR_ScriptsCheckBox.TabIndex = 10;
-            CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_SubtitlesCheckBox
-            // 
-            CR_SubtitlesCheckBox.AutoCheck = false;
-            CR_SubtitlesCheckBox.AutoSize = true;
-            CR_SubtitlesCheckBox.Location = new Point(0, 144);
-            CR_SubtitlesCheckBox.TabIndex = 11;
-            CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CR_ObjectsCheckBox
-            // 
-            CR_ObjectsCheckBox.AutoCheck = false;
-            CR_ObjectsCheckBox.AutoSize = true;
-            CR_ObjectsCheckBox.Location = new Point(0, 80);
-            CR_ObjectsCheckBox.TabIndex = 7;
-            CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // CustomResourcesLabel
-            // 
-            CustomResourcesLabel.AutoSize = true;
-            CustomResourcesLabel.Location = new Point(4, 42);
-            CustomResourcesLabel.TabIndex = 0;
-            // 
-            // StatsHorizDiv
-            // 
-            StatsHorizDiv.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            StatsHorizDiv.Location = new Point(6, 24);
-            StatsHorizDiv.Size = new Size(512, 16);
-            StatsHorizDiv.TabIndex = 0;
             // 
             // EditFMTabPage
             // 
-            EditFMTabPage.AutoScroll = true;
             EditFMTabPage.BackColor = SystemColors.Control;
-            EditFMTabPage.Controls.Add(EditFMScanLanguagesButton);
-            EditFMTabPage.Controls.Add(EditFMLanguageLabel);
-            EditFMTabPage.Controls.Add(EditFMLanguageComboBox);
-            EditFMTabPage.Controls.Add(EditFMScanForReadmesButton);
-            EditFMTabPage.Controls.Add(EditFMScanReleaseDateButton);
-            EditFMTabPage.Controls.Add(EditFMScanAuthorButton);
-            EditFMTabPage.Controls.Add(EditFMScanTitleButton);
-            EditFMTabPage.Controls.Add(EditFMAltTitlesArrowButton);
-            EditFMTabPage.Controls.Add(EditFMTitleTextBox);
-            EditFMTabPage.Controls.Add(EditFMFinishedOnButton);
-            EditFMTabPage.Controls.Add(EditFMRatingComboBox);
-            EditFMTabPage.Controls.Add(EditFMRatingLabel);
-            EditFMTabPage.Controls.Add(EditFMLastPlayedDateTimePicker);
-            EditFMTabPage.Controls.Add(EditFMReleaseDateDateTimePicker);
-            EditFMTabPage.Controls.Add(EditFMLastPlayedCheckBox);
-            EditFMTabPage.Controls.Add(EditFMReleaseDateCheckBox);
-            EditFMTabPage.Controls.Add(EditFMAuthorTextBox);
-            EditFMTabPage.Controls.Add(EditFMAuthorLabel);
-            EditFMTabPage.Controls.Add(EditFMTitleLabel);
-            EditFMTabPage.Size = new Size(526, 284);
-            EditFMTabPage.TabIndex = 2;
-            // 
-            // EditFMScanLanguagesButton
-            // 
-            EditFMScanLanguagesButton.Location = new Point(137, 200);
-            EditFMScanLanguagesButton.Size = new Size(22, 23);
-            EditFMScanLanguagesButton.TabIndex = 33;
-            EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
-            EditFMScanLanguagesButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanLanguagesButton.Click += EditFMScanLanguagesButton_Click;
-            // 
-            // EditFMLanguageLabel
-            // 
-            EditFMLanguageLabel.AutoSize = true;
-            EditFMLanguageLabel.Location = new Point(8, 185);
-            EditFMLanguageLabel.TabIndex = 31;
-            // 
-            // EditFMLanguageComboBox
-            // 
-            EditFMLanguageComboBox.FormattingEnabled = true;
-            EditFMLanguageComboBox.Location = new Point(9, 201);
-            EditFMLanguageComboBox.Size = new Size(128, 21);
-            EditFMLanguageComboBox.TabIndex = 32;
-            EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
-            // 
-            // EditFMScanForReadmesButton
-            // 
-            EditFMScanForReadmesButton.AutoSize = true;
-            EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            EditFMScanForReadmesButton.Location = new Point(8, 238);
-            EditFMScanForReadmesButton.MinimumSize = new Size(130, 23);
-            EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
-            EditFMScanForReadmesButton.TabIndex = 34;
-            EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
-            EditFMScanForReadmesButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanForReadmesButton.Click += Async_EventHandler_Main;
-            // 
-            // EditFMScanReleaseDateButton
-            // 
-            EditFMScanReleaseDateButton.Location = new Point(136, 105);
-            EditFMScanReleaseDateButton.Size = new Size(22, 22);
-            EditFMScanReleaseDateButton.TabIndex = 22;
-            EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
-            EditFMScanReleaseDateButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanReleaseDateButton.Click += Async_EventHandler_Main;
-            // 
-            // EditFMScanAuthorButton
-            // 
-            EditFMScanAuthorButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanAuthorButton.Location = new Point(493, 63);
-            EditFMScanAuthorButton.Size = new Size(22, 22);
-            EditFMScanAuthorButton.TabIndex = 19;
-            EditFMScanAuthorButton.UseVisualStyleBackColor = true;
-            EditFMScanAuthorButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanAuthorButton.Click += Async_EventHandler_Main;
-            // 
-            // EditFMScanTitleButton
-            // 
-            EditFMScanTitleButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanTitleButton.Location = new Point(493, 23);
-            EditFMScanTitleButton.Size = new Size(22, 22);
-            EditFMScanTitleButton.TabIndex = 16;
-            EditFMScanTitleButton.UseVisualStyleBackColor = true;
-            EditFMScanTitleButton.PaintCustom += ScanIconButtons_Paint;
-            EditFMScanTitleButton.Click += Async_EventHandler_Main;
-            // 
-            // EditFMAltTitlesArrowButton
-            // 
-            EditFMAltTitlesArrowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMAltTitlesArrowButton.ArrowDirection = Direction.Down;
-            EditFMAltTitlesArrowButton.Location = new Point(477, 23);
-            EditFMAltTitlesArrowButton.Size = new Size(17, 22);
-            EditFMAltTitlesArrowButton.TabIndex = 15;
-            EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
-            EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButton_Click;
-            // 
-            // EditFMTitleTextBox
-            // 
-            EditFMTitleTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            EditFMTitleTextBox.Location = new Point(8, 24);
-            EditFMTitleTextBox.Size = new Size(469, 20);
-            EditFMTitleTextBox.TabIndex = 14;
-            EditFMTitleTextBox.TextChanged += EditFMTitleTextBox_TextChanged;
-            EditFMTitleTextBox.Leave += EditFMTitleTextBox_Leave;
-            // 
-            // EditFMFinishedOnButton
-            // 
-            EditFMFinishedOnButton.AutoSize = true;
-            EditFMFinishedOnButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            EditFMFinishedOnButton.Location = new Point(184, 144);
-            EditFMFinishedOnButton.MinimumSize = new Size(138, 23);
-            EditFMFinishedOnButton.Padding = new Padding(6, 0, 6, 0);
-            EditFMFinishedOnButton.TabIndex = 27;
-            EditFMFinishedOnButton.UseVisualStyleBackColor = true;
-            EditFMFinishedOnButton.Click += EditFMFinishedOnButton_Click;
-            // 
-            // EditFMRatingComboBox
-            // 
-            EditFMRatingComboBox.FormattingEnabled = true;
-            EditFMRatingComboBox.Items.AddRange(new object[] {
-            "Unrated",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            EditFMRatingComboBox.Location = new Point(185, 104);
-            EditFMRatingComboBox.Size = new Size(136, 21);
-            EditFMRatingComboBox.TabIndex = 26;
-            EditFMRatingComboBox.SelectedIndexChanged += EditFMRatingComboBox_SelectedIndexChanged;
-            // 
-            // EditFMRatingLabel
-            // 
-            EditFMRatingLabel.AutoSize = true;
-            EditFMRatingLabel.Location = new Point(185, 87);
-            EditFMRatingLabel.TabIndex = 25;
-            // 
-            // EditFMLastPlayedDateTimePicker
-            // 
-            EditFMLastPlayedDateTimePicker.Format = DateTimePickerFormat.Short;
-            EditFMLastPlayedDateTimePicker.Location = new Point(8, 148);
-            EditFMLastPlayedDateTimePicker.Size = new Size(128, 20);
-            EditFMLastPlayedDateTimePicker.TabIndex = 24;
-            EditFMLastPlayedDateTimePicker.Visible = false;
-            EditFMLastPlayedDateTimePicker.ValueChanged += EditFMLastPlayedDateTimePicker_ValueChanged;
-            // 
-            // EditFMReleaseDateDateTimePicker
-            // 
-            EditFMReleaseDateDateTimePicker.Format = DateTimePickerFormat.Short;
-            EditFMReleaseDateDateTimePicker.Location = new Point(8, 106);
-            EditFMReleaseDateDateTimePicker.Size = new Size(128, 20);
-            EditFMReleaseDateDateTimePicker.TabIndex = 21;
-            EditFMReleaseDateDateTimePicker.Visible = false;
-            EditFMReleaseDateDateTimePicker.ValueChanged += EditFMReleaseDateDateTimePicker_ValueChanged;
-            // 
-            // EditFMLastPlayedCheckBox
-            // 
-            EditFMLastPlayedCheckBox.AutoSize = true;
-            EditFMLastPlayedCheckBox.Location = new Point(8, 130);
-            EditFMLastPlayedCheckBox.TabIndex = 23;
-            EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
-            EditFMLastPlayedCheckBox.CheckedChanged += EditFMLastPlayedCheckBox_CheckedChanged;
-            // 
-            // EditFMReleaseDateCheckBox
-            // 
-            EditFMReleaseDateCheckBox.AutoSize = true;
-            EditFMReleaseDateCheckBox.Location = new Point(8, 88);
-            EditFMReleaseDateCheckBox.TabIndex = 20;
-            EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
-            EditFMReleaseDateCheckBox.CheckedChanged += EditFMReleaseDateCheckBox_CheckedChanged;
-            // 
-            // EditFMAuthorTextBox
-            // 
-            EditFMAuthorTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            EditFMAuthorTextBox.Location = new Point(8, 64);
-            EditFMAuthorTextBox.Size = new Size(485, 20);
-            EditFMAuthorTextBox.TabIndex = 18;
-            EditFMAuthorTextBox.TextChanged += EditFMAuthorTextBox_TextChanged;
-            EditFMAuthorTextBox.Leave += EditFMAuthorTextBox_Leave;
-            // 
-            // EditFMAuthorLabel
-            // 
-            EditFMAuthorLabel.AutoSize = true;
-            EditFMAuthorLabel.Location = new Point(8, 48);
-            EditFMAuthorLabel.TabIndex = 17;
-            // 
-            // EditFMTitleLabel
-            // 
-            EditFMTitleLabel.AutoSize = true;
-            EditFMTitleLabel.Location = new Point(8, 8);
-            EditFMTitleLabel.TabIndex = 13;
+            EditFMTabPage.TabIndex = 0;
             // 
             // CommentTabPage
             // 
             CommentTabPage.BackColor = SystemColors.Control;
-            CommentTabPage.Controls.Add(CommentTextBox);
-            CommentTabPage.Size = new Size(526, 284);
             CommentTabPage.TabIndex = 0;
-            // 
-            // CommentTextBox
-            // 
-            CommentTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            CommentTextBox.Location = new Point(8, 8);
-            CommentTextBox.Multiline = true;
-            CommentTextBox.ScrollBars = ScrollBars.Vertical;
-            CommentTextBox.Size = new Size(510, 266);
-            CommentTextBox.TabIndex = 32;
-            CommentTextBox.TextChanged += CommentTextBox_TextChanged;
-            CommentTextBox.Leave += CommentTextBox_Leave;
             // 
             // TagsTabPage
             // 
-            TagsTabPage.AutoScroll = true;
             TagsTabPage.BackColor = SystemColors.Control;
-            TagsTabPage.Controls.Add(AddTagButton);
-            TagsTabPage.Controls.Add(AddTagTextBox);
-            TagsTabPage.Controls.Add(AddRemoveTagFLP);
-            TagsTabPage.Controls.Add(TagsTreeView);
-            TagsTabPage.Controls.Add(TagsTabAutoScrollMarker);
-            TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
-            // 
-            // AddTagButton
-            // 
-            AddTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            AddTagButton.AutoSize = true;
-            AddTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            AddTagButton.Location = new Point(453, 7);
-            AddTagButton.MinimumSize = new Size(0, 23);
-            AddTagButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagButton.Size = new Size(66, 23);
-            AddTagButton.TabIndex = 1;
-            AddTagButton.UseVisualStyleBackColor = true;
-            AddTagButton.Click += AddTagButton_Click;
-            // 
-            // AddTagTextBox
-            // 
-            AddTagTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            AddTagTextBox.DisallowedCharacters = ",;";
-            AddTagTextBox.Location = new Point(8, 8);
-            AddTagTextBox.Size = new Size(440, 20);
-            AddTagTextBox.StrictTextChangedEvent = false;
-            AddTagTextBox.TabIndex = 0;
-            AddTagTextBox.TextChanged += AddTagTextBox_TextChanged;
-            AddTagTextBox.KeyDown += AddTagTextBoxOrListBox_KeyDown;
-            AddTagTextBox.Leave += AddTagTextBoxOrListBox_Leave;
-            // 
-            // AddRemoveTagFLP
-            // 
-            AddRemoveTagFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            AddRemoveTagFLP.AutoSize = true;
-            AddRemoveTagFLP.Controls.Add(RemoveTagButton);
-            AddRemoveTagFLP.Controls.Add(AddTagFromListButton);
-            AddRemoveTagFLP.FlowDirection = FlowDirection.RightToLeft;
-            AddRemoveTagFLP.Location = new Point(0, 248);
-            AddRemoveTagFLP.Size = new Size(525, 24);
-            AddRemoveTagFLP.TabIndex = 3;
-            // 
-            // RemoveTagButton
-            // 
-            RemoveTagButton.AutoSize = true;
-            RemoveTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            RemoveTagButton.Margin = new Padding(0, 0, 6, 0);
-            RemoveTagButton.MinimumSize = new Size(0, 23);
-            RemoveTagButton.Padding = new Padding(6, 0, 6, 0);
-            RemoveTagButton.TabIndex = 1;
-            RemoveTagButton.UseVisualStyleBackColor = true;
-            RemoveTagButton.Click += RemoveTagButton_Click;
-            // 
-            // AddTagFromListButton
-            // 
-            AddTagFromListButton.AutoSize = true;
-            AddTagFromListButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            AddTagFromListButton.Margin = new Padding(0);
-            AddTagFromListButton.MinimumSize = new Size(0, 23);
-            AddTagFromListButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagFromListButton.TabIndex = 0;
-            AddTagFromListButton.UseVisualStyleBackColor = true;
-            AddTagFromListButton.Click += AddTagFromListButton_Click;
-            // 
-            // TagsTreeView
-            // 
-            TagsTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TagsTreeView.HideSelection = false;
-            TagsTreeView.Location = new Point(8, 32);
-            TagsTreeView.Size = new Size(510, 216);
-            TagsTreeView.TabIndex = 2;
-            // 
-            // TagsTabAutoScrollMarker
-            // 
-            TagsTabAutoScrollMarker.Size = new Size(240, 152);
             // 
             // PatchTabPage
             // 
-            PatchTabPage.AutoScroll = true;
             PatchTabPage.BackColor = SystemColors.Control;
-            PatchTabPage.Controls.Add(Patch_PerFMValues_Label);
-            PatchTabPage.Controls.Add(Patch_NDSubs_CheckBox);
-            PatchTabPage.Controls.Add(Patch_PostProc_CheckBox);
-            PatchTabPage.Controls.Add(Patch_NewMantle_CheckBox);
-            PatchTabPage.Controls.Add(PatchMainPanel);
-            PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
-            // 
-            // Patch_PerFMValues_Label
-            // 
-            Patch_PerFMValues_Label.AutoSize = true;
-            Patch_PerFMValues_Label.Location = new Point(6, 8);
-            Patch_PerFMValues_Label.TabIndex = 0;
-            // 
-            // Patch_NDSubs_CheckBox
-            // 
-            Patch_NDSubs_CheckBox.AutoSize = true;
-            Patch_NDSubs_CheckBox.Checked = true;
-            Patch_NDSubs_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_NDSubs_CheckBox.Location = new Point(8, 80);
-            Patch_NDSubs_CheckBox.TabIndex = 3;
-            Patch_NDSubs_CheckBox.ThreeState = true;
-            Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
-            Patch_NDSubs_CheckBox.CheckStateChanged += Patch_NDSubs_CheckBox_CheckStateChanged;
-            // 
-            // Patch_PostProc_CheckBox
-            // 
-            Patch_PostProc_CheckBox.AutoSize = true;
-            Patch_PostProc_CheckBox.Checked = true;
-            Patch_PostProc_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_PostProc_CheckBox.Location = new Point(8, 56);
-            Patch_PostProc_CheckBox.TabIndex = 2;
-            Patch_PostProc_CheckBox.ThreeState = true;
-            Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
-            Patch_PostProc_CheckBox.CheckStateChanged += Patch_PostProc_CheckBox_CheckStateChanged;
-            // 
-            // Patch_NewMantle_CheckBox
-            // 
-            Patch_NewMantle_CheckBox.AutoSize = true;
-            Patch_NewMantle_CheckBox.Checked = true;
-            Patch_NewMantle_CheckBox.CheckState = CheckState.Indeterminate;
-            Patch_NewMantle_CheckBox.Location = new Point(8, 32);
-            Patch_NewMantle_CheckBox.TabIndex = 1;
-            Patch_NewMantle_CheckBox.ThreeState = true;
-            Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
-            Patch_NewMantle_CheckBox.CheckStateChanged += Patch_NewMantle_CheckBox_CheckStateChanged;
-            // 
-            // PatchMainPanel
-            // 
-            PatchMainPanel.AutoSize = true;
-            PatchMainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchMainPanel.Controls.Add(PatchDMLsPanel);
-            PatchMainPanel.Controls.Add(PatchOpenFMFolderButton);
-            PatchMainPanel.Location = new Point(0, 104);
-            PatchMainPanel.Size = new Size(311, 250);
-            PatchMainPanel.TabIndex = 38;
-            // 
-            // PatchDMLsPanel
-            // 
-            PatchDMLsPanel.AutoSize = true;
-            PatchDMLsPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchDMLsPanel.Controls.Add(PatchDMLPatchesLabel);
-            PatchDMLsPanel.Controls.Add(PatchDMLsListBox);
-            PatchDMLsPanel.Controls.Add(PatchRemoveDMLButton);
-            PatchDMLsPanel.Controls.Add(PatchAddDMLButton);
-            PatchDMLsPanel.Size = new Size(308, 218);
-            PatchDMLsPanel.TabIndex = 39;
-            // 
-            // PatchDMLPatchesLabel
-            // 
-            PatchDMLPatchesLabel.AutoSize = true;
-            PatchDMLPatchesLabel.Location = new Point(8, 8);
-            PatchDMLPatchesLabel.TabIndex = 40;
-            // 
-            // PatchDMLsListBox
-            // 
-            PatchDMLsListBox.Location = new Point(8, 24);
-            PatchDMLsListBox.MultiSelect = false;
-            PatchDMLsListBox.Size = new Size(296, 168);
-            PatchDMLsListBox.TabIndex = 41;
-            // 
-            // PatchRemoveDMLButton
-            // 
-            PatchRemoveDMLButton.Location = new Point(258, 192);
-            PatchRemoveDMLButton.Size = new Size(23, 23);
-            PatchRemoveDMLButton.TabIndex = 42;
-            PatchRemoveDMLButton.UseVisualStyleBackColor = true;
-            PatchRemoveDMLButton.PaintCustom += PatchRemoveDMLButton_Paint;
-            PatchRemoveDMLButton.Click += PatchRemoveDMLButton_Click;
-            // 
-            // PatchAddDMLButton
-            // 
-            PatchAddDMLButton.Location = new Point(282, 192);
-            PatchAddDMLButton.Size = new Size(23, 23);
-            PatchAddDMLButton.TabIndex = 43;
-            PatchAddDMLButton.UseVisualStyleBackColor = true;
-            PatchAddDMLButton.PaintCustom += PatchAddDMLButton_Paint;
-            PatchAddDMLButton.Click += PatchAddDMLButton_Click;
-            // 
-            // PatchOpenFMFolderButton
-            // 
-            PatchOpenFMFolderButton.AutoSize = true;
-            PatchOpenFMFolderButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            PatchOpenFMFolderButton.Location = new Point(7, 224);
-            PatchOpenFMFolderButton.MinimumSize = new Size(162, 23);
-            PatchOpenFMFolderButton.TabIndex = 44;
-            PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
-            PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;
             // 
             // ModsTabPage
             // 
-            ModsTabPage.AutoScroll = true;
             ModsTabPage.BackColor = SystemColors.Control;
-            ModsTabPage.Controls.Add(MainModsControl);
-            ModsTabPage.Size = new Size(527, 284);
             ModsTabPage.TabIndex = 4;
-            // 
-            // MainModsControl
-            // 
-            MainModsControl.Anchor = AnchorStyles.Top |
-                                     AnchorStyles.Bottom |
-                                     AnchorStyles.Left |
-                                     AnchorStyles.Right;
-            MainModsControl.Location = new Point(0, 0);
-            MainModsControl.Size = new Size(527, 284);
-            MainModsControl.TabIndex = 6;
-            MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
-            MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
             // 
             // ReadmeEncodingButton
             // 
@@ -1496,22 +894,14 @@ namespace AngelLoader.Forms
             TopRightTabControl.ResumeLayout(false);
             StatisticsTabPage.ResumeLayout(false);
             StatisticsTabPage.PerformLayout();
-            StatsCheckBoxesPanel.ResumeLayout(false);
-            StatsCheckBoxesPanel.PerformLayout();
             EditFMTabPage.ResumeLayout(false);
             EditFMTabPage.PerformLayout();
             CommentTabPage.ResumeLayout(false);
             CommentTabPage.PerformLayout();
             TagsTabPage.ResumeLayout(false);
             TagsTabPage.PerformLayout();
-            AddRemoveTagFLP.ResumeLayout(false);
-            AddRemoveTagFLP.PerformLayout();
             PatchTabPage.ResumeLayout(false);
             PatchTabPage.PerformLayout();
-            PatchMainPanel.ResumeLayout(false);
-            PatchMainPanel.PerformLayout();
-            PatchDMLsPanel.ResumeLayout(false);
-            PatchDMLsPanel.PerformLayout();
             ModsTabPage.ResumeLayout(false);
             ModsTabPage.PerformLayout();
             ResumeLayout(false);

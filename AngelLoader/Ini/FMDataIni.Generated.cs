@@ -519,6 +519,10 @@ namespace AngelLoader
                     sb.Append("DisabledMods=");
                     sb.AppendLine(fm.DisabledMods);
                 }
+                if (fm.DisableAllMods)
+                {
+                    sb.AppendLine("DisableAllMods=True");
+                }
 #if write_old_resources_style
                 if (fm.ResourcesScanned)
                 {

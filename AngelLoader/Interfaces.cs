@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
-using static AngelLoader.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
@@ -31,28 +31,47 @@ namespace AngelLoader
 
     public interface IEventDisabler
     {
-        bool EventsDisabled { set; }
+        bool EventsDisabled { get; }
+        int EventsDisabledCount { get; set; }
     }
 
-    internal sealed class DisableEvents : IDisposable
+    internal sealed class DisableEvents_Reference : IDisposable
     {
         private readonly IEventDisabler Obj;
-        internal DisableEvents(IEventDisabler obj)
+        internal DisableEvents_Reference(IEventDisabler obj)
         {
             Obj = obj;
-            Obj.EventsDisabled = true;
+            Obj.EventsDisabledCount++;
         }
 
-        public void Dispose() => Obj.EventsDisabled = false;
+        public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
     }
 
+    internal readonly ref struct DisableEvents
+    {
+        private readonly bool _active;
+        private readonly IEventDisabler Obj;
+        public DisableEvents(IEventDisabler obj, bool active = true)
+        {
+            _active = active;
+            Obj = obj;
+
+            if (_active) Obj.EventsDisabledCount++;
+        }
+
+        public void Dispose()
+        {
+            if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
+        }
+    }
     #endregion
 
     #region DisableZeroSelectCode
 
     public interface IZeroSelectCodeDisabler
     {
-        bool ZeroSelectCodeDisabled { set; }
+        bool ZeroSelectCodeDisabled { get; }
+        int ZeroSelectCodeDisabledCount { get; set; }
     }
 
     internal sealed class DisableZeroSelectCode : IDisposable
@@ -61,10 +80,10 @@ namespace AngelLoader
         internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
         {
             Obj = obj;
-            Obj.ZeroSelectCodeDisabled = true;
+            Obj.ZeroSelectCodeDisabledCount++;
         }
 
-        public void Dispose() => Obj.ZeroSelectCodeDisabled = false;
+        public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
     }
 
     #endregion
@@ -135,6 +154,7 @@ namespace AngelLoader
         IDialogs GetDialogs();
         ISplashScreen GetSplashScreen();
         IView GetView();
+        void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
         (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
     }
 
@@ -413,35 +433,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Tags
-
-        (string Category, string Tag) SelectedCategoryAndTag();
-
-        void DisplayFMTags(FMCategoriesCollection fmTags);
-
-        void ClearTagsSearchBox();
-
-        #endregion
-
-        #region Languages
-
-        void ClearLanguagesList();
-
-        void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs);
-
-        // @LANGS(backing items): We could allow the backing items to be enum values
-        // That way we don't even have to store the lang strings in the combobox backing list
-        /// <summary>
-        /// Sets the selected item in the language list.
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns>The selected language, or default if a match was not found.</returns>
-        Language SetSelectedLanguage(Language language);
-
-        Language GetMainSelectedLanguage();
-
-        #endregion
-
         #region Dialogs
 
         (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
@@ -468,8 +459,6 @@ namespace AngelLoader
 
         void SetPinnedMenuState(bool pinned);
 
-        string GetFMCommentText();
-
         void SetPlayOriginalGameControlsState();
 
         void UpdateAllFMUIDataExceptReadme(FanMission fm);
@@ -479,7 +468,5 @@ namespace AngelLoader
         bool AbleToAcceptDragDrop();
 
         void SetAvailableFMCount();
-
-        void ShowLanguageDetectError(bool enabled);
     }
 }

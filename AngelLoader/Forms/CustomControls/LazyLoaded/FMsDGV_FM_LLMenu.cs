@@ -790,7 +790,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
-                    _owner.UpdateRatingForSelectedFMs(rating: i - 1);
+                    _owner.EditFMTabPage.UpdateRatingForSelectedFMs(rating: i - 1);
                     break;
                 }
             }
