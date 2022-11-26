@@ -221,7 +221,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 bool fmIsT3 = fm.Game == Game.Thief3;
 
-                UpdateRatingForSelectedFMs(fm.Rating);
+                UpdateRatingForSelectedFMs(fm.Rating, updateAllFMs: false);
 
                 if (!_constructed)
                 {
@@ -457,7 +457,7 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1);
+            UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1, updateAllFMs: false);
         }
 
         #endregion
@@ -647,7 +647,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void UpdateRatingForSelectedFMs(int rating)
+        internal void UpdateRatingForSelectedFMs(int rating, bool updateAllFMs = true)
         {
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
             fm.Rating = rating;
@@ -655,16 +655,19 @@ namespace AngelLoader.Forms.CustomControls
 
             UpdateRatingMenus(rating);
 
-            FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
-            if (sFMs.Length > 1)
+            if (updateAllFMs)
             {
-                foreach (FanMission sFM in sFMs)
+                FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
+                if (sFMs.Length > 1)
                 {
-                    sFM.Rating = rating;
+                    foreach (FanMission sFM in sFMs)
+                    {
+                        sFM.Rating = rating;
+                    }
+                    _owner.RefreshFMsListRowsOnlyKeepSelection();
                 }
-                _owner.RefreshFMsListRowsOnlyKeepSelection();
+                Ini.WriteFullFMDataIni();
             }
-            Ini.WriteFullFMDataIni();
         }
 
         #endregion
