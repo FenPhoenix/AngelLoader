@@ -510,7 +510,7 @@ namespace AngelLoader.DataClasses
             internal readonly string Author = "Author:";
             internal readonly string ReleaseDate = "Release date:";
             internal readonly string LastPlayed = "Last played:";
-            internal readonly string Rating = "Rating:";
+            internal readonly string Rating = "Rating...";
             internal readonly string FinishedOn = "Finished on...";
             internal readonly string PlayFMInThisLanguage = "Play FM in this language:";
             internal readonly string DefaultLanguage = "Default";

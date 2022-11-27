@@ -75,6 +75,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         private ToolStripMenuItemCustom RatingMenuItem = null!;
         private ToolStripMenuItemCustom RatingMenuUnrated = null!;
         private ToolStripMenuItemCustom FinishedOnMenuItem = null!;
+        private DarkContextMenu RatingMenu = null!;
         private DarkContextMenu FinishedOnMenu = null!;
         private ToolStripMenuItemCustom FinishedOnNormalMenuItem = null!;
         private ToolStripMenuItemCustom FinishedOnHardMenuItem = null!;
@@ -96,6 +97,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 if (!_constructed) return;
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
+                RatingMenu.DarkModeEnabled = _darkModeEnabled;
                 FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
                 DeleteFMMenuItem.Image = Images.Trash;
@@ -205,6 +207,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             #region Instantiation
 
             _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+            RatingMenu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
             FinishedOnMenu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
 
             #endregion
@@ -243,11 +246,13 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
                 ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
             });
 
-            RatingMenuItem.DropDownItems.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true });
+            RatingMenu.Items.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true });
             for (int i = 0; i < 11; i++)
             {
-                RatingMenuItem.DropDownItems.Add(new ToolStripMenuItemCustom { CheckOnClick = true });
+                RatingMenu.Items.Add(new ToolStripMenuItemCustom { CheckOnClick = true });
             }
+
+            RatingMenuItem.DropDown = RatingMenu;
 
             FinishedOnMenu.Items.AddRange(new ToolStripItem[]
             {
@@ -280,7 +285,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
             ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
 
-            foreach (ToolStripMenuItemCustom item in RatingMenuItem.DropDownItems)
+            foreach (ToolStripMenuItemCustom item in RatingMenu.Items)
             {
                 item.Click += RatingMenuItems_Click;
                 item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
@@ -427,7 +432,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             for (int i = 0; i <= 10; i++)
             {
                 string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                RatingMenuItem.DropDownItems[i + 1].Text = num;
+                RatingMenu.Items[i + 1].Text = num;
             }
         }
 
@@ -435,6 +440,12 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
         {
             Construct();
             return FinishedOnMenu;
+        }
+
+        internal ContextMenuStrip GetRatingMenu()
+        {
+            Construct();
+            return RatingMenu;
         }
 
         internal void SetPlayFMMenuItemEnabled(bool value)
@@ -663,7 +674,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
             if (_constructed)
             {
-                ((ToolStripMenuItemCustom)RatingMenuItem.DropDownItems[value + 1]).Checked = true;
+                ((ToolStripMenuItemCustom)RatingMenu.Items[value + 1]).Checked = true;
             }
             else
             {
@@ -786,9 +797,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
 
         private void RatingMenuItems_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < RatingMenuItem.DropDownItems.Count; i++)
+            for (int i = 0; i < RatingMenu.Items.Count; i++)
             {
-                if (RatingMenuItem.DropDownItems[i] == sender)
+                if (RatingMenu.Items[i] == sender)
                 {
                     _owner.UpdateAllSelectedFMsRating(rating: i - 1);
                     break;
@@ -801,7 +812,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             var s = (ToolStripMenuItemCustom)sender;
             if (!s.Checked) return;
 
-            foreach (ToolStripMenuItemCustom item in RatingMenuItem.DropDownItems)
+            foreach (ToolStripMenuItemCustom item in RatingMenu.Items)
             {
                 if (item != s) item.Checked = false;
             }

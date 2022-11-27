@@ -3725,8 +3725,6 @@ namespace AngelLoader.Forms
         {
             #region Update rating lists
 
-            EditFMTabPage.UpdateRatingStrings(fmSelStyle);
-
             FMsDGV_FM_LLMenu.UpdateRatingList(fmSelStyle);
 
             #endregion
@@ -4441,9 +4439,9 @@ namespace AngelLoader.Forms
             // We should never get here when the view list count is 0, but hey
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
-            FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
-
             FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(fm.Rating);
+
+            FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
             UpdateTopRightTabs();
         }

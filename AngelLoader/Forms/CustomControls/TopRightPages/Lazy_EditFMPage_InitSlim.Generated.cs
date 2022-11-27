@@ -17,8 +17,6 @@
             this.EditFMAltTitlesArrowButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.EditFMTitleTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.EditFMFinishedOnButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.EditFMRatingComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-            this.EditFMRatingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMLastPlayedDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
             this.EditFMReleaseDateDateTimePicker = new AngelLoader.Forms.CustomControls.DarkDateTimePicker();
             this.EditFMLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -26,6 +24,7 @@
             this.EditFMAuthorTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.EditFMAuthorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.EditFMTitleLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.EditFMRatingButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.SuspendLayout();
             // 
             // EditFMScanLanguagesButton
@@ -108,32 +107,6 @@
             this.EditFMFinishedOnButton.TabIndex = 49;
             this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             // 
-            // EditFMRatingComboBox
-            // 
-            this.EditFMRatingComboBox.FormattingEnabled = true;
-            this.EditFMRatingComboBox.Items.AddRange(new object[] {
-            "Unrated",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            this.EditFMRatingComboBox.Location = new System.Drawing.Point(185, 104);
-            this.EditFMRatingComboBox.Size = new System.Drawing.Size(136, 21);
-            this.EditFMRatingComboBox.TabIndex = 48;
-            // 
-            // EditFMRatingLabel
-            // 
-            this.EditFMRatingLabel.AutoSize = true;
-            this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
-            this.EditFMRatingLabel.TabIndex = 47;
-            // 
             // EditFMLastPlayedDateTimePicker
             // 
             this.EditFMLastPlayedDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
@@ -184,6 +157,16 @@
             this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
             this.EditFMTitleLabel.TabIndex = 35;
             // 
+            // EditFMRatingButton
+            // 
+            this.EditFMRatingButton.AutoSize = true;
+            this.EditFMRatingButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.EditFMRatingButton.Location = new System.Drawing.Point(184, 104);
+            this.EditFMRatingButton.MinimumSize = new System.Drawing.Size(138, 23);
+            this.EditFMRatingButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.EditFMRatingButton.TabIndex = 49;
+            this.EditFMRatingButton.UseVisualStyleBackColor = true;
+            // 
             // Lazy_EditFMPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -198,9 +181,8 @@
             this.Controls.Add(this.EditFMScanTitleButton);
             this.Controls.Add(this.EditFMAltTitlesArrowButton);
             this.Controls.Add(this.EditFMTitleTextBox);
+            this.Controls.Add(this.EditFMRatingButton);
             this.Controls.Add(this.EditFMFinishedOnButton);
-            this.Controls.Add(this.EditFMRatingComboBox);
-            this.Controls.Add(this.EditFMRatingLabel);
             this.Controls.Add(this.EditFMLastPlayedDateTimePicker);
             this.Controls.Add(this.EditFMReleaseDateDateTimePicker);
             this.Controls.Add(this.EditFMLastPlayedCheckBox);

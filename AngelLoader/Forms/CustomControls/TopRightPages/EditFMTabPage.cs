@@ -150,7 +150,7 @@ namespace AngelLoader.Forms.CustomControls
                 _page.EditFMReleaseDateDateTimePicker.ValueChanged += EditFMReleaseDateDateTimePicker_ValueChanged;
                 _page.EditFMLastPlayedDateTimePicker.ValueChanged += EditFMLastPlayedDateTimePicker_ValueChanged;
 
-                _page.EditFMRatingComboBox.SelectedIndexChanged += EditFMRatingComboBox_SelectedIndexChanged;
+                _page.EditFMRatingButton.Click += EditFMRatingButton_Click;
 
                 _page.EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
 
@@ -165,8 +165,6 @@ namespace AngelLoader.Forms.CustomControls
                 _page.EditFMScanForReadmesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
                 _constructed = true;
-
-                UpdateRatingStrings(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
 
                 UpdatePage();
 
@@ -186,12 +184,11 @@ namespace AngelLoader.Forms.CustomControls
             _page.EditFMAuthorLabel.Text = LText.EditFMTab.Author;
             _page.EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
             _page.EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
-            _page.EditFMRatingLabel.Text = LText.EditFMTab.Rating;
+            _page.EditFMRatingButton.Text = LText.EditFMTab.Rating;
 
             // For some reason this counts as a selected index change?!
             using (new DisableEvents(_owner))
             {
-                _page.EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
                 if (_page.EditFMLanguageComboBox.Items.Count > 0 &&
                     _page.EditFMLanguageComboBox.BackingItems[0].EqualsI(FMLanguages.DefaultLangKey))
                 {
@@ -229,8 +226,6 @@ namespace AngelLoader.Forms.CustomControls
                     }
                     return;
                 }
-
-                _page.EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
 
                 ShowLanguageDetectError(_showingLangDetectError);
 
@@ -295,8 +290,6 @@ namespace AngelLoader.Forms.CustomControls
             else
             {
                 if (!_constructed) return;
-
-                _page.EditFMRatingComboBox.SelectedIndex = 0;
 
                 // Always enable the combobox when modifying its items, to prevent the white flicker.
                 // We'll disable it again in the disable-all-controls loop.
@@ -454,20 +447,13 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Rating
 
-        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void EditFMRatingButton_Click(object sender, EventArgs e)
         {
-            if (_owner.EventsDisabled) return;
-
-            int rating = _page.EditFMRatingComboBox.SelectedIndex - 1;
-
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Rating = rating;
-            _owner.RefreshMainSelectedFMRow_Fast();
-
-            using (new DisableEvents(_owner))
-            {
-                _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-            }
+            ControlUtils.ShowMenu(
+                _owner.FMsDGV_FM_LLMenu.GetRatingMenu(),
+                _page.EditFMRatingButton,
+                ControlUtils.MenuPos.BottomRight,
+                unstickMenu: true);
         }
 
         #endregion
@@ -624,24 +610,6 @@ namespace AngelLoader.Forms.CustomControls
             else
             {
                 _showingLangDetectError = enabled;
-            }
-        }
-
-        #endregion
-
-        #region Rating methods
-
-        internal void UpdateRatingStrings(bool fmSelStyle)
-        {
-            if (!_constructed) return;
-
-            // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
-            using (new DisableEvents(_owner))
-            {
-                for (int i = 0; i <= 10; i++)
-                {
-                    _page.EditFMRatingComboBox.Items[i + 1] = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                }
             }
         }
 
