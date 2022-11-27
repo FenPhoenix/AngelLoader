@@ -801,7 +801,19 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             {
                 if (RatingMenu.Items[i] == sender)
                 {
-                    _owner.UpdateAllSelectedFMsRating(rating: i - 1);
+                    int rating = i - 1;
+
+                    FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
+                    if (sFMs.Length > 0)
+                    {
+                        foreach (FanMission sFM in sFMs)
+                        {
+                            sFM.Rating = rating;
+                        }
+                        _owner.RefreshFMsListRowsOnlyKeepSelection();
+                    }
+                    Ini.WriteFullFMDataIni();
+
                     break;
                 }
             }
