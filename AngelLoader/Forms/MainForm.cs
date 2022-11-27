@@ -4429,6 +4429,21 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
+            if (GameIsDark(fm.Game))
+            {
+                if (!fm.LangsScanned)
+                {
+                    FMLanguages.FillFMSupportedLangs(fm);
+                    Ini.WriteFullFMDataIni();
+                }
+            }
+            else if (fm.Game == Game.Thief3)
+            {
+                fm.Langs = LanguageSupport.Language.Default;
+                fm.SelectedLang = LanguageSupport.Language.Default;
+                fm.LangsScanned = true;
+            }
+
             UpdateTopRightTabs();
         }
 

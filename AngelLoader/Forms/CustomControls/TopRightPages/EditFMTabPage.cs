@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -152,6 +151,9 @@ namespace AngelLoader.Forms.CustomControls
 
                 _page.EditFMRatingButton.Click += EditFMRatingButton_Click;
 
+                _page.EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+                _page.EditFMLanguageComboBox.SelectedIndex = 0;
+
                 _page.EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
 
                 _page.EditFMFinishedOnButton.Click += EditFMFinishedOnButton_Click;
@@ -189,11 +191,7 @@ namespace AngelLoader.Forms.CustomControls
             // For some reason this counts as a selected index change?!
             using (new DisableEvents(_owner))
             {
-                if (_page.EditFMLanguageComboBox.Items.Count > 0 &&
-                    _page.EditFMLanguageComboBox.BackingItems[0].EqualsI(FMLanguages.DefaultLangKey))
-                {
-                    _page.EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
-                }
+                _page.EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
             }
 
             _page.EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
@@ -209,25 +207,15 @@ namespace AngelLoader.Forms.CustomControls
             _page.EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
         }
 
-        // @TopLazy(EditFM): Can affect the FM
         public override void UpdatePage()
         {
+            if (!_constructed) return;
+
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
             if (fm != null)
             {
                 bool fmIsT3 = fm.Game == Game.Thief3;
-
-                if (!_constructed)
-                {
-                    if (!fmIsT3 && !OnStartupAndThisTabIsSelected())
-                    {
-                        ScanAndFillLanguagesList(forceScan: false);
-                    }
-                    return;
-                }
-
-                ShowLanguageDetectError(_showingLangDetectError);
 
                 void SetLanguageEnabledState()
                 {
@@ -240,18 +228,13 @@ namespace AngelLoader.Forms.CustomControls
                 // the items.
                 if (fmIsT3)
                 {
-                    if (_page.EditFMLanguageComboBox.Items.Count == 0)
-                    {
-                        AddLanguagesToList(new() { new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage) });
-                    }
-                    SetSelectedLanguage(Language.Default);
-
+                    FillLanguagesList();
                     SetLanguageEnabledState();
                 }
                 else
                 {
                     SetLanguageEnabledState();
-                    ScanAndFillLanguagesList(forceScan: false);
+                    FillLanguagesList();
                 }
 
                 foreach (Control c in _page.Controls)
@@ -289,14 +272,10 @@ namespace AngelLoader.Forms.CustomControls
             }
             else
             {
-                if (!_constructed) return;
-
                 // Always enable the combobox when modifying its items, to prevent the white flicker.
                 // We'll disable it again in the disable-all-controls loop.
                 _page.EditFMLanguageComboBox.Enabled = true;
 
-                _page.EditFMLanguageComboBox.ClearFullItems();
-                _page.EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
                 _page.EditFMLanguageComboBox.SelectedIndex = 0;
 
                 Lazy_LangDetectError.SetVisible(false);
@@ -485,39 +464,21 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
         {
-            using (new DisableEvents(_owner))
-            {
-                ScanAndFillLanguagesList(forceScan: true);
-            }
+            FanMission? fm = _owner.GetMainSelectedFMOrNull();
+            if (fm == null) return;
+
+            FMLanguages.FillFMSupportedLangs(fm);
+            FillLanguagesList();
             Ini.WriteFullFMDataIni();
-        }
-
-        private void AddLanguagesToList(List<KeyValuePair<string, string>> langPairs)
-        {
-            try
-            {
-                _page.EditFMLanguageComboBox.BeginUpdate();
-
-                foreach (KeyValuePair<string, string> item in langPairs)
-                {
-                    _page.EditFMLanguageComboBox.AddFullItem(item.Key, item.Value);
-                }
-            }
-            finally
-            {
-                _page.EditFMLanguageComboBox.EndUpdate();
-            }
         }
 
         #endregion
 
         #region Language methods
 
-        private void ClearLanguagesList() => _page.EditFMLanguageComboBox.ClearFullItems();
-
         private Language GetMainSelectedLanguage()
         {
-            if (_page.EditFMLanguageComboBox.SelectedIndex <= 0)
+            if (_page.EditFMLanguageComboBox.SelectedIndex == 0)
             {
                 return Language.Default;
             }
@@ -528,88 +489,59 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private Language SetSelectedLanguage(Language language)
+        private void FillLanguagesList()
         {
-            if (_page.EditFMLanguageComboBox.Items.Count == 0)
+
+            using (new DisableEvents(_owner))
             {
-                return Language.Default;
-            }
-            else
-            {
-                _page.EditFMLanguageComboBox.SelectedIndex = !language.ConvertsToKnown(out LanguageIndex langIndex)
-                    ? 0
-                    : _page.EditFMLanguageComboBox
-                        .BackingItems
-                        .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
-                        .ClampToZero();
+                FanMission? fm = _owner.GetMainSelectedFMOrNull();
+                if (fm == null) return;
 
-                return _page.EditFMLanguageComboBox.SelectedIndex > 0 &&
-                       LangStringsToEnums.TryGetValue(_page.EditFMLanguageComboBox.SelectedBackingItem(), out Language returnLanguage)
-                    ? returnLanguage
-                    : Language.Default;
-            }
-        }
+                _page.EditFMLanguageComboBox.ClearAllBeyondFirstItem();
 
-        private void ScanAndFillLanguagesList(bool forceScan)
-        {
-            FanMission? fm = _owner.GetMainSelectedFMOrNull();
-            if (fm == null) return;
-
-            var langPairs = new List<KeyValuePair<string, string>>(SupportedLanguageCount + 1);
-
-            if (_constructed) ClearLanguagesList();
-
-            langPairs.Add(new(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage));
-
-            if (GameIsDark(fm.Game))
-            {
-                bool doScan = forceScan || !fm.LangsScanned;
-
-                if (doScan)
+                if (GameIsDark(fm.Game))
                 {
-                    bool success = FMLanguages.FillFMSupportedLangs(fm);
-                    ShowLanguageDetectError(!success);
-                    Ini.WriteFullFMDataIni();
+                    Lazy_LangDetectError.SetVisible(!fm.LangsScanned);
+
+                    var langPairs = new List<(string InternalName, string TranslatedName)>(SupportedLanguageCount);
+
+                    for (int i = 0; i < SupportedLanguageCount; i++)
+                    {
+                        LanguageIndex languageIndex = (LanguageIndex)i;
+                        Language language = LanguageIndexToLanguage(languageIndex);
+                        if (fm.Langs.HasFlagFast(language))
+                        {
+                            langPairs.Add((GetLanguageString(languageIndex), GetTranslatedLanguageName(languageIndex)));
+                        }
+                    }
+
+                    try
+                    {
+                        _page.EditFMLanguageComboBox.BeginUpdate();
+
+                        foreach (var (internalName, translatedName) in langPairs)
+                        {
+                            _page.EditFMLanguageComboBox.AddFullItem(internalName, translatedName);
+                        }
+                    }
+                    finally
+                    {
+                        _page.EditFMLanguageComboBox.EndUpdate();
+                    }
+
+                    _page.EditFMLanguageComboBox.SelectedIndex = !fm.SelectedLang.ConvertsToKnown(out LanguageIndex langIndex)
+                        ? 0
+                        : _page.EditFMLanguageComboBox
+                            .BackingItems
+                            .FindIndex(x => x.EqualsI(GetLanguageString(langIndex)))
+                            .ClampToZero();
                 }
                 else
                 {
-                    ShowLanguageDetectError(false);
+                    _page.EditFMLanguageComboBox.SelectedIndex = 0;
+                    Lazy_LangDetectError.SetVisible(false);
+                    fm.SelectedLang = Language.Default;
                 }
-
-                for (int i = 0; i < SupportedLanguageCount; i++)
-                {
-                    LanguageIndex index = (LanguageIndex)i;
-                    Language language = LanguageIndexToLanguage(index);
-                    if (fm.Langs.HasFlagFast(language))
-                    {
-                        string langStr = GetLanguageString(index);
-                        langPairs.Add(new(langStr, GetTranslatedLanguageName(index)));
-                    }
-                }
-            }
-            else
-            {
-                ShowLanguageDetectError(false);
-            }
-
-            if (_constructed)
-            {
-                AddLanguagesToList(langPairs);
-                fm.SelectedLang = SetSelectedLanguage(fm.SelectedLang);
-            }
-        }
-
-        private bool _showingLangDetectError;
-
-        private void ShowLanguageDetectError(bool enabled)
-        {
-            if (_constructed)
-            {
-                Lazy_LangDetectError.SetVisible(enabled);
-            }
-            else
-            {
-                _showingLangDetectError = enabled;
             }
         }
 

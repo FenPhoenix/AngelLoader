@@ -101,7 +101,7 @@ namespace AngelLoader
             return (sLanguage, bForceLanguage);
         }
 
-        internal static bool FillFMSupportedLangs(FanMission fm)
+        internal static void FillFMSupportedLangs(FanMission fm)
         {
             #region Local functions
 
@@ -138,7 +138,7 @@ namespace AngelLoader
             #endregion
 
             // We should already have checked before getting here, but just for safety...
-            if (!GameIsDark(fm.Game)) return true;
+            if (!GameIsDark(fm.Game)) return;
 
             List<string>? langs;
             if (FMIsReallyInstalled(fm, out string fmInstalledPath))
@@ -148,7 +148,7 @@ namespace AngelLoader
                 {
                     fm.Langs = Language.Default;
                     fm.LangsScanned = false;
-                    return false;
+                    return;
                 }
             }
             else
@@ -157,7 +157,7 @@ namespace AngelLoader
                 {
                     fm.Langs = Language.Default;
                     fm.LangsScanned = false;
-                    return false;
+                    return;
                 }
             }
 
@@ -174,8 +174,6 @@ namespace AngelLoader
             }
 
             fm.LangsScanned = true;
-
-            return true;
         }
 
         private static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)

@@ -53,6 +53,18 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
+        public void ClearAllBeyondFirstItem()
+        {
+            if (Items.Count > 1 && BackingItems.Count > 1)
+            {
+                for (int i = Items.Count - 1; i >= 1; i--)
+                {
+                    Items.RemoveAt(i);
+                    BackingItems.RemoveAt(i);
+                }
+            }
+        }
+
         public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
 
         public string SelectedBackingItem() => BackingItems[SelectedIndex];
