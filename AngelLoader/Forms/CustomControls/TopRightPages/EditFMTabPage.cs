@@ -221,8 +221,6 @@ namespace AngelLoader.Forms.CustomControls
             {
                 bool fmIsT3 = fm.Game == Game.Thief3;
 
-                UpdateRatingForSelectedFMs(fm.Rating, updateAllFMs: false);
-
                 if (!_constructed)
                 {
                     if (!fmIsT3 && !OnStartupAndThisTabIsSelected())
@@ -231,6 +229,8 @@ namespace AngelLoader.Forms.CustomControls
                     }
                     return;
                 }
+
+                _page.EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
 
                 ShowLanguageDetectError(_showingLangDetectError);
 
@@ -457,7 +457,17 @@ namespace AngelLoader.Forms.CustomControls
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_owner.EventsDisabled) return;
-            UpdateRatingForSelectedFMs(_page.EditFMRatingComboBox.SelectedIndex - 1, updateAllFMs: false);
+
+            int rating = _page.EditFMRatingComboBox.SelectedIndex - 1;
+
+            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+            fm.Rating = rating;
+            _owner.RefreshMainSelectedFMRow_Fast();
+
+            using (new DisableEvents(_owner))
+            {
+                _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
+            }
         }
 
         #endregion
@@ -621,18 +631,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Rating methods
 
-        private void UpdateRatingMenus(int rating)
-        {
-            using (new DisableEvents(_owner))
-            {
-                _owner.FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(rating);
-                if (_constructed)
-                {
-                    _page.EditFMRatingComboBox.SelectedIndex = rating + 1;
-                }
-            }
-        }
-
         internal void UpdateRatingStrings(bool fmSelStyle)
         {
             if (!_constructed) return;
@@ -644,29 +642,6 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     _page.EditFMRatingComboBox.Items[i + 1] = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
                 }
-            }
-        }
-
-        internal void UpdateRatingForSelectedFMs(int rating, bool updateAllFMs = true)
-        {
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.Rating = rating;
-            _owner.RefreshMainSelectedFMRow_Fast();
-
-            UpdateRatingMenus(rating);
-
-            if (updateAllFMs)
-            {
-                FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
-                if (sFMs.Length > 1)
-                {
-                    foreach (FanMission sFM in sFMs)
-                    {
-                        sFM.Rating = rating;
-                    }
-                    _owner.RefreshFMsListRowsOnlyKeepSelection();
-                }
-                Ini.WriteFullFMDataIni();
             }
         }
 

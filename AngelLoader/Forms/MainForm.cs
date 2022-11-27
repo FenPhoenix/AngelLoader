@@ -4417,6 +4417,20 @@ namespace AngelLoader.Forms
             }
         }
 
+        internal void UpdateAllSelectedFMsRating(int rating)
+        {
+            FanMission[] sFMs = FMsDGV.GetSelectedFMs();
+            if (sFMs.Length > 0)
+            {
+                foreach (FanMission sFM in sFMs)
+                {
+                    sFM.Rating = rating;
+                }
+                RefreshFMsListRowsOnlyKeepSelection();
+            }
+            Ini.WriteFullFMDataIni();
+        }
+
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
         // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
@@ -4428,6 +4442,8 @@ namespace AngelLoader.Forms
             MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
+
+            FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(fm.Rating);
 
             UpdateTopRightTabs();
         }
