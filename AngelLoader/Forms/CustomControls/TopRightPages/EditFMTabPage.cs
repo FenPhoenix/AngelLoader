@@ -228,13 +228,13 @@ namespace AngelLoader.Forms.CustomControls
                 // the items.
                 if (fmIsT3)
                 {
-                    FillLanguagesList();
+                    FillLanguagesListAndSelectLanguage();
                     SetLanguageEnabledState();
                 }
                 else
                 {
                     SetLanguageEnabledState();
-                    FillLanguagesList();
+                    FillLanguagesListAndSelectLanguage();
                 }
 
                 foreach (Control c in _page.Controls)
@@ -468,7 +468,7 @@ namespace AngelLoader.Forms.CustomControls
             if (fm == null) return;
 
             FMLanguages.FillFMSupportedLangs(fm);
-            FillLanguagesList();
+            FillLanguagesListAndSelectLanguage();
             Ini.WriteFullFMDataIni();
         }
 
@@ -489,9 +489,8 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void FillLanguagesList()
+        private void FillLanguagesListAndSelectLanguage()
         {
-
             using (new DisableEvents(_owner))
             {
                 FanMission? fm = _owner.GetMainSelectedFMOrNull();
