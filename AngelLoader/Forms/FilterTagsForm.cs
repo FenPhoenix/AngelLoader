@@ -32,7 +32,7 @@ namespace AngelLoader.Forms
 
             Localize();
 
-            ControlUtils.FillTreeViewFromTags_Sorted(OriginTreeView, sourceTags, selectFirst: true);
+            ControlUtils.FillTreeViewFromTags(OriginTreeView, sourceTags, sort: true, selectFirst: true);
 
             if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
             if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
@@ -133,7 +133,7 @@ namespace AngelLoader.Forms
                 tags == TagsFilter.OrTags ? OrTreeView :
                 NotTreeView;
 
-            ControlUtils.FillTreeViewFromTags_Sorted(tv, tags);
+            ControlUtils.FillTreeViewFromTags(tv, tags, sort: true);
 
             CheckTagInAny();
         }

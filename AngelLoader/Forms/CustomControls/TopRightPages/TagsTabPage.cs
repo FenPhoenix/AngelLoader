@@ -111,31 +111,21 @@ namespace AngelLoader.Forms.CustomControls
             _page.RemoveTagButton.Text = LText.TagsTab.RemoveTag;
         }
 
-        // @TopLazy(Tags): Can affect the FM
         public override void UpdatePage()
         {
+            if (!_constructed) return;
+
             FanMission? fm = _owner.GetMainSelectedFMOrNull();
             if (fm != null)
             {
-                if (_constructed)
-                {
-                    foreach (Control c in _page.Controls) c.Enabled = true;
-                    _page.AddTagTextBox.Text = "";
-                    FillFMTags(fm.Tags);
-                }
-                else if (!OnStartupAndThisTabIsSelected())
-                {
-                    fm.Tags.SortAndMoveMiscToEnd();
-                }
+                foreach (Control c in _page.Controls) c.Enabled = true;
+                FillFMTags(fm.Tags, sort: false);
+                _page.AddTagTextBox.Text = "";
             }
             else
             {
-                if (!_constructed) return;
-
                 _page.AddTagTextBox.Text = "";
-
                 _page.TagsTreeView.Nodes.Clear();
-
                 foreach (Control c in _page.Controls) c.Enabled = false;
             }
         }
@@ -144,10 +134,10 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Page
 
-        private void FillFMTags(FMCategoriesCollection fmTags)
+        private void FillFMTags(FMCategoriesCollection fmTags, bool sort)
         {
             if (!_constructed) return;
-            ControlUtils.FillTreeViewFromTags_Sorted(_page.TagsTreeView, fmTags);
+            ControlUtils.FillTreeViewFromTags(_page.TagsTreeView, fmTags, sort: sort);
         }
 
         // null! checks - industrial strength protection against stupid event handler firing in the component init method...
@@ -375,7 +365,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 FMTags.AddTagToFM(fm, catAndTag);
                 Ini.WriteFullFMDataIni();
-                FillFMTags(fm.Tags);
+                FillFMTags(fm.Tags, sort: true);
             }
 
             ClearTagsSearchBox();
@@ -393,7 +383,7 @@ namespace AngelLoader.Forms.CustomControls
             bool success = FMTags.RemoveTagFromFM(fm, catText, tagText, isCategory);
             if (success)
             {
-                FillFMTags(fm.Tags);
+                FillFMTags(fm.Tags, sort: true);
             }
         }
 

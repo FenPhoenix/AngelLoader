@@ -4444,6 +4444,8 @@ namespace AngelLoader.Forms
                 fm.LangsScanned = true;
             }
 
+            fm.Tags.SortAndMoveMiscToEnd();
+
             UpdateTopRightTabs();
         }
 

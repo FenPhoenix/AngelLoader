@@ -524,14 +524,18 @@ namespace AngelLoader.Forms
                 f.GdiVerticalFont);
         }
 
-        internal static void FillTreeViewFromTags_Sorted(DarkTreeView treeView, FMCategoriesCollection categories, bool selectFirst = false)
+        internal static void FillTreeViewFromTags(
+            DarkTreeView treeView,
+            FMCategoriesCollection categories,
+            bool sort,
+            bool selectFirst = false)
         {
             try
             {
                 treeView.BeginUpdate();
                 treeView.Nodes.Clear();
 
-                categories.SortAndMoveMiscToEnd();
+                if (sort) categories.SortAndMoveMiscToEnd();
 
                 foreach (CatAndTagsList item in categories)
                 {
