@@ -129,13 +129,7 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     if (!fmIsT3)
                     {
-                        (bool success, string disabledMods, bool disableAllMods) =
-                            Core.CanonicalizeFMDisabledMods(fm.Game, fm.DisabledMods, fm.DisableAllMods);
-                        if (success)
-                        {
-                            fm.DisabledMods = disabledMods;
-                            fm.DisableAllMods = disableAllMods;
-                        }
+                        Core.CanonicalizeFMDisabledMods(fm);
                     }
                 }
             }

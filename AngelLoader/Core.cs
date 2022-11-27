@@ -2410,20 +2410,18 @@ namespace AngelLoader
         }
 
         [PublicAPI]
-        public static (bool Success, string DisabledMods, bool DisableAllMods)
-        CanonicalizeFMDisabledMods(Game game, string disabledMods, bool disableAllMods)
+        public static void
+        CanonicalizeFMDisabledMods(FanMission fm)
         {
-            var fail = (false, "", false);
+            if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
 
-            if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return fail;
-
+            // @TopLazy: The read of the mods from disk with every FM complicates this. We could just do it once at SetGameDataFromDisk()?
             (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
+            if (!success) return;
 
-            if (!success) return fail;
+            bool allDisabled = fm.DisableAllMods;
 
-            bool allDisabled = disableAllMods;
-
-            if (allDisabled) disabledMods = "";
+            if (allDisabled) fm.DisabledMods = "";
 
             for (int i = 0; i < mods.Count; i++)
             {
@@ -2451,14 +2449,12 @@ namespace AngelLoader
 
                 if (allDisabled && !mod.IsUber)
                 {
-                    if (!disabledMods.IsEmpty()) disabledMods += "+";
-                    disabledMods += mod.InternalName;
+                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                    fm.DisabledMods += mod.InternalName;
                 }
             }
 
-            if (allDisabled) disableAllMods = false;
-
-            return (true, disabledMods, disableAllMods);
+            if (allDisabled) fm.DisableAllMods = false;
         }
     }
 }
