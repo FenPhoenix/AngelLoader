@@ -4429,6 +4429,8 @@ namespace AngelLoader.Forms
 
             FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
+            bool fmIsT3 = fm.Game == Game.Thief3;
+
             if (GameIsDark(fm.Game))
             {
                 if (!fm.LangsScanned)
@@ -4437,7 +4439,7 @@ namespace AngelLoader.Forms
                     Ini.WriteFullFMDataIni();
                 }
             }
-            else if (fm.Game == Game.Thief3)
+            else if (fmIsT3)
             {
                 fm.Langs = LanguageSupport.Language.Default;
                 fm.SelectedLang = LanguageSupport.Language.Default;
@@ -4445,6 +4447,8 @@ namespace AngelLoader.Forms
             }
 
             fm.Tags.SortAndMoveMiscToEnd();
+
+            if (!fmIsT3) Core.CanonicalizeFMDisabledMods(fm);
 
             UpdateTopRightTabs();
         }

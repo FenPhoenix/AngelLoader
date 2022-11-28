@@ -749,24 +749,28 @@ namespace AngelLoader
                     Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe_FromDisk().IsEmpty();
                 }
 
-                // Stupid hash set classes don't have a capacity reset method exposed...
                 var hash = new HashSetPathI();
-                Config.SetModDirs(gameIndex, hash);
+                List<Mod>? mods = null;
 
                 if (!gamePath.IsEmpty() && Directory.Exists(gamePath))
                 {
-                    (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
+                    (bool success, mods) = GameConfigFiles.GetGameMods(gameIndex);
                     if (success)
                     {
-                        foreach (Mod mod in mods)
+                        for (int i = 0; i < mods.Count; i++)
                         {
-                            if (TryCombineDirectoryPathAndCheckExistence(gamePath, mod.InternalName, out _))
+                            Mod mod = mods[i];
+                            if (!TryCombineDirectoryPathAndCheckExistence(gamePath, mod.InternalName, out _) ||
+                                !hash.Add(mod.InternalName))
                             {
-                                hash.Add(mod.InternalName);
+                                mods.RemoveAt(i);
+                                i--;
                             }
                         }
                     }
                 }
+
+                Config.SetMods(gameIndex, mods ?? new List<Mod>());
             }
             else
             {
@@ -2415,9 +2419,7 @@ namespace AngelLoader
         {
             if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
 
-            // @TopLazy: The read of the mods from disk with every FM complicates this. We could just do it once at SetGameDataFromDisk()?
-            (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
-            if (!success) return;
+            var mods = Config.GetMods(gameIndex);
 
             bool allDisabled = fm.DisableAllMods;
 
@@ -2430,16 +2432,6 @@ namespace AngelLoader
                 {
                     mods.RemoveAt(i);
                     mods.Add(mod);
-                }
-            }
-
-            for (int i = 0; i < mods.Count; i++)
-            {
-                Mod mod = mods[i];
-                if (!Config.GetModDirs(gameIndex).Contains(mod.InternalName))
-                {
-                    mods.RemoveAt(i);
-                    i--;
                 }
             }
 

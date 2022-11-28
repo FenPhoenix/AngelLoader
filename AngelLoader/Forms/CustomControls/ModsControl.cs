@@ -87,18 +87,11 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         [PublicAPI]
-        public (bool Success, string DisabledMods, bool DisableAllMods)
-        Set(GameIndex gameIndex, string disabledMods, bool disableAllMods)
-        {
-            return Set(GameIndexToGame(gameIndex), disabledMods, disableAllMods);
-        }
+        public void Set(GameIndex gameIndex, string disabledMods) => Set(GameIndexToGame(gameIndex), disabledMods);
 
         [PublicAPI]
-        public (bool Success, string DisabledMods, bool DisableAllMods)
-        Set(Game game, string disabledMods, bool disableAllMods)
+        public void Set(Game game, string disabledMods)
         {
-            var fail = (false, "", false);
-
             try
             {
                 CheckList.SuspendDrawing();
@@ -107,46 +100,13 @@ namespace AngelLoader.Forms.CustomControls
 
                 CheckList.ClearList();
 
-                if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return fail;
+                if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
 
-                (bool success, List<Mod> mods) = GameConfigFiles.GetGameMods(gameIndex);
-
-                if (!success)
-                {
-                    if (_errorTextGetter != null)
-                    {
-                        CheckList.SetErrorText(_errorTextGetter.Invoke());
-                    }
-                    return fail;
-                }
+                List<Mod> mods = Config.GetMods(gameIndex);
 
                 HashSetI disabledModsList = disabledMods
                     .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
                     .ToHashSetI();
-
-                bool allDisabled = disableAllMods;
-
-                if (allDisabled) disabledMods = "";
-
-                for (int i = 0; i < mods.Count; i++)
-                {
-                    Mod mod = mods[i];
-                    if (mod.IsUber)
-                    {
-                        mods.RemoveAt(i);
-                        mods.Add(mod);
-                    }
-                }
-
-                for (int i = 0; i < mods.Count; i++)
-                {
-                    Mod mod = mods[i];
-                    if (!Config.GetModDirs(gameIndex).Contains(mod.InternalName))
-                    {
-                        mods.RemoveAt(i);
-                        i--;
-                    }
-                }
 
                 var checkItems = new DarkCheckList.CheckItem[mods.Count];
 
@@ -154,26 +114,12 @@ namespace AngelLoader.Forms.CustomControls
                 {
                     Mod mod = mods[i];
                     checkItems[i] = new DarkCheckList.CheckItem(
-                        @checked: allDisabled ? mod.IsUber : !disabledModsList.Contains(mod.InternalName),
+                        @checked: !disabledModsList.Contains(mod.InternalName),
                         text: mod.InternalName,
                         caution: mod.IsUber);
-
-                    if (allDisabled && !mod.IsUber)
-                    {
-                        if (!disabledMods.IsEmpty()) disabledMods += "+";
-                        disabledMods += mod.InternalName;
-                    }
-                }
-
-                if (allDisabled)
-                {
-                    DisabledModsTextBox.Text = disabledMods;
-                    disableAllMods = false;
                 }
 
                 CheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
-
-                return (true, disabledMods, disableAllMods);
             }
             finally
             {

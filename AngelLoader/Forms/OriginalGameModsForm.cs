@@ -29,7 +29,7 @@ namespace AngelLoader.Forms
 
             Localize(gameIndex);
 
-            OrigGameModsControl.Set(gameIndex, DisabledMods, false);
+            OrigGameModsControl.Set(gameIndex, DisabledMods);
         }
 
         private void Localize(GameIndex gameIndex)

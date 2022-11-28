@@ -20,7 +20,7 @@ namespace AngelLoader.DataClasses
             _gameEditorDetected = new bool[SupportedGameCount];
             _startupAlwaysStartSelector = new bool[SupportedGameCount];
 
-            _modDirs = new HashSetPathI?[SupportedGameCount];
+            _mods = new List<Mod>?[SupportedGameCount];
 
             #endregion
 
@@ -102,11 +102,11 @@ namespace AngelLoader.DataClasses
 
         #region Mod dirs
 
-        private readonly HashSetPathI?[] _modDirs;
+        private readonly List<Mod>?[] _mods;
 
-        internal HashSetPathI GetModDirs(GameIndex index) => _modDirs[(int)index] ??= new HashSetPathI();
+        internal List<Mod> GetMods(GameIndex gameIndex) => _mods[(int)gameIndex] ??= new List<Mod>();
 
-        internal void SetModDirs(GameIndex gameIndex, HashSetPathI value) => _modDirs[(int)gameIndex] = value;
+        internal void SetMods(GameIndex gameIndex, List<Mod> value) => _mods[(int)gameIndex] = value;
 
         #endregion
 
