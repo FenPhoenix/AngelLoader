@@ -2854,13 +2854,6 @@ namespace AngelLoader.Forms
                     bool selectDoneAtLeastOnce = false;
                     void DoSelect()
                     {
-                        if (keepSelection != KeepSel.False)
-                        {
-                            // @TopLazy: Is this right? Ugh...
-                            if (EventsDisabledCount == 0) EventsDisabledCount++;
-                            // Old line
-                            //EventsDisabled = true;
-                        }
                         FMsDGV.SelectSingle(row, suppressSelectionChangedEvent: !selectDoneAtLeastOnce);
                         FMsDGV.SelectProperly(suspendResume: startup);
                         selectDoneAtLeastOnce = true;
