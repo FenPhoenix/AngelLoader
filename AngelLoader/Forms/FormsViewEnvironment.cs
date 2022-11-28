@@ -70,7 +70,6 @@ namespace AngelLoader.Forms
                 return;
             }
 
-
             byte[] bytes;
             try
             {

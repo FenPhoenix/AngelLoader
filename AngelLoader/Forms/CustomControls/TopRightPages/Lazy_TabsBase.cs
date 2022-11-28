@@ -42,7 +42,6 @@ namespace AngelLoader.Forms.CustomControls
 
         public virtual void UpdatePage() { }
 
-
         private protected void RefreshTheme()
         {
             ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);

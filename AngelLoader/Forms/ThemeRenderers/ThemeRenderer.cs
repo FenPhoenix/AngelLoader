@@ -12,7 +12,7 @@ namespace AngelLoader.Forms.ThemeRenderers
         private protected abstract string CLSID { get; }
         internal abstract bool Enabled { get; }
 
-        internal ThemeRenderer() => Reload();
+        private protected ThemeRenderer() => Reload();
 
         internal void Reload()
         {

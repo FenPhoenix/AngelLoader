@@ -450,9 +450,6 @@ namespace FMScanner
 
         // PERF: Making regexes compiled increases their performance by a huge amount.
         // And as we know, regexes need all the performance help they can get.
-        private readonly Regex GLMLTagRegex =
-            new Regex(@"\[/?GL[A-Z]+\]", RegexOptions.Compiled);
-
         private readonly Regex AThief3Mission =
             new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
                 RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);

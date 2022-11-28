@@ -59,11 +59,9 @@ namespace FenGen
             w.WL("{");
             for (int i = 0; i < keys.Count; i++)
             {
-                //string item = list[i];
                 string key = keys[i];
                 string value = values[i];
                 string suffix = i < keys.Count - 1 ? "," : "";
-                //w.WL(quote + item + quote + suffix);
                 w.WL("{ " + keyQuote + key + keyQuote + ", " + valueQuote + value + valueQuote + " }" + suffix);
             }
             w.WL("};");
