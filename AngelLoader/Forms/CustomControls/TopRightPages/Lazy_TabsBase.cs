@@ -32,9 +32,22 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public virtual void SetOwner(MainForm owner) { }
+        public void SetOwner(MainForm owner) => _owner = owner;
 
-        public virtual void ConstructWithSuspendResume() { }
+        public void ConstructWithSuspendResume()
+        {
+            if (_constructed) return;
+
+            try
+            {
+                this.SuspendDrawing();
+                Construct();
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
+        }
 
         public virtual void Construct() { }
 
@@ -45,11 +58,6 @@ namespace AngelLoader.Forms.CustomControls
         private protected void RefreshTheme()
         {
             ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
-        }
-
-        private protected bool OnStartupAndThisTabIsSelected()
-        {
-            return !_constructed && !_owner.Visible && _owner.TopRightTabControl.SelectedTab == this;
         }
     }
 }

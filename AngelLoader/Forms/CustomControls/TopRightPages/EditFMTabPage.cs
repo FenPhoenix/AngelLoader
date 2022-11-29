@@ -84,23 +84,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Public common
 
-        public override void SetOwner(MainForm owner) => _owner = owner;
-
-        public override void ConstructWithSuspendResume()
-        {
-            if (_constructed) return;
-
-            try
-            {
-                this.SuspendDrawing();
-                Construct();
-            }
-            finally
-            {
-                this.ResumeDrawing();
-            }
-        }
-
         public override void Construct()
         {
             if (_constructed) return;
