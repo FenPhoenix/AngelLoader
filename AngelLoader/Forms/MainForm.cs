@@ -946,7 +946,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.HorizontalScroll.SmallChange = 20;
 
             Config.Filter.DeepCopyTo(FMsDGV.Filter);
-            SetUIFilterValues(FMsDGV.Filter);
+            SetUIFilterValues(FMsDGV.Filter, startup: true);
 
             #endregion
 
@@ -1796,15 +1796,14 @@ namespace AngelLoader.Forms
                 RefreshFiltersButton.Image = Images.RefreshFilters;
                 ClearFiltersButton.Image = Images.ClearFilters;
 
-                var gameTabImages = new Image[SupportedGameCount];
-                for (int i = 0; i < SupportedGameCount; i++)
+                if (Config.GameOrganization == GameOrganization.ByTab)
                 {
-                    GameIndex gameIndex = (GameIndex)i;
-                    _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
-                    gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
+                    SetGameTabImages();
                 }
-
-                GamesTabControl.SetImages(gameTabImages);
+                else
+                {
+                    SetGameButtonImages();
+                }
 
                 // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
                 // while running(?) meh, whatever.
@@ -1815,6 +1814,27 @@ namespace AngelLoader.Forms
             {
                 if (!startup) EverythingPanel.ResumeDrawing();
             }
+        }
+
+        private void SetGameButtonImages()
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+            }
+        }
+
+        private void SetGameTabImages()
+        {
+            var gameTabImages = new Image[SupportedGameCount];
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
+            }
+
+            GamesTabControl.SetImages(gameTabImages);
         }
 
         #endregion
@@ -1869,10 +1889,14 @@ namespace AngelLoader.Forms
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
+                if (!startup) SetGameButtonImages();
+
                 Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
             }
             else // ByTab
             {
+                if (!startup) SetGameTabImages();
+
                 // In case they don't match
                 Config.Filter.Games = GameIndexToGame(Config.GameTab);
 
@@ -2153,11 +2177,11 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void SetUIFilterValues(Filter filter)
+        private void SetUIFilterValues(Filter filter, bool startup = false)
         {
             using (new DisableEvents(this))
             {
-                FilterBarFLP.SuspendDrawing();
+                if (!startup) FilterBarFLP.SuspendDrawing();
                 try
                 {
                     FilterTitleTextBox.Text = filter.Title;
@@ -2179,7 +2203,7 @@ namespace AngelLoader.Forms
                 }
                 finally
                 {
-                    FilterBarFLP.ResumeDrawing();
+                    if (!startup) FilterBarFLP.ResumeDrawing();
                 }
             }
         }
