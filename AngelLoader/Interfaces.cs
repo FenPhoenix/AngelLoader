@@ -74,7 +74,7 @@ namespace AngelLoader
         int ZeroSelectCodeDisabledCount { get; set; }
     }
 
-    internal sealed class DisableZeroSelectCode : IDisposable
+    internal readonly ref struct DisableZeroSelectCode
     {
         private readonly IZeroSelectCodeDisabler Obj;
         internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
