@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
@@ -38,6 +39,7 @@ namespace AngelLoader.Forms.CustomControls
         private int _originalDistance;
         private bool _mouseOverCrossSection;
         [Browsable(false)]
+        [MemberNotNullWhen(true, nameof(_sibling))]
         private bool MouseOverCrossSection => _sibling != null && _mouseOverCrossSection;
 
         private Color? _origBackColor;
@@ -214,7 +216,7 @@ namespace AngelLoader.Forms.CustomControls
 
             Resizing = false;
             SplitterDistance = _originalDistance;
-            if (MouseOverCrossSection) _sibling!.SplitterDistance = _sibling._originalDistance;
+            if (MouseOverCrossSection) _sibling.SplitterDistance = _sibling._originalDistance;
             _mouseOverCrossSection = false;
         }
 
@@ -264,7 +266,7 @@ namespace AngelLoader.Forms.CustomControls
                  (!IsStacked && Cursor.Current == Cursors.VSplit)))
             {
                 _originalDistance = SplitterDistance;
-                if (MouseOverCrossSection) _sibling!._originalDistance = _sibling.SplitterDistance;
+                if (MouseOverCrossSection) _sibling._originalDistance = _sibling.SplitterDistance;
                 Resizing = true;
             }
             else
@@ -340,16 +342,16 @@ namespace AngelLoader.Forms.CustomControls
                     {
                         if (RefreshSiblingFirst)
                         {
-                            _sibling!.SuspendDrawing();
+                            _sibling.SuspendDrawing();
                             this.SuspendDrawing();
                         }
                         else
                         {
                             this.SuspendDrawing();
-                            _sibling!.SuspendDrawing();
+                            _sibling.SuspendDrawing();
                         }
 
-                        _sibling!.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
+                        _sibling.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
                     }
                     else
                     {
@@ -362,13 +364,13 @@ namespace AngelLoader.Forms.CustomControls
                     {
                         if (RefreshSiblingFirst)
                         {
-                            _sibling!.ResumeDrawing();
+                            _sibling.ResumeDrawing();
                             this.ResumeDrawing();
                         }
                         else
                         {
                             this.ResumeDrawing();
-                            _sibling!.ResumeDrawing();
+                            _sibling.ResumeDrawing();
                         }
                     }
                     else
