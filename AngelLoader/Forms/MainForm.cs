@@ -811,8 +811,6 @@ namespace AngelLoader.Forms
             {
                 button.DarkModeBackColor = DarkColors.Fen_DarkBackground;
             }
-
-            MainMenuButton.HideFocusRectangle();
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner

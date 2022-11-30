@@ -37,5 +37,12 @@
 #else
             "restoredWindowBoundsSpecified";
 #endif
+
+        internal const string ComboBox_PrefHeightCache =
+#if NETFRAMEWORK
+            "prefHeightCache";
+#else
+            "_prefHeightCache";
+#endif
     }
 }
