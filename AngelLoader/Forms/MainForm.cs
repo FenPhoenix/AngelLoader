@@ -3726,7 +3726,7 @@ namespace AngelLoader.Forms
 
             DataGridViewColumn newRatingColumn =
                 Config.RatingDisplayStyle == RatingDisplayStyle.FMSel && Config.RatingUseStars
-                    ? (DataGridViewColumn)RatingImageColumn
+                    ? RatingImageColumn
                     : RatingTextColumn;
 
             if (!startup)
