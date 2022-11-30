@@ -279,7 +279,7 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         internal static DialogResult ShowDialogDark(this CommonDialog dialog, IWin32Window? owner)
         {
-            using (Config.DarkMode ? new Win32ThemeHooks.DialogScope() : null)
+            using (new Win32ThemeHooks.DialogScope(active: Config.DarkMode))
             {
                 return dialog.ShowDialog(owner);
             }

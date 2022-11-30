@@ -60,7 +60,8 @@ namespace AngelLoader.Forms.CustomControls
             if (newMouseOverButton != _mouseOverButton)
             {
                 _mouseOverButton = newMouseOverButton;
-                DrawButton();
+                using var gc = new Native.GraphicsContext(Handle);
+                DrawButton(gc.G);
             }
         }
 
@@ -73,39 +74,25 @@ namespace AngelLoader.Forms.CustomControls
             if (_mouseOverButton)
             {
                 _mouseOverButton = false;
-                DrawButton();
+                using var gc = new Native.GraphicsContext(Handle);
+                DrawButton(gc.G);
             }
         }
 
-        private void DrawButton(Graphics? g = null)
+        private void DrawButton(Graphics g)
         {
-            Native.GraphicsContext? gc = null;
+            var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
 
-            if (g == null)
-            {
-                gc = new Native.GraphicsContext(Handle);
-                g = gc.G;
-            }
-
-            try
-            {
-                var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
-
-                SolidBrush buttonBrush =
-                    (dtpInfo.stateButton & Native.STATE_SYSTEM_PRESSED) != 0
-                        ? DarkColors.DarkBackgroundBrush
-                        : _mouseOverButton
+            SolidBrush buttonBrush =
+                (dtpInfo.stateButton & Native.STATE_SYSTEM_PRESSED) != 0
+                    ? DarkColors.DarkBackgroundBrush
+                    : _mouseOverButton
                         ? DarkColors.LighterBackgroundBrush
                         : DarkColors.LightBackgroundBrush;
 
-                g.FillRectangle(buttonBrush, buttonRect);
+            g.FillRectangle(buttonBrush, buttonRect);
 
-                Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
-            }
-            finally
-            {
-                gc?.Dispose();
-            }
+            Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
         }
 
         private void PaintCustom()

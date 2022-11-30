@@ -46,7 +46,7 @@ namespace AngelLoader.Forms
 
         #region Disposables
 
-        private readonly Native.GraphicsContext _graphicsContext;
+        private readonly Native.GraphicsContext_Ref _graphicsContext;
 
         private readonly PrivateFontCollection? _collection;
         private readonly Font _messageFont;
@@ -87,7 +87,7 @@ namespace AngelLoader.Forms
 
             Text = "AngelLoader " + Application.ProductVersion;
 
-            _graphicsContext = new Native.GraphicsContext(Handle);
+            _graphicsContext = new Native.GraphicsContext_Ref(Handle);
         }
 
         public void Show(VisualTheme theme)

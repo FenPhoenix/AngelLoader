@@ -255,7 +255,27 @@ namespace AngelLoader.Forms.WinFormsNative
         [DllImport("user32.dll")]
         private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
-        public sealed class GraphicsContext : IDisposable
+        public sealed class GraphicsContext_Ref : IDisposable
+        {
+            private readonly IntPtr _hWnd;
+            private readonly IntPtr _dc;
+            public readonly Graphics G;
+
+            public GraphicsContext_Ref(IntPtr hWnd)
+            {
+                _hWnd = hWnd;
+                _dc = GetWindowDC(_hWnd);
+                G = Graphics.FromHdc(_dc);
+            }
+
+            public void Dispose()
+            {
+                G.Dispose();
+                ReleaseDC(_hWnd, _dc);
+            }
+        }
+
+        public readonly ref struct GraphicsContext
         {
             private readonly IntPtr _hWnd;
             private readonly IntPtr _dc;

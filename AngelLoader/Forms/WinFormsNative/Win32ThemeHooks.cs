@@ -212,25 +212,34 @@ namespace AngelLoader.Forms.WinFormsNative
         unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
         least it's temporary.
         */
-        internal sealed class DialogScope : IDisposable
+        internal readonly ref struct DialogScope
         {
-            internal DialogScope()
+            private readonly bool _active;
+
+            internal DialogScope(bool active = true)
             {
-                _disableHookedTheming = true;
-                ControlUtils.RecreateAllToolTipHandles();
+                _active = active;
+                if (_active)
+                {
+                    _disableHookedTheming = true;
+                    ControlUtils.RecreateAllToolTipHandles();
+                }
             }
 
             public void Dispose()
             {
-                _disableHookedTheming = false;
-                // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
-                // dark-on-dark tooltips
-                ControlUtils.RecreateAllToolTipHandles();
-                List<IntPtr> handles = Native.GetProcessWindowHandles();
-                foreach (IntPtr handle in handles)
+                if (_active)
                 {
-                    Control? control = Control.FromHandle(handle);
-                    if (control is Form form) form.Refresh();
+                    _disableHookedTheming = false;
+                    // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
+                    // dark-on-dark tooltips
+                    ControlUtils.RecreateAllToolTipHandles();
+                    List<IntPtr> handles = Native.GetProcessWindowHandles();
+                    foreach (IntPtr handle in handles)
+                    {
+                        Control? control = Control.FromHandle(handle);
+                        if (control is Form form) form.Refresh();
+                    }
                 }
             }
         }
