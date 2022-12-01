@@ -1784,17 +1784,26 @@ namespace AngelLoader.Forms
                     SetProgressBoxDarkModeEnabled(darkMode);
                 }
 
-                FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
-                FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
-                FilterByTagsButton.Image = Images.FilterByTags;
-                FilterByFinishedButton.Image = Images.FilterByFinished;
-                FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
-                FilterByRatingButton.Image = Images.FilterByRating;
-                FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
+                try
+                {
+                    FilterBarFLP.SuspendLayout();
 
-                RefreshFromDiskButton.Image = Images.Refresh;
-                RefreshFiltersButton.Image = Images.RefreshFilters;
-                ClearFiltersButton.Image = Images.ClearFilters;
+                    FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
+                    FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
+                    FilterByTagsButton.Image = Images.FilterByTags;
+                    FilterByFinishedButton.Image = Images.FilterByFinished;
+                    FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
+                    FilterByRatingButton.Image = Images.FilterByRating;
+                    FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
+
+                    RefreshFromDiskButton.Image = Images.Refresh;
+                    RefreshFiltersButton.Image = Images.RefreshFilters;
+                    ClearFiltersButton.Image = Images.ClearFilters;
+                }
+                finally
+                {
+                    FilterBarFLP.ResumeLayout();
+                }
 
                 if (Config.GameOrganization == GameOrganization.ByTab)
                 {
@@ -1818,10 +1827,19 @@ namespace AngelLoader.Forms
 
         private void SetGameButtonImages()
         {
-            for (int i = 0; i < SupportedGameCount; i++)
+            try
             {
-                GameIndex gameIndex = (GameIndex)i;
-                _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+                FilterGameButtonsToolStrip.SuspendLayout();
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+                }
+            }
+            finally
+            {
+                FilterGameButtonsToolStrip.ResumeLayout();
             }
         }
 
