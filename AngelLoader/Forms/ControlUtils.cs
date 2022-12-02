@@ -701,7 +701,8 @@ namespace AngelLoader.Forms
         private static void FillControlColorList(
             Control control,
             List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
-            bool createControlHandles
+            bool createControlHandles,
+            Func<Control, bool>? createHandlePredicate = null
 #if !ReleasePublic && !NoAsserts
             , int stackCounter = 0
 #endif
@@ -719,7 +720,9 @@ namespace AngelLoader.Forms
                 controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
             }
 
-            if (createControlHandles && !control.IsHandleCreated)
+            if (createControlHandles &&
+                createHandlePredicate?.Invoke(control) != false &&
+                !control.IsHandleCreated)
             {
                 IntPtr dummy = control.Handle;
             }
@@ -744,11 +747,12 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < backingPages.Length; i++)
                 {
                     FillControlColorList(
-                        backingPages[i],
-                        controlColors,
-                        createControlHandles
+                        control: backingPages[i],
+                        controlColors: controlColors,
+                        createControlHandles: createControlHandles,
+                        createHandlePredicate: createHandlePredicate
 #if !ReleasePublic && !NoAsserts
-                        , stackCounter
+                        , stackCounter: stackCounter
 #endif
                     );
                 }
@@ -758,18 +762,26 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < control.Controls.Count; i++)
                 {
                     FillControlColorList(
-                        control.Controls[i],
-                        controlColors,
-                        createControlHandles
+                        control: control.Controls[i],
+                        controlColors: controlColors,
+                        createControlHandles: createControlHandles,
+                        createHandlePredicate: createHandlePredicate
 #if !ReleasePublic && !NoAsserts
-                        , stackCounter
+                        , stackCounter: stackCounter
 #endif
                     );
                 }
             }
         }
 
-        internal static void CreateAllControlsHandles(Control control) => FillControlColorList(control, null, createControlHandles: true);
+        internal static void CreateAllControlsHandles(Control control, Func<Control, bool> createHandlePredicate)
+        {
+            FillControlColorList(
+                control: control,
+                controlColors: null,
+                createControlHandles: true,
+                createHandlePredicate: createHandlePredicate);
+        }
 
         internal static void SetTheme(
             Control baseControl,
@@ -777,6 +789,7 @@ namespace AngelLoader.Forms
             VisualTheme theme,
             Func<Component, bool>? excludePredicate = null,
             bool createControlHandles = false,
+            Func<Control, bool>? createHandlePredicate = null,
             int capacity = -1)
         {
             bool darkMode = theme == VisualTheme.Dark;
@@ -788,7 +801,11 @@ namespace AngelLoader.Forms
             if (controlColors.Count == 0)
             {
                 if (capacity >= 0) controlColors.Capacity = capacity;
-                FillControlColorList(baseControl, (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors, createControlHandles);
+                FillControlColorList(
+                    control: baseControl,
+                    controlColors: (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors,
+                    createControlHandles: createControlHandles,
+                    createHandlePredicate: createHandlePredicate);
             }
 
             foreach (var item in controlColors)

@@ -48,9 +48,17 @@ namespace AngelLoader.Forms
             VisualTheme theme,
             Func<Component, bool>? excludePredicate = null,
             bool createControlHandles = false,
+            Func<Control, bool>? createHandlePredicate = null,
             int capacity = -1)
         {
-            ControlUtils.SetTheme(this, _controlColors, theme, excludePredicate, createControlHandles, capacity);
+            ControlUtils.SetTheme(
+                baseControl: this,
+                controlColors: _controlColors,
+                theme: theme,
+                excludePredicate: excludePredicate,
+                createControlHandles: createControlHandles,
+                createHandlePredicate: createHandlePredicate,
+                capacity: capacity);
         }
 
         #endregion

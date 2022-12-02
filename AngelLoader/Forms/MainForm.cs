@@ -1751,19 +1751,27 @@ namespace AngelLoader.Forms
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
 
+                bool CreateHandlePredicate(Control x) =>
+                    x == BottomPanel ||
+                    (!TopSplitContainer.FullScreen && x == TopSplitContainer);
+
                 if (startup && !darkMode)
                 {
-                    ControlUtils.CreateAllControlsHandles(this);
+                    ControlUtils.CreateAllControlsHandles(
+                        control: this,
+                        createHandlePredicate: CreateHandlePredicate);
                 }
                 else
                 {
                     SetThemeBase(
-                        theme,
-                        x => x.EqualsIfNotNull(ProgressBox)
-                             || (_progressBoxConstructed && x is Control xControl &&
-                                 ProgressBox!.Controls.Contains(xControl))
-                             || x is SplitterPanel,
+                        theme: theme,
+                        excludePredicate: x =>
+                            x.EqualsIfNotNull(ProgressBox)
+                            || (_progressBoxConstructed && x is Control xControl &&
+                                ProgressBox!.Controls.Contains(xControl))
+                            || x is SplitterPanel,
                         createControlHandles: createControlHandles,
+                        createHandlePredicate: CreateHandlePredicate,
                         capacity: 150
                     );
                 }
