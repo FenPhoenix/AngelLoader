@@ -1751,9 +1751,28 @@ namespace AngelLoader.Forms
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
 
+#if true
                 bool CreateHandlePredicate(Control x) =>
                     x == BottomPanel ||
                     (!TopSplitContainer.FullScreen && x == TopSplitContainer);
+#else
+                /*
+                PERF_TODO(Startup window drawn state completeness/speed tradeoff):
+                Use this for a more conservative visual ux. With this method, the window shows all bg color
+                and then refreshes all at once, but is slower. With the faster method above, the window shows
+                in a mostly-but-not-quite-fully-drawn state, but if you have window animations on (which is
+                the default and probably almost everyone does), you don't really have time to see it.
+                So meh, it's a toss-up.
+                Also, I think the faster method above may not actually be any faster to usability, but may
+                just be faster to _something_ being displayed, so it _appears_ that the app "loads faster".
+                */
+                bool CreateHandlePredicate(Control x) =>
+                    !TopSplitContainer.FullScreen ||
+                    (x != TopSplitContainer &&
+                     x != TopSplitContainer.Panel2 &&
+                     x != TopRightTabControl &&
+                     !_topRightTabs.Contains(x));
+#endif
 
                 if (startup && !darkMode)
                 {
