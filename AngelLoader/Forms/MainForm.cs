@@ -1751,7 +1751,7 @@ namespace AngelLoader.Forms
             {
                 if (!startup) EverythingPanel.SuspendDrawing();
 
-#if true
+#if false
                 bool CreateHandlePredicate(Control x) =>
                     x == BottomPanel ||
                     (!TopSplitContainer.FullScreen && x == TopSplitContainer);
