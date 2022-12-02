@@ -752,6 +752,49 @@ namespace AngelLoader
                 var hash = new HashSetPathI();
                 List<Mod>? mods = null;
 
+                static bool ModExistsOnDisk(string gamePath, string modName)
+                {
+                    if (TryCombineDirectoryPathAndCheckExistence(gamePath, modName, out _)) return true;
+                    string fullPath;
+                    try
+                    {
+                        fullPath = Path.Combine(gamePath, modName);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+
+                    string modContainingDir;
+                    try
+                    {
+                        modContainingDir = Path.GetDirectoryName(fullPath) ?? gamePath;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+
+                    try
+                    {
+                        if (Directory.Exists(modContainingDir))
+                        {
+                            string modFileNameOnly = modName.GetFileNameFast();
+                            if (modFileNameOnly.IsEmpty()) return false;
+                            List<string> modFiles = FastIO.GetFilesTopOnly(modContainingDir, modFileNameOnly + ".*");
+                            return modFiles.Count > 0;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+
                 if (!gamePath.IsEmpty() && Directory.Exists(gamePath))
                 {
                     (bool success, mods) = GameConfigFiles.GetGameMods(gameIndex);
@@ -760,7 +803,7 @@ namespace AngelLoader
                         for (int i = 0; i < mods.Count; i++)
                         {
                             Mod mod = mods[i];
-                            if (!TryCombineDirectoryPathAndCheckExistence(gamePath, mod.InternalName, out _) ||
+                            if (!ModExistsOnDisk(gamePath, mod.InternalName) ||
                                 !hash.Add(mod.InternalName))
                             {
                                 mods.RemoveAt(i);
