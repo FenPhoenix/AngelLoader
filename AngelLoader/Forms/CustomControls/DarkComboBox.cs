@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -90,49 +89,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             // We only support DropDownList for dark mode
             base.DropDownStyle = ComboBoxStyle.DropDownList;
-
-            // @NET5: This is hardcoded to MS Sans Serif font height
-            const int height = 21;
-
-            try
-            {
-                // Prevents measuring text on every fricking combobox when we know what it'll end up as anyway
-                FieldInfo? prefHeightCacheField = typeof(ComboBox).GetField(WinFormsReflection.ComboBox_PrefHeightCache,
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-
-                if (prefHeightCacheField != null)
-                {
-                    // Numbers need to be cast to the exact right type or it throws, so let's be super dumb OCD
-                    if (prefHeightCacheField.FieldType == typeof(short))
-                    {
-                        prefHeightCacheField.SetValue(this, (short)height);
-                    }
-                    else if (prefHeightCacheField.FieldType == typeof(ushort))
-                    {
-                        prefHeightCacheField.SetValue(this, (ushort)height);
-                    }
-                    else if (prefHeightCacheField.FieldType == typeof(int))
-                    {
-                        prefHeightCacheField.SetValue(this, (int)height);
-                    }
-                    else if (prefHeightCacheField.FieldType == typeof(uint))
-                    {
-                        prefHeightCacheField.SetValue(this, (uint)height);
-                    }
-                    else if (prefHeightCacheField.FieldType == typeof(long))
-                    {
-                        prefHeightCacheField.SetValue(this, (long)height);
-                    }
-                    else if (prefHeightCacheField.FieldType == typeof(ulong))
-                    {
-                        prefHeightCacheField.SetValue(this, (ulong)height);
-                    }
-                }
-            }
-            catch
-            {
-                // oh well...
-            }
         }
 
         protected override Size DefaultSize => new(121, 21);
