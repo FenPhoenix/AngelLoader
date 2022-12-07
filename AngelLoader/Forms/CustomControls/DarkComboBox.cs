@@ -135,14 +135,7 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        protected override Size DefaultSize
-        {
-            get
-            {
-
-                return new(121, 21);
-            }
-        }
+        protected override Size DefaultSize => new(121, 21);
 
         private void SetButtonState(DarkControlState buttonState, bool invalidate = true)
         {
