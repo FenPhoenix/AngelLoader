@@ -827,12 +827,6 @@ namespace AngelLoader
 
         #endregion
 
-        /*
-        @vNext(GetGameMods()):
-        Since we get the on-disk mods only once per SetGameDataFromDisk(), we should maybe only get these then
-        too, otherwise there's a mismatch. Although, new ones won't show up here anyway, cause they'll be cross-
-        checked with the on-disk set, and those won't have changed.
-        */
         internal static (bool Success, List<Mod> Mods)
         GetGameMods(GameIndex gameIndex)
         {

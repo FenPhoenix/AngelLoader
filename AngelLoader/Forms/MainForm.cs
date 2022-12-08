@@ -5039,7 +5039,6 @@ namespace AngelLoader.Forms
         private string _fmSelectedCountText = "";
         private string _fmCountText = "";
 
-        // @vNext: Maybe only display it if the top-right area is hidden?
         private void SetFMSelectedCountMessage(int count)
         {
             string text =
