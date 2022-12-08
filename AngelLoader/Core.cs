@@ -2460,7 +2460,7 @@ namespace AngelLoader
         {
             if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
 
-            var mods = Config.GetMods(gameIndex);
+            List<Mod> mods = Config.GetMods(gameIndex);
 
             bool allDisabled = fm.DisableAllMods;
 
@@ -2479,7 +2479,6 @@ namespace AngelLoader
             for (int i = 0; i < mods.Count; i++)
             {
                 Mod mod = mods[i];
-
                 if (allDisabled && !mod.IsUber)
                 {
                     if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";

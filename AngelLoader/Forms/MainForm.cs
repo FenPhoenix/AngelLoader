@@ -81,6 +81,11 @@ namespace AngelLoader.Forms
         /// </summary>
         internal bool AboutToClose;
 
+        /*
+        The usual way to get the currently displayed FM is simply to check the selection, but in certain cases we
+        need to check the accuracy of the selection itself (eg. in FMsDGV nav) so we can check this field, which
+        will always be accurate. Or if for whatever other reason we decide it's better to check this then we can.
+        */
         private FanMission? _displayedFM;
 
         #region Window size/location
@@ -2347,8 +2352,6 @@ namespace AngelLoader.Forms
             DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
             DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
 
-            // Normally you can see the re-layout kind of "sequentially happen", this stops that and makes it
-            // snappy
             if (suspendResume) FilterBarFLP.SuspendDrawing();
             try
             {
@@ -3779,11 +3782,7 @@ namespace AngelLoader.Forms
 
         private void UpdateRatingListsAndColumn(bool fmSelStyle, bool startup)
         {
-            #region Update rating lists
-
             FMsDGV_FM_LLMenu.UpdateRatingList(fmSelStyle);
-
-            #endregion
 
             #region Update rating column
 
@@ -3844,7 +3843,6 @@ namespace AngelLoader.Forms
 
         private void UpdateRatingLabel(bool suspendResume = true)
         {
-            // For snappy visual layout performance
             if (suspendResume) FilterBarFLP.SuspendDrawing();
             try
             {
