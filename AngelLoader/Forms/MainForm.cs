@@ -1768,8 +1768,8 @@ namespace AngelLoader.Forms
                 */
                 bool CreateHandlePredicate(Control x) =>
                     !TopSplitContainer.FullScreen ||
-                    (x != TopSplitContainer &&
-                     x != TopSplitContainer.Panel2 &&
+                    (//x != TopSplitContainer &&
+                     //x != TopSplitContainer.Panel2 &&
                      x != TopRightTabControl &&
                      !_topRightTabs.Contains(x));
 #endif
