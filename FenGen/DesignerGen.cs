@@ -601,9 +601,9 @@ namespace FenGen
                              // relative to its anchor... you know.
                              ((props.HasDefaultAnchor != false) &&
                              (
-                                 (props.Size != null && props.MinimumSize != null &&
+                                 (props is { Size: { }, MinimumSize: { } } &&
                                   props.Size == props.MinimumSize) ||
-                                 (props.Size != null && props.AutoSize == true) ||
+                                 props is { Size: { }, AutoSize: true } ||
                                  props.AutoSize == true
                              ))
                          )
@@ -611,9 +611,9 @@ namespace FenGen
                 {
                     destNode.IgnoreExceptForComments = true;
                 }
-                else if (destNode.PropName == "CheckState" &&
-                         ((props.Checked == true && props.CheckState == CheckState.Checked) ||
-                          (props.Checked == false && props.CheckState == CheckState.Unchecked)))
+                else if (destNode.PropName == "CheckState" && props is
+                             { Checked: true, CheckState: CheckState.Checked } or
+                             { Checked: false, CheckState: CheckState.Unchecked })
                 {
                     destNode.IgnoreExceptForComments = true;
                 }

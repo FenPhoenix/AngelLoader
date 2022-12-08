@@ -394,7 +394,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded
             foreach (ToolStripItem baseItem in _menu.Items)
             {
                 InitItem(baseItem);
-                if (baseItem is ToolStripMenuItem baseMenuItem && baseMenuItem.DropDownItems.Count > 0)
+                if (baseItem is ToolStripMenuItem { DropDownItems.Count: > 0 } baseMenuItem)
                 {
                     foreach (ToolStripItem item in baseMenuItem.DropDownItems)
                     {

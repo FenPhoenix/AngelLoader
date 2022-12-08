@@ -169,7 +169,7 @@ namespace AngelLoader
 
             // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
             // our new background color to keep author intent (avoiding spoilers etc.)
-            static bool ColorIsTheSameAsBackground(Color color) => color.R == 255 && color.G == 255 && color.B == 255;
+            static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
 
             static List<byte> ByteToASCIICharBytes(byte number)
             {
@@ -217,7 +217,7 @@ namespace AngelLoader
                     {
                         // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
                         // white and that's a bit too bright.
-                        invertedColor = currentColor.R == 0 && currentColor.G == 0 && currentColor.B == 0
+                        invertedColor = currentColor is { R: 0, G: 0, B: 0 }
                             ? DarkColors.Fen_DarkForeground
                             : ColorIsTheSameAsBackground(currentColor)
                             ? DarkColors.Fen_DarkBackground

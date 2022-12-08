@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -245,6 +246,9 @@ namespace AngelLoader.DataClasses
 
         private int _ratingTo = 10;
         internal int RatingTo { get => _ratingTo; set => _ratingTo = value.SetRatingClamped(); }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool RatingIsSet() => this is not { _ratingFrom: -1, _ratingTo: 10 };
 
         #endregion
 

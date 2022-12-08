@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
@@ -1053,13 +1054,12 @@ namespace AngelLoader
 
                 (bool Match, bool ExactMatch) match = (false, false);
 
-                if (fm.MarkedRecent ||
-                    fm.Pinned ||
+                if (FMIsTopped(fm) ||
                     titleIsWhitespace ||
                     (match = FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed)).Match)
                 {
                     filterShownIndexList.Add(i);
-                    if (match.ExactMatch && ret.titleExactMatch == null && !fm.Pinned && !fm.MarkedRecent)
+                    if (match.ExactMatch && ret.titleExactMatch == null && !FMIsTopped(fm))
                     {
                         ret.titleExactMatch = fm;
                     }
@@ -1078,8 +1078,7 @@ namespace AngelLoader
 
                     (bool Match, bool ExactMatch) match = (false, false);
 
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
+                    if (!FMIsTopped(fm) &&
                         !(match = fm.Author.ContainsI_TextFilter(viewFilter.Author)).Match)
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1087,7 +1086,7 @@ namespace AngelLoader
                     }
                     else
                     {
-                        if (match.ExactMatch && ret.authorExactMatch == null && !fm.Pinned && !fm.MarkedRecent)
+                        if (match.ExactMatch && ret.authorExactMatch == null && !FMIsTopped(fm))
                         {
                             ret.authorExactMatch = fm;
                         }
@@ -1122,7 +1121,7 @@ namespace AngelLoader
                 {
                     FanMission fm = FMsViewList[filterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm.Game) &&
-                        (Config.GameOrganization == GameOrganization.ByTab || (!fm.MarkedRecent && !fm.Pinned)) &&
+                        (Config.GameOrganization == GameOrganization.ByTab || !FMIsTopped(fm)) &&
                         !viewFilter.Games.HasFlagFast(fm.Game))
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1147,7 +1146,7 @@ namespace AngelLoader
                 {
                     FanMission fm = FMsViewList[filterShownIndexList[i]];
 
-                    if (fm.MarkedRecent || fm.Pinned) continue;
+                    if (FMIsTopped(fm)) continue;
 
                     if (fm.Tags.Count == 0 && notTags.Count == 0)
                     {
@@ -1289,7 +1288,7 @@ namespace AngelLoader
 
             #region Rating
 
-            if (!(viewFilter.RatingFrom == -1 && viewFilter.RatingTo == 10))
+            if (viewFilter.RatingIsSet())
             {
                 int rf = viewFilter.RatingFrom;
                 int rt = viewFilter.RatingTo;
@@ -1297,8 +1296,7 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     FanMission fm = FMsViewList[filterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
+                    if (!FMIsTopped(fm) &&
                         (fm.Rating < rf || fm.Rating > rt))
                     {
                         filterShownIndexList.RemoveAt(i);
@@ -1319,13 +1317,12 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     FanMission fm = FMsViewList[filterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
+                    if (!FMIsTopped(fm) &&
                         (fm.ReleaseDate.DateTime == null ||
-                        (rdf != null &&
-                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
-                        (rdt != null &&
-                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdt.Value.Date) > 0)))
+                         (rdf != null &&
+                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
+                         (rdt != null &&
+                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdt.Value.Date) > 0)))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -1345,13 +1342,12 @@ namespace AngelLoader
                 for (int i = 0; i < filterShownIndexList.Count; i++)
                 {
                     FanMission fm = FMsViewList[filterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
+                    if (!FMIsTopped(fm) &&
                         (fm.LastPlayed.DateTime == null ||
-                        (lpdf != null &&
-                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
-                        (lpdt != null &&
-                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdt.Value.Date) > 0)))
+                         (lpdf != null &&
+                          fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
+                         (lpdt != null &&
+                          fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdt.Value.Date) > 0)))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -1371,12 +1367,11 @@ namespace AngelLoader
                     uint fmFinished = fm.FinishedOn;
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if (!fm.MarkedRecent &&
-                        !fm.Pinned &&
+                    if (!FMIsTopped(fm) &&
                         (((fmFinished > 0 || fmFinishedOnUnknown) &&
                           !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
                          (fmFinished == 0 && !fmFinishedOnUnknown &&
-                         !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished))))
+                          !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished))))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -2433,7 +2428,7 @@ namespace AngelLoader
 
         #endregion
 
-        public static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
+        internal static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
         {
             if (!View.MultipleFMsSelected())
             {
@@ -2456,8 +2451,11 @@ namespace AngelLoader
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool FMIsTopped(FanMission fm) => fm.MarkedRecent || fm.Pinned;
+
         [PublicAPI]
-        public static void
+        internal static void
         CanonicalizeFMDisabledMods(FanMission fm)
         {
             if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;

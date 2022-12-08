@@ -164,7 +164,7 @@ namespace AngelLoader
 
             // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
             // less... don't ask me
-            if (retColor.R == 255 && retColor.G == 255 && retColor.B == 255)
+            if (retColor is { R: 255, G: 255, B: 255 })
             {
                 retColor = Color.FromArgb(254, 254, 254);
             }

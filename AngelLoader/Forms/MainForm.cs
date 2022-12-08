@@ -2243,7 +2243,7 @@ namespace AngelLoader.Forms
                     FilterByFinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Finished);
                     FilterByUnfinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Unfinished);
 
-                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
+                    FilterByRatingButton.Checked = filter.RatingIsSet();
                     UpdateRatingLabel(suspendResume: false);
                 }
                 finally
@@ -2332,8 +2332,7 @@ namespace AngelLoader.Forms
 
                     if (f.ShowDialogDark(this) != DialogResult.OK) return;
                     FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
-                    FilterByRatingButton.Checked =
-                        !(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10);
+                    FilterByRatingButton.Checked = FMsDGV.Filter.RatingIsSet();
                 }
 
                 UpdateRatingLabel();
@@ -2978,7 +2977,7 @@ namespace AngelLoader.Forms
 
         #region Top-right area
 
-        private void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
+        private static void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
         {
             if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
             {
@@ -3344,7 +3343,7 @@ namespace AngelLoader.Forms
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
                             FanMission fm = FMsDGV.GetFMFromIndex(i);
-                            if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.TitleExactMatch)
+                            if (!Core.FMIsTopped(fm) && fm == filterMatches.TitleExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                 keepSel = KeepSel.True;
@@ -3358,7 +3357,7 @@ namespace AngelLoader.Forms
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
                             FanMission fm = FMsDGV.GetFMFromIndex(i);
-                            if (!fm.MarkedRecent && !fm.Pinned && fm == filterMatches.AuthorExactMatch)
+                            if (!Core.FMIsTopped(fm) && fm == filterMatches.AuthorExactMatch)
                             {
                                 selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                 keepSel = KeepSel.True;
@@ -3373,7 +3372,7 @@ namespace AngelLoader.Forms
                     for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                     {
                         FanMission fm = FMsDGV.GetFMFromIndex(i);
-                        if (!fm.MarkedRecent && !fm.Pinned)
+                        if (!Core.FMIsTopped(fm))
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                             keepSel = KeepSel.True;
@@ -3402,10 +3401,7 @@ namespace AngelLoader.Forms
                     {
                         FanMission fm = FMsDGV.GetFMFromIndex(i);
 
-                        if (!fm.MarkedRecent && !fm.Pinned)
-                        {
-                            break;
-                        }
+                        if (!Core.FMIsTopped(fm)) break;
 
                         if (Config.EnableFuzzySearch)
                         {
