@@ -11,7 +11,7 @@ namespace AngelLoader
 
         // Public domain code ported/implemented from https://bottosson.github.io/posts/oklab/
 
-        private readonly struct Lab
+        private readonly ref struct Lab
         {
             internal readonly float L;
             internal readonly float a;
@@ -26,7 +26,7 @@ namespace AngelLoader
         }
 
         // Lightness, chroma, hue
-        private readonly struct LCh
+        private readonly ref struct LCh
         {
             internal readonly float L;
             internal readonly float C;
