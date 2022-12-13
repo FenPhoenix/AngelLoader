@@ -2697,7 +2697,7 @@ namespace FMScanner
                             readmeStream?.Dispose();
                             readmeStream = new MemoryStream(readmeFileLen);
                             using var es = _archive.OpenEntry(readmeEntry!);
-                            es.CopyTo(readmeStream);
+                            StreamCopyNoAlloc(es, readmeStream);
                         }
 
                         last.Text = _fmIsZip
@@ -3807,7 +3807,7 @@ namespace FMScanner
                        buffer[len - 2] == 'M';
             }
 
-            using (var sr = _fmIsZip
+            using (var br = _fmIsZip
                 ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
                 : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
             {
@@ -3826,12 +3826,12 @@ namespace FMScanner
 
                     if (_fmIsZip)
                     {
-                        buffer = sr.ReadBytes(_zipOffsets[i]);
+                        buffer = br.ReadBytes(_zipOffsets[i]);
                     }
                     else
                     {
-                        sr.BaseStream.Position = _locations[i];
-                        buffer = sr.ReadBytes(locationBytesToRead);
+                        br.BaseStream.Position = _locations[i];
+                        buffer = br.ReadBytes(locationBytesToRead);
                     }
 
                     if ((_locations[i] == _ss2MapParamNewDarkLoc ||
@@ -4106,6 +4106,25 @@ namespace FMScanner
             Directory.Delete(directory, recursive: true);
         }
 
+        #region Stream copy with buffer
+
+        private byte[]? _streamCopyBuffer;
+        private byte[] StreamCopyBuffer => _streamCopyBuffer ??= new byte[81920];
+
+        private void StreamCopyNoAlloc(Stream source, Stream destination)
+        {
+            byte[] buffer = StreamCopyBuffer;
+
+            buffer.Clear();
+            int count;
+            while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
+            {
+                destination.Write(buffer, 0, count);
+            }
+        }
+
+        #endregion
+
         #region Generic dir/file functions
 
         private string[]
@@ -4175,7 +4194,7 @@ namespace FMScanner
             // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
             // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
             using var memStream = new MemoryStream((int)length);
-            stream.CopyTo(memStream);
+            StreamCopyNoAlloc(stream, memStream);
             stream.Dispose();
             memStream.Position = 0;
             Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
