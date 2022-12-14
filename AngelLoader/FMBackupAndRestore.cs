@@ -569,6 +569,7 @@ namespace AngelLoader
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
             using var fs = File.OpenRead(fileNameOnDisk);
             using var eo = entry.Open();
+            // @MEM(Backup/AddEntry): stream.CopyTo(), we could recycle the buffer here
             fs.CopyTo(eo);
         }
 
