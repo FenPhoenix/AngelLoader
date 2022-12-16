@@ -166,7 +166,12 @@ namespace AngelLoader.Forms.CustomControls
 
         internal static bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
 
-        // @MEM/@Mods(Mods panel checkbox list): Make a control to handle the recycling/dark mode syncing of these
+        /*
+        @MEM/@Mods(Mods panel checkbox list):
+        -Make a control to handle the recycling/dark mode syncing of these
+        -Now that we only change the mods list on game data set, we can just have one set of mods per supported
+         game, and only rebuild them on game change.
+        */
         internal void ClearList()
         {
             Controls.DisposeAndClear();
