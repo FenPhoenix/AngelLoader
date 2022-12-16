@@ -463,7 +463,7 @@ namespace AngelLoader
                 return archivesDict;
             }
 
-            var lastResortLinkupBundle = new LastResortLinkupBundle();
+            LastResortLinkupBundle? lastResortLinkupBundle = null;
 
             // Attempt to set archive names for newly found installed FMs (best effort search)
             for (int i = 0; i < FMDataIniList.Count; i++)
@@ -484,6 +484,7 @@ namespace AngelLoader
                     // Skip the expensive archive name search if we're marked as having no archive
                     if (!fm.NoArchive)
                     {
+                        lastResortLinkupBundle ??= new LastResortLinkupBundle();
                         archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupBundle);
                     }
                     if (archiveName.IsEmpty()) continue;
