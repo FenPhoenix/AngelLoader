@@ -178,9 +178,10 @@ public class DarkTextBox : TextBox, IDarkable
         // textboxes when we're disabled)
         if (m.Msg != Native.WM_ENABLE || m.WParam.ToInt32() != 0)
         {
-            Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
-            base.WndProc(ref m);
-            Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+            using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.Full))
+            {
+                base.WndProc(ref m);
+            }
         }
 
         if (m.Msg == Native.WM_PAINT)

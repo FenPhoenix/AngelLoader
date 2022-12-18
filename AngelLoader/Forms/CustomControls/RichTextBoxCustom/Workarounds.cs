@@ -37,9 +37,10 @@ internal sealed partial class RichTextBoxCustom
             case Native.WM_PAINT:
                 if (_darkModeEnabled)
                 {
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.RichText;
-                    base.WndProc(ref m);
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+                    using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.RichText))
+                    {
+                        base.WndProc(ref m);
+                    }
                 }
                 else
                 {

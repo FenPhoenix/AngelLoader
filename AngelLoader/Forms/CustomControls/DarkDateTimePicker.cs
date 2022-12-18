@@ -119,12 +119,10 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
             // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise,
             // we'll just call it done.
             case Native.WM_PAINT:
-                // We have to override global colors for this, and we have no proper way to only override them
-                // for this one control specifically, so this is the best we can do. This prevents the colors
-                // from being changed for other controls (stock MessageBoxes, for one).
-                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
-                base.WndProc(ref m);
-                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+                using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.Full))
+                {
+                    base.WndProc(ref m);
+                }
                 PaintCustom();
                 break;
             case Native.WM_NCPAINT:

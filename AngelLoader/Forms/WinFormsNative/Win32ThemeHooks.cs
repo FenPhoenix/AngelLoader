@@ -91,7 +91,7 @@ internal static class Win32ThemeHooks
 
     // We set/unset this while painting specific controls, so other controls aren't affected by the global
     // color change
-    internal static Override SysColorOverride = Override.None;
+    private static Override SysColorOverride = Override.None;
 
     #endregion
 
@@ -104,6 +104,14 @@ internal static class Win32ThemeHooks
     private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
     private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
     private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+
+    internal readonly ref struct OverrideSysColorScope
+    {
+        public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
+
+        // ReSharper disable once MemberCanBeMadeStatic.Global
+        public void Dispose() => SysColorOverride = Override.None;
+    }
 
     internal static void InstallHooks()
     {

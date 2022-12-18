@@ -409,9 +409,10 @@ public class DarkListBox : ListView, IDarkable
             case Native.WM_ENABLE:
                 if (_darkModeEnabled && m.WParam == IntPtr.Zero)
                 {
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
-                    base.WndProc(ref m);
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+                    using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.Full))
+                    {
+                        base.WndProc(ref m);
+                    }
                 }
                 else
                 {
