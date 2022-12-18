@@ -597,10 +597,10 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         #endregion
 
 #if DEBUG
-            // The debug path - the standard designer-generated method with tons of bloat and redundant value
-            // setting, immediate initialization, etc.
-            // This path supports working with the designer.
-            InitializeComponent();
+        // The debug path - the standard designer-generated method with tons of bloat and redundant value
+        // setting, immediate initialization, etc.
+        // This path supports working with the designer.
+        InitializeComponent();
 #else
         // The fast path - a custom method with all or most cruft stripped out, copied by hand from the
         // designer-generated method and tweaked as I see fit for speed and lazy-loading support.
@@ -1757,9 +1757,9 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
             if (!startup) EverythingPanel.SuspendDrawing();
 
 #if false
-                bool CreateHandlePredicate(Control x) =>
-                    x == BottomPanel ||
-                    (!TopSplitContainer.FullScreen && x == TopSplitContainer);
+            bool CreateHandlePredicate(Control x) =>
+                x == BottomPanel ||
+                (!TopSplitContainer.FullScreen && x == TopSplitContainer);
 #else
             /*
             PERF_TODO(Startup window drawn state completeness/speed tradeoff):
@@ -1774,7 +1774,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
             bool CreateHandlePredicate(Control x) =>
                 !TopSplitContainer.FullScreen ||
                 (//x != TopSplitContainer &&
-                    //x != TopSplitContainer.Panel2 &&
+                 //x != TopSplitContainer.Panel2 &&
                     x != TopRightTabControl &&
                     !_topRightTabs.Contains(x));
 #endif

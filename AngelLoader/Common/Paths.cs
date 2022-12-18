@@ -18,7 +18,7 @@ internal static class Paths
     #region Startup path
 
 #if false
-        internal const string AppFileName = "AngelLoader.exe";
+    internal const string AppFileName = "AngelLoader.exe";
 #endif
 
     // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class

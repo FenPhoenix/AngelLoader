@@ -71,16 +71,16 @@ public sealed class ZipReusableBundle : IDisposable
 
 #if false
 
-        /// <summary>Reads a 4-byte signed integer from the current stream and advances the current position of the stream by four bytes.</summary>
-        /// <returns>A 4-byte signed integer read from the current stream.</returns>
-        /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
-        /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        internal int ReadInt32(Stream stream)
-        {
-            FillBuffer(stream, 4);
-            return (int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24;
-        }
+    /// <summary>Reads a 4-byte signed integer from the current stream and advances the current position of the stream by four bytes.</summary>
+    /// <returns>A 4-byte signed integer read from the current stream.</returns>
+    /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
+    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
+    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+    internal int ReadInt32(Stream stream)
+    {
+        FillBuffer(stream, 4);
+        return (int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24;
+    }
 
 #endif
 
@@ -101,16 +101,16 @@ public sealed class ZipReusableBundle : IDisposable
 
 #if false
 
-        /// <summary>Reads an 8-byte signed integer from the current stream and advances the current position of the stream by eight bytes.</summary>
-        /// <returns>An 8-byte signed integer read from the current stream.</returns>
-        /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
-        /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-        internal long ReadInt64(Stream stream)
-        {
-            FillBuffer(stream, 8);
-            return (long)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (long)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
-        }
+    /// <summary>Reads an 8-byte signed integer from the current stream and advances the current position of the stream by eight bytes.</summary>
+    /// <returns>An 8-byte signed integer read from the current stream.</returns>
+    /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
+    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
+    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+    internal long ReadInt64(Stream stream)
+    {
+        FillBuffer(stream, 8);
+        return (long)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (long)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
+    }
 
 #endif
 

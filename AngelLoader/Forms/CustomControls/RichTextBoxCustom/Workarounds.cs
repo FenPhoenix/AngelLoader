@@ -405,9 +405,9 @@ internal sealed partial class RichTextBoxCustom
     private static readonly byte[] _shppict =
     {
 #if false
-            (byte)'{',
-            (byte)'\\',
-            (byte)'*',
+        (byte)'{',
+        (byte)'\\',
+        (byte)'*',
 #endif
         (byte)'\\',
         (byte)'s',
@@ -421,9 +421,9 @@ internal sealed partial class RichTextBoxCustom
     private static readonly byte[] _shppictBlanked =
     {
 #if false
-            (byte)'{',
-            (byte)'\\',
-            (byte)'*',
+        (byte)'{',
+        (byte)'\\',
+        (byte)'*',
 #endif
         (byte)'\\',
         (byte)'x',
@@ -438,7 +438,7 @@ internal sealed partial class RichTextBoxCustom
     private static readonly byte[] _nonshppict =
     {
 #if false
-            (byte)'{',
+        (byte)'{',
 #endif
         (byte)'\\',
         (byte)'n',
@@ -455,7 +455,7 @@ internal sealed partial class RichTextBoxCustom
     private static readonly byte[] _nonshppictBlanked =
     {
 #if false
-            (byte)'{',
+        (byte)'{',
 #endif
         (byte)'\\',
         (byte)'x',

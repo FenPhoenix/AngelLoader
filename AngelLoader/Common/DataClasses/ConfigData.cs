@@ -272,10 +272,10 @@ public sealed class ConfigData
 
             // @NET5: Enable this when we want to start converting old default font size to new
 #if false
-                if (Version == 1 && Math.Abs(val - 8.25f) < 0.001)
-                {
-                    val = 9.0f;
-                }
+            if (Version == 1 && Math.Abs(val - 8.25f) < 0.001)
+            {
+                val = 9.0f;
+            }
 #endif
 
             _fmsListFontSizeInPoints = val.ClampToFMsDGVFontSizeMinMax();

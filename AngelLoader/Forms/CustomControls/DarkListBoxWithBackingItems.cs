@@ -23,9 +23,9 @@ public sealed class DarkListBoxWithBackingItems : DarkListBox, IListControlWithB
     #region Disabled until needed
 
 #if false
-        public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
+    public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
 
-        public void SelectBackingIndexOf(string item) => SelectedIndex = BackingIndexOf(item);
+    public void SelectBackingIndexOf(string item) => SelectedIndex = BackingIndexOf(item);
 #endif
 
     #endregion

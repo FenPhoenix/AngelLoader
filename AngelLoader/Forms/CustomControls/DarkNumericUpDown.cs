@@ -12,8 +12,8 @@ namespace AngelLoader.Forms.CustomControls;
 public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 {
 #if false
-        private Color? _origForeColor;
-        private Color? _origBackColor;
+    private Color? _origForeColor;
+    private Color? _origBackColor;
 #endif
 
     private static bool? _setStyleMethodReflectable;
@@ -48,15 +48,15 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
                          ControlStyles.UserPaint, true);
 
 #if false
-                    _origForeColor ??= base.ForeColor;
-                    _origBackColor ??= base.BackColor;
+                _origForeColor ??= base.ForeColor;
+                _origBackColor ??= base.BackColor;
 #endif
 
                 // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
                 // My only guess is it's taking the parent's fore/back colors?
 #if false
-                    base.ForeColor = DarkColors.LightText;
-                    base.BackColor = DarkColors.Fen_DarkBackground;
+                base.ForeColor = DarkColors.LightText;
+                base.BackColor = DarkColors.Fen_DarkBackground;
 #endif
             }
             else
@@ -65,8 +65,8 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
                 SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 
 #if false
-                    if (_origForeColor != null) base.ForeColor = (Color)_origForeColor;
-                    if (_origBackColor != null) base.BackColor = (Color)_origBackColor;
+                if (_origForeColor != null) base.ForeColor = (Color)_origForeColor;
+                if (_origBackColor != null) base.BackColor = (Color)_origBackColor;
 #endif
             }
 

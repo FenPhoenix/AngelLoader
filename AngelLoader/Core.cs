@@ -371,7 +371,7 @@ internal static class Core
     /// <param name="cleanStart"></param>
     /// <returns><see langword="true"/> if changes were accepted, <see langword="false"/> if canceled.</returns>
     public static async Task<bool>
-        OpenSettings(bool startup = false, bool cleanStart = false)
+    OpenSettings(bool startup = false, bool cleanStart = false)
     {
         (bool accepted, ConfigData outConfig) =
             ViewEnv.ShowSettingsWindow(startup ? null : View, Config, startup, cleanStart);
@@ -1533,26 +1533,26 @@ internal static class Core
     }
 
 #if ENABLE_SAFE_README_IDENTICALITY_TEST
-        internal static async void ReadmeTest()
+    internal static async void ReadmeTest()
+    {
+        using (var sw = new StreamWriter(@"C:\readme_test_new.txt"))
         {
-            using (var sw = new StreamWriter(@"C:\readme_test_new.txt"))
-            {
-                var langs = Config.LanguageNames.Keys.ToList();
-                langs.Sort(StringComparer.Ordinal);
+            var langs = Config.LanguageNames.Keys.ToList();
+            langs.Sort(StringComparer.Ordinal);
 
-                foreach (string lang in langs)
+            foreach (string lang in langs)
+            {
+                Config.Language = lang;
+                foreach (FanMission fm in FMDataIniList)
                 {
-                    Config.Language = lang;
-                    foreach (FanMission fm in FMDataIniList)
-                    {
-                        var cache = await FMCache.GetCacheableData(fm, false);
-                        string safeReadme = DetectSafeReadme(cache.Readmes, fm.Title);
-                        await sw.WriteLineAsync(safeReadme);
-                    }
+                    var cache = await FMCache.GetCacheableData(fm, false);
+                    string safeReadme = DetectSafeReadme(cache.Readmes, fm.Title);
+                    await sw.WriteLineAsync(safeReadme);
                 }
-                Config.Language = "English";
             }
+            Config.Language = "English";
         }
+    }
 #endif
 
     /// <summary>
@@ -2137,7 +2137,7 @@ internal static class Core
     #endregion
 
     internal static (Error Error, string Version)
-        GetGameVersion(GameIndex game)
+    GetGameVersion(GameIndex game)
     {
         string gameExe = Config.GetGameExe(game);
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
@@ -2226,7 +2226,7 @@ internal static class Core
     // it always is >-1 and matches the currently selected FM/row. Can probably be removed.
     [MustUseReturnValue]
     internal static async Task<FanMission?>
-        DisplayFM(int index = -1, bool refreshCache = false)
+    DisplayFM(int index = -1, bool refreshCache = false)
     {
         FanMission? fm = index > -1 ? View.GetFMFromIndex(index) : View.GetMainSelectedFMOrNull();
         AssertR(fm != null, nameof(fm) + " == null");
@@ -2455,8 +2455,7 @@ internal static class Core
     internal static bool FMIsTopped(FanMission fm) => fm.MarkedRecent || fm.Pinned;
 
     [PublicAPI]
-    internal static void
-        CanonicalizeFMDisabledMods(FanMission fm)
+    internal static void CanonicalizeFMDisabledMods(FanMission fm)
     {
         if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
 

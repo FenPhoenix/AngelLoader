@@ -20,13 +20,13 @@ internal enum ScanOptionsEnum
     Tags,
     MissionCount
 #if FMScanner_FullCode
-        ,
-        CampaignMissionNames,
-        Version,
-        Languages,
-        NewDarkRequired,
-        NewDarkMinimumVersion,
-        Description
+    ,
+    CampaignMissionNames,
+    Version,
+    Languages,
+    NewDarkRequired,
+    NewDarkMinimumVersion,
+    Description
 #endif
 }
 
@@ -47,12 +47,12 @@ public sealed class ScanOptions
         if (ScanTags) ret |= ScanOptionsEnum.Tags;
         if (ScanMissionCount) ret |= ScanOptionsEnum.MissionCount;
 #if FMScanner_FullCode
-            if (ScanCampaignMissionNames) ret |= ScanOptionsEnum.CampaignMissionNames;
-            if (ScanVersion) ret |= ScanOptionsEnum.Version;
-            if (ScanLanguages) ret |= ScanOptionsEnum.Languages;
-            if (ScanNewDarkRequired) ret |= ScanOptionsEnum.NewDarkRequired;
-            if (ScanNewDarkMinimumVersion) ret |= ScanOptionsEnum.NewDarkMinimumVersion;
-            if (ScanDescription) ret |= ScanOptionsEnum.Description;
+        if (ScanCampaignMissionNames) ret |= ScanOptionsEnum.CampaignMissionNames;
+        if (ScanVersion) ret |= ScanOptionsEnum.Version;
+        if (ScanLanguages) ret |= ScanOptionsEnum.Languages;
+        if (ScanNewDarkRequired) ret |= ScanOptionsEnum.NewDarkRequired;
+        if (ScanNewDarkMinimumVersion) ret |= ScanOptionsEnum.NewDarkMinimumVersion;
+        if (ScanDescription) ret |= ScanOptionsEnum.Description;
 #endif
 
         return ret;
@@ -74,13 +74,13 @@ public sealed class ScanOptions
         bool scanMissionCount = false
 
 #if FMScanner_FullCode
-            ,
-            bool scanCampaignMissionNames = false,
-            bool scanVersion = false,
-            bool scanLanguages = false,
-            bool scanNewDarkRequired = false,
-            bool scanNewDarkMinimumVersion = false,
-            bool scanDescription = false
+        ,
+        bool scanCampaignMissionNames = false,
+        bool scanVersion = false,
+        bool scanLanguages = false,
+        bool scanNewDarkRequired = false,
+        bool scanNewDarkMinimumVersion = false,
+        bool scanDescription = false
 #endif
     ) =>
         new()
@@ -94,12 +94,12 @@ public sealed class ScanOptions
             ScanTags = scanTags,
             ScanMissionCount = scanMissionCount,
 #if FMScanner_FullCode
-                ScanCampaignMissionNames = scanCampaignMissionNames,
-                ScanVersion = scanVersion,
-                ScanLanguages = scanLanguages,
-                ScanNewDarkRequired = scanNewDarkRequired,
-                ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
-                ScanDescription = scanDescription
+            ScanCampaignMissionNames = scanCampaignMissionNames,
+            ScanVersion = scanVersion,
+            ScanLanguages = scanLanguages,
+            ScanNewDarkRequired = scanNewDarkRequired,
+            ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
+            ScanDescription = scanDescription
 #endif
         };
 
@@ -114,12 +114,12 @@ public sealed class ScanOptions
         ScanTags = ScanTags,
         ScanMissionCount = ScanMissionCount,
 #if FMScanner_FullCode
-            ScanCampaignMissionNames = ScanCampaignMissionNames,
-            ScanVersion = ScanVersion,
-            ScanLanguages = ScanLanguages,
-            ScanNewDarkRequired = ScanNewDarkRequired,
-            ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
-            ScanDescription = ScanDescription
+        ScanCampaignMissionNames = ScanCampaignMissionNames,
+        ScanVersion = ScanVersion,
+        ScanLanguages = ScanLanguages,
+        ScanNewDarkRequired = ScanNewDarkRequired,
+        ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
+        ScanDescription = ScanDescription
 #endif
     };
 
@@ -158,36 +158,36 @@ public sealed class ScanOptions
     /// </summary>
     public bool ScanMissionCount = true;
 #if FMScanner_FullCode
-        /// <summary>
-        /// <see langword="true"/> to detect the titles of individual campaign missions.
-        /// If the mission is not a campaign, this option has no effect.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanCampaignMissionNames = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the mission's version.
-        /// </summary>
-        public bool ScanVersion = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the languages the mission supports.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanLanguages = true;
-        /// <summary>
-        /// <see langword="true"/> to detect whether the mission requires NewDark.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanNewDarkRequired = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
-        /// If ScanNewDarkRequired is false, this option has no effect.
-        /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-        /// </summary>
-        public bool ScanNewDarkMinimumVersion = true;
-        /// <summary>
-        /// <see langword="true"/> to detect the mission's fm.ini description field.
-        /// </summary>
-        public bool ScanDescription = true;
+    /// <summary>
+    /// <see langword="true"/> to detect the titles of individual campaign missions.
+    /// If the mission is not a campaign, this option has no effect.
+    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+    /// </summary>
+    public bool ScanCampaignMissionNames = true;
+    /// <summary>
+    /// <see langword="true"/> to detect the mission's version.
+    /// </summary>
+    public bool ScanVersion = true;
+    /// <summary>
+    /// <see langword="true"/> to detect the languages the mission supports.
+    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+    /// </summary>
+    public bool ScanLanguages = true;
+    /// <summary>
+    /// <see langword="true"/> to detect whether the mission requires NewDark.
+    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+    /// </summary>
+    public bool ScanNewDarkRequired = true;
+    /// <summary>
+    /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
+    /// If ScanNewDarkRequired is false, this option has no effect.
+    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
+    /// </summary>
+    public bool ScanNewDarkMinimumVersion = true;
+    /// <summary>
+    /// <see langword="true"/> to detect the mission's fm.ini description field.
+    /// </summary>
+    public bool ScanDescription = true;
 #endif
 }
 
@@ -267,21 +267,21 @@ public sealed class ScannedFMData
 
     public FMType Type;
 #if FMScanner_FullCode
-        public string[] IncludedMissions = Array.Empty<string>();
+    public string[] IncludedMissions = Array.Empty<string>();
 #endif
     public Game Game;
     public string[] Languages = Array.Empty<string>();
 #if FMScanner_FullCode
-        public string Version = "";
-        public bool? NewDarkRequired;
-        public string NewDarkMinRequiredVersion = "";
+    public string Version = "";
+    public bool? NewDarkRequired;
+    public string NewDarkMinRequiredVersion = "";
 #endif
 
 #if FMScanner_FullCode
-        /// <summary>
-        /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
-        /// </summary>
-        public DateTime? OriginalReleaseDate;
+    /// <summary>
+    /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
+    /// </summary>
+    public DateTime? OriginalReleaseDate;
 #endif
 
     private DateTime? _lastUpdateDate;
@@ -293,7 +293,7 @@ public sealed class ScannedFMData
     }
 
 #if FMScanner_FullCode
-        public string Description = "";
+    public string Description = "";
 #endif
     public string TagsString = "";
 

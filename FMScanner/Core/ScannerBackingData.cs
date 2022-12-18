@@ -190,7 +190,7 @@ public sealed partial class Scanner
     };
 
 #if FMScanner_FullCode
-        private readonly string[] SA_VersionDetect = { "Version" };
+    private readonly string[] SA_VersionDetect = { "Version" };
 #endif
 
     #endregion
@@ -224,20 +224,20 @@ public sealed partial class Scanner
 
     // Single source of truth for language names (but we use this to build more arrays based on it for perf)
     private readonly string[]
-        Languages =
-        {
-            "english",
-            "czech",
-            "dutch",
-            "french",
-            "german",
-            "hungarian",
-            "italian",
-            "japanese",
-            "polish",
-            "russian",
-            "spanish"
-        };
+    Languages =
+    {
+        "english",
+        "czech",
+        "dutch",
+        "french",
+        "german",
+        "hungarian",
+        "italian",
+        "japanese",
+        "polish",
+        "russian",
+        "spanish"
+    };
 
     private readonly string[] Languages_FS_Lang_FS;
     private readonly string[] Languages_FS_Lang_Language_FS;
@@ -248,14 +248,14 @@ public sealed partial class Scanner
     #region Dates
 
     private readonly string[]
-        _dateFormatsEuropean =
-        {
-            "d.M.yyyy",
-            "dd.M.yyyy",
+    _dateFormatsEuropean =
+    {
+        "d.M.yyyy",
+        "dd.M.yyyy",
 
-            "d.MM.yyyy",
-            "dd.MM.yyyy"
-        };
+        "d.MM.yyyy",
+        "dd.MM.yyyy"
+    };
 
     // Fields we use in here:
     // d - The day of the month, from 1 through 31.
@@ -268,102 +268,102 @@ public sealed partial class Scanner
     // yy - The year, from 00 to 99.
     // yyyy - The year as a four-digit number.
     private readonly (string Format, bool CanBeAmbiguous)[]
-        _dateFormats =
-        {
-            ("MMM d yy", false),
-            ("MMM d, yy", false),
-            ("MMM dd yy", false),
-            ("MMM dd, yy", false),
+    _dateFormats =
+    {
+        ("MMM d yy", false),
+        ("MMM d, yy", false),
+        ("MMM dd yy", false),
+        ("MMM dd, yy", false),
 
-            ("MMM d yyyy", false),
-            ("MMM d, yyyy", false),
-            ("MMM dd yyyy", false),
-            ("MMM dd, yyyy", false),
+        ("MMM d yyyy", false),
+        ("MMM d, yyyy", false),
+        ("MMM dd yyyy", false),
+        ("MMM dd, yyyy", false),
 
-            ("MMMM d yy", false),
-            ("MMMM d, yy", false),
-            ("MMMM dd yy", false),
-            ("MMMM dd, yy", false),
+        ("MMMM d yy", false),
+        ("MMMM d, yy", false),
+        ("MMMM dd yy", false),
+        ("MMMM dd, yy", false),
 
-            ("MMMM d yyyy", false),
-            ("MMMM d, yyyy", false),
-            ("MMMM dd yyyy", false),
-            ("MMMM dd, yyyy", false),
+        ("MMMM d yyyy", false),
+        ("MMMM d, yyyy", false),
+        ("MMMM dd yyyy", false),
+        ("MMMM dd, yyyy", false),
 
-            ("d MMM yy", true),
-            ("d MMM, yy", true),
-            ("dd MMM yy", true),
-            ("dd MMM, yy", true),
+        ("d MMM yy", true),
+        ("d MMM, yy", true),
+        ("dd MMM yy", true),
+        ("dd MMM, yy", true),
 
-            ("d MMM yyyy", false),
-            ("d MMM, yyyy", false),
-            ("dd MMM yyyy", false),
-            ("dd MMM, yyyy", false),
+        ("d MMM yyyy", false),
+        ("d MMM, yyyy", false),
+        ("dd MMM yyyy", false),
+        ("dd MMM, yyyy", false),
 
-            ("d MMMM yy", true),
-            ("d MMMM, yy", true),
-            ("dd MMMM yy", true),
-            ("dd MMMM, yy", true),
-            ("d MMMM yyyy", false),
-            ("d MMMM, yyyy", false),
-            ("dd MMMM yyyy", false),
-            ("dd MMMM, yyyy", false),
+        ("d MMMM yy", true),
+        ("d MMMM, yy", true),
+        ("dd MMMM yy", true),
+        ("dd MMMM, yy", true),
+        ("d MMMM yyyy", false),
+        ("d MMMM, yyyy", false),
+        ("dd MMMM yyyy", false),
+        ("dd MMMM, yyyy", false),
 
-            ("yyyy MMM d", false),
-            ("yyyy MMM dd", false),
-            ("yyyy MMMM d", false),
-            ("yyyy MMMM dd", false),
+        ("yyyy MMM d", false),
+        ("yyyy MMM dd", false),
+        ("yyyy MMMM d", false),
+        ("yyyy MMMM dd", false),
 
-            ("MM/dd/yyyy", true),
-            ("dd/MM/yyyy", true),
-            ("MM/dd/yy", true),
-            ("dd/MM/yy", true),
+        ("MM/dd/yyyy", true),
+        ("dd/MM/yyyy", true),
+        ("MM/dd/yy", true),
+        ("dd/MM/yy", true),
 
-            ("M/d/yyyy", true),
-            ("d/M/yyyy", true),
-            ("M/d/yy", true),
-            ("d/M/yy", true),
+        ("M/d/yyyy", true),
+        ("d/M/yyyy", true),
+        ("M/d/yy", true),
+        ("d/M/yy", true),
 
-            ("MM-dd-yyyy", true),
-            ("dd-MM-yyyy", true),
-            ("MM-dd-yy", true),
-            ("dd-MM-yy", true),
+        ("MM-dd-yyyy", true),
+        ("dd-MM-yyyy", true),
+        ("MM-dd-yy", true),
+        ("dd-MM-yy", true),
 
-            ("M-d-yyyy", true),
-            ("d-M-yyyy", true),
-            ("M-d-yy", true),
-            ("d-M-yy", true)
-        };
+        ("M-d-yyyy", true),
+        ("d-M-yyyy", true),
+        ("M-d-yy", true),
+        ("d-M-yy", true)
+    };
 
     private readonly string[]
-        _monthNamesEnglish =
-        {
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
+    _monthNamesEnglish =
+    {
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
 
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            // "May" left out because it's already three letters and thus already exists in the full name set
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-        };
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        // "May" left out because it's already three letters and thus already exists in the full name set
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    };
 
     #endregion
 
@@ -465,8 +465,8 @@ public sealed partial class Scanner
             RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 #if FMScanner_FullCode
-        private readonly Regex VersionExclude1Regex =
-            new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
+    private readonly Regex VersionExclude1Regex =
+        new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
 #endif
 
     private readonly Regex TitleAnyConsecutiveLettersRegex =
@@ -485,47 +485,47 @@ public sealed partial class Scanner
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 #if FMScanner_FullCode
-        // TODO: This one looks iffy though
-        private readonly Regex VersionFirstNumberRegex =
-            new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
+    // TODO: This one looks iffy though
+    private readonly Regex VersionFirstNumberRegex =
+        new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
 
-        // Much, much faster to iterate through possible regex matches, common ones first
-        // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
-        private readonly Regex[] NewDarkVersionRegexes =
-        {
-            new Regex(@"NewDark (?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(
-                @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(
-                @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture),
-            new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
-                RegexOptions.ExplicitCapture)
+    // Much, much faster to iterate through possible regex matches, common ones first
+    // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
+    private readonly Regex[] NewDarkVersionRegexes =
+    {
+        new Regex(@"NewDark (?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(
+            @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(
+            @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture),
+        new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+            RegexOptions.ExplicitCapture)
 
-            // Original regex for reference - slow!
-            // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
-        };
+        // Original regex for reference - slow!
+        // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
+    };
 #endif
 
     private readonly Regex[] AuthorRegexes =

@@ -74,29 +74,29 @@ public sealed partial class MainForm
 
 #if false
 
-        public void ShowProgressBox_Double(
-            string? mainMessage1 = null,
-            string? mainMessage2 = null,
-            ProgressType? mainProgressType = null,
-            string? subMessage = null,
-            ProgressType? subProgressType = null,
-            string? cancelMessage = null,
-            Action? cancelAction = null) => Invoke(() =>
-        {
-            ConstructProgressBox();
-            ProgressBox!.SetState(
-                visible: true,
-                size: ProgressSizeMode.Double,
-                mainMessage1: mainMessage1 ?? "",
-                mainMessage2: mainMessage2 ?? "",
-                mainPercent: 0,
-                mainProgressBarType: mainProgressType ?? ProgressPanel.DefaultProgressType,
-                subMessage: subMessage ?? "",
-                subPercent: 0,
-                subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
-                cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
-                cancelAction: cancelAction ?? NullAction);
-        });
+    public void ShowProgressBox_Double(
+        string? mainMessage1 = null,
+        string? mainMessage2 = null,
+        ProgressType? mainProgressType = null,
+        string? subMessage = null,
+        ProgressType? subProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+        ConstructProgressBox();
+        ProgressBox!.SetState(
+            visible: true,
+            size: ProgressSizeMode.Double,
+            mainMessage1: mainMessage1 ?? "",
+            mainMessage2: mainMessage2 ?? "",
+            mainPercent: 0,
+            mainProgressBarType: mainProgressType ?? ProgressPanel.DefaultProgressType,
+            subMessage: subMessage ?? "",
+            subPercent: 0,
+            subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
+            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            cancelAction: cancelAction ?? NullAction);
+    });
 
 #endif
 

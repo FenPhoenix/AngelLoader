@@ -37,7 +37,7 @@ namespace FMScanner;
 public sealed partial class Scanner : IDisposable
 {
 #if DEBUG
-        private readonly Stopwatch _overallTimer = new Stopwatch();
+    private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
 
     #region Public properties
@@ -55,22 +55,22 @@ public sealed partial class Scanner : IDisposable
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
 
-        // Testing robustness of directory separator-agnostic code
+    // Testing robustness of directory separator-agnostic code
 
-        private readonly Random rnd = new Random();
+    private readonly Random rnd = new Random();
 
-        private string Debug_RandomizeDirSeps(string value)
+    private string Debug_RandomizeDirSeps(string value)
+    {
+        for (int ri = 0; ri < value.Length; ri++)
         {
-            for (int ri = 0; ri < value.Length; ri++)
+            if (value[ri].IsDirSep())
             {
-                if (value[ri].IsDirSep())
-                {
-                    value = value.Remove(ri, 1).Insert(ri, rnd.Next(0, 2) == 0 ? "\\" : "/");
-                }
+                value = value.Remove(ri, 1).Insert(ri, rnd.Next(0, 2) == 0 ? "\\" : "/");
             }
-
-            return value;
         }
+
+        return value;
+    }
 
 #endif
 
@@ -108,7 +108,7 @@ public sealed partial class Scanner : IDisposable
 
     private bool SS2FingerprintRequiredAndNotDone() => (
 #if FMScanner_FullCode
-            _scanOptions.ScanNewDarkRequired ||
+        _scanOptions.ScanNewDarkRequired ||
 #endif
         _scanOptions.ScanGameType) && !_ss2Fingerprinted;
 
@@ -202,8 +202,8 @@ public sealed partial class Scanner : IDisposable
         Title,
         Author,
 #if FMScanner_FullCode
-            Version,
-            NewDarkMinimumVersion
+        Version,
+        NewDarkMinimumVersion
 #endif
     }
 
@@ -211,7 +211,7 @@ public sealed partial class Scanner : IDisposable
     public Scanner(string sevenZipExePath)
     {
 #if !NETFRAMEWORK
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
         _zipBundle = new ZipReusableBundle();
@@ -263,36 +263,36 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
 
-        [PublicAPI]
-        public ScannedFMDataAndError
-        Scan(string mission, string tempPath, bool forceFullIfNew)
-        {
-            return ScanMany(
-                new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
-                tempPath, _scanOptions, null, CancellationToken.None)[0];
-        }
+    [PublicAPI]
+    public ScannedFMDataAndError
+    Scan(string mission, string tempPath, bool forceFullIfNew)
+    {
+        return ScanMany(
+            new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
+            tempPath, _scanOptions, null, CancellationToken.None)[0];
+    }
 
-        [PublicAPI]
-        public ScannedFMDataAndError
-        Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
-        {
-            return ScanMany(
-                new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
-                tempPath, scanOptions, null, CancellationToken.None)[0];
-        }
+    [PublicAPI]
+    public ScannedFMDataAndError
+    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
+    {
+        return ScanMany(
+            new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
+            tempPath, scanOptions, null, CancellationToken.None)[0];
+    }
 
 #endif
 
     // Debug - scan on UI thread so breaks will actually break where they're supposed to
     // (test frontend use only)
 #if DEBUG || ScanSynchronous
-        [PublicAPI]
-        public List<ScannedFMDataAndError>
-        Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-             IProgress<ProgressReport> progress, CancellationToken cancellationToken)
-        {
-            return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
-        }
+    [PublicAPI]
+    public List<ScannedFMDataAndError>
+    Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+         IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    {
+        return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
+    }
 #endif
 
     #endregion
@@ -301,34 +301,34 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
 
-        [PublicAPI]
-        public Task<List<ScannedFMDataAndError>>
-        ScanAsync(List<FMToScan> missions, string tempPath)
-        {
-            return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
-        }
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> missions, string tempPath)
+    {
+        return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
+    }
 
-        [PublicAPI]
-        public Task<List<ScannedFMDataAndError>>
-        ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
-        {
-            return Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
-        }
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
+    {
+        return Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
+    }
 
-        [PublicAPI]
-        public Task<List<ScannedFMDataAndError>>
-        ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
-                  CancellationToken cancellationToken)
-        {
-            return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
-        }
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
+              CancellationToken cancellationToken)
+    {
+        return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
+    }
 
 #endif
 
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>>
-        ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-            IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+              IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
         return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
     }
@@ -336,8 +336,8 @@ public sealed partial class Scanner : IDisposable
     #endregion
 
     private List<ScannedFMDataAndError>
-        ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-            IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
+    ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+             IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
     {
         // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
         // entries as the in-list; this allows the calling app to not have to do a search to link up the FMs
@@ -487,10 +487,10 @@ public sealed partial class Scanner : IDisposable
     }
 
     private ScannedFMDataAndError
-        ScanCurrentFM(FMToScan fm, string tempPath, CancellationToken cancellationToken)
+    ScanCurrentFM(FMToScan fm, string tempPath, CancellationToken cancellationToken)
     {
 #if DEBUG
-            _overallTimer.Restart();
+        _overallTimer.Restart();
 #endif
 
         // Sometimes we'll want to remove this from the start of a string to get a relative path, so it's
@@ -501,7 +501,7 @@ public sealed partial class Scanner : IDisposable
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
 
-            _fmWorkingPath = Debug_RandomizeDirSeps(_fmWorkingPath);
+        _fmWorkingPath = Debug_RandomizeDirSeps(_fmWorkingPath);
 
 #endif
 
@@ -1034,13 +1034,13 @@ public sealed partial class Scanner : IDisposable
 
             if (
 #if FMScanner_FullCode
-                    _scanOptions.ScanNewDarkRequired ||
+                _scanOptions.ScanNewDarkRequired ||
 #endif
                 _scanOptions.ScanGameType)
             {
                 var (newDarkRequired, game) = GetGameTypeAndEngine(baseDirFiles, usedMisFiles);
 #if FMScanner_FullCode
-                    if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
+                if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
 #endif
                 if (_scanOptions.ScanGameType)
                 {
@@ -1060,7 +1060,7 @@ public sealed partial class Scanner : IDisposable
 
             if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor ||
 #if FMScanner_FullCode
-                    _scanOptions.ScanVersion ||
+                _scanOptions.ScanVersion ||
 #endif
                 _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
             {
@@ -1076,7 +1076,7 @@ public sealed partial class Scanner : IDisposable
                             fmData.Author = author;
                         }
 #if FMScanner_FullCode
-                            if (_scanOptions.ScanVersion) fmData.Version = version;
+                        if (_scanOptions.ScanVersion) fmData.Version = version;
 #endif
                         if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
                         break;
@@ -1098,7 +1098,7 @@ public sealed partial class Scanner : IDisposable
                             fmData.Author = author;
                         }
 #if FMScanner_FullCode
-                            if (_scanOptions.ScanDescription) fmData.Description = description;
+                        if (_scanOptions.ScanDescription) fmData.Description = description;
 #endif
                         if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
                         if (_scanOptions.ScanTags) fmData.TagsString = tags;
@@ -1143,18 +1143,18 @@ public sealed partial class Scanner : IDisposable
         #endregion
 
 #if FMScanner_FullCode
-            if (!fmIsT3)
+        if (!fmIsT3)
+        {
+            // This is here because it needs to come after the readmes are cached
+        #region NewDark minimum required version
+
+            if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
             {
-                // This is here because it needs to come after the readmes are cached
-            #region NewDark minimum required version
-
-                if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
-                {
-                    fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
-                }
-
-            #endregion
+                fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
             }
+
+        #endregion
+        }
 #endif
 
         #region Set release date
@@ -1173,7 +1173,7 @@ public sealed partial class Scanner : IDisposable
         {
             if (_scanOptions.ScanTitle
 #if FMScanner_FullCode
-                    || _scanOptions.ScanCampaignMissionNames
+                || _scanOptions.ScanCampaignMissionNames
 #endif
                )
             {
@@ -1184,11 +1184,11 @@ public sealed partial class Scanner : IDisposable
                     SetOrAddTitle(titleFromN);
                 }
 #if FMScanner_FullCode
-                    if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
-                    {
-                        for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
-                        fmData.IncludedMissions = cNames.ToArray();
-                    }
+                if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
+                {
+                    for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
+                    fmData.IncludedMissions = cNames.ToArray();
+                }
 #endif
             }
         }
@@ -1258,11 +1258,11 @@ public sealed partial class Scanner : IDisposable
         #endregion
 
 #if FMScanner_FullCode
-            #region Version
+        #region Version
 
-            if (_scanOptions.ScanVersion && fmData.Version.IsEmpty()) fmData.Version = GetVersion();
+        if (_scanOptions.ScanVersion && fmData.Version.IsEmpty()) fmData.Version = GetVersion();
 
-            #endregion
+        #endregion
 #endif
 
         // Again, I don't know enough about Thief 3 to know how to detect its languages
@@ -1272,7 +1272,7 @@ public sealed partial class Scanner : IDisposable
 
             if (
 #if FMScanner_FullCode
-                    _scanOptions.ScanLanguages ||
+                _scanOptions.ScanLanguages ||
 #endif
                 _scanOptions.ScanTags)
             {
@@ -1280,7 +1280,7 @@ public sealed partial class Scanner : IDisposable
                 fmData.Languages = getLangs.Langs.ToArray();
                 if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
 #if FMScanner_FullCode
-                    if (!_scanOptions.ScanLanguages) fmData.Languages = Array.Empty<string>();
+                if (!_scanOptions.ScanLanguages) fmData.Languages = Array.Empty<string>();
 #endif
             }
 
@@ -1327,8 +1327,8 @@ public sealed partial class Scanner : IDisposable
         }
 
 #if DEBUG
-            _overallTimer.Stop();
-            Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
+        _overallTimer.Stop();
+        Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
@@ -1784,7 +1784,7 @@ public sealed partial class Scanner : IDisposable
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
 
-                    fn = Debug_RandomizeDirSeps(fn);
+                fn = Debug_RandomizeDirSeps(fn);
 
 #endif
 
@@ -2241,7 +2241,7 @@ public sealed partial class Scanner : IDisposable
     #region Read FM info files
 
     private (string Title, string Author, string Version, DateTime? ReleaseDate)
-        ReadFMInfoXml(NameAndIndex file)
+    ReadFMInfoXml(NameAndIndex file)
     {
         string title = "";
         string author = "";
@@ -2277,11 +2277,11 @@ public sealed partial class Scanner : IDisposable
         }
 
 #if FMScanner_FullCode
-            if (_scanOptions.ScanVersion)
-            {
-                XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
-                if (xVersion.Count > 0) version = xVersion[0]?.InnerText ?? "";
-            }
+        if (_scanOptions.ScanVersion)
+        {
+            XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
+            if (xVersion.Count > 0) version = xVersion[0]?.InnerText ?? "";
+        }
 #endif
 
         XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
@@ -2298,7 +2298,7 @@ public sealed partial class Scanner : IDisposable
     }
 
     private (string Title, string Author, string Description, DateTime? LastUpdateDate, string Tags)
-        ReadFMIni(NameAndIndex file)
+    ReadFMIni(NameAndIndex file)
     {
         var ret = (
             Title: "",
@@ -2355,19 +2355,19 @@ public sealed partial class Scanner : IDisposable
             {
                 inDescr = true;
 #if FMScanner_FullCode
-                    if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
+                if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
 #endif
             }
             else if (inDescr)
             {
 #if FMScanner_FullCode
-                    if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
+                if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
 #endif
             }
         }
 
 #if FMScanner_FullCode
-            if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
+        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
 #endif
 
         #endregion
@@ -2375,42 +2375,42 @@ public sealed partial class Scanner : IDisposable
         #endregion
 
 #if FMScanner_FullCode
-            #region Fixup description
+        #region Fixup description
 
-            // Descr can be multiline, and you're supposed to use \n for linebreaks, but sometimes this value
-            // is multiple actual lines. Despite this being a horrific violation of the .ini format, we still
-            // have to handle it.
+        // Descr can be multiline, and you're supposed to use \n for linebreaks, but sometimes this value
+        // is multiple actual lines. Despite this being a horrific violation of the .ini format, we still
+        // have to handle it.
 
-            if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
+        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
+        {
+            fmIni.Descr = fmIni.Descr
+                .Replace(@"\t", "\t")
+                .Replace(@"\r\n", "\r\n")
+                .Replace(@"\r", "\r\n")
+                .Replace(@"\n", "\r\n")
+                .Replace(@"\""", "\"");
+
+            // Remove surrounding quotes
+            if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
+                CountChars(fmIni.Descr, '\"') == 2)
             {
-                fmIni.Descr = fmIni.Descr
-                    .Replace(@"\t", "\t")
-                    .Replace(@"\r\n", "\r\n")
-                    .Replace(@"\r", "\r\n")
-                    .Replace(@"\n", "\r\n")
-                    .Replace(@"\""", "\"");
-
-                // Remove surrounding quotes
-                if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
-                    CountChars(fmIni.Descr, '\"') == 2)
-                {
-                    fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
-                }
-                if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
-                    CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
-                {
-                    fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
-                }
-
-                fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
-
-                // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
-                // senseless. It can easily be converted later.
-                fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
-                if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = "";
+                fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
+            }
+            if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
+                CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
+            {
+                fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
             }
 
-            #endregion
+            fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
+
+            // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
+            // senseless. It can easily be converted later.
+            fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
+            if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = "";
+        }
+
+        #endregion
 #endif
 
         #region Get author from tags
@@ -2470,7 +2470,7 @@ public sealed partial class Scanner : IDisposable
         }
 
 #if FMScanner_FullCode
-            if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
+        if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
 #endif
 
         /*
@@ -2486,7 +2486,7 @@ public sealed partial class Scanner : IDisposable
     }
 
     private (string Title, string Author)
-        ReadModIni(NameAndIndex file)
+    ReadModIni(NameAndIndex file)
     {
         var ret = (Title: "", Author: "");
 
@@ -2725,12 +2725,12 @@ public sealed partial class Scanner : IDisposable
             if (!file.Scan) continue;
 
 #if FMScanner_FullCode
-                if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
-                {
-                    string ndv = GetNewDarkVersionFromText(file.Text);
-                    if (!ndv.IsEmpty()) return ndv;
-                }
-                else
+            if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
+            {
+                string ndv = GetNewDarkVersionFromText(file.Text);
+                if (!ndv.IsEmpty()) return ndv;
+            }
+            else
 #endif
             {
                 if (specialLogic == SpecialLogic.Author)
@@ -2826,9 +2826,9 @@ public sealed partial class Scanner : IDisposable
 
     private
 #if !FMScanner_FullCode
-        static
+    static
 #endif
-        string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+    string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
@@ -2844,11 +2844,11 @@ public sealed partial class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI("Title & Description") ||
                     lineStartTrimmed.StartsWithGL("Title screen"):
 #if FMScanner_FullCode
-                    case SpecialLogic.Version when
-                        lineStartTrimmed.StartsWithI("Version History") ||
-                        lineStartTrimmed.ContainsI("NewDark") ||
-                        lineStartTrimmed.ContainsI("64 Cubed") ||
-                        VersionExclude1Regex.Match(lineStartTrimmed).Success:
+                case SpecialLogic.Version when
+                    lineStartTrimmed.StartsWithI("Version History") ||
+                    lineStartTrimmed.ContainsI("NewDark") ||
+                    lineStartTrimmed.ContainsI("64 Cubed") ||
+                    VersionExclude1Regex.Match(lineStartTrimmed).Success:
 #endif
                 case SpecialLogic.Author when
                     lineStartTrimmed.StartsWithI("Authors note"):
@@ -2897,9 +2897,9 @@ public sealed partial class Scanner : IDisposable
             else
             {
 #if FMScanner_FullCode
-                    // Don't detect "Version "; too many false positives
-                    // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
-                    if (specialLogic == SpecialLogic.Version) continue;
+                // Don't detect "Version "; too many false positives
+                // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
+                if (specialLogic == SpecialLogic.Version) continue;
 #endif
 
                 for (int i = 0; i < keys.Length; i++)
@@ -3096,7 +3096,7 @@ public sealed partial class Scanner : IDisposable
     }
 
     private (string TitleFrom0, string TitleFromN, List<string>? CampaignMissionNames)
-        GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
+    GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
     {
         List<string>? titlesStrLines = GetTitlesStrLines(stringsDirFiles);
         if (titlesStrLines == null || titlesStrLines.Count == 0) return ("", "", null);
@@ -3158,7 +3158,7 @@ public sealed partial class Scanner : IDisposable
             {
                 ret.TitleFromN = title;
 #if FMScanner_FullCode
-                    if (!_scanOptions.ScanCampaignMissionNames)
+                if (!_scanOptions.ScanCampaignMissionNames)
 #endif
                 {
                     break;
@@ -3173,10 +3173,10 @@ public sealed partial class Scanner : IDisposable
                 ret.TitleFromN = titles[0];
             }
 #if FMScanner_FullCode
-                else if (_scanOptions.ScanCampaignMissionNames)
-                {
-                    ret.CampaignMissionNames = titles;
-                }
+            else if (_scanOptions.ScanCampaignMissionNames)
+            {
+                ret.CampaignMissionNames = titles;
+            }
 #endif
         }
 
@@ -3497,18 +3497,38 @@ public sealed partial class Scanner : IDisposable
     #endregion
 
 #if FMScanner_FullCode
-        private string GetVersion()
+    private string GetVersion()
+    {
+        string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
+
+        if (version.IsEmpty()) return "";
+
+        Debug.WriteLine(@"GetVersion() top:");
+        Debug.WriteLine(version);
+
+        const string numbers = "0123456789.";
+        if (numbers.Any(x => version[0] == x))
         {
-            string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
+            int indexSpace = version.IndexOf(' ');
+            int indexTab = version.IndexOf('\t');
 
-            if (version.IsEmpty()) return "";
+            int index = indexSpace > -1 && indexTab > -1
+                ? Math.Min(indexSpace, indexTab)
+                : Math.Max(indexSpace, indexTab);
 
-            Debug.WriteLine(@"GetVersion() top:");
-            Debug.WriteLine(version);
-
-            const string numbers = "0123456789.";
-            if (numbers.Any(x => version[0] == x))
+            if (index > -1)
             {
+                version = version.Substring(0, index);
+            }
+        }
+        else // Starts with non-numbers
+        {
+            // Find index of the first numeric character
+            Match match = VersionFirstNumberRegex.Match(version);
+            if (match.Success)
+            {
+                version = version.Substring(match.Index);
+
                 int indexSpace = version.IndexOf(' ');
                 int indexTab = version.IndexOf('\t');
 
@@ -3521,38 +3541,18 @@ public sealed partial class Scanner : IDisposable
                     version = version.Substring(0, index);
                 }
             }
-            else // Starts with non-numbers
-            {
-                // Find index of the first numeric character
-                Match match = VersionFirstNumberRegex.Match(version);
-                if (match.Success)
-                {
-                    version = version.Substring(match.Index);
-
-                    int indexSpace = version.IndexOf(' ');
-                    int indexTab = version.IndexOf('\t');
-
-                    int index = indexSpace > -1 && indexTab > -1
-                        ? Math.Min(indexSpace, indexTab)
-                        : Math.Max(indexSpace, indexTab);
-
-                    if (index > -1)
-                    {
-                        version = version.Substring(0, index);
-                    }
-                }
-            }
-
-            Debug.WriteLine(@"GetVersion() bottom:");
-            Debug.WriteLine(version);
-
-            return version;
         }
+
+        Debug.WriteLine(@"GetVersion() bottom:");
+        Debug.WriteLine(version);
+
+        return version;
+    }
 #endif
 
     private (List<string> Langs, bool EnglishIsUncertain)
-        GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
-            List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
+    GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
+        List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
     {
         var langs = new List<string>();
         bool englishIsUncertain = false;
@@ -3655,7 +3655,7 @@ public sealed partial class Scanner : IDisposable
     }
 
     private (bool? NewDarkRequired, Game Game)
-        GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
+    GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
     {
         var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
 
@@ -3815,7 +3815,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (
 #if FMScanner_FullCode
-                        !_scanOptions.ScanNewDarkRequired &&
+                    !_scanOptions.ScanNewDarkRequired &&
 #endif
                     (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2))
                 {
@@ -3884,7 +3884,7 @@ public sealed partial class Scanner : IDisposable
         {
             return (
 #if FMScanner_FullCode
-                    _scanOptions.ScanNewDarkRequired ? (bool?)false :
+                _scanOptions.ScanNewDarkRequired ? (bool?)false :
 #endif
                 null,
                 _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
@@ -4017,33 +4017,33 @@ public sealed partial class Scanner : IDisposable
     }
 
 #if FMScanner_FullCode
-        private string GetNewDarkVersionFromText(string text)
+    private string GetNewDarkVersionFromText(string text)
+    {
+        string version = "";
+
+        for (int i = 0; i < NewDarkVersionRegexes.Length; i++)
         {
-            string version = "";
-
-            for (int i = 0; i < NewDarkVersionRegexes.Length; i++)
+            Match match = NewDarkVersionRegexes[i].Match(text);
+            if (match.Success)
             {
-                Match match = NewDarkVersionRegexes[i].Match(text);
-                if (match.Success)
-                {
-                    version = match.Groups["Version"].Value;
-                    break;
-                }
+                version = match.Groups["Version"].Value;
+                break;
             }
-
-            if (version.IsEmpty()) return "";
-
-            string ndv = version.Trim(CA_Period);
-            int index = ndv.IndexOf('.');
-            if (index > -1 && ndv.Substring(index + 1).Length < 2)
-            {
-                ndv += "0";
-            }
-
-            // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
-            // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
-            return Float_TryParseInv(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
         }
+
+        if (version.IsEmpty()) return "";
+
+        string ndv = version.Trim(CA_Period);
+        int index = ndv.IndexOf('.');
+        if (index > -1 && ndv.Substring(index + 1).Length < 2)
+        {
+            ndv += "0";
+        }
+
+        // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
+        // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
+        return Float_TryParseInv(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
+    }
 #endif
 
     private void DeleteFMWorkingPath()
@@ -4070,22 +4070,22 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
 
-        // So we don't bloat up AL_Common with this when we don't use it there
+    // So we don't bloat up AL_Common with this when we don't use it there
 
-        /// <summary>
-        /// Returns the number of times a character appears in a string.
-        /// Avoids whatever silly overhead junk Count(predicate) is doing.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        private static int CountChars(string value, char character)
-        {
-            int count = 0;
-            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
+    /// <summary>
+    /// Returns the number of times a character appears in a string.
+    /// Avoids whatever silly overhead junk Count(predicate) is doing.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="character"></param>
+    /// <returns></returns>
+    private static int CountChars(string value, char character)
+    {
+        int count = 0;
+        for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
 
-            return count;
-        }
+        return count;
+    }
 
 #endif
 
@@ -4128,10 +4128,10 @@ public sealed partial class Scanner : IDisposable
     #region Generic dir/file functions
 
     private string[]
-        EnumFiles(SearchOption searchOption) => EnumFiles("", searchOption, checkDirExists: false);
+    EnumFiles(SearchOption searchOption) => EnumFiles("", searchOption, checkDirExists: false);
 
     private string[]
-        EnumFiles(string path, SearchOption searchOption, bool checkDirExists = true)
+    EnumFiles(string path, SearchOption searchOption, bool checkDirExists = true)
     {
         string fullDir = Path.Combine(_fmWorkingPath, path);
 

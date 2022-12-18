@@ -135,9 +135,9 @@ public interface IListControlWithBackingItems
 
 #if false
 
-        int BackingIndexOf(string item);
-        string SelectedBackingItem();
-        void SelectBackingIndexOf(string item);
+    int BackingIndexOf(string item);
+    string SelectedBackingItem();
+    void SelectBackingIndexOf(string item);
 
 #endif
 
@@ -203,19 +203,19 @@ public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContext
 
 #if false
 
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Null parameters mean explicitly set the defaults.
-        /// </summary>
-        /// <param name="mainMessage1"></param>
-        /// <param name="mainMessage2"></param>
-        /// <param name="mainProgressType"></param>
-        /// <param name="subMessage"></param>
-        /// <param name="subProgressType"></param>
-        /// <param name="cancelMessage"></param>
-        /// <param name="cancelAction"></param>
-        void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean explicitly set the defaults.
+    /// </summary>
+    /// <param name="mainMessage1"></param>
+    /// <param name="mainMessage2"></param>
+    /// <param name="mainProgressType"></param>
+    /// <param name="subMessage"></param>
+    /// <param name="subProgressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
+    void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
 #endif
 

@@ -168,7 +168,7 @@ internal static class Win32ThemeHooks
     }
 
     private static (LocalHook Hook, TDelegate OriginalMethod)
-        InstallHook<TDelegate>(string dll, string method, TDelegate hookDelegate) where TDelegate : Delegate
+    InstallHook<TDelegate>(string dll, string method, TDelegate hookDelegate) where TDelegate : Delegate
     {
         TDelegate originalMethod;
         LocalHook? hook = null;

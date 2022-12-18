@@ -343,12 +343,12 @@ internal static class Native
     // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
 #if false
-        internal static int MAKELONG(int low, int high) => high << 16 | (low & (int)ushort.MaxValue);
+    internal static int MAKELONG(int low, int high) => high << 16 | (low & (int)ushort.MaxValue);
 #endif
     internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | (low & (int)ushort.MaxValue));
     internal static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
 #if false
-        internal static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
+    internal static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
 #endif
     internal static int LOWORD(int n) => n & (int)ushort.MaxValue;
     internal static int LOWORD(IntPtr n) => LOWORD((int)(long)n);

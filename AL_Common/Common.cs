@@ -111,7 +111,7 @@ public static class Common
         public DictionaryI(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase) { }
 
 #if false
-            public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
+        public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
 #endif
     }
 
@@ -553,18 +553,18 @@ public static class Common
 
 #if false
 
-        /// <summary>
-        /// Calls <see langword="double"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="double"/> <paramref name="result"/>);
-        /// </summary>
-        /// <param name="s">A string representing a number to convert.</param>
-        /// <param name="result"></param>
-        /// <exception cref="ArgumentException"></exception>
-        /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Double_TryParseInv(string s, out double result)
-        {
-            return double.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
-        }
+    /// <summary>
+    /// Calls <see langword="double"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="double"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Double_TryParseInv(string s, out double result)
+    {
+        return double.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
+    }
 
 #endif
 
@@ -653,11 +653,11 @@ public static class Common
     #region Disabled until needed
 
 #if false
-        public static bool PathContainsI(this string[] value, string substring)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
-            return false;
-        }
+    public static bool PathContainsI(this string[] value, string substring)
+    {
+        for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
+        return false;
+    }
 #endif
 
     #endregion
@@ -850,49 +850,49 @@ public static class Common
     #region Disabled until needed
 
 #if false
-        public static bool PathContainsI_Dir(this List<string> value, string substring)
+    public static bool PathContainsI_Dir(this List<string> value, string substring)
+    {
+        for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+        return false;
+    }
+
+    public static bool PathContainsI_Dir(this string[] value, string substring)
+    {
+        for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="start"></param>
+    /// <returns></returns>
+    public static int CountDirSeps(this string value, int start = 0)
+    {
+        int count = 0;
+        for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
+        return count;
+    }
+
+    /// <summary>
+    /// Counts dir seps up to <paramref name="count"/> occurrences and then returns, skipping further counting.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="count"></param>
+    /// <param name="start"></param>
+    /// <returns></returns>
+    internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
+    {
+        int foundCount = 0;
+        for (int i = start; i < value.Length; i++)
         {
-            for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
-            return false;
+            if (value[i].IsDirSep()) foundCount++;
+            if (foundCount == count) return true;
         }
 
-        public static bool PathContainsI_Dir(this string[] value, string substring)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        public static int CountDirSeps(this string value, int start = 0)
-        {
-            int count = 0;
-            for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
-            return count;
-        }
-
-        /// <summary>
-        /// Counts dir seps up to <paramref name="count"/> occurrences and then returns, skipping further counting.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="count"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
-        {
-            int foundCount = 0;
-            for (int i = start; i < value.Length; i++)
-            {
-                if (value[i].IsDirSep()) foundCount++;
-                if (foundCount == count) return true;
-            }
-
-            return false;
-        }
+        return false;
+    }
 #endif
 
     #endregion
@@ -968,20 +968,20 @@ public static class Common
 
 #if false
 
-        /// <summary>
-        /// Returns the number of times a character appears in a string.
-        /// Avoids whatever silly overhead junk Count(predicate) is doing.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        public static int CountChars(this string value, char character)
-        {
-            int count = 0;
-            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
+    /// <summary>
+    /// Returns the number of times a character appears in a string.
+    /// Avoids whatever silly overhead junk Count(predicate) is doing.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="character"></param>
+    /// <returns></returns>
+    public static int CountChars(this string value, char character)
+    {
+        int count = 0;
+        for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
 
-            return count;
-        }
+        return count;
+    }
 
 #endif
 
@@ -1221,62 +1221,62 @@ public static class Common
     }
 
 #if false
-        // List version
-        public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
+    // List version
+    public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
+    {
+        byte firstByte = pattern[0];
+        int index = input.IndexOf(firstByte, start);
+
+        while (index > -1)
         {
-            byte firstByte = pattern[0];
-            int index = input.IndexOf(firstByte, start);
-
-            while (index > -1)
+            for (int i = 0; i < pattern.Length; i++)
             {
-                for (int i = 0; i < pattern.Length; i++)
+                if (index + i >= input.Count) return -1;
+                if (pattern[i] != input[index + i])
                 {
-                    if (index + i >= input.Count) return -1;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = input.IndexOf(firstByte, index + i)) == -1) return -1;
-                        break;
-                    }
-
-                    if (i == pattern.Length - 1) return index;
+                    if ((index = input.IndexOf(firstByte, index + i)) == -1) return -1;
+                    break;
                 }
-            }
 
-            return -1;
+                if (i == pattern.Length - 1) return index;
+            }
         }
 
-        /// <summary>
-        /// What it says
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="groupControlWord">Must start with '{', for example "{\fonttbl"</param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        public static (bool Found, int StartIndex, int EndIndex)
-        FindStartAndEndIndicesOfRtfGroup(byte[] input, byte[] groupControlWord, int start = 0)
+        return -1;
+    }
+
+    /// <summary>
+    /// What it says
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="groupControlWord">Must start with '{', for example "{\fonttbl"</param>
+    /// <param name="start"></param>
+    /// <returns></returns>
+    public static (bool Found, int StartIndex, int EndIndex)
+    FindStartAndEndIndicesOfRtfGroup(byte[] input, byte[] groupControlWord, int start = 0)
+    {
+        int index = FindIndexOfByteSequence(input, groupControlWord, start: start);
+        if (index == -1) return (false, -1, -1);
+
+        int braceLevel = 1;
+
+        for (int i = index + 1; i < input.Length; i++)
         {
-            int index = FindIndexOfByteSequence(input, groupControlWord, start: start);
-            if (index == -1) return (false, -1, -1);
-
-            int braceLevel = 1;
-
-            for (int i = index + 1; i < input.Length; i++)
+            byte b = input[i];
+            if (b == (byte)'{')
             {
-                byte b = input[i];
-                if (b == (byte)'{')
-                {
-                    braceLevel++;
-                }
-                else if (b == (byte)'}')
-                {
-                    braceLevel--;
-                }
-
-                if (braceLevel < 1) return (true, index, i + 1);
+                braceLevel++;
+            }
+            else if (b == (byte)'}')
+            {
+                braceLevel--;
             }
 
-            return (false, -1, -1);
+            if (braceLevel < 1) return (true, index, i + 1);
         }
+
+        return (false, -1, -1);
+    }
 
 #endif
 
@@ -1311,34 +1311,34 @@ public static class Common
 
 #if false
 
-        // List version
-        public static void ReplaceByteSequence(List<byte> input, byte[] pattern, byte[] replacePattern)
+    // List version
+    public static void ReplaceByteSequence(List<byte> input, byte[] pattern, byte[] replacePattern)
+    {
+        byte firstByte = pattern[0];
+        int index = input.IndexOf(firstByte);
+        int pLen = pattern.Length;
+
+        while (index > -1)
         {
-            byte firstByte = pattern[0];
-            int index = input.IndexOf(firstByte);
-            int pLen = pattern.Length;
-
-            while (index > -1)
+            for (int i = 0; i < pLen; i++)
             {
-                for (int i = 0; i < pLen; i++)
+                if (index + i >= input.Count) return;
+                if (pattern[i] != input[index + i])
                 {
-                    if (index + i >= input.Count) return;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = input.IndexOf(firstByte, index + i)) == -1) return;
-                        break;
-                    }
+                    if ((index = input.IndexOf(firstByte, index + i)) == -1) return;
+                    break;
+                }
 
-                    if (i == pLen - 1)
+                if (i == pLen - 1)
+                {
+                    for (int j = index, ri = 0; j < index + pLen; j++, ri++)
                     {
-                        for (int j = index, ri = 0; j < index + pLen; j++, ri++)
-                        {
-                            input[j] = replacePattern[ri];
-                        }
+                        input[j] = replacePattern[ri];
                     }
                 }
             }
         }
+    }
 
 #endif
 

@@ -47,12 +47,12 @@ public sealed class FMTagsCollection : IEnumerable<string>
     }
 
 #if false
-        public void RemoveAt(int index)
-        {
-            string item = _list[index];
-            _list.RemoveAt(index);
-            _hashSet.Remove(item);
-        }
+    public void RemoveAt(int index)
+    {
+        string item = _list[index];
+        _list.RemoveAt(index);
+        _hashSet.Remove(item);
+    }
 #endif
 
     public string this[int index] => _list[index];
@@ -128,13 +128,13 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
 
     public CatAndTagsList this[int index] => new(_list[index], _dict[_list[index]]);
 
-#if false
-        public bool RemoveAt(int index)
-        {
-            string item = _list[index];
-            _list.RemoveAt(index);
-            return _dict.Remove(item);
-        }
+#if false 
+    public bool RemoveAt(int index)
+    {
+        string item = _list[index];
+        _list.RemoveAt(index);
+        return _dict.Remove(item);
+    }
 #endif
 
     public void Clear()
@@ -185,7 +185,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
     }
 
 #if false
-        public CatAndTagsList this[int index] => new CatAndTagsList(_list[index], _dict[_list[index]]);
+    public CatAndTagsList this[int index] => new CatAndTagsList(_list[index], _dict[_list[index]]);
 #endif
 
     public IEnumerator<CatAndTagsList> GetEnumerator()

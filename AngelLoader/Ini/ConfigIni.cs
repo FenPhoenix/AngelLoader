@@ -1055,7 +1055,7 @@ internal static partial class Ini
 
         // @NET5: Write current config version header (keep it off for testing old-to-new)
 #if false
-            sb.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
+        sb.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
 #endif
 
         // Put this one first so it can be read quickly so we can get the theme quickly so we can show the
