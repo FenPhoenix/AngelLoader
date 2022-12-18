@@ -4,78 +4,77 @@ using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal sealed class ExitLLButton : IDarkable
 {
-    internal sealed class ExitLLButton : IDarkable
+    private readonly MainForm _owner;
+
+    private bool _constructed;
+
+    private DarkButton Button = null!;
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
     {
-        private readonly MainForm _owner;
-
-        private bool _constructed;
-
-        private DarkButton Button = null!;
-
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                if (!_constructed) return;
-
-                Button.DarkModeEnabled = value;
-            }
-        }
-
-        internal ExitLLButton(MainForm owner) => _owner = owner;
-
-        internal void Localize()
-        {
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
             if (!_constructed) return;
-            Button.Text = LText.Global.Exit;
+
+            Button.DarkModeEnabled = value;
         }
+    }
 
-        private void Construct()
+    internal ExitLLButton(MainForm owner) => _owner = owner;
+
+    internal void Localize()
+    {
+        if (!_constructed) return;
+        Button.Text = LText.Global.Exit;
+    }
+
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        var container = _owner.BottomRightFLP;
+
+        Button = new DarkButton
         {
-            if (_constructed) return;
+            Tag = LoadType.Lazy,
 
-            var container = _owner.BottomRightFLP;
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            MinimumSize = new Size(36, 36),
+            TabIndex = 63,
+            UseVisualStyleBackColor = true,
 
-            Button = new DarkButton
-            {
-                Tag = LoadType.Lazy,
+            DarkModeEnabled = _darkModeEnabled
+        };
 
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                MinimumSize = new Size(36, 36),
-                TabIndex = 63,
-                UseVisualStyleBackColor = true,
+        Button.Click += _owner.Exit_Click;
 
-                DarkModeEnabled = _darkModeEnabled
-            };
+        container.Controls.Add(Button);
+        container.Controls.SetChildIndex(Button, 0);
 
-            Button.Click += _owner.Exit_Click;
+        _constructed = true;
 
-            container.Controls.Add(Button);
-            container.Controls.SetChildIndex(Button, 0);
+        Localize();
+    }
 
-            _constructed = true;
-
-            Localize();
+    internal void SetVisible(bool visible)
+    {
+        if (visible)
+        {
+            Construct();
+            Button.Show();
         }
-
-        internal void SetVisible(bool visible)
+        else
         {
-            if (visible)
-            {
-                Construct();
-                Button.Show();
-            }
-            else
-            {
-                if (_constructed) Button.Hide();
-            }
+            if (_constructed) Button.Hide();
         }
     }
 }

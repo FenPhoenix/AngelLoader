@@ -4,32 +4,31 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
-{
-    public class DarkTabPageCustom : TabPage, IDarkable
-    {
-        private Color? _origBackColor;
+namespace AngelLoader.Forms.CustomControls;
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public virtual bool DarkModeEnabled
+public class DarkTabPageCustom : TabPage, IDarkable
+{
+    private Color? _origBackColor;
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public virtual bool DarkModeEnabled
+    {
+        get => _darkModeEnabled;
+        set
         {
-            get => _darkModeEnabled;
-            set
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+            if (_darkModeEnabled)
             {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                if (_darkModeEnabled)
-                {
-                    _origBackColor ??= BackColor;
-                    BackColor = DarkColors.Fen_ControlBackground;
-                }
-                else
-                {
-                    if (_origBackColor != null) BackColor = (Color)_origBackColor;
-                }
+                _origBackColor ??= BackColor;
+                BackColor = DarkColors.Fen_ControlBackground;
+            }
+            else
+            {
+                if (_origBackColor != null) BackColor = (Color)_origBackColor;
             }
         }
     }

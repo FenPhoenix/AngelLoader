@@ -5,136 +5,135 @@ using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal sealed class ChooseReadmeLLPanel : IDarkable
 {
-    internal sealed class ChooseReadmeLLPanel : IDarkable
+    private bool _constructed;
+
+    private readonly MainForm _owner;
+
+    private Panel Panel = null!;
+
+    private DarkListBoxWithBackingItems _listBox = null!;
+    internal DarkListBoxWithBackingItems ListBox
     {
-        private bool _constructed;
-
-        private readonly MainForm _owner;
-
-        private Panel Panel = null!;
-
-        private DarkListBoxWithBackingItems _listBox = null!;
-        internal DarkListBoxWithBackingItems ListBox
+        get
         {
-            get
-            {
-                Construct();
-                return _listBox;
-            }
+            Construct();
+            return _listBox;
         }
+    }
 
-        private FlowLayoutPanel OK_FLP = null!;
-        private DarkButton OKButton = null!;
+    private FlowLayoutPanel OK_FLP = null!;
+    private DarkButton OKButton = null!;
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
 
-                if (!_constructed) return;
+            if (!_constructed) return;
 
-                Panel.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
-                _listBox.DarkModeEnabled = _darkModeEnabled;
-                OK_FLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
-                OKButton.DarkModeEnabled = _darkModeEnabled;
-            }
+            Panel.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
+            _listBox.DarkModeEnabled = _darkModeEnabled;
+            OK_FLP.BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control;
+            OKButton.DarkModeEnabled = _darkModeEnabled;
         }
+    }
 
-        internal ChooseReadmeLLPanel(MainForm owner) => _owner = owner;
+    internal ChooseReadmeLLPanel(MainForm owner) => _owner = owner;
 
-        private void Construct()
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        Control container = _owner.MainSplitContainer.Panel2;
+
+        OKButton = new DarkButton
         {
-            if (_constructed) return;
+            Tag = LoadType.Lazy,
 
-            Control container = _owner.MainSplitContainer.Panel2;
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            AutoSize = true,
+            Margin = new Padding(0),
+            Padding = new Padding(6, 0, 6, 0),
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            MinimumSize = new Size(75, 23),
+            TabIndex = 48,
+            UseVisualStyleBackColor = true,
 
-            OKButton = new DarkButton
-            {
-                Tag = LoadType.Lazy,
+            DarkModeEnabled = _darkModeEnabled
+        };
+        OKButton.Click += _owner.ChooseReadmeButton_Click;
 
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                AutoSize = true,
-                Margin = new Padding(0),
-                Padding = new Padding(6, 0, 6, 0),
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                MinimumSize = new Size(75, 23),
-                TabIndex = 48,
-                UseVisualStyleBackColor = true,
+        OK_FLP = new FlowLayoutPanel
+        {
+            Tag = LoadType.Lazy,
 
-                DarkModeEnabled = _darkModeEnabled
-            };
-            OKButton.Click += _owner.ChooseReadmeButton_Click;
+            FlowDirection = FlowDirection.RightToLeft,
+            Location = new Point(1, 134),
+            Size = new Size(320, 24),
+            TabIndex = 3,
 
-            OK_FLP = new FlowLayoutPanel
-            {
-                Tag = LoadType.Lazy,
+            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
+        };
+        OK_FLP.Controls.Add(OKButton);
 
-                FlowDirection = FlowDirection.RightToLeft,
-                Location = new Point(1, 134),
-                Size = new Size(320, 24),
-                TabIndex = 3,
+        _listBox = new DarkListBoxWithBackingItems
+        {
+            Tag = LoadType.Lazy,
 
-                BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
-            };
-            OK_FLP.Controls.Add(OKButton);
+            MultiSelect = false,
+            Size = new Size(320, 134),
+            TabIndex = 47,
 
-            _listBox = new DarkListBoxWithBackingItems
-            {
-                Tag = LoadType.Lazy,
+            DarkModeEnabled = _darkModeEnabled
+        };
 
-                MultiSelect = false,
-                Size = new Size(320, 134),
-                TabIndex = 47,
+        Panel = new Panel
+        {
+            Tag = LoadType.Lazy,
 
-                DarkModeEnabled = _darkModeEnabled
-            };
+            Anchor = AnchorStyles.None,
+            TabIndex = 46,
+            Visible = false,
+            Size = new Size(324, 161),
 
-            Panel = new Panel
-            {
-                Tag = LoadType.Lazy,
+            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
+        };
+        Panel.Controls.Add(_listBox);
+        Panel.Controls.Add(OK_FLP);
 
-                Anchor = AnchorStyles.None,
-                TabIndex = 46,
-                Visible = false,
-                Size = new Size(324, 161),
+        container.Controls.Add(Panel);
+        Panel.CenterHV(container);
 
-                BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
-            };
-            Panel.Controls.Add(_listBox);
-            Panel.Controls.Add(OK_FLP);
+        _constructed = true;
 
-            container.Controls.Add(Panel);
-            Panel.CenterHV(container);
+        Localize();
+    }
 
-            _constructed = true;
+    internal void Localize()
+    {
+        if (_constructed) OKButton.Text = LText.Global.OK;
+    }
 
-            Localize();
+    internal void ShowPanel(bool value)
+    {
+        if (value)
+        {
+            Construct();
+            Panel.Show();
         }
-
-        internal void Localize()
+        else
         {
-            if (_constructed) OKButton.Text = LText.Global.OK;
-        }
-
-        internal void ShowPanel(bool value)
-        {
-            if (value)
+            if (_constructed)
             {
-                Construct();
-                Panel.Show();
-            }
-            else
-            {
-                if (_constructed)
-                {
-                    Panel.Hide();
-                }
+                Panel.Hide();
             }
         }
     }

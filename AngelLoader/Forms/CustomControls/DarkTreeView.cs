@@ -12,27 +12,27 @@ using AngelLoader.Forms.WinFormsNative;
 #endif
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+internal sealed class DarkTreeView : TreeView, IDarkable
 {
-    internal sealed class DarkTreeView : TreeView, IDarkable
+    [DefaultValue(false)]
+    public bool AlwaysDrawNodesFocused { get; set; }
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
     {
-        [DefaultValue(false)]
-        public bool AlwaysDrawNodesFocused { get; set; }
-
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
 
-                BackColor = _darkModeEnabled ? DarkColors.LightBackground : SystemColors.Window;
-            }
+            BackColor = _darkModeEnabled ? DarkColors.LightBackground : SystemColors.Window;
         }
+    }
 
 #if DEBUG
 
@@ -48,74 +48,74 @@ namespace AngelLoader.Forms.CustomControls
 
 #endif
 
-        public DarkTreeView()
+    public DarkTreeView()
+    {
+        base.BorderStyle = BorderStyle.FixedSingle;
+
+        // @DarkModeNote(DarkTreeView - close/expand buttons note)
+        // We currently draw the close/expand buttons in a theme renderer, which is quick and easy. If we
+        // wanted to draw them here, we would have to use OwnerDrawAll mode, and then we would have to draw
+        // everything - close/expand buttons, dotted lines, text, icons if there are any, etc.
+        base.DrawMode = TreeViewDrawMode.OwnerDrawText;
+
+        HideSelection = false;
+    }
+
+    #region Event overrides
+
+    protected override void OnDrawNode(DrawTreeNodeEventArgs e)
+    {
+        bool nodeFocused = (e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused;
+
+        bool darkMode = _darkModeEnabled;
+
+        Brush bgBrush_Normal = darkMode ? DarkColors.LightBackgroundBrush : SystemBrushes.Window;
+        Brush bgBrush_Highlighted_Focused = darkMode ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
+        Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
+
+        Color textColor_Normal = darkMode ? DarkColors.LightText : SystemColors.ControlText;
+        Color textColor_Highlighted_Focused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.HighlightText;
+        Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.ControlText;
+
+        Brush backColorBrush;
+        Color textColor;
+        if (e.Node == SelectedNode)
         {
-            base.BorderStyle = BorderStyle.FixedSingle;
-
-            // @DarkModeNote(DarkTreeView - close/expand buttons note)
-            // We currently draw the close/expand buttons in a theme renderer, which is quick and easy. If we
-            // wanted to draw them here, we would have to use OwnerDrawAll mode, and then we would have to draw
-            // everything - close/expand buttons, dotted lines, text, icons if there are any, etc.
-            base.DrawMode = TreeViewDrawMode.OwnerDrawText;
-
-            HideSelection = false;
-        }
-
-        #region Event overrides
-
-        protected override void OnDrawNode(DrawTreeNodeEventArgs e)
-        {
-            bool nodeFocused = (e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused;
-
-            bool darkMode = _darkModeEnabled;
-
-            Brush bgBrush_Normal = darkMode ? DarkColors.LightBackgroundBrush : SystemBrushes.Window;
-            Brush bgBrush_Highlighted_Focused = darkMode ? DarkColors.BlueSelectionBrush : SystemBrushes.Highlight;
-            Brush bgBrush_Highlighted_NotFocused = darkMode ? DarkColors.GreySelectionBrush : SystemBrushes.ControlLight;
-
-            Color textColor_Normal = darkMode ? DarkColors.LightText : SystemColors.ControlText;
-            Color textColor_Highlighted_Focused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.HighlightText;
-            Color textColor_Highlighted_NotFocused = darkMode ? DarkColors.Fen_HighlightText : SystemColors.ControlText;
-
-            Brush backColorBrush;
-            Color textColor;
-            if (e.Node == SelectedNode)
+            if (AlwaysDrawNodesFocused)
             {
-                if (AlwaysDrawNodesFocused)
-                {
-                    backColorBrush = Focused && !nodeFocused ? bgBrush_Normal : bgBrush_Highlighted_Focused;
-                    textColor = Focused && !nodeFocused ? textColor_Normal : textColor_Highlighted_Focused;
-                }
-                else
-                {
-                    if (Focused)
-                    {
-                        backColorBrush = nodeFocused ? bgBrush_Highlighted_Focused : bgBrush_Normal;
-                        textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
-                    }
-                    else
-                    {
-                        backColorBrush = bgBrush_Highlighted_NotFocused;
-                        textColor = textColor_Highlighted_NotFocused;
-                    }
-                }
+                backColorBrush = Focused && !nodeFocused ? bgBrush_Normal : bgBrush_Highlighted_Focused;
+                textColor = Focused && !nodeFocused ? textColor_Normal : textColor_Highlighted_Focused;
             }
             else
             {
-                backColorBrush = nodeFocused ? bgBrush_Highlighted_Focused : bgBrush_Normal;
-                textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
+                if (Focused)
+                {
+                    backColorBrush = nodeFocused ? bgBrush_Highlighted_Focused : bgBrush_Normal;
+                    textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
+                }
+                else
+                {
+                    backColorBrush = bgBrush_Highlighted_NotFocused;
+                    textColor = textColor_Highlighted_NotFocused;
+                }
             }
-
-            // IMPORTANT(TreeView node draw): DO NOT change any of the params "e.Node.Bounds" or "TextFormatFlags.NoPrefix"
-            // They have to be just so or we get one or more of several different visual problems.
-            // Don't use e.Bounds, keep e.Node.Bounds.
-            e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
-            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor, TextFormatFlags.NoPrefix);
-
-            base.OnDrawNode(e);
+        }
+        else
+        {
+            backColorBrush = nodeFocused ? bgBrush_Highlighted_Focused : bgBrush_Normal;
+            textColor = nodeFocused ? textColor_Highlighted_Focused : textColor_Normal;
         }
 
-        #endregion
+        // IMPORTANT(TreeView node draw): DO NOT change any of the params "e.Node.Bounds" or "TextFormatFlags.NoPrefix"
+        // They have to be just so or we get one or more of several different visual problems.
+        // Don't use e.Bounds, keep e.Node.Bounds.
+        e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
+        TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor, TextFormatFlags.NoPrefix);
+
+        base.OnDrawNode(e);
+    }
+
+    #endregion
 
 #if DRAW_BORDER
         private void DrawBorder(IntPtr hWnd)
@@ -151,5 +151,4 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 #endif
-    }
 }

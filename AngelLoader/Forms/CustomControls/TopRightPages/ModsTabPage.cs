@@ -6,134 +6,133 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed class ModsTabPage : Lazy_TabsBase
 {
-    public sealed class ModsTabPage : Lazy_TabsBase
+    private Lazy_ModsPage _page = null!;
+
+    #region Lazy-loaded subcontrols
+
+    private DarkLabel ModsTabNotSupportedMessageLabel = null!;
+
+    #endregion
+
+    #region Public common
+
+    public override void Construct()
     {
-        private Lazy_ModsPage _page = null!;
+        if (_constructed) return;
 
-        #region Lazy-loaded subcontrols
-
-        private DarkLabel ModsTabNotSupportedMessageLabel = null!;
-
-        #endregion
-
-        #region Public common
-
-        public override void Construct()
+        _page = new Lazy_ModsPage
         {
-            if (_constructed) return;
+            Dock = DockStyle.Fill,
+            Tag = LoadType.Lazy,
+            Visible = false
+        };
 
-            _page = new Lazy_ModsPage
+        using (new DisableEvents(_owner))
+        {
+            Controls.Add(_page);
+
+            _page.MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
+
+            ModsTabNotSupportedMessageLabel = new DarkLabel
             {
+                AutoSize = false,
+                DarkModeBackColor = DarkColors.Fen_ControlBackground,
                 Dock = DockStyle.Fill,
-                Tag = LoadType.Lazy,
+                TextAlign = ContentAlignment.MiddleCenter,
                 Visible = false
             };
 
-            using (new DisableEvents(_owner))
-            {
-                Controls.Add(_page);
+            _page.Controls.Add(ModsTabNotSupportedMessageLabel);
+            ModsTabNotSupportedMessageLabel.BringToFront();
 
-                _page.MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
+            _page.MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
+            _page.MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
 
-                ModsTabNotSupportedMessageLabel = new DarkLabel
-                {
-                    AutoSize = false,
-                    DarkModeBackColor = DarkColors.Fen_ControlBackground,
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Visible = false
-                };
+            _constructed = true;
 
-                _page.Controls.Add(ModsTabNotSupportedMessageLabel);
-                ModsTabNotSupportedMessageLabel.BringToFront();
+            UpdatePage();
 
-                _page.MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
-                _page.MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
+            if (DarkModeEnabled) RefreshTheme();
 
-                _constructed = true;
-
-                UpdatePage();
-
-                if (DarkModeEnabled) RefreshTheme();
-
-                Localize();
-            }
-
-            _page.Show();
+            Localize();
         }
 
-        public override void Localize()
+        _page.Show();
+    }
+
+    public override void Localize()
+    {
+        if (!_constructed) return;
+
+        _page.MainModsControl.Localize(LText.ModsTab.Header);
+        _page.MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+
+        ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
+    }
+
+    public override void UpdatePage()
+    {
+        if (!_constructed) return;
+
+        FanMission? fm = _owner.GetMainSelectedFMOrNull();
+
+        if (fm != null)
         {
-            if (!_constructed) return;
+            bool fmIsT3 = fm.Game == Game.Thief3;
 
-            _page.MainModsControl.Localize(LText.ModsTab.Header);
-            _page.MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+            _page.MainModsControl.Enabled = true;
 
-            ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
-        }
-
-        public override void UpdatePage()
-        {
-            if (!_constructed) return;
-
-            FanMission? fm = _owner.GetMainSelectedFMOrNull();
-
-            if (fm != null)
+            if (fmIsT3)
             {
-                bool fmIsT3 = fm.Game == Game.Thief3;
+                _page.MainModsControl.Visible = false;
+                ModsTabNotSupportedMessageLabel.Visible = true;
 
-                _page.MainModsControl.Enabled = true;
-
-                if (fmIsT3)
-                {
-                    _page.MainModsControl.Visible = false;
-                    ModsTabNotSupportedMessageLabel.Visible = true;
-
-                    _page.MainModsControl.CheckList.ClearList();
-                }
-                else
-                {
-                    _page.MainModsControl.Visible = true;
-                    ModsTabNotSupportedMessageLabel.Visible = false;
-
-                    _page.MainModsControl.Set(fm.Game, fm.DisabledMods);
-                }
+                _page.MainModsControl.CheckList.ClearList();
             }
             else
             {
-                ModsTabNotSupportedMessageLabel.Visible = false;
-                _page.MainModsControl.CheckList.ClearList();
-                _page.MainModsControl.Enabled = false;
                 _page.MainModsControl.Visible = true;
+                ModsTabNotSupportedMessageLabel.Visible = false;
+
+                _page.MainModsControl.Set(fm.Game, fm.DisabledMods);
             }
         }
-
-        #endregion
-
-        #region Page
-
-        private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        else
         {
-            UpdateFMDisabledMods(writeIni: false);
+            ModsTabNotSupportedMessageLabel.Visible = false;
+            _page.MainModsControl.CheckList.ClearList();
+            _page.MainModsControl.Enabled = false;
+            _page.MainModsControl.Visible = true;
         }
-
-        private void Mods_DisabledModsUpdated(object sender, EventArgs e)
-        {
-            UpdateFMDisabledMods(writeIni: true);
-        }
-
-        private void UpdateFMDisabledMods(bool writeIni)
-        {
-            if (_owner.EventsDisabled || !_owner.FMsDGV.RowSelected()) return;
-
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            fm.DisabledMods = _page.MainModsControl.DisabledModsTextBox.Text;
-            _owner.RefreshMainSelectedFMRow_Fast();
-            if (writeIni) Ini.WriteFullFMDataIni();
-        }
-
-        #endregion
     }
+
+    #endregion
+
+    #region Page
+
+    private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+    {
+        UpdateFMDisabledMods(writeIni: false);
+    }
+
+    private void Mods_DisabledModsUpdated(object sender, EventArgs e)
+    {
+        UpdateFMDisabledMods(writeIni: true);
+    }
+
+    private void UpdateFMDisabledMods(bool writeIni)
+    {
+        if (_owner.EventsDisabled || !_owner.FMsDGV.RowSelected()) return;
+
+        FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+        fm.DisabledMods = _page.MainModsControl.DisabledModsTextBox.Text;
+        _owner.RefreshMainSelectedFMRow_Fast();
+        if (writeIni) Ini.WriteFullFMDataIni();
+    }
+
+    #endregion
 }

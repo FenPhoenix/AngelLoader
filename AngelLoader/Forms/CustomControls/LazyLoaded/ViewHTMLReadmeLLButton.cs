@@ -4,79 +4,78 @@ using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal sealed class ViewHTMLReadmeLLButton : IDarkable
 {
-    internal sealed class ViewHTMLReadmeLLButton : IDarkable
+    private bool _constructed;
+    private DarkButton Button = null!;
+
+    private readonly MainForm _owner;
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
     {
-        private bool _constructed;
-        private DarkButton Button = null!;
-
-        private readonly MainForm _owner;
-
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                if (!_constructed) return;
-
-                Button.DarkModeEnabled = value;
-            }
-        }
-
-        internal ViewHTMLReadmeLLButton(MainForm owner) => _owner = owner;
-
-        internal void Localize()
-        {
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
             if (!_constructed) return;
 
-            Button.Text = LText.ReadmeArea.ViewHTMLReadme;
-            Button.CenterHV(_owner.MainSplitContainer.Panel2);
+            Button.DarkModeEnabled = value;
         }
+    }
 
-        internal bool Visible => _constructed && Button.Visible;
+    internal ViewHTMLReadmeLLButton(MainForm owner) => _owner = owner;
 
-        internal void Hide()
+    internal void Localize()
+    {
+        if (!_constructed) return;
+
+        Button.Text = LText.ReadmeArea.ViewHTMLReadme;
+        Button.CenterHV(_owner.MainSplitContainer.Panel2);
+    }
+
+    internal bool Visible => _constructed && Button.Visible;
+
+    internal void Hide()
+    {
+        if (_constructed) Button.Hide();
+    }
+
+    internal void Show()
+    {
+        if (!_constructed)
         {
-            if (_constructed) Button.Hide();
-        }
+            var container = _owner.MainSplitContainer.Panel2;
 
-        internal void Show()
-        {
-            if (!_constructed)
+            Button = new DarkButton
             {
-                var container = _owner.MainSplitContainer.Panel2;
+                Tag = LoadType.Lazy,
 
-                Button = new DarkButton
-                {
-                    Tag = LoadType.Lazy,
+                Anchor = AnchorStyles.None,
+                AutoSize = true,
+                // Button gets centered on localize so no location is specified here
+                Padding = new Padding(6, 0, 6, 0),
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                MinimumSize = new Size(0, 23),
+                TabIndex = 49,
+                UseVisualStyleBackColor = true,
+                Visible = false,
 
-                    Anchor = AnchorStyles.None,
-                    AutoSize = true,
-                    // Button gets centered on localize so no location is specified here
-                    Padding = new Padding(6, 0, 6, 0),
-                    AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                    MinimumSize = new Size(0, 23),
-                    TabIndex = 49,
-                    UseVisualStyleBackColor = true,
-                    Visible = false,
+                DarkModeEnabled = _darkModeEnabled
+            };
 
-                    DarkModeEnabled = _darkModeEnabled
-                };
+            container.Controls.Add(Button);
+            Button.Click += _owner.ViewHTMLReadmeButton_Click;
+            Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
 
-                container.Controls.Add(Button);
-                Button.Click += _owner.ViewHTMLReadmeButton_Click;
-                Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
+            _constructed = true;
 
-                _constructed = true;
-
-                Localize();
-            }
-
-            Button.Show();
+            Localize();
         }
+
+        Button.Show();
     }
 }

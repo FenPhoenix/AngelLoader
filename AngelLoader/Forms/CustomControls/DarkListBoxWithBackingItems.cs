@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed class DarkListBoxWithBackingItems : DarkListBox, IListControlWithBackingItems
 {
-    public sealed class DarkListBoxWithBackingItems : DarkListBox, IListControlWithBackingItems
+    public readonly List<string> BackingItems = new();
+
+    public void AddFullItem(string backingItem, string item)
     {
-        public readonly List<string> BackingItems = new();
+        BackingItems.Add(backingItem);
+        Items.Add(item);
+    }
 
-        public void AddFullItem(string backingItem, string item)
-        {
-            BackingItems.Add(backingItem);
-            Items.Add(item);
-        }
+    public void ClearFullItems()
+    {
+        BackingItems.Clear();
+        Items.Clear();
+    }
 
-        public void ClearFullItems()
-        {
-            BackingItems.Clear();
-            Items.Clear();
-        }
+    public string SelectedBackingItem() => BackingItems[SelectedIndex];
 
-        public string SelectedBackingItem() => BackingItems[SelectedIndex];
-
-        #region Disabled until needed
+    #region Disabled until needed
 
 #if false
         public int BackingIndexOf(string item) => BackingItems.IndexOf(item);
@@ -28,6 +28,5 @@ namespace AngelLoader.Forms.CustomControls
         public void SelectBackingIndexOf(string item) => SelectedIndex = BackingIndexOf(item);
 #endif
 
-        #endregion
-    }
+    #endregion
 }

@@ -7,23 +7,23 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed class DarkRadioButton : RadioButton, IDarkable
 {
-    public sealed class DarkRadioButton : RadioButton, IDarkable
-    {
-        #region Field Region
+    #region Field Region
 
-        private DarkControlState _controlState = DarkControlState.Normal;
+    private DarkControlState _controlState = DarkControlState.Normal;
 
-        private bool _origUseVisualStyleBackColor;
+    private bool _origUseVisualStyleBackColor;
 
-        private bool _spacePressed;
+    private bool _spacePressed;
 
-        private const int _radioButtonSize = 12;
+    private const int _radioButtonSize = 12;
 
-        #endregion
+    #endregion
 
-        #region Property Region
+    #region Property Region
 
 #if DEBUG
 
@@ -88,215 +88,214 @@ namespace AngelLoader.Forms.CustomControls
         public new bool UseMnemonic { get => false; set => base.UseMnemonic = false; }
 #endif
 
-        #endregion
+    #endregion
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+
+            if (_darkModeEnabled)
             {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-
-                if (_darkModeEnabled)
-                {
-                    _origUseVisualStyleBackColor = UseVisualStyleBackColor;
-                    UseVisualStyleBackColor = false;
-                }
-                else
-                {
-                    UseVisualStyleBackColor = _origUseVisualStyleBackColor;
-                }
-
-                Invalidate();
-            }
-        }
-
-        #region Constructor Region
-
-        public DarkRadioButton()
-        {
-            UseMnemonic = false;
-
-            // Always true in both modes
-            SetStyle(ControlStyles.SupportsTransparentBackColor |
-                     ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.UserPaint, true);
-        }
-
-        #endregion
-
-        #region Method Region
-
-        private void SetControlState(DarkControlState controlState)
-        {
-            if (_controlState != controlState)
-            {
-                _controlState = controlState;
-                if (_darkModeEnabled) Invalidate();
-            }
-        }
-
-        #endregion
-
-        #region Event Handler Region
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
-            ? DarkControlState.Pressed
-            : DarkControlState.Hover);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
-            {
-                SetControlState(DarkControlState.Pressed);
-            }
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(DarkControlState.Normal);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(DarkControlState.Normal);
-        }
-
-        protected override void OnMouseCaptureChanged(EventArgs e)
-        {
-            base.OnMouseCaptureChanged(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
-            {
-                SetControlState(DarkControlState.Normal);
-            }
-        }
-
-        protected override void OnGotFocus(EventArgs e)
-        {
-            base.OnGotFocus(e);
-
-            if (!_darkModeEnabled) return;
-
-            Invalidate();
-        }
-
-        protected override void OnLostFocus(EventArgs e)
-        {
-            base.OnLostFocus(e);
-
-            if (!_darkModeEnabled) return;
-
-            _spacePressed = false;
-
-            SetControlState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
-                ? DarkControlState.Normal
-                : DarkControlState.Hover);
-        }
-
-        #endregion
-
-        #region Paint Region
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if (!_darkModeEnabled)
-            {
-                base.OnPaint(e);
-                return;
-            }
-
-            Graphics g = e.Graphics;
-
-            Color textColor = DarkColors.LightText;
-            Pen borderColorPen = DarkColors.LightTextPen;
-            SolidBrush fillColorBrush = DarkColors.LightTextBrush;
-
-            if (Enabled)
-            {
-                if (Focused)
-                {
-                    borderColorPen = DarkColors.BlueHighlightPen;
-                    fillColorBrush = DarkColors.BlueSelectionBrush;
-                }
-
-                if (_controlState == DarkControlState.Hover)
-                {
-                    borderColorPen = DarkColors.BlueHighlightPen;
-                    fillColorBrush = DarkColors.BlueSelectionBrush;
-                }
-                else if (_controlState == DarkControlState.Pressed)
-                {
-                    borderColorPen = DarkColors.GreyHighlightPen;
-                    fillColorBrush = DarkColors.GreySelectionBrush;
-                }
+                _origUseVisualStyleBackColor = UseVisualStyleBackColor;
+                UseVisualStyleBackColor = false;
             }
             else
             {
-                textColor = DarkColors.DisabledText;
+                UseVisualStyleBackColor = _origUseVisualStyleBackColor;
+            }
+
+            Invalidate();
+        }
+    }
+
+    #region Constructor Region
+
+    public DarkRadioButton()
+    {
+        UseMnemonic = false;
+
+        // Always true in both modes
+        SetStyle(ControlStyles.SupportsTransparentBackColor |
+                 ControlStyles.OptimizedDoubleBuffer |
+                 ControlStyles.ResizeRedraw |
+                 ControlStyles.UserPaint, true);
+    }
+
+    #endregion
+
+    #region Method Region
+
+    private void SetControlState(DarkControlState controlState)
+    {
+        if (_controlState != controlState)
+        {
+            _controlState = controlState;
+            if (_darkModeEnabled) Invalidate();
+        }
+    }
+
+    #endregion
+
+    #region Event Handler Region
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
+            ? DarkControlState.Pressed
+            : DarkControlState.Hover);
+    }
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
+        {
+            SetControlState(DarkControlState.Pressed);
+        }
+    }
+
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(DarkControlState.Normal);
+    }
+
+    protected override void OnMouseLeave(EventArgs e)
+    {
+        base.OnMouseLeave(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(DarkControlState.Normal);
+    }
+
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        base.OnMouseCaptureChanged(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        {
+            SetControlState(DarkControlState.Normal);
+        }
+    }
+
+    protected override void OnGotFocus(EventArgs e)
+    {
+        base.OnGotFocus(e);
+
+        if (!_darkModeEnabled) return;
+
+        Invalidate();
+    }
+
+    protected override void OnLostFocus(EventArgs e)
+    {
+        base.OnLostFocus(e);
+
+        if (!_darkModeEnabled) return;
+
+        _spacePressed = false;
+
+        SetControlState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+            ? DarkControlState.Normal
+            : DarkControlState.Hover);
+    }
+
+    #endregion
+
+    #region Paint Region
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        if (!_darkModeEnabled)
+        {
+            base.OnPaint(e);
+            return;
+        }
+
+        Graphics g = e.Graphics;
+
+        Color textColor = DarkColors.LightText;
+        Pen borderColorPen = DarkColors.LightTextPen;
+        SolidBrush fillColorBrush = DarkColors.LightTextBrush;
+
+        if (Enabled)
+        {
+            if (Focused)
+            {
+                borderColorPen = DarkColors.BlueHighlightPen;
+                fillColorBrush = DarkColors.BlueSelectionBrush;
+            }
+
+            if (_controlState == DarkControlState.Hover)
+            {
+                borderColorPen = DarkColors.BlueHighlightPen;
+                fillColorBrush = DarkColors.BlueSelectionBrush;
+            }
+            else if (_controlState == DarkControlState.Pressed)
+            {
                 borderColorPen = DarkColors.GreyHighlightPen;
                 fillColorBrush = DarkColors.GreySelectionBrush;
             }
-
-            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
-
-            g.SmoothingMode = SmoothingMode.HighQuality;
-
-            var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
-            g.DrawEllipse(borderColorPen, boxRect);
-
-            if (Checked)
-            {
-                var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1, _radioButtonSize - 6, _radioButtonSize - 6);
-                g.FillEllipse(fillColorBrush, checkRect);
-            }
-
-            g.SmoothingMode = SmoothingMode.Default;
-
-            TextFormatFlags textFormatFlags =
-                ControlUtils.GetTextAlignmentFlags(TextAlign) |
-                TextFormatFlags.NoClipping |
-                TextFormatFlags.NoPrefix |
-                TextFormatFlags.WordBreak;
-
-            var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
-            TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
+        }
+        else
+        {
+            textColor = DarkColors.DisabledText;
+            borderColorPen = DarkColors.GreyHighlightPen;
+            fillColorBrush = DarkColors.GreySelectionBrush;
         }
 
-        #endregion
+        g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
+
+        g.SmoothingMode = SmoothingMode.HighQuality;
+
+        var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
+        g.DrawEllipse(borderColorPen, boxRect);
+
+        if (Checked)
+        {
+            var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1, _radioButtonSize - 6, _radioButtonSize - 6);
+            g.FillEllipse(fillColorBrush, checkRect);
+        }
+
+        g.SmoothingMode = SmoothingMode.Default;
+
+        TextFormatFlags textFormatFlags =
+            ControlUtils.GetTextAlignmentFlags(TextAlign) |
+            TextFormatFlags.NoClipping |
+            TextFormatFlags.NoPrefix |
+            TextFormatFlags.WordBreak;
+
+        var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
+        TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
     }
+
+    #endregion
 }

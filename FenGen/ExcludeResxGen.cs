@@ -4,101 +4,100 @@ using System.Linq;
 using System.Xml;
 using static FenGen.Misc;
 
-namespace FenGen
+namespace FenGen;
+
+// @WPF(FenGen/ExcludeResx): This thing might be WinForms specific, are resx files WinForms specific?
+// If so, I guess we're fine since if WPF doesn't use .resx files then it won't affect it. But if it does,
+// we might have to get rid of this. Unless WPF doesn't need them either.
+internal static class ExcludeResx
 {
-    // @WPF(FenGen/ExcludeResx): This thing might be WinForms specific, are resx files WinForms specific?
-    // If so, I guess we're fine since if WPF doesn't use .resx files then it won't affect it. But if it does,
-    // we might have to get rid of this. Unless WPF doesn't need them either.
-    internal static class ExcludeResx
+    private const string _itemGroupName = "ItemGroup";
+
+    internal static void GenerateRestore()
     {
-        private const string _itemGroupName = "ItemGroup";
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.Load(Core.ALProjectFile);
 
-        internal static void GenerateRestore()
+        XmlNodeList itemGroups = xml.GetElementsByTagName(_itemGroupName);
+
+        for (int i = 0; i < itemGroups.Count; i++)
         {
-            var xml = new XmlDocument { PreserveWhitespace = true };
-            xml.Load(Core.ALProjectFile);
-
-            XmlNodeList itemGroups = xml.GetElementsByTagName(_itemGroupName);
-
-            for (int i = 0; i < itemGroups.Count; i++)
+            XmlNode itemGroup = itemGroups[i];
+            foreach (XmlNode cn in itemGroup)
             {
-                XmlNode itemGroup = itemGroups[i];
-                foreach (XmlNode cn in itemGroup)
+                if (cn is XmlComment commentNode &&
+                    commentNode.InnerText.Trim() == GenAttributes.FenGenExcludeResx)
                 {
-                    if (cn is XmlComment commentNode &&
-                        commentNode.InnerText.Trim() == GenAttributes.FenGenExcludeResx)
-                    {
-                        // We're guaranteed to be at least three levels deep - Project/ItemGroup/Comment. If we're
-                        // not, then our project file is fubar and we have bigger problems than a couple of null
-                        // references.
-                        commentNode.ParentNode!.ParentNode!.RemoveChild(itemGroup);
-                        i--;
-                        break;
-                    }
+                    // We're guaranteed to be at least three levels deep - Project/ItemGroup/Comment. If we're
+                    // not, then our project file is fubar and we have bigger problems than a couple of null
+                    // references.
+                    commentNode.ParentNode!.ParentNode!.RemoveChild(itemGroup);
+                    i--;
+                    break;
                 }
             }
-
-            WriteXml(xml);
         }
 
-        internal static void GenerateExclude()
+        WriteXml(xml);
+    }
+
+    internal static void GenerateExclude()
+    {
+        // In case our temp ItemGroup got left there due to the build process not fully completing or whatever
+        // else have you, just remove it again so we know we're clean.
+        GenerateRestore();
+
+        string[] resxFilesToExclude = Directory
+            .GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
+            .Where(static x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
+
+        const string embeddedResourceName = "EmbeddedResource";
+        const string conditionString = "'$(Configuration)' != 'Debug'";
+        const string conditionName = "Condition";
+        const string removeName = "Remove";
+
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.Load(Core.ALProjectFile);
+
+        var newNodes = new List<XmlNode>();
+
+        XmlNode projNode = xml.GetElementsByTagName("Project")[0];
+
+        XmlElement tempItemGroup = xml.CreateElement(_itemGroupName);
+        foreach (string exclude in resxFilesToExclude)
         {
-            // In case our temp ItemGroup got left there due to the build process not fully completing or whatever
-            // else have you, just remove it again so we know we're clean.
-            GenerateRestore();
+            XmlElement excludeElem = xml.CreateElement(embeddedResourceName);
+            var condAttr = xml.CreateAttribute(conditionName);
+            condAttr.Value = conditionString;
+            var removeAttr = xml.CreateAttribute(removeName);
+            removeAttr.Value = exclude.Substring(Core.ALProjectPath.Length).TrimStart('/', '\\');
+            excludeElem.SetAttributeNode(condAttr);
+            excludeElem.SetAttributeNode(removeAttr);
 
-            string[] resxFilesToExclude = Directory
-                .GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
-                .Where(static x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
-
-            const string embeddedResourceName = "EmbeddedResource";
-            const string conditionString = "'$(Configuration)' != 'Debug'";
-            const string conditionName = "Condition";
-            const string removeName = "Remove";
-
-            var xml = new XmlDocument { PreserveWhitespace = true };
-            xml.Load(Core.ALProjectFile);
-
-            var newNodes = new List<XmlNode>();
-
-            XmlNode projNode = xml.GetElementsByTagName("Project")[0];
-
-            XmlElement tempItemGroup = xml.CreateElement(_itemGroupName);
-            foreach (string exclude in resxFilesToExclude)
-            {
-                XmlElement excludeElem = xml.CreateElement(embeddedResourceName);
-                var condAttr = xml.CreateAttribute(conditionName);
-                condAttr.Value = conditionString;
-                var removeAttr = xml.CreateAttribute(removeName);
-                removeAttr.Value = exclude.Substring(Core.ALProjectPath.Length).TrimStart('/', '\\');
-                excludeElem.SetAttributeNode(condAttr);
-                excludeElem.SetAttributeNode(removeAttr);
-
-                newNodes.Add(excludeElem);
-            }
-
-            for (int i = 0; i < newNodes.Count; i++)
-            {
-                XmlNode n = newNodes[i];
-                tempItemGroup.PrependChild(n);
-                // We have to manually add linebreaks and indents
-                tempItemGroup.InsertBefore(xml.CreateWhitespace("    "), n);
-                tempItemGroup.InsertAfter(xml.CreateWhitespace("\r\n"), n);
-            }
-            // Prepend in reverse order
-            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n"));
-            tempItemGroup.PrependChild(xml.CreateComment("\r\n" +
-                "        This is a temporary ItemGroup generated by FenGen to exclude .resx files on compile.\r\n" +
-                "        If you can see this, something probably went wrong and you should delete this item group\r\n" +
-                "        to prevent crashes and chaotic behavior when editing forms.\r\n    "));
-            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
-            tempItemGroup.PrependChild(xml.CreateComment(GenAttributes.FenGenExcludeResx));
-            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
-
-            projNode.PrependChild(tempItemGroup);
-            projNode.PrependChild(xml.CreateWhitespace("\r\n"));
-
-            WriteXml(xml);
+            newNodes.Add(excludeElem);
         }
+
+        for (int i = 0; i < newNodes.Count; i++)
+        {
+            XmlNode n = newNodes[i];
+            tempItemGroup.PrependChild(n);
+            // We have to manually add linebreaks and indents
+            tempItemGroup.InsertBefore(xml.CreateWhitespace("    "), n);
+            tempItemGroup.InsertAfter(xml.CreateWhitespace("\r\n"), n);
+        }
+        // Prepend in reverse order
+        tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n"));
+        tempItemGroup.PrependChild(xml.CreateComment("\r\n" +
+                                                     "        This is a temporary ItemGroup generated by FenGen to exclude .resx files on compile.\r\n" +
+                                                     "        If you can see this, something probably went wrong and you should delete this item group\r\n" +
+                                                     "        to prevent crashes and chaotic behavior when editing forms.\r\n    "));
+        tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
+        tempItemGroup.PrependChild(xml.CreateComment(GenAttributes.FenGenExcludeResx));
+        tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
+
+        projNode.PrependChild(tempItemGroup);
+        projNode.PrependChild(xml.CreateWhitespace("\r\n"));
+
+        WriteXml(xml);
     }
 }

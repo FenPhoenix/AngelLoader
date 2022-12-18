@@ -1,16 +1,15 @@
 ﻿using System.Windows.Forms;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed partial class Lazy_TagsPage : UserControl
 {
-    public sealed partial class Lazy_TagsPage : UserControl
+    public Lazy_TagsPage()
     {
-        public Lazy_TagsPage()
-        {
 #if DEBUG
             InitializeComponent();
 #else
-            InitSlim();
+        InitSlim();
 #endif
-        }
     }
 }

@@ -3,75 +3,74 @@ using System.IO;
 using System.Xml;
 using static FenGen.Misc;
 
-namespace FenGen
+namespace FenGen;
+
+internal static class CopyrightGen
 {
-    internal static class CopyrightGen
+    private static readonly string[] LicenseTopLines =
     {
-        private static readonly string[] LicenseTopLines =
-        {
-            "The full source code can be obtained from: https://github.com/FenPhoenix/AngelLoader",
-            "------------------------------------------------------------------------------------",
-            ""
-        };
+        "The full source code can be obtained from: https://github.com/FenPhoenix/AngelLoader",
+        "------------------------------------------------------------------------------------",
+        ""
+    };
 
-        private static readonly string[] MitLicenseLines =
-        {
-            "MIT License",
-            "",
-            "Copyright (c) 2018-" + Cache.CurrentYear + " Brian Tobin (FenPhoenix)",
-            "",
-            "Permission is hereby granted, free of charge, to any person obtaining a copy",
-            "of this software and associated documentation files (the \"Software\"), to deal",
-            "in the Software without restriction, including without limitation the rights",
-            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
-            "copies of the Software, and to permit persons to whom the Software is",
-            "furnished to do so, subject to the following conditions:",
-            "",
-            "The above copyright notice and this permission notice shall be included in all",
-            "copies or substantial portions of the Software.",
-            "",
-            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
-            "SOFTWARE."
-        };
+    private static readonly string[] MitLicenseLines =
+    {
+        "MIT License",
+        "",
+        "Copyright (c) 2018-" + Cache.CurrentYear + " Brian Tobin (FenPhoenix)",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the \"Software\"), to deal",
+        "in the Software without restriction, including without limitation the rights",
+        "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
+        "SOFTWARE."
+    };
 
-        internal static void GenProjCopyright()
-        {
-            var xml = new XmlDocument { PreserveWhitespace = true };
-            xml.Load(Core.ALProjectFile);
-            XmlElement copyrightNode = (XmlElement)xml.GetElementsByTagName("Copyright")[0];
-            copyrightNode.InnerText = "Copyright © 2018 - " + Cache.CurrentYear;
+    internal static void GenProjCopyright()
+    {
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.Load(Core.ALProjectFile);
+        XmlElement copyrightNode = (XmlElement)xml.GetElementsByTagName("Copyright")[0];
+        copyrightNode.InnerText = "Copyright © 2018 - " + Cache.CurrentYear;
 
-            WriteXml(xml);
-        }
+        WriteXml(xml);
+    }
 
-        internal static void GenCurrentYear(string destFile, bool remove = false)
-        {
-            var w = GetWriterForClass(destFile, GenAttributes.FenGenCurrentYearDestClassAttribute);
+    internal static void GenCurrentYear(string destFile, bool remove = false)
+    {
+        var w = GetWriterForClass(destFile, GenAttributes.FenGenCurrentYearDestClassAttribute);
 
-            string currentYear = remove ? "" : Cache.CurrentYear;
-            w.WL("internal const string CurrentYear = \"" + currentYear + "\";");
-            w.CloseClassAndNamespace();
+        string currentYear = remove ? "" : Cache.CurrentYear;
+        w.WL("internal const string CurrentYear = \"" + currentYear + "\";");
+        w.CloseClassAndNamespace();
 
-            File.WriteAllText(destFile, w.ToString());
-        }
+        File.WriteAllText(destFile, w.ToString());
+    }
 
-        internal static void GenLicenses()
-        {
-            string gitLicenseFile = Path.Combine(Core.ALSolutionPath, "LICENSE");
-            string distLicenseFile = Path.Combine(Core.ALSolutionPath, "BinReleaseOnly", "Licenses", "AngelLoader license.txt");
+    internal static void GenLicenses()
+    {
+        string gitLicenseFile = Path.Combine(Core.ALSolutionPath, "LICENSE");
+        string distLicenseFile = Path.Combine(Core.ALSolutionPath, "BinReleaseOnly", "Licenses", "AngelLoader license.txt");
 
-            File.WriteAllLines(gitLicenseFile, MitLicenseLines);
+        File.WriteAllLines(gitLicenseFile, MitLicenseLines);
 
-            var distLicenseLines = new List<string>();
-            distLicenseLines.AddRange(LicenseTopLines);
-            distLicenseLines.AddRange(MitLicenseLines);
+        var distLicenseLines = new List<string>();
+        distLicenseLines.AddRange(LicenseTopLines);
+        distLicenseLines.AddRange(MitLicenseLines);
 
-            File.WriteAllLines(distLicenseFile, distLicenseLines);
-        }
+        File.WriteAllLines(distLicenseFile, distLicenseLines);
     }
 }

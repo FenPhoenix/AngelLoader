@@ -1,16 +1,15 @@
 ﻿using System.Windows.Forms;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed partial class Lazy_EditFMPage : UserControl
 {
-    public sealed partial class Lazy_EditFMPage : UserControl
+    public Lazy_EditFMPage()
     {
-        public Lazy_EditFMPage()
-        {
 #if DEBUG
             InitializeComponent();
 #else
-            InitSlim();
+        InitSlim();
 #endif
-        }
     }
 }

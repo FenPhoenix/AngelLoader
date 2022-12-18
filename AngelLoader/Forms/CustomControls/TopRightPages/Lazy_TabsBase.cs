@@ -4,60 +4,59 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+// @VBL: Lots of it in the lazy-loaded top-right tabs now.
+public class Lazy_TabsBase : DarkTabPageCustom
 {
-    // @VBL: Lots of it in the lazy-loaded top-right tabs now.
-    public class Lazy_TabsBase : DarkTabPageCustom
+    private protected MainForm _owner = null!;
+
+    private protected bool _constructed;
+
+    private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
+
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override bool DarkModeEnabled
     {
-        private protected MainForm _owner = null!;
-
-        private protected bool _constructed;
-
-        private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
-
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override bool DarkModeEnabled
+        get => base.DarkModeEnabled;
+        set
         {
-            get => base.DarkModeEnabled;
-            set
-            {
-                if (base.DarkModeEnabled == value) return;
-                base.DarkModeEnabled = value;
+            if (base.DarkModeEnabled == value) return;
+            base.DarkModeEnabled = value;
 
-                if (!_constructed) return;
+            if (!_constructed) return;
 
-                RefreshTheme();
-            }
+            RefreshTheme();
         }
+    }
 
-        public void SetOwner(MainForm owner) => _owner = owner;
+    public void SetOwner(MainForm owner) => _owner = owner;
 
-        public void ConstructWithSuspendResume()
+    public void ConstructWithSuspendResume()
+    {
+        if (_constructed) return;
+
+        try
         {
-            if (_constructed) return;
-
-            try
-            {
-                this.SuspendDrawing();
-                Construct();
-            }
-            finally
-            {
-                this.ResumeDrawing();
-            }
+            this.SuspendDrawing();
+            Construct();
         }
-
-        public virtual void Construct() { }
-
-        public virtual void Localize() { }
-
-        public virtual void UpdatePage() { }
-
-        private protected void RefreshTheme()
+        finally
         {
-            ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
+            this.ResumeDrawing();
         }
+    }
+
+    public virtual void Construct() { }
+
+    public virtual void Localize() { }
+
+    public virtual void UpdatePage() { }
+
+    private protected void RefreshTheme()
+    {
+        ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
     }
 }

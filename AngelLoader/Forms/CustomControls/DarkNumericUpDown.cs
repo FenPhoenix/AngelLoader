@@ -7,97 +7,97 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 {
-    public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
-    {
 #if false
         private Color? _origForeColor;
         private Color? _origBackColor;
 #endif
 
-        private static bool? _setStyleMethodReflectable;
-        private static MethodInfo? _setStyleMethod;
+    private static bool? _setStyleMethodReflectable;
+    private static MethodInfo? _setStyleMethod;
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+
+            // Classic mode original values:
+
+            // This:
+            // ControlStyles.OptimizedDoubleBuffer == false
+            // ControlStyles.ResizeRedraw == true
+            // ControlStyles.UserPaint == true
+
+            // Controls[0]:
+            // ControlStyles.AllPaintingInWmPaint == true
+            // ControlStyles.DoubleBuffer == false
+
+            if (_darkModeEnabled)
             {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-
-                // Classic mode original values:
-
-                // This:
-                // ControlStyles.OptimizedDoubleBuffer == false
-                // ControlStyles.ResizeRedraw == true
-                // ControlStyles.UserPaint == true
-
-                // Controls[0]:
-                // ControlStyles.AllPaintingInWmPaint == true
-                // ControlStyles.DoubleBuffer == false
-
-                if (_darkModeEnabled)
-                {
-                    SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                             ControlStyles.ResizeRedraw |
-                             ControlStyles.UserPaint, true);
+                SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                         ControlStyles.ResizeRedraw |
+                         ControlStyles.UserPaint, true);
 
 #if false
                     _origForeColor ??= base.ForeColor;
                     _origBackColor ??= base.BackColor;
 #endif
 
-                    // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
-                    // My only guess is it's taking the parent's fore/back colors?
+                // @DarkModeNote(NumericUpDown): Fore/back colors don't take when we set them, but they end up correct anyway(?!)
+                // My only guess is it's taking the parent's fore/back colors?
 #if false
                     base.ForeColor = DarkColors.LightText;
                     base.BackColor = DarkColors.Fen_DarkBackground;
 #endif
-                }
-                else
-                {
-                    SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
-                    SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
+            }
+            else
+            {
+                SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+                SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 
 #if false
                     if (_origForeColor != null) base.ForeColor = (Color)_origForeColor;
                     if (_origBackColor != null) base.BackColor = (Color)_origBackColor;
 #endif
-                }
+            }
 
-                try
+            try
+            {
+                // Prevent flickering, only if our assembly has reflection permission
+                if (_setStyleMethodReflectable == null)
                 {
-                    // Prevent flickering, only if our assembly has reflection permission
-                    if (_setStyleMethodReflectable == null)
-                    {
-                        _setStyleMethod = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
-                        _setStyleMethodReflectable = _setStyleMethod != null;
-                    }
-                    if (_setStyleMethodReflectable == true)
-                    {
-                        if (_darkModeEnabled)
-                        {
-                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
-                        }
-                        else
-                        {
-                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
-                            _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
-                        }
-                    }
+                    _setStyleMethod = Controls[0].GetType().GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance);
+                    _setStyleMethodReflectable = _setStyleMethod != null;
                 }
-                catch
+                if (_setStyleMethodReflectable == true)
                 {
-                    // Oh well...
-                    _setStyleMethodReflectable = false;
+                    if (_darkModeEnabled)
+                    {
+                        _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true });
+                    }
+                    else
+                    {
+                        _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.AllPaintingInWmPaint, true });
+                        _setStyleMethod!.Invoke(Controls[0], new object[] { ControlStyles.DoubleBuffer, false });
+                    }
                 }
             }
+            catch
+            {
+                // Oh well...
+                _setStyleMethodReflectable = false;
+            }
         }
+    }
 
 #if DEBUG
 
@@ -113,134 +113,133 @@ namespace AngelLoader.Forms.CustomControls
 
 #endif
 
-        private bool _mouseDown;
+    private bool _mouseDown;
 
-        public DarkNumericUpDown()
+    public DarkNumericUpDown()
+    {
+        Controls[0].Paint += DarkNumericUpDown_Paint;
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        if (!_darkModeEnabled)
         {
-            Controls[0].Paint += DarkNumericUpDown_Paint;
+            base.OnMouseMove(e);
+            return;
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            if (!_darkModeEnabled)
-            {
-                base.OnMouseMove(e);
-                return;
-            }
+        Invalidate();
+    }
 
-            Invalidate();
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        if (!_darkModeEnabled)
+        {
+            base.OnMouseDown(e);
+            return;
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            if (!_darkModeEnabled)
-            {
-                base.OnMouseDown(e);
-                return;
-            }
+        _mouseDown = true;
+        Invalidate();
+    }
 
-            _mouseDown = true;
-            Invalidate();
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        if (!_darkModeEnabled)
+        {
+            base.OnMouseUp(e);
+            return;
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            if (!_darkModeEnabled)
-            {
-                base.OnMouseUp(e);
-                return;
-            }
+        _mouseDown = false;
+        Invalidate();
+    }
 
-            _mouseDown = false;
-            Invalidate();
-        }
+    protected override void OnMouseEnter(EventArgs e)
+    {
+        base.OnMouseEnter(e);
+        if (_darkModeEnabled) Invalidate();
+    }
 
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            base.OnMouseEnter(e);
-            if (_darkModeEnabled) Invalidate();
-        }
+    protected override void OnMouseLeave(EventArgs e)
+    {
+        base.OnMouseLeave(e);
+        if (_darkModeEnabled) Invalidate();
+    }
 
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-            if (_darkModeEnabled) Invalidate();
-        }
+    protected override void OnGotFocus(EventArgs e)
+    {
+        base.OnGotFocus(e);
+        if (_darkModeEnabled) Invalidate();
+    }
 
-        protected override void OnGotFocus(EventArgs e)
-        {
-            base.OnGotFocus(e);
-            if (_darkModeEnabled) Invalidate();
-        }
+    protected override void OnLostFocus(EventArgs e)
+    {
+        base.OnLostFocus(e);
+        if (_darkModeEnabled) Invalidate();
+    }
 
-        protected override void OnLostFocus(EventArgs e)
-        {
-            base.OnLostFocus(e);
-            if (_darkModeEnabled) Invalidate();
-        }
+    protected override void OnTextBoxLostFocus(object source, EventArgs e)
+    {
+        base.OnTextBoxLostFocus(source, e);
+        if (_darkModeEnabled) Invalidate();
+    }
 
-        protected override void OnTextBoxLostFocus(object source, EventArgs e)
-        {
-            base.OnTextBoxLostFocus(source, e);
-            if (_darkModeEnabled) Invalidate();
-        }
+    private void DarkNumericUpDown_Paint(object sender, PaintEventArgs e)
+    {
+        if (!_darkModeEnabled) return;
 
-        private void DarkNumericUpDown_Paint(object sender, PaintEventArgs e)
-        {
-            if (!_darkModeEnabled) return;
+        Graphics g = e.Graphics;
+        Rectangle clipRect = Controls[0].ClientRectangle;
 
-            Graphics g = e.Graphics;
-            Rectangle clipRect = Controls[0].ClientRectangle;
+        g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
 
-            g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
+        Point mousePos = Controls[0].PointToClient_Fast(Native.GetCursorPosition_Fast());
 
-            Point mousePos = Controls[0].PointToClient_Fast(Native.GetCursorPosition_Fast());
+        var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
+        bool upHot = upArea.Contains(mousePos);
 
-            var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
-            bool upHot = upArea.Contains(mousePos);
+        Pen upPen = upHot
+            ? _mouseDown
+                ? DarkColors.ActiveControlPen
+                : DarkColors.GreyHighlightPen
+            : DarkColors.GreySelectionPen;
 
-            Pen upPen = upHot
-                ? _mouseDown
-                    ? DarkColors.ActiveControlPen
-                    : DarkColors.GreyHighlightPen
-                : DarkColors.GreySelectionPen;
+        Images.PaintArrow7x4(
+            g: g,
+            direction: Misc.Direction.Up,
+            area: upArea,
+            controlEnabled: Enabled,
+            pen: upPen
+        );
 
-            Images.PaintArrow7x4(
-                g: g,
-                direction: Misc.Direction.Up,
-                area: upArea,
-                controlEnabled: Enabled,
-                pen: upPen
-            );
+        var downArea = new Rectangle(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
+        bool downHot = downArea.Contains(mousePos);
 
-            var downArea = new Rectangle(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
-            bool downHot = downArea.Contains(mousePos);
+        Pen downPen = downHot
+            ? _mouseDown
+                ? DarkColors.ActiveControlPen
+                : DarkColors.GreyHighlightPen
+            : DarkColors.GreySelectionPen;
 
-            Pen downPen = downHot
-                ? _mouseDown
-                    ? DarkColors.ActiveControlPen
-                    : DarkColors.GreyHighlightPen
-                : DarkColors.GreySelectionPen;
+        Images.PaintArrow7x4(
+            g: g,
+            direction: Misc.Direction.Down,
+            area: downArea,
+            controlEnabled: Enabled,
+            pen: downPen
+        );
+    }
 
-            Images.PaintArrow7x4(
-                g: g,
-                direction: Misc.Direction.Down,
-                area: downArea,
-                controlEnabled: Enabled,
-                pen: downPen
-            );
-        }
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
+        if (!_darkModeEnabled) return;
 
-            if (!_darkModeEnabled) return;
+        Pen borderPen = Focused && TabStop ? DarkColors.BlueHighlightPen : DarkColors.GreySelectionPen;
+        var borderRect = new Rectangle(ClientRectangle.Left, ClientRectangle.Top, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
 
-            Pen borderPen = Focused && TabStop ? DarkColors.BlueHighlightPen : DarkColors.GreySelectionPen;
-            var borderRect = new Rectangle(ClientRectangle.Left, ClientRectangle.Top, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-
-            e.Graphics.DrawRectangle(borderPen, borderRect);
-        }
+        e.Graphics.DrawRectangle(borderPen, borderRect);
     }
 }

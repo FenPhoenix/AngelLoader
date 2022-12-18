@@ -7,27 +7,27 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+// @DarkModeNote(DarkCheckBox):
+// We could add support for putting the checkbox on the right-hand side if we feel like we need it
+public sealed class DarkCheckBox : CheckBox, IDarkable
 {
-    // @DarkModeNote(DarkCheckBox):
-    // We could add support for putting the checkbox on the right-hand side if we feel like we need it
-    public sealed class DarkCheckBox : CheckBox, IDarkable
-    {
-        #region Field Region
+    #region Field Region
 
-        private DarkControlState _controlState = DarkControlState.Normal;
+    private DarkControlState _controlState = DarkControlState.Normal;
 
-        private bool _spacePressed;
+    private bool _spacePressed;
 
-        private const int _checkBoxSize = 12;
+    private const int _checkBoxSize = 12;
 
-        #endregion
+    #endregion
 
-        [PublicAPI]
-        public Color? DarkModeBackColor;
+    [PublicAPI]
+    public Color? DarkModeBackColor;
 
-        [PublicAPI]
-        public Color? DarkModeForeColor;
+    [PublicAPI]
+    public Color? DarkModeForeColor;
 
 #if DEBUG
 
@@ -42,265 +42,264 @@ namespace AngelLoader.Forms.CustomControls
 
 #endif
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                Invalidate();
-            }
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+            Invalidate();
         }
+    }
 
-        #region Constructor Region
+    #region Constructor Region
 
-        public DarkCheckBox()
+    public DarkCheckBox()
+    {
+        // Always true
+        SetStyle(ControlStyles.SupportsTransparentBackColor |
+                 ControlStyles.OptimizedDoubleBuffer |
+                 ControlStyles.ResizeRedraw |
+                 ControlStyles.UserPaint, true);
+        UseMnemonic = false;
+    }
+
+    #endregion
+
+    private void InvalidateIfDark()
+    {
+        if (_darkModeEnabled) Invalidate();
+    }
+
+    #region Method Region
+
+    private void SetControlState(DarkControlState controlState)
+    {
+        if (_controlState != controlState)
         {
-            // Always true
-            SetStyle(ControlStyles.SupportsTransparentBackColor |
-                     ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.UserPaint, true);
-            UseMnemonic = false;
-        }
-
-        #endregion
-
-        private void InvalidateIfDark()
-        {
-            if (_darkModeEnabled) Invalidate();
-        }
-
-        #region Method Region
-
-        private void SetControlState(DarkControlState controlState)
-        {
-            if (_controlState != controlState)
-            {
-                _controlState = controlState;
-                InvalidateIfDark();
-            }
-        }
-
-        #endregion
-
-        #region Event Handler Region
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
-                ? DarkControlState.Pressed
-                : DarkControlState.Hover);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
-            {
-                SetControlState(DarkControlState.Pressed);
-            }
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(DarkControlState.Normal);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            SetControlState(DarkControlState.Normal);
-        }
-
-        protected override void OnMouseCaptureChanged(EventArgs e)
-        {
-            base.OnMouseCaptureChanged(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_spacePressed) return;
-
-            if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
-            {
-                SetControlState(DarkControlState.Normal);
-            }
-        }
-
-        protected override void OnGotFocus(EventArgs e)
-        {
-            base.OnGotFocus(e);
-
-            if (!_darkModeEnabled) return;
-
+            _controlState = controlState;
             InvalidateIfDark();
         }
+    }
 
-        protected override void OnLostFocus(EventArgs e)
+    #endregion
+
+    #region Event Handler Region
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
+            ? DarkControlState.Pressed
+            : DarkControlState.Hover);
+    }
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
         {
-            base.OnLostFocus(e);
+            SetControlState(DarkControlState.Pressed);
+        }
+    }
 
-            if (!_darkModeEnabled) return;
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
 
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(DarkControlState.Normal);
+    }
+
+    protected override void OnMouseLeave(EventArgs e)
+    {
+        base.OnMouseLeave(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        SetControlState(DarkControlState.Normal);
+    }
+
+    protected override void OnMouseCaptureChanged(EventArgs e)
+    {
+        base.OnMouseCaptureChanged(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_spacePressed) return;
+
+        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        {
+            SetControlState(DarkControlState.Normal);
+        }
+    }
+
+    protected override void OnGotFocus(EventArgs e)
+    {
+        base.OnGotFocus(e);
+
+        if (!_darkModeEnabled) return;
+
+        InvalidateIfDark();
+    }
+
+    protected override void OnLostFocus(EventArgs e)
+    {
+        base.OnLostFocus(e);
+
+        if (!_darkModeEnabled) return;
+
+        _spacePressed = false;
+
+        SetControlState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+            ? DarkControlState.Hover
+            : DarkControlState.Normal);
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (e.KeyCode == Keys.Space)
+        {
+            _spacePressed = true;
+            SetControlState(DarkControlState.Pressed);
+        }
+    }
+
+    protected override void OnKeyUp(KeyEventArgs e)
+    {
+        base.OnKeyUp(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (e.KeyCode == Keys.Space)
+        {
             _spacePressed = false;
 
             SetControlState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }
+    }
 
-        protected override void OnKeyDown(KeyEventArgs e)
+    #endregion
+
+    #region Paint Region
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        if (!_darkModeEnabled)
         {
-            base.OnKeyDown(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (e.KeyCode == Keys.Space)
-            {
-                _spacePressed = true;
-                SetControlState(DarkControlState.Pressed);
-            }
+            base.OnPaint(e);
+            return;
         }
 
-        protected override void OnKeyUp(KeyEventArgs e)
+        Graphics g = e.Graphics;
+        var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+
+        Color textColor = DarkColors.LightText;
+        Pen borderPen = DarkColors.LightTextPen;
+        SolidBrush fillBrush = DarkColors.LightTextBrush;
+
+        if (Enabled)
         {
-            base.OnKeyUp(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (e.KeyCode == Keys.Space)
+            if (AutoCheck && Focused)
             {
-                _spacePressed = false;
-
-                SetControlState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
-                    ? DarkControlState.Hover
-                    : DarkControlState.Normal);
-            }
-        }
-
-        #endregion
-
-        #region Paint Region
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if (!_darkModeEnabled)
-            {
-                base.OnPaint(e);
-                return;
+                borderPen = DarkColors.BlueHighlightPen;
+                fillBrush = DarkColors.BlueHighlightBrush;
             }
 
-            Graphics g = e.Graphics;
-            var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
-
-            Color textColor = DarkColors.LightText;
-            Pen borderPen = DarkColors.LightTextPen;
-            SolidBrush fillBrush = DarkColors.LightTextBrush;
-
-            if (Enabled)
+            if (_controlState == DarkControlState.Hover)
             {
-                if (AutoCheck && Focused)
-                {
-                    borderPen = DarkColors.BlueHighlightPen;
-                    fillBrush = DarkColors.BlueHighlightBrush;
-                }
-
-                if (_controlState == DarkControlState.Hover)
-                {
-                    borderPen = DarkColors.BlueHighlightPen;
-                    fillBrush = DarkColors.BlueSelectionBrush;
-                }
-                else if (_controlState == DarkControlState.Pressed)
-                {
-                    borderPen = DarkColors.GreyHighlightPen;
-                    fillBrush = DarkColors.GreySelectionBrush;
-                }
+                borderPen = DarkColors.BlueHighlightPen;
+                fillBrush = DarkColors.BlueSelectionBrush;
             }
-            else
+            else if (_controlState == DarkControlState.Pressed)
             {
-                textColor = DarkColors.DisabledText;
                 borderPen = DarkColors.GreyHighlightPen;
                 fillBrush = DarkColors.GreySelectionBrush;
             }
-
-            Color? parentBackColor = Parent?.BackColor;
-            if (parentBackColor != null)
-            {
-                using var b = new SolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
-                g.FillRectangle(b, rect);
-            }
-            else
-            {
-                g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
-            }
-
-            var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
-            g.DrawRectangle(borderPen, outlineBoxRect);
-
-            if (CheckState == CheckState.Checked)
-            {
-                // IMPORTANT! Stop removing this thing, IT NEEDS TO BE SEPARATE BECAUSE IT'S GOT A DIFFERENT WIDTH!
-                using var checkMarkPen = new Pen(fillBrush, 1.6f);
-                SmoothingMode oldSmoothingMode = g.SmoothingMode;
-
-                g.SmoothingMode = SmoothingMode.HighQuality;
-
-                // First half of checkmark
-                g.DrawLine(checkMarkPen,
-                    outlineBoxRect.Left + 1.5f,
-                    outlineBoxRect.Top + 6,
-                    outlineBoxRect.Left + 4.5f,
-                    outlineBoxRect.Top + 9);
-
-                // Second half of checkmark
-                g.DrawLine(checkMarkPen,
-                    outlineBoxRect.Left + 4.5f,
-                    outlineBoxRect.Top + 9,
-                    outlineBoxRect.Left + 10.5f,
-                    outlineBoxRect.Top + 3);
-
-                g.SmoothingMode = oldSmoothingMode;
-            }
-            else if (CheckState == CheckState.Indeterminate)
-            {
-                var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
-                g.FillRectangle(fillBrush, boxRect);
-            }
-
-            TextFormatFlags textFormatFlags =
-                ControlUtils.GetTextAlignmentFlags(TextAlign) |
-                TextFormatFlags.NoPrefix |
-                TextFormatFlags.NoClipping |
-                TextFormatFlags.WordBreak;
-
-            var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
-            TextRenderer.DrawText(g, Text, Font, textRect, DarkModeForeColor ?? textColor, textFormatFlags);
+        }
+        else
+        {
+            textColor = DarkColors.DisabledText;
+            borderPen = DarkColors.GreyHighlightPen;
+            fillBrush = DarkColors.GreySelectionBrush;
         }
 
-        #endregion
+        Color? parentBackColor = Parent?.BackColor;
+        if (parentBackColor != null)
+        {
+            using var b = new SolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
+            g.FillRectangle(b, rect);
+        }
+        else
+        {
+            g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
+        }
+
+        var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
+        g.DrawRectangle(borderPen, outlineBoxRect);
+
+        if (CheckState == CheckState.Checked)
+        {
+            // IMPORTANT! Stop removing this thing, IT NEEDS TO BE SEPARATE BECAUSE IT'S GOT A DIFFERENT WIDTH!
+            using var checkMarkPen = new Pen(fillBrush, 1.6f);
+            SmoothingMode oldSmoothingMode = g.SmoothingMode;
+
+            g.SmoothingMode = SmoothingMode.HighQuality;
+
+            // First half of checkmark
+            g.DrawLine(checkMarkPen,
+                outlineBoxRect.Left + 1.5f,
+                outlineBoxRect.Top + 6,
+                outlineBoxRect.Left + 4.5f,
+                outlineBoxRect.Top + 9);
+
+            // Second half of checkmark
+            g.DrawLine(checkMarkPen,
+                outlineBoxRect.Left + 4.5f,
+                outlineBoxRect.Top + 9,
+                outlineBoxRect.Left + 10.5f,
+                outlineBoxRect.Top + 3);
+
+            g.SmoothingMode = oldSmoothingMode;
+        }
+        else if (CheckState == CheckState.Indeterminate)
+        {
+            var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
+            g.FillRectangle(fillBrush, boxRect);
+        }
+
+        TextFormatFlags textFormatFlags =
+            ControlUtils.GetTextAlignmentFlags(TextAlign) |
+            TextFormatFlags.NoPrefix |
+            TextFormatFlags.NoClipping |
+            TextFormatFlags.WordBreak;
+
+        var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
+        TextRenderer.DrawText(g, Text, Font, textRect, DarkModeForeColor ?? textColor, textFormatFlags);
     }
+
+    #endregion
 }

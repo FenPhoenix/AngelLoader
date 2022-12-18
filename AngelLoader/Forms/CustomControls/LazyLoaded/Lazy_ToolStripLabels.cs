@@ -6,107 +6,106 @@ using static AngelLoader.Global;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 #pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal enum Lazy_FilterLabel
 {
-    internal enum Lazy_FilterLabel
+    ReleaseDate,
+    LastPlayed,
+    Rating
+}
+
+internal sealed class Lazy_ToolStripLabels : IDarkable
+{
+    private readonly MainForm _owner;
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
     {
-        ReleaseDate,
-        LastPlayed,
-        Rating
+        set
+        {
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+
+            for (int i = 0; i < _labels.Length; i++)
+            {
+                if (_constructed[i])
+                {
+                    ToolStripLabel label = _labels[i];
+                    label.ForeColor = LabelForeColor;
+                }
+            }
+        }
     }
 
-    internal sealed class Lazy_ToolStripLabels : IDarkable
+    internal Lazy_ToolStripLabels(MainForm owner) => _owner = owner;
+
+    private Color LabelForeColor => _darkModeEnabled ? DarkColors.LightText : Color.Maroon;
+
+    private readonly bool[] _constructed = new bool[3];
+
+    // Inits to null, don't worry
+    private readonly ToolStripLabel[] _labels = new ToolStripLabel[3];
+
+    internal void Show(Lazy_FilterLabel label, string text)
     {
-        private readonly MainForm _owner;
+        int li = (int)label;
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+        if (!_constructed[li])
         {
-            set
+            var _label = new ToolStripLabel
             {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
+                ForeColor = LabelForeColor,
+                Margin = new Padding(4, 5, 0, 2)
+            };
 
-                for (int i = 0; i < _labels.Length; i++)
+            _labels[li] = _label;
+
+            var container = _owner.FilterIconButtonsToolStrip;
+            ToolStripButtonCustom button = label switch
+            {
+                Lazy_FilterLabel.ReleaseDate => _owner.FilterByReleaseDateButton,
+                Lazy_FilterLabel.LastPlayed => _owner.FilterByLastPlayedButton,
+                Lazy_FilterLabel.Rating => _owner.FilterByRatingButton
+            };
+
+            for (int i = 0; i < container.Items.Count; i++)
+            {
+                if (container.Items[i] == button)
                 {
-                    if (_constructed[i])
-                    {
-                        ToolStripLabel label = _labels[i];
-                        label.ForeColor = LabelForeColor;
-                    }
+                    container.Items.Insert(i + 1, _label);
+                    break;
                 }
             }
+
+            _constructed[li] = true;
+
+            Localize(label);
         }
 
-        internal Lazy_ToolStripLabels(MainForm owner) => _owner = owner;
+        _labels[li].Text = text;
+        _labels[li].Visible = true;
+    }
 
-        private Color LabelForeColor => _darkModeEnabled ? DarkColors.LightText : Color.Maroon;
+    internal void Localize(Lazy_FilterLabel label)
+    {
+        int li = (int)label;
 
-        private readonly bool[] _constructed = new bool[3];
-
-        // Inits to null, don't worry
-        private readonly ToolStripLabel[] _labels = new ToolStripLabel[3];
-
-        internal void Show(Lazy_FilterLabel label, string text)
+        if (_constructed[li])
         {
-            int li = (int)label;
-
-            if (!_constructed[li])
+            _labels[li].ToolTipText = label switch
             {
-                var _label = new ToolStripLabel
-                {
-                    ForeColor = LabelForeColor,
-                    Margin = new Padding(4, 5, 0, 2)
-                };
-
-                _labels[li] = _label;
-
-                var container = _owner.FilterIconButtonsToolStrip;
-                ToolStripButtonCustom button = label switch
-                {
-                    Lazy_FilterLabel.ReleaseDate => _owner.FilterByReleaseDateButton,
-                    Lazy_FilterLabel.LastPlayed => _owner.FilterByLastPlayedButton,
-                    Lazy_FilterLabel.Rating => _owner.FilterByRatingButton
-                };
-
-                for (int i = 0; i < container.Items.Count; i++)
-                {
-                    if (container.Items[i] == button)
-                    {
-                        container.Items.Insert(i + 1, _label);
-                        break;
-                    }
-                }
-
-                _constructed[li] = true;
-
-                Localize(label);
-            }
-
-            _labels[li].Text = text;
-            _labels[li].Visible = true;
+                Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
+                Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
+                Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip
+            };
         }
+    }
 
-        internal void Localize(Lazy_FilterLabel label)
-        {
-            int li = (int)label;
-
-            if (_constructed[li])
-            {
-                _labels[li].ToolTipText = label switch
-                {
-                    Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
-                    Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
-                    Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip
-                };
-            }
-        }
-
-        internal void Hide(Lazy_FilterLabel label)
-        {
-            int li = (int)label;
-            if (_constructed[li]) _labels[li].Visible = false;
-        }
+    internal void Hide(Lazy_FilterLabel label)
+    {
+        int li = (int)label;
+        if (_constructed[li]) _labels[li].Visible = false;
     }
 }

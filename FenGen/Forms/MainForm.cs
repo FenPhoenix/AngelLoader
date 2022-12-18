@@ -2,26 +2,25 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
-namespace FenGen.Forms
+namespace FenGen.Forms;
+
+[SuppressMessage("ReSharper", "UnusedType.Global")]
+public partial class MainForm : Form
 {
-    [SuppressMessage("ReSharper", "UnusedType.Global")]
-    public partial class MainForm : Form
+    public MainForm()
     {
-        public MainForm()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
 #pragma warning disable 1998
-        private async void GenerateButton_Click(object sender, EventArgs e)
+    private async void GenerateButton_Click(object sender, EventArgs e)
 #pragma warning restore 1998
-        {
-            Core.ReadArgsAndDoTasks();
-        }
+    {
+        Core.ReadArgsAndDoTasks();
+    }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Environment.Exit(0);
-        }
+    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        Environment.Exit(0);
     }
 }

@@ -6,262 +6,261 @@ using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader
+namespace AngelLoader;
+
+internal static class FMTags
 {
-    internal static class FMTags
+    #region Add tag
+
+    internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
     {
-        #region Add tag
+        AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
+        UpdateFMTagsString(fm);
+        if (rebuildGlobalTags) RebuildGlobalTags();
+    }
 
-        internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
+    #endregion
+
+    #region Remove tag
+
+    internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
+    {
+        if (isCategory ? catText.IsWhiteSpace() : tagText.IsWhiteSpace()) return false;
+
+        // TODO: These messageboxes are annoying, but they prevent accidental deletion.
+        // Figure out something better.
+        (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+            message: isCategory ? LText.TagsTab.AskRemoveCategory : LText.TagsTab.AskRemoveTag,
+            title: LText.TagsTab.TabText,
+            icon: MBoxIcon.None,
+            yes: LText.Global.Yes,
+            no: LText.Global.No
+        );
+        if (result == MBoxButton.No) return false;
+
+        // Parent node (category)
+        if (isCategory)
         {
-            AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
-            UpdateFMTagsString(fm);
-            if (rebuildGlobalTags) RebuildGlobalTags();
-        }
-
-        #endregion
-
-        #region Remove tag
-
-        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText, bool isCategory)
-        {
-            if (isCategory ? catText.IsWhiteSpace() : tagText.IsWhiteSpace()) return false;
-
-            // TODO: These messageboxes are annoying, but they prevent accidental deletion.
-            // Figure out something better.
-            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                message: isCategory ? LText.TagsTab.AskRemoveCategory : LText.TagsTab.AskRemoveTag,
-                title: LText.TagsTab.TabText,
-                icon: MBoxIcon.None,
-                yes: LText.Global.Yes,
-                no: LText.Global.No
-            );
-            if (result == MBoxButton.No) return false;
-
-            // Parent node (category)
-            if (isCategory)
+            if (fm.Tags.ContainsKey(catText))
             {
-                if (fm.Tags.ContainsKey(catText))
-                {
-                    fm.Tags.Remove(catText);
-                    UpdateFMTagsString(fm);
-                }
+                fm.Tags.Remove(catText);
+                UpdateFMTagsString(fm);
             }
-            // Child node (tag)
-            else
-            {
-                if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
-                    tagsList.Contains(tagText))
-                {
-                    tagsList.Remove(tagText);
-                    if (tagsList.Count == 0) fm.Tags.Remove(catText);
-                    UpdateFMTagsString(fm);
-                }
-            }
-
-            RebuildGlobalTags();
-
-            Ini.WriteFullFMDataIni();
-
-            return true;
         }
-
-        #endregion
-
-        internal static void RebuildGlobalTags()
+        // Child node (tag)
+        else
         {
-            PresetTags.DeepCopyTo(GlobalTags);
-            for (int i = 0; i < FMsViewList.Count; i++)
+            if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
+                tagsList.Contains(tagText))
             {
-                FanMission fm = FMsViewList[i];
-                AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+                tagsList.Remove(tagText);
+                if (tagsList.Count == 0) fm.Tags.Remove(catText);
+                UpdateFMTagsString(fm);
             }
         }
 
-        internal static List<string> GetMatchingTagsList(string searchText)
+        RebuildGlobalTags();
+
+        Ini.WriteFullFMDataIni();
+
+        return true;
+    }
+
+    #endregion
+
+    internal static void RebuildGlobalTags()
+    {
+        PresetTags.DeepCopyTo(GlobalTags);
+        for (int i = 0; i < FMsViewList.Count; i++)
         {
-            // Smartasses who try to break it get nothing
-            if (searchText.CharCountIsAtLeast(':', 2) || searchText.IsWhiteSpace()) return new List<string>();
+            FanMission fm = FMsViewList[i];
+            AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+        }
+    }
 
-            (string First, string Second) text;
+    internal static List<string> GetMatchingTagsList(string searchText)
+    {
+        // Smartasses who try to break it get nothing
+        if (searchText.CharCountIsAtLeast(':', 2) || searchText.IsWhiteSpace()) return new List<string>();
 
-            int index = searchText.IndexOf(':');
-            if (index > -1)
-            {
-                text.First = searchText.Substring(0, index).Trim();
-                text.Second = searchText.Substring(index + 1).Trim();
-            }
-            else
-            {
-                text.First = searchText.Trim();
-                text.Second = "";
-            }
+        (string First, string Second) text;
 
-            // Shut up, it works
-            var list = new List<string>();
-            foreach (CatAndTagsList gCat in GlobalTags)
+        int index = searchText.IndexOf(':');
+        if (index > -1)
+        {
+            text.First = searchText.Substring(0, index).Trim();
+            text.Second = searchText.Substring(index + 1).Trim();
+        }
+        else
+        {
+            text.First = searchText.Trim();
+            text.Second = "";
+        }
+
+        // Shut up, it works
+        var list = new List<string>();
+        foreach (CatAndTagsList gCat in GlobalTags)
+        {
+            if (gCat.Category.ContainsI(text.First))
             {
-                if (gCat.Category.ContainsI(text.First))
+                if (gCat.Tags.Count == 0)
                 {
-                    if (gCat.Tags.Count == 0)
-                    {
-                        if (gCat.Category != PresetTags.MiscCategory) list.Add(gCat.Category + ":");
-                    }
-                    else
-                    {
-                        foreach (string gTag in gCat.Tags)
-                        {
-                            if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
-                            if (gCat.Category == PresetTags.MiscCategory)
-                            {
-                                if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
-                                {
-                                    list.Add(gTag);
-                                }
-                            }
-                            else
-                            {
-                                list.Add(gCat.Category + ": " + gTag);
-                            }
-                        }
-                    }
+                    if (gCat.Category != PresetTags.MiscCategory) list.Add(gCat.Category + ":");
                 }
-                // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Category == PresetTags.MiscCategory)
+                else
                 {
                     foreach (string gTag in gCat.Tags)
                     {
-                        if (gTag.ContainsI(searchText)) list.Add(gTag);
+                        if (!text.Second.IsWhiteSpace() && !gTag.ContainsI(text.Second)) continue;
+                        if (gCat.Category == PresetTags.MiscCategory)
+                        {
+                            if (text.Second.IsWhiteSpace() && !gCat.Category.ContainsI(text.First))
+                            {
+                                list.Add(gTag);
+                            }
+                        }
+                        else
+                        {
+                            list.Add(gCat.Category + ": " + gTag);
+                        }
                     }
                 }
             }
-
-            list.Sort(StringComparer.OrdinalIgnoreCase);
-
-            return list;
+            // if, not else if - we want to display found tags both categorized and uncategorized
+            if (gCat.Category == PresetTags.MiscCategory)
+            {
+                foreach (string gTag in gCat.Tags)
+                {
+                    if (gTag.ContainsI(searchText)) list.Add(gTag);
+                }
+            }
         }
 
-        private const int _tagsToStringSBInitialCapacity = 100;
-        private static readonly StringBuilder _tagsToStringSB = new(_tagsToStringSBInitialCapacity);
-        internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
+        list.Sort(StringComparer.OrdinalIgnoreCase);
+
+        return list;
+    }
+
+    private const int _tagsToStringSBInitialCapacity = 100;
+    private static readonly StringBuilder _tagsToStringSB = new(_tagsToStringSBInitialCapacity);
+    internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
+    {
+        if (_tagsToStringSB.Capacity > ByteSize.KB * 10)
         {
-            if (_tagsToStringSB.Capacity > ByteSize.KB * 10)
-            {
-                _tagsToStringSB.Clear();
-                _tagsToStringSB.Capacity = _tagsToStringSBInitialCapacity;
-            }
-
-            for (int i = 0; i < tagsList.Count; i++)
-            {
-                CatAndTagsList item = tagsList[i];
-                if (item.Tags.Count == 0 && writeEmptyCategories)
-                {
-                    _tagsToStringSB.Append(item.Category).Append(':').Append(',');
-                }
-                else
-                {
-                    for (int j = 0; j < item.Tags.Count; j++)
-                    {
-                        string tag = item.Tags[j];
-                        _tagsToStringSB.Append(item.Category).Append(':').Append(tag).Append(',');
-                    }
-                }
-            }
-
-            // Cheap and easy to understand
-            if (_tagsToStringSB.Length > 0 &&
-                _tagsToStringSB[_tagsToStringSB.Length - 1] == ',')
-            {
-                _tagsToStringSB.Remove(_tagsToStringSB.Length - 1, 1);
-            }
-
-            string ret = _tagsToStringSB.ToString();
-
             _tagsToStringSB.Clear();
-
-            return ret;
+            _tagsToStringSB.Capacity = _tagsToStringSBInitialCapacity;
         }
 
-        // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
-        // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets
-        // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
-        // be kept in sync with Tags. This should ONLY be called when a tag is added or removed. Keep it simple
-        // so we can see and follow the logic.
-        private static void UpdateFMTagsString(FanMission fm)
+        for (int i = 0; i < tagsList.Count; i++)
         {
-            fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false);
-        }
-
-        internal static bool TryGetCatAndTag(string item, out string cat, out string tag)
-        {
-            switch (item.CountCharsUpToAmount(':', 2))
+            CatAndTagsList item = tagsList[i];
+            if (item.Tags.Count == 0 && writeEmptyCategories)
             {
-                case > 1:
-                    cat = "";
-                    tag = "";
-                    return false;
-                case 1:
-                    int index = item.IndexOf(':');
-                    cat = item.Substring(0, index).Trim();
-                    // Save an alloc if we're ascii lowercase already (case conversion always allocs, even if
-                    // the new string is the same as the old)
-                    if (!cat.IsAsciiLower()) cat = cat.ToLowerInvariant();
-                    tag = item.Substring(index + 1).Trim();
-                    break;
-                default:
-                    cat = PresetTags.MiscCategory;
-                    tag = item.Trim();
-                    break;
+                _tagsToStringSB.Append(item.Category).Append(':').Append(',');
+            }
+            else
+            {
+                for (int j = 0; j < item.Tags.Count; j++)
+                {
+                    string tag = item.Tags[j];
+                    _tagsToStringSB.Append(item.Category).Append(':').Append(tag).Append(',');
+                }
+            }
+        }
+
+        // Cheap and easy to understand
+        if (_tagsToStringSB.Length > 0 &&
+            _tagsToStringSB[_tagsToStringSB.Length - 1] == ',')
+        {
+            _tagsToStringSB.Remove(_tagsToStringSB.Length - 1, 1);
+        }
+
+        string ret = _tagsToStringSB.ToString();
+
+        _tagsToStringSB.Clear();
+
+        return ret;
+    }
+
+    // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
+    // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets
+    // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
+    // be kept in sync with Tags. This should ONLY be called when a tag is added or removed. Keep it simple
+    // so we can see and follow the logic.
+    private static void UpdateFMTagsString(FanMission fm)
+    {
+        fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false);
+    }
+
+    internal static bool TryGetCatAndTag(string item, out string cat, out string tag)
+    {
+        switch (item.CountCharsUpToAmount(':', 2))
+        {
+            case > 1:
+                cat = "";
+                tag = "";
+                return false;
+            case 1:
+                int index = item.IndexOf(':');
+                cat = item.Substring(0, index).Trim();
+                // Save an alloc if we're ascii lowercase already (case conversion always allocs, even if
+                // the new string is the same as the old)
+                if (!cat.IsAsciiLower()) cat = cat.ToLowerInvariant();
+                tag = item.Substring(index + 1).Trim();
+                break;
+            default:
+                cat = PresetTags.MiscCategory;
+                tag = item.Trim();
+                break;
+        }
+
+        return true;
+    }
+
+    // Very awkward procedure that accesses global state in the name of only doing one iteration
+    internal static void AddTagsToFMAndGlobalList(
+        string tagsToAdd,
+        FMCategoriesCollection existingFMTags,
+        bool addToGlobalList = true)
+    {
+        if (tagsToAdd.IsWhiteSpace()) return;
+
+        string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < tagsArray.Length; i++)
+        {
+            if (!TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+                cat.IsEmpty() || tag.IsEmpty())
+            {
+                continue;
             }
 
-            return true;
-        }
+            #region FM tags
 
-        // Very awkward procedure that accesses global state in the name of only doing one iteration
-        internal static void AddTagsToFMAndGlobalList(
-            string tagsToAdd,
-            FMCategoriesCollection existingFMTags,
-            bool addToGlobalList = true)
-        {
-            if (tagsToAdd.IsWhiteSpace()) return;
-
-            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < tagsArray.Length; i++)
+            if (existingFMTags.TryGetValue(cat, out FMTagsCollection tagsList))
             {
-                if (!TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
-                    cat.IsEmpty() || tag.IsEmpty())
-                {
-                    continue;
-                }
-
-                #region FM tags
-
-                if (existingFMTags.TryGetValue(cat, out FMTagsCollection tagsList))
-                {
-                    tagsList.Add(tag);
-                }
-                else
-                {
-                    existingFMTags.Add(cat, new FMTagsCollection { tag });
-                }
-
-                #endregion
-
-                if (!addToGlobalList) continue;
-
-                #region Global tags
-
-                if (GlobalTags.TryGetValue(cat, out FMTagsCollection globalTagsList))
-                {
-                    globalTagsList.Add(tag);
-                }
-                else
-                {
-                    GlobalTags.Add(cat, new FMTagsCollection { tag });
-                }
-
-                #endregion
+                tagsList.Add(tag);
             }
+            else
+            {
+                existingFMTags.Add(cat, new FMTagsCollection { tag });
+            }
+
+            #endregion
+
+            if (!addToGlobalList) continue;
+
+            #region Global tags
+
+            if (GlobalTags.TryGetValue(cat, out FMTagsCollection globalTagsList))
+            {
+                globalTagsList.Add(tag);
+            }
+            else
+            {
+                GlobalTags.Add(cat, new FMTagsCollection { tag });
+            }
+
+            #endregion
         }
     }
 }

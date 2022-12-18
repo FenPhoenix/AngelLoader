@@ -8,818 +8,817 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 // ReSharper disable ArrangeTrailingCommaInMultilineLists
 
-namespace AngelLoader.Forms.WinFormsNative
+namespace AngelLoader.Forms.WinFormsNative;
+
+[SuppressMessage("ReSharper", "IdentifierTypo")]
+[SuppressMessage("ReSharper", "CommentTypo")]
+[SuppressMessage("ReSharper", "StringLiteralTypo")]
+internal static class Native
 {
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "CommentTypo")]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static class Native
+    private const int WM_USER = 0x0400;
+    internal const int WM_REFLECT = WM_USER + 0x1C00;
+    internal const int WM_NOTIFY = 0x004E;
+    internal const int WM_SETREDRAW = 0x000B;
+    internal const int WM_NCPAINT = 0x0085;
+    internal const int WM_PAINT = 0x000F;
+    internal const int WM_ERASEBKGND = 0x0014;
+    internal const int WM_MOVE = 0x0003;
+    internal const int WM_SIZE = 0x0005;
+    internal const int WM_WINDOWPOSCHANGED = 0x0047;
+    internal const int WM_ENABLE = 0x000A;
+    internal const int WM_CONTEXTMENU = 0x007B;
+
+    internal const uint WM_CTLCOLORLISTBOX = 0x0134;
+    internal const int SWP_NOSIZE = 0x0001;
+
+    internal const int STATE_SYSTEM_INVISIBLE = 0x00008000;
+    internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
+
+    [PublicAPI]
+    public readonly struct RECT
     {
-        private const int WM_USER = 0x0400;
-        internal const int WM_REFLECT = WM_USER + 0x1C00;
-        internal const int WM_NOTIFY = 0x004E;
-        internal const int WM_SETREDRAW = 0x000B;
-        internal const int WM_NCPAINT = 0x0085;
-        internal const int WM_PAINT = 0x000F;
-        internal const int WM_ERASEBKGND = 0x0014;
-        internal const int WM_MOVE = 0x0003;
-        internal const int WM_SIZE = 0x0005;
-        internal const int WM_WINDOWPOSCHANGED = 0x0047;
-        internal const int WM_ENABLE = 0x000A;
-        internal const int WM_CONTEXTMENU = 0x007B;
+        public readonly int left;
+        public readonly int top;
+        public readonly int right;
+        public readonly int bottom;
 
-        internal const uint WM_CTLCOLORLISTBOX = 0x0134;
-        internal const int SWP_NOSIZE = 0x0001;
+        internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
+    }
 
-        internal const int STATE_SYSTEM_INVISIBLE = 0x00008000;
-        internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
+    [StructLayout(LayoutKind.Sequential)]
+    private sealed class POINT
+    {
+        public int x;
+        public int y;
+    }
 
-        [PublicAPI]
-        public readonly struct RECT
+    private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
+
+    [DllImport("user32.dll")]
+    private static extern bool GetCursorPos([In, Out] POINT pt);
+
+    [DllImport("user32.dll")]
+    private static extern int MapWindowPoints(
+        HandleRef hWndFrom,
+        HandleRef hWndTo,
+        [In, Out] POINT pt,
+        int cPoints);
+
+    // Since we know the UI will only ever run on one thread, we can just have one global POINT class and
+    // just let anyone populate and use it randomly whenever. It can never be accessed by two things at once
+    // because everyone is on one thread.
+    private static readonly POINT _globalNativePoint = new();
+
+    public static Point GetCursorPosition_Fast()
+    {
+        GetCursorPos(_globalNativePoint);
+        return new Point(_globalNativePoint.x, _globalNativePoint.y);
+    }
+
+    public static Point PointToClient_Fast(this Control control, Point p)
+    {
+        _globalNativePoint.x = p.X;
+        _globalNativePoint.y = p.Y;
+        MapWindowPoints(NullHandleRef, new HandleRef(control, control.Handle), _globalNativePoint, 1);
+        return new Point(_globalNativePoint.x, _globalNativePoint.y);
+    }
+
+    public static Point PointToScreen_Fast(this Control control, Point p)
+    {
+        _globalNativePoint.x = p.X;
+        _globalNativePoint.y = p.Y;
+        MapWindowPoints(new HandleRef(control, control.Handle), NullHandleRef, _globalNativePoint, 1);
+        return new Point(_globalNativePoint.x, _globalNativePoint.y);
+    }
+
+    #region SendMessage/PostMessage
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+
+    #endregion
+
+    #region Control-specific
+
+    #region ListView
+
+    private const int LVM_FIRST = 0x1000;
+    internal const int LVM_SETITEMA = LVM_FIRST + 6;
+    internal const int LVM_SETITEMW = LVM_FIRST + 76;
+    internal const int LVM_SETITEMTEXTA = LVM_FIRST + 46;
+    internal const int LVM_SETITEMTEXTW = LVM_FIRST + 116;
+    internal const int LVM_INSERTITEMA = LVM_FIRST + 7;
+    internal const int LVM_INSERTITEMW = LVM_FIRST + 77;
+    internal const int LVM_DELETEITEM = LVM_FIRST + 8;
+    internal const int LVM_DELETEALLITEMS = LVM_FIRST + 9;
+
+    #endregion
+
+    #region MessageBox/TaskDialog
+
+    internal enum SHSTOCKICONID : uint
+    {
+        SIID_HELP = 23,
+        SIID_WARNING = 78,
+        SIID_INFO = 79,
+        SIID_ERROR = 80
+    }
+
+    internal const uint SHGSI_ICON = 0x000000100;
+
+    [PublicAPI]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    internal struct SHSTOCKICONINFO
+    {
+        internal uint cbSize;
+        internal IntPtr hIcon;
+        internal int iSysIconIndex;
+        internal int iIcon;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
+        internal string szPath;
+    }
+
+    [DllImport("Shell32.dll", SetLastError = false)]
+    internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern bool DestroyIcon(IntPtr hIcon);
+
+    #endregion
+
+    #region RichTextBox
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr SetCursor(HandleRef hCursor);
+
+    #region Reader mode
+
+    internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
+
+    internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
+
+    [Flags]
+    internal enum ReaderModeFlags
+    {
+        //None = 0x00,
+        //ZeroCursor = 0x01,
+        VerticalOnly = 0x02,
+        //HorizontalOnly = 0x04
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct READERMODEINFO
+    {
+        internal int cbSize;
+        internal IntPtr hwnd;
+        internal ReaderModeFlags fFlags;
+        internal IntPtr prc;
+        internal ReaderScrollCallbackDelegate pfnScroll;
+        internal TranslateDispatchCallbackDelegate fFlags2;
+        internal IntPtr lParam;
+    }
+
+    [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
+    internal static extern void DoReaderMode(ref READERMODEINFO prmi);
+
+    #endregion
+
+    #region Cursor fix
+
+    internal const int EN_LINK = 0x070b;
+
+    [StructLayout(LayoutKind.Sequential)]
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    internal struct NMHDR
+    {
+        internal IntPtr hwndFrom;
+        internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
+        internal int code;
+    }
+
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
+    [StructLayout(LayoutKind.Sequential)]
+    internal class ENLINK
+    {
+        internal NMHDR nmhdr;
+        internal int msg = 0;
+        internal IntPtr wParam = IntPtr.Zero;
+        internal IntPtr lParam = IntPtr.Zero;
+        internal CHARRANGE? charrange = null;
+    }
+
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [StructLayout(LayoutKind.Sequential)]
+    public class ENLINK64
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
+        public byte[] contents = new byte[56];
+    }
+
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [StructLayout(LayoutKind.Sequential)]
+    internal class CHARRANGE
+    {
+        internal int cpMin;
+        internal int cpMax;
+    }
+
+    #endregion
+
+    #region Auto URL detect
+
+    internal const int EM_AUTOURLDETECT = WM_USER + 91;
+    internal const int AURL_ENABLEURL = 1;
+    internal const int AURL_ENABLEEMAILADDR = 2;
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #region Device context
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetWindowDC(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+    public sealed class GraphicsContext_Ref : IDisposable
+    {
+        private readonly IntPtr _hWnd;
+        private readonly IntPtr _dc;
+        public readonly Graphics G;
+
+        public GraphicsContext_Ref(IntPtr hWnd)
         {
-            public readonly int left;
-            public readonly int top;
-            public readonly int right;
-            public readonly int bottom;
-
-            internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
+            _hWnd = hWnd;
+            _dc = GetWindowDC(_hWnd);
+            G = Graphics.FromHdc(_dc);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private sealed class POINT
+        public void Dispose()
         {
-            public int x;
-            public int y;
+            G.Dispose();
+            ReleaseDC(_hWnd, _dc);
+        }
+    }
+
+    public readonly ref struct GraphicsContext
+    {
+        private readonly IntPtr _hWnd;
+        private readonly IntPtr _dc;
+        public readonly Graphics G;
+
+        public GraphicsContext(IntPtr hWnd)
+        {
+            _hWnd = hWnd;
+            _dc = GetWindowDC(_hWnd);
+            G = Graphics.FromHdc(_dc);
         }
 
-        private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
-
-        [DllImport("user32.dll")]
-        private static extern bool GetCursorPos([In, Out] POINT pt);
-
-        [DllImport("user32.dll")]
-        private static extern int MapWindowPoints(
-            HandleRef hWndFrom,
-            HandleRef hWndTo,
-            [In, Out] POINT pt,
-            int cPoints);
-
-        // Since we know the UI will only ever run on one thread, we can just have one global POINT class and
-        // just let anyone populate and use it randomly whenever. It can never be accessed by two things at once
-        // because everyone is on one thread.
-        private static readonly POINT _globalNativePoint = new();
-
-        public static Point GetCursorPosition_Fast()
+        public void Dispose()
         {
-            GetCursorPos(_globalNativePoint);
-            return new Point(_globalNativePoint.x, _globalNativePoint.y);
+            G.Dispose();
+            ReleaseDC(_hWnd, _dc);
         }
+    }
 
-        public static Point PointToClient_Fast(this Control control, Point p)
-        {
-            _globalNativePoint.x = p.X;
-            _globalNativePoint.y = p.Y;
-            MapWindowPoints(NullHandleRef, new HandleRef(control, control.Handle), _globalNativePoint, 1);
-            return new Point(_globalNativePoint.x, _globalNativePoint.y);
-        }
+    #endregion
 
-        public static Point PointToScreen_Fast(this Control control, Point p)
-        {
-            _globalNativePoint.x = p.X;
-            _globalNativePoint.y = p.Y;
-            MapWindowPoints(new HandleRef(control, control.Handle), NullHandleRef, _globalNativePoint, 1);
-            return new Point(_globalNativePoint.x, _globalNativePoint.y);
-        }
+    #region Window
 
-        #region SendMessage/PostMessage
+    [DllImport("user32.dll")]
+    internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-        [DllImport("user32.dll")]
-        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+    {
+        return Environment.Is64BitProcess
+            ? GetWindowLongPtr64(hWnd, nIndex)
+            : GetWindowLong32(hWnd, nIndex);
+    }
 
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
+    private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll")]
-        internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, IntPtr lParam);
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll")]
-        internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+    /*
+    // This static method is required because legacy OSes do not support SetWindowLongPtr
+    internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, UIntPtr dwNewLong)
+    {
+        return Environment.Is64BitProcess
+            ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
+            : SetWindowLong32(hWnd, nIndex, dwNewLong);
+    }
 
-        #endregion
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
+    private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
 
-        #region Control-specific
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+    private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
+    */
 
-        #region ListView
+    [DllImport("user32.dll")]
+    internal static extern IntPtr WindowFromPoint(Point pt);
 
-        private const int LVM_FIRST = 0x1000;
-        internal const int LVM_SETITEMA = LVM_FIRST + 6;
-        internal const int LVM_SETITEMW = LVM_FIRST + 76;
-        internal const int LVM_SETITEMTEXTA = LVM_FIRST + 46;
-        internal const int LVM_SETITEMTEXTW = LVM_FIRST + 116;
-        internal const int LVM_INSERTITEMA = LVM_FIRST + 7;
-        internal const int LVM_INSERTITEMW = LVM_FIRST + 77;
-        internal const int LVM_DELETEITEM = LVM_FIRST + 8;
-        internal const int LVM_DELETEALLITEMS = LVM_FIRST + 9;
+    #endregion
 
-        #endregion
+    #region lParam/wParam
 
-        #region MessageBox/TaskDialog
+    // This code is straight from the .NET source, so keep it exactly the same despite "unnecessary cast" warnings
 
-        internal enum SHSTOCKICONID : uint
-        {
-            SIID_HELP = 23,
-            SIID_WARNING = 78,
-            SIID_INFO = 79,
-            SIID_ERROR = 80
-        }
-
-        internal const uint SHGSI_ICON = 0x000000100;
-
-        [PublicAPI]
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        internal struct SHSTOCKICONINFO
-        {
-            internal uint cbSize;
-            internal IntPtr hIcon;
-            internal int iSysIconIndex;
-            internal int iIcon;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
-            internal string szPath;
-        }
-
-        [DllImport("Shell32.dll", SetLastError = false)]
-        internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool DestroyIcon(IntPtr hIcon);
-
-        #endregion
-
-        #region RichTextBox
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SetCursor(HandleRef hCursor);
-
-        #region Reader mode
-
-        internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
-
-        internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
-
-        [Flags]
-        internal enum ReaderModeFlags
-        {
-            //None = 0x00,
-            //ZeroCursor = 0x01,
-            VerticalOnly = 0x02,
-            //HorizontalOnly = 0x04
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct READERMODEINFO
-        {
-            internal int cbSize;
-            internal IntPtr hwnd;
-            internal ReaderModeFlags fFlags;
-            internal IntPtr prc;
-            internal ReaderScrollCallbackDelegate pfnScroll;
-            internal TranslateDispatchCallbackDelegate fFlags2;
-            internal IntPtr lParam;
-        }
-
-        [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
-        internal static extern void DoReaderMode(ref READERMODEINFO prmi);
-
-        #endregion
-
-        #region Cursor fix
-
-        internal const int EN_LINK = 0x070b;
-
-        [StructLayout(LayoutKind.Sequential)]
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        internal struct NMHDR
-        {
-            internal IntPtr hwndFrom;
-            internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
-            internal int code;
-        }
-
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
-        [StructLayout(LayoutKind.Sequential)]
-        internal class ENLINK
-        {
-            internal NMHDR nmhdr;
-            internal int msg = 0;
-            internal IntPtr wParam = IntPtr.Zero;
-            internal IntPtr lParam = IntPtr.Zero;
-            internal CHARRANGE? charrange = null;
-        }
-
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [StructLayout(LayoutKind.Sequential)]
-        public class ENLINK64
-        {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
-            public byte[] contents = new byte[56];
-        }
-
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [StructLayout(LayoutKind.Sequential)]
-        internal class CHARRANGE
-        {
-            internal int cpMin;
-            internal int cpMax;
-        }
-
-        #endregion
-
-        #region Auto URL detect
-
-        internal const int EM_AUTOURLDETECT = WM_USER + 91;
-        internal const int AURL_ENABLEURL = 1;
-        internal const int AURL_ENABLEEMAILADDR = 2;
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #region Device context
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowDC(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
-        public sealed class GraphicsContext_Ref : IDisposable
-        {
-            private readonly IntPtr _hWnd;
-            private readonly IntPtr _dc;
-            public readonly Graphics G;
-
-            public GraphicsContext_Ref(IntPtr hWnd)
-            {
-                _hWnd = hWnd;
-                _dc = GetWindowDC(_hWnd);
-                G = Graphics.FromHdc(_dc);
-            }
-
-            public void Dispose()
-            {
-                G.Dispose();
-                ReleaseDC(_hWnd, _dc);
-            }
-        }
-
-        public readonly ref struct GraphicsContext
-        {
-            private readonly IntPtr _hWnd;
-            private readonly IntPtr _dc;
-            public readonly Graphics G;
-
-            public GraphicsContext(IntPtr hWnd)
-            {
-                _hWnd = hWnd;
-                _dc = GetWindowDC(_hWnd);
-                G = Graphics.FromHdc(_dc);
-            }
-
-            public void Dispose()
-            {
-                G.Dispose();
-                ReleaseDC(_hWnd, _dc);
-            }
-        }
-
-        #endregion
-
-        #region Window
-
-        [DllImport("user32.dll")]
-        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-        internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
-        {
-            return Environment.Is64BitProcess
-                ? GetWindowLongPtr64(hWnd, nIndex)
-                : GetWindowLong32(hWnd, nIndex);
-        }
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
-        private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-        private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
-
-        /*
-        // This static method is required because legacy OSes do not support SetWindowLongPtr
-        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, UIntPtr dwNewLong)
-        {
-            return Environment.Is64BitProcess
-                ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
-                : SetWindowLong32(hWnd, nIndex, dwNewLong);
-        }
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
-        private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
-        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
-        */
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr WindowFromPoint(Point pt);
-
-        #endregion
-
-        #region lParam/wParam
-
-        // This code is straight from the .NET source, so keep it exactly the same despite "unnecessary cast" warnings
-
-        // ReSharper disable RedundantCast
+    // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
 #if false
         internal static int MAKELONG(int low, int high) => high << 16 | (low & (int)ushort.MaxValue);
 #endif
-        internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | (low & (int)ushort.MaxValue));
-        internal static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
+    internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | (low & (int)ushort.MaxValue));
+    internal static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
 #if false
         internal static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
 #endif
-        internal static int LOWORD(int n) => n & (int)ushort.MaxValue;
-        internal static int LOWORD(IntPtr n) => LOWORD((int)(long)n);
-        internal static int SignedHIWORD(IntPtr n) => SignedHIWORD((int)(long)n);
-        internal static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
-        internal static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
-        internal static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
+    internal static int LOWORD(int n) => n & (int)ushort.MaxValue;
+    internal static int LOWORD(IntPtr n) => LOWORD((int)(long)n);
+    internal static int SignedHIWORD(IntPtr n) => SignedHIWORD((int)(long)n);
+    internal static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
+    internal static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
+    internal static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
 #pragma warning restore IDE0004
-        // ReSharper restore RedundantCast
+    // ReSharper restore RedundantCast
 
-        #endregion
+    #endregion
 
-        #region Hide focus rectangle
+    #region Hide focus rectangle
 
-        internal const int WM_CHANGEUISTATE = 0x0127;
+    internal const int WM_CHANGEUISTATE = 0x0127;
 
-        private const int UIS_SET = 1;
-        //internal const int UIS_CLEAR = 2;
-        //internal const int UIS_INITIALIZE = 3;
+    private const int UIS_SET = 1;
+    //internal const int UIS_CLEAR = 2;
+    //internal const int UIS_INITIALIZE = 3;
 
-        private const int UISF_HIDEFOCUS = 1;
-        //internal const int UISF_HIDEACCEL = 2;
-        //internal const int UISF_ACTIVE = 4;
+    private const int UISF_HIDEFOCUS = 1;
+    //internal const int UISF_HIDEACCEL = 2;
+    //internal const int UISF_ACTIVE = 4;
 
-        internal const int SetControlFocusToHidden = UISF_HIDEFOCUS + (UIS_SET << 16);
+    internal const int SetControlFocusToHidden = UISF_HIDEFOCUS + (UIS_SET << 16);
 
-        #endregion
+    #endregion
 
-        #region Mouse
+    #region Mouse
 
-        // NC prefix means the mouse was over a non-client area
+    // NC prefix means the mouse was over a non-client area
 
-        internal const int WM_SETCURSOR = 0x20;
+    internal const int WM_SETCURSOR = 0x20;
 
-        internal const int WM_MOUSEWHEEL = 0x20A;
-        internal const int WM_MOUSEHWHEEL = 0x020E; // Mousewheel tilt
+    internal const int WM_MOUSEWHEEL = 0x20A;
+    internal const int WM_MOUSEHWHEEL = 0x020E; // Mousewheel tilt
 
-        internal const int WM_MOUSEMOVE = 0x200;
-        internal const int WM_NCMOUSEMOVE = 0xA0;
+    internal const int WM_MOUSEMOVE = 0x200;
+    internal const int WM_NCMOUSEMOVE = 0xA0;
 
-        internal const int WM_MOUSELEAVE = 0x02A3;
+    internal const int WM_MOUSELEAVE = 0x02A3;
 
-        internal const int WM_LBUTTONUP = 0x202;
-        internal const int WM_NCLBUTTONUP = 0x00A2;
-        internal const int WM_MBUTTONUP = 0x208;
-        internal const int WM_NCMBUTTONUP = 0xA8;
-        internal const int WM_RBUTTONUP = 0x205;
-        internal const int WM_NCRBUTTONUP = 0xA5;
+    internal const int WM_LBUTTONUP = 0x202;
+    internal const int WM_NCLBUTTONUP = 0x00A2;
+    internal const int WM_MBUTTONUP = 0x208;
+    internal const int WM_NCMBUTTONUP = 0xA8;
+    internal const int WM_RBUTTONUP = 0x205;
+    internal const int WM_NCRBUTTONUP = 0xA5;
 
-        internal const int WM_LBUTTONDOWN = 0x201;
-        internal const int WM_NCLBUTTONDOWN = 0x00A1;
-        internal const int WM_MBUTTONDOWN = 0x207;
-        internal const int WM_NCMBUTTONDOWN = 0xA7;
-        internal const int WM_RBUTTONDOWN = 0x204;
-        internal const int WM_NCRBUTTONDOWN = 0xA4;
+    internal const int WM_LBUTTONDOWN = 0x201;
+    internal const int WM_NCLBUTTONDOWN = 0x00A1;
+    internal const int WM_MBUTTONDOWN = 0x207;
+    internal const int WM_NCMBUTTONDOWN = 0xA7;
+    internal const int WM_RBUTTONDOWN = 0x204;
+    internal const int WM_NCRBUTTONDOWN = 0xA4;
 
-        internal const int WM_XBUTTONDOWN = 0x020B;
-        //internal const int WM_NCXBUTTONDOWN = 0x0AB;
+    internal const int WM_XBUTTONDOWN = 0x020B;
+    //internal const int WM_NCXBUTTONDOWN = 0x0AB;
 
-        internal const int WM_LBUTTONDBLCLK = 0x203;
-        internal const int WM_NCLBUTTONDBLCLK = 0xA3;
-        internal const int WM_MBUTTONDBLCLK = 0x209;
-        internal const int WM_NCMBUTTONDBLCLK = 0xA9;
-        internal const int WM_RBUTTONDBLCLK = 0x206;
-        internal const int WM_NCRBUTTONDBLCLK = 0xA6;
+    internal const int WM_LBUTTONDBLCLK = 0x203;
+    internal const int WM_NCLBUTTONDBLCLK = 0xA3;
+    internal const int WM_MBUTTONDBLCLK = 0x209;
+    internal const int WM_NCMBUTTONDBLCLK = 0xA9;
+    internal const int WM_RBUTTONDBLCLK = 0x206;
+    internal const int WM_NCRBUTTONDBLCLK = 0xA6;
 
-        #endregion
+    #endregion
 
-        #region Keyboard
+    #region Keyboard
 
-        internal const int WM_KEYDOWN = 0x100;
-        internal const int WM_SYSKEYDOWN = 0x104;
-        internal const int WM_SYSKEYUP = 0x105;
-        internal const int WM_KEYUP = 0x101;
+    internal const int WM_KEYDOWN = 0x100;
+    internal const int WM_SYSKEYDOWN = 0x104;
+    internal const int WM_SYSKEYUP = 0x105;
+    internal const int WM_KEYUP = 0x101;
 
-        // MK_ only to be used in mouse messages
-        internal const int MK_CONTROL = 0x8;
+    // MK_ only to be used in mouse messages
+    internal const int MK_CONTROL = 0x8;
 
-        // VK_ only to be used in keyboard messages
-        /*
-        internal const int VK_SHIFT = 0x10;
-        internal const int VK_CONTROL = 0x11;
-        internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
-        internal const int VK_ESCAPE = 0x1B;
-        internal const int VK_PAGEUP = 0x21; // VK_PRIOR
-        internal const int VK_PAGEDOWN = 0x22; // VK_NEXT
-        internal const int VK_END = 0x23;
-        internal const int VK_HOME = 0x24;
-        internal const int VK_LEFT = 0x25;
-        internal const int VK_UP = 0x26;
-        internal const int VK_RIGHT = 0x27;
-        internal const int VK_DOWN = 0x28;
-        */
+    // VK_ only to be used in keyboard messages
+    /*
+    internal const int VK_SHIFT = 0x10;
+    internal const int VK_CONTROL = 0x11;
+    internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
+    internal const int VK_ESCAPE = 0x1B;
+    internal const int VK_PAGEUP = 0x21; // VK_PRIOR
+    internal const int VK_PAGEDOWN = 0x22; // VK_NEXT
+    internal const int VK_END = 0x23;
+    internal const int VK_HOME = 0x24;
+    internal const int VK_LEFT = 0x25;
+    internal const int VK_UP = 0x26;
+    internal const int VK_RIGHT = 0x27;
+    internal const int VK_DOWN = 0x28;
+    */
 
-        #endregion
+    #endregion
 
-        #region Scrolling / scroll bars
+    #region Scrolling / scroll bars
 
-        internal const uint WS_VSCROLL = 0x00200000;
+    internal const uint WS_VSCROLL = 0x00200000;
 
-        internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
-        internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
+    internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
+    internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
 
-        internal const int SB_HORZ = 0;
-        internal const int SB_VERT = 1;
+    internal const int SB_HORZ = 0;
+    internal const int SB_VERT = 1;
 
-        internal const int WM_SCROLL = 0x114;
-        internal const int WM_VSCROLL = 0x115;
-        internal const int WM_HSCROLL = 0x114;
-        //internal const int SB_LINEUP = 0;
-        internal const int SB_LINELEFT = 0;
-        //internal const int SB_LINEDOWN = 1;
-        internal const int SB_LINERIGHT = 1;
-        /*
-        internal const int SB_PAGEUP = 2;
-        internal const int SB_PAGELEFT = 2;
-        internal const int SB_PAGEDOWN = 3;
-        internal const int SB_PAGERIGHT = 3;
-        internal const int SB_PAGETOP = 6;
-        internal const int SB_LEFT = 6;
-        internal const int SB_PAGEBOTTOM = 7;
-        internal const int SB_RIGHT = 7;
-        internal const int SB_ENDSCROLL = 8;
-        internal const int SBM_GETPOS = 225;
-        internal const int SB_HORZ = 0;
-        */
-        internal const uint SB_THUMBTRACK = 5;
+    internal const int WM_SCROLL = 0x114;
+    internal const int WM_VSCROLL = 0x115;
+    internal const int WM_HSCROLL = 0x114;
+    //internal const int SB_LINEUP = 0;
+    internal const int SB_LINELEFT = 0;
+    //internal const int SB_LINEDOWN = 1;
+    internal const int SB_LINERIGHT = 1;
+    /*
+    internal const int SB_PAGEUP = 2;
+    internal const int SB_PAGELEFT = 2;
+    internal const int SB_PAGEDOWN = 3;
+    internal const int SB_PAGERIGHT = 3;
+    internal const int SB_PAGETOP = 6;
+    internal const int SB_LEFT = 6;
+    internal const int SB_PAGEBOTTOM = 7;
+    internal const int SB_RIGHT = 7;
+    internal const int SB_ENDSCROLL = 8;
+    internal const int SBM_GETPOS = 225;
+    internal const int SB_HORZ = 0;
+    */
+    internal const uint SB_THUMBTRACK = 5;
 
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SCROLLINFO
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SCROLLINFO
+    {
+        internal uint cbSize;
+        internal uint fMask;
+        internal int nMin;
+        internal int nMax;
+        internal uint nPage;
+        internal int nPos;
+        internal int nTrackPos;
+    }
+
+    [PublicAPI]
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SCROLLBARINFO
+    {
+        internal int cbSize;
+        internal RECT rcScrollBar;
+        internal int dxyLineButton;
+        internal int xyThumbTop;
+        internal int xyThumbBottom;
+        internal int reserved;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        internal int[] rgstate;
+    }
+
+    [Flags]
+    internal enum ScrollInfoMask
+    {
+        SIF_RANGE = 0x0001,
+        SIF_PAGE = 0x0002,
+        SIF_POS = 0x0004,
+        //SIF_DISABLENOSCROLL = 0x0008,
+        SIF_TRACKPOS = 0x0010,
+        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+
+    [DllImport("user32.dll")]
+    internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+
+    [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
+    internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+
+    #endregion
+
+    #region Theming
+
+    internal const int WM_THEMECHANGED = 0x031A;
+
+    internal const int TMT_FILLCOLOR = 3802;
+    internal const int TMT_TEXTCOLOR = 3803;
+
+    #region ToolTip parts
+
+    internal const int TTP_STANDARD = 1;
+    internal const int TTP_STANDARDTITLE = 2;
+    /*
+    internal const int TTP_BALLOON = 3;
+    internal const int TTP_BALLOONTITLE = 4;
+    internal const int TTP_CLOSE = 5;
+    internal const int TTP_BALLOONSTEM = 6;
+    internal const int TTP_WRENCH = 7;
+    */
+
+    #endregion
+
+    #region DateTimePicker
+
+    internal const int DTM_GETDATETIMEPICKERINFO = 0x100E;
+
+    //internal const int STATE_SYSTEM_HOTTRACKED = 0x00000080;
+    internal const int STATE_SYSTEM_PRESSED = 0x00000008;
+
+    [StructLayout(LayoutKind.Sequential)]
+    [PublicAPI]
+    internal struct DATETIMEPICKERINFO
+    {
+        internal int cbSize;
+        internal RECT rcCheck;
+        internal int stateCheck;
+        internal RECT rcButton;
+        internal int stateButton;
+        internal IntPtr hwndEdit;
+        internal IntPtr hwndUD;
+        internal IntPtr hwndDropDown;
+    }
+
+    #endregion
+
+    #region Scroll bar parts
+
+    internal const int SBP_ARROWBTN = 1;
+    internal const int SBP_THUMBBTNHORZ = 2;
+    internal const int SBP_THUMBBTNVERT = 3;
+    /*
+    internal const int SBP_LOWERTRACKHORZ = 4;
+    internal const int SBP_UPPERTRACKHORZ = 5;
+    internal const int SBP_LOWERTRACKVERT = 6;
+    internal const int SBP_UPPERTRACKVERT = 7;
+    */
+    internal const int SBP_GRIPPERHORZ = 8;
+    internal const int SBP_GRIPPERVERT = 9;
+    //internal const int SBP_SIZEBOX = 10;
+    // Uh, this one isn't listed in vsstyle.h, but it works...?
+    internal const int SBP_CORNER = 11;
+
+    #endregion
+
+    #region Scroll bar arrow button states
+
+    internal const int ABS_UPNORMAL = 1;
+    internal const int ABS_UPHOT = 2;
+    internal const int ABS_UPPRESSED = 3;
+    internal const int ABS_UPDISABLED = 4;
+    //internal const int ABS_DOWNNORMAL = 5;
+    internal const int ABS_DOWNHOT = 6;
+    internal const int ABS_DOWNPRESSED = 7;
+    internal const int ABS_DOWNDISABLED = 8;
+    internal const int ABS_LEFTNORMAL = 9;
+    internal const int ABS_LEFTHOT = 10;
+    internal const int ABS_LEFTPRESSED = 11;
+    internal const int ABS_LEFTDISABLED = 12;
+    internal const int ABS_RIGHTNORMAL = 13;
+    internal const int ABS_RIGHTHOT = 14;
+    internal const int ABS_RIGHTPRESSED = 15;
+    internal const int ABS_RIGHTDISABLED = 16;
+    internal const int ABS_UPHOVER = 17;
+    //internal const int ABS_DOWNHOVER = 18;
+    internal const int ABS_LEFTHOVER = 19;
+    internal const int ABS_RIGHTHOVER = 20;
+
+    #endregion
+
+    #region Scroll bar thumb states
+
+    internal const int SCRBS_NORMAL = 1;
+    internal const int SCRBS_HOT = 2;
+    internal const int SCRBS_PRESSED = 3;
+    //internal const int SCRBS_DISABLED = 4;
+    internal const int SCRBS_HOVER = 5;
+
+    #endregion
+
+    #region TreeView parts
+
+    //internal const int TVP_TREEITEM = 1;
+    internal const int TVP_GLYPH = 2;
+    //internal const int TVP_BRANCH = 3;
+    internal const int TVP_HOTGLYPH = 4;
+
+    #endregion
+
+    #region TreeView glyph states
+
+    internal const int GLPS_CLOSED = 1;
+    //internal const int GLPS_OPENED = 2;
+    internal const int HGLPS_CLOSED = 1;
+    //internal const int HGLPS_OPENED = 2;
+
+    #endregion
+
+    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+    internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+
+    [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
+    internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
+
+    [DllImport("uxtheme.dll", ExactSpelling = true)]
+    public static extern int CloseThemeData(IntPtr hTheme);
+
+    [DllImport("uxtheme.dll", ExactSpelling = true)]
+    internal static extern bool IsThemeActive();
+
+    [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+    internal static extern IntPtr CreateSolidBrush(int crColor);
+
+    #endregion
+
+    #region Enumerate window handles
+
+    private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+
+    internal static List<IntPtr> GetProcessWindowHandles()
+    {
+        var handles = new List<IntPtr>();
+
+        using Process currentProcess = Process.GetCurrentProcess();
+        foreach (ProcessThread thread in currentProcess.Threads)
         {
-            internal uint cbSize;
-            internal uint fMask;
-            internal int nMin;
-            internal int nMax;
-            internal uint nPage;
-            internal int nPos;
-            internal int nTrackPos;
+            EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
         }
 
-        [PublicAPI]
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SCROLLBARINFO
-        {
-            internal int cbSize;
-            internal RECT rcScrollBar;
-            internal int dxyLineButton;
-            internal int xyThumbTop;
-            internal int xyThumbBottom;
-            internal int reserved;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-            internal int[] rgstate;
-        }
+        return handles;
+    }
 
-        [Flags]
-        internal enum ScrollInfoMask
-        {
-            SIF_RANGE = 0x0001,
-            SIF_PAGE = 0x0002,
-            SIF_POS = 0x0004,
-            //SIF_DISABLENOSCROLL = 0x0008,
-            SIF_TRACKPOS = 0x0010,
-            SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
-        }
+    #endregion
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+    #region Aero Snap window restore hack
 
-        [DllImport("user32.dll")]
-        internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
-
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
-        internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
-
-        #endregion
-
-        #region Theming
-
-        internal const int WM_THEMECHANGED = 0x031A;
-
-        internal const int TMT_FILLCOLOR = 3802;
-        internal const int TMT_TEXTCOLOR = 3803;
-
-        #region ToolTip parts
-
-        internal const int TTP_STANDARD = 1;
-        internal const int TTP_STANDARDTITLE = 2;
-        /*
-        internal const int TTP_BALLOON = 3;
-        internal const int TTP_BALLOONTITLE = 4;
-        internal const int TTP_CLOSE = 5;
-        internal const int TTP_BALLOONSTEM = 6;
-        internal const int TTP_WRENCH = 7;
-        */
-
-        #endregion
-
-        #region DateTimePicker
-
-        internal const int DTM_GETDATETIMEPICKERINFO = 0x100E;
-
-        //internal const int STATE_SYSTEM_HOTTRACKED = 0x00000080;
-        internal const int STATE_SYSTEM_PRESSED = 0x00000008;
-
-        [StructLayout(LayoutKind.Sequential)]
-        [PublicAPI]
-        internal struct DATETIMEPICKERINFO
-        {
-            internal int cbSize;
-            internal RECT rcCheck;
-            internal int stateCheck;
-            internal RECT rcButton;
-            internal int stateButton;
-            internal IntPtr hwndEdit;
-            internal IntPtr hwndUD;
-            internal IntPtr hwndDropDown;
-        }
-
-        #endregion
-
-        #region Scroll bar parts
-
-        internal const int SBP_ARROWBTN = 1;
-        internal const int SBP_THUMBBTNHORZ = 2;
-        internal const int SBP_THUMBBTNVERT = 3;
-        /*
-        internal const int SBP_LOWERTRACKHORZ = 4;
-        internal const int SBP_UPPERTRACKHORZ = 5;
-        internal const int SBP_LOWERTRACKVERT = 6;
-        internal const int SBP_UPPERTRACKVERT = 7;
-        */
-        internal const int SBP_GRIPPERHORZ = 8;
-        internal const int SBP_GRIPPERVERT = 9;
-        //internal const int SBP_SIZEBOX = 10;
-        // Uh, this one isn't listed in vsstyle.h, but it works...?
-        internal const int SBP_CORNER = 11;
-
-        #endregion
-
-        #region Scroll bar arrow button states
-
-        internal const int ABS_UPNORMAL = 1;
-        internal const int ABS_UPHOT = 2;
-        internal const int ABS_UPPRESSED = 3;
-        internal const int ABS_UPDISABLED = 4;
-        //internal const int ABS_DOWNNORMAL = 5;
-        internal const int ABS_DOWNHOT = 6;
-        internal const int ABS_DOWNPRESSED = 7;
-        internal const int ABS_DOWNDISABLED = 8;
-        internal const int ABS_LEFTNORMAL = 9;
-        internal const int ABS_LEFTHOT = 10;
-        internal const int ABS_LEFTPRESSED = 11;
-        internal const int ABS_LEFTDISABLED = 12;
-        internal const int ABS_RIGHTNORMAL = 13;
-        internal const int ABS_RIGHTHOT = 14;
-        internal const int ABS_RIGHTPRESSED = 15;
-        internal const int ABS_RIGHTDISABLED = 16;
-        internal const int ABS_UPHOVER = 17;
-        //internal const int ABS_DOWNHOVER = 18;
-        internal const int ABS_LEFTHOVER = 19;
-        internal const int ABS_RIGHTHOVER = 20;
-
-        #endregion
-
-        #region Scroll bar thumb states
-
-        internal const int SCRBS_NORMAL = 1;
-        internal const int SCRBS_HOT = 2;
-        internal const int SCRBS_PRESSED = 3;
-        //internal const int SCRBS_DISABLED = 4;
-        internal const int SCRBS_HOVER = 5;
-
-        #endregion
-
-        #region TreeView parts
-
-        //internal const int TVP_TREEITEM = 1;
-        internal const int TVP_GLYPH = 2;
-        //internal const int TVP_BRANCH = 3;
-        internal const int TVP_HOTGLYPH = 4;
-
-        #endregion
-
-        #region TreeView glyph states
-
-        internal const int GLPS_CLOSED = 1;
-        //internal const int GLPS_OPENED = 2;
-        internal const int HGLPS_CLOSED = 1;
-        //internal const int HGLPS_OPENED = 2;
-
-        #endregion
-
-        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
-
-        [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-        internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
-
-        [DllImport("uxtheme.dll", ExactSpelling = true)]
-        public static extern int CloseThemeData(IntPtr hTheme);
-
-        [DllImport("uxtheme.dll", ExactSpelling = true)]
-        internal static extern bool IsThemeActive();
-
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        internal static extern IntPtr CreateSolidBrush(int crColor);
-
-        #endregion
-
-        #region Enumerate window handles
-
-        private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
-
-        internal static List<IntPtr> GetProcessWindowHandles()
-        {
-            var handles = new List<IntPtr>();
-
-            using Process currentProcess = Process.GetCurrentProcess();
-            foreach (ProcessThread thread in currentProcess.Threads)
-            {
-                EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
-            }
-
-            return handles;
-        }
-
-        #endregion
-
-        #region Aero Snap window restore hack
+    /// <summary>
+    /// Contains information about the placement of a window on the screen.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    [PublicAPI]
+    private struct WINDOWPLACEMENT
+    {
+        /// <summary>
+        /// The length of the structure, in bytes. Before calling the GetWindowPlacement or SetWindowPlacement functions, set this member to sizeof(WINDOWPLACEMENT).
+        /// <para>
+        /// GetWindowPlacement and SetWindowPlacement fail if this member is not set correctly.
+        /// </para>
+        /// </summary>
+        internal uint Length;
 
         /// <summary>
-        /// Contains information about the placement of a window on the screen.
+        /// Specifies flags that control the position of the minimized window and the method by which the window is restored.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        [PublicAPI]
-        private struct WINDOWPLACEMENT
+        internal readonly uint Flags;
+
+        /// <summary>
+        /// The current show state of the window.
+        /// </summary>
+        internal readonly uint ShowCmd;
+
+        /// <summary>
+        /// The coordinates of the window's upper-left corner when the window is minimized.
+        /// </summary>
+        internal readonly POINT MinPosition;
+
+        /// <summary>
+        /// The coordinates of the window's upper-left corner when the window is maximized.
+        /// </summary>
+        internal readonly POINT MaxPosition;
+
+        /// <summary>
+        /// The window's coordinates when the window is in the restored position.
+        /// </summary>
+        internal readonly RECT NormalPosition;
+
+        /// <summary>
+        /// Gets the default (empty) value.
+        /// </summary>
+        internal static WINDOWPLACEMENT Default
         {
-            /// <summary>
-            /// The length of the structure, in bytes. Before calling the GetWindowPlacement or SetWindowPlacement functions, set this member to sizeof(WINDOWPLACEMENT).
-            /// <para>
-            /// GetWindowPlacement and SetWindowPlacement fail if this member is not set correctly.
-            /// </para>
-            /// </summary>
-            internal uint Length;
-
-            /// <summary>
-            /// Specifies flags that control the position of the minimized window and the method by which the window is restored.
-            /// </summary>
-            internal readonly uint Flags;
-
-            /// <summary>
-            /// The current show state of the window.
-            /// </summary>
-            internal readonly uint ShowCmd;
-
-            /// <summary>
-            /// The coordinates of the window's upper-left corner when the window is minimized.
-            /// </summary>
-            internal readonly POINT MinPosition;
-
-            /// <summary>
-            /// The coordinates of the window's upper-left corner when the window is maximized.
-            /// </summary>
-            internal readonly POINT MaxPosition;
-
-            /// <summary>
-            /// The window's coordinates when the window is in the restored position.
-            /// </summary>
-            internal readonly RECT NormalPosition;
-
-            /// <summary>
-            /// Gets the default (empty) value.
-            /// </summary>
-            internal static WINDOWPLACEMENT Default
+            get
             {
-                get
-                {
-                    WINDOWPLACEMENT result = new();
-                    result.Length = (uint)Marshal.SizeOf(result);
-                    return result;
-                }
+                WINDOWPLACEMENT result = new();
+                result.Length = (uint)Marshal.SizeOf(result);
+                return result;
             }
         }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
-
-        internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
-        {
-            WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
-            bool success = GetWindowPlacement(form.Handle, ref wp);
-            if (success)
-            {
-                rect = wp.NormalPosition.ToRectangle();
-                return true;
-            }
-            else
-            {
-                rect = Rectangle.Empty;
-                return false;
-            }
-        }
-
-        #endregion
-
-        #region Get system metrics
-
-        private const int LF_FACESIZE = 32;
-
-        private const int SPI_GETNONCLIENTMETRICS = 0x0029;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        [PublicAPI]
-        internal struct LOGFONTW
-        {
-            internal int lfHeight;
-            internal int lfWidth;
-            internal int lfEscapement;
-            internal int lfOrientation;
-            internal int lfWeight;
-            internal byte lfItalic;
-            internal byte lfUnderline;
-            internal byte lfStrikeOut;
-            internal byte lfCharSet;
-            internal byte lfOutPrecision;
-            internal byte lfClipPrecision;
-            internal byte lfQuality;
-            internal byte lfPitchAndFamily;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
-            internal string lfFaceName;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        [PublicAPI]
-        internal struct NONCLIENTMETRICSW
-        {
-            internal int cbSize;
-            internal int iBorderWidth;
-            internal int iScrollWidth;
-            internal int iScrollHeight;
-            internal int iCaptionWidth;
-            internal int iCaptionHeight;
-            internal LOGFONTW lfCaptionFont;
-            internal int iSMCaptionWidth;
-            internal int iSMCaptionHeight;
-            internal LOGFONTW lfSMCaptionFont;
-            internal int iMenuWidth;
-            internal int iMenuHeight;
-            internal LOGFONTW lfMenuFont;
-            internal LOGFONTW lfStatusFont;
-            internal LOGFONTW lfMessageFont;
-            internal int iPaddedBorderWidth;
-        }
-
-        [DllImport("user32", CharSet = CharSet.Unicode)]
-        private static extern int SystemParametersInfo(int uAction, int uParam, ref NONCLIENTMETRICSW lpvParam, int fuWinIni);
-
-        public static NONCLIENTMETRICSW GetNonClientMetrics()
-        {
-            var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
-            SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
-            return metrics;
-        }
-
-        #endregion
     }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+    internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
+    {
+        WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
+        bool success = GetWindowPlacement(form.Handle, ref wp);
+        if (success)
+        {
+            rect = wp.NormalPosition.ToRectangle();
+            return true;
+        }
+        else
+        {
+            rect = Rectangle.Empty;
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region Get system metrics
+
+    private const int LF_FACESIZE = 32;
+
+    private const int SPI_GETNONCLIENTMETRICS = 0x0029;
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [PublicAPI]
+    internal struct LOGFONTW
+    {
+        internal int lfHeight;
+        internal int lfWidth;
+        internal int lfEscapement;
+        internal int lfOrientation;
+        internal int lfWeight;
+        internal byte lfItalic;
+        internal byte lfUnderline;
+        internal byte lfStrikeOut;
+        internal byte lfCharSet;
+        internal byte lfOutPrecision;
+        internal byte lfClipPrecision;
+        internal byte lfQuality;
+        internal byte lfPitchAndFamily;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
+        internal string lfFaceName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    [PublicAPI]
+    internal struct NONCLIENTMETRICSW
+    {
+        internal int cbSize;
+        internal int iBorderWidth;
+        internal int iScrollWidth;
+        internal int iScrollHeight;
+        internal int iCaptionWidth;
+        internal int iCaptionHeight;
+        internal LOGFONTW lfCaptionFont;
+        internal int iSMCaptionWidth;
+        internal int iSMCaptionHeight;
+        internal LOGFONTW lfSMCaptionFont;
+        internal int iMenuWidth;
+        internal int iMenuHeight;
+        internal LOGFONTW lfMenuFont;
+        internal LOGFONTW lfStatusFont;
+        internal LOGFONTW lfMessageFont;
+        internal int iPaddedBorderWidth;
+    }
+
+    [DllImport("user32", CharSet = CharSet.Unicode)]
+    private static extern int SystemParametersInfo(int uAction, int uParam, ref NONCLIENTMETRICSW lpvParam, int fuWinIni);
+
+    public static NONCLIENTMETRICSW GetNonClientMetrics()
+    {
+        var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
+        SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
+        return metrics;
+    }
+
+    #endregion
 }

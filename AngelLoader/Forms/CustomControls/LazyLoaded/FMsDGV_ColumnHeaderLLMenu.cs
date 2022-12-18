@@ -6,201 +6,200 @@ using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 {
-    internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
+    #region Control backing fields
+
+    private bool _constructed;
+    private readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
+
+    #endregion
+
+    private readonly MainForm _owner;
+
+    private enum ColumnProperties { Visible, DisplayIndex, Width }
+
+    #region Menu item fields
+
+    private DarkContextMenu _menu = null!;
+    internal DarkContextMenu Menu
     {
-        #region Control backing fields
-
-        private bool _constructed;
-        private readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
-
-        #endregion
-
-        private readonly MainForm _owner;
-
-        private enum ColumnProperties { Visible, DisplayIndex, Width }
-
-        #region Menu item fields
-
-        private DarkContextMenu _menu = null!;
-        internal DarkContextMenu Menu
+        get
         {
-            get
-            {
-                Construct();
-                return _menu;
-            }
+            Construct();
+            return _menu;
         }
+    }
 
-        private ToolStripMenuItemCustom ResetColumnVisibilityMenuItem = null!;
-        private ToolStripMenuItemCustom ResetAllColumnWidthsMenuItem = null!;
-        private ToolStripMenuItemCustom ResetColumnPositionsMenuItem = null!;
+    private ToolStripMenuItemCustom ResetColumnVisibilityMenuItem = null!;
+    private ToolStripMenuItemCustom ResetAllColumnWidthsMenuItem = null!;
+    private ToolStripMenuItemCustom ResetColumnPositionsMenuItem = null!;
 
-        private ToolStripMenuItemCustom[] ColumnHeaderCheckBoxMenuItems = null!;
+    private ToolStripMenuItemCustom[] ColumnHeaderCheckBoxMenuItems = null!;
 
-        #endregion
+    #endregion
 
-        internal FMsDGV_ColumnHeaderLLMenu(MainForm owner) => _owner = owner;
+    internal FMsDGV_ColumnHeaderLLMenu(MainForm owner) => _owner = owner;
 
-        #region Private methods
+    #region Private methods
 
-        private void ResetPropertyOnAllColumns(ColumnProperties property)
+    private void ResetPropertyOnAllColumns(ColumnProperties property)
+    {
+        try
         {
-            try
-            {
-                _owner.TopSplitContainer.Panel1.SuspendDrawing();
+            _owner.TopSplitContainer.Panel1.SuspendDrawing();
 
-                for (int i = 0; i < _owner.FMsDGV.Columns.Count; i++)
+            for (int i = 0; i < _owner.FMsDGV.Columns.Count; i++)
+            {
+                DataGridViewColumn c = _owner.FMsDGV.Columns[i];
+                switch (property)
                 {
-                    DataGridViewColumn c = _owner.FMsDGV.Columns[i];
-                    switch (property)
-                    {
-                        case ColumnProperties.Visible:
-                            _owner.FMsDGV.MakeColumnVisible(c, true);
-                            break;
-                        case ColumnProperties.DisplayIndex:
-                            c.DisplayIndex = c.Index;
-                            break;
-                        case ColumnProperties.Width:
-                            if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
-                            break;
-                    }
-
-                    SetColumnChecked(c.Index, c.Visible);
+                    case ColumnProperties.Visible:
+                        _owner.FMsDGV.MakeColumnVisible(c, true);
+                        break;
+                    case ColumnProperties.DisplayIndex:
+                        c.DisplayIndex = c.Index;
+                        break;
+                    case ColumnProperties.Width:
+                        if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
+                        break;
                 }
-            }
-            finally
-            {
-                _owner.TopSplitContainer.Panel1.ResumeDrawing();
-                _owner.FMsDGV.SelectProperly();
+
+                SetColumnChecked(c.Index, c.Visible);
             }
         }
-
-        #endregion
-
-        #region Private event handlers
-
-        private void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
-
-        private void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
-
-        private void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
-
-        private void CheckBoxMenuItems_Click(object sender, EventArgs e)
+        finally
         {
-            var s = (ToolStripMenuItemCustom)sender;
-            _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
+            _owner.TopSplitContainer.Panel1.ResumeDrawing();
             _owner.FMsDGV.SelectProperly();
         }
+    }
 
-        #endregion
+    #endregion
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+    #region Private event handlers
+
+    private void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
+
+    private void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
+
+    private void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
+
+    private void CheckBoxMenuItems_Click(object sender, EventArgs e)
+    {
+        var s = (ToolStripMenuItemCustom)sender;
+        _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
+        _owner.FMsDGV.SelectProperly();
+    }
+
+    #endregion
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                if (!_constructed) return;
-
-                _menu.DarkModeEnabled = _darkModeEnabled;
-            }
-        }
-
-        #region Public methods
-
-        internal bool Visible => _constructed && _menu.Visible;
-
-        private void Construct()
-        {
-            if (_constructed) return;
-
-            #region Instantiation
-
-            _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
-
-            #endregion
-
-            #region Add items to menu and hookup events
-
-            _menu.Items.AddRange(new ToolStripItem[]
-            {
-                ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
-                ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
-                ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
-                new ToolStripSeparator()
-            });
-
-            #region Fill ColumnHeaderCheckBoxMenuItems array
-
-            ColumnHeaderCheckBoxMenuItems = InitializedArray<ToolStripMenuItemCustom>(ColumnsCount);
-
-            for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
-            {
-                ToolStripMenuItemCustom item = ColumnHeaderCheckBoxMenuItems[i];
-                item.CheckOnClick = true;
-                item.Tag = (Column)i;
-                item.Checked = _columnCheckedStates[i];
-                item.Click += CheckBoxMenuItems_Click;
-                _menu.Items.Add(item);
-            }
-
-            #endregion
-
-            ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
-            ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
-            ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
-
-            #endregion
-
-            _menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
-
-            _menu.DarkModeEnabled = _darkModeEnabled;
-
-            _constructed = true;
-
-            Localize();
-        }
-
-        internal void Localize()
-        {
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
             if (!_constructed) return;
 
-            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
-            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
-            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
-
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Game].Text = LText.FMsList.GameColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Installed].Text = LText.FMsList.InstalledColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.MissionCount].Text = LText.FMsList.MissionCountColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Title].Text = LText.FMsList.TitleColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Archive].Text = LText.FMsList.ArchiveColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Author].Text = LText.FMsList.AuthorColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Size].Text = LText.FMsList.SizeColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Rating].Text = LText.FMsList.RatingColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Finished].Text = LText.FMsList.FinishedColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.ReleaseDate].Text = LText.FMsList.ReleaseDateColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.LastPlayed].Text = LText.FMsList.LastPlayedColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.DateAdded].Text = LText.FMsList.DateAddedColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.DisabledMods].Text = LText.FMsList.DisabledModsColumn;
-            ColumnHeaderCheckBoxMenuItems[(int)Column.Comment].Text = LText.FMsList.CommentColumn;
+            _menu.DarkModeEnabled = _darkModeEnabled;
         }
+    }
 
-        internal void SetColumnChecked(int index, bool enabled)
+    #region Public methods
+
+    internal bool Visible => _constructed && _menu.Visible;
+
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        #region Instantiation
+
+        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+
+        #endregion
+
+        #region Add items to menu and hookup events
+
+        _menu.Items.AddRange(new ToolStripItem[]
         {
-            if (_constructed)
-            {
-                ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
-            }
-            else
-            {
-                _columnCheckedStates[index] = enabled;
-            }
+            ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
+            ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
+            ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
+            new ToolStripSeparator()
+        });
+
+        #region Fill ColumnHeaderCheckBoxMenuItems array
+
+        ColumnHeaderCheckBoxMenuItems = InitializedArray<ToolStripMenuItemCustom>(ColumnsCount);
+
+        for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
+        {
+            ToolStripMenuItemCustom item = ColumnHeaderCheckBoxMenuItems[i];
+            item.CheckOnClick = true;
+            item.Tag = (Column)i;
+            item.Checked = _columnCheckedStates[i];
+            item.Click += CheckBoxMenuItems_Click;
+            _menu.Items.Add(item);
         }
 
         #endregion
+
+        ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
+        ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
+        ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
+
+        #endregion
+
+        _menu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+
+        _menu.DarkModeEnabled = _darkModeEnabled;
+
+        _constructed = true;
+
+        Localize();
     }
+
+    internal void Localize()
+    {
+        if (!_constructed) return;
+
+        ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
+        ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
+        ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
+
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Game].Text = LText.FMsList.GameColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Installed].Text = LText.FMsList.InstalledColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.MissionCount].Text = LText.FMsList.MissionCountColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Title].Text = LText.FMsList.TitleColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Archive].Text = LText.FMsList.ArchiveColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Author].Text = LText.FMsList.AuthorColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Size].Text = LText.FMsList.SizeColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Rating].Text = LText.FMsList.RatingColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Finished].Text = LText.FMsList.FinishedColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.ReleaseDate].Text = LText.FMsList.ReleaseDateColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.LastPlayed].Text = LText.FMsList.LastPlayedColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.DateAdded].Text = LText.FMsList.DateAddedColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.DisabledMods].Text = LText.FMsList.DisabledModsColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.Comment].Text = LText.FMsList.CommentColumn;
+    }
+
+    internal void SetColumnChecked(int index, bool enabled)
+    {
+        if (_constructed)
+        {
+            ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
+        }
+        else
+        {
+            _columnCheckedStates[index] = enabled;
+        }
+    }
+
+    #endregion
 }

@@ -1,17 +1,16 @@
 ﻿using JetBrains.Annotations;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms;
+
+internal static class Interfaces
 {
-    internal static class Interfaces
+    [PublicAPI]
+    internal interface ISettingsPage
     {
-        [PublicAPI]
-        internal interface ISettingsPage
-        {
-            bool IsVisible { get; }
-            void SetVScrollPos(int value);
-            int GetVScrollPos();
-            void ShowPage();
-            void HidePage();
-        }
+        bool IsVisible { get; }
+        void SetVScrollPos(int value);
+        int GetVScrollPos();
+        void ShowPage();
+        void HidePage();
     }
 }

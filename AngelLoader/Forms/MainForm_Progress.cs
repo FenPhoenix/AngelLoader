@@ -3,74 +3,74 @@ using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms;
+
+public sealed partial class MainForm
 {
-    public sealed partial class MainForm
+    // Not great code really, but works.
+
+    private ProgressPanel? ProgressBox;
+
+    // Progress box not being null does not necessarily mean it's fully constructed.
+    private bool _progressBoxConstructed;
+
+    private bool _progressBoxDarkModeEnabled;
+    private void SetProgressBoxDarkModeEnabled(bool value)
     {
-        // Not great code really, but works.
+        if (_progressBoxDarkModeEnabled == value) return;
+        _progressBoxDarkModeEnabled = value;
+        if (!_progressBoxConstructed) return;
 
-        private ProgressPanel? ProgressBox;
+        ProgressBox!.DarkModeEnabled = value;
+    }
 
-        // Progress box not being null does not necessarily mean it's fully constructed.
-        private bool _progressBoxConstructed;
+    private void ConstructProgressBox()
+    {
+        if (_progressBoxConstructed) return;
 
-        private bool _progressBoxDarkModeEnabled;
-        private void SetProgressBoxDarkModeEnabled(bool value)
-        {
-            if (_progressBoxDarkModeEnabled == value) return;
-            _progressBoxDarkModeEnabled = value;
-            if (!_progressBoxConstructed) return;
+        ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
+        Controls.Add(ProgressBox);
+        ProgressBox.Anchor = AnchorStyles.None;
+        ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
+        ProgressBox.SetSizeToDefault();
 
-            ProgressBox!.DarkModeEnabled = value;
-        }
+        _progressBoxConstructed = true;
+    }
 
-        private void ConstructProgressBox()
-        {
-            if (_progressBoxConstructed) return;
+    // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
+    // simple.
 
-            ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
-            Controls.Add(ProgressBox);
-            ProgressBox.Anchor = AnchorStyles.None;
-            ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
-            ProgressBox.SetSizeToDefault();
+    // We don't cache the actions anymore, because we still ended up recreating the params object[] array
+    // every time, which was in almost all cases _larger_ than the 32 bytes of an action. Also, it made our
+    // parameters un-statically-checkable for correct number and types, since they were a variable-length
+    // array of plain objects. So... yeah, not worth it.
 
-            _progressBoxConstructed = true;
-        }
+    // Convenience methods for first show - they handle a few parameters for you
+    #region Show methods
 
-        // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
-        // simple.
+    public void ShowProgressBox_Single(
+        string? message1 = null,
+        string? message2 = null,
+        ProgressType? progressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+        ConstructProgressBox();
+        ProgressBox!.SetState(
+            visible: true,
+            size: ProgressSizeMode.Single,
+            mainMessage1: message1 ?? "",
+            mainMessage2: message2 ?? "",
+            mainPercent: 0,
+            mainProgressBarType: progressType ?? ProgressPanel.DefaultProgressType,
+            subMessage: "",
+            subPercent: 0,
+            subProgressBarType: ProgressType.Determinate,
+            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            cancelAction: cancelAction ?? NullAction);
+    });
 
-        // We don't cache the actions anymore, because we still ended up recreating the params object[] array
-        // every time, which was in almost all cases _larger_ than the 32 bytes of an action. Also, it made our
-        // parameters un-statically-checkable for correct number and types, since they were a variable-length
-        // array of plain objects. So... yeah, not worth it.
-
-        // Convenience methods for first show - they handle a few parameters for you
-        #region Show methods
-
-        public void ShowProgressBox_Single(
-            string? message1 = null,
-            string? message2 = null,
-            ProgressType? progressType = null,
-            string? cancelMessage = null,
-            Action? cancelAction = null) => Invoke(() =>
-        {
-            ConstructProgressBox();
-            ProgressBox!.SetState(
-                visible: true,
-                size: ProgressSizeMode.Single,
-                mainMessage1: message1 ?? "",
-                mainMessage2: message2 ?? "",
-                mainPercent: 0,
-                mainProgressBarType: progressType ?? ProgressPanel.DefaultProgressType,
-                subMessage: "",
-                subPercent: 0,
-                subProgressBarType: ProgressType.Determinate,
-                cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
-                cancelAction: cancelAction ?? NullAction);
-        });
-
-        #region Disabled until needed
+    #region Disabled until needed
 
 #if false
 
@@ -100,53 +100,99 @@ namespace AngelLoader.Forms
 
 #endif
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        // Intended to be used after first show, for modifying the state
-        #region Set methods
+    // Intended to be used after first show, for modifying the state
+    #region Set methods
 
-        public void SetProgressBoxState_Single(
-            bool? visible = null,
-            string? message1 = null,
-            string? message2 = null,
-            int? percent = null,
-            ProgressType? progressType = null,
-            string? cancelMessage = null,
-            Action? cancelAction = null) => Invoke(() =>
+    public void SetProgressBoxState_Single(
+        bool? visible = null,
+        string? message1 = null,
+        string? message2 = null,
+        int? percent = null,
+        ProgressType? progressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+        ConstructProgressBox();
+        ProgressBox!.SetState(
+            visible: visible,
+            size: ProgressSizeMode.Single,
+            mainMessage1: message1,
+            mainMessage2: message2,
+            mainPercent: percent,
+            mainProgressBarType: progressType,
+            subMessage: "",
+            subPercent: 0,
+            subProgressBarType: ProgressType.Determinate,
+            cancelButtonMessage: cancelMessage,
+            cancelAction: cancelAction);
+    });
+
+    public void SetProgressBoxState_Double(
+        bool? visible = null,
+        string? mainMessage1 = null,
+        string? mainMessage2 = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
+        string? subMessage = null,
+        int? subPercent = null,
+        ProgressType? subProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+        ConstructProgressBox();
+        ProgressBox!.SetState(
+            visible: visible,
+            size: ProgressSizeMode.Double,
+            mainMessage1: mainMessage1,
+            mainMessage2: mainMessage2,
+            mainPercent: mainPercent,
+            mainProgressBarType: mainProgressType,
+            subMessage: subMessage,
+            subPercent: subPercent,
+            subProgressBarType: subProgressType,
+            cancelButtonMessage: cancelMessage,
+            cancelAction: cancelAction);
+    });
+
+    public void SetProgressPercent(int percent) => Invoke(() =>
+    {
+        ConstructProgressBox();
+        ProgressBox!.SetState(
+            visible: null,
+            size: null,
+            mainMessage1: null,
+            mainMessage2: null,
+            mainPercent: percent,
+            mainProgressBarType: null,
+            subMessage: null,
+            subPercent: null,
+            subProgressBarType: null,
+            cancelButtonMessage: null,
+            cancelAction: null);
+    });
+
+    public void SetProgressBoxState(
+        bool? visible = null,
+        ProgressSizeMode? size = null,
+        string? mainMessage1 = null,
+        string? mainMessage2 = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
+        string? subMessage = null,
+        int? subPercent = null,
+        ProgressType? subProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) =>
+        Invoke(() =>
         {
             ConstructProgressBox();
             ProgressBox!.SetState(
                 visible: visible,
-                size: ProgressSizeMode.Single,
-                mainMessage1: message1,
-                mainMessage2: message2,
-                mainPercent: percent,
-                mainProgressBarType: progressType,
-                subMessage: "",
-                subPercent: 0,
-                subProgressBarType: ProgressType.Determinate,
-                cancelButtonMessage: cancelMessage,
-                cancelAction: cancelAction);
-        });
-
-        public void SetProgressBoxState_Double(
-            bool? visible = null,
-            string? mainMessage1 = null,
-            string? mainMessage2 = null,
-            int? mainPercent = null,
-            ProgressType? mainProgressType = null,
-            string? subMessage = null,
-            int? subPercent = null,
-            ProgressType? subProgressType = null,
-            string? cancelMessage = null,
-            Action? cancelAction = null) => Invoke(() =>
-        {
-            ConstructProgressBox();
-            ProgressBox!.SetState(
-                visible: visible,
-                size: ProgressSizeMode.Double,
+                size: size,
                 mainMessage1: mainMessage1,
                 mainMessage2: mainMessage2,
                 mainPercent: mainPercent,
@@ -158,58 +204,11 @@ namespace AngelLoader.Forms
                 cancelAction: cancelAction);
         });
 
-        public void SetProgressPercent(int percent) => Invoke(() =>
-        {
-            ConstructProgressBox();
-            ProgressBox!.SetState(
-                visible: null,
-                size: null,
-                mainMessage1: null,
-                mainMessage2: null,
-                mainPercent: percent,
-                mainProgressBarType: null,
-                subMessage: null,
-                subPercent: null,
-                subProgressBarType: null,
-                cancelButtonMessage: null,
-                cancelAction: null);
-        });
+    #endregion
 
-        public void SetProgressBoxState(
-            bool? visible = null,
-            ProgressSizeMode? size = null,
-            string? mainMessage1 = null,
-            string? mainMessage2 = null,
-            int? mainPercent = null,
-            ProgressType? mainProgressType = null,
-            string? subMessage = null,
-            int? subPercent = null,
-            ProgressType? subProgressType = null,
-            string? cancelMessage = null,
-            Action? cancelAction = null) =>
-            Invoke(() =>
-            {
-                ConstructProgressBox();
-                ProgressBox!.SetState(
-                    visible: visible,
-                    size: size,
-                    mainMessage1: mainMessage1,
-                    mainMessage2: mainMessage2,
-                    mainPercent: mainPercent,
-                    mainProgressBarType: mainProgressType,
-                    subMessage: subMessage,
-                    subPercent: subPercent,
-                    subProgressBarType: subProgressType,
-                    cancelButtonMessage: cancelMessage,
-                    cancelAction: cancelAction);
-            });
-
-        #endregion
-
-        public void HideProgressBox() => Invoke(() =>
-        {
-            if (!_progressBoxConstructed) return;
-            ProgressBox!.HideThis();
-        });
-    }
+    public void HideProgressBox() => Invoke(() =>
+    {
+        if (!_progressBoxConstructed) return;
+        ProgressBox!.HideThis();
+    });
 }

@@ -1,9 +1,8 @@
-﻿namespace AngelLoader.Forms.CustomControls
+﻿namespace AngelLoader.Forms.CustomControls;
+
+public enum DarkControlState
 {
-    public enum DarkControlState
-    {
-        Normal,
-        Hover,
-        Pressed
-    }
+    Normal,
+    Hover,
+    Pressed
 }

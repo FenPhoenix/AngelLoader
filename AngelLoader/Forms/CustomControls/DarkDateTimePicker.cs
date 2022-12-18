@@ -7,135 +7,134 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
 {
-    public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
+    private bool _mouseOverButton;
+
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
     {
-        private bool _mouseOverButton;
-
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+        set
         {
-            set
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+
+            if (_darkModeEnabled)
             {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-
-                if (_darkModeEnabled)
-                {
-                    Native.SetWindowTheme(Handle, "", "");
-                }
-                else
-                {
-                    // I can't get SetWindowTheme() to work for resetting the theme back to normal, but recreating
-                    // the handle does the job.
-                    RecreateHandle();
-                }
-
-                Invalidate();
+                Native.SetWindowTheme(Handle, "", "");
             }
-        }
+            else
+            {
+                // I can't get SetWindowTheme() to work for resetting the theme back to normal, but recreating
+                // the handle does the job.
+                RecreateHandle();
+            }
 
-        private (Native.DATETIMEPICKERINFO DateTimePickerInfo, Rectangle ButtonRectangle)
+            Invalidate();
+        }
+    }
+
+    private (Native.DATETIMEPICKERINFO DateTimePickerInfo, Rectangle ButtonRectangle)
         GetDTPInfoAndButtonRect()
+    {
+        var dtpInfo = new Native.DATETIMEPICKERINFO { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
+        Native.SendMessage(Handle, Native.DTM_GETDATETIMEPICKERINFO, IntPtr.Zero, ref dtpInfo);
+
+        return (dtpInfo, dtpInfo.rcButton.ToRectangle());
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+
+        if (!_darkModeEnabled) return;
+
+        var (_, buttonRect) = GetDTPInfoAndButtonRect();
+        bool newMouseOverButton = buttonRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()));
+
+        if (newMouseOverButton != _mouseOverButton)
         {
-            var dtpInfo = new Native.DATETIMEPICKERINFO { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
-            Native.SendMessage(Handle, Native.DTM_GETDATETIMEPICKERINFO, IntPtr.Zero, ref dtpInfo);
-
-            return (dtpInfo, dtpInfo.rcButton.ToRectangle());
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            if (!_darkModeEnabled) return;
-
-            var (_, buttonRect) = GetDTPInfoAndButtonRect();
-            bool newMouseOverButton = buttonRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()));
-
-            if (newMouseOverButton != _mouseOverButton)
-            {
-                _mouseOverButton = newMouseOverButton;
-                using var gc = new Native.GraphicsContext(Handle);
-                DrawButton(gc.G);
-            }
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-
-            if (!_darkModeEnabled) return;
-
-            if (_mouseOverButton)
-            {
-                _mouseOverButton = false;
-                using var gc = new Native.GraphicsContext(Handle);
-                DrawButton(gc.G);
-            }
-        }
-
-        private void DrawButton(Graphics g)
-        {
-            var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
-
-            SolidBrush buttonBrush =
-                (dtpInfo.stateButton & Native.STATE_SYSTEM_PRESSED) != 0
-                    ? DarkColors.DarkBackgroundBrush
-                    : _mouseOverButton
-                        ? DarkColors.LighterBackgroundBrush
-                        : DarkColors.LightBackgroundBrush;
-
-            g.FillRectangle(buttonBrush, buttonRect);
-
-            Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
-        }
-
-        private void PaintCustom()
-        {
+            _mouseOverButton = newMouseOverButton;
             using var gc = new Native.GraphicsContext(Handle);
-
-            gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
-            gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
-
             DrawButton(gc.G);
         }
+    }
 
-        protected override void WndProc(ref Message m)
+    protected override void OnMouseLeave(EventArgs e)
+    {
+        base.OnMouseLeave(e);
+
+        if (!_darkModeEnabled) return;
+
+        if (_mouseOverButton)
         {
-            if (!_darkModeEnabled)
-            {
-                base.WndProc(ref m);
-                return;
-            }
+            _mouseOverButton = false;
+            using var gc = new Native.GraphicsContext(Handle);
+            DrawButton(gc.G);
+        }
+    }
 
-            switch (m.Msg)
-            {
-                // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
-                // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise,
-                // we'll just call it done.
-                case Native.WM_PAINT:
-                    // We have to override global colors for this, and we have no proper way to only override them
-                    // for this one control specifically, so this is the best we can do. This prevents the colors
-                    // from being changed for other controls (stock MessageBoxes, for one).
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
-                    base.WndProc(ref m);
-                    Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
-                    PaintCustom();
-                    break;
-                case Native.WM_NCPAINT:
-                    // Attempt to reduce flicker (only reduces the chance very slightly)
-                    // NOTE: I don't think this does anything at all actually
-                    PaintCustom();
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
-            }
+    private void DrawButton(Graphics g)
+    {
+        var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
+
+        SolidBrush buttonBrush =
+            (dtpInfo.stateButton & Native.STATE_SYSTEM_PRESSED) != 0
+                ? DarkColors.DarkBackgroundBrush
+                : _mouseOverButton
+                    ? DarkColors.LighterBackgroundBrush
+                    : DarkColors.LightBackgroundBrush;
+
+        g.FillRectangle(buttonBrush, buttonRect);
+
+        Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
+    }
+
+    private void PaintCustom()
+    {
+        using var gc = new Native.GraphicsContext(Handle);
+
+        gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
+        gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
+
+        DrawButton(gc.G);
+    }
+
+    protected override void WndProc(ref Message m)
+    {
+        if (!_darkModeEnabled)
+        {
+            base.WndProc(ref m);
+            return;
+        }
+
+        switch (m.Msg)
+        {
+            // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
+            // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise,
+            // we'll just call it done.
+            case Native.WM_PAINT:
+                // We have to override global colors for this, and we have no proper way to only override them
+                // for this one control specifically, so this is the best we can do. This prevents the colors
+                // from being changed for other controls (stock MessageBoxes, for one).
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.Full;
+                base.WndProc(ref m);
+                Win32ThemeHooks.SysColorOverride = Win32ThemeHooks.Override.None;
+                PaintCustom();
+                break;
+            case Native.WM_NCPAINT:
+                // Attempt to reduce flicker (only reduces the chance very slightly)
+                // NOTE: I don't think this does anything at all actually
+                PaintCustom();
+                break;
+            default:
+                base.WndProc(ref m);
+                break;
         }
     }
 }

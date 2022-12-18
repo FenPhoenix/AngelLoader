@@ -31,80 +31,79 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 
-namespace AngelLoader.FFmpeg.NET
+namespace AngelLoader.FFmpeg.NET;
+
+public enum ConvertType
 {
-    public enum ConvertType
+    AudioBitRateTo16Bit,
+    FormatConvert
+}
+
+public static class Engine
+{
+    public static async Task ConvertAsync(string input, string output, ConvertType convertType)
     {
-        AudioBitRateTo16Bit,
-        FormatConvert
+        void LogInfo(string topMsg, Exception ex)
+        {
+            Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
+                nameof(input) + ": " + input + "\r\n" +
+                nameof(output) + ": " + input + "\r\n" +
+                nameof(convertType) + ": " + convertType,
+                ex);
+        }
+
+        if (!File.Exists(Paths.FFmpegExe))
+        {
+            var ex = new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
+            LogInfo("", ex);
+            throw ex;
+        }
+
+        string arguments = convertType == ConvertType.FormatConvert
+            ? " -i \"" + input + "\" \"" + output + "\" "
+            : " -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\" ";
+
+        var startInfo = new ProcessStartInfo
+        {
+            // -y overwrite output files
+            Arguments = "-y " + arguments,
+            FileName = Paths.FFmpegExe,
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        using var ffmpegProcess = new Process { StartInfo = startInfo };
+        try
+        {
+            await WaitForExitAsync(ffmpegProcess);
+        }
+        catch (Exception ex)
+        {
+            LogInfo(ErrorText.ExTry + "run or exit FFmpeg", ex);
+            throw;
+        }
     }
 
-    public static class Engine
+    private static Task<int> WaitForExitAsync(Process process)
     {
-        public static async Task ConvertAsync(string input, string output, ConvertType convertType)
+        var tcs = new TaskCompletionSource<int>();
+
+        void processOnExited(object sender, EventArgs e)
         {
-            void LogInfo(string topMsg, Exception ex)
-            {
-                Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
-                    nameof(input) + ": " + input + "\r\n" +
-                    nameof(output) + ": " + input + "\r\n" +
-                    nameof(convertType) + ": " + convertType,
-                    ex);
-            }
-
-            if (!File.Exists(Paths.FFmpegExe))
-            {
-                var ex = new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
-                LogInfo("", ex);
-                throw ex;
-            }
-
-            string arguments = convertType == ConvertType.FormatConvert
-                ? " -i \"" + input + "\" \"" + output + "\" "
-                : " -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\" ";
-
-            var startInfo = new ProcessStartInfo
-            {
-                // -y overwrite output files
-                Arguments = "-y " + arguments,
-                FileName = Paths.FFmpegExe,
-                CreateNoWindow = true,
-                UseShellExecute = false
-            };
-
-            using var ffmpegProcess = new Process { StartInfo = startInfo };
-            try
-            {
-                await WaitForExitAsync(ffmpegProcess);
-            }
-            catch (Exception ex)
-            {
-                LogInfo(ErrorText.ExTry + "run or exit FFmpeg", ex);
-                throw;
-            }
+            process.WaitForExit();
+            tcs.TrySetResult(process.ExitCode);
+            process.Exited -= processOnExited;
         }
 
-        private static Task<int> WaitForExitAsync(Process process)
+        process.EnableRaisingEvents = true;
+        process.Exited += processOnExited;
+
+        bool started = process.Start();
+        if (!started)
         {
-            var tcs = new TaskCompletionSource<int>();
-
-            void processOnExited(object sender, EventArgs e)
-            {
-                process.WaitForExit();
-                tcs.TrySetResult(process.ExitCode);
-                process.Exited -= processOnExited;
-            }
-
-            process.EnableRaisingEvents = true;
-            process.Exited += processOnExited;
-
-            bool started = process.Start();
-            if (!started)
-            {
-                tcs.TrySetException(new InvalidOperationException("Could not start process " + process));
-            }
-
-            return tcs.Task;
+            tcs.TrySetException(new InvalidOperationException("Could not start process " + process));
         }
+
+        return tcs.Task;
     }
 }

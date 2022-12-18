@@ -4,119 +4,118 @@ using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Global;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms;
+
+public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
 {
-    public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
+    private enum DateType { From, To }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int EventsDisabledCount { get; set; }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool EventsDisabled => EventsDisabledCount > 0;
+
+    internal DateTime? DateFrom;
+    internal DateTime? DateTo;
+
+    public FilterDateForm(string title, DateTime? from, DateTime? to)
     {
-        private enum DateType { From, To }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int EventsDisabledCount { get; set; }
-
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool EventsDisabled => EventsDisabledCount > 0;
-
-        internal DateTime? DateFrom;
-        internal DateTime? DateTo;
-
-        public FilterDateForm(string title, DateTime? from, DateTime? to)
-        {
 #if DEBUG
             InitializeComponent();
 #else
-            InitSlim();
+        InitSlim();
 #endif
 
-            NoMinLabel.Location = FromDateTimePicker.Location;
-            NoMinLabel.Size = FromDateTimePicker.Size;
-            NoMinLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        NoMinLabel.Location = FromDateTimePicker.Location;
+        NoMinLabel.Size = FromDateTimePicker.Size;
+        NoMinLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            NoMaxLabel.Location = ToDateTimePicker.Location;
-            NoMaxLabel.Size = ToDateTimePicker.Size;
-            NoMaxLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        NoMaxLabel.Location = ToDateTimePicker.Location;
+        NoMaxLabel.Size = ToDateTimePicker.Size;
+        NoMaxLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
+        if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
-            Localize();
+        Localize();
 
-            Text = title;
+        Text = title;
 
-            ControlUtils.AutoSizeFilterWindow(this, OKButton, Cancel_Button);
+        ControlUtils.AutoSizeFilterWindow(this, OKButton, Cancel_Button);
 
-            using (new DisableEvents(this))
-            {
-                FromCheckBox.Checked = from != null;
-                ToCheckBox.Checked = to != null;
-            }
-
-            ShowDate(DateType.From, from != null);
-            ShowDate(DateType.To, to != null);
-
-            if (from != null) FromDateTimePicker.Value = (DateTime)from;
-            if (to != null) ToDateTimePicker.Value = (DateTime)to;
-        }
-
-        private void Localize()
+        using (new DisableEvents(this))
         {
-            FromLabel.Text = LText.DateFilterBox.From;
-            ToLabel.Text = LText.DateFilterBox.To;
-            NoMinLabel.Text = LText.DateFilterBox.NoMinimum;
-            NoMaxLabel.Text = LText.DateFilterBox.NoMaximum;
-
-            ResetButton.Text = LText.Global.Reset;
-            OKButton.Text = LText.Global.OK;
-            Cancel_Button.Text = LText.Global.Cancel;
+            FromCheckBox.Checked = from != null;
+            ToCheckBox.Checked = to != null;
         }
 
-        private void ShowDate(DateType dateType, bool shown)
+        ShowDate(DateType.From, from != null);
+        ShowDate(DateType.To, to != null);
+
+        if (from != null) FromDateTimePicker.Value = (DateTime)from;
+        if (to != null) ToDateTimePicker.Value = (DateTime)to;
+    }
+
+    private void Localize()
+    {
+        FromLabel.Text = LText.DateFilterBox.From;
+        ToLabel.Text = LText.DateFilterBox.To;
+        NoMinLabel.Text = LText.DateFilterBox.NoMinimum;
+        NoMaxLabel.Text = LText.DateFilterBox.NoMaximum;
+
+        ResetButton.Text = LText.Global.Reset;
+        OKButton.Text = LText.Global.OK;
+        Cancel_Button.Text = LText.Global.Cancel;
+    }
+
+    private void ShowDate(DateType dateType, bool shown)
+    {
+        DarkTextBox label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;
+        DarkDateTimePicker dtp = dateType == DateType.From ? FromDateTimePicker : ToDateTimePicker;
+
+        if (shown)
         {
-            DarkTextBox label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;
-            DarkDateTimePicker dtp = dateType == DateType.From ? FromDateTimePicker : ToDateTimePicker;
-
-            if (shown)
-            {
-                label.Hide();
-                dtp.Show();
-            }
-            else
-            {
-                label.Show();
-                dtp.Hide();
-            }
+            label.Hide();
+            dtp.Show();
         }
-
-        private void CheckBoxes_CheckedChanged(object sender, EventArgs e)
+        else
         {
-            if (EventsDisabled) return;
-            var s = (CheckBox)sender;
-            ShowDate(s == FromCheckBox ? DateType.From : DateType.To, s.Checked);
+            label.Show();
+            dtp.Hide();
         }
+    }
 
-        private void ResetButton_Click(object sender, EventArgs e)
+    private void CheckBoxes_CheckedChanged(object sender, EventArgs e)
+    {
+        if (EventsDisabled) return;
+        var s = (CheckBox)sender;
+        ShowDate(s == FromCheckBox ? DateType.From : DateType.To, s.Checked);
+    }
+
+    private void ResetButton_Click(object sender, EventArgs e)
+    {
+        using (new DisableEvents(this))
         {
-            using (new DisableEvents(this))
-            {
-                FromCheckBox.Checked = false;
-                ToCheckBox.Checked = false;
-            }
-
-            ShowDate(DateType.From, false);
-            ShowDate(DateType.To, false);
-
-            FromDateTimePicker.Value = DateTime.Now;
-            ToDateTimePicker.Value = DateTime.Now;
+            FromCheckBox.Checked = false;
+            ToCheckBox.Checked = false;
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        ShowDate(DateType.From, false);
+        ShowDate(DateType.To, false);
+
+        FromDateTimePicker.Value = DateTime.Now;
+        ToDateTimePicker.Value = DateTime.Now;
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        if (DialogResult == DialogResult.OK)
         {
-            if (DialogResult == DialogResult.OK)
-            {
-                DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : null;
-                DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : null;
-            }
-            base.OnFormClosing(e);
+            DateFrom = FromDateTimePicker.Visible ? FromDateTimePicker.Value : null;
+            DateTo = ToDateTimePicker.Visible ? ToDateTimePicker.Value : null;
         }
+        base.OnFormClosing(e);
     }
 }

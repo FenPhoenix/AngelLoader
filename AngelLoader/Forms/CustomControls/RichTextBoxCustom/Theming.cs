@@ -9,104 +9,103 @@ using JetBrains.Annotations;
 using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+internal sealed partial class RichTextBoxCustom
 {
-    internal sealed partial class RichTextBoxCustom
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool DarkModeEnabled
     {
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool DarkModeEnabled
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                SetReadmeTypeAndColorState(_currentReadmeType);
-                // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
-                // selected or whatever
-                if (Visible) RefreshDarkModeState();
-            }
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+            SetReadmeTypeAndColorState(_currentReadmeType);
+            // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
+            // selected or whatever
+            if (Visible) RefreshDarkModeState();
         }
-
-        #region Methods
-
-        private void SetReadmeTypeAndColorState(ReadmeType readmeType)
-        {
-            _currentReadmeType = readmeType;
-
-            if (readmeType is ReadmeType.PlainText or ReadmeType.Wri)
-            {
-                (BackColor, ForeColor) = _darkModeEnabled
-                    ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
-                    : (SystemColors.Window, SystemColors.WindowText);
-            }
-            else
-            {
-                (BackColor, ForeColor) = (SystemColors.Window, SystemColors.WindowText);
-            }
-        }
-
-        private void RefreshDarkModeState(PreProcessedRTF? preProcessedRtf = null, bool skipSuspend = false)
-        {
-            // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
-            // our scroll position bump itself slightly. Weird.
-
-            bool plainText = _currentReadmeType == ReadmeType.PlainText;
-
-            bool toggleReadOnly = _currentReadmeType is ReadmeType.RichText or ReadmeType.GLML;
-
-            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
-            try
-            {
-                if (!skipSuspend)
-                {
-                    if (!plainText) SaveZoom();
-                    this.SuspendDrawing();
-                    if (toggleReadOnly) ReadOnly = false;
-                }
-
-                if (_currentReadmeType == ReadmeType.RichText)
-                {
-                    if (preProcessedRtf != null)
-                    {
-                        using var ms = new MemoryStream(preProcessedRtf.Bytes);
-                        LoadFile(ms, RichTextBoxStreamType.RichText);
-                    }
-                    else
-                    {
-                        using var ms = new MemoryStream(_darkModeEnabled ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes) : _currentReadmeBytes);
-                        LoadFile(ms, RichTextBoxStreamType.RichText);
-                    }
-                }
-                else if (_currentReadmeType == ReadmeType.GLML)
-                {
-                    Rtf = GLMLConversion.GLMLToRTF(_currentReadmeBytes, _darkModeEnabled);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
-            }
-            finally
-            {
-                SwitchOffPreloadState();
-
-                if (!skipSuspend)
-                {
-                    if (!plainText)
-                    {
-                        if (toggleReadOnly) ReadOnly = true;
-                        RestoreZoom();
-                    }
-
-                    ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
-                    this.ResumeDrawing();
-                }
-            }
-        }
-
-        #endregion
     }
+
+    #region Methods
+
+    private void SetReadmeTypeAndColorState(ReadmeType readmeType)
+    {
+        _currentReadmeType = readmeType;
+
+        if (readmeType is ReadmeType.PlainText or ReadmeType.Wri)
+        {
+            (BackColor, ForeColor) = _darkModeEnabled
+                ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
+                : (SystemColors.Window, SystemColors.WindowText);
+        }
+        else
+        {
+            (BackColor, ForeColor) = (SystemColors.Window, SystemColors.WindowText);
+        }
+    }
+
+    private void RefreshDarkModeState(PreProcessedRTF? preProcessedRtf = null, bool skipSuspend = false)
+    {
+        // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
+        // our scroll position bump itself slightly. Weird.
+
+        bool plainText = _currentReadmeType == ReadmeType.PlainText;
+
+        bool toggleReadOnly = _currentReadmeType is ReadmeType.RichText or ReadmeType.GLML;
+
+        Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+        try
+        {
+            if (!skipSuspend)
+            {
+                if (!plainText) SaveZoom();
+                this.SuspendDrawing();
+                if (toggleReadOnly) ReadOnly = false;
+            }
+
+            if (_currentReadmeType == ReadmeType.RichText)
+            {
+                if (preProcessedRtf != null)
+                {
+                    using var ms = new MemoryStream(preProcessedRtf.Bytes);
+                    LoadFile(ms, RichTextBoxStreamType.RichText);
+                }
+                else
+                {
+                    using var ms = new MemoryStream(_darkModeEnabled ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes) : _currentReadmeBytes);
+                    LoadFile(ms, RichTextBoxStreamType.RichText);
+                }
+            }
+            else if (_currentReadmeType == ReadmeType.GLML)
+            {
+                Rtf = GLMLConversion.GLMLToRTF(_currentReadmeBytes, _darkModeEnabled);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
+        }
+        finally
+        {
+            SwitchOffPreloadState();
+
+            if (!skipSuspend)
+            {
+                if (!plainText)
+                {
+                    if (toggleReadOnly) ReadOnly = true;
+                    RestoreZoom();
+                }
+
+                ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
+                this.ResumeDrawing();
+            }
+        }
+    }
+
+    #endregion
 }

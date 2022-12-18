@@ -2,62 +2,61 @@
 using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Forms.CustomControls.LazyLoaded
+namespace AngelLoader.Forms.CustomControls.LazyLoaded;
+
+internal sealed class DynamicItemsLLMenu : IDarkable
 {
-    internal sealed class DynamicItemsLLMenu : IDarkable
+    private bool _constructed;
+
+    private readonly MainForm _owner;
+
+    private DarkContextMenu _menu = null!;
+    internal DarkContextMenu Menu
     {
-        private bool _constructed;
-
-        private readonly MainForm _owner;
-
-        private DarkContextMenu _menu = null!;
-        internal DarkContextMenu Menu
+        get
         {
-            get
-            {
-                Construct();
-                return _menu;
-            }
+            Construct();
+            return _menu;
         }
+    }
 
-        internal DynamicItemsLLMenu(MainForm owner) => _owner = owner;
+    internal DynamicItemsLLMenu(MainForm owner) => _owner = owner;
 
-        private bool _darkModeEnabled;
-        [PublicAPI]
-        public bool DarkModeEnabled
+    private bool _darkModeEnabled;
+    [PublicAPI]
+    public bool DarkModeEnabled
+    {
+        set
         {
-            set
-            {
-                if (_darkModeEnabled == value) return;
-                _darkModeEnabled = value;
-                if (!_constructed) return;
+            if (_darkModeEnabled == value) return;
+            _darkModeEnabled = value;
+            if (!_constructed) return;
 
-                _menu.DarkModeEnabled = _darkModeEnabled;
-            }
+            _menu.DarkModeEnabled = _darkModeEnabled;
         }
+    }
 
-        private void Construct()
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        _menu = new DarkContextMenu(_owner)
         {
-            if (_constructed) return;
+            Tag = LoadType.Lazy,
+            DarkModeEnabled = _darkModeEnabled
+        };
 
-            _menu = new DarkContextMenu(_owner)
-            {
-                Tag = LoadType.Lazy,
-                DarkModeEnabled = _darkModeEnabled
-            };
+        _constructed = true;
 
-            _constructed = true;
+        // Just to keep things in a known state (clearing items also removes their event hookups, which is
+        // convenient)
+        _menu.Closed += (_, _) => Menu.Items.Clear();
+    }
 
-            // Just to keep things in a known state (clearing items also removes their event hookups, which is
-            // convenient)
-            _menu.Closed += (_, _) => Menu.Items.Clear();
-        }
-
-        internal void ClearAndFillMenu(ToolStripItem[] items)
-        {
-            Menu.Items.Clear();
-            Menu.Items.AddRange(items);
-            Menu.RefreshDarkModeState();
-        }
+    internal void ClearAndFillMenu(ToolStripItem[] items)
+    {
+        Menu.Items.Clear();
+        Menu.Items.AddRange(items);
+        Menu.RefreshDarkModeState();
     }
 }

@@ -7,131 +7,131 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
-namespace AngelLoader
+namespace AngelLoader;
+
+#region DisableEvents
+
+/*
+ Implement the interface on your form, and put guard clauses on all your event handlers that you want to
+ be disableable:
+
+ if (EventsDisabled) return;
+
+ Then whenever you want to disable those event handlers, just make a using block:
+
+ using (new DisableEvents(this))
+ {
+ }
+
+ Inside this block, put any code that changes the state of the controls in such a way that would normally
+ run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
+ much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
+ and has the added bonus of guaranteeing a reset of the value due to the using block.
+*/
+
+public interface IEventDisabler
 {
-    #region DisableEvents
+    bool EventsDisabled { get; }
+    int EventsDisabledCount { get; set; }
+}
 
-    /*
-     Implement the interface on your form, and put guard clauses on all your event handlers that you want to
-     be disableable:
-
-     if (EventsDisabled) return;
-
-     Then whenever you want to disable those event handlers, just make a using block:
-
-     using (new DisableEvents(this))
-     {
-     }
-
-     Inside this block, put any code that changes the state of the controls in such a way that would normally
-     run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
-     much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
-     and has the added bonus of guaranteeing a reset of the value due to the using block.
-    */
-
-    public interface IEventDisabler
+internal sealed class DisableEvents_Reference : IDisposable
+{
+    private readonly IEventDisabler Obj;
+    internal DisableEvents_Reference(IEventDisabler obj)
     {
-        bool EventsDisabled { get; }
-        int EventsDisabledCount { get; set; }
+        Obj = obj;
+        Obj.EventsDisabledCount++;
     }
 
-    internal sealed class DisableEvents_Reference : IDisposable
-    {
-        private readonly IEventDisabler Obj;
-        internal DisableEvents_Reference(IEventDisabler obj)
-        {
-            Obj = obj;
-            Obj.EventsDisabledCount++;
-        }
+    public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
+}
 
-        public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
+internal readonly ref struct DisableEvents
+{
+    private readonly bool _active;
+    private readonly IEventDisabler Obj;
+    public DisableEvents(IEventDisabler obj, bool active = true)
+    {
+        _active = active;
+        Obj = obj;
+
+        if (_active) Obj.EventsDisabledCount++;
     }
 
-    internal readonly ref struct DisableEvents
+    public void Dispose()
     {
-        private readonly bool _active;
-        private readonly IEventDisabler Obj;
-        public DisableEvents(IEventDisabler obj, bool active = true)
-        {
-            _active = active;
-            Obj = obj;
-
-            if (_active) Obj.EventsDisabledCount++;
-        }
-
-        public void Dispose()
-        {
-            if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
-        }
+        if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
     }
-    #endregion
+}
+#endregion
 
-    #region DisableZeroSelectCode
+#region DisableZeroSelectCode
 
-    public interface IZeroSelectCodeDisabler
+public interface IZeroSelectCodeDisabler
+{
+    bool ZeroSelectCodeDisabled { get; }
+    int ZeroSelectCodeDisabledCount { get; set; }
+}
+
+internal readonly ref struct DisableZeroSelectCode
+{
+    private readonly IZeroSelectCodeDisabler Obj;
+    internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
     {
-        bool ZeroSelectCodeDisabled { get; }
-        int ZeroSelectCodeDisabledCount { get; set; }
+        Obj = obj;
+        Obj.ZeroSelectCodeDisabledCount++;
     }
 
-    internal readonly ref struct DisableZeroSelectCode
-    {
-        private readonly IZeroSelectCodeDisabler Obj;
-        internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
-        {
-            Obj = obj;
-            Obj.ZeroSelectCodeDisabledCount++;
-        }
+    public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
+}
 
-        public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
-    }
+#endregion
 
-    #endregion
+public interface IDarkContextMenuOwner
+{
+    bool ViewBlocked { get; }
+    IContainer GetComponents();
+}
 
-    public interface IDarkContextMenuOwner
-    {
-        bool ViewBlocked { get; }
-        IContainer GetComponents();
-    }
+public interface ISettingsChangeableWindow
+{
+    void Localize();
+    void SetTheme(VisualTheme theme);
+    void SetWaitCursor(bool value);
+}
 
-    public interface ISettingsChangeableWindow
-    {
-        void Localize();
-        void SetTheme(VisualTheme theme);
-        void SetWaitCursor(bool value);
-    }
+public interface IDarkable
+{
+    bool DarkModeEnabled { set; }
+}
 
-    public interface IDarkable
-    {
-        bool DarkModeEnabled { set; }
-    }
+public interface ISplashScreen
+{
+    bool VisibleCached { get; }
+    void ProgrammaticClose();
+    void SetCheckAtStoredMessageWidth();
+    void SetCheckMessageWidth(string message);
+    void SetMessage(string message);
+    void Show(VisualTheme theme);
+    void Hide();
+    void Dispose();
+    void LockPainting(bool enabled);
+}
 
-    public interface ISplashScreen
-    {
-        bool VisibleCached { get; }
-        void ProgrammaticClose();
-        void SetCheckAtStoredMessageWidth();
-        void SetCheckMessageWidth(string message);
-        void SetMessage(string message);
-        void Show(VisualTheme theme);
-        void Hide();
-        void Dispose();
-        void LockPainting(bool enabled);
-    }
+// The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another
+// UI is loading), so we pass as this interface to guarantee that nobody can do anything dangerous with it.
+public interface ISplashScreen_Safe
+{
+    void Hide();
+}
 
-    // The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another
-    // UI is loading), so we pass as this interface to guarantee that nobody can do anything dangerous with it.
-    public interface ISplashScreen_Safe
-    {
-        void Hide();
-    }
+public interface IListControlWithBackingItems
+{
+    void AddFullItem(string backingItem, string item);
+    void ClearFullItems();
 
-    public interface IListControlWithBackingItems
-    {
-        void AddFullItem(string backingItem, string item);
-        void ClearFullItems();
-
-        #region Disabled until needed
+    #region Disabled until needed
 
 #if false
 
@@ -141,65 +141,65 @@ namespace AngelLoader
 
 #endif
 
-        #endregion
+    #endregion
 
-        void BeginUpdate();
-        void EndUpdate();
-    }
+    void BeginUpdate();
+    void EndUpdate();
+}
 
-    public interface IViewEnvironment
-    {
-        string ProductVersion { get; }
-        void ApplicationExit();
-        IDialogs GetDialogs();
-        ISplashScreen GetSplashScreen();
-        IView GetView();
-        void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
-        (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
-    }
+public interface IViewEnvironment
+{
+    string ProductVersion { get; }
+    void ApplicationExit();
+    IDialogs GetDialogs();
+    ISplashScreen GetSplashScreen();
+    IView GetView();
+    void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
+    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
+}
 
-    public interface IDialogs
-    {
-        (MBoxButton ButtonPressed, bool CheckBoxChecked) ShowMultiChoiceDialog(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel = null, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
-        void ShowError_ViewOwned(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
-        void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
-        void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
-        void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
-        (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
-    }
+public interface IDialogs
+{
+    (MBoxButton ButtonPressed, bool CheckBoxChecked) ShowMultiChoiceDialog(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel = null, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
+    void ShowError_ViewOwned(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
+    void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
+    void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
+    void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
+    (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
+}
 
-    public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContextMenuOwner, IZeroSelectCodeDisabler
-    {
+public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContextMenuOwner, IZeroSelectCodeDisabler
+{
 #if !ReleaseBeta && !ReleasePublic
-        void UpdateGameScreenShotModes();
+    void UpdateGameScreenShotModes();
 #endif
 
-        #region Debug
+    #region Debug
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        string GetDebug1Text();
-        string GetDebug2Text();
-        void SetDebug1Text(string value);
-        void SetDebug2Text(string value);
+    string GetDebug1Text();
+    string GetDebug2Text();
+    void SetDebug1Text(string value);
+    void SetDebug2Text(string value);
 #endif
 
-        #endregion
+    #endregion
 
-        #region Progress box
+    #region Progress box
 
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Null parameters mean explicitly set the defaults.
-        /// </summary>
-        /// <param name="message1"></param>
-        /// <param name="message2"></param>
-        /// <param name="progressType"></param>
-        /// <param name="cancelMessage"></param>
-        /// <param name="cancelAction"></param>
-        void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean explicitly set the defaults.
+    /// </summary>
+    /// <param name="message1"></param>
+    /// <param name="message2"></param>
+    /// <param name="progressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
+    void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
-        #region Disabled until needed
+    #region Disabled until needed
 
 #if false
 
@@ -219,254 +219,253 @@ namespace AngelLoader
 
 #endif
 
-        #endregion
-
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Null parameters mean no change.
-        /// </summary>
-        /// <param name="visible"></param>
-        /// <param name="message1"></param>
-        /// <param name="message2"></param>
-        /// <param name="percent"></param>
-        /// <param name="progressType"></param>
-        /// <param name="cancelMessage"></param>
-        /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
-
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Null parameters mean no change.
-        /// </summary>
-        /// <param name="visible"></param>
-        /// <param name="mainMessage1"></param>
-        /// <param name="mainMessage2"></param>
-        /// <param name="mainPercent"></param>
-        /// <param name="mainProgressType"></param>
-        /// <param name="subMessage"></param>
-        /// <param name="subPercent"></param>
-        /// <param name="subProgressType"></param>
-        /// <param name="cancelMessage"></param>
-        /// <param name="cancelAction"></param>
-        void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
+    #endregion
+
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean no change.
+    /// </summary>
+    /// <param name="visible"></param>
+    /// <param name="message1"></param>
+    /// <param name="message2"></param>
+    /// <param name="percent"></param>
+    /// <param name="progressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
+    void SetProgressBoxState_Single(bool? visible = null, string? message1 = null, string? message2 = null, int? percent = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
+
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean no change.
+    /// </summary>
+    /// <param name="visible"></param>
+    /// <param name="mainMessage1"></param>
+    /// <param name="mainMessage2"></param>
+    /// <param name="mainPercent"></param>
+    /// <param name="mainProgressType"></param>
+    /// <param name="subMessage"></param>
+    /// <param name="subPercent"></param>
+    /// <param name="subProgressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
+    void SetProgressBoxState_Double(bool? visible = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Just sets the percent, leaving all other fields unchanged.
-        /// </summary>
-        /// <param name="percent"></param>
-        void SetProgressPercent(int percent);
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Just sets the percent, leaving all other fields unchanged.
+    /// </summary>
+    /// <param name="percent"></param>
+    void SetProgressPercent(int percent);
 
-        /// <summary>
-        /// Use this is you need to be more detailed than any of the tighter-scoped methods.
-        /// <para/>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// <para/>
-        /// Null parameters mean no change.
-        /// </summary>
-        /// <param name="visible"></param>
-        /// <param name="size"></param>
-        /// <param name="mainMessage1"></param>
-        /// <param name="mainMessage2"></param>
-        /// <param name="mainPercent"></param>
-        /// <param name="mainProgressType"></param>
-        /// <param name="subMessage"></param>
-        /// <param name="subPercent"></param>
-        /// <param name="subProgressType"></param>
-        /// <param name="cancelMessage"></param>
-        /// <param name="cancelAction"></param>
-        void SetProgressBoxState(bool? visible = null, ProgressSizeMode? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
+    /// <summary>
+    /// Use this is you need to be more detailed than any of the tighter-scoped methods.
+    /// <para/>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean no change.
+    /// </summary>
+    /// <param name="visible"></param>
+    /// <param name="size"></param>
+    /// <param name="mainMessage1"></param>
+    /// <param name="mainMessage2"></param>
+    /// <param name="mainPercent"></param>
+    /// <param name="mainProgressType"></param>
+    /// <param name="subMessage"></param>
+    /// <param name="subPercent"></param>
+    /// <param name="subProgressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
+    void SetProgressBoxState(bool? visible = null, ProgressSizeMode? size = null, string? mainMessage1 = null, string? mainMessage2 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? subMessage = null, int? subPercent = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
-        /// <summary>
-        /// This method call is auto-invoked, so no need to wrap it manually.
-        /// </summary>
-        void HideProgressBox();
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// </summary>
+    void HideProgressBox();
 
-        #endregion
+    #endregion
 
-        #region Get column sort state
+    #region Get column sort state
 
-        Column GetCurrentSortedColumnIndex();
+    Column GetCurrentSortedColumnIndex();
 
-        SortDirection GetCurrentSortDirection();
+    SortDirection GetCurrentSortDirection();
 
-        #endregion
+    #endregion
 
-        #region Init and show
+    #region Init and show
 
-        /// <summary>
-        /// This can be called while the FindFMs() thread is running; it doesn't interfere.
-        /// </summary>
-        void InitThreadable();
-        /// <summary>
-        /// Call this only after the FindFMs() thread has finished.
-        /// </summary>
-        /// <returns></returns>
-        Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
+    /// <summary>
+    /// This can be called while the FindFMs() thread is running; it doesn't interfere.
+    /// </summary>
+    void InitThreadable();
+    /// <summary>
+    /// Call this only after the FindFMs() thread has finished.
+    /// </summary>
+    /// <returns></returns>
+    Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
 
-        void Show();
+    void Show();
 
-        #endregion
+    #endregion
 
-        #region Show or hide UI elements
+    #region Show or hide UI elements
 
-        void ShowFMsListZoomButtons(bool visible);
+    void ShowFMsListZoomButtons(bool visible);
 
-        void ShowInstallUninstallButton(bool enabled, bool startup = false);
+    void ShowInstallUninstallButton(bool enabled, bool startup = false);
 
-        void ShowWebSearchButton(bool enabled, bool startup = false);
+    void ShowWebSearchButton(bool enabled, bool startup = false);
 
-        void ShowExitButton(bool enabled, bool startup = false);
+    void ShowExitButton(bool enabled, bool startup = false);
 
-        #endregion
+    #endregion
 
-        #region Filter
+    #region Filter
 
-        Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
-                              bool keepSelection = false, bool gameTabSwitch = false,
-                              bool landImmediate = false, bool keepMultiSelection = false);
+    Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
+        bool keepSelection = false, bool gameTabSwitch = false,
+        bool landImmediate = false, bool keepMultiSelection = false);
 
-        Filter GetFilter();
+    Filter GetFilter();
 
-        string GetTitleFilter();
+    string GetTitleFilter();
 
-        string GetAuthorFilter();
+    string GetAuthorFilter();
 
-        GameSupport.Game GetGameFiltersEnabled();
+    GameSupport.Game GetGameFiltersEnabled();
 
-        bool GetFinishedFilter();
+    bool GetFinishedFilter();
 
-        bool GetUnfinishedFilter();
+    bool GetUnfinishedFilter();
 
-        bool GetShowUnsupportedFilter();
+    bool GetShowUnsupportedFilter();
 
-        bool GetShowUnavailableFMsFilter();
+    bool GetShowUnavailableFMsFilter();
 
-        List<int> GetFilterShownIndexList();
+    List<int> GetFilterShownIndexList();
 
-        bool GetShowRecentAtTop();
+    bool GetShowRecentAtTop();
 
-        void ClearUIAndCurrentInternalFilter();
+    void ClearUIAndCurrentInternalFilter();
 
-        void ChangeGameOrganization(bool startup = false);
+    void ChangeGameOrganization(bool startup = false);
 
-        #endregion
+    #endregion
 
-        #region Row count
+    #region Row count
 
-        int GetRowCount();
+    int GetRowCount();
 
-        void SetRowCount(int count);
+    void SetRowCount(int count);
 
-        #endregion
+    #endregion
 
-        #region Invoke
+    #region Invoke
 
-        object Invoke(Delegate method);
+    object Invoke(Delegate method);
 
-        //object Invoke(Delegate method, params object[] args);
+    //object Invoke(Delegate method, params object[] args);
 
-        #endregion
+    #endregion
 
-        #region Refresh
+    #region Refresh
 
-        void RefreshFM(FanMission fm, bool rowOnly = false);
+    void RefreshFM(FanMission fm, bool rowOnly = false);
 
-        void RefreshFMsListRowsOnlyKeepSelection();
+    void RefreshFMsListRowsOnlyKeepSelection();
 
-        void RefreshAllSelectedFMs_Full();
+    void RefreshAllSelectedFMs_Full();
 
-        void RefreshMainSelectedFMRow_Fast();
+    void RefreshMainSelectedFMRow_Fast();
 
-        void RefreshAllSelectedFMs_UpdateInstallState();
+    void RefreshAllSelectedFMs_UpdateInstallState();
 
-        #endregion
+    #endregion
 
-        #region Readme
+    #region Readme
 
-        void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null);
+    void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null);
 
-        Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
+    Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
 
-        void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType);
+    void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType);
 
-        Encoding? ChangeReadmeEncoding(Encoding? encoding);
+    Encoding? ChangeReadmeEncoding(Encoding? encoding);
 
-        void SetSelectedEncoding(Encoding encoding);
+    void SetSelectedEncoding(Encoding encoding);
 
-        void ChangeReadmeBoxFont(bool useFixed);
+    void ChangeReadmeBoxFont(bool useFixed);
 
-        void ClearReadmesList();
+    void ClearReadmesList();
 
-        void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
+    void ReadmeListFillAndSelect(List<string> readmeFiles, string readme);
 
-        void ShowReadmeChooser(bool visible);
+    void ShowReadmeChooser(bool visible);
 
-        void ShowInitialReadmeChooser(bool visible);
+    void ShowInitialReadmeChooser(bool visible);
 
-        #endregion
+    #endregion
 
-        #region Get FM info
+    #region Get FM info
 
-        FanMission[] GetSelectedFMs();
+    FanMission[] GetSelectedFMs();
 
-        List<FanMission> GetSelectedFMs_InOrder_List();
+    List<FanMission> GetSelectedFMs_InOrder_List();
 
-        SelectedFM? GetMainSelectedFMPosInfo();
+    SelectedFM? GetMainSelectedFMPosInfo();
 
-        FanMission? GetMainSelectedFMOrNull();
+    FanMission? GetMainSelectedFMOrNull();
 
-        FanMission? GetMainSelectedFMOrNull_Fast();
+    FanMission? GetMainSelectedFMOrNull_Fast();
 
-        FanMission? GetFMFromIndex(int index);
+    FanMission? GetFMFromIndex(int index);
 
-        SelectedFM? GetFMPosInfoFromIndex(int index);
+    SelectedFM? GetFMPosInfoFromIndex(int index);
 
-        bool MultipleFMsSelected();
+    bool MultipleFMsSelected();
 
-        bool RowSelected(int index);
+    bool RowSelected(int index);
 
-        int GetMainSelectedRowIndex();
+    int GetMainSelectedRowIndex();
 
-        #endregion
+    #endregion
 
-        #region Dialogs
+    #region Dialogs
 
-        (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
+    (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
 
-        (bool Accepted, string IniFile, bool ImportFMData, bool ImportTitle, bool ImportSize, bool ImportComment, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportFinishedOn, bool ImportSaves) ShowDarkLoaderImportWindow();
+    (bool Accepted, string IniFile, bool ImportFMData, bool ImportTitle, bool ImportSize, bool ImportComment, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportFinishedOn, bool ImportSaves) ShowDarkLoaderImportWindow();
 
-        (bool Accepted, List<string> IniFiles, bool ImportTitle, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportComment, bool ImportRating, bool ImportDisabledMods, bool ImportTags, bool ImportSelectedReadme, bool ImportFinishedOn, bool ImportSize) ShowImportFromMultipleInisForm(ImportType importType);
+    (bool Accepted, List<string> IniFiles, bool ImportTitle, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportComment, bool ImportRating, bool ImportDisabledMods, bool ImportTags, bool ImportSelectedReadme, bool ImportFinishedOn, bool ImportSize) ShowImportFromMultipleInisForm(ImportType importType);
 
-        #endregion
+    #endregion
 
-        #region UI enabled
+    #region UI enabled
 
-        bool GetUIEnabled();
+    bool GetUIEnabled();
 
-        void SetUIEnabled(bool value);
+    void SetUIEnabled(bool value);
 
-        #endregion
+    #endregion
 
-        void Block(bool block);
+    void Block(bool block);
 
-        void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
+    void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
 
-        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
+    void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
 
-        void SetPinnedMenuState(bool pinned);
+    void SetPinnedMenuState(bool pinned);
 
-        void SetPlayOriginalGameControlsState();
+    void SetPlayOriginalGameControlsState();
 
-        void UpdateAllFMUIDataExceptReadme(FanMission fm);
+    void UpdateAllFMUIDataExceptReadme(FanMission fm);
 
-        void ActivateThisInstance();
+    void ActivateThisInstance();
 
-        bool AbleToAcceptDragDrop();
+    bool AbleToAcceptDragDrop();
 
-        void SetAvailableFMCount();
-    }
+    void SetAvailableFMCount();
 }

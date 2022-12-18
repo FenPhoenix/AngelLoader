@@ -49,162 +49,162 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static FenGen.Misc;
 
-namespace FenGen
+namespace FenGen;
+
+internal sealed class GameSourceEnum
 {
-    internal sealed class GameSourceEnum
+    internal string Name = "";
+    internal string GameIndexName = "";
+    internal readonly List<string> GameEnumNames = new();
+    internal readonly List<string> GameIndexEnumNames = new();
+    internal readonly List<string> GamePrefixes = new();
+    internal readonly List<string> SteamIds = new();
+    internal readonly List<string> EditorNames = new();
+}
+
+internal sealed class LanguageSourceEnum
+{
+    internal string Name = "";
+    internal string StringToEnumDictName = "";
+    internal string LanguageIndexName = "";
+    internal readonly List<string> LangEnumNames = new();
+    internal readonly List<string> LangIndexEnumNames = new();
+    internal readonly List<string> LangIndexEnumNamesLowercase = new();
+    internal readonly List<string> LangCodes = new();
+    internal readonly List<string> LangTranslatedNames = new();
+}
+
+internal sealed class DesignerCSFile
+{
+    internal readonly string FileName;
+    internal readonly bool SplashScreen;
+
+    public DesignerCSFile(string fileName, bool splashScreen = false)
     {
-        internal string Name = "";
-        internal string GameIndexName = "";
-        internal readonly List<string> GameEnumNames = new();
-        internal readonly List<string> GameIndexEnumNames = new();
-        internal readonly List<string> GamePrefixes = new();
-        internal readonly List<string> SteamIds = new();
-        internal readonly List<string> EditorNames = new();
+        FileName = fileName;
+        SplashScreen = splashScreen;
+    }
+}
+
+// Nasty global state that's really just here to avoid over-parameterization.
+internal static class Cache
+{
+    #region Games
+
+    private static string _gameSupportFile = "";
+    internal static void SetGameSupportFile(string file) => _gameSupportFile = file;
+    private static GameSourceEnum? _gamesEnum;
+    internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
+
+    #endregion
+
+    #region Language support
+
+    private static string _langsSupportFile = "";
+    internal static void SetLangSupportFile(string file) => _langsSupportFile = file;
+    private static LanguageSourceEnum? _languageEnum;
+    internal static LanguageSourceEnum LangsEnum => _languageEnum ??= LanguageSupport.FillLangsEnum(_langsSupportFile);
+
+    #endregion
+
+    private static List<string>? _csFiles;
+    internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
+
+    internal static readonly List<DesignerCSFile> DesignerCSFiles = new();
+
+    internal static void Clear()
+    {
+        _gameSupportFile = "";
+        _gamesEnum = null;
+
+        _langsSupportFile = "";
+        _languageEnum = null;
+
+        _csFiles = null;
+        DesignerCSFiles.Clear();
     }
 
-    internal sealed class LanguageSourceEnum
+    internal static readonly string CurrentYear = DateTime.Now.Year.ToString();
+}
+
+internal static class GenAttributes
+{
+    #region Serialization
+
+    internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
+    internal const string FenGenFMDataDestClass = nameof(FenGenFMDataDestClass);
+    internal const string FenGenIgnore = nameof(FenGenIgnore);
+    internal const string FenGenDoNotWrite = nameof(FenGenDoNotWrite);
+    internal const string FenGenIniName = nameof(FenGenIniName);
+    internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
+    internal const string FenGenMaxDigits = nameof(FenGenMaxDigits);
+    internal const string FenGenListType = nameof(FenGenListType);
+    internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
+    internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
+
+    #endregion
+
+    internal const string FenGenFlagsSingleAssignment = nameof(FenGenFlagsSingleAssignment);
+    internal const string FenGenReadmeEncoding = nameof(FenGenReadmeEncoding);
+    internal const string FenGenDoNotSubstring = nameof(FenGenDoNotSubstring);
+
+    #region Localizable text
+
+    internal const string FenGenLocalizationSourceClass = nameof(FenGenLocalizationSourceClass);
+    internal const string FenGenLocalizedGameNameGetterDestClass = nameof(FenGenLocalizedGameNameGetterDestClass);
+    internal const string FenGenComment = nameof(FenGenComment);
+    internal const string FenGenBlankLine = nameof(FenGenBlankLine);
+    internal const string FenGenGameSet = nameof(FenGenGameSet);
+
+    #endregion
+
+    #region Game support
+
+    internal const string FenGenGameEnum = nameof(FenGenGameEnum);
+    internal const string FenGenGameSupportMainGenDestClass = nameof(FenGenGameSupportMainGenDestClass);
+    internal const string FenGenGame = nameof(FenGenGame);
+
+    #endregion
+
+    #region Language support
+
+    internal const string FenGenLanguageSupportDestClass = nameof(FenGenLanguageSupportDestClass);
+    internal const string FenGenLanguageEnum = nameof(FenGenLanguageEnum);
+    internal const string FenGenLanguage = nameof(FenGenLanguage);
+
+    #endregion
+
+    internal const string FenGenExcludeResx = nameof(FenGenExcludeResx);
+
+    internal const string FenGenBuildDateDestClass = nameof(FenGenBuildDateDestClass);
+
+    internal const string FenGenDoNotRemoveTextAttribute = nameof(FenGenDoNotRemoveTextAttribute);
+    internal const string FenGenDoNotRemoveHeaderTextAttribute = nameof(FenGenDoNotRemoveHeaderTextAttribute);
+    internal const string FenGenDoNotRemoveToolTipTextAttribute = nameof(FenGenDoNotRemoveToolTipTextAttribute);
+
+    internal const string FenGenForceRemoveSizeAttribute = nameof(FenGenForceRemoveSizeAttribute);
+
+    internal const string FenGenCurrentYearDestClassAttribute = nameof(FenGenCurrentYearDestClassAttribute);
+}
+
+internal static class Core
+{
+    private enum GenType
     {
-        internal string Name = "";
-        internal string StringToEnumDictName = "";
-        internal string LanguageIndexName = "";
-        internal readonly List<string> LangEnumNames = new();
-        internal readonly List<string> LangIndexEnumNames = new();
-        internal readonly List<string> LangIndexEnumNamesLowercase = new();
-        internal readonly List<string> LangCodes = new();
-        internal readonly List<string> LangTranslatedNames = new();
+        FMData,
+        Config,
+        Language,
+        LanguageAndAlsoCreateTestIni,
+        GameSupport,
+        ExcludeResx,
+        RestoreResx,
+        AddBuildDate,
+        RemoveBuildDate,
+        GenSlimDesignerFiles,
+        GenCopyright
     }
 
-    internal sealed class DesignerCSFile
-    {
-        internal readonly string FileName;
-        internal readonly bool SplashScreen;
-
-        public DesignerCSFile(string fileName, bool splashScreen = false)
-        {
-            FileName = fileName;
-            SplashScreen = splashScreen;
-        }
-    }
-
-    // Nasty global state that's really just here to avoid over-parameterization.
-    internal static class Cache
-    {
-        #region Games
-
-        private static string _gameSupportFile = "";
-        internal static void SetGameSupportFile(string file) => _gameSupportFile = file;
-        private static GameSourceEnum? _gamesEnum;
-        internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
-
-        #endregion
-
-        #region Language support
-
-        private static string _langsSupportFile = "";
-        internal static void SetLangSupportFile(string file) => _langsSupportFile = file;
-        private static LanguageSourceEnum? _languageEnum;
-        internal static LanguageSourceEnum LangsEnum => _languageEnum ??= LanguageSupport.FillLangsEnum(_langsSupportFile);
-
-        #endregion
-
-        private static List<string>? _csFiles;
-        internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
-
-        internal static readonly List<DesignerCSFile> DesignerCSFiles = new();
-
-        internal static void Clear()
-        {
-            _gameSupportFile = "";
-            _gamesEnum = null;
-
-            _langsSupportFile = "";
-            _languageEnum = null;
-
-            _csFiles = null;
-            DesignerCSFiles.Clear();
-        }
-
-        internal static readonly string CurrentYear = DateTime.Now.Year.ToString();
-    }
-
-    internal static class GenAttributes
-    {
-        #region Serialization
-
-        internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
-        internal const string FenGenFMDataDestClass = nameof(FenGenFMDataDestClass);
-        internal const string FenGenIgnore = nameof(FenGenIgnore);
-        internal const string FenGenDoNotWrite = nameof(FenGenDoNotWrite);
-        internal const string FenGenIniName = nameof(FenGenIniName);
-        internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
-        internal const string FenGenMaxDigits = nameof(FenGenMaxDigits);
-        internal const string FenGenListType = nameof(FenGenListType);
-        internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
-        internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
-
-        #endregion
-
-        internal const string FenGenFlagsSingleAssignment = nameof(FenGenFlagsSingleAssignment);
-        internal const string FenGenReadmeEncoding = nameof(FenGenReadmeEncoding);
-        internal const string FenGenDoNotSubstring = nameof(FenGenDoNotSubstring);
-
-        #region Localizable text
-
-        internal const string FenGenLocalizationSourceClass = nameof(FenGenLocalizationSourceClass);
-        internal const string FenGenLocalizedGameNameGetterDestClass = nameof(FenGenLocalizedGameNameGetterDestClass);
-        internal const string FenGenComment = nameof(FenGenComment);
-        internal const string FenGenBlankLine = nameof(FenGenBlankLine);
-        internal const string FenGenGameSet = nameof(FenGenGameSet);
-
-        #endregion
-
-        #region Game support
-
-        internal const string FenGenGameEnum = nameof(FenGenGameEnum);
-        internal const string FenGenGameSupportMainGenDestClass = nameof(FenGenGameSupportMainGenDestClass);
-        internal const string FenGenGame = nameof(FenGenGame);
-
-        #endregion
-
-        #region Language support
-
-        internal const string FenGenLanguageSupportDestClass = nameof(FenGenLanguageSupportDestClass);
-        internal const string FenGenLanguageEnum = nameof(FenGenLanguageEnum);
-        internal const string FenGenLanguage = nameof(FenGenLanguage);
-
-        #endregion
-
-        internal const string FenGenExcludeResx = nameof(FenGenExcludeResx);
-
-        internal const string FenGenBuildDateDestClass = nameof(FenGenBuildDateDestClass);
-
-        internal const string FenGenDoNotRemoveTextAttribute = nameof(FenGenDoNotRemoveTextAttribute);
-        internal const string FenGenDoNotRemoveHeaderTextAttribute = nameof(FenGenDoNotRemoveHeaderTextAttribute);
-        internal const string FenGenDoNotRemoveToolTipTextAttribute = nameof(FenGenDoNotRemoveToolTipTextAttribute);
-
-        internal const string FenGenForceRemoveSizeAttribute = nameof(FenGenForceRemoveSizeAttribute);
-
-        internal const string FenGenCurrentYearDestClassAttribute = nameof(FenGenCurrentYearDestClassAttribute);
-    }
-
-    internal static class Core
-    {
-        private enum GenType
-        {
-            FMData,
-            Config,
-            Language,
-            LanguageAndAlsoCreateTestIni,
-            GameSupport,
-            ExcludeResx,
-            RestoreResx,
-            AddBuildDate,
-            RemoveBuildDate,
-            GenSlimDesignerFiles,
-            GenCopyright
-        }
-
-        private static readonly Dictionary<string, GenType>
+    private static readonly Dictionary<string, GenType>
         _argToTaskMap = new()
         {
             { "-fmd", GenType.FMData },
@@ -219,7 +219,7 @@ namespace FenGen
             { "-cr", GenType.GenCopyright }
         };
 
-        // Only used for debug, so we can explicitly place test arguments into the set
+    // Only used for debug, so we can explicitly place test arguments into the set
 #if DEBUG || PROFILING
         private static string GetArg(GenType genType)
         {
@@ -232,70 +232,70 @@ namespace FenGen
         }
 #endif
 
-        private static class DefineHeaders
-        {
-            internal const string LocalizationSource = "FenGen_LocalizationSource";
-            internal const string GameSupportSource = "FenGen_GameSupportSource";
-            internal const string LanguageSupportSource = "FenGen_LanguageSupportSource";
-            internal const string LanguageSupportDest = "FenGen_LanguageSupportDest";
-            internal const string FMDataSource = "FenGen_FMDataSource";
-            internal const string FMDataDest = "FenGen_FMDataDest";
-            internal const string DesignerSource = "FenGen_DesignerSource";
-            internal const string DesignerSource_SplashScreen = "FenGen_DesignerSource_SplashScreen";
-            internal const string BuildDate = "FenGen_BuildDateDest";
-            internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
-            internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
-            internal const string CurrentYearDest = "FenGen_CurrentYearDest";
-        }
+    private static class DefineHeaders
+    {
+        internal const string LocalizationSource = "FenGen_LocalizationSource";
+        internal const string GameSupportSource = "FenGen_GameSupportSource";
+        internal const string LanguageSupportSource = "FenGen_LanguageSupportSource";
+        internal const string LanguageSupportDest = "FenGen_LanguageSupportDest";
+        internal const string FMDataSource = "FenGen_FMDataSource";
+        internal const string FMDataDest = "FenGen_FMDataDest";
+        internal const string DesignerSource = "FenGen_DesignerSource";
+        internal const string DesignerSource_SplashScreen = "FenGen_DesignerSource_SplashScreen";
+        internal const string BuildDate = "FenGen_BuildDateDest";
+        internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
+        internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
+        internal const string CurrentYearDest = "FenGen_CurrentYearDest";
+    }
 
-        private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
+    private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
         private static Forms.MainForm View = null!;
 #endif
 
-        internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
-        internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
-        internal static readonly string ALProjectFile = Path.Combine(ALProjectPath, "AngelLoader.csproj");
+    internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
+    internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
+    internal static readonly string ALProjectFile = Path.Combine(ALProjectPath, "AngelLoader.csproj");
 
-        // Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
-        // That's not even counting doing any actual work with it, which adds even more slug time.
-        // -ParseText() seems to have like a 200ms init time the first time you call it. See what I goddamn mean.
+    // Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
+    // That's not even counting doing any actual work with it, which adds even more slug time.
+    // -ParseText() seems to have like a 200ms init time the first time you call it. See what I goddamn mean.
 
-        internal static void Init()
-        {
+    internal static void Init()
+    {
 #if Release
-            ReadArgsAndDoTasks();
+        ReadArgsAndDoTasks();
 
-            Environment.Exit(0);
+        Environment.Exit(0);
 #else
             View = new Forms.MainForm();
             View.Show();
 #endif
-        }
+    }
 
-        private static void Exit() => Environment.Exit(1);
+    private static void Exit() => Environment.Exit(1);
 
-        [PublicAPI]
-        internal static void ReadArgsAndDoTasks()
+    [PublicAPI]
+    internal static void ReadArgsAndDoTasks()
+    {
+        try
         {
-            try
-            {
-                ReadArgsAndDoTasksInternal();
-            }
-            catch (Exception ex)
-            {
-                ThrowErrorAndTerminate(ex);
-            }
-            finally
-            {
-                Cache.Clear();
-            }
+            ReadArgsAndDoTasksInternal();
         }
-
-        private static void ReadArgsAndDoTasksInternal()
+        catch (Exception ex)
         {
-            // args[0] is always the application filename
+            ThrowErrorAndTerminate(ex);
+        }
+        finally
+        {
+            Cache.Clear();
+        }
+    }
+
+    private static void ReadArgsAndDoTasksInternal()
+    {
+        // args[0] is always the application filename
 
 #if DEBUG || PROFILING
             string[] args =
@@ -311,257 +311,256 @@ namespace FenGen
                 GetArg(GenType.GenCopyright)
             };
 #else
-            string[] args = Environment.GetCommandLineArgs();
+        string[] args = Environment.GetCommandLineArgs();
 #endif
 
-            if (args.Length < 2) Exit();
+        if (args.Length < 2) Exit();
 
-            bool[] _genTasksActive = new bool[_genTaskCount];
+        bool[] _genTasksActive = new bool[_genTaskCount];
 
-            #region Local functions
+        #region Local functions
 
-            void SetGenTaskActive(GenType genType) => _genTasksActive[(int)genType] = true;
+        void SetGenTaskActive(GenType genType) => _genTasksActive[(int)genType] = true;
 
-            bool GenTaskActive(GenType genType) => _genTasksActive[(int)genType];
+        bool GenTaskActive(GenType genType) => _genTasksActive[(int)genType];
 
-            bool LangTaskActive() => GenTaskActive(GenType.Language) ||
-                                     GenTaskActive(GenType.LanguageAndAlsoCreateTestIni);
+        bool LangTaskActive() => GenTaskActive(GenType.Language) ||
+                                 GenTaskActive(GenType.LanguageAndAlsoCreateTestIni);
 
-            bool AnyGenTasksActive()
-            {
-                for (int i = 0; i < _genTasksActive.Length; i++)
-                {
-                    if (_genTasksActive[i]) return true;
-                }
-                return false;
-            }
-
-            #endregion
-
-            for (int i = 1; i < args.Length; i++)
-            {
-                if (_argToTaskMap.TryGetValue(args[i], out GenType genType)) SetGenTaskActive(genType);
-            }
-
-            if (!AnyGenTasksActive())
-            {
-                Exit();
-                return;
-            }
-
-            bool forceFindRequiredFiles = false;
-            var defineHeaders = new List<string>();
-            bool gameSupportRequested = GenTaskActive(GenType.FMData) ||
-                                        GenTaskActive(GenType.GameSupport) ||
-                                        LangTaskActive();
-
-            // Just always do it...
-            bool langSupportRequested = true;
-
-            if (langSupportRequested)
-            {
-                defineHeaders.Add(DefineHeaders.LanguageSupportSource);
-            }
-
-            if (gameSupportRequested)
-            {
-                defineHeaders.Add(DefineHeaders.GameSupportSource);
-            }
-            // Only do this if we're writing out game support stuff proper, not just reading them
-            if (GenTaskActive(GenType.GameSupport))
-            {
-                defineHeaders.Add(DefineHeaders.GameSupportMainGenDest);
-            }
-            if (GenTaskActive(GenType.FMData))
-            {
-                defineHeaders.Add(DefineHeaders.FMDataSource);
-                defineHeaders.Add(DefineHeaders.FMDataDest);
-            }
-            if (LangTaskActive())
-            {
-                defineHeaders.Add(DefineHeaders.LocalizationSource);
-                defineHeaders.Add(DefineHeaders.LocalizedGameNameGetterDest);
-                defineHeaders.Add(DefineHeaders.LanguageSupportSource);
-                defineHeaders.Add(DefineHeaders.LanguageSupportDest);
-            }
-            if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
-            {
-                defineHeaders.Add(DefineHeaders.BuildDate);
-            }
-            if (GenTaskActive(GenType.GenSlimDesignerFiles))
-            {
-                forceFindRequiredFiles = true;
-            }
-            if (GenTaskActive(GenType.GenCopyright))
-            {
-                defineHeaders.Add(DefineHeaders.CurrentYearDest);
-            }
-
-            var taggedFilesDict = new Dictionary<string, string>();
-            if (forceFindRequiredFiles || defineHeaders.Count > 0)
-            {
-                taggedFilesDict = FindRequiredCodeFiles(defineHeaders.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
-            }
-
-            if (gameSupportRequested)
-            {
-                Cache.SetGameSupportFile(taggedFilesDict[DefineHeaders.GameSupportSource]);
-            }
-            if (langSupportRequested)
-            {
-                Cache.SetLangSupportFile(taggedFilesDict[DefineHeaders.LanguageSupportSource]);
-            }
-
-            if (GenTaskActive(GenType.FMData))
-            {
-                FMData.Generate(
-                    taggedFilesDict[DefineHeaders.FMDataSource],
-                    taggedFilesDict[DefineHeaders.FMDataDest]);
-            }
-            if (LangTaskActive())
-            {
-                static string GetTestLangPath()
-                {
-                    try
-                    {
-                        // Only generate the test lang file into what may be a production folder on my own
-                        // machine, not everyone else's
-                        string? val = Environment.GetEnvironmentVariable(
-                            "AL_FEN_PERSONAL_DEV_3053BA21",
-                            EnvironmentVariableTarget.Machine);
-                        return val?.EqualsTrue() == true
-                            ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
-                            : "";
-                    }
-                    catch
-                    {
-                        return "";
-                    }
-                }
-
-                string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
-                string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
-                    ? GetTestLangPath()
-                    : "";
-
-                Language.Generate(
-                    sourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
-                    perGameLangGetterDestFile: taggedFilesDict[DefineHeaders.LocalizedGameNameGetterDest],
-                    langIniFile: englishIni,
-                    testLangIniFile: testLangIni);
-
-                LanguageSupport.Generate(destFile: taggedFilesDict[DefineHeaders.LanguageSupportDest]);
-            }
-            if (GenTaskActive(GenType.GameSupport))
-            {
-                Games.Generate(taggedFilesDict[DefineHeaders.GameSupportMainGenDest]);
-            }
-            if (GenTaskActive(GenType.ExcludeResx))
-            {
-                ExcludeResx.GenerateExclude();
-            }
-            if (GenTaskActive(GenType.RestoreResx))
-            {
-                ExcludeResx.GenerateRestore();
-            }
-            if (GenTaskActive(GenType.AddBuildDate))
-            {
-                BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate]);
-            }
-            if (GenTaskActive(GenType.RemoveBuildDate))
-            {
-                BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate], remove: true);
-            }
-            if (GenTaskActive(GenType.GenSlimDesignerFiles))
-            {
-                DesignerGen.Generate();
-            }
-            if (GenTaskActive(GenType.GenCopyright))
-            {
-                CopyrightGen.GenProjCopyright();
-                CopyrightGen.GenCurrentYear(taggedFilesDict[DefineHeaders.CurrentYearDest]);
-                CopyrightGen.GenLicenses();
-            }
-        }
-
-        [MustUseReturnValue]
-        private static Dictionary<string, string>
-        FindRequiredCodeFiles(List<string> defineHeaders)
+        bool AnyGenTasksActive()
         {
-            var taggedFiles = InitializedArray<List<string>>(defineHeaders.Count);
-
-            foreach (string f in Cache.CSFiles)
+            for (int i = 0; i < _genTasksActive.Length; i++)
             {
-                using var sr = new StreamReader(f);
+                if (_genTasksActive[i]) return true;
+            }
+            return false;
+        }
 
-                while (sr.ReadLine() is { } line)
+        #endregion
+
+        for (int i = 1; i < args.Length; i++)
+        {
+            if (_argToTaskMap.TryGetValue(args[i], out GenType genType)) SetGenTaskActive(genType);
+        }
+
+        if (!AnyGenTasksActive())
+        {
+            Exit();
+            return;
+        }
+
+        bool forceFindRequiredFiles = false;
+        var defineHeaders = new List<string>();
+        bool gameSupportRequested = GenTaskActive(GenType.FMData) ||
+                                    GenTaskActive(GenType.GameSupport) ||
+                                    LangTaskActive();
+
+        // Just always do it...
+        bool langSupportRequested = true;
+
+        if (langSupportRequested)
+        {
+            defineHeaders.Add(DefineHeaders.LanguageSupportSource);
+        }
+
+        if (gameSupportRequested)
+        {
+            defineHeaders.Add(DefineHeaders.GameSupportSource);
+        }
+        // Only do this if we're writing out game support stuff proper, not just reading them
+        if (GenTaskActive(GenType.GameSupport))
+        {
+            defineHeaders.Add(DefineHeaders.GameSupportMainGenDest);
+        }
+        if (GenTaskActive(GenType.FMData))
+        {
+            defineHeaders.Add(DefineHeaders.FMDataSource);
+            defineHeaders.Add(DefineHeaders.FMDataDest);
+        }
+        if (LangTaskActive())
+        {
+            defineHeaders.Add(DefineHeaders.LocalizationSource);
+            defineHeaders.Add(DefineHeaders.LocalizedGameNameGetterDest);
+            defineHeaders.Add(DefineHeaders.LanguageSupportSource);
+            defineHeaders.Add(DefineHeaders.LanguageSupportDest);
+        }
+        if (GenTaskActive(GenType.AddBuildDate) || GenTaskActive(GenType.RemoveBuildDate))
+        {
+            defineHeaders.Add(DefineHeaders.BuildDate);
+        }
+        if (GenTaskActive(GenType.GenSlimDesignerFiles))
+        {
+            forceFindRequiredFiles = true;
+        }
+        if (GenTaskActive(GenType.GenCopyright))
+        {
+            defineHeaders.Add(DefineHeaders.CurrentYearDest);
+        }
+
+        var taggedFilesDict = new Dictionary<string, string>();
+        if (forceFindRequiredFiles || defineHeaders.Count > 0)
+        {
+            taggedFilesDict = FindRequiredCodeFiles(defineHeaders.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+        }
+
+        if (gameSupportRequested)
+        {
+            Cache.SetGameSupportFile(taggedFilesDict[DefineHeaders.GameSupportSource]);
+        }
+        if (langSupportRequested)
+        {
+            Cache.SetLangSupportFile(taggedFilesDict[DefineHeaders.LanguageSupportSource]);
+        }
+
+        if (GenTaskActive(GenType.FMData))
+        {
+            FMData.Generate(
+                taggedFilesDict[DefineHeaders.FMDataSource],
+                taggedFilesDict[DefineHeaders.FMDataDest]);
+        }
+        if (LangTaskActive())
+        {
+            static string GetTestLangPath()
+            {
+                try
                 {
-                    string lts = line.TrimStart();
-                    if (lts.IsWhiteSpace() || lts.StartsWithO("//")) continue;
+                    // Only generate the test lang file into what may be a production folder on my own
+                    // machine, not everyone else's
+                    string? val = Environment.GetEnvironmentVariable(
+                        "AL_FEN_PERSONAL_DEV_3053BA21",
+                        EnvironmentVariableTarget.Machine);
+                    return val?.EqualsTrue() == true
+                        ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
+                        : "";
+                }
+                catch
+                {
+                    return "";
+                }
+            }
 
-                    if (lts[0] != '#') break;
+            string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
+            string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
+                ? GetTestLangPath()
+                : "";
 
-                    if (lts.StartsWithPlusWhiteSpace("#define"))
+            Language.Generate(
+                sourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
+                perGameLangGetterDestFile: taggedFilesDict[DefineHeaders.LocalizedGameNameGetterDest],
+                langIniFile: englishIni,
+                testLangIniFile: testLangIni);
+
+            LanguageSupport.Generate(destFile: taggedFilesDict[DefineHeaders.LanguageSupportDest]);
+        }
+        if (GenTaskActive(GenType.GameSupport))
+        {
+            Games.Generate(taggedFilesDict[DefineHeaders.GameSupportMainGenDest]);
+        }
+        if (GenTaskActive(GenType.ExcludeResx))
+        {
+            ExcludeResx.GenerateExclude();
+        }
+        if (GenTaskActive(GenType.RestoreResx))
+        {
+            ExcludeResx.GenerateRestore();
+        }
+        if (GenTaskActive(GenType.AddBuildDate))
+        {
+            BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate]);
+        }
+        if (GenTaskActive(GenType.RemoveBuildDate))
+        {
+            BuildDateGen.Generate(taggedFilesDict[DefineHeaders.BuildDate], remove: true);
+        }
+        if (GenTaskActive(GenType.GenSlimDesignerFiles))
+        {
+            DesignerGen.Generate();
+        }
+        if (GenTaskActive(GenType.GenCopyright))
+        {
+            CopyrightGen.GenProjCopyright();
+            CopyrightGen.GenCurrentYear(taggedFilesDict[DefineHeaders.CurrentYearDest]);
+            CopyrightGen.GenLicenses();
+        }
+    }
+
+    [MustUseReturnValue]
+    private static Dictionary<string, string>
+        FindRequiredCodeFiles(List<string> defineHeaders)
+    {
+        var taggedFiles = InitializedArray<List<string>>(defineHeaders.Count);
+
+        foreach (string f in Cache.CSFiles)
+        {
+            using var sr = new StreamReader(f);
+
+            while (sr.ReadLine() is { } line)
+            {
+                string lts = line.TrimStart();
+                if (lts.IsWhiteSpace() || lts.StartsWithO("//")) continue;
+
+                if (lts[0] != '#') break;
+
+                if (lts.StartsWithPlusWhiteSpace("#define"))
+                {
+                    string tag = lts.Substring(7).Trim();
+                    if (tag
+                        is DefineHeaders.DesignerSource
+                        or DefineHeaders.DesignerSource_SplashScreen)
                     {
-                        string tag = lts.Substring(7).Trim();
-                        if (tag
-                            is DefineHeaders.DesignerSource
-                            or DefineHeaders.DesignerSource_SplashScreen)
+                        if (f.EndsWithI(".Designer.cs"))
                         {
-                            if (f.EndsWithI(".Designer.cs"))
-                            {
-                                Cache.DesignerCSFiles.Add(
-                                    new DesignerCSFile(
-                                        fileName: f,
-                                        splashScreen: tag == DefineHeaders.DesignerSource_SplashScreen
-                                    ));
-                            }
-                            else
-                            {
-                                ThrowErrorAndTerminate(DefineHeaders.DesignerSource +
-                                                       " found in a file not ending in .Designer.cs.");
-                            }
-                            continue;
+                            Cache.DesignerCSFiles.Add(
+                                new DesignerCSFile(
+                                    fileName: f,
+                                    splashScreen: tag == DefineHeaders.DesignerSource_SplashScreen
+                                ));
                         }
-
-                        for (int i = 0; i < defineHeaders.Count; i++)
+                        else
                         {
-                            if (tag == defineHeaders[i])
-                            {
-                                taggedFiles[i].Add(f);
-                                break;
-                            }
+                            ThrowErrorAndTerminate(DefineHeaders.DesignerSource +
+                                                   " found in a file not ending in .Designer.cs.");
+                        }
+                        continue;
+                    }
+
+                    for (int i = 0; i < defineHeaders.Count; i++)
+                    {
+                        if (tag == defineHeaders[i])
+                        {
+                            taggedFiles[i].Add(f);
+                            break;
                         }
                     }
                 }
             }
-
-            #region Error reporting
-
-            static string AddError(string msg, string add) => msg + (msg.IsEmpty() ? "" : "\r\n") + add;
-
-            string error = "";
-            for (int i = 0; i < taggedFiles.Length; i++)
-            {
-                if (taggedFiles[i].Count == 0)
-                {
-                    error = AddError(error, "-No file found with '#define " + defineHeaders[i] + "' at top");
-                }
-                else if (taggedFiles[i].Count > 1)
-                {
-                    error = AddError(error, "-Multiple files found with '#define " + defineHeaders[i] + "' at top");
-                }
-            }
-            if (!error.IsEmpty()) ThrowErrorAndTerminate(error);
-
-            #endregion
-
-            var ret = new Dictionary<string, string>(defineHeaders.Count);
-            for (int i = 0; i < defineHeaders.Count; i++)
-            {
-                ret.Add(defineHeaders[i], taggedFiles[i][0]);
-            }
-            return ret;
         }
+
+        #region Error reporting
+
+        static string AddError(string msg, string add) => msg + (msg.IsEmpty() ? "" : "\r\n") + add;
+
+        string error = "";
+        for (int i = 0; i < taggedFiles.Length; i++)
+        {
+            if (taggedFiles[i].Count == 0)
+            {
+                error = AddError(error, "-No file found with '#define " + defineHeaders[i] + "' at top");
+            }
+            else if (taggedFiles[i].Count > 1)
+            {
+                error = AddError(error, "-Multiple files found with '#define " + defineHeaders[i] + "' at top");
+            }
+        }
+        if (!error.IsEmpty()) ThrowErrorAndTerminate(error);
+
+        #endregion
+
+        var ret = new Dictionary<string, string>(defineHeaders.Count);
+        for (int i = 0; i < defineHeaders.Count; i++)
+        {
+            ret.Add(defineHeaders[i], taggedFiles[i][0]);
+        }
+        return ret;
     }
 }

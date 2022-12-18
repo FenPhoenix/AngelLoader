@@ -9,154 +9,153 @@ using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
-namespace AngelLoader.Forms
-{
-    public sealed class User_FMSel_NDL_ImportControls : UserControl
-    {
-        private ImportType _importType;
+namespace AngelLoader.Forms;
 
-        private readonly
+public sealed class User_FMSel_NDL_ImportControls : UserControl
+{
+    private ImportType _importType;
+
+    private readonly
+        (DarkGroupBox GroupBox,
+        DarkCheckBox AutodetectCheckBox,
+        DarkTextBox TextBox,
+        DarkButton BrowseButton)[]
+        GameIniItems = new
             (DarkGroupBox GroupBox,
             DarkCheckBox AutodetectCheckBox,
             DarkTextBox TextBox,
-            DarkButton BrowseButton)[]
-            GameIniItems = new
-                (DarkGroupBox GroupBox,
-                DarkCheckBox AutodetectCheckBox,
-                DarkTextBox TextBox,
-                DarkButton BrowseButton)[SupportedGameCount];
+            DarkButton BrowseButton)[SupportedGameCount];
 
-        private readonly DarkLabel ChooseIniFilesLabel;
+    private readonly DarkLabel ChooseIniFilesLabel;
 
-        internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;
+    internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;
 
-        public User_FMSel_NDL_ImportControls()
+    public User_FMSel_NDL_ImportControls()
+    {
+        SuspendLayout();
+
+        ChooseIniFilesLabel = new DarkLabel
         {
-            SuspendLayout();
+            AutoSize = true,
+            Location = new Point(16, 8)
+        };
 
-            ChooseIniFilesLabel = new DarkLabel
-            {
-                AutoSize = true,
-                Location = new Point(16, 8)
-            };
+        AutoScaleDimensions = new SizeF(6F, 13F);
+        AutoScaleMode = AutoScaleMode.Font;
+        Size = new Size(551, 410);
+        Controls.Add(ChooseIniFilesLabel);
 
-            AutoScaleDimensions = new SizeF(6F, 13F);
-            AutoScaleMode = AutoScaleMode.Font;
-            Size = new Size(551, 410);
-            Controls.Add(ChooseIniFilesLabel);
+        for (int i = 0, y = 32; i < SupportedGameCount; i++, y += 88)
+        {
+            var checkBox = new DarkCheckBox();
+            var textBox = new DarkTextBox();
+            var button = new DarkButton();
+            var groupBox = new DarkGroupBox();
 
-            for (int i = 0, y = 32; i < SupportedGameCount; i++, y += 88)
-            {
-                var checkBox = new DarkCheckBox();
-                var textBox = new DarkTextBox();
-                var button = new DarkButton();
-                var groupBox = new DarkGroupBox();
+            groupBox.SuspendLayout();
 
-                groupBox.SuspendLayout();
+            checkBox.AutoSize = true;
+            checkBox.Checked = true;
+            checkBox.Location = new Point(16, 24);
+            checkBox.TabIndex = 0;
+            checkBox.UseVisualStyleBackColor = true;
+            checkBox.CheckedChanged += AutodetectCheckBoxes_CheckedChanged;
 
-                checkBox.AutoSize = true;
-                checkBox.Checked = true;
-                checkBox.Location = new Point(16, 24);
-                checkBox.TabIndex = 0;
-                checkBox.UseVisualStyleBackColor = true;
-                checkBox.CheckedChanged += AutodetectCheckBoxes_CheckedChanged;
+            textBox.Location = new Point(16, 48);
+            textBox.ReadOnly = true;
+            textBox.Size = new Size(432, 20);
+            textBox.TabIndex = 1;
 
-                textBox.Location = new Point(16, 48);
-                textBox.ReadOnly = true;
-                textBox.Size = new Size(432, 20);
-                textBox.TabIndex = 1;
+            button.AutoSize = true;
+            button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            button.MinimumSize = new Size(75, 23);
+            button.Enabled = false;
+            button.Location = new Point(448, 47);
+            button.Padding = new Padding(6, 0, 6, 0);
+            button.TabIndex = 1;
+            button.UseVisualStyleBackColor = true;
+            button.Click += ThiefIniBrowseButtons_Click;
 
-                button.AutoSize = true;
-                button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-                button.MinimumSize = new Size(75, 23);
-                button.Enabled = false;
-                button.Location = new Point(448, 47);
-                button.Padding = new Padding(6, 0, 6, 0);
-                button.TabIndex = 1;
-                button.UseVisualStyleBackColor = true;
-                button.Click += ThiefIniBrowseButtons_Click;
+            groupBox.Controls.Add(checkBox);
+            groupBox.Controls.Add(textBox);
+            groupBox.Controls.Add(button);
 
-                groupBox.Controls.Add(checkBox);
-                groupBox.Controls.Add(textBox);
-                groupBox.Controls.Add(button);
+            groupBox.Location = new Point(8, y);
+            groupBox.Size = new Size(536, 80);
+            groupBox.TabIndex = i + 1;
+            groupBox.TabStop = false;
 
-                groupBox.Location = new Point(8, y);
-                groupBox.Size = new Size(536, 80);
-                groupBox.TabIndex = i + 1;
-                groupBox.TabStop = false;
+            GameIniItems[i].GroupBox = groupBox;
+            GameIniItems[i].AutodetectCheckBox = checkBox;
+            GameIniItems[i].TextBox = textBox;
+            GameIniItems[i].BrowseButton = button;
 
-                GameIniItems[i].GroupBox = groupBox;
-                GameIniItems[i].AutodetectCheckBox = checkBox;
-                GameIniItems[i].TextBox = textBox;
-                GameIniItems[i].BrowseButton = button;
+            Controls.Add(groupBox);
 
-                Controls.Add(groupBox);
-
-                groupBox.ResumeLayout(false);
-            }
-
-            ResumeLayout(false);
-            PerformLayout();
+            groupBox.ResumeLayout(false);
         }
 
-        internal void Init(ImportType importType)
+        ResumeLayout(false);
+        PerformLayout();
+    }
+
+    internal void Init(ImportType importType)
+    {
+        _importType = importType;
+
+        Localize();
+
+        for (int i = 0; i < SupportedGameCount; i++)
         {
-            _importType = importType;
-
-            Localize();
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                AutodetectGameIni((GameIndex)i, GameIniItems[i].TextBox);
-            }
+            AutodetectGameIni((GameIndex)i, GameIniItems[i].TextBox);
         }
+    }
 
-        private void Localize()
+    private void Localize()
+    {
+        ChooseIniFilesLabel.Text = _importType == ImportType.NewDarkLoader
+            ? LText.Importing.ChooseNewDarkLoaderIniFiles
+            : LText.Importing.ChooseFMSelIniFiles;
+
+        for (int i = 0; i < SupportedGameCount; i++)
         {
-            ChooseIniFilesLabel.Text = _importType == ImportType.NewDarkLoader
-                ? LText.Importing.ChooseNewDarkLoaderIniFiles
-                : LText.Importing.ChooseFMSelIniFiles;
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIniItems[i].GroupBox.Text = GetLocalizedGameName((GameIndex)i);
-                GameIniItems[i].AutodetectCheckBox.Text = LText.Global.Autodetect;
-                GameIniItems[i].BrowseButton.SetTextForTextBoxButtonCombo(GameIniItems[i].TextBox, LText.Global.BrowseEllipses);
-            }
+            GameIniItems[i].GroupBox.Text = GetLocalizedGameName((GameIndex)i);
+            GameIniItems[i].AutodetectCheckBox.Text = LText.Global.Autodetect;
+            GameIniItems[i].BrowseButton.SetTextForTextBoxButtonCombo(GameIniItems[i].TextBox, LText.Global.BrowseEllipses);
         }
+    }
 
-        private void AutodetectGameIni(GameIndex game, TextBox textBox)
+    private void AutodetectGameIni(GameIndex game, TextBox textBox)
+    {
+        string iniFile = _importType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
+
+        string fmsPath = Config.GetFMInstallPath(game);
+        textBox.Text = !fmsPath.IsWhiteSpace() && TryCombineFilePathAndCheckExistence(fmsPath, iniFile, out string iniFileFull)
+            ? iniFileFull
+            : "";
+    }
+
+    private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
+    {
+        using var d = new OpenFileDialog
         {
-            string iniFile = _importType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
+            Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
+        };
+        if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
-            string fmsPath = Config.GetFMInstallPath(game);
-            textBox.Text = !fmsPath.IsWhiteSpace() && TryCombineFilePathAndCheckExistence(fmsPath, iniFile, out string iniFileFull)
-                ? iniFileFull
-                : "";
-        }
+        DarkTextBox tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
+        tb.Text = d.FileName;
+    }
 
-        private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
-        {
-            using var d = new OpenFileDialog
-            {
-                Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
-            };
-            if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
+    private void AutodetectCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    {
+        var s = (CheckBox)sender;
 
-            DarkTextBox tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
-            tb.Text = d.FileName;
-        }
+        var gameIniItem = GameIniItems.First(x => x.AutodetectCheckBox == sender);
 
-        private void AutodetectCheckBoxes_CheckedChanged(object sender, EventArgs e)
-        {
-            var s = (CheckBox)sender;
+        gameIniItem.TextBox.ReadOnly = s.Checked;
+        gameIniItem.BrowseButton.Enabled = !s.Checked;
 
-            var gameIniItem = GameIniItems.First(x => x.AutodetectCheckBox == sender);
-
-            gameIniItem.TextBox.ReadOnly = s.Checked;
-            gameIniItem.BrowseButton.Enabled = !s.Checked;
-
-            if (s.Checked) AutodetectGameIni((GameIndex)Array.IndexOf(GameIniItems, gameIniItem), gameIniItem.TextBox);
-        }
+        if (s.Checked) AutodetectGameIni((GameIndex)Array.IndexOf(GameIniItems, gameIniItem), gameIniItem.TextBox);
     }
 }

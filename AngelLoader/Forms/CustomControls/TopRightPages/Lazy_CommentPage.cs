@@ -1,16 +1,15 @@
 ﻿using System.Windows.Forms;
 
-namespace AngelLoader.Forms.CustomControls
+namespace AngelLoader.Forms.CustomControls;
+
+public sealed partial class Lazy_CommentPage : UserControl
 {
-    public sealed partial class Lazy_CommentPage : UserControl
+    public Lazy_CommentPage()
     {
-        public Lazy_CommentPage()
-        {
 #if DEBUG
             InitializeComponent();
 #else
-            InitSlim();
+        InitSlim();
 #endif
-        }
     }
 }
