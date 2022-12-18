@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using static AL_Common.Common;
+
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
