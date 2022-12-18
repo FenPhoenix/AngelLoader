@@ -73,6 +73,8 @@ namespace AngelLoader.Forms
 
         private enum PathError { True, False }
 
+        #region Disablers
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int EventsDisabledCount { get; set; }
@@ -80,6 +82,8 @@ namespace AngelLoader.Forms
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool EventsDisabled => EventsDisabledCount > 0;
+
+        #endregion
 
         #endregion
 
@@ -676,19 +680,6 @@ namespace AngelLoader.Forms
             PathsPage.LayoutFLP.PerformLayout();
 
             base.OnShown(e);
-        }
-
-        private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
-        {
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameUseSteamCheckBoxes[i].Enabled = enabled;
-            }
-        }
-
-        private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            SetUseSteamGameCheckBoxesEnabled(PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked);
         }
 
         private void Localize(bool suspendResume = true)
@@ -1355,6 +1346,19 @@ namespace AngelLoader.Forms
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
         }
 
+        private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameUseSteamCheckBoxes[i].Enabled = enabled;
+            }
+        }
+
+        private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            SetUseSteamGameCheckBoxesEnabled(PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked);
+        }
+
         #region Archive paths
 
         private void AddFMArchivePathButton_Click(object sender, EventArgs e)
@@ -1405,6 +1409,52 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Appearance page
+
+        private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            string lang = LangComboBox.SelectedBackingItem();
+            try
+            {
+                LText = new LText_Class();
+                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, lang + ".ini"), LText);
+            }
+            catch (Exception ex)
+            {
+                if (!lang.EqualsI("English"))
+                {
+                    string msg = ex is FileNotFoundException
+                        ? "Language file not found."
+                        : "Unable to read language file.";
+
+                    Core.Dialogs.ShowAlert(msg + " Falling back to English.", LText.AlertMessages.Alert);
+
+                    using (new DisableEvents(this))
+                    {
+                        LangComboBox.SelectedIndex = 0;
+                    }
+
+                    Log(ErrorText.Ex + "in language reading", ex);
+                }
+
+                // If we wanted to be really fancy we could fall back to the previously selected language, by
+                // keeping it in memory and only switching if we know the select succeeded.
+                LText = new LText_Class();
+            }
+
+            try
+            {
+                SetCursors(wait: true);
+
+                Localize();
+                if (!_startup) _ownerForm?.Localize();
+            }
+            finally
+            {
+                SetCursors(wait: false);
+            }
+        }
 
         private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
@@ -1477,6 +1527,47 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Rating display
+
+        private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
+            {
+                AppearancePage.RatingUseStarsCheckBox.Enabled = false;
+                SetRatingImage();
+            }
+        }
+
+        private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
+            {
+                AppearancePage.RatingUseStarsCheckBox.Enabled = true;
+                SetRatingImage();
+            }
+        }
+
+        private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            SetRatingImage();
+        }
+
+        private void SetRatingImage()
+        {
+            AppearancePage.RatingExamplePictureBox.Image = AppearancePage.RatingNDLDisplayStyleRadioButton.Checked
+                ? Images.RatingExample_NDL
+                : AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked && AppearancePage.RatingUseStarsCheckBox.Checked
+                ? Images.RatingExample_FMSel_Stars
+                : Images.RatingExample_FMSel_Number;
+        }
+
+        #endregion
+
+        #region Date format
+
         private void SetCustomDateFormatFieldsToDefault()
         {
             using (new DisableEvents(this))
@@ -1527,8 +1618,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        #region Date display
-
         private void UpdateCustomExampleDate()
         {
             bool success = FormatAndTestDate(out _, out string formattedExampleDate);
@@ -1564,96 +1653,11 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Rating display
-
-        private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
-            {
-                AppearancePage.RatingUseStarsCheckBox.Enabled = false;
-                SetRatingImage();
-            }
-        }
-
-        private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
-            {
-                AppearancePage.RatingUseStarsCheckBox.Enabled = true;
-                SetRatingImage();
-            }
-        }
-
-        private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            SetRatingImage();
-        }
-
-        private void SetRatingImage()
-        {
-            AppearancePage.RatingExamplePictureBox.Image = AppearancePage.RatingNDLDisplayStyleRadioButton.Checked
-                ? Images.RatingExample_NDL
-                : AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked && AppearancePage.RatingUseStarsCheckBox.Checked
-                ? Images.RatingExample_FMSel_Stars
-                : Images.RatingExample_FMSel_Number;
-        }
-
-        #endregion
-
         #endregion
 
         #region Other page
 
         private void WebSearchURLResetButton_Click(object sender, EventArgs e) => OtherPage.WebSearchUrlTextBox.Text = Defaults.WebSearchUrl;
-
-        private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-
-            string lang = LangComboBox.SelectedBackingItem();
-            try
-            {
-                LText = new LText_Class();
-                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, lang + ".ini"), LText);
-            }
-            catch (Exception ex)
-            {
-                if (!lang.EqualsI("English"))
-                {
-                    string msg = ex is FileNotFoundException
-                        ? "Language file not found."
-                        : "Unable to read language file.";
-
-                    Core.Dialogs.ShowAlert(msg + " Falling back to English.", LText.AlertMessages.Alert);
-
-                    using (new DisableEvents(this))
-                    {
-                        LangComboBox.SelectedIndex = 0;
-                    }
-
-                    Log(ErrorText.Ex + "in language reading", ex);
-                }
-
-                // If we wanted to be really fancy we could fall back to the previously selected language, by
-                // keeping it in memory and only switching if we know the select succeeded.
-                LText = new LText_Class();
-            }
-
-            try
-            {
-                SetCursors(wait: true);
-
-                Localize();
-                if (!_startup) _ownerForm?.Localize();
-            }
-            finally
-            {
-                SetCursors(wait: false);
-            }
-        }
 
         #endregion
 
