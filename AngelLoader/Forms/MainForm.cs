@@ -826,8 +826,8 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     public void InitThreadable()
     {
 #if RELEASE_BETA
-            const string betaVer = "4";
-            string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
+        const string betaVer = "4";
+        string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
         string title = "AngelLoader " + Application.ProductVersion;
 #endif
@@ -1132,9 +1132,9 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
         // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
-            // Regular Environment.Exit() because we're testing speed
-            Environment.Exit(1);
-            return;
+        // Regular Environment.Exit() because we're testing speed
+        Environment.Exit(1);
+        return;
 #endif
     }
 
@@ -1201,8 +1201,8 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
                         var unsnappedSize = new Size(rect.Width, rect.Height);
 
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
-                            _nominalWindowLocation = unsnappedLocation;
-                            _nominalWindowSize = unsnappedSize;
+                        _nominalWindowLocation = unsnappedLocation;
+                        _nominalWindowSize = unsnappedSize;
 #endif
 
                         if (nominalWasMaximized)
@@ -1211,11 +1211,11 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
                         }
                     }
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
-                        else
-                        {
-                            _nominalWindowSize = Size;
-                            _nominalWindowLocation = Location;
-                        }
+                    else
+                    {
+                        _nominalWindowSize = Size;
+                        _nominalWindowLocation = Location;
+                    }
 #endif
                 }
             }
@@ -3516,12 +3516,12 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
         static string FormatSize(ulong size) =>
             size == 0
-                ? ""
-                : size < ByteSize.MB
-                    ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
-                    : size is >= ByteSize.MB and < ByteSize.GB
-                        ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
-                        : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
+            ? ""
+            : size < ByteSize.MB
+            ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
+            : size is >= ByteSize.MB and < ByteSize.GB
+            ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
+            : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
 
         const string pinChar = "\U0001F4CC ";
 
@@ -4958,7 +4958,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     #region Show dialogs
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
-        ShowScanAllFMsWindow(bool selected)
+    ShowScanAllFMsWindow(bool selected)
     {
         using var f = new ScanAllFMsForm(selected);
         return (f.ShowDialogDark(this) == DialogResult.OK, f.ScanOptions, f.NoneSelected);
@@ -4974,7 +4974,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         bool ImportLastPlayed,
         bool ImportFinishedOn,
         bool ImportSaves)
-        ShowDarkLoaderImportWindow()
+    ShowDarkLoaderImportWindow()
     {
         using var f = new ImportFromDarkLoaderForm();
         return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
@@ -5002,7 +5002,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         bool ImportSelectedReadme,
         bool ImportFinishedOn,
         bool ImportSize)
-        ShowImportFromMultipleInisForm(ImportType importType)
+    ShowImportFromMultipleInisForm(ImportType importType)
     {
         using var f = new ImportFromMultipleInisForm(importType);
         return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,

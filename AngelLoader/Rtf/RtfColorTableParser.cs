@@ -42,7 +42,7 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
 
     [PublicAPI]
     public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-        GetColorTable(byte[] rtfBytes)
+    GetColorTable(byte[] rtfBytes)
     {
         try
         {

@@ -62,6 +62,7 @@ Other:
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
  so statistically it's likely it may not even hit broken text even if it exists.
 */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -1090,14 +1091,14 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     [PublicAPI]
     public (bool Success, string Text)
-        Convert(Stream stream, long streamLength)
+    Convert(Stream stream, long streamLength)
     {
         Reset(stream, streamLength);
 
 #if ReleaseRTFTest || DebugRTFTest
-            Error error = ParseRtf();
-            return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
-            //return error == Error.OK ? (true, "") : throw new Exception("RTF converter error: " + error);
+        Error error = ParseRtf();
+        return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
+        //return error == Error.OK ? (true, "") : throw new Exception("RTF converter error: " + error);
 #else
         try
         {
@@ -2094,7 +2095,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
-        GetCurrentEncoding()
+    GetCurrentEncoding()
     {
         int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
 
