@@ -7,6 +7,7 @@ using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
+
 /*
 @DarkModeNote(DarkButton): There was an _isDefault thing here where we'd draw differently if we were the default button, but:
 It didn't work 100% like it was supposed to, in fact the original works weirdly and inconsistently too, but

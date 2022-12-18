@@ -6,6 +6,7 @@ using AngelLoader.DataClasses;
 using static AL_Common.Common;
 
 namespace AngelLoader;
+
 /*
 @WPF(RTF notes and research):
 -We could use WebView2 with WPF and convert our RTF to HTML maybe by modifying the internal RTF-to-XAML code
