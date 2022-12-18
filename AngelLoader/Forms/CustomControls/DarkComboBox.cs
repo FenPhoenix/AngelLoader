@@ -63,25 +63,25 @@ public class DarkComboBox : ComboBox, IDarkable
 
 #if DEBUG
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public new Color ForeColor { get; set; }
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [PublicAPI]
+    public new Color ForeColor { get; set; }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public new Color BackColor { get; set; }
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [PublicAPI]
+    public new Color BackColor { get; set; }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public new FlatStyle FlatStyle { get; set; }
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [PublicAPI]
+    public new FlatStyle FlatStyle { get; set; }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public new ComboBoxStyle DropDownStyle { get; set; }
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [PublicAPI]
+    public new ComboBoxStyle DropDownStyle { get; set; }
 
 #endif
 

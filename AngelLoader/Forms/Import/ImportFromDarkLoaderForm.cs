@@ -22,7 +22,7 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
     internal ImportFromDarkLoaderForm()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

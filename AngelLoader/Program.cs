@@ -17,8 +17,8 @@ internal static class Program
     private static void Main(string[] args)
     {
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
-            Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
-            return;
+        Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
+        return;
 #endif
 
 #if !WPF
@@ -29,9 +29,9 @@ internal static class Program
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 #if NET6_0_OR_GREATER
-            // It's not like we wouldn't choose a more modern font given a clean slate, but this at least gets
-            // things working without having to redo the entire set of hardcoded UI assumptions based on the font.
-            System.Windows.Forms.Application.SetDefaultFont(Utils.GetMicrosoftSansSerifDefault());
+        // It's not like we wouldn't choose a more modern font given a clean slate, but this at least gets
+        // things working without having to redo the entire set of hardcoded UI assumptions based on the font.
+        System.Windows.Forms.Application.SetDefaultFont(Utils.GetMicrosoftSansSerifDefault());
 #endif
 #endif
         new SingleInstanceManager().Run(args);
@@ -55,7 +55,7 @@ internal static class Program
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
 #if !NETFRAMEWORK
-                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
 #if !WPF

@@ -19,7 +19,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
     internal FilterTagsForm(FMCategoriesCollection sourceTags, TagsFilter tagsFilter)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

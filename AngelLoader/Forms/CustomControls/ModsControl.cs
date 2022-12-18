@@ -26,17 +26,17 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
 #if DEBUG
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [PublicAPI]
-        public new bool AutoScroll { get; set; }
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [PublicAPI]
+    public new bool AutoScroll { get; set; }
 
 #endif
 
     public ModsControl()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

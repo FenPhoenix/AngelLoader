@@ -30,7 +30,7 @@ public sealed partial class MessageBoxCustomForm : DarkFormBase
         bool multiSelectionAllowed = true)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

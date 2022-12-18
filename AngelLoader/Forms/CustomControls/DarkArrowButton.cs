@@ -24,10 +24,10 @@ public sealed class DarkArrowButton : DarkButton
 
 #if DEBUG
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override ImageLayout BackgroundImageLayout { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override ImageLayout BackgroundImageLayout { get; set; }
 
 #endif
 

@@ -13,7 +13,7 @@ public sealed partial class AboutForm : DarkFormBase
     public AboutForm()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

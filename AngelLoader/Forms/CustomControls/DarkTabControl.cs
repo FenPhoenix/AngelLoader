@@ -98,7 +98,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
 
 #if DEBUG
-            if (DesignMode) return (-1, null!);
+        if (DesignMode) return (-1, null!);
 #endif
 
         // We should never get here! (unless we're in infernal-forsaken design mode...!)

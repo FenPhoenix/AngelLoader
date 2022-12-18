@@ -12,10 +12,10 @@ public sealed class DarkLabel : Label, IDarkable
 
 #if DEBUG
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseMnemonic { get => base.UseMnemonic; set => base.UseMnemonic = value; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool UseMnemonic { get => base.UseMnemonic; set => base.UseMnemonic = value; }
 
 #endif
 

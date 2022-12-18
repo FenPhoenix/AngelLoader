@@ -90,7 +90,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         _owner = owner;
 
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

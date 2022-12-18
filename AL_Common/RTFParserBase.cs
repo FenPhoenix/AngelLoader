@@ -66,7 +66,7 @@ public abstract partial class RTFParserBase
     protected RTFParserBase()
     {
 #if !NETFRAMEWORK
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
     }
 

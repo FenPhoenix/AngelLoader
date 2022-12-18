@@ -95,7 +95,7 @@ public sealed class ZipArchiveFast : IDisposable
     private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle, bool allowUnsupportedEntries)
     {
 #if !NETFRAMEWORK
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
         _allowUnsupportedEntries = allowUnsupportedEntries;

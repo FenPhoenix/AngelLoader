@@ -22,7 +22,7 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     public FilterRatingForm(int ratingFrom, int ratingTo, bool outOfFive)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

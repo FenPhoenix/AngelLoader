@@ -27,7 +27,7 @@ public sealed partial class ImportFromMultipleInisForm : DarkFormBase
     {
         _importType = importType;
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

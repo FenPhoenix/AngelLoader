@@ -11,7 +11,7 @@ public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
     public OtherPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

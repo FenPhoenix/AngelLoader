@@ -34,7 +34,7 @@ public partial class DarkTaskDialog : DarkFormBase
         // about them.
 
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

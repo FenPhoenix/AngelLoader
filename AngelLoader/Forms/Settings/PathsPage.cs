@@ -15,7 +15,7 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
     public PathsPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

@@ -7,7 +7,7 @@ public sealed partial class Lazy_CommentPage : UserControl
     public Lazy_CommentPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

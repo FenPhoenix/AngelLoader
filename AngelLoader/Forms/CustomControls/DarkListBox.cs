@@ -42,50 +42,50 @@ public class DarkListBox : ListView, IDarkable
 
 #if DEBUG
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new BorderStyle BorderStyle { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new BorderStyle BorderStyle { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool FullRowSelect { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool FullRowSelect { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new ColumnHeaderStyle HeaderStyle { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new ColumnHeaderStyle HeaderStyle { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool HideSelection { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool HideSelection { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool LabelWrap { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool LabelWrap { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool OwnerDraw { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool OwnerDraw { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool ShowGroups { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool ShowGroups { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new bool UseCompatibleStateImageBehavior { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool UseCompatibleStateImageBehavior { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new View View { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new View View { get; set; }
 
 #endif
 

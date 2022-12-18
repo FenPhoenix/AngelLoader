@@ -7,7 +7,7 @@ public sealed partial class Lazy_PatchPage : UserControl
     public Lazy_PatchPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

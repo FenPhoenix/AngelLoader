@@ -36,15 +36,15 @@ internal sealed class DarkTreeView : TreeView, IDarkable
 
 #if DEBUG
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new BorderStyle BorderStyle { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new BorderStyle BorderStyle { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new TreeViewDrawMode DrawMode { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new TreeViewDrawMode DrawMode { get; set; }
 
 #endif
 
@@ -118,37 +118,37 @@ internal sealed class DarkTreeView : TreeView, IDarkable
     #endregion
 
 #if DRAW_BORDER
-        private void DrawBorder(IntPtr hWnd)
-        {
-            // This draws a buggy extra border an item-height high at the bottom if we collapse an item.
-            // Everything seems to look fine without this, so disabling for now.
-            return;
+    private void DrawBorder(IntPtr hWnd)
+    {
+        // This draws a buggy extra border an item-height high at the bottom if we collapse an item.
+        // Everything seems to look fine without this, so disabling for now.
+        return;
 
-            if (!_darkModeEnabled || base.BorderStyle == BorderStyle.None) return;
+        if (!_darkModeEnabled || base.BorderStyle == BorderStyle.None) return;
 
-            using var gc = new Native.GraphicsContext(hWnd);
-            gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
-            gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
-        }
+        using var gc = new Native.GraphicsContext(hWnd);
+        gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
+        gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
+    }
 #endif
 
 #if DRAW_BORDER
-        protected override void WndProc(ref Message m)
+    protected override void WndProc(ref Message m)
+    {
+        switch (m.Msg)
         {
-            switch (m.Msg)
-            {
-                case Native.WM_PAINT:
-                    base.WndProc(ref m);
-                    if (_darkModeEnabled) DrawBorder(m.HWnd);
-                    break;
-                case Native.WM_NCPAINT:
-                    if (_darkModeEnabled) DrawBorder(m.HWnd);
-                    base.WndProc(ref m);
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
-            }
+            case Native.WM_PAINT:
+                base.WndProc(ref m);
+                if (_darkModeEnabled) DrawBorder(m.HWnd);
+                break;
+            case Native.WM_NCPAINT:
+                if (_darkModeEnabled) DrawBorder(m.HWnd);
+                base.WndProc(ref m);
+                break;
+            default:
+                base.WndProc(ref m);
+                break;
         }
+    }
 #endif
 }

@@ -205,31 +205,31 @@ internal static class Core
     }
 
     private static readonly Dictionary<string, GenType>
-        _argToTaskMap = new()
-        {
-            { "-fmd", GenType.FMData },
-            { "-lang", GenType.Language },
-            { "-lang_t", GenType.LanguageAndAlsoCreateTestIni },
-            { "-game", GenType.GameSupport },
-            { "-resx_e", GenType.ExcludeResx },
-            { "-resx_r", GenType.RestoreResx },
-            { "-bd", GenType.AddBuildDate },
-            { "-bd_r", GenType.RemoveBuildDate },
-            { "-des", GenType.GenSlimDesignerFiles },
-            { "-cr", GenType.GenCopyright }
-        };
+    _argToTaskMap = new()
+    {
+        { "-fmd", GenType.FMData },
+        { "-lang", GenType.Language },
+        { "-lang_t", GenType.LanguageAndAlsoCreateTestIni },
+        { "-game", GenType.GameSupport },
+        { "-resx_e", GenType.ExcludeResx },
+        { "-resx_r", GenType.RestoreResx },
+        { "-bd", GenType.AddBuildDate },
+        { "-bd_r", GenType.RemoveBuildDate },
+        { "-des", GenType.GenSlimDesignerFiles },
+        { "-cr", GenType.GenCopyright }
+    };
 
     // Only used for debug, so we can explicitly place test arguments into the set
 #if DEBUG || PROFILING
-        private static string GetArg(GenType genType)
+    private static string GetArg(GenType genType)
+    {
+        foreach (var item in _argToTaskMap)
         {
-            foreach (var item in _argToTaskMap)
-            {
-                if (item.Value == genType) return item.Key;
-            }
-
-            throw new ArgumentException(nameof(GetArg) + ": No matching arg string found for genType");
+            if (item.Value == genType) return item.Key;
         }
+
+        throw new ArgumentException(nameof(GetArg) + ": No matching arg string found for genType");
+    }
 #endif
 
     private static class DefineHeaders
@@ -251,7 +251,7 @@ internal static class Core
     private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
-        private static Forms.MainForm View = null!;
+    private static Forms.MainForm View = null!;
 #endif
 
     internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
@@ -266,11 +266,10 @@ internal static class Core
     {
 #if Release
         ReadArgsAndDoTasks();
-
         Environment.Exit(0);
 #else
-            View = new Forms.MainForm();
-            View.Show();
+        View = new Forms.MainForm();
+        View.Show();
 #endif
     }
 
@@ -298,18 +297,18 @@ internal static class Core
         // args[0] is always the application filename
 
 #if DEBUG || PROFILING
-            string[] args =
-            {
-                Environment.GetCommandLineArgs()[0],
-                GetArg(GenType.FMData),
-                GetArg(GenType.LanguageAndAlsoCreateTestIni),
-                GetArg(GenType.ExcludeResx),
-                //GetArg(GenType.RestoreResx),
-                GetArg(GenType.AddBuildDate),
-                GetArg(GenType.GenSlimDesignerFiles),
-                GetArg(GenType.GameSupport),
-                GetArg(GenType.GenCopyright)
-            };
+        string[] args =
+        {
+            Environment.GetCommandLineArgs()[0],
+            GetArg(GenType.FMData),
+            GetArg(GenType.LanguageAndAlsoCreateTestIni),
+            GetArg(GenType.ExcludeResx),
+            //GetArg(GenType.RestoreResx),
+            GetArg(GenType.AddBuildDate),
+            GetArg(GenType.GenSlimDesignerFiles),
+            GetArg(GenType.GameSupport),
+            GetArg(GenType.GenCopyright)
+        };
 #else
         string[] args = Environment.GetCommandLineArgs();
 #endif

@@ -10,7 +10,7 @@ public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPa
     public AppearancePage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

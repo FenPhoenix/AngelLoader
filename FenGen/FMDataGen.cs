@@ -89,26 +89,26 @@ internal static class FMData
 
 #if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
 
-        private static readonly Dictionary<string, int> _numericTypeToMaxDigits = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "byte", 3 },
-            { "sbyte", 3 },
-            { "short", 5 },
-            { "ushort", 5 },
-            { "int", 10 },
-            { "uint", 10 },
-            { "long", 19 },
-            { "ulong", 20 },
+    private static readonly Dictionary<string, int> _numericTypeToMaxDigits = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "byte", 3 },
+        { "sbyte", 3 },
+        { "short", 5 },
+        { "ushort", 5 },
+        { "int", 10 },
+        { "uint", 10 },
+        { "long", 19 },
+        { "ulong", 20 },
 
-            { "byte?", 3 },
-            { "sbyte?", 3 },
-            { "short?", 5 },
-            { "ushort?", 5 },
-            { "int?", 10 },
-            { "uint?", 10 },
-            { "long?", 19 },
-            { "ulong?", 20 }
-        };
+        { "byte?", 3 },
+        { "sbyte?", 3 },
+        { "short?", 5 },
+        { "ushort?", 5 },
+        { "int?", 10 },
+        { "uint?", 10 },
+        { "long?", 19 },
+        { "ulong?", 20 }
+    };
 
 #endif
 
@@ -235,11 +235,11 @@ internal static class FMData
 
 #if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
 
-                    if (field.MaxDigits == null &&
-                        _numericTypeToMaxDigits.TryGetValue(field.Type, out int maxDigits))
-                    {
-                        field.MaxDigits = maxDigits;
-                    }
+                if (field.MaxDigits == null &&
+                    _numericTypeToMaxDigits.TryGetValue(field.Type, out int maxDigits))
+                {
+                    field.MaxDigits = maxDigits;
+                }
 
 #endif
 

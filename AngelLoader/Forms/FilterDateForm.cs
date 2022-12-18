@@ -24,7 +24,7 @@ public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
     public FilterDateForm(string title, DateTime? from, DateTime? to)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

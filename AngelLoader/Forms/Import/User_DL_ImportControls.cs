@@ -9,7 +9,7 @@ public sealed partial class User_DL_ImportControls : UserControl
     public User_DL_ImportControls()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

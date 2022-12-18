@@ -66,7 +66,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
     public SplashScreenForm()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

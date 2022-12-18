@@ -101,15 +101,15 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 
 #if DEBUG
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Color ForeColor { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new Color ForeColor { get; set; }
 
-        [PublicAPI]
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new Color BackColor { get; set; }
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new Color BackColor { get; set; }
 
 #endif
 

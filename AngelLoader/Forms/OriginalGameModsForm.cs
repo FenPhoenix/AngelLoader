@@ -12,7 +12,7 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
     public OriginalGameModsForm(GameIndex gameIndex)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

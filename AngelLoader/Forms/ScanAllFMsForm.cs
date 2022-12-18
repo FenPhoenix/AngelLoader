@@ -17,7 +17,7 @@ public sealed partial class ScanAllFMsForm : DarkFormBase
     public ScanAllFMsForm(bool selected)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

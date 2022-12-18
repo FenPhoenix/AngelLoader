@@ -7,7 +7,7 @@ public sealed partial class Lazy_TagsPage : UserControl
     public Lazy_TagsPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

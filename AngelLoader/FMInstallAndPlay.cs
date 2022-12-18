@@ -179,7 +179,7 @@ internal static class FMInstallAndPlay
 #if !ReleaseBeta && !ReleasePublic
             string args = Config.ForceWindowed ? "force_windowed=1" : "";
 #else
-                string args = "";
+            string args = "";
 #endif
             string workingPath = Config.GetGamePath(gameIndex);
             var sv = GetSteamValues(gameIndex, playMP);
@@ -257,7 +257,7 @@ internal static class FMInstallAndPlay
 #if !ReleaseBeta && !ReleasePublic
         string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "force_windowed=1 -fm" : "-fm";
 #else
-            string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
+        string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
         if (GameIsDark(fm.Game))

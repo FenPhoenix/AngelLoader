@@ -25,7 +25,7 @@ public static partial class Utils
 {
     // Depend on non-defined symbol if we're in public release profile, to prevent the bloat of calls to this
 #if ReleasePublic || NoAsserts
-        [Conditional("_AngelLoader_In_Release_Public_Mode")]
+    [Conditional("_AngelLoader_In_Release_Public_Mode")]
 #endif
     [PublicAPI]
     [AssertionMethod]

@@ -7,7 +7,7 @@ public sealed partial class Lazy_EditFMPage : UserControl
     public Lazy_EditFMPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

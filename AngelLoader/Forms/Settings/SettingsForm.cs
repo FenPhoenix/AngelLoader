@@ -102,7 +102,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     internal SettingsForm(ISettingsChangeableWindow? ownerForm, ConfigData config, bool startup, bool cleanStart)
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif

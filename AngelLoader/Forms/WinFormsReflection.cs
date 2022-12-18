@@ -6,21 +6,21 @@ internal static class WinFormsReflection
 #if NETFRAMEWORK
         "selectionMode";
 #else
-            "_selectionMode";
+        "_selectionMode";
 #endif
 
     internal const string DGV_TypeInternalBackingFieldName =
 #if NETFRAMEWORK
         "typeInternal";
 #else
-            "_typeInternal";
+        "_typeInternal";
 #endif
 
     internal const string ToolTipNativeWindow_ToolTipFieldName =
 #if NETFRAMEWORK
         "control";
 #else
-            "_toolTip";
+        "_toolTip";
 #endif
 
     // @NET5: These ones seem to be the same currently (as of .NET 6.0.x)
@@ -28,13 +28,13 @@ internal static class WinFormsReflection
 #if NETFRAMEWORK
         "restoredWindowBounds";
 #else
-            "restoredWindowBounds";
+        "restoredWindowBounds";
 #endif
 
     internal const string Form_RestoredWindowBoundsSpecified =
 #if NETFRAMEWORK
         "restoredWindowBoundsSpecified";
 #else
-            "restoredWindowBoundsSpecified";
+        "restoredWindowBoundsSpecified";
 #endif
 }

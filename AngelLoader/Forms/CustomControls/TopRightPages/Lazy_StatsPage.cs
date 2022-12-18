@@ -7,7 +7,7 @@ public sealed partial class Lazy_StatsPage : UserControl
     public Lazy_StatsPage()
     {
 #if DEBUG
-            InitializeComponent();
+        InitializeComponent();
 #else
         InitSlim();
 #endif
