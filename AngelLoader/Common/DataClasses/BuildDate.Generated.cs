@@ -2,11 +2,10 @@
 
 using static AngelLoader.FenGenAttributes;
 
-namespace AngelLoader.DataClasses
+namespace AngelLoader.DataClasses;
+
+[FenGenBuildDateDestClass]
+internal static class BuildDateSource
 {
-    [FenGenBuildDateDestClass]
-    internal static class BuildDateSource
-    {
-        internal const string BuildDate = "";
-    }
+    internal const string BuildDate = "";
 }
