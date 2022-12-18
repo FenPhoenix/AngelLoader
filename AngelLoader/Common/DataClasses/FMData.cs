@@ -9,12 +9,12 @@ using static AngelLoader.LanguageSupport;
 
 namespace AngelLoader.DataClasses;
 
-// FenGen reads this and outputs fast ini read and write methods.
 /*
- Notes to self:
-    -Keep names shortish for more performance when reading
-    -I told myself to version-header ini files right from the start, but I didn't. Meh.
+FenGen reads this and outputs fast ini read and write methods.
 
+Notes to self:
+-Keep names shortish for more performance when reading
+-I told myself to version-header ini files right from the start, but I didn't. Meh.
 
 @MEM(FMData): We could get rid of some stuff in here, like TagsString is an easy candidate
 -We could also, if we're clever, get rid of some other stuff we nominally need, like MarkedRecent. We could

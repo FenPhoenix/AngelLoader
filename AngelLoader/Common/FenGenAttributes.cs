@@ -3,7 +3,7 @@ using System.Diagnostics;
 using JetBrains.Annotations;
 
 // ReSharper disable UnusedParameter.Local
-#pragma warning disable IDE0060
+#pragma warning disable IDE0060 // Remove unused parameter.
 #pragma warning disable RCS1163 // Unused parameter.
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
 

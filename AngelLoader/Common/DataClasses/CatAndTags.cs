@@ -126,7 +126,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
         return _dict.Remove(category);
     }
 
-    public CatAndTagsList this[int index] => new CatAndTagsList(_list[index], _dict[_list[index]]);
+    public CatAndTagsList this[int index] => new(_list[index], _dict[_list[index]]);
 
 #if false
         public bool RemoveAt(int index)
