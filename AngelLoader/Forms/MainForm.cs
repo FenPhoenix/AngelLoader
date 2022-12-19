@@ -3042,6 +3042,8 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #region FMs list
 
+    public bool MultipleFMsSelected() => FMsDGV.MultipleFMsSelected();
+
     public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
     public FanMission? GetMainSelectedFMOrNull_Fast() => _displayedFM;
@@ -3670,8 +3672,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
         DataGridView.HitTestInfo ht = FMsDGV.HitTest(e.X, e.Y);
 
-        #region Right-click menu
-
         if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
         {
             FMsDGV.ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.Menu;
@@ -3689,8 +3689,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         {
             FMsDGV.ContextMenuStrip = null;
         }
-
-        #endregion
     }
 
     private void SetTopRightBlockerVisible()
@@ -3767,8 +3765,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     }
 
     #endregion
-
-    public bool MultipleFMsSelected() => FMsDGV.MultipleFMsSelected();
 
     #endregion
 
@@ -4686,6 +4682,20 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #region Helpers & misc
 
+    private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
+    {
+        Misc.WindowState.Normal => FormWindowState.Normal,
+        Misc.WindowState.Minimized => FormWindowState.Minimized,
+        _ => FormWindowState.Maximized
+    };
+
+    private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
+    {
+        FormWindowState.Normal => Misc.WindowState.Normal,
+        FormWindowState.Minimized => Misc.WindowState.Minimized,
+        _ => Misc.WindowState.Maximized
+    };
+
     private void CancelResizables()
     {
         FMsDGV.CancelColumnResize();
@@ -4910,20 +4920,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
             await FMArchives.Add(droppedItems.ToList());
         }
     }
-
-    private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
-    {
-        Misc.WindowState.Normal => FormWindowState.Normal,
-        Misc.WindowState.Minimized => FormWindowState.Minimized,
-        _ => FormWindowState.Maximized
-    };
-
-    private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
-    {
-        FormWindowState.Normal => Misc.WindowState.Normal,
-        FormWindowState.Minimized => Misc.WindowState.Minimized,
-        _ => Misc.WindowState.Maximized
-    };
 
     #endregion
 
