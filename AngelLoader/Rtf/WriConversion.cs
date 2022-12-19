@@ -27,7 +27,7 @@ internal static class WriConversion
     }
 
     private static (bool Success, uint PlainTextStart, uint PlainTextEnd)
-        ReadWriFileHeader(Stream stream)
+    ReadWriFileHeader(Stream stream)
     {
         var fail = (false, (uint)0, (uint)stream.Length);
 
@@ -70,7 +70,7 @@ internal static class WriConversion
     // clean plaintext readme. For other .wri files, there could be junk chars in the middle too, and then
     // we would have to parse the format properly. But we only have the one file, so we don't bother.
     internal static (bool Success, byte[] Bytes, string Text)
-        LoadWriFileAsPlainText(byte[] bytes)
+    LoadWriFileAsPlainText(byte[] bytes)
     {
         try
         {

@@ -586,7 +586,7 @@ internal static class FMBackupAndRestore
     private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
 
     private static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
-        GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, bool useOnlySize = false)
+    GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, bool useOnlySize = false)
     {
         var changedList = new HashSetPathI();
         var addedList = new HashSetPathI();

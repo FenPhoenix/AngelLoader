@@ -1468,7 +1468,7 @@ internal static class Core
     }
 
     internal static (bool Success, List<string> DMLFiles)
-        GetDMLFiles(FanMission fm)
+    GetDMLFiles(FanMission fm)
     {
         AssertR(GameIsDark(fm.Game), nameof(GetDMLFiles) + ": " + nameof(fm) + " is not Dark");
 
@@ -1498,7 +1498,7 @@ internal static class Core
             : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
     internal static (string ReadmePath, ReadmeType ReadmeType)
-        GetReadmeFileAndType(FanMission fm)
+    GetReadmeFileAndType(FanMission fm)
     {
         string readmeOnDisk = GetReadmeFileFullPath(fm);
 

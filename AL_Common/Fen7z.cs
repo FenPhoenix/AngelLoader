@@ -268,7 +268,7 @@ public static class Fen7z
     }
 
     private static (SevenZipExitCode ExitCode, int? ExitCodeInt, Exception? ex)
-        GetExitCode(Process p)
+    GetExitCode(Process p)
     {
         try
         {

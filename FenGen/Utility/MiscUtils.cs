@@ -69,7 +69,7 @@ internal static partial class Misc
     }
 
     private static (string CodeBlock, bool FileScopedNamespace)
-        GetCodeBlock(string file, string genAttr)
+    GetCodeBlock(string file, string genAttr)
     {
         string code = File.ReadAllText(file);
         SyntaxTree tree = ParseTextFast(code);
@@ -129,7 +129,7 @@ internal static partial class Misc
 
     [PublicAPI]
     internal static (MemberDeclarationSyntax Member, AttributeSyntax Attribute)
-        GetAttrMarkedItem(SyntaxTree tree, SyntaxKind syntaxKind, string attrName)
+    GetAttrMarkedItem(SyntaxTree tree, SyntaxKind syntaxKind, string attrName)
     {
         var attrMarkedItems = new List<MemberDeclarationSyntax>();
         AttributeSyntax? retAttr = null;

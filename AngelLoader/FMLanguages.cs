@@ -42,7 +42,7 @@ internal static class FMLanguages
     }
 
     internal static (string Language, bool ForceLanguage)
-        GetDarkFMLanguage(GameIndex game, string fmArchive, string fmInstalledDir)
+    GetDarkFMLanguage(GameIndex game, string fmArchive, string fmInstalledDir)
     {
         string sLanguage;
         bool bForceLanguage;
@@ -222,7 +222,7 @@ internal static class FMLanguages
     }
 
     private static (bool Success, List<string> Languages)
-        GetFMSupportedLanguagesFromArchive(string archiveName, bool earlyOutOnEnglish)
+    GetFMSupportedLanguagesFromArchive(string archiveName, bool earlyOutOnEnglish)
     {
         // @DIRSEP: '/' conversion in here due to string.IndexOf()
 

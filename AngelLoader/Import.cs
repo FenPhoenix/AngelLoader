@@ -263,7 +263,7 @@ internal static class Import
     #region Private methods
 
     private static (ImportError Error, List<FanMission> FMs)
-        ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
+    ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
     {
         #region Local functions
 
@@ -595,7 +595,7 @@ internal static class Import
     }
 
     private static (ImportError Error, List<FanMission> FMs)
-        ImportFMSelInternal(string iniFile, FieldsToImport fields)
+    ImportFMSelInternal(string iniFile, FieldsToImport fields)
     {
         string[] lines = File.ReadAllLines(iniFile);
         var fms = new List<FanMission>();
@@ -679,7 +679,7 @@ internal static class Import
     }
 
     private static (ImportError Error, List<FanMission> FMs)
-        ImportNDLInternal(string iniFile, FieldsToImport fields)
+    ImportNDLInternal(string iniFile, FieldsToImport fields)
     {
         string[] lines = File.ReadAllLines(iniFile);
         var fms = new List<FanMission>();

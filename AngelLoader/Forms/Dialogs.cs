@@ -56,16 +56,16 @@ internal sealed class Dialogs : IDialogs
     /// <param name="defaultButton"></param>
     /// <returns></returns>
     public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-        ShowMultiChoiceDialog(
-            string message,
-            string title,
-            MBoxIcon icon,
-            string? yes,
-            string? no,
-            string? cancel = null,
-            bool yesIsDangerous = false,
-            string? checkBoxText = null,
-            MBoxButton defaultButton = MBoxButton.Yes) =>
+    ShowMultiChoiceDialog(
+        string message,
+        string title,
+        MBoxIcon icon,
+        string? yes,
+        string? no,
+        string? cancel = null,
+        bool yesIsDangerous = false,
+        string? checkBoxText = null,
+        MBoxButton defaultButton = MBoxButton.Yes) =>
         ((MBoxButton, bool))InvokeIfViewExists(() =>
         {
             using var d = new DarkTaskDialog(
@@ -87,16 +87,16 @@ internal sealed class Dialogs : IDialogs
         });
 
     public (bool Accepted, List<string> SelectedItems)
-        ShowListDialog(
-            string messageTop,
-            string messageBottom,
-            string title,
-            MBoxIcon icon,
-            string okText,
-            string cancelText,
-            bool okIsDangerous,
-            string[] choiceStrings,
-            bool multiSelectionAllowed) =>
+    ShowListDialog(
+        string messageTop,
+        string messageBottom,
+        string title,
+        MBoxIcon icon,
+        string okText,
+        string cancelText,
+        bool okIsDangerous,
+        string[] choiceStrings,
+        bool multiSelectionAllowed) =>
         ((bool, List<string>))InvokeIfViewExists(() =>
         {
             using var d = new MessageBoxCustomForm(

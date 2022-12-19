@@ -132,7 +132,7 @@ internal static class FMDelete
     #region Delete from disk
 
     private static (bool Success, List<string> FinalArchives)
-        GetFinalArchives(List<string> archives, bool single)
+    GetFinalArchives(List<string> archives, bool single)
     {
         var retFail = (false, new List<string>());
 

@@ -539,7 +539,7 @@ internal static class FMInstallAndPlay
     }
 
     private static (bool Success, string GameExe, string GamePath)
-        CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
+    CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
     {
         var failed = (Success: false, GameExe: "", GamePath: "");
 
@@ -628,7 +628,7 @@ internal static class FMInstallAndPlay
     }
 
     private static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
-        GetSteamValues(GameIndex game, bool playMP)
+    GetSteamValues(GameIndex game, bool playMP)
     {
         // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
         // will start Thief2.exe
@@ -1104,7 +1104,7 @@ internal static class FMInstallAndPlay
 
     [MustUseReturnValue]
     private static (bool Success, List<string> ArchivePaths)
-        DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
+    DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
     {
         var fail = (false, new List<string>());
 
@@ -1518,7 +1518,7 @@ internal static class FMInstallAndPlay
     }
 
     private static (bool Canceled, bool InstallFailed)
-        InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
     {
         bool single = fmCount == 1;
 
@@ -1582,7 +1582,7 @@ internal static class FMInstallAndPlay
     }
 
     private static (bool Canceled, bool InstallFailed)
-        InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
     {
         bool single = fmCount == 1;
 

@@ -45,7 +45,7 @@ internal static class Language
     }
 
     private static (List<IniSection> Sections, Dictionary<string, (string Field, string Section)[]> PerGameSets)
-        ReadSource(string file)
+    ReadSource(string file)
     {
         string code = File.ReadAllText(file);
         SyntaxTree tree = ParseTextFast(code);

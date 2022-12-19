@@ -65,8 +65,8 @@ internal static class GameConfigFiles
 
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
-        List<string> FMSelectorLines, bool AlwaysShowLoader)
-        GetInfoFromCamModIni(string gamePath, bool langOnly = false)
+                     List<string> FMSelectorLines, bool AlwaysShowLoader)
+    GetInfoFromCamModIni(string gamePath, bool langOnly = false)
     {
         string CreateAndReturnFMsPath()
         {
@@ -179,8 +179,8 @@ internal static class GameConfigFiles
 
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
-        string PrevFMSelectorValue, bool AlwaysShowLoader)
-        GetInfoFromSneakyOptionsIni()
+                     string PrevFMSelectorValue, bool AlwaysShowLoader)
+    GetInfoFromSneakyOptionsIni()
     {
         string soIni = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
@@ -828,7 +828,7 @@ internal static class GameConfigFiles
     #endregion
 
     internal static (bool Success, List<Mod> Mods)
-        GetGameMods(GameIndex gameIndex)
+    GetGameMods(GameIndex gameIndex)
     {
         var list = new List<Mod>();
 

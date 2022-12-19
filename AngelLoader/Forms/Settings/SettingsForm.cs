@@ -1331,7 +1331,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     private (DialogResult Result, string FileName)
-        BrowseForExeFile(string initialPath)
+    BrowseForExeFile(string initialPath)
     {
         using var dialog = new OpenFileDialog
         {

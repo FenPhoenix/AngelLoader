@@ -88,7 +88,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     #region Private methods
 
     private (int Index, BackingTab BackingTab)
-        FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
+    FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
     {
         for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
         {
@@ -106,7 +106,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     }
 
     private (int BackingTabIndex, TabPage? TabPage)
-        GetTabAtPoint(Point position, bool xOnly = false)
+    GetTabAtPoint(Point position, bool xOnly = false)
     {
         for (int i = 0; i < TabCount; i++)
         {

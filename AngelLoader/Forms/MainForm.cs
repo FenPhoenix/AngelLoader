@@ -2008,7 +2008,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     }
 
     private (SelectedFM GameSelFM, Filter GameFilter, GameIndex GameIndex)
-        GetGameSelFMAndFilter(TabPage tabPage)
+    GetGameSelFMAndFilter(TabPage tabPage)
     {
         SelectedFM? gameSelFM = null;
         Filter? gameFilter = null;
