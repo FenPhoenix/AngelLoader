@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -2454,37 +2455,75 @@ internal static class Core
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool FMIsTopped(FanMission fm) => fm.MarkedRecent || fm.Pinned;
 
-    [PublicAPI]
-    internal static void CanonicalizeFMDisabledMods(FanMission fm)
+    internal static string CreateMisCountMessageText(int misCount) => misCount switch
     {
-        if (!fm.Game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
+        < 1 => "",
+        1 => LText.StatisticsTab.MissionCount_Single,
+        > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
+               misCount.ToString(CultureInfo.CurrentCulture) +
+               LText.StatisticsTab.MissionCount_AfterNumber
+    };
 
-        List<Mod> mods = Config.GetMods(gameIndex);
+    internal static void JustInTimeProcessFM(FanMission fm)
+    {
+        #region Languages
 
-        bool allDisabled = fm.DisableAllMods;
-
-        if (allDisabled) fm.DisabledMods = "";
-
-        for (int i = 0; i < mods.Count; i++)
+        if (GameIsDark(fm.Game))
         {
-            Mod mod = mods[i];
-            if (mod.IsUber)
+            if (!fm.LangsScanned)
             {
-                mods.RemoveAt(i);
-                mods.Add(mod);
+                FMLanguages.FillFMSupportedLangs(fm);
+                Ini.WriteFullFMDataIni();
             }
         }
-
-        for (int i = 0; i < mods.Count; i++)
+        else if (fm.Game == Game.Thief3)
         {
-            Mod mod = mods[i];
-            if (allDisabled && !mod.IsUber)
-            {
-                if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
-                fm.DisabledMods += mod.InternalName;
-            }
+            fm.Langs = Language.Default;
+            fm.SelectedLang = Language.Default;
+            fm.LangsScanned = true;
         }
 
-        if (allDisabled) fm.DisableAllMods = false;
+        #endregion
+
+        #region Tags
+
+        fm.Tags.SortAndMoveMiscToEnd();
+
+        #endregion
+
+        #region Mods
+
+        if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex))
+        {
+            List<Mod> mods = Config.GetMods(gameIndex);
+
+            bool allDisabled = fm.DisableAllMods;
+
+            if (allDisabled) fm.DisabledMods = "";
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (mod.IsUber)
+                {
+                    mods.RemoveAt(i);
+                    mods.Add(mod);
+                }
+            }
+
+            for (int i = 0; i < mods.Count; i++)
+            {
+                Mod mod = mods[i];
+                if (allDisabled && !mod.IsUber)
+                {
+                    if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
+                    fm.DisabledMods += mod.InternalName;
+                }
+            }
+
+            if (allDisabled) fm.DisableAllMods = false;
+        }
+
+        #endregion
     }
 }

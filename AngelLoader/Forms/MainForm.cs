@@ -4449,15 +4449,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         Lazy_WebSearchButton.SetEnabled(!multiSelected);
     }
 
-    internal static string CreateMisCountLabelText(int misCount) => misCount switch
-    {
-        < 1 => "",
-        1 => LText.StatisticsTab.MissionCount_Single,
-        > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
-               misCount.ToString(CultureInfo.CurrentCulture) +
-               LText.StatisticsTab.MissionCount_AfterNumber
-    };
-
     private void UpdateTopRightTabs()
     {
         using (new DisableEvents(this))
@@ -4472,7 +4463,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
     // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
     // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
-    // @VBL(UpdateAllFMUIDateExceptReadme): Most business logic in here now, we could move this to Core
     public void UpdateAllFMUIDataExceptReadme(FanMission fm)
     {
         UpdateUIControlsForMultiSelectState(fm);
@@ -4484,26 +4474,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
         FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
-        bool fmIsT3 = fm.Game == Game.Thief3;
-
-        if (GameIsDark(fm.Game))
-        {
-            if (!fm.LangsScanned)
-            {
-                FMLanguages.FillFMSupportedLangs(fm);
-                Ini.WriteFullFMDataIni();
-            }
-        }
-        else if (fmIsT3)
-        {
-            fm.Langs = LanguageSupport.Language.Default;
-            fm.SelectedLang = LanguageSupport.Language.Default;
-            fm.LangsScanned = true;
-        }
-
-        fm.Tags.SortAndMoveMiscToEnd();
-
-        if (!fmIsT3) Core.CanonicalizeFMDisabledMods(fm);
+        Core.JustInTimeProcessFM(fm);
 
         UpdateTopRightTabs();
     }

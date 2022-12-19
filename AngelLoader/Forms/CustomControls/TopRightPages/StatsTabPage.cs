@@ -66,7 +66,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
         FanMission? selFM = _owner.GetMainSelectedFMOrNull();
 
         _page.Stats_MisCountLabel.Text = selFM != null
-            ? MainForm.CreateMisCountLabelText(selFM.MisCount)
+            ? Core.CreateMisCountMessageText(selFM.MisCount)
             : LText.StatisticsTab.NoFMSelected;
 
         _page.CustomResourcesLabel.Text =
@@ -100,7 +100,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
             EnableStatsPanelLabels(_page, true);
 
-            _page.Stats_MisCountLabel.Text = MainForm.CreateMisCountLabelText(fm.MisCount);
+            _page.Stats_MisCountLabel.Text = Core.CreateMisCountMessageText(fm.MisCount);
 
             _page.StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
