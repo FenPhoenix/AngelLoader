@@ -539,8 +539,8 @@ internal static class DesignerGen
                     // Un-obvious hack: If we DON'T set Text to something, anything, here, then first render (if paths tab
                     // is the startup tab) is really slow. We just set a one-char blank space to prevent that(?!) Probably
                     // something to do with this activating some kind of render routine beforehand... I guess... who knows...
-                    destNode.OverrideLine = "            // Hack to prevent slow first render on some forms if Text is blank\r\n" +
-                                            "            this.Text = \" \";";
+                    destNode.OverrideLine = "// Hack to prevent slow first render on some forms if Text is blank\r\n" +
+                                            "this.Text = \" \";";
                 }
                 else
                 {
@@ -576,7 +576,7 @@ internal static class DesignerGen
             }
             else if (destNode.PropName == "Icon" && props.ExplicitAppIcon && props.IsFormProperty)
             {
-                destNode.OverrideLine = "            this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;";
+                destNode.OverrideLine = "this.Icon = AngelLoader.Forms.AL_Icon.AngelLoader;";
             }
             else if (destNode.PropName == "Location" &&
                      (
@@ -612,8 +612,8 @@ internal static class DesignerGen
                 destNode.IgnoreExceptForComments = true;
             }
             else if (destNode.PropName == "CheckState" && props is
-                         { Checked: true, CheckState: CheckState.Checked } or
-                         { Checked: false, CheckState: CheckState.Unchecked })
+            { Checked: true, CheckState: CheckState.Checked } or
+            { Checked: false, CheckState: CheckState.Unchecked })
             {
                 destNode.IgnoreExceptForComments = true;
             }

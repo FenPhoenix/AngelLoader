@@ -4449,12 +4449,12 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         Lazy_WebSearchButton.SetEnabled(!multiSelected);
     }
 
-    internal static string CreateMisCountLabelText(FanMission fm) => fm.MisCount switch
+    internal static string CreateMisCountLabelText(int misCount) => misCount switch
     {
         < 1 => "",
         1 => LText.StatisticsTab.MissionCount_Single,
         > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
-               fm.MisCount.ToString(CultureInfo.CurrentCulture) +
+               misCount.ToString(CultureInfo.CurrentCulture) +
                LText.StatisticsTab.MissionCount_AfterNumber
     };
 

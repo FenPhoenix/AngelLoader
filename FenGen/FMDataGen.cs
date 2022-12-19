@@ -494,8 +494,8 @@ internal static class FMData
         {
             w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
             w.WL("{");
-            w.WL("    SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
-            w.WL("    " + obj + ".ResourcesScanned = true;");
+            w.WL("SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
+            w.WL(obj + ".ResourcesScanned = true;");
             w.WL("}");
             w.WL();
         }
@@ -578,11 +578,11 @@ internal static class FMData
         {
             "private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
             "{",
-            "    var sb = new StringBuilder();",
+            "var sb = new StringBuilder();",
             "",
-            "    foreach (FanMission " + obj + " in fmDataList)",
-            "    {",
-            "        sb.AppendLine(\"[FM]\");",
+            "foreach (FanMission " + obj + " in fmDataList)",
+            "{",
+            "sb.AppendLine(\"[FM]\");",
             ""
         });
 
