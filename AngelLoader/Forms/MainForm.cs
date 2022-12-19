@@ -4472,6 +4472,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
     // IMPORTANT(UpdateAllFMUIDataExceptReadme): ALWAYS call this when changing install state!
     // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
+    // @VBL(UpdateAllFMUIDateExceptReadme): Most business logic in here now, we could move this to Core
     public void UpdateAllFMUIDataExceptReadme(FanMission fm)
     {
         UpdateUIControlsForMultiSelectState(fm);
