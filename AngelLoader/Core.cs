@@ -972,7 +972,8 @@ internal static class Core
         }
     }
 
-    internal static (bool Matched, bool ExactMatch) ContainsI_TextFilter(this string hay, string needle)
+    internal static (bool Matched, bool ExactMatch)
+    ContainsI_TextFilter(this string hay, string needle)
     {
         if (Config.EnableFuzzySearch)
         {
@@ -985,7 +986,8 @@ internal static class Core
         }
     }
 
-    internal static (bool Matched, bool ExactMatch) FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
+    internal static (bool Matched, bool ExactMatch)
+    FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
     {
         bool extIsArchive = fm.Archive.ExtIsArchive();
         if (extIsArchive && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
@@ -1009,7 +1011,8 @@ internal static class Core
     //       This was tested with the Release_Testing (optimized) profile.
     //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
     //       given this is a reasonably naive implementation with no real attempt to be clever.
-    internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch) SetFilter()
+    internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch)
+    SetFilter()
     {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         View.SetDebug2Text(int.TryParse(View.GetDebug2Text(), out int result) ? (result + 1).ToString() : "1");

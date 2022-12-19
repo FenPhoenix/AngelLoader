@@ -386,7 +386,8 @@ public static class Common
     /// <param name="hay"></param>
     /// <param name="needle"></param>
     /// <returns></returns>
-    public static (bool Matched, bool ExactMatch) ContainsI_Subsequence(this string hay, string needle)
+    public static (bool Matched, bool ExactMatch)
+    ContainsI_Subsequence(this string hay, string needle)
     {
         var fail = (false, false);
 
