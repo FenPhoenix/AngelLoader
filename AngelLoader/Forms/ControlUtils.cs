@@ -588,20 +588,6 @@ internal static class ControlUtils
         );
     }
 
-    internal static bool? ToNullableBool(this DarkCheckBox checkBox) => checkBox.CheckState switch
-    {
-        CheckState.Checked => true,
-        CheckState.Unchecked => false,
-        _ => null
-    };
-
-    internal static void SetFromNullableBool(this DarkCheckBox checkBox, bool? value) => checkBox.CheckState = value switch
-    {
-        true => CheckState.Checked,
-        false => CheckState.Unchecked,
-        _ => CheckState.Indeterminate
-    };
-
     #region Aero Snap window restore hack
 
     private static bool? _restoredHackReflectable;

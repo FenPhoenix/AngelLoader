@@ -86,6 +86,20 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         }
     }
 
+    internal bool? ToNullableBool() => CheckState switch
+    {
+        CheckState.Checked => true,
+        CheckState.Unchecked => false,
+        _ => null
+    };
+
+    internal void SetFromNullableBool(bool? value) => CheckState = value switch
+    {
+        true => CheckState.Checked,
+        false => CheckState.Unchecked,
+        _ => CheckState.Indeterminate
+    };
+
     #endregion
 
     #region Event Handler Region
