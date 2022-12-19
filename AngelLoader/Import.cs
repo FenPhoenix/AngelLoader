@@ -836,7 +836,7 @@ internal static class Import
     }
 
     private static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
+    MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
     {
         // Perf
         int initCount = FMDataIniList.Count;

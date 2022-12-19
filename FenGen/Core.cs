@@ -485,7 +485,7 @@ internal static class Core
 
     [MustUseReturnValue]
     private static Dictionary<string, string>
-        FindRequiredCodeFiles(List<string> defineHeaders)
+    FindRequiredCodeFiles(List<string> defineHeaders)
     {
         var taggedFiles = InitializedArray<List<string>>(defineHeaders.Count);
 

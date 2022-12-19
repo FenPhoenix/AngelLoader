@@ -877,8 +877,7 @@ internal static class GameConfigFiles
             }
         }
 
-        static List<string>
-            GetModPaths(List<string> lines, int lastIndex, string pathKey)
+        static List<string> GetModPaths(List<string> lines, int lastIndex, string pathKey)
         {
             return lastIndex > -1
                 ? lines[lastIndex].Substring(pathKey.Length).Trim()
