@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -52,13 +53,7 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
             SelectAllMenuItem = new ToolStripMenuItemCustom()
         });
 
-        _menu.Opening += (_, _) =>
-        {
-            CopyMenuItem.Enabled = _owner.ReadmeRichTextBox.SelectionLength > 0;
-            SelectAllMenuItem.Enabled = !(_owner.ReadmeRichTextBox.SelectionStart == 0 &&
-                                          _owner.ReadmeRichTextBox.SelectionLength ==
-                                          _owner.ReadmeRichTextBox.TextLength);
-        };
+        _menu.Opening += MenuOpening;
 
         CopyMenuItem.Click += (_, _) => _owner.ReadmeRichTextBox.Copy();
         SelectAllMenuItem.Click += (_, _) => _owner.ReadmeRichTextBox.SelectAll();
@@ -76,5 +71,19 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
 
         CopyMenuItem.Text = LText.Global.Copy;
         SelectAllMenuItem.Text = LText.Global.SelectAll;
+    }
+
+    private void MenuOpening(object sender, CancelEventArgs e)
+    {
+        if (!_owner.ReadmeRichTextBox.Visible)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        CopyMenuItem.Enabled = _owner.ReadmeRichTextBox.SelectionLength > 0;
+        SelectAllMenuItem.Enabled = !(_owner.ReadmeRichTextBox.SelectionStart == 0 &&
+                                      _owner.ReadmeRichTextBox.SelectionLength ==
+                                      _owner.ReadmeRichTextBox.TextLength);
     }
 }
