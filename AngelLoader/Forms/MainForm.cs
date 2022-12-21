@@ -975,6 +975,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
             TopSplitContainer.SetFullScreen(true, suspendResume: false);
             SetTopRightCollapsedState();
         }
+
         #endregion
 
         // Set these here because they depend on the splitter positions
@@ -1746,9 +1747,9 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
     }
 
-    public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false);
+    public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false, createControlHandles: false);
 
-    private void SetTheme(VisualTheme theme, bool startup, bool createControlHandles = false)
+    private void SetTheme(VisualTheme theme, bool startup, bool createControlHandles)
     {
         bool darkMode = theme == VisualTheme.Dark;
 
