@@ -1040,7 +1040,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
 
         Core.SetFilter();
-        if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
+        if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, keepSelection: KeepSel.TrueNearest))
         {
             _displayedFM = await Core.DisplayFM();
         }
@@ -1857,35 +1857,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
     }
 
-    private void SetGameButtonImages()
-    {
-        try
-        {
-            FilterGameButtonsToolStrip.SuspendLayout();
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
-            }
-        }
-        finally
-        {
-            FilterGameButtonsToolStrip.ResumeLayout();
-        }
-    }
-
-    private void SetGameTabImages()
-    {
-        var gameTabImages = new Image[SupportedGameCount];
-        for (int i = 0; i < SupportedGameCount; i++)
-        {
-            GameIndex gameIndex = (GameIndex)i;
-            gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
-        }
-
-        GamesTabControl.SetImages(gameTabImages);
-    }
+    public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
 
     #endregion
 
@@ -1972,6 +1944,102 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         if (!startup) ChangeFilterControlsForGameType();
 
         AutosizeGameTabsWidth();
+    }
+
+    private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
+    {
+        ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
+            GameFilterControlsShowHideButtonToolStrip,
+            ControlUtils.MenuPos.RightDown,
+            -GameFilterControlsShowHideButton.Width,
+            GameFilterControlsShowHideButton.Height);
+    }
+
+    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+    internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
+    {
+        var s = (ToolStripMenuItemCustom)sender;
+
+        if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(static x => !x))
+        {
+            s.Checked = true;
+            return;
+        }
+
+        if (Config.GameOrganization == GameOrganization.OneList)
+        {
+            ToolStripButtonCustom button = GetObjectFromMenuItem(
+                GameFilterControlsLLMenu.Menu,
+                s,
+                _filterByGameButtons,
+                SupportedGameCount);
+
+            button.Visible = s.Checked;
+            if (button.Checked && !s.Checked) button.Checked = false;
+
+            // We have to refresh manually because Checked change doesn't trigger the refresh, only Click
+            await SortAndSetFilter(keepSelection: true);
+        }
+        else // ByTab
+        {
+            TabPage tab = GetObjectFromMenuItem(
+                GameFilterControlsLLMenu.Menu,
+                s,
+                _gameTabs,
+                SupportedGameCount);
+
+            // We don't need to do a manual refresh here because ShowTab will end up resulting in one
+            GamesTabControl.ShowTab(tab, s.Checked);
+            AutosizeGameTabsWidth();
+            PositionFilterBarAfterTabs();
+        }
+    }
+
+    private void SetGameFilterShowHideMenuText() =>
+        GameFilterControlsShowHideButton.ToolTipText =
+            Config.GameOrganization == GameOrganization.OneList
+                ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
+                : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
+
+    public Game GetGameFiltersEnabled()
+    {
+        Game games = Game.Null;
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            if (_filterByGameButtons[i].Checked) games |= GameIndexToGame((GameIndex)i);
+        }
+
+        return games;
+    }
+
+    private void SetGameButtonImages()
+    {
+        try
+        {
+            FilterGameButtonsToolStrip.SuspendLayout();
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+            }
+        }
+        finally
+        {
+            FilterGameButtonsToolStrip.ResumeLayout();
+        }
+    }
+
+    private void SetGameTabImages()
+    {
+        var gameTabImages = new Image[SupportedGameCount];
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
+        }
+
+        GamesTabControl.SetImages(gameTabImages);
     }
 
     #region Game tabs
@@ -2079,17 +2147,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     public Filter GetFilter() => FMsDGV.Filter;
     public string GetTitleFilter() => FilterTitleTextBox.Text;
     public string GetAuthorFilter() => FilterAuthorTextBox.Text;
-
-    public Game GetGameFiltersEnabled()
-    {
-        Game games = Game.Null;
-        for (int i = 0; i < SupportedGameCount; i++)
-        {
-            if (_filterByGameButtons[i].Checked) games |= GameIndexToGame((GameIndex)i);
-        }
-
-        return games;
-    }
 
     public bool GetFinishedFilter() => FilterByFinishedButton.Checked;
     public bool GetUnfinishedFilter() => FilterByUnfinishedButton.Checked;
@@ -2649,70 +2706,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #endregion
 
-    private void ResetLayoutButton_Click(object sender, EventArgs e)
-    {
-        MainSplitContainer.ResetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
-        TopSplitContainer.ResetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
-        if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
-    }
-
-    private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
-    {
-        ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
-            GameFilterControlsShowHideButtonToolStrip,
-            ControlUtils.MenuPos.RightDown,
-            -GameFilterControlsShowHideButton.Width,
-            GameFilterControlsShowHideButton.Height);
-    }
-
-    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-    internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
-    {
-        var s = (ToolStripMenuItemCustom)sender;
-
-        if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(static x => !x))
-        {
-            s.Checked = true;
-            return;
-        }
-
-        if (Config.GameOrganization == GameOrganization.OneList)
-        {
-            ToolStripButtonCustom button = GetObjectFromMenuItem(
-                GameFilterControlsLLMenu.Menu,
-                s,
-                _filterByGameButtons,
-                SupportedGameCount);
-
-            button.Visible = s.Checked;
-            if (button.Checked && !s.Checked) button.Checked = false;
-
-            // We have to refresh manually because Checked change doesn't trigger the refresh, only Click
-            await SortAndSetFilter(keepSelection: true);
-        }
-        else // ByTab
-        {
-            TabPage tab = GetObjectFromMenuItem(
-                GameFilterControlsLLMenu.Menu,
-                s,
-                _gameTabs,
-                SupportedGameCount);
-
-            // We don't need to do a manual refresh here because ShowTab will end up resulting in one
-            GamesTabControl.ShowTab(tab, s.Checked);
-            AutosizeGameTabsWidth();
-            PositionFilterBarAfterTabs();
-        }
-    }
-
-    private void SetGameFilterShowHideMenuText() =>
-        GameFilterControlsShowHideButton.ToolTipText =
-            Config.GameOrganization == GameOrganization.OneList
-                ? LText.FilterBar.ShowHideGameFilterMenu_Filters_ToolTip
-                : LText.FilterBar.ShowHideGameFilterMenu_Tabs_ToolTip;
-
-    #endregion
-
     #region Filter controls visibility menu
 
     private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
@@ -2789,6 +2782,15 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #endregion
 
+    private void ResetLayoutButton_Click(object sender, EventArgs e)
+    {
+        MainSplitContainer.ResetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
+        TopSplitContainer.ResetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
+        if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
+    }
+
+    #endregion
+
     #region Refresh FMs list
 
     public void RefreshFM(FanMission fm, bool rowOnly = false)
@@ -2841,8 +2843,12 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     /// <param name="fromColumnClick"></param>
     /// <param name="multiSelectedFMs"></param>
     /// <returns></returns>
-    private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False,
-        bool fromColumnClick = false, FanMission[]? multiSelectedFMs = null)
+    private bool RefreshFMsList(
+        SelectedFM? selectedFM,
+        bool startup = false,
+        KeepSel keepSelection = KeepSel.False,
+        bool fromColumnClick = false,
+        FanMission[]? multiSelectedFMs = null)
     {
         using (new DisableEvents(this))
         {
@@ -3036,6 +3042,21 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
 
         TopRightTabControl.ShowTab(tab, s.Checked);
+    }
+
+    private void SetTopRightBlockerVisible()
+    {
+        // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
+        if (FMsDGV.MultipleFMsSelected())
+        {
+            Lazy_TopRightBlocker.Visible = true;
+            if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
+        }
+        else
+        {
+            if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
+            Lazy_TopRightBlocker.Visible = false;
+        }
     }
 
     #endregion
@@ -3259,8 +3280,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
     }
 
-    public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
-
     #region FMs list sorting
 
     public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
@@ -3302,9 +3321,13 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     /// <param name="landImmediate"></param>
     /// <param name="keepMultiSelection"></param>
     /// <returns></returns>
-    public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
-        bool keepSelection = false, bool gameTabSwitch = false,
-        bool landImmediate = false, bool keepMultiSelection = false)
+    public async Task SortAndSetFilter(
+        SelectedFM? selectedFM = null,
+        bool forceDisplayFM = false,
+        bool keepSelection = false,
+        bool gameTabSwitch = false,
+        bool landImmediate = false,
+        bool keepMultiSelection = false)
     {
         bool selFMWasPassedIn = selectedFM != null;
 
@@ -3691,21 +3714,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         }
     }
 
-    private void SetTopRightBlockerVisible()
-    {
-        // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
-        if (FMsDGV.MultipleFMsSelected())
-        {
-            Lazy_TopRightBlocker.Visible = true;
-            if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
-        }
-        else
-        {
-            if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
-            Lazy_TopRightBlocker.Visible = false;
-        }
-    }
-
     private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
     {
         if (FMsDGV.SuppressSelectionEvent) return;
@@ -3999,6 +4007,27 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
                 button.Visible = enabled;
             }
             _readmeControlsOtherThanComboBoxVisible = enabled;
+        }
+    }
+
+    private void SetReadmeControlZPosition(bool front)
+    {
+        if (front)
+        {
+            ChooseReadmeComboBox.BringToFront();
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.BringToFront();
+            }
+        }
+        else
+        {
+            ChooseReadmeComboBox.SendToBack();
+            ChooseReadmeComboBox.DroppedDown = false;
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.SendToBack();
+            }
         }
     }
 
@@ -4703,29 +4732,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         TopSplitContainer.CancelResize();
     }
 
-    public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
-
-    private void SetReadmeControlZPosition(bool front)
-    {
-        if (front)
-        {
-            ChooseReadmeComboBox.BringToFront();
-            foreach (DarkButton button in _readmeControlButtons)
-            {
-                button.BringToFront();
-            }
-        }
-        else
-        {
-            ChooseReadmeComboBox.SendToBack();
-            ChooseReadmeComboBox.DroppedDown = false;
-            foreach (DarkButton button in _readmeControlButtons)
-            {
-                button.SendToBack();
-            }
-        }
-    }
-
     public void Block(bool block) => Invoke(() =>
     {
         if (ViewBlockingPanel == null)
@@ -4884,23 +4890,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #endregion
 
-    public bool GetUIEnabled() => EverythingPanel.Enabled;
-
-    public void SetUIEnabled(bool enabled)
-    {
-        bool doFocus = !EverythingPanel.Enabled && enabled;
-
-        EverythingPanel.Enabled = enabled;
-
-        if (!doFocus) return;
-
-        // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
-        // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
-        // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
-        FMsDGV.Focus();
-        FMsDGV.SelectProperly();
-    }
-
     #region Drag & drop
 
     public bool AbleToAcceptDragDrop() => GetUIEnabled();
@@ -4990,16 +4979,6 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     #endregion
 
-    private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
-    {
-        TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
-    }
-
-    private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
-    {
-        MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
-    }
-
     #region FM selected stats
 
     private string _fmSelectedCountText = "";
@@ -5038,4 +5017,37 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     }
 
     #endregion
+
+    #region UI enabled
+
+    public bool GetUIEnabled() => EverythingPanel.Enabled;
+
+    public void SetUIEnabled(bool enabled)
+    {
+        bool doFocus = !EverythingPanel.Enabled && enabled;
+
+        EverythingPanel.Enabled = enabled;
+
+        if (!doFocus) return;
+
+        // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
+        // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
+        // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
+        FMsDGV.Focus();
+        FMsDGV.SelectProperly();
+    }
+
+    #endregion
+
+    public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
+
+    private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    {
+        TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
+    }
+
+    private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    {
+        MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
+    }
 }
