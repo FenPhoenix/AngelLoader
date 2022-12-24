@@ -38,9 +38,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
     private bool _multiplePinnedStates;
 
-    #endregion
-
     private bool _sayPin = true;
+
+    #endregion
 
     private readonly MainForm _owner;
 

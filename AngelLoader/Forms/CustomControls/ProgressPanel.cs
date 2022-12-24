@@ -22,8 +22,8 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
     internal static string DefaultCancelMessage => LText.Global.Cancel;
     internal const ProgressType DefaultProgressType = ProgressType.Determinate;
 
-    private const int regularHeight = 128;
-    private const int extendedHeight = 192;
+    private const int _regularHeight = 128;
+    private const int _extendedHeight = 192;
 
     #endregion
 
@@ -108,7 +108,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
         bool doubleSize = sizeMode == ProgressSizeMode.Double;
 
-        Size = Size with { Height = sizeMode == ProgressSizeMode.Double ? extendedHeight : regularHeight };
+        Size = Size with { Height = sizeMode == ProgressSizeMode.Double ? _extendedHeight : _regularHeight };
         SubMessageLabel.Visible = doubleSize;
         SubPercentLabel.Visible = doubleSize;
         SubProgressBar.Visible = doubleSize;
