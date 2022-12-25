@@ -75,6 +75,9 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     #region Public fields and properties
 
     [PublicAPI]
+    public bool InErrorState { get; private set; }
+
+    [PublicAPI]
     public CheckItem[] CheckItems = Array.Empty<CheckItem>();
 
     [PublicAPI]
@@ -179,8 +182,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         _checkBoxes = Array.Empty<DarkCheckBox>();
         CheckItems = Array.Empty<CheckItem>();
     }
-
-    public bool InErrorState;
 
     internal void SetErrorText(string text)
     {
