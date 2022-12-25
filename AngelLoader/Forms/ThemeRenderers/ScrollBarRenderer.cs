@@ -102,12 +102,12 @@ internal sealed class ScrollBarRenderer : ThemeRenderer
                 case Native.ABS_RIGHTHOT:
                     pen = DarkColors.GreyHighlightPen;
                     break;
-                /*
+#if false
                 case Native.ABS_UPNORMAL:
                 case Native.ABS_DOWNNORMAL:
                 case Native.ABS_LEFTNORMAL:
                 case Native.ABS_RIGHTNORMAL:
-                */
+#endif
                 default:
                     pen = DarkColors.GreySelectionPen;
                     break;
@@ -137,13 +137,13 @@ internal sealed class ScrollBarRenderer : ThemeRenderer
                 case Native.ABS_UPDISABLED:
                     direction = Misc.Direction.Up;
                     break;
-                /*
+#if false
                 case Native.ABS_DOWNNORMAL:
                 case Native.ABS_DOWNHOT:
                 case Native.ABS_DOWNPRESSED:
                 case Native.ABS_DOWNHOVER:
                 case Native.ABS_DOWNDISABLED:
-                */
+#endif
                 default:
                     direction = Misc.Direction.Down;
                     break;

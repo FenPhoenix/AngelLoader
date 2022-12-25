@@ -73,7 +73,7 @@ public static partial class Utils
 
     #region Disabled until needed
 
-    /*
+#if false
     internal static bool StartsWithPlusWhiteSpace(this string str, string value)
     {
         int valLen;
@@ -86,7 +86,7 @@ public static partial class Utils
         str.StartsWithO(value) &&
         str.Length > valueLength &&
         char.IsWhiteSpace(str[valueLength]);
-    */
+#endif
 
     #endregion
 

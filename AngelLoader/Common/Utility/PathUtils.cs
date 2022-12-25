@@ -202,7 +202,7 @@ public static partial class Utils
 
     #region Disabled until needed
 
-    /*
+#if false
     internal static bool TryCombineFilePathAndCheckExistence(string[] pathParts, out string combinedPath)
     {
         try
@@ -225,8 +225,7 @@ public static partial class Utils
             return false;
         }
     }
-
-    */
+#endif
 
     #endregion
 

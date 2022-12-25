@@ -50,12 +50,12 @@ internal static class ControlUtils
         control.Location = control.Location with { X = (parent.Width / 2) - (control.Width / 2) };
     }
 
-    /*
+#if false
     internal static void CenterV(this Control control, Control parent)
     {
         control.Location = control.Location with { Y = (parent.Height / 2) - (control.Height / 2) };
     }
-    */
+#endif
 
     internal static void CenterHV(this Control control, Control parent, bool clientSize = false)
     {

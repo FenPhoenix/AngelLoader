@@ -33,7 +33,7 @@ internal enum HResult
     /// </summary>
     Ok = 0x0000,
 
-    /*
+#if false
     /// <summary>
     /// S_FALSE
     /// </summary> 
@@ -78,14 +78,14 @@ internal enum HResult
     /// Win32 Error code: ERROR_CANCELLED
     /// </summary>
     Win32ErrorCanceled = 1223,
-    */
+#endif
 
     /// <summary>
     /// ERROR_CANCELLED
     /// </summary>
     Canceled = unchecked((int)0x800704C7),
 
-    /*
+#if false
     /// <summary>
     /// The requested resource is in use
     /// </summary>
@@ -95,7 +95,7 @@ internal enum HResult
     /// The requested resources is read-only.
     /// </summary>
     AccessDenied = unchecked((int)0x80030005)
-    */
+#endif
 }
 
 // These are specific guids that need to be exactly what they are here. Not just generated and assigned
@@ -124,7 +124,7 @@ internal static class NativeMethods
 
     #region Commented-out enums
 
-    /*
+#if false
     [PublicAPI]
     internal enum FDAP
     {
@@ -155,39 +155,45 @@ internal static class NativeMethods
         SIATTRIBFLAGS_OR = 0x00000002,
         SIATTRIBFLAGS_APPCOMPAT = 0x00000003
     }
-    */
+#endif
 
     #endregion
 
     internal enum SIGDN : uint
     {
-        //SIGDN_NORMALDISPLAY = 0x00000000,
-        //SIGDN_PARENTRELATIVEPARSING = 0x80018001,
+#if false
+        SIGDN_NORMALDISPLAY = 0x00000000,
+        SIGDN_PARENTRELATIVEPARSING = 0x80018001,
+#endif
         SIGDN_DESKTOPABSOLUTEPARSING = 0x80028000,
-        //SIGDN_PARENTRELATIVEEDITING = 0x80031001,
-        //SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
-        //SIGDN_FILESYSPATH = 0x80058000,
-        //SIGDN_URL = 0x80068000,
-        //SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
-        //SIGDN_PARENTRELATIVE = 0x80080001
+#if false
+        SIGDN_PARENTRELATIVEEDITING = 0x80031001,
+        SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
+        SIGDN_FILESYSPATH = 0x80058000,
+        SIGDN_URL = 0x80068000,
+        SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+        SIGDN_PARENTRELATIVE = 0x80080001
+#endif
     }
 
     [Flags]
     internal enum FOS : uint
     {
-        /*
+#if false
         FOS_OVERWRITEPROMPT = 0x00000002,
         FOS_STRICTFILETYPES = 0x00000004,
         FOS_NOCHANGEDIR = 0x00000008,
-        */
+#endif
         FOS_PICKFOLDERS = 0x00000020,
         FOS_FORCEFILESYSTEM = 0x00000040,
-        //FOS_ALLNONSTORAGEITEMS = 0x00000080,
+#if false
+        FOS_ALLNONSTORAGEITEMS = 0x00000080,
+#endif
         FOS_NOVALIDATE = 0x00000100,
         FOS_ALLOWMULTISELECT = 0x00000200,
         FOS_PATHMUSTEXIST = 0x00000800,
         FOS_FILEMUSTEXIST = 0x00001000,
-        /*
+#if false
         FOS_CREATEPROMPT = 0x00002000,
         FOS_SHAREAWARE = 0x00004000,
         FOS_NOREADONLYRETURN = 0x00008000,
@@ -198,7 +204,7 @@ internal static class NativeMethods
         FOS_DONTADDTORECENT = 0x02000000,
         FOS_FORCESHOWHIDDEN = 0x10000000,
         FOS_DEFAULTNOMINIMODE = 0x20000000
-        */
+#endif
     }
 
     [PublicAPI]
@@ -220,7 +226,7 @@ internal static class NativeMethods
 
 #region IFileDialog (commented out)
 
-/*
+#if false
 [ComImport, Guid(Guids.IFileDialog), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface IFileDialog
 {
@@ -297,7 +303,7 @@ internal interface IFileDialog
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
 }
-*/
+#endif
 
 #endregion
 
@@ -393,7 +399,7 @@ internal interface IFileOpenDialog //: IFileDialog // IFileDialog is commented-o
 [ComImport, Guid(Guids.IFileDialogEvents), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface IFileDialogEvents
 {
-    /*
+#if false
     [PreserveSig]
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     HResult OnFileOk([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
@@ -416,7 +422,7 @@ internal interface IFileDialogEvents
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void OnOverwrite([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd, [In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, out uint pResponse);
-    */
+#endif
 }
 
 [ComImport, Guid(Guids.IShellItem), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

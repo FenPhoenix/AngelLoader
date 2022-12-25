@@ -3,7 +3,7 @@
 internal enum Error
 {
     None,
-    /*
+#if false
     NoGamesSpecified,
     BackupPathNotSpecified,
     T1CamModIniNotFound,
@@ -13,7 +13,7 @@ internal enum Error
     CamModIniCouldNotBeRead,
     SneakyOptionsNoRegKey,
     T3FMInstPathNotFound,
-    */
+#endif
     GeneralSneakyOptionsIniError,
     SneakyOptionsNotFound,
     GameExeNotSpecified,
@@ -35,7 +35,7 @@ internal enum ImportError
     Unknown
 }
 
-/*
+#if false
 internal enum StubResponseError
 {
     RootTooLong,
@@ -43,4 +43,4 @@ internal enum StubResponseError
     ModExcludeTooLong,
     LanguageTooLong
 }
-*/
+#endif

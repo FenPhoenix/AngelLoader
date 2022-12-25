@@ -426,7 +426,7 @@ public class DarkButton : Button, IDarkable
             switch (TextImageRelation)
             {
                 // @DarkModeNote(DarkButton): These are probably incorrect - fix them if we ever want to use them
-                /*
+#if false
                 case TextImageRelation.ImageAboveText:
                     textOffsetY = (Image.Size.Height / 2) + (ImagePadding / 2);
                     y -= (int)(stringSize.Height / 2) + (ImagePadding / 2);
@@ -438,7 +438,7 @@ public class DarkButton : Button, IDarkable
                 case TextImageRelation.TextBeforeImage:
                     x += (int)stringSize.Width;
                     break;
-                */
+#endif
                 case TextImageRelation.ImageBeforeText:
                 default:
                     textOffsetX = Image.Size.Width + ImagePadding + 1;

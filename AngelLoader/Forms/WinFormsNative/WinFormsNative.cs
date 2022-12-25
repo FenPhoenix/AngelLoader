@@ -315,7 +315,7 @@ internal static class Native
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
-    /*
+#if false
     // This static method is required because legacy OSes do not support SetWindowLongPtr
     internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, UIntPtr dwNewLong)
     {
@@ -329,7 +329,7 @@ internal static class Native
 
     [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
     private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
-    */
+#endif
 
     [DllImport("user32.dll")]
     internal static extern IntPtr WindowFromPoint(Point pt);
@@ -428,7 +428,7 @@ internal static class Native
     internal const int MK_CONTROL = 0x8;
 
     // VK_ only to be used in keyboard messages
-    /*
+#if false
     internal const int VK_SHIFT = 0x10;
     internal const int VK_CONTROL = 0x11;
     internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
@@ -441,7 +441,7 @@ internal static class Native
     internal const int VK_UP = 0x26;
     internal const int VK_RIGHT = 0x27;
     internal const int VK_DOWN = 0x28;
-    */
+#endif
 
     #endregion
 
@@ -458,11 +458,12 @@ internal static class Native
     internal const int WM_SCROLL = 0x114;
     internal const int WM_VSCROLL = 0x115;
     internal const int WM_HSCROLL = 0x114;
-    //internal const int SB_LINEUP = 0;
+
     internal const int SB_LINELEFT = 0;
-    //internal const int SB_LINEDOWN = 1;
     internal const int SB_LINERIGHT = 1;
-    /*
+#if false
+    internal const int SB_LINEUP = 0;
+    internal const int SB_LINEDOWN = 1;
     internal const int SB_PAGEUP = 2;
     internal const int SB_PAGELEFT = 2;
     internal const int SB_PAGEDOWN = 3;
@@ -474,7 +475,7 @@ internal static class Native
     internal const int SB_ENDSCROLL = 8;
     internal const int SBM_GETPOS = 225;
     internal const int SB_HORZ = 0;
-    */
+#endif
     internal const uint SB_THUMBTRACK = 5;
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -538,13 +539,13 @@ internal static class Native
 
     internal const int TTP_STANDARD = 1;
     internal const int TTP_STANDARDTITLE = 2;
-    /*
+#if false
     internal const int TTP_BALLOON = 3;
     internal const int TTP_BALLOONTITLE = 4;
     internal const int TTP_CLOSE = 5;
     internal const int TTP_BALLOONSTEM = 6;
     internal const int TTP_WRENCH = 7;
-    */
+#endif
 
     #endregion
 
@@ -576,15 +577,17 @@ internal static class Native
     internal const int SBP_ARROWBTN = 1;
     internal const int SBP_THUMBBTNHORZ = 2;
     internal const int SBP_THUMBBTNVERT = 3;
-    /*
+#if false
     internal const int SBP_LOWERTRACKHORZ = 4;
     internal const int SBP_UPPERTRACKHORZ = 5;
     internal const int SBP_LOWERTRACKVERT = 6;
     internal const int SBP_UPPERTRACKVERT = 7;
-    */
+#endif
     internal const int SBP_GRIPPERHORZ = 8;
     internal const int SBP_GRIPPERVERT = 9;
-    //internal const int SBP_SIZEBOX = 10;
+#if false
+    internal const int SBP_SIZEBOX = 10;
+#endif
     // Uh, this one isn't listed in vsstyle.h, but it works...?
     internal const int SBP_CORNER = 11;
 
