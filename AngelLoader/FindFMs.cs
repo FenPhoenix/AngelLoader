@@ -418,8 +418,7 @@ internal static class FindFMs
 
         EnsureUniqueInstalledNames();
 
-        // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
-        // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
+        // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
         var fmsViewListUnscanned = new List<FanMission>(FMDataIniList.Count);
 
         BuildViewList(fmArchivesAndDatesDict, perGameInstFMDirsItems, fmsViewListUnscanned);
