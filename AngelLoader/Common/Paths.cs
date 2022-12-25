@@ -218,15 +218,16 @@ internal static class Paths
 
     #endregion
 
-    // PERF_TODO: These two 7z things are not necessarily used right away and should be lazy-loaded
+    private static string? _sevenZipPath;
+    internal static string SevenZipPath => _sevenZipPath ??=
+        // Use a 64-bit version if possible for even more out-of-memory prevention...
+        // @X64: If we go x64-only, we can remove the 32-bit 7z and then we need to update this
+        Environment.Is64BitOperatingSystem
+            ? PathCombineFast_NoChecks(Startup, "7z64")
+            : PathCombineFast_NoChecks(Startup, "7z32");
 
-    // Use a 64-bit version if possible for even more out-of-memory prevention...
-    // @X64: If we go x64-only, we can remove the 32-bit 7z and then we need to update this
-    internal static readonly string SevenZipPath = Environment.Is64BitOperatingSystem
-        ? PathCombineFast_NoChecks(Startup, "7z64")
-        : PathCombineFast_NoChecks(Startup, "7z32");
-
-    internal static readonly string SevenZipExe = PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
+    private static string? _sevenZipExe;
+    internal static string SevenZipExe => _sevenZipExe ??= PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
 
     #region Log files
 
