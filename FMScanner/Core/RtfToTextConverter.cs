@@ -2233,26 +2233,27 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     }
 
     /// <summary>
-    /// Copy of framework version but with a fast null return on fail instead of the infernal exception-throwing.
+    /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private char[]? ConvertFromUtf32(int utf32)
     {
-        if (utf32 is < 0 or > 1114111 or (>= 55296 and <= 57343))
+        uint utf32u = (uint)utf32;
+
+        if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)
         {
             return null;
         }
 
-        if (utf32 < 65536)
+        if (utf32u <= 0xFFFFu)
         {
-            _charBuffer1[0] = (char)utf32;
+            _charBuffer1[0] = (char)utf32u;
             return _charBuffer1;
         }
 
-        utf32 -= 65536;
+        _charBuffer2[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
+        _charBuffer2[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
 
-        _charBuffer2[0] = (char)((utf32 / 1024) + 55296);
-        _charBuffer2[1] = (char)((utf32 % 1024) + 56320);
         return _charBuffer2;
     }
 
