@@ -499,9 +499,6 @@ internal static class Import
             }
             finally
             {
-                // IMPORTANT (ImportDarkLoaderInternal):
-                // This MUST be invoked back to the UI thread because this method will be called from inside
-                // an await Task.Run()!
                 // We don't really need this here; we already close later
                 // This just lets us close before putting up a possible error dialog, but other than that is
                 // unnecessary.
@@ -872,22 +869,22 @@ internal static class Import
                       )
                      )
                     )
-                    /*
-                    NOTE: Original v1.01 is like this:
+                   /*
+                   NOTE: Original v1.01 is like this:
 
-                    if (!mainFM.Checked &&
-                        (importType == ImportType.DarkLoader &&
-                         mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                        (importType == ImportType.FMSel &&
-                         (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
-                        (importType == ImportType.NewDarkLoader &&
-                         mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
+                   if (!mainFM.Checked &&
+                       (importType == ImportType.DarkLoader &&
+                        mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                       (importType == ImportType.FMSel &&
+                        (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                         importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
+                       (importType == ImportType.NewDarkLoader &&
+                        mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
 
-                    So it's 100% intentional, not wrong parentheses or anything.
-                    NewDarkLoader doesn't store the archive names in its ini. BUT we still get it by searching
-                    the archive dir on disk. So... it probably is still an oversight?
-                    */
+                   So it's 100% intentional, not wrong parentheses or anything.
+                   NewDarkLoader doesn't store the archive names in its ini. BUT we still get it by searching
+                   the archive dir on disk. So... it probably is still an oversight?
+                   */
                    )
                 {
                     if (fields.Title && !importedFM.Title.IsEmpty())
