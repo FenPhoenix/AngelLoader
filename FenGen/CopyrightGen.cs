@@ -39,7 +39,14 @@ internal static class CopyrightGen
         "SOFTWARE."
     };
 
-    internal static void GenProjCopyright()
+    internal static void Generate(string destFile)
+    {
+        GenProjCopyright();
+        GenCurrentYear(destFile);
+        GenLicenses();
+    }
+
+    private static void GenProjCopyright()
     {
         var xml = new XmlDocument { PreserveWhitespace = true };
         xml.Load(Core.ALProjectFile);
@@ -49,18 +56,17 @@ internal static class CopyrightGen
         WriteXml(xml);
     }
 
-    internal static void GenCurrentYear(string destFile, bool remove = false)
+    private static void GenCurrentYear(string destFile)
     {
         var w = GetWriterForClass(destFile, GenAttributes.FenGenCurrentYearDestClassAttribute);
 
-        string currentYear = remove ? "" : Cache.CurrentYear;
-        w.WL("internal const string CurrentYear = \"" + currentYear + "\";");
+        w.WL("internal const string CurrentYear = \"" + Cache.CurrentYear + "\";");
         w.CloseClassAndNamespace();
 
         File.WriteAllText(destFile, w.ToString());
     }
 
-    internal static void GenLicenses()
+    private static void GenLicenses()
     {
         string gitLicenseFile = Path.Combine(Core.ALSolutionPath, "LICENSE");
         string distLicenseFile = Path.Combine(Core.ALSolutionPath, "BinReleaseOnly", "Licenses", "AngelLoader license.txt");

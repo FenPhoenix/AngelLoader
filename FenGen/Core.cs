@@ -43,6 +43,7 @@ So no complaining. This is my generator. Good day.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -124,7 +125,7 @@ internal static class Cache
         DesignerCSFiles.Clear();
     }
 
-    internal static readonly string CurrentYear = DateTime.Now.Year.ToString();
+    internal static readonly string CurrentYear = DateTime.Now.Year.ToString(CultureInfo.InvariantCulture);
 }
 
 internal static class GenAttributes
@@ -477,9 +478,7 @@ internal static class Core
         }
         if (GenTaskActive(GenType.GenCopyright))
         {
-            CopyrightGen.GenProjCopyright();
-            CopyrightGen.GenCurrentYear(taggedFilesDict[DefineHeaders.CurrentYearDest]);
-            CopyrightGen.GenLicenses();
+            CopyrightGen.Generate(taggedFilesDict[DefineHeaders.CurrentYearDest]);
         }
     }
 
