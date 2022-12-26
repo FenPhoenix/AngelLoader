@@ -2200,7 +2200,9 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
         even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
         */
-        if (handleSymbolCharRange && (codePoint is >= 0xF020 and <= 0xF0FF))
+        if (handleSymbolCharRange &&
+            // We know the code point is > 0 by this point so the uint cast is fine and seems to add perf somehow
+            ((uint)(codePoint - 0xF020) <= 0xF0FF - 0xF020))
         {
             codePoint -= 0xF000;
 
