@@ -1765,7 +1765,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         if (numIsHex)
         {
-            // ALLOC: ToString(): int.TryParse(hex)
+            // @ALLOC: ToString(): int.TryParse(hex)
             // We could implement our own hex parser, but this is called so infrequently (actually not at all
             // in the test set) that it doesn't really matter.
             // TODO: Make our own parser anyway, because speed in all things

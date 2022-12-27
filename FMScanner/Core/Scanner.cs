@@ -903,7 +903,7 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = _fmIsZip || _fmIsSevenZip
                 ? Path.GetFileName(fm.Path)
-                // PERF_TODO: Use fast string-only name getter
+                // @PERF_TODO: Use fast string-only name getter
                 // Case against: Being built-in, this way is safe and complete. ArchiveName is monumentally
                 // important, we don't want to mess around.
                 : new DirectoryInfo(_fmWorkingPath).Name
@@ -958,7 +958,7 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        // PERF_TODO: Recycle these
+        // @PERF_TODO: Recycle these
         var baseDirFiles = new List<NameAndIndex>();
         var misFiles = new List<NameAndIndex>();
         var usedMisFiles = new List<NameAndIndex>();
@@ -1131,7 +1131,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Read, cache, and set readme files
 
-        // PERF_TODO: Recycle this
+        // @PERF_TODO: Recycle this
         var readmeDirFiles = new List<NameAndIndex>();
 
         foreach (NameAndIndex f in baseDirFiles) readmeDirFiles.Add(f);
@@ -2750,7 +2750,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     if (specialLogic == SpecialLogic.Author)
                     {
-                        // PERF_TODO: We can move things around for perf here.
+                        // @PERF_TODO: We can move things around for perf here.
                         // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
                         // a little bit faster on average. But that causes a handful of differences in the
                         // output. Not enough to matter really, but the conceptual issue I have is that I
@@ -2812,7 +2812,7 @@ public sealed partial class Scanner : IDisposable
                 if (!ret.IsEmpty()) return ret;
             }
 
-            // PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
+            // @PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
             // This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
             // don't even know why I thought I needed that but it turns out I could just make it static like
             // the rest, so I did. Re-evaluate this and maybe put it higher?
@@ -3599,7 +3599,7 @@ public sealed partial class Scanner : IDisposable
             string fn = baseDirFiles[i].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
-            // PERF_TODO: String allocation, but a large convenience
+            // @PERF_TODO: String allocation, but a large convenience
             fn = fn.RemoveExtension();
 
             // LINQ avoidance

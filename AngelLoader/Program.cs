@@ -38,7 +38,7 @@ internal static class Program
     }
 
     /*
-    PERF_TODO: SingleInstanceManager style takes ~30-35ms to get to the top of OnStartup().
+    @PERF_TODO: SingleInstanceManager style takes ~30-35ms to get to the top of OnStartup().
     The old way was faster, but we can't pass args the old way. We don't currently pass args right now,
     but eh...
 

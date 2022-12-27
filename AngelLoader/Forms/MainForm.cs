@@ -1768,7 +1768,7 @@ public sealed partial class MainForm : DarkFormBase,
                 (!TopSplitContainer.FullScreen && x == TopSplitContainer);
 #else
             /*
-            PERF_TODO(Startup window drawn state completeness/speed tradeoff):
+            @PERF_TODO(Startup window drawn state completeness/speed tradeoff):
             Use this for a more conservative visual ux. With this method, the window shows all bg color
             and then refreshes all at once, but is slower. With the faster method above, the window shows
             in a mostly-but-not-quite-fully-drawn state, but if you have window animations on (which is
@@ -2633,7 +2633,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FilterBarFLP_Scroll(object sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
 
-    // PERF_TODO: This is still called too many times on startup.
+    // @PERF_TODO: This is still called too many times on startup.
     // Even though it has checks to prevent any real work from being done if not needed, I should still take
     // a look at this and see if I can't make it be called only once max on startup.
     // TODO: Something about the Construct() calls in this method causes the anchoring issue (when we lazy-load).
@@ -3372,7 +3372,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (Config.EnableFuzzySearch &&
                 (filterMatches.TitleExactMatch != null || filterMatches.AuthorExactMatch != null))
             {
-                // PERF_TODO(SortAndSetFilter()):
+                // @PERF_TODO(SortAndSetFilter()):
                 // We're looping through when we already have our FanMission object, but what we need is a
                 // SelectedFM object, but that requires getting the scroll position and such, so we can't
                 // just convert a FanMission to a SelectedFM. These loops are super stupid and wasteful but
@@ -3543,7 +3543,7 @@ public sealed partial class MainForm : DarkFormBase,
         FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
         // PERF: ~0.14ms per FM for en-US Long Date format
-        // PERF_TODO: Test with custom - dt.ToString() might be slow?
+        // @PERF_TODO: Test with custom - dt.ToString() might be slow?
         static string FormatDate(DateTime dt) => Config.DateFormat switch
         {
             DateFormat.CurrentCultureShort => dt.ToShortDateString(),
@@ -4288,7 +4288,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetTopRightBlockerVisible();
     }
 
-    // PERF_TODO(Context menu sel state update): Since this runs always on selection change...
+    // @PERF_TODO(Context menu sel state update): Since this runs always on selection change...
     // ... we might not need to call it on FM load.
     // NOTE(Context menu sel state update):
     // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK

@@ -478,7 +478,7 @@ internal static class FindFMs
                     continue;
                 }
 
-                // PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
+                // @PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
                 string? archiveName = null;
                 // Skip the expensive archive name search if we're marked as having no archive
                 if (!fm.NoArchive)
@@ -649,7 +649,7 @@ internal static class FindFMs
 
     #endregion
 
-    // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
+    // @PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
     private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ExpandableDate_FromTicks> archives, LastResortLinkupBundle bundle)
     {
         // The game type is supposed to be inferred from the installed location, but it could be unknown in
@@ -668,7 +668,7 @@ internal static class FindFMs
             // Make a best-effort attempt to find what this FM's archive name should be
             // PERF: NoArchive property caches this value so this only gets run once per archive-less FM and
             // then never again, rather than once per startup always.
-            // PERF_TODO: Does this actually even need to be run?
+            // @PERF_TODO: Does this actually even need to be run?
             // Now that I know the NoArchive value can be set back in MergeNewArchiveFMs, I wonder if this is
             // wholly or at least partially unnecessary. If we don't have an archive name by this point, do
             // we therefore already know this is not going to find anything?

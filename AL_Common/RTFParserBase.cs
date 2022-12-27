@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace AL_Common;
 
-/* PERF_TODO(RTF parser / UnGetChar):
+/* @PERF_TODO(RTF parser / UnGetChar):
 We might be able to get rid of our un-get buffer if we're clever...
 The only place "UnGet" is called in the original example in the spec file is when it un-gets the non-space
 char after a keyword if there isn't a space.
