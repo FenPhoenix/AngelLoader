@@ -32,7 +32,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 {
     #region Private fields
 
-    private readonly ISettingsChangeableWindow? _ownerForm;
+    private readonly ISettingsChangeableView? _ownerForm;
 
     private readonly bool _startup;
     private readonly bool _cleanStart;
@@ -99,7 +99,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     // @CAN_RUN_BEFORE_VIEW_INIT
-    internal SettingsForm(ISettingsChangeableWindow? ownerForm, ConfigData config, bool startup, bool cleanStart)
+    internal SettingsForm(ISettingsChangeableView? ownerForm, ConfigData config, bool startup, bool cleanStart)
     {
 #if DEBUG
         InitializeComponent();

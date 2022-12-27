@@ -11,8 +11,7 @@ namespace AngelLoader;
 // We need this one call in RefreshFMsListFromDisk() and finagling it out is tricky due to reasons involving
 // FindFMs.Find() setting row count to 0 and blah.
 
-
-public interface ISettingsChangeableWindow
+public interface ISettingsChangeableView
 {
     void Localize();
     void SetTheme(VisualTheme theme);
@@ -47,7 +46,7 @@ public interface IViewEnvironment
     ISplashScreen GetSplashScreen();
     IView GetView();
     void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
-    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableWindow? view, ConfigData inConfig, bool startup, bool cleanStart);
+    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, bool startup, bool cleanStart);
 }
 
 public interface IDialogs
@@ -60,7 +59,7 @@ public interface IDialogs
     (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
 }
 
-public interface IView : ISettingsChangeableWindow
+public interface IView : ISettingsChangeableView
 {
 #if !ReleaseBeta && !ReleasePublic
     void UpdateGameScreenShotModes();
