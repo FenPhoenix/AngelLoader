@@ -395,7 +395,7 @@ public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContext
 
     Encoding? ChangeReadmeEncoding(Encoding? encoding);
 
-    void SetSelectedEncoding(Encoding encoding);
+    void SetSelectedReadmeEncoding(Encoding encoding);
 
     void ChangeReadmeBoxFont(bool useFixed);
 

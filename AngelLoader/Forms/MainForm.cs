@@ -173,7 +173,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     private readonly IDarkable[] _lazyLoadedControls;
 
     private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
-    private readonly EncodingsLLMenu EncodingsLLMenu;
+    private readonly Lazy_ReadmeEncodingsMenu Lazy_ReadmeEncodingsMenu;
     private readonly ExitLLButton ExitLLButton;
     private readonly FilterControlsLLMenu FilterControlsLLMenu;
     private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
@@ -554,7 +554,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         _lazyLoadedControls = new IDarkable[]
         {
             ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
-            EncodingsLLMenu = new EncodingsLLMenu(this),
+            Lazy_ReadmeEncodingsMenu = new Lazy_ReadmeEncodingsMenu(this),
             ExitLLButton = new ExitLLButton(this),
             FilterControlsLLMenu = new FilterControlsLLMenu(this),
             FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this),
@@ -1705,7 +1705,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
             MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
             MainToolTip.SetToolTip(ReadmeEncodingButton, LText.ReadmeArea.CharacterEncoding);
 
-            EncodingsLLMenu.Localize();
+            Lazy_ReadmeEncodingsMenu.Localize();
 
             ViewHTMLReadmeLLButton.Localize();
 
@@ -3959,7 +3959,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
     private void ReadmeEncodingButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(EncodingsLLMenu.Menu, ReadmeEncodingButton, ControlUtils.MenuPos.LeftDown);
+        ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, ControlUtils.MenuPos.LeftDown);
     }
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
@@ -4611,7 +4611,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         ReadmeRichTextBox.LocalizableMessageType = messageType;
     }
 
-    public void SetSelectedEncoding(Encoding encoding) => EncodingsLLMenu.SetEncodingMenuItemChecked(encoding);
+    public void SetSelectedReadmeEncoding(Encoding encoding) => Lazy_ReadmeEncodingsMenu.SetMenuItemChecked(encoding);
 
     #endregion
 

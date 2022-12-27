@@ -1791,7 +1791,7 @@ internal static class Core
 
                 if (fileType == ReadmeType.PlainText && finalEncoding != null)
                 {
-                    View.SetSelectedEncoding(finalEncoding);
+                    View.SetSelectedReadmeEncoding(finalEncoding);
                 }
             }
         }
@@ -1815,7 +1815,7 @@ internal static class Core
             if (enc != null)
             {
                 UpdateFMSelectedReadmeCodePage(fm, enc.CodePage);
-                View.SetSelectedEncoding(enc);
+                View.SetSelectedReadmeEncoding(enc);
             }
         }
         else
@@ -1830,7 +1830,7 @@ internal static class Core
                 return;
             }
 
-            View.SetSelectedEncoding(enc);
+            View.SetSelectedReadmeEncoding(enc);
             View.ChangeReadmeEncoding(enc);
             UpdateFMSelectedReadmeCodePage(fm, enc.CodePage);
         }

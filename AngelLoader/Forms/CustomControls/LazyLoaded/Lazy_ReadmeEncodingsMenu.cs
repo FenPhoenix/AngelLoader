@@ -9,7 +9,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class EncodingsLLMenu : IEventDisabler, IDarkable
+internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 {
     #region Private fields
 
@@ -70,7 +70,7 @@ internal sealed class EncodingsLLMenu : IEventDisabler, IDarkable
         }
     }
 
-    internal EncodingsLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_ReadmeEncodingsMenu(MainForm owner) => _owner = owner;
 
     private void MenuItems_CheckedChanged(object sender, EventArgs e)
     {
@@ -417,7 +417,7 @@ internal sealed class EncodingsLLMenu : IEventDisabler, IDarkable
         _menu.ResumeLayout();
     }
 
-    internal void SetEncodingMenuItemChecked(Encoding encoding)
+    internal void SetMenuItemChecked(Encoding encoding)
     {
         if (_constructed && _menuItemsDict.TryGetValue(encoding.CodePage, out var menuItem))
         {
