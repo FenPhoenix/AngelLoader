@@ -258,7 +258,7 @@ internal static class FindFMs
             // the list when it's in an indeterminate state (which can cause a selection change (bad) and/or
             // a visible change of the list (not really bad but unprofessional looking)).
             // @THREADING: Don't do this on startup because we're running in parallel with the form new/init in that case.
-            Core.View.SetRowCount(0);
+            Core.View.DisableFMsListDisplay();
         }
 
         // Init or reinit - must be deep-copied or changes propagate back because reference types

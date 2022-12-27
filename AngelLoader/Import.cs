@@ -169,7 +169,7 @@ internal static class Import
         // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
         // list when it's in an indeterminate state, which can cause a selection change (bad) and/or a visible
         // change of the list (not really bad but unprofessional looking).
-        Core.View.SetRowCount(0);
+        Core.View.DisableFMsListDisplay(inert: false);
 
         // ReSharper disable once ConvertToConstant.Local
         string dlErrorMessage = "An error occurred with DarkLoader importing. See the log file for details. Aborting import operation.";

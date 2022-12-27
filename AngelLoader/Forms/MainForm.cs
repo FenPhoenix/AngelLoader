@@ -67,7 +67,12 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class MainForm : DarkFormBase, IView, IDarkContextMenuOwner, IZeroSelectCodeDisabler, IMessageFilter
+public sealed partial class MainForm : DarkFormBase,
+    IView,
+    IEventDisabler,
+    IZeroSelectCodeDisabler,
+    IDarkContextMenuOwner,
+    IMessageFilter
 {
     #region Private fields
 
@@ -3101,7 +3106,13 @@ public sealed partial class MainForm : DarkFormBase, IView, IDarkContextMenuOwne
 
     public int GetRowCount() => FMsDGV.RowCount;
 
-    public void SetRowCount(int count) => FMsDGV.RowCount = count;
+    public void DisableFMsListDisplay(bool inert = true)
+    {
+        using (new DisableEvents(this, active: inert))
+        {
+            FMsDGV.RowCount = 0;
+        }
+    }
 
     public void ShowFMsListZoomButtons(bool visible)
     {

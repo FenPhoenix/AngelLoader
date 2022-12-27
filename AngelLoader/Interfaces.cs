@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
@@ -11,62 +10,7 @@ namespace AngelLoader;
 // @CoreViewKnowledge: DisableEvents shouldn't be known about by the business logic, but:
 // We need this one call in RefreshFMsListFromDisk() and finagling it out is tricky due to reasons involving
 // FindFMs.Find() setting row count to 0 and blah.
-#region DisableEvents
 
-/*
- Implement the interface on your form, and put guard clauses on all your event handlers that you want to
- be disableable:
-
- if (EventsDisabled) return;
-
- Then whenever you want to disable those event handlers, just make a using block:
-
- using (new DisableEvents(this))
- {
- }
-
- Inside this block, put any code that changes the state of the controls in such a way that would normally
- run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
- much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
- and has the added bonus of guaranteeing a reset of the value due to the using block.
-*/
-
-public interface IEventDisabler
-{
-    bool EventsDisabled { get; }
-    int EventsDisabledCount { get; set; }
-}
-
-internal sealed class DisableEvents_Reference : IDisposable
-{
-    private readonly IEventDisabler Obj;
-    internal DisableEvents_Reference(IEventDisabler obj)
-    {
-        Obj = obj;
-        Obj.EventsDisabledCount++;
-    }
-
-    public void Dispose() => Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
-}
-
-internal readonly ref struct DisableEvents
-{
-    private readonly bool _active;
-    private readonly IEventDisabler Obj;
-    public DisableEvents(IEventDisabler obj, bool active = true)
-    {
-        _active = active;
-        Obj = obj;
-
-        if (_active) Obj.EventsDisabledCount++;
-    }
-
-    public void Dispose()
-    {
-        if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
-    }
-}
-#endregion
 
 public interface ISettingsChangeableWindow
 {
@@ -116,7 +60,7 @@ public interface IDialogs
     (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
 }
 
-public interface IView : ISettingsChangeableWindow, IEventDisabler
+public interface IView : ISettingsChangeableWindow
 {
 #if !ReleaseBeta && !ReleasePublic
     void UpdateGameScreenShotModes();
@@ -307,7 +251,7 @@ public interface IView : ISettingsChangeableWindow, IEventDisabler
 
     int GetRowCount();
 
-    void SetRowCount(int count);
+    void DisableFMsListDisplay(bool inert = true);
 
     #endregion
 
