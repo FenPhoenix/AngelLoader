@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using AL_Common;
@@ -9,6 +8,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
+// @CoreViewKnowledge: DisableEvents shouldn't be known about by the business logic, but:
+// We need this one call in RefreshFMsListFromDisk() and finagling it out is tricky due to reasons involving
+// FindFMs.Find() setting row count to 0 and blah.
 #region DisableEvents
 
 /*
@@ -66,44 +68,11 @@ internal readonly ref struct DisableEvents
 }
 #endregion
 
-#region DisableZeroSelectCode
-
-public interface IZeroSelectCodeDisabler
-{
-    bool ZeroSelectCodeDisabled { get; }
-    int ZeroSelectCodeDisabledCount { get; set; }
-}
-
-internal readonly ref struct DisableZeroSelectCode
-{
-    private readonly IZeroSelectCodeDisabler Obj;
-    internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
-    {
-        Obj = obj;
-        Obj.ZeroSelectCodeDisabledCount++;
-    }
-
-    public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
-}
-
-#endregion
-
-public interface IDarkContextMenuOwner
-{
-    bool ViewBlocked { get; }
-    IContainer GetComponents();
-}
-
 public interface ISettingsChangeableWindow
 {
     void Localize();
     void SetTheme(VisualTheme theme);
     void SetWaitCursor(bool value);
-}
-
-public interface IDarkable
-{
-    bool DarkModeEnabled { set; }
 }
 
 public interface ISplashScreen
@@ -124,27 +93,6 @@ public interface ISplashScreen
 public interface ISplashScreen_Safe
 {
     void Hide();
-}
-
-public interface IListControlWithBackingItems
-{
-    void AddFullItem(string backingItem, string item);
-    void ClearFullItems();
-
-    #region Disabled until needed
-
-#if false
-
-    int BackingIndexOf(string item);
-    string SelectedBackingItem();
-    void SelectBackingIndexOf(string item);
-
-#endif
-
-    #endregion
-
-    void BeginUpdate();
-    void EndUpdate();
 }
 
 public interface IViewEnvironment
@@ -168,7 +116,7 @@ public interface IDialogs
     (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
 }
 
-public interface IView : ISettingsChangeableWindow, IEventDisabler, IDarkContextMenuOwner, IZeroSelectCodeDisabler
+public interface IView : ISettingsChangeableWindow, IEventDisabler
 {
 #if !ReleaseBeta && !ReleasePublic
     void UpdateGameScreenShotModes();

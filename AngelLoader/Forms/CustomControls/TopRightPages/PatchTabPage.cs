@@ -199,7 +199,7 @@ public sealed class PatchTabPage : Lazy_TabsBase
         _page.PatchDMLsListBox.RemoveAndSelectNearest();
     }
 
-    // @VBL
+    // @ViewBusinessLogic(PatchAddDMLButton_Click)
     private void PatchAddDMLButton_Click(object sender, EventArgs e)
     {
         var dmlFiles = new List<string>();

@@ -270,7 +270,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
         AddTagOperation(_owner.FMsDGV.GetMainSelectedFM(), _page.AddTagTextBox.Text);
     }
 
-    // @VBL (AddTagFromListButton_Click - lots of menu items and event hookups)
+    // @ViewBusinessLogic (AddTagFromListButton_Click - lots of menu items and event hookups)
     private void AddTagFromListButton_Click(object sender, EventArgs e)
     {
         GlobalTags.SortAndMoveMiscToEnd();

@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-// @VBL: Lots of it in the lazy-loaded top-right tabs now.
+// @ViewBusinessLogic: Lots of it in the lazy-loaded top-right tabs now.
 public class Lazy_TabsBase : DarkTabPageCustom
 {
     private protected MainForm _owner = null!;

@@ -67,7 +67,7 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
+public sealed partial class MainForm : DarkFormBase, IView, IDarkContextMenuOwner, IZeroSelectCodeDisabler, IMessageFilter
 {
     #region Private fields
 
@@ -997,7 +997,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     }
 
     // This one can't be multithreaded because it depends on the FMs list
-    // @VBL
+    // @ViewBusinessLogic(FinishInitAndShow)
     public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
     {
         _splashScreen = splashScreen;
@@ -3354,7 +3354,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
         var filterMatches = Core.SetFilter();
 
-        // @VBL egregious
+        // @ViewBusinessLogic(SortAndSetFilter) - egregious
         if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
         {
             bool foundUnTopped = false;
@@ -4334,7 +4334,7 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
 
                 for (int i = 0; i < selRowsCount; i++)
                 {
-                    // @VBL(Multisel state updater):
+                    // @ViewBusinessLogic(Multisel state updater):
                     // This whole stuff is business logic but it's the direct access of the DGV rows that
                     // prevents us from extracting it out without taking a large allocation hit
                     FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
