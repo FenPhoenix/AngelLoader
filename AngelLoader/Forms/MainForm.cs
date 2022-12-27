@@ -4505,6 +4505,8 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
         UpdateTopRightTabs();
     }
 
+    #region Readme
+
     public void ClearReadmesList()
     {
         using (new DisableEvents(this))
@@ -4612,6 +4614,8 @@ public sealed partial class MainForm : DarkFormBase, IView, IMessageFilter
     }
 
     public void SetSelectedReadmeEncoding(Encoding encoding) => Lazy_ReadmeEncodingsMenu.SetMenuItemChecked(encoding);
+
+    #endregion
 
     #endregion
 
