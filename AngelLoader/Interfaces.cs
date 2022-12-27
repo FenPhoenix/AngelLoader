@@ -7,10 +7,6 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-// @CoreViewKnowledge: DisableEvents shouldn't be known about by the business logic, but:
-// We need this one call in RefreshFMsListFromDisk() and finagling it out is tricky due to reasons involving
-// FindFMs.Find() setting row count to 0 and blah.
-
 public interface ISettingsChangeableView
 {
     void Localize();
