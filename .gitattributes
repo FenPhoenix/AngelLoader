@@ -8,6 +8,7 @@ AngelLoader_Stub/*.h linguist-language=C++
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
+*.bat eol=crlf
 
 ###############################################################################
 # Set default behavior for command prompt diff.
