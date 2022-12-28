@@ -40,6 +40,8 @@ Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/r
 .NET Framework 4.7.2 or above is required. All modern versions of Windows should come with this already.
 
 ## Building
+- Use Visual Studio 2022, .NET Framework 4.7.2 targeting, also going to need the C++ workload installed.
+- Use Release_Public / x86 for the standard AngelLoader build. See [here](https://github.com/FenPhoenix/AngelLoader/blob/master/FOR_OTHER_PROGRAMMERS.md) for an explanation of the other profiles. x64 is believed to work fine if you want to try that, but it has not been tested nearly as much as the x86 build.
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
 ## License
