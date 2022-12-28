@@ -34,7 +34,8 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         public override Color ButtonCheckedHighlightBorder => DarkColors.BlueHighlight;
     }
 
-    private readonly DarkModeToolStripColorTable _colorTable = new();
+    // Static - we CAN cache the color table at least
+    private static readonly DarkModeToolStripColorTable _colorTable = new();
 
     private bool _darkModeEnabled;
     [PublicAPI]
