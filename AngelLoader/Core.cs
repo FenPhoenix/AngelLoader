@@ -2499,8 +2499,6 @@ internal static class Core
 
         #region Mods
 
-        // @vNext: BUG: The mods at the end of the list swap order every time it's run, due to the put-at-the-end thing we do here
-        // Use a temp list and then copy it back to the end to preserve the order
         if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex))
         {
             List<Mod> mods = Config.GetMods(gameIndex);
@@ -2509,14 +2507,24 @@ internal static class Core
 
             if (allDisabled) fm.DisabledMods = "";
 
+            // @MEM: If we're really bothered by this we could figure out how not to allocate it every time but meh
+            var tempList = new List<Mod>(mods.Count);
+
             for (int i = 0; i < mods.Count; i++)
             {
                 Mod mod = mods[i];
                 if (mod.IsUber)
                 {
                     mods.RemoveAt(i);
-                    mods.Add(mod);
+                    i--;
+                    tempList.Add(mod);
                 }
+            }
+
+            // Use a temp list to prevent the order of the moved-to-the-end mods being swapped every time we run
+            for (int i = 0; i < tempList.Count; i++)
+            {
+                mods.Add(tempList[i]);
             }
 
             for (int i = 0; i < mods.Count; i++)
