@@ -2499,6 +2499,8 @@ internal static class Core
 
         #region Mods
 
+        // @vNext: BUG: The mods at the end of the list swap order every time it's run, due to the put-at-the-end thing we do here
+        // Use a temp list and then copy it back to the end to preserve the order
         if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex))
         {
             List<Mod> mods = Config.GetMods(gameIndex);
