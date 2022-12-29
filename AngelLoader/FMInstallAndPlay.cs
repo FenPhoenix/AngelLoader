@@ -59,6 +59,39 @@ internal static class FMInstallAndPlay
         (byte)'M'
     };
 
+    private static readonly byte[] _FINGERPRINT_Bytes =
+    {
+        (byte)'\n',
+        (byte)'F',
+        (byte)'I',
+        (byte)'N',
+        (byte)'G',
+        (byte)'E',
+        (byte)'R',
+        (byte)'P',
+        (byte)'R',
+        (byte)'I',
+        (byte)'N',
+        (byte)'T'
+    };
+
+    private static readonly byte[] _notFINGERPRINT_Bytes =
+    {
+        (byte)'\n',
+        (byte)'!',
+        (byte)'F',
+        (byte)'I',
+        (byte)'N',
+        (byte)'G',
+        (byte)'E',
+        (byte)'R',
+        (byte)'P',
+        (byte)'R',
+        (byte)'I',
+        (byte)'N',
+        (byte)'T'
+    };
+
     private static Encoding? _utf8NoBOM;
     private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
 
@@ -222,6 +255,19 @@ internal static class FMInstallAndPlay
         (bool success, string gameExe, string gamePath) =
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
         if (!success) return false;
+
+        var unFingerprintedDMLs = CheckForUnFingerprintedDMLs(fm);
+        if (unFingerprintedDMLs.Found)
+        {
+            // @vNext: Disable this for perf testing
+            // @vNext: Make this into a proper dialog with explanations and choice buttons etc.
+#if false
+            Core.Dialogs.ShowAlert(
+                "Unfingerprinted dmls found:\r\n\r\n" + unFingerprintedDMLs.FileMessage,
+                LText.AlertMessages.Alert);
+#endif
+            return false;
+        }
 
         Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
@@ -1096,6 +1142,139 @@ internal static class FMInstallAndPlay
                 "This may cause black-and-white OldDark missions to have some objects in color.");
             return false;
         }
+    }
+
+    // @vNext(Check DML fingerprint):
+    // -Test with all error cases
+    // -Return a list of filenames instead of a string, so we can put them a list dialog or whatever
+    private static (bool Found, string FileMessage) CheckForUnFingerprintedDMLs(FanMission fm)
+    {
+        var foundNone = (false, "");
+
+        if (!fm.Game.ConvertsToDark(out GameIndex gameIndex)) return foundNone;
+
+        string gamePath = Config.GetGamePath(gameIndex);
+        if (gamePath.IsEmpty() || !Directory.Exists(gamePath)) return foundNone;
+        string? fmInstalledPath = null;
+        try
+        {
+            string fmsPath = Config.GetFMInstallPath(gameIndex);
+            if (!fmsPath.IsEmpty())
+            {
+                fmInstalledPath = Path.Combine(fmsPath, fm.InstalledDir);
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+
+        List<Mod> mods = Config.GetMods(gameIndex);
+        var misDotDmlFiles = new List<string>();
+
+        try
+        {
+            misDotDmlFiles.AddRange(FastIO.GetFilesTopOnly(gamePath, "*.mis.dml", pathIsKnownValid: true));
+        }
+        catch
+        {
+            // ignore
+        }
+
+        for (int modIndex = 0; modIndex < mods.Count; modIndex++)
+        {
+            Mod mod = mods[modIndex];
+            // Don't check files, cause zip/7z would be too slow to do a dml fingerprint check on
+            if (TryCombineDirectoryPathAndCheckExistence(gamePath, mod.InternalName, out string modPath) &&
+                (fmInstalledPath?.PathEqualsI(modPath) != true))
+            {
+                string[] dmls = Directory.GetFiles(modPath, "*.mis.dml", SearchOption.AllDirectories);
+                for (int dmlIndex = 0; dmlIndex < dmls.Length; dmlIndex++)
+                {
+                    string dml = dmls[dmlIndex];
+                    // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                    if (dml.EndsWithI(".mis.dml"))
+                    {
+                        misDotDmlFiles.Add(dml);
+                    }
+                }
+            }
+        }
+
+        // @vNext: If one match fails the criteria, continue searching rather than returning false right away
+        static bool FingerprintFound(byte[] haystack, byte[] needle)
+        {
+            int fingerprintIndex = FindIndexOfByteSequence(haystack, needle);
+            if (fingerprintIndex > -1)
+            {
+                for (int i = fingerprintIndex + needle.Length; i < haystack.Length; i++)
+                {
+                    char c = (char)haystack[i];
+                    if (c is '\r' or '\n')
+                    {
+                        return true;
+                    }
+                    else if (!char.IsWhiteSpace(c))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        var unFingerprintedDMLs = new List<string>();
+
+        foreach (string dml in misDotDmlFiles)
+        {
+            /*
+            @vNext: Use this to cut out all like "act_miss20.mis.dml" in T2FMDML\dbmods\miss_all
+            We're between 50-120ms (cache cold, and depending on SSD vs. HDD) if we don't use this; if we do
+            we're a handful of ms. But... it's kinda some 1980s-type shortcutty "optimization" here...
+
+            Just going on the fact that per-FM dmls are going to be named the exact .mis name and then .dml (per 
+            spec), and SS2 mis files can be named whatever, but are extremely unlikely to be named "blah_miss20.mis"
+            for example. And anyone calling a file something other than an exact .mis name is surely intending it
+            to either be global, or to contain a FINGERPRINT section to make it not be global.
+            Exceedingly unlikely for someone to make a non-exact-mis named dml file without a FINGERPRINT section
+            and intend it to be per-FM.
+            So this is a fairly safe optimization really, but we should decide if we want to keep it.
+            */
+#if false
+            if (Regex.Match(dml, @"\w+_miss[0123456789]+\.mis\.dml$").Success)
+            {
+                continue;
+            }
+#endif
+
+            try
+            {
+                byte[] bytes = File.ReadAllBytes(dml);
+                bool fingerprintFound = FingerprintFound(bytes, _FINGERPRINT_Bytes) ||
+                                        FingerprintFound(bytes, _notFINGERPRINT_Bytes);
+
+                if (!fingerprintFound)
+                {
+                    unFingerprintedDMLs.Add(dml);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        if (unFingerprintedDMLs.Count == 0) return foundNone;
+
+        string filesMsg = "";
+        foreach (string item in unFingerprintedDMLs)
+        {
+            if (!filesMsg.IsEmpty()) filesMsg += "\r\n";
+            filesMsg += item;
+        }
+
+        return (true, filesMsg);
     }
 
     #endregion
