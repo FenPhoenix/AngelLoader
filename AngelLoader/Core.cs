@@ -816,6 +816,29 @@ internal static class Core
             }
 
             Config.SetMods(gameIndex, mods ?? new List<Mod>());
+
+            List<Mod> configMods = Config.GetMods(gameIndex);
+            if (configMods.Count > 0)
+            {
+                var tempList = new List<Mod>(configMods.Count);
+
+                for (int i = 0; i < configMods.Count; i++)
+                {
+                    Mod mod = configMods[i];
+                    if (mod.IsUber)
+                    {
+                        configMods.RemoveAt(i);
+                        i--;
+                        tempList.Add(mod);
+                    }
+                }
+
+                // Use a temp list to prevent any issues with in-place moving in a loop
+                for (int i = 0; i < tempList.Count; i++)
+                {
+                    configMods.Add(tempList[i]);
+                }
+            }
         }
         else
         {
@@ -2501,32 +2524,11 @@ internal static class Core
 
         if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex))
         {
-            List<Mod> mods = Config.GetMods(gameIndex);
-
             bool allDisabled = fm.DisableAllMods;
 
             if (allDisabled) fm.DisabledMods = "";
 
-            // @MEM: If we're really bothered by this we could figure out how not to allocate it every time but meh
-            var tempList = new List<Mod>(mods.Count);
-
-            for (int i = 0; i < mods.Count; i++)
-            {
-                Mod mod = mods[i];
-                if (mod.IsUber)
-                {
-                    mods.RemoveAt(i);
-                    i--;
-                    tempList.Add(mod);
-                }
-            }
-
-            // Use a temp list to prevent the order of the moved-to-the-end mods being swapped every time we run
-            for (int i = 0; i < tempList.Count; i++)
-            {
-                mods.Add(tempList[i]);
-            }
-
+            List<Mod> mods = Config.GetMods(gameIndex);
             for (int i = 0; i < mods.Count; i++)
             {
                 Mod mod = mods[i];
