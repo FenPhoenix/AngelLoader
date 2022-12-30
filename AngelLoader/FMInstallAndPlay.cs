@@ -59,6 +59,8 @@ internal static class FMInstallAndPlay
         (byte)'M'
     };
 
+    // @vNext: Search backward from match so we don't need these two slightly different ones
+    // (though even with the double search we're still extremely fast)
     private static readonly byte[] _FINGERPRINT_Bytes =
     {
         (byte)'\n',
@@ -1146,7 +1148,7 @@ internal static class FMInstallAndPlay
 
     // @vNext(Check DML fingerprint):
     // -Test with all error cases
-    // -Return a list of filenames instead of a string, so we can put them a list dialog or whatever
+    // -Return a list of filenames instead of a string, so we can put them in a list dialog or whatever
     private static (bool Found, string FileMessage) CheckForUnFingerprintedDMLs(FanMission fm)
     {
         var foundNone = (false, "");
@@ -1201,11 +1203,10 @@ internal static class FMInstallAndPlay
             }
         }
 
-        // @vNext: If one match fails the criteria, continue searching rather than returning false right away
         static bool FingerprintFound(byte[] haystack, byte[] needle)
         {
-            int fingerprintIndex = FindIndexOfByteSequence(haystack, needle);
-            if (fingerprintIndex > -1)
+            int fingerprintIndex = 0;
+            while ((fingerprintIndex = FindIndexOfByteSequence(haystack, needle, fingerprintIndex)) > -1)
             {
                 for (int i = fingerprintIndex + needle.Length; i < haystack.Length; i++)
                 {
@@ -1216,7 +1217,8 @@ internal static class FMInstallAndPlay
                     }
                     else if (!char.IsWhiteSpace(c))
                     {
-                        return false;
+                        fingerprintIndex = i;
+                        break;
                     }
                 }
             }
@@ -1250,6 +1252,8 @@ internal static class FMInstallAndPlay
 
             try
             {
+                // ReadAllBytes is the fastest way to read a file: one buffer allocation and no character encoding
+                // conversion. Since we could be opening an arbitrarily large number of files, we want to be FAST.
                 byte[] bytes = File.ReadAllBytes(dml);
                 bool fingerprintFound = FingerprintFound(bytes, _FINGERPRINT_Bytes) ||
                                         FingerprintFound(bytes, _notFINGERPRINT_Bytes);
