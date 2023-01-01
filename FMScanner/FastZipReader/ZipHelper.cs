@@ -74,25 +74,6 @@ public sealed class ZipReusableBundle : IDisposable
         return (ushort)((uint)_buffer[0] | (uint)_buffer[1] << 8);
     }
 
-    #region Disabled until needed
-
-#if false
-
-    /// <summary>Reads a 4-byte signed integer from the current stream and advances the current position of the stream by four bytes.</summary>
-    /// <returns>A 4-byte signed integer read from the current stream.</returns>
-    /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    internal int ReadInt32(Stream stream)
-    {
-        FillBuffer(stream, 4);
-        return (int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24;
-    }
-
-#endif
-
-    #endregion
-
     /// <summary>Reads a 4-byte unsigned integer from the current stream and advances the position of the stream by four bytes.</summary>
     /// <returns>A 4-byte unsigned integer read from this stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
@@ -103,25 +84,6 @@ public sealed class ZipReusableBundle : IDisposable
         FillBuffer(stream, 4);
         return (uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
     }
-
-    #region Disabled until needed
-
-#if false
-
-    /// <summary>Reads an 8-byte signed integer from the current stream and advances the current position of the stream by eight bytes.</summary>
-    /// <returns>An 8-byte signed integer read from the current stream.</returns>
-    /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    internal long ReadInt64(Stream stream)
-    {
-        FillBuffer(stream, 8);
-        return (long)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (long)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
-    }
-
-#endif
-
-    #endregion
 
     /// <summary>Reads an 8-byte unsigned integer from the current stream and advances the position of the stream by eight bytes.</summary>
     /// <returns>An 8-byte unsigned integer read from this stream.</returns>
@@ -138,78 +100,54 @@ public sealed class ZipReusableBundle : IDisposable
     /// <param name="stream"></param>
     /// <param name="count">The number of bytes to read. This value must be 0 or a non-negative number or an exception will occur.</param>
     /// <returns>A byte array containing data read from the underlying stream. This might be less than the number of bytes requested if the end of the stream is reached.</returns>
-    /// <exception cref="T:System.ArgumentException">The number of decoded characters to read is greater than <paramref name="count" />. This can happen if a Unicode decoder returns fallback characters or a surrogate pair.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.ArgumentOutOfRangeException">
     /// <paramref name="count" /> is negative.</exception>
-    internal static byte[] ReadBytes(Stream stream, int count)
+    internal static byte[] ReadBytes_UShort(Stream stream, ushort count)
     {
-        if (count < 0)
-        {
-            ThrowHelper.ArgumentOutOfRange(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
-        }
-        if (count == 0)
-        {
-            return Array.Empty<byte>();
-        }
+        // ushort because that's all we ever call it with, and then we also don't need to do the negative check.
+        if (count == 0) return Array.Empty<byte>();
 
-        byte[] numArray = new byte[count];
+        int countInternal = count;
+        byte[] numArray = new byte[countInternal];
         int length = 0;
+
         do
         {
-            int num = stream.Read(numArray, length, count);
+            int num = stream.Read(numArray, length, countInternal);
             if (num != 0)
             {
                 length += num;
-                count -= num;
+                countInternal -= num;
             }
             else
             {
                 break;
             }
-        }
-        while (count > 0);
+        } while (countInternal > 0);
+
         if (length != numArray.Length)
         {
             byte[] dst = new byte[length];
             Buffer.BlockCopy(numArray, 0, dst, 0, length);
             numArray = dst;
         }
+
         return numArray;
     }
 
-    /// <summary>Fills the internal buffer with the specified number of bytes read from the stream.</summary>
-    /// <param name="stream"></param>
-    /// <param name="numBytes">The number of bytes to be read.</param>
-    /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached before <paramref name="numBytes" /> could be read.</exception>
-    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">Requested <paramref name="numBytes" /> is larger than the internal buffer size.</exception>
     private void FillBuffer(Stream stream, int numBytes)
     {
-        if (numBytes < 0 || numBytes > _buffer.Length)
-        {
-            ThrowHelper.ArgumentOutOfRange(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
-        }
-
         int offset = 0;
 
-        if (numBytes == 1)
+        do
         {
-            int num = stream.ReadByte();
-            if (num == -1) ThrowHelper.EndOfFile();
-            _buffer[0] = (byte)num;
+            int num = stream.Read(_buffer, offset, numBytes - offset);
+            if (num == 0) ThrowHelper.EndOfFile();
+            offset += num;
         }
-        else
-        {
-            do
-            {
-                int num = stream.Read(_buffer, offset, numBytes - offset);
-                if (num == 0) ThrowHelper.EndOfFile();
-                offset += num;
-            }
-            while (offset < numBytes);
-        }
+        while (offset < numBytes);
     }
 
     public void Dispose() => ArchiveSubReadStream.Dispose();
