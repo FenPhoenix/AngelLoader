@@ -59,7 +59,7 @@ public sealed class ZipReusableBundle : IDisposable
     {
         // Avoid calling Read() because it allocates a 1-byte buffer every time (ridiculous)
         int num = stream.Read(_buffer, 0, 1);
-        if (num == -1) ThrowHelper.EndOfFile();
+        if (num <= 0) ThrowHelper.EndOfFile();
         return (byte)num;
     }
 
