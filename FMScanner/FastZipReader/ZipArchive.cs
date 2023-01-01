@@ -277,7 +277,7 @@ public sealed class ZipArchiveFast : IDisposable
 
                         if (currentHeader.DiskNumberStart != _numberOfThisDisk)
                         {
-                            UnopenableArchives[entry] = SR.SplitSpanned;
+                            throw new InvalidDataException(SR.SplitSpanned);
                         }
                         else
                         {
