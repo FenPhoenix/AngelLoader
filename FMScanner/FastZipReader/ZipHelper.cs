@@ -26,7 +26,14 @@ public sealed class ZipCompressionMethodException : Exception
 
 internal static class ThrowHelper
 {
+    internal static void ArgumentOutOfRange(string paramName, string message) => throw new ArgumentOutOfRangeException(paramName, message);
     internal static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
+    internal static void InvalidData(string message) => throw new InvalidDataException(message);
+    internal static void IOException(string message) => throw new IOException(message);
+    internal static void NotSupported(string message) => throw new NotSupportedException(message);
+    internal static void ReadModeCapabilities() => throw new ArgumentException(SR.ReadModeCapabilities);
+    internal static void SplitSpanned() => throw new InvalidDataException(SR.SplitSpanned);
+    internal static void ZipCompressionMethodException(string message) => throw new ZipCompressionMethodException(message);
 }
 
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
@@ -140,7 +147,7 @@ public sealed class ZipReusableBundle : IDisposable
     {
         if (count < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
+            ThrowHelper.ArgumentOutOfRange(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
         }
         if (count == 0)
         {
@@ -182,7 +189,7 @@ public sealed class ZipReusableBundle : IDisposable
     {
         if (numBytes < 0 || numBytes > _buffer.Length)
         {
-            throw new ArgumentOutOfRangeException(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
+            ThrowHelper.ArgumentOutOfRange(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
         }
 
         int offset = 0;
@@ -270,7 +277,7 @@ internal static class ZipHelpers
             // streams, when checking the ~1600 set.
             // 2041 allocations of (4096 + 12 overhead per array object) = 8,384,428 bytes
             int bytesRead = stream.Read(buffer, totalBytesRead, bytesLeftToRead);
-            if (bytesRead == 0) throw new IOException(SR.UnexpectedEndOfStream);
+            if (bytesRead == 0) ThrowHelper.IOException(SR.UnexpectedEndOfStream);
 
             totalBytesRead += bytesRead;
             bytesLeftToRead -= bytesRead;
@@ -330,7 +337,7 @@ internal static class ZipHelpers
             bundle.ThrowawayBuffer.Clear();
             int numBytesToSkip = numBytesLeft > ZipReusableBundle.ThrowAwayBufferSize ? ZipReusableBundle.ThrowAwayBufferSize : (int)numBytesLeft;
             int numBytesActuallySkipped = stream.Read(bundle.ThrowawayBuffer, 0, numBytesToSkip);
-            if (numBytesActuallySkipped == 0) throw new IOException(SR.UnexpectedEndOfStream);
+            if (numBytesActuallySkipped == 0) ThrowHelper.IOException(SR.UnexpectedEndOfStream);
             numBytesLeft -= numBytesActuallySkipped;
         }
     }

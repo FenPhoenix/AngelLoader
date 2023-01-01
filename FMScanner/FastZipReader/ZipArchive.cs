@@ -117,7 +117,7 @@ public sealed class ZipArchiveFast : IDisposable
 
             if (!stream.CanRead)
             {
-                throw new ArgumentException(SR.ReadModeCapabilities);
+                ThrowHelper.ReadModeCapabilities();
             }
             if (!stream.CanSeek)
             {
@@ -163,7 +163,7 @@ public sealed class ZipArchiveFast : IDisposable
     {
         ThrowIfDisposed();
 
-        if (!IsOpenable(entry, out string message)) throw new InvalidDataException(message);
+        if (!IsOpenable(entry, out string message)) ThrowHelper.InvalidData(message);
 
         // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
@@ -277,7 +277,7 @@ public sealed class ZipArchiveFast : IDisposable
 
                         if (currentHeader.DiskNumberStart != _numberOfThisDisk)
                         {
-                            throw new InvalidDataException(SR.SplitSpanned);
+                            ThrowHelper.SplitSpanned();
                         }
                         else
                         {
@@ -294,14 +294,14 @@ public sealed class ZipArchiveFast : IDisposable
                                         UnopenableArchives[entry] = msg;
                                         if (!_allowUnsupportedEntries)
                                         {
-                                            throw new ZipCompressionMethodException(msg);
+                                            ThrowHelper.ZipCompressionMethodException(msg);
                                         }
                                         break;
                                     default:
                                         UnopenableArchives[entry] = SR.UnsupportedCompression;
                                         if (!_allowUnsupportedEntries)
                                         {
-                                            throw new ZipCompressionMethodException(SR.UnsupportedCompression);
+                                            ThrowHelper.ZipCompressionMethodException(SR.UnsupportedCompression);
                                         }
                                         break;
                                 }
@@ -349,14 +349,14 @@ public sealed class ZipArchiveFast : IDisposable
 
             if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
             {
-                throw new InvalidDataException(SR.SplitSpanned);
+                ThrowHelper.SplitSpanned();
             }
 
             _numberOfThisDisk = eocd.NumberOfThisDisk;
             _centralDirectoryStart = eocd.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
             if (eocd.NumberOfEntriesInTheCentralDirectory != eocd.NumberOfEntriesInTheCentralDirectoryOnThisDisk)
             {
-                throw new InvalidDataException(SR.SplitSpanned);
+                ThrowHelper.SplitSpanned();
             }
             _expectedNumberOfEntries = eocd.NumberOfEntriesInTheCentralDirectory;
 
@@ -403,7 +403,7 @@ public sealed class ZipArchiveFast : IDisposable
                     }
                     if (record.NumberOfEntriesTotal != record.NumberOfEntriesOnThisDisk)
                     {
-                        throw new InvalidDataException(SR.SplitSpanned);
+                        ThrowHelper.SplitSpanned();
                     }
 
                     _expectedNumberOfEntries = (long)record.NumberOfEntriesTotal;

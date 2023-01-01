@@ -75,7 +75,7 @@ public sealed class SubReadStream : Stream
 
         if (origin != SeekOrigin.Current)
         {
-            throw new NotSupportedException(SR.SeekingNotSupported);
+            ThrowHelper.NotSupported(SR.SeekingNotSupported);
         }
 
         if (_superStream.Position != _positionInSuperStream)
