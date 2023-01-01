@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
@@ -144,6 +145,67 @@ public static class Common
     #endregion
 
     #region Methods
+
+    private static bool? _fieldStreamBufferFieldFound;
+    private static FieldInfo? _fieldStreamBufferFieldInfo;
+
+    public static FileStream GetFileStreamFast(string path, byte[] buffer)
+    {
+        buffer.Clear();
+
+
+        if (_fieldStreamBufferFieldFound == null)
+        {
+            try
+            {
+                // @NET5(FileStream buffering): Newer .NETs (since the FileStream "strategy" additions) are totally different
+                // We'd have to see if they added a way to pass in a buffer, and if not, we'd have to write totally
+                // different code to get at the buffer here for newer .NETs.
+                _fieldStreamBufferFieldInfo = typeof(FileStream)
+                    .GetField(
+                        "_buffer",
+                        BindingFlags.NonPublic | BindingFlags.Instance);
+
+                _fieldStreamBufferFieldFound = _fieldStreamBufferFieldInfo != null &&
+                                               _fieldStreamBufferFieldInfo.FieldType == typeof(byte[]);
+            }
+            catch
+            {
+                _fieldStreamBufferFieldFound = false;
+                _fieldStreamBufferFieldInfo = null;
+            }
+        }
+
+        var fs =
+            _fieldStreamBufferFieldFound == true
+                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
+                : new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        if (_fieldStreamBufferFieldFound == true)
+        {
+            try
+            {
+                _fieldStreamBufferFieldInfo?.SetValue(fs, buffer);
+            }
+            catch
+            {
+                _fieldStreamBufferFieldFound = false;
+                _fieldStreamBufferFieldInfo = null;
+            }
+        }
+
+        return fs;
+    }
+
+    public static StreamReader GetStreamReaderFast(string path, Encoding encoding, byte[] buffer)
+    {
+        return new StreamReader(GetFileStreamFast(path, buffer), encoding);
+    }
+
+    public static StreamReader GetStreamReaderFast(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, byte[] buffer)
+    {
+        return new StreamReader(GetFileStreamFast(path, buffer), encoding, detectEncodingFromByteOrderMarks);
+    }
 
     #region Stream reading
 

@@ -28,7 +28,7 @@
     License: http://www.opensource.org/licenses/mit-license.php
     Website: https://github.com/khalidsalomao/SimpleHelpers.Net
 
-    Modified by FenPhoenix 2020-2022
+    Modified by FenPhoenix 2020-2023
  */
 #endregion
 
@@ -78,6 +78,7 @@ public sealed class FileEncoding
     private string? _encodingName;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[16 * 1024];
+    private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
     private bool _canBeASCII = true;
 
     /// <summary>
@@ -87,7 +88,7 @@ public sealed class FileEncoding
     /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
     public Encoding? DetectFileEncoding(string inputFilename)
     {
-        using var stream = new FileStream(inputFilename, FileMode.Open, FileAccess.Read, FileShare.Read, DEFAULT_BUFFER_SIZE);
+        using var stream = Common.GetFileStreamFast(inputFilename, _fileStreamBuffer);
         return DetectFileEncoding(stream);
     }
 

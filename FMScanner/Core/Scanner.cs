@@ -112,6 +112,9 @@ public sealed partial class Scanner : IDisposable
 #endif
         _scanOptions.ScanGameType) && !_ss2Fingerprinted;
 
+    private byte[]? _diskFileStreamBuffer;
+    private byte[] DiskFileStreamBuffer => _diskFileStreamBuffer ??= new byte[4096];
+
     #endregion
 
     #region Private classes
@@ -790,7 +793,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    _archive = new ZipArchiveFast(File.OpenRead(fm.Path), _zipBundle, allowUnsupportedEntries: false);
+                    _archive = new ZipArchiveFast(GetFileStreamFast(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
 
                     // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                     // thrown while loading them. If this passes, we're definitely good.
@@ -2653,7 +2656,7 @@ public sealed partial class Scanner : IDisposable
                 byte[]? rtfHeader;
                 using (var br = _fmIsZip
                            ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
-                           : new BinaryReader(File.OpenRead(readmeFileOnDisk), Encoding.ASCII, leaveOpen: false))
+                           : new BinaryReader(GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, leaveOpen: false))
                 {
                     // stupid micro-optimization
                     const int rtfHeaderBytesLength = 6;
@@ -2679,7 +2682,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else
                     {
-                        using var fs = File.OpenRead(readmeFileOnDisk);
+                        using var fs = GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer);
                         (success, text) = RtfConverter.Convert(fs, readmeFileLen);
                     }
 
@@ -3809,7 +3812,7 @@ public sealed partial class Scanner : IDisposable
 
         using (var br = _fmIsZip
                    ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
-                   : new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, false))
+                   : new BinaryReader(GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, false))
         {
             for (int i = 0; i < _locations.Length; i++)
             {
@@ -3944,7 +3947,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
-            using var br = new BinaryReader(File.OpenRead(misFileOnDisk), Encoding.ASCII, leaveOpen: false);
+            using var br = new BinaryReader(GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, leaveOpen: false);
 
             uint tocOffset = br.ReadUInt32();
 
@@ -4000,7 +4003,7 @@ public sealed partial class Scanner : IDisposable
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
         if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : File.OpenRead(misFileOnDisk);
+            using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
             if (StreamContainsIdentString(
                     stream,
                     MAPPARAM,
@@ -4172,7 +4175,7 @@ public sealed partial class Scanner : IDisposable
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        using var sr = new StreamReader(file, encoding);
+        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
         return sr.ReadToEnd();
     }
 
@@ -4218,7 +4221,7 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>();
 
-        using var sr = new StreamReader(file, encoding);
+        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4238,11 +4241,11 @@ public sealed partial class Scanner : IDisposable
         return lines;
     }
 
-    private static List<string> ReadAllLines(string file, Encoding encoding)
+    private List<string> ReadAllLines(string file, Encoding encoding)
     {
         var lines = new List<string>();
 
-        using var sr = new StreamReader(file, encoding, false);
+        using var sr = GetStreamReaderFast(file, encoding, false, DiskFileStreamBuffer);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
