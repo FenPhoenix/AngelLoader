@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using FMScanner.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -167,16 +166,16 @@ public sealed class ZipArchiveFast : IDisposable
 
         _bundle.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
 
-        return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream);
+        return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream, _bundle.InflateBuffer);
     }
 
-    private static Stream GetDataDecompressor(ZipArchiveEntry entry, SubReadStream compressedStreamToRead)
+    private static Stream GetDataDecompressor(ZipArchiveEntry entry, SubReadStream compressedStreamToRead, byte[] buffer)
     {
         Stream uncompressedStream;
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
-                uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress);
+                uncompressedStream = new DeflateStreamFast(compressedStreamToRead, buffer);
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode

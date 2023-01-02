@@ -1774,6 +1774,30 @@ public sealed partial class Scanner : IDisposable
                    (path[len - 1] == 'n' || path[len - 1] == 'N');
         }
 
+        static bool FileExtensionFound(string fn, string[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (fn.EndsWithI(array[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool BaseDirScriptFileExtensions(List<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
+        {
+            for (int i = 0; i < baseDirFiles.Count; i++)
+            {
+                if (scriptFileExtensions.ContainsI(Path.GetExtension(baseDirFiles[i].Name)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         if (_fmIsZip || _fmDirFileInfos.Count > 0)
         {
             int filesCount = _fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count;
@@ -1889,7 +1913,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomMotions == null &&
                              fn.PathStartsWithI(FMDirs.MotionsS) &&
-                             MotionFileExtensions.Any(fn.EndsWithI))
+                             FileExtensionFound(fn, MotionFileExtensions))
                     {
                         fmd.HasCustomMotions = true;
                     }
@@ -1901,7 +1925,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomTextures == null &&
                              fn.PathStartsWithI(FMDirs.FamS) &&
-                             ImageFileExtensions.Any(fn.EndsWithI))
+                             FileExtensionFound(fn, ImageFileExtensions))
                     {
                         fmd.HasCustomTextures = true;
                     }
@@ -1919,7 +1943,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if ((fmd.HasCustomScripts == null &&
                               !fn.Rel_ContainsDirSep() &&
-                              ScriptFileExtensions.Any(fn.EndsWithI)) ||
+                              FileExtensionFound(fn, ScriptFileExtensions)) ||
                              (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                               fn.HasFileExtension()))
                     {
@@ -2085,7 +2109,7 @@ public sealed partial class Scanner : IDisposable
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
-                            baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
+                            BaseDirScriptFileExtensions(baseDirFiles, ScriptFileExtensions) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
                              FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
 
@@ -2163,13 +2187,39 @@ public sealed partial class Scanner : IDisposable
         if (stringsDirFiles.Count > 0)
         {
             // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
-            missFlag =
-                stringsDirFiles.Find(static x =>
-                    x.Name.PathEqualsI(FMFiles.StringsMissFlag))
-                ?? stringsDirFiles.Find(static x =>
-                    x.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                ?? stringsDirFiles.Find(static x =>
-                    x.Name.PathEndsWithI(FMFiles.SMissFlag));
+            for (int i = 0; i < stringsDirFiles.Count; i++)
+            {
+                NameAndIndex item = stringsDirFiles[i];
+                if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
+                {
+                    missFlag = item;
+                    break;
+                }
+            }
+            if (missFlag == null)
+            {
+                for (int i = 0; i < stringsDirFiles.Count; i++)
+                {
+                    NameAndIndex item = stringsDirFiles[i];
+                    if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                    {
+                        missFlag = item;
+                        break;
+                    }
+                }
+            }
+            if (missFlag == null)
+            {
+                for (int i = 0; i < stringsDirFiles.Count; i++)
+                {
+                    NameAndIndex item = stringsDirFiles[i];
+                    if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
+                    {
+                        missFlag = item;
+                        break;
+                    }
+                }
+            }
         }
 
         if (missFlag != null)
@@ -3194,9 +3244,23 @@ public sealed partial class Scanner : IDisposable
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
         {
-            NameAndIndex? titlesFile = _fmIsZip
-                ? stringsDirFiles.Find(x => x.Name.PathEqualsI(titlesFileLocation))
-                : new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
+            NameAndIndex? titlesFile = null;
+            if (_fmIsZip)
+            {
+                for (int i = 0; i < stringsDirFiles.Count; i++)
+                {
+                    var item = stringsDirFiles[i];
+                    if (item.Name.PathEqualsI(titlesFileLocation))
+                    {
+                        titlesFile = item;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                titlesFile = new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
+            }
 
             if (titlesFile == null || (!_fmIsZip && !File.Exists(titlesFile.Name))) continue;
 
@@ -3223,6 +3287,18 @@ public sealed partial class Scanner : IDisposable
         // There's a way to do this with an IEqualityComparer, but no, for reasons
         var tfLinesD = new List<string>(titlesStrLines.Count);
 
+        static bool TFLinesDAny(string line, int indexOfColon, List<string> tfLinesD)
+        {
+            for (int i = 0; i < tfLinesD.Count; i++)
+            {
+                if (tfLinesD[i].StartsWithI(line.Substring(0, indexOfColon)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         for (int i = 0; i < titlesStrLines.Count; i++)
         {
             int indexOfColon;
@@ -3232,7 +3308,7 @@ public sealed partial class Scanner : IDisposable
                 line.StartsWithI("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
                 line.CharCountIsAtLeast('\"', 2) &&
-                !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, indexOfColon))))
+                !TFLinesDAny(line, indexOfColon, tfLinesD))
             {
                 tfLinesD.Add(line);
             }

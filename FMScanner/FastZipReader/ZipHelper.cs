@@ -51,6 +51,8 @@ public sealed class ZipReusableBundle : IDisposable
     internal readonly byte[] DataBuffer = new byte[ushort.MaxValue];
     internal readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
 
+    internal readonly byte[] InflateBuffer = new byte[DeflateStreamFast.DefaultBufferSize];
+
     private const int _backwardsSeekingBufferSize = 32;
     internal const int ThrowAwayBufferSize = 64;
 
@@ -103,47 +105,6 @@ public sealed class ZipReusableBundle : IDisposable
     {
         FillBuffer(stream, 8);
         return (ulong)(uint)((int)_buffer[4] | (int)_buffer[5] << 8 | (int)_buffer[6] << 16 | (int)_buffer[7] << 24) << 32 | (ulong)(uint)((int)_buffer[0] | (int)_buffer[1] << 8 | (int)_buffer[2] << 16 | (int)_buffer[3] << 24);
-    }
-
-    /// <summary>Reads the specified number of bytes from the current stream into a byte array and advances the current position by that number of bytes.</summary>
-    /// <param name="stream"></param>
-    /// <param name="count">The number of bytes to read. This value must be 0 or a non-negative number or an exception will occur.</param>
-    /// <returns>A byte array containing data read from the underlying stream. This might be less than the number of bytes requested if the end of the stream is reached.</returns>
-    /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">
-    /// <paramref name="count" /> is negative.</exception>
-    internal static byte[] ReadBytes_UShort(Stream stream, ushort count)
-    {
-        // ushort because that's all we ever call it with, and then we also don't need to do the negative check.
-        if (count == 0) return Array.Empty<byte>();
-
-        int countInternal = count;
-        byte[] numArray = new byte[countInternal];
-        int length = 0;
-
-        do
-        {
-            int num = stream.Read(numArray, length, countInternal);
-            if (num != 0)
-            {
-                length += num;
-                countInternal -= num;
-            }
-            else
-            {
-                break;
-            }
-        } while (countInternal > 0);
-
-        if (length != numArray.Length)
-        {
-            byte[] dst = new byte[length];
-            Buffer.BlockCopy(numArray, 0, dst, 0, length);
-            numArray = dst;
-        }
-
-        return numArray;
     }
 
     private void FillBuffer(Stream stream, int numBytes)

@@ -45,6 +45,4 @@ internal static class SR
     internal static readonly string WritingNotSupported = "This stream from ZipArchiveEntry does not support writing.";
     internal static readonly string Zip64EOCDNotWhereExpected = "Zip 64 End of Central Directory Record not where indicated.";
     internal static readonly string EOF_ReadBeyondEOF = "Unable to read beyond the end of the stream.";
-    internal static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
-    internal static readonly string ArgumentOutOfRange_BinaryReaderFillBuffer = "The number of bytes requested does not fit into BinaryReader's internal buffer.";
 }
