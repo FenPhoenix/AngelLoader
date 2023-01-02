@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using AL_Common;
+using static AL_Common.Common;
 
 namespace FMScanner.FastZipReader;
 
@@ -41,7 +42,7 @@ internal static class ThrowHelper
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
 public sealed class ZipReusableBundle : IDisposable
 {
-    internal readonly RTFParserBase.ListFast<ZipArchiveEntry> Entries = new(0);
+    internal readonly ListFast<ZipArchiveEntry> Entries = new(0);
 
     internal readonly SubReadStream ArchiveSubReadStream = new();
 

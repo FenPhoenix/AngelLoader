@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using AL_Common;
 using FMScanner.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
+using static AL_Common.Common;
 
 namespace FMScanner.FastZipReader;
 
@@ -247,7 +247,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
     /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
     [PublicAPI]
-    public RTFParserBase.ListFast<ZipArchiveEntry> Entries
+    public ListFast<ZipArchiveEntry> Entries
     {
         get
         {
