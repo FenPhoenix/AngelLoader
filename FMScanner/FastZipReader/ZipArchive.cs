@@ -6,10 +6,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using AL_Common;
 using FMScanner.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 
@@ -36,8 +36,6 @@ public sealed class ZipArchiveFast : IDisposable
     private Dictionary<ZipArchiveEntry, string>? _unopenableArchives;
     private Dictionary<ZipArchiveEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveEntry, string>();
 
-    private List<ZipArchiveEntry>? _entries;
-    private ReadOnlyCollection<ZipArchiveEntry>? _entriesCollection;
     private long _centralDirectoryStart; //only valid after ReadCentralDirectory
     private bool _isDisposed;
     private long _expectedNumberOfEntries;
@@ -66,8 +64,8 @@ public sealed class ZipArchiveFast : IDisposable
     /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
     /// entries with unsupported compression methods are found.
     /// </param>
-    public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) : this(stream,
-        new ZipReusableBundle(), disposeBundle: true, allowUnsupportedEntries)
+    public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) :
+        this(stream, new ZipReusableBundle(), disposeBundle: true, allowUnsupportedEntries)
     {
     }
 
@@ -86,8 +84,8 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     [PublicAPI]
-    public ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool allowUnsupportedEntries) : this(
-        stream, bundle, disposeBundle: false, allowUnsupportedEntries)
+    public ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool allowUnsupportedEntries) :
+        this(stream, bundle, disposeBundle: false, allowUnsupportedEntries)
     {
     }
 
@@ -240,6 +238,8 @@ public sealed class ZipArchiveFast : IDisposable
         return true;
     }
 
+    private bool _entriesInitialized;
+
     /// <summary>
     /// The collection of entries that are currently in the ZipArchive. This may not accurately represent the actual entries that are present in the underlying file or stream.
     /// </summary>
@@ -247,16 +247,26 @@ public sealed class ZipArchiveFast : IDisposable
     /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
     /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
     [PublicAPI]
-    public ReadOnlyCollection<ZipArchiveEntry> Entries
+    public RTFParserBase.ListFast<ZipArchiveEntry> Entries
     {
         get
         {
             ThrowIfDisposed();
 
-            if (_entries == null)
+            if (!_entriesInitialized)
             {
-                _entries = new List<ZipArchiveEntry>((int)_expectedNumberOfEntries);
-                _entriesCollection = new ReadOnlyCollection<ZipArchiveEntry>(_entries);
+                if (_bundle.Entries.Capacity > 25_000)
+                {
+                    _bundle.Entries.Capacity = 0;
+                    _bundle.Entries.Count = 0;
+                }
+
+                if (_bundle.Entries.Capacity < (int)_expectedNumberOfEntries)
+                {
+                    _bundle.Entries.Capacity = (int)_expectedNumberOfEntries;
+                }
+
+                _bundle.Entries.Count = (int)_expectedNumberOfEntries;
 
                 #region Read central directory
 
@@ -271,8 +281,26 @@ public sealed class ZipArchiveFast : IDisposable
                     //read the central directory
                     while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, _bundle, out var currentHeader))
                     {
-                        var entry = new ZipArchiveEntry(currentHeader);
-                        _entries.Add(entry);
+                        ZipArchiveEntry entry;
+                        if (_bundle.Entries.Count > numberOfEntries)
+                        {
+                            entry = _bundle.Entries[(int)numberOfEntries];
+                            if (entry == null!)
+                            {
+                                entry = new ZipArchiveEntry(currentHeader);
+                                _bundle.Entries[(int)numberOfEntries] = entry;
+                            }
+                            else
+                            {
+                                entry.Set(currentHeader);
+                            }
+                        }
+                        else
+                        {
+                            entry = new ZipArchiveEntry(currentHeader);
+                            _bundle.Entries.Add(entry);
+                        }
+
                         numberOfEntries++;
 
                         if (currentHeader.DiskNumberStart != _numberOfThisDisk)
@@ -319,10 +347,12 @@ public sealed class ZipArchiveFast : IDisposable
                     throw new InvalidDataException(SR.CentralDirectoryInvalid + "\r\nInner exception:\r\n" + ex);
                 }
 
+                _entriesInitialized = true;
+
                 #endregion
             }
 
-            return _entriesCollection!;
+            return _bundle.Entries;
         }
     }
 

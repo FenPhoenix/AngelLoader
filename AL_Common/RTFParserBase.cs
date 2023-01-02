@@ -150,7 +150,7 @@ public abstract partial class RTFParserBase
     /// </para>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    protected sealed class ListFast<T>
+    public sealed class ListFast<T>
     {
         public T[] ItemsArray;
         private int _itemsArrayLength;
@@ -159,6 +159,12 @@ public abstract partial class RTFParserBase
         /// Do not set from outside. Properties are slow.
         /// </summary>
         public int Count;
+
+        public T this[int index]
+        {
+            get => ItemsArray[index];
+            set => ItemsArray[index] = value;
+        }
 
         public ListFast(int capacity)
         {

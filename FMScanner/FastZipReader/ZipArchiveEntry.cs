@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using AL_Common;
 using JetBrains.Annotations;
@@ -13,8 +14,8 @@ public sealed class ZipArchiveEntry
 {
     #region Fields
 
-    internal readonly long OffsetOfLocalHeader;
-    internal readonly ZipArchiveFast.CompressionMethodValues CompressionMethod;
+    internal long OffsetOfLocalHeader;
+    internal ZipArchiveFast.CompressionMethodValues CompressionMethod;
     internal long? StoredOffsetOfCompressedData;
 
     #endregion
@@ -24,28 +25,31 @@ public sealed class ZipArchiveEntry
     /// <summary>
     /// The compressed size of the entry.
     /// </summary>
-    public readonly long CompressedLength;
+    public long CompressedLength;
 
     /// <summary>
     /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
-    public readonly uint LastWriteTime;
+    public uint LastWriteTime;
 
     /// <summary>
     /// The uncompressed size of the entry.
     /// </summary>
-    public readonly long Length;
+    public long Length;
 
     /// <summary>
     /// The relative path of the entry as stored in the Zip archive. Note that Zip archives allow any string
     /// to be the path of the entry, including invalid and absolute paths.
     /// </summary>
-    public readonly string FullName;
+    public string FullName;
 
     #endregion
 
-    internal ZipArchiveEntry(ZipCentralDirectoryFileHeader cd)
+    internal ZipArchiveEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
+
+    [MemberNotNull(nameof(FullName))]
+    internal void Set(ZipCentralDirectoryFileHeader cd)
     {
         CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;
 

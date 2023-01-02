@@ -41,6 +41,8 @@ internal static class ThrowHelper
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
 public sealed class ZipReusableBundle : IDisposable
 {
+    internal readonly RTFParserBase.ListFast<ZipArchiveEntry> Entries = new(0);
+
     internal readonly SubReadStream ArchiveSubReadStream = new();
 
     internal readonly byte[] FileStreamBuffer = new byte[4096];
