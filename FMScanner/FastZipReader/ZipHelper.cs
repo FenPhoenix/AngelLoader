@@ -51,8 +51,6 @@ public sealed class ZipReusableBundle : IDisposable
     internal readonly byte[] DataBuffer = new byte[ushort.MaxValue];
     internal readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
 
-    internal readonly byte[] InflateBuffer = new byte[DeflateStreamFast.DefaultBufferSize];
-
     private const int _backwardsSeekingBufferSize = 32;
     internal const int ThrowAwayBufferSize = 64;
 
