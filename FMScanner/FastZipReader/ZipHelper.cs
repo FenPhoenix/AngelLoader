@@ -26,6 +26,7 @@ public sealed class ZipCompressionMethodException : Exception
 
 internal static class ThrowHelper
 {
+    internal static void ArgumentException(string message) => throw new ArgumentException(message);
     internal static void ArgumentOutOfRange(string paramName, string message) => throw new ArgumentOutOfRangeException(paramName, message);
     internal static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
     internal static void InvalidData(string message) => throw new InvalidDataException(message);
@@ -43,6 +44,9 @@ public sealed class ZipReusableBundle : IDisposable
     internal readonly SubReadStream ArchiveSubReadStream = new();
 
     internal readonly byte[] FileStreamBuffer = new byte[4096];
+
+    internal readonly byte[] DataBuffer = new byte[ushort.MaxValue];
+    internal readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
 
     private const int _backwardsSeekingBufferSize = 32;
     internal const int ThrowAwayBufferSize = 64;
@@ -301,6 +305,56 @@ internal static class ZipHelpers
             stream.Seek(0, SeekOrigin.Begin);
             bufferPointer = bytesToRead - 1;
             return true;
+        }
+    }
+
+    internal static unsafe int ReadInt32(byte[] value, int valueLength, int startIndex)
+    {
+        if ((long)(uint)startIndex >= (long)valueLength)
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
+        }
+        if (startIndex > valueLength - 4)
+        {
+            ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
+        }
+
+        fixed (byte* numPtr = &value[startIndex])
+        {
+            return startIndex % 4 == 0
+                ? *(int*)numPtr
+                : BitConverter.IsLittleEndian
+                    ? (int)*numPtr | (int)numPtr[1] << 8 | (int)numPtr[2] << 16 | (int)numPtr[3] << 24
+                    : (int)*numPtr << 24 | (int)numPtr[1] << 16 | (int)numPtr[2] << 8 | (int)numPtr[3];
+        }
+    }
+
+    internal static unsafe long ReadInt64(byte[] value, int valueLength, int startIndex)
+    {
+        if ((long)(uint)startIndex >= (long)valueLength)
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
+        }
+        if (startIndex > valueLength - 8)
+        {
+            ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
+        }
+
+        fixed (byte* numPtr = &value[startIndex])
+        {
+            if (startIndex % 8 == 0) return *(long*)numPtr;
+
+            if (BitConverter.IsLittleEndian)
+            {
+                return (long)(uint)((int)*numPtr | (int)numPtr[1] << 8 | (int)numPtr[2] << 16 |
+                                    (int)numPtr[3] << 24) | (long)((int)numPtr[4] | (int)numPtr[5] << 8 |
+                                                                   (int)numPtr[6] << 16 |
+                                                                   (int)numPtr[7] << 24) << 32;
+            }
+
+            int num = (int)*numPtr << 24 | (int)numPtr[1] << 16 | (int)numPtr[2] << 8 | (int)numPtr[3];
+            return (long)((uint)((int)numPtr[4] << 24 | (int)numPtr[5] << 16 | (int)numPtr[6] << 8) |
+                          (uint)numPtr[7]) | (long)num << 32;
         }
     }
 }

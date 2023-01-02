@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using AL_Common;
 
 namespace FMScanner.FastZipReader;
 
@@ -23,19 +24,19 @@ internal readonly ref struct ZipGenericExtraField
 {
     internal readonly ushort Tag;
     // returns size of data, not of the entire block
-    internal readonly ushort Size;
+    internal readonly ushort DataSize;
     internal readonly byte[] Data = Array.Empty<byte>();
 
-    private ZipGenericExtraField(ushort tag, ushort size)
+    private ZipGenericExtraField(ushort tag, ushort dataSize)
     {
         Tag = tag;
-        Size = size;
+        DataSize = dataSize;
     }
 
-    private ZipGenericExtraField(ushort tag, ushort size, byte[] data)
+    private ZipGenericExtraField(ushort tag, ushort dataSize, byte[] data)
     {
         Tag = tag;
-        Size = size;
+        DataSize = dataSize;
         Data = data;
     }
 
@@ -55,18 +56,18 @@ internal readonly ref struct ZipGenericExtraField
         }
 
         ushort tag = bundle.ReadUInt16(stream);
-        ushort size = bundle.ReadUInt16(stream);
+        ushort dataSize = bundle.ReadUInt16(stream);
 
         // not enough bytes to read the data
-        if (endExtraField - stream.Position < size)
+        if (endExtraField - stream.Position < dataSize)
         {
-            field = new ZipGenericExtraField(tag: tag, size: size);
+            field = new ZipGenericExtraField(tag: tag, dataSize: dataSize);
             return false;
         }
 
-        byte[] data = ZipReusableBundle.ReadBytes_UShort(stream, size);
+        stream.ReadAll(bundle.DataBuffer.Cleared(), 0, dataSize);
 
-        field = new ZipGenericExtraField(tag: tag, size: size, data: data);
+        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: bundle.DataBuffer);
 
         return true;
     }
@@ -154,17 +155,17 @@ internal readonly ref struct Zip64ExtraField
             return false;
         }
 
-        ushort size = extraField.Size;
+        ushort dataSize = extraField.DataSize;
 
-        ushort expectedSize = 0;
+        ushort expectedDataSize = 0;
 
-        if (readUncompressedSize) expectedSize += 8;
-        if (readCompressedSize) expectedSize += 8;
-        if (readLocalHeaderOffset) expectedSize += 8;
-        if (readStartDiskNumber) expectedSize += 4;
+        if (readUncompressedSize) expectedDataSize += 8;
+        if (readCompressedSize) expectedDataSize += 8;
+        if (readLocalHeaderOffset) expectedDataSize += 8;
+        if (readStartDiskNumber) expectedDataSize += 4;
 
         // if it is not the expected size, perhaps there is another extra field that matches
-        if (expectedSize != size)
+        if (expectedDataSize != dataSize)
         {
             zip64Block = new Zip64ExtraField();
             return false;
@@ -179,22 +180,22 @@ internal readonly ref struct Zip64ExtraField
         int arrayIndex = 0;
         if (readUncompressedSize)
         {
-            uncompressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            uncompressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readCompressedSize)
         {
-            compressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            compressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readLocalHeaderOffset)
         {
-            localHeaderOffset = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            localHeaderOffset = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readStartDiskNumber)
         {
-            startDiskNumber = BitConverter.ToInt32(extraField.Data, arrayIndex);
+            startDiskNumber = ZipHelpers.ReadInt32(extraField.Data, dataSize, arrayIndex);
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
@@ -338,7 +339,8 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
     internal readonly int DiskNumberStart;
     internal readonly long RelativeOffsetOfLocalHeader;
 
-    internal readonly byte[]? Filename;
+    internal readonly byte[] Filename = Array.Empty<byte>();
+    internal readonly ushort FilenameLength;
 
     private ZipCentralDirectoryFileHeader(
         ushort compressionMethod,
@@ -347,7 +349,8 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         long uncompressedSize,
         int diskNumberStart,
         long relativeOffsetOfLocalHeader,
-        byte[]? filename)
+        byte[] filename,
+        ushort filenameLength)
     {
         CompressionMethod = compressionMethod;
         LastModified = lastModified;
@@ -356,6 +359,7 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         DiskNumberStart = diskNumberStart;
         RelativeOffsetOfLocalHeader = relativeOffsetOfLocalHeader;
         Filename = filename;
+        FilenameLength = filenameLength;
     }
 
     // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
@@ -388,7 +392,7 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         bundle.ReadUInt32(stream); // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = bundle.ReadUInt32(stream);
 
-        byte[] filename = ZipReusableBundle.ReadBytes_UShort(stream, filenameLength);
+        stream.ReadAll(bundle.FilenameBuffer.Cleared(), 0, filenameLength);
 
         bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
         bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
@@ -425,7 +429,8 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
             uncompressedSize: uncompressedSize,
             diskNumberStart: diskNumberStart,
             relativeOffsetOfLocalHeader: relativeOffsetOfLocalHeader,
-            filename: filename
+            filename: bundle.FilenameBuffer,
+            filenameLength: filenameLength
         );
 
         return true;
