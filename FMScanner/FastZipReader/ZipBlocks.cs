@@ -65,7 +65,7 @@ internal readonly ref struct ZipGenericExtraField
             return false;
         }
 
-        stream.ReadAll(bundle.DataBuffer.Cleared(), 0, dataSize);
+        stream.ReadAll(bundle.DataBuffer, 0, dataSize);
 
         field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: bundle.DataBuffer);
 
@@ -392,7 +392,7 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         bundle.ReadUInt32(stream); // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = bundle.ReadUInt32(stream);
 
-        stream.ReadAll(bundle.FilenameBuffer.Cleared(), 0, filenameLength);
+        stream.ReadAll(bundle.FilenameBuffer, 0, filenameLength);
 
         bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
         bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;

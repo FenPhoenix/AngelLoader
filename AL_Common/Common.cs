@@ -153,7 +153,6 @@ public static class Common
     {
         buffer.Clear();
 
-
         if (_fieldStreamBufferFieldFound == null)
         {
             try
