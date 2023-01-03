@@ -20,6 +20,8 @@ public sealed partial class Scanner
 {
     private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 
+    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
+
     private const char LeftDoubleQuote = '\u201C';
     private const char RightDoubleQuote = '\u201D';
 

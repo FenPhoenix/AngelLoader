@@ -4043,11 +4043,11 @@ public sealed partial class Scanner : IDisposable
             uint invCount = br.ReadUInt32();
             for (int i = 0; i < invCount; i++)
             {
-                byte[] header = br.ReadBytes(12);
+                int bytesRead = br.BaseStream.ReadAll(_misChunkHeaderBuffer, 0, 12);
                 uint offset = br.ReadUInt32();
                 uint length = br.ReadUInt32();
 
-                if (!header.Contains(OBJ_MAP)) continue;
+                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(OBJ_MAP)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
