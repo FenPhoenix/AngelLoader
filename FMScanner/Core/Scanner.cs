@@ -4253,7 +4253,7 @@ public sealed partial class Scanner : IDisposable
 
         stream.Position = 0;
 
-        using var sr = new StreamReader(stream, encoding);
+        using var sr = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: false);
         return sr.ReadToEnd();
     }
 
@@ -4267,7 +4267,7 @@ public sealed partial class Scanner : IDisposable
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
+        using var sr = GetStreamReaderFast(file, encoding, detectEncodingFromByteOrderMarks: false, DiskFileStreamBuffer);
         return sr.ReadToEnd();
     }
 
@@ -4295,7 +4295,7 @@ public sealed partial class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
         memStream.Position = 0;
 
-        using var sr = new StreamReader(memStream, encoding, false);
+        using var sr = new StreamReader(memStream, encoding, detectEncodingFromByteOrderMarks: false);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4313,7 +4313,7 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>();
 
-        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
+        using var sr = GetStreamReaderFast(file, encoding, detectEncodingFromByteOrderMarks: false, DiskFileStreamBuffer);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4327,7 +4327,7 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var sr = new StreamReader(stream, encoding, false);
+        using var sr = new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: false);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4337,7 +4337,7 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var sr = GetStreamReaderFast(file, encoding, false, DiskFileStreamBuffer);
+        using var sr = GetStreamReaderFast(file, encoding, detectEncodingFromByteOrderMarks: false, DiskFileStreamBuffer);
         while (sr.ReadLine() is { } line) lines.Add(line);
 
         return lines;
