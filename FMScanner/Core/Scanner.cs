@@ -930,7 +930,7 @@ public sealed partial class Scanner : IDisposable
         {
             if (_fmIsZip)
             {
-                fmData.Size = (ulong)_archive.ArchiveStream.Length;
+                fmData.Size = (ulong)_archive.ArchiveStreamLength;
             }
             else
             {

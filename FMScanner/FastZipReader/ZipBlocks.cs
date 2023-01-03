@@ -305,19 +305,19 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, ZipReusableBundle bundle)
+    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
         if (bundle.ReadUInt32(stream) != SignatureConstant) return false;
-        if (stream.Length < stream.Position + offsetToFilenameLength) return false;
+        if (streamLength < stream.Position + offsetToFilenameLength) return false;
 
         stream.Seek(offsetToFilenameLength, SeekOrigin.Current);
 
         ushort filenameLength = bundle.ReadUInt16(stream);
         ushort extraFieldLength = bundle.ReadUInt16(stream);
 
-        if (stream.Length < stream.Position + filenameLength + extraFieldLength)
+        if (streamLength < stream.Position + filenameLength + extraFieldLength)
         {
             return false;
         }
