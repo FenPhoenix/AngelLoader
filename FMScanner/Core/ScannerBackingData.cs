@@ -18,6 +18,8 @@ namespace FMScanner;
 */
 public sealed partial class Scanner
 {
+    private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
+
     private const char LeftDoubleQuote = '\u201C';
     private const char RightDoubleQuote = '\u201D';
 

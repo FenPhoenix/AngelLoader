@@ -2701,26 +2701,37 @@ public sealed partial class Scanner : IDisposable
                     readmeStream = _archive.OpenEntry(readmeEntry!);
                 }
 
+                _rtfHeaderBuffer.Clear();
+
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                byte[]? rtfHeader;
-                using (var br = _fmIsZip
-                           ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
-                           : new BinaryReader(GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, leaveOpen: false))
+                Stream? readmeHeaderStream = null;
+                try
                 {
+                    readmeHeaderStream = _fmIsZip
+                        ? readmeStream!
+                        : GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer);
+
                     // stupid micro-optimization
                     const int rtfHeaderBytesLength = 6;
 
-                    // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
-                    rtfHeader = readmeFileLen >= rtfHeaderBytesLength
-                        ? br.ReadBytes(rtfHeaderBytesLength)
-                        : null;
+                    if (readmeFileLen >= rtfHeaderBytesLength)
+                    {
+                        readmeHeaderStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
+                    }
+                }
+                finally
+                {
+                    if (!_fmIsZip)
+                    {
+                        readmeHeaderStream?.Dispose();
+                    }
                 }
 
                 ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
 
                 // file is rtf
-                if (rtfHeader?.SequenceEqual(RTFHeaderBytes) == true)
+                if (_rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
                 {
                     bool success;
                     string text;
