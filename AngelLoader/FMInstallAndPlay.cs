@@ -978,7 +978,9 @@ internal static class FMInstallAndPlay
                 {
                     using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
 
-                    if (br.BaseStream.Length > MAPPARAM_NewDarkLocation + _MAPPARAM_Bytes.Length)
+                    long streamLength = br.BaseStream.Length;
+
+                    if (streamLength > MAPPARAM_NewDarkLocation + _MAPPARAM_Bytes.Length)
                     {
                         br.BaseStream.Position = MAPPARAM_NewDarkLocation;
                         byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
@@ -991,7 +993,7 @@ internal static class FMInstallAndPlay
                     // Robustness - don't assume there's a MAPPARAM at the OldDark location just because
                     // there wasn't one at the NewDark location.
                     if (!atLeastOneOldDarkMissionFound &&
-                        br.BaseStream.Length > MAPPARAM_OldDarkLocation + _MAPPARAM_Bytes.Length)
+                        streamLength > MAPPARAM_OldDarkLocation + _MAPPARAM_Bytes.Length)
                     {
                         br.BaseStream.Position = MAPPARAM_OldDarkLocation;
                         byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
