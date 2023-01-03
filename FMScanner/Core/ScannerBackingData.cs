@@ -446,6 +446,18 @@ public sealed partial class Scanner
 
     private readonly int[] _zipOffsets = { _ss2NewDarkOffset, _t2OldDarkOffset, _ss2OldDarkOffset, _newDarkOffset1, _newDarkOffset2 };
 
+    private readonly byte[][] _zipOffsetBuffers =
+    {
+        new byte[_ss2NewDarkOffset],
+        new byte[_t2OldDarkOffset],
+        new byte[_ss2OldDarkOffset],
+        new byte[_newDarkOffset1],
+        new byte[_newDarkOffset2]
+    };
+
+    private const int _gameDetectStringBufferLength = 9;
+    private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
+
     // ReSharper restore IdentifierTypo
 
     #endregion

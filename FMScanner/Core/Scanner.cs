@@ -3916,12 +3916,17 @@ public sealed partial class Scanner : IDisposable
 
                 if (_fmIsZip)
                 {
-                    buffer = br.ReadBytes(_zipOffsets[i]);
+                    buffer = _zipOffsetBuffers[i];
+                    int length = _zipOffsets[i];
+                    int bytesRead = br.BaseStream.ReadAll(buffer, 0, length);
+                    if (bytesRead < length) break;
                 }
                 else
                 {
+                    buffer = _gameDetectStringBuffer;
                     br.BaseStream.Position = _locations[i];
-                    buffer = br.ReadBytes(locationBytesToRead);
+                    int bytesRead = br.BaseStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
+                    if (bytesRead < _gameDetectStringBufferLength) break;
                 }
 
                 if ((_locations[i] == _ss2MapParamNewDarkLoc ||
