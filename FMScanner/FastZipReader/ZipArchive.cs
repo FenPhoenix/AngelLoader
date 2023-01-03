@@ -176,7 +176,7 @@ public sealed class ZipArchiveFast : IDisposable
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
-                uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress);
+                uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress, leaveOpen: true);
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
