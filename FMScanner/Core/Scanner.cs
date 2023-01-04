@@ -1071,6 +1071,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
+                    // @ScanExp: EqualsI(FMInfoXml)
                     if (f.Name.EqualsI(FMFiles.FMInfoXml))
                     {
                         var (title, author, version, releaseDate) = ReadFMInfoXml(f);
@@ -1093,6 +1094,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
+                    // @ScanExp: EqualsI(FMIni)
                     if (f.Name.EqualsI(FMFiles.FMIni))
                     {
                         var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
@@ -1117,6 +1119,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
+                    // @ScanExp: EqualsI(ModIni)
                     if (f.Name.EqualsI(FMFiles.ModIni))
                     {
                         var (title, author) = ReadModIni(f);
@@ -1462,6 +1465,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_fmDirFileInfos.Count > 0)
                 {
+                    // @ScanExp: .mis extension check
                     string fn =
                         _fmIsSevenZip ? usedMisFiles[0].Name :
                             _fmWorkingPath + usedMisFiles[0].Name;
@@ -1481,6 +1485,7 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
+                    // @ScanExp: .mis extension check
                     var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
                     misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                 }
@@ -1749,6 +1754,7 @@ public sealed partial class Scanner : IDisposable
         static bool MapFileExists(string path)
         {
             int lsi;
+            // @ScanExp(MapFileExists): Complicated
             return path.PathStartsWithI(FMDirs.IntrfaceS) &&
                    path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                    path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
@@ -1763,6 +1769,7 @@ public sealed partial class Scanner : IDisposable
         static bool AutomapFileExists(string path)
         {
             int len = path.Length;
+            // @ScanExp(AutomapFileExists): Extension check
             return path.PathStartsWithI(FMDirs.IntrfaceS) &&
                    path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                    // We don't need to check the length because we only need length == 6 but by virtue of
@@ -1787,6 +1794,7 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
+        // @ScanExp: scriptFileExtensions extension check
         static bool BaseDirScriptFileExtensions(List<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
         {
             for (int i = 0; i < baseDirFiles.Count; i++)
@@ -1914,6 +1922,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomMotions == null &&
                              fn.PathStartsWithI(FMDirs.MotionsS) &&
+                             // @ScanExp: MotionFileExtensions check
                              FileExtensionFound(fn, MotionFileExtensions))
                     {
                         fmd.HasCustomMotions = true;
@@ -1926,6 +1935,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomTextures == null &&
                              fn.PathStartsWithI(FMDirs.FamS) &&
+                             // @ScanExp: ImageFileExtensions check
                              FileExtensionFound(fn, ImageFileExtensions))
                     {
                         fmd.HasCustomTextures = true;
@@ -1944,6 +1954,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if ((fmd.HasCustomScripts == null &&
                               !fn.Rel_ContainsDirSep() &&
+                              // @ScanExp: ScriptFileExtensions check
                               FileExtensionFound(fn, ScriptFileExtensions)) ||
                              (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                               fn.HasFileExtension()))
@@ -2148,6 +2159,7 @@ public sealed partial class Scanner : IDisposable
                         for (int i = 0; i < t3GmpFiles.Count; i++)
                         {
                             NameAndIndex item = t3GmpFiles[i];
+                            // @ScanExp: EqualsI(EntryGmp)
                             if (!item.Name.EqualsI(FMFiles.EntryGmp))
                             {
                                 usedMisFiles.Add(item);
@@ -2168,6 +2180,7 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < baseDirFiles.Count; i++)
         {
             NameAndIndex f = baseDirFiles[i];
+            // @ScanExp: .mis extension check
             if (f.Name.ExtIsMis())
             {
                 misFiles.Add(new NameAndIndex(Path.GetFileName(f.Name), f.Index));
@@ -2191,6 +2204,7 @@ public sealed partial class Scanner : IDisposable
             for (int i = 0; i < stringsDirFiles.Count; i++)
             {
                 NameAndIndex item = stringsDirFiles[i];
+                // @ScanExp: PathEqualsI(StringsMissFlag)
                 if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
                 {
                     missFlag = item;
@@ -2202,6 +2216,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < stringsDirFiles.Count; i++)
                 {
                     NameAndIndex item = stringsDirFiles[i];
+                    // @ScanExp: PathEqualsI(StringsEnglishMissFlag)
                     if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
                     {
                         missFlag = item;
@@ -2214,6 +2229,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < stringsDirFiles.Count; i++)
                 {
                     NameAndIndex item = stringsDirFiles[i];
+                    // @ScanExp: PathEndsWithI(SMissFlag)
                     if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
                     {
                         missFlag = item;
@@ -2243,6 +2259,7 @@ public sealed partial class Scanner : IDisposable
                 NameAndIndex mf = misFiles[mfI];
 
                 // Obtuse nonsense to avoid string allocations (perf)
+                // @ScanExp(usedMisFiles): just .mis extension checks
                 if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                 {
                     // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
@@ -2313,6 +2330,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
+            // @ScanExp: fminfo.xml
             fmInfoXml.Load(Path.Combine(_fmWorkingPath, file.Name));
         }
 
@@ -2374,6 +2392,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
+            // @ScanExp: fm.ini
             iniLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
         }
 
@@ -2554,6 +2573,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
+            // @ScanExp: mod.ini
             lines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
         }
 
@@ -2603,6 +2623,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    // @ScanExp: Valid readme extension checks
     private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles)
     {
         // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
@@ -3104,6 +3125,7 @@ public sealed partial class Scanner : IDisposable
     {
         if (intrfaceDirFiles.Count == 0) return "";
 
+        // @ScanExp(newGameStrFile): PathEqualsI()/StartsWithI()/EndsWithI()
         NameAndIndex? newGameStrFile =
             intrfaceDirFiles.Find(static x =>
                 x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
@@ -3125,6 +3147,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
+            // @ScanExp: newgame.str ends-with check
             lines = ReadAllLinesE(Path.Combine(_fmWorkingPath, newGameStrFile.Name));
         }
 
@@ -3177,6 +3200,7 @@ public sealed partial class Scanner : IDisposable
             return line.Substring(i = line.IndexOf('\"') + 1, line.IndexOf('\"', i) - i);
         }
 
+        // @ScanExp: .mis extension check
         static bool NameExistsInList(List<NameAndIndex> list, string value)
         {
             for (int i = 0; i < list.Count; i++)
@@ -3202,6 +3226,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (titleNum == "0") ret.TitleFrom0 = title;
 
+                // @ScanExp: .mis extension check
                 string umf = usedMisFiles[umfIndex].Name;
                 int umfDotIndex = umf.IndexOf('.');
 
@@ -3254,6 +3279,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Read title(s).str file
 
+        // @ScanExp: title.str/titles.str files: /title.str and /titles.str ends-with check
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
         {
             NameAndIndex? titlesFile = null;
@@ -3667,6 +3693,7 @@ public sealed partial class Scanner : IDisposable
                     string dfName = df.Name.ToForwardSlashes();
 
                     // We say HasFileExtension() because we only want to count lang dirs that have files in them
+                    // @ScanExp(GetLanguages): Complicated
                     if (dfName.HasFileExtension() &&
                         (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
                          dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
@@ -3687,6 +3714,9 @@ public sealed partial class Scanner : IDisposable
         // Sometimes extra languages are in zip files inside the FM archive
         for (int i = 0; i < baseDirFiles.Count; i++)
         {
+            // @ScanExp(GetLanguages/whatever-style naming detection): All base dir file names are needed here!
+            // -Due to ContainsI() (wrapping IndexOf()) and Regex.Match() (hard requires a string), and extension
+            //  removal
             string fn = baseDirFiles[i].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
@@ -3752,6 +3782,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Choose smallest .gam file
 
+        // @ScanExp: .gam extension
         NameAndIndex[] gamFiles = baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
         NameAndIndex? smallestGamFile = null;
 
@@ -3774,6 +3805,7 @@ public sealed partial class Scanner : IDisposable
                     else
                     {
                         string? gamFullPath = null;
+                        // @ScanExp: .gam extension
                         FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
                         length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
                     }
@@ -3809,6 +3841,7 @@ public sealed partial class Scanner : IDisposable
                 else
                 {
                     string? misFullPath = null;
+                    // @ScanExp: .mis extension
                     FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                     length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                 }
@@ -3834,6 +3867,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
+            // @ScanExp: .mis extension
             misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
         }
 
@@ -4084,6 +4118,7 @@ public sealed partial class Scanner : IDisposable
         {
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
             {
+                // @ScanExp: .mis extension
                 if (ss2MisFiles.Contains(misFiles[mfI].Name))
                 {
                     return true;
