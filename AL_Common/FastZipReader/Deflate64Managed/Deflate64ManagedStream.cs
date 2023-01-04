@@ -13,9 +13,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FMScanner.FastZipReader.Deflate64Managed;
+namespace AL_Common.FastZipReader.Deflate64Managed;
 
-internal sealed class Deflate64ManagedStream : Stream
+public sealed class Deflate64ManagedStream : Stream
 {
     private const int DefaultBufferSize = 8192;
 
@@ -25,7 +25,7 @@ internal sealed class Deflate64ManagedStream : Stream
     private byte[] _buffer;
 
     // A specific constructor to allow decompression of Deflate64
-    internal Deflate64ManagedStream(Stream stream)
+    public Deflate64ManagedStream(Stream stream)
     {
         if (stream == null)
         {

@@ -10,7 +10,7 @@
 using System;
 using System.Diagnostics;
 
-namespace FMScanner.FastZipReader.Deflate64Managed;
+namespace AL_Common.FastZipReader.Deflate64Managed;
 
 // This class can be used to read bits from an byte array quickly.
 // Normally we get bits from 'bitBuffer' field and bitsInBuffer stores
@@ -33,7 +33,7 @@ internal sealed class InputBuffer
     internal int AvailableBits;
 
     /// <summary>Total bytes available in the input buffer.</summary>
-    internal int AvailableBytes => (_end - _start) + (AvailableBits / 8);
+    internal int AvailableBytes => _end - _start + AvailableBits / 8;
 
     /// <summary>Ensure that count bits are in the bit buffer.</summary>
     /// <param name="count">Can be up to 16.</param>
@@ -200,6 +200,6 @@ internal sealed class InputBuffer
     internal void SkipToByteBoundary()
     {
         _bitBuffer >>= AvailableBits % 8;
-        AvailableBits = AvailableBits - (AvailableBits % 8);
+        AvailableBits = AvailableBits - AvailableBits % 8;
     }
 }

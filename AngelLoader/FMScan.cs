@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -216,7 +217,7 @@ internal static class FMScan
                                 item.Exception != null ||
                                 !item.ErrorInfo.IsEmpty())
                             {
-                                if (item.Exception is FMScanner.FastZipReader.ZipCompressionMethodException)
+                                if (item.Exception is ZipCompressionMethodException)
                                 {
                                     unsupportedCompressionErrors.Add((fms[i], item));
                                 }

@@ -10,7 +10,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace FMScanner.FastZipReader.Deflate64Managed;
+namespace AL_Common.FastZipReader.Deflate64Managed;
 
 // Strictly speaking this class is not a HuffmanTree, this class is
 // a lookup table combined with a HuffmanTree. The idea is to speed up
@@ -123,7 +123,7 @@ internal sealed class HuffmanTree
         uint tempCode = 0;
         for (int bits = 1; bits <= 16; bits++)
         {
-            tempCode = (tempCode + bitLengthCount[bits - 1]) << 1;
+            tempCode = tempCode + bitLengthCount[bits - 1] << 1;
             nextCode[bits] = tempCode;
         }
 
@@ -149,7 +149,7 @@ internal sealed class HuffmanTree
         Debug.Assert(length > 0 && length <= 16, "Invalid len");
         do
         {
-            newCode |= (code & 1);
+            newCode |= code & 1;
             newCode <<= 1;
             code >>= 1;
         } while (--length > 0);
@@ -201,7 +201,7 @@ internal sealed class HuffmanTree
                     }
 
                     // Note the bits in the table are reverted.
-                    int locs = 1 << (_tableBits - len);
+                    int locs = 1 << _tableBits - len;
                     for (int j = 0; j < locs; j++)
                     {
                         _table[start] = (short)ch;
@@ -221,7 +221,7 @@ internal sealed class HuffmanTree
                     // tbe table, we will need to follow the tree to find the real character.
                     // This is in place to avoid bloating the table if there are
                     // a few ones with long code.
-                    int index = start & ((1 << _tableBits) - 1);
+                    int index = start & (1 << _tableBits) - 1;
                     short[] array = _table;
 
                     do

@@ -24,7 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common;
-using FMScanner.FastZipReader;
+using AL_Common.FastZipReader;
+using FMScanner.ScannerZipReader;
 using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
 using SevenZip;
@@ -76,8 +77,8 @@ public sealed partial class Scanner : IDisposable
 
     #region Disposable
 
-    private ZipArchiveFast _archive = null!;
-    private readonly ZipReusableBundle _zipBundle;
+    private ZipArchiveS _archive = null!;
+    private readonly ZipReusableBundleS _zipBundle;
 
     #endregion
 
@@ -217,7 +218,7 @@ public sealed partial class Scanner : IDisposable
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
-        _zipBundle = new ZipReusableBundle();
+        _zipBundle = new ZipReusableBundleS();
 
         _sevenZipExePath = sevenZipExePath;
 
@@ -793,7 +794,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    _archive = new ZipArchiveFast(GetFileStreamFast(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
+                    _archive = new ZipArchiveS(GetFileStreamFast(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
 
                     // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                     // thrown while loading them. If this passes, we're definitely good.
@@ -874,7 +875,7 @@ public sealed partial class Scanner : IDisposable
                     else
                     {
                         Log(fm.Path + ": fm is zip, exception in " +
-                            nameof(ZipArchiveFast) +
+                            nameof(ZipArchiveS) +
                             " construction or entries getting. Returning 'Unsupported' game type.", ex);
                         return UnsupportedZip(fm.Path, null, ex, "");
                     }
@@ -2367,7 +2368,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmIsZip)
         {
-            ZipArchiveEntry e = _archive.Entries[file.Index];
+            ZipArchiveSEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
             iniLines = ReadAllLinesE(es, e.Length);
         }
@@ -2547,7 +2548,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmIsZip)
         {
-            ZipArchiveEntry e = _archive.Entries[file.Index];
+            ZipArchiveSEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
             lines = ReadAllLinesE(es, e.Length);
         }
@@ -2611,7 +2612,7 @@ public sealed partial class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            ZipArchiveEntry? readmeEntry = null;
+            ZipArchiveSEntry? readmeEntry = null;
 
             if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
 
@@ -3118,7 +3119,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmIsZip)
         {
-            ZipArchiveEntry e = _archive.Entries[newGameStrFile.Index];
+            ZipArchiveSEntry e = _archive.Entries[newGameStrFile.Index];
             using var es = _archive.OpenEntry(e);
             lines = ReadAllLinesE(es, e.Length);
         }
@@ -3277,7 +3278,7 @@ public sealed partial class Scanner : IDisposable
 
             if (_fmIsZip)
             {
-                ZipArchiveEntry e = _archive.Entries[titlesFile.Index];
+                ZipArchiveSEntry e = _archive.Entries[titlesFile.Index];
                 using var es = _archive.OpenEntry(e);
                 titlesStrLines = ReadAllLinesE(es, e.Length);
             }
@@ -3821,8 +3822,8 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
-        ZipArchiveEntry gamFileZipEntry = null!;
-        ZipArchiveEntry misFileZipEntry = null!;
+        ZipArchiveSEntry gamFileZipEntry = null!;
+        ZipArchiveSEntry misFileZipEntry = null!;
 
         string misFileOnDisk = null!;
 

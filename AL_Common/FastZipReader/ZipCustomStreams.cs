@@ -6,7 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace FMScanner.FastZipReader;
+namespace AL_Common.FastZipReader;
 
 public sealed class SubReadStream : Stream
 {
@@ -15,9 +15,9 @@ public sealed class SubReadStream : Stream
     private long _endInSuperStream;
     private Stream _superStream = null!;
 
-    internal void SetSuperStream(Stream? stream) => _superStream = stream!;
+    public void SetSuperStream(Stream? stream) => _superStream = stream!;
 
-    internal void Set(long startPosition, long maxLength)
+    public void Set(long startPosition, long maxLength)
     {
         _startInSuperStream = startPosition;
         _positionInSuperStream = startPosition;
@@ -75,7 +75,7 @@ public sealed class SubReadStream : Stream
 
         if (origin != SeekOrigin.Current)
         {
-            ThrowHelper.NotSupported(SR.SeekingNotSupported);
+            throw new NotSupportedException(SR.SeekingNotSupported);
         }
 
         if (_superStream.Position != _positionInSuperStream)

@@ -7,15 +7,15 @@ using System.Text;
 using AL_Common;
 using JetBrains.Annotations;
 
-namespace FMScanner.FastZipReader;
+namespace FMScanner.ScannerZipReader;
 
 [PublicAPI]
-public sealed class ZipArchiveEntry
+internal sealed class ZipArchiveSEntry
 {
     #region Fields
 
     internal long OffsetOfLocalHeader;
-    internal ZipArchiveFast.CompressionMethodValues CompressionMethod;
+    internal ZipArchiveS.CompressionMethodValues CompressionMethod;
     internal long? StoredOffsetOfCompressedData;
 
     #endregion
@@ -25,33 +25,33 @@ public sealed class ZipArchiveEntry
     /// <summary>
     /// The compressed size of the entry.
     /// </summary>
-    public long CompressedLength;
+    internal long CompressedLength;
 
     /// <summary>
     /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
-    public uint LastWriteTime;
+    internal uint LastWriteTime;
 
     /// <summary>
     /// The uncompressed size of the entry.
     /// </summary>
-    public long Length;
+    internal long Length;
 
     /// <summary>
     /// The relative path of the entry as stored in the Zip archive. Note that Zip archives allow any string
     /// to be the path of the entry, including invalid and absolute paths.
     /// </summary>
-    public string FullName;
+    internal string FullName;
 
     #endregion
 
-    internal ZipArchiveEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
+    internal ZipArchiveSEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
 
     [MemberNotNull(nameof(FullName))]
     internal void Set(ZipCentralDirectoryFileHeader cd)
     {
-        CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;
+        CompressionMethod = (ZipArchiveS.CompressionMethodValues)cd.CompressionMethod;
 
         // Leave this as a uint and let the caller convert it if it wants (perf optimization)
         LastWriteTime = cd.LastModified;

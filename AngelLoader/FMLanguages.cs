@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SevenZip;
 using static AL_Common.Common;
@@ -235,7 +236,7 @@ internal static class FMLanguages
 
         bool[] FoundLangInArchive = new bool[SupportedLanguageCount];
 
-        FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
+        ZipArchiveFast? zipArchive = null;
         SevenZipExtractor? sevenZipArchive = null;
         try
         {
@@ -243,7 +244,7 @@ internal static class FMLanguages
 
             if (fmIsZip)
             {
-                zipArchive = new FMScanner.FastZipReader.ZipArchiveFast(File.OpenRead(archivePath), allowUnsupportedEntries: true);
+                zipArchive = new ZipArchiveFast(File.OpenRead(archivePath), allowUnsupportedEntries: true);
             }
             else
             {

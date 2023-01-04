@@ -10,7 +10,7 @@
 using System;
 using System.Diagnostics;
 
-namespace FMScanner.FastZipReader.Deflate64Managed;
+namespace AL_Common.FastZipReader.Deflate64Managed;
 
 /// <summary>
 /// This class maintains a window for decompressed output.
@@ -46,7 +46,7 @@ internal sealed class OutputWindow
         // move backwards distance bytes in the output stream,
         // and copy length bytes from this position to the output stream.
         AvailableBytes += length;
-        int copyStart = (_end - distance) & WindowMask; // start position for coping.
+        int copyStart = _end - distance & WindowMask; // start position for coping.
 
         int border = WindowSize - length;
         if (copyStart <= border && _end < border)
@@ -107,7 +107,7 @@ internal sealed class OutputWindow
             copied = input.CopyTo(_window, _end, length);
         }
 
-        _end = (_end + copied) & WindowMask;
+        _end = _end + copied & WindowMask;
         AvailableBytes += copied;
         return copied;
     }
@@ -131,7 +131,7 @@ internal sealed class OutputWindow
         }
         else
         {
-            copyEnd = (_end - AvailableBytes + length) & WindowMask; // copy length of bytes
+            copyEnd = _end - AvailableBytes + length & WindowMask; // copy length of bytes
         }
 
         int copied = length;

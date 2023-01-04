@@ -5,8 +5,9 @@
 using System;
 using System.IO;
 using AL_Common;
+using AL_Common.FastZipReader;
 
-namespace FMScanner.FastZipReader;
+namespace FMScanner.ScannerZipReader;
 
 /*
 Fen's note(@NET5 vs. Framework file I/O perf hack):
@@ -45,7 +46,7 @@ internal readonly ref struct ZipGenericExtraField
     internal static bool TryReadBlock(
         Stream stream,
         long endExtraField,
-        ZipReusableBundle bundle,
+        ZipReusableBundleS bundle,
         out ZipGenericExtraField field)
     {
         // not enough bytes to read tag + size
@@ -118,7 +119,7 @@ internal readonly ref struct Zip64ExtraField
         bool readCompressedSize,
         bool readLocalHeaderOffset,
         bool readStartDiskNumber,
-        ZipReusableBundle bundle)
+        ZipReusableBundleS bundle)
     {
         while (ZipGenericExtraField.TryReadBlock(
                    stream: extraFieldStream,
@@ -229,7 +230,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipReusableBundleS bundle,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
     {
         if (bundle.ReadUInt32(stream) != SignatureConstant)
@@ -271,7 +272,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipReusableBundleS bundle,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
     {
         if (bundle.ReadUInt32(stream) != SignatureConstant)
@@ -305,7 +306,7 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
+    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundleS bundle)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -366,7 +367,7 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
     // in either case, the zip64 extra field info will be incorporated into other fields
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipReusableBundleS bundle,
         out ZipCentralDirectoryFileHeader header)
     {
         if (bundle.ReadUInt32(stream) != SignatureConstant)
@@ -464,7 +465,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipReusableBundleS bundle,
         out ZipEndOfCentralDirectoryBlock eocdBlock)
     {
         if (bundle.ReadUInt32(stream) != SignatureConstant)

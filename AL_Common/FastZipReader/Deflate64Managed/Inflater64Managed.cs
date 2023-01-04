@@ -11,7 +11,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace FMScanner.FastZipReader.Deflate64Managed;
+namespace AL_Common.FastZipReader.Deflate64Managed;
 
 internal enum BlockType
 {
@@ -273,7 +273,7 @@ internal sealed class Inflater64Managed
         // If we reached the end of the block and the block we were decoding had
         // bfinal=1 (final block)
         //
-        if (eob && (_bfinal != 0))
+        if (eob && _bfinal != 0)
         {
             if (_hasFormatReader)
                 _state = Inflater64State.StartReadingFooter;
@@ -325,7 +325,7 @@ internal sealed class Inflater64Managed
                         int blockLengthComplement = _blockLengthBuffer[2] + _blockLengthBuffer[3] * 256;
 
                         // make sure complement matches
-                        if ((ushort)_blockLength != (ushort)(~blockLengthComplement))
+                        if ((ushort)_blockLength != (ushort)~blockLengthComplement)
                         {
                             throw new InvalidDataException(SR.InvalidBlockLength);
                         }
@@ -475,7 +475,7 @@ internal sealed class Inflater64Managed
                     int offset;
                     if (_distanceCode > 3)
                     {
-                        _extraBits = (_distanceCode - 2) >> 1;
+                        _extraBits = _distanceCode - 2 >> 1;
                         int bits = _input.GetBits(_extraBits);
                         if (bits < 0)
                         {
