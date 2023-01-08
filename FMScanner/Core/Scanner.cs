@@ -18,6 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -239,8 +240,9 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 1; i < langsCount; i++)
         {
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + Languages[i] + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + Languages[i] + "/title.str";
+            string lang = Languages[i].Name;
+            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + lang + "/title.str";
         }
 
         #endregion
@@ -249,9 +251,9 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 0; i < langsCount; i++)
         {
-            string lang = Languages[i];
-            Languages_FS_Lang_FS[i] = "/" + Languages[i] + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + Languages[i] + " Language/";
+            string lang = Languages[i].Name;
+            Languages_FS_Lang_FS[i] = "/" + lang + "/";
+            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
 
             // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
             // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
@@ -378,6 +380,10 @@ public sealed partial class Scanner : IDisposable
             _readmeFiles.Clear();
             _fmDirFileInfos.Clear();
             _ss2Fingerprinted = false;
+            for (int langI = 0; langI < Languages.Length; langI++)
+            {
+                Languages[langI].Found = false;
+            }
 
             bool nullAlreadyAdded = false;
 
@@ -1283,7 +1289,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanTags)
             {
-                var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
+                var getLangs = GetLanguages(baseDirFiles);
                 fmData.Languages = getLangs.Langs.ToArray();
                 if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
 #if FMScanner_FullCode
@@ -1735,6 +1741,37 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetLanguageFound(string fn)
+    {
+        if (
+#if FMScanner_FullCode
+            _scanOptions.ScanLanguages ||
+#endif
+            _scanOptions.ScanTags
+        )
+        {
+            for (int langIndex = 0; langIndex < Languages.Length; langIndex++)
+            {
+                if (Languages[langIndex].Found) continue;
+
+                string fnFS = fn.ToForwardSlashes();
+
+                // We say HasFileExtension() because we only want to count lang dirs that have files in them
+                // @ScanExp(SetLanguageFound): Requires case-insensitive byte-array search instead of ContainsI()
+                // I think ContainsI() ultimately just uppercases the string and then does the fast native IndexOf(),
+                // so we could do the same and use our standard byte-array searcher
+                if (fnFS.HasFileExtension() &&
+                    (fnFS.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
+                     fnFS.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
+                {
+                    Languages[langIndex].Found = true;
+                    break;
+                }
+            }
+        }
+    }
+
     private bool ReadAndCacheFMData(
         string fmPath,
         ScannedFMData fmd,
@@ -1889,16 +1926,21 @@ public sealed partial class Scanner : IDisposable
                     {
                         _ss2Fingerprinted = true;
                     }
+
+                    SetLanguageFound(fn);
+
                     continue;
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
                 {
                     intrfaceDirFiles.Add(new NameAndIndex(fn, index));
+                    SetLanguageFound(fn);
                     // Fallthrough so ScanCustomResources can use it
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
                 {
                     booksDirFiles.Add(new NameAndIndex(fn, index));
+                    SetLanguageFound(fn);
                     continue;
                 }
                 else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
@@ -3668,41 +3710,15 @@ public sealed partial class Scanner : IDisposable
 #endif
 
     private (List<string> Langs, bool EnglishIsUncertain)
-    GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
-        List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
+    GetLanguages(List<NameAndIndex> baseDirFiles)
     {
         var langs = new List<string>();
         bool englishIsUncertain = false;
 
-        for (int dirIndex = 0; dirIndex < 3; dirIndex++)
+        for (int langIndex = 0; langIndex < Languages.Length; langIndex++)
         {
-            List<NameAndIndex> dirFiles = dirIndex switch
-            {
-                0 => booksDirFiles,
-                1 => intrfaceDirFiles,
-                _ => stringsDirFiles
-            };
-
-            for (int langIndex = 0; langIndex < Languages.Length; langIndex++)
-            {
-                string lang = Languages[langIndex];
-                for (int dfIndex = 0; dfIndex < dirFiles.Count; dfIndex++)
-                {
-                    NameAndIndex df = dirFiles[dfIndex];
-                    // Directory separator agnostic & keeping perf reasonably high
-                    string dfName = df.Name.ToForwardSlashes();
-
-                    // We say HasFileExtension() because we only want to count lang dirs that have files in them
-                    // @ScanExp(GetLanguages): Complicated
-                    if (dfName.HasFileExtension() &&
-                        (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
-                         dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
-                    {
-                        langs.Add(lang);
-                        break;
-                    }
-                }
-            }
+            var (langName, found) = Languages[langIndex];
+            if (found) langs.Add(langName);
         }
 
         if (!langs.ContainsI("english"))
@@ -3712,22 +3728,25 @@ public sealed partial class Scanner : IDisposable
         }
 
         // Sometimes extra languages are in zip files inside the FM archive
-        for (int i = 0; i < baseDirFiles.Count; i++)
+        for (int baseDirFilesI = 0; baseDirFilesI < baseDirFiles.Count; baseDirFilesI++)
         {
             // @ScanExp(GetLanguages/whatever-style naming detection): All base dir file names are needed here!
             // -Due to ContainsI() (wrapping IndexOf()) and Regex.Match() (hard requires a string), and extension
             //  removal
-            string fn = baseDirFiles[i].Name;
+            string fn = baseDirFiles[baseDirFilesI].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
             // @PERF_TODO: String allocation, but a large convenience
             fn = fn.RemoveExtension();
 
             // LINQ avoidance
-            for (int j = 0; j < Languages.Length; j++)
+            for (int langI = 0; langI < Languages.Length; langI++)
             {
-                string lang = Languages[j];
-                if (fn.StartsWithI(lang)) langs.Add(lang);
+                var (langName, found) = Languages[langI];
+                if (!found && fn.StartsWithI(langName))
+                {
+                    langs.Add(langName);
+                }
             }
 
             // "Italiano" will be caught by StartsWithI("italian")

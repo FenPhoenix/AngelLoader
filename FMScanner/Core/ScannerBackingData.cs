@@ -227,20 +227,20 @@ public sealed partial class Scanner
     private readonly List<string> EnglishOnly = new() { "english" };
 
     // Single source of truth for language names (but we use this to build more arrays based on it for perf)
-    private readonly string[]
+    private readonly (string Name, bool Found)[]
     Languages =
     {
-        "english",
-        "czech",
-        "dutch",
-        "french",
-        "german",
-        "hungarian",
-        "italian",
-        "japanese",
-        "polish",
-        "russian",
-        "spanish"
+        ("english", false),
+        ("czech", false),
+        ("dutch", false),
+        ("french", false),
+        ("german", false),
+        ("hungarian", false),
+        ("italian", false),
+        ("japanese", false),
+        ("polish", false),
+        ("russian", false),
+        ("spanish", false)
     };
 
     private readonly string[] Languages_FS_Lang_FS;
