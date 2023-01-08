@@ -1759,8 +1759,6 @@ public sealed partial class Scanner : IDisposable
 
                 // We say HasFileExtension() because we only want to count lang dirs that have files in them
                 // @ScanExp(SetLanguageFound): Requires case-insensitive byte-array search instead of ContainsI()
-                // I think ContainsI() ultimately just uppercases the string and then does the fast native IndexOf(),
-                // so we could do the same and use our standard byte-array searcher
                 if (fnFS.HasFileExtension() &&
                     (fnFS.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
                      fnFS.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
