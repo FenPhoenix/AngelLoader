@@ -2201,7 +2201,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
         */
         if (handleSymbolCharRange &&
-            // We know the code point is > 0 by this point so the uint cast is fine and seems to add perf somehow
+            // We know the code point is >= 0 by this point so the uint cast is fine and seems to add perf somehow
             ((uint)(codePoint - 0xF020) <= 0xF0FF - 0xF020))
         {
             codePoint -= 0xF000;
