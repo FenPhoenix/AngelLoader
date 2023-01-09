@@ -1865,6 +1865,8 @@ public sealed partial class Scanner : IDisposable
                 -Only check filename byte array + length in here
                 -If it turns out we want to convert this ref struct entry to a proper entry, do so and handle
                  the count/expected count values so we don't get a mismatch exception afterwards
+                @ScanExp(ReadAndCacheFMData): We can't use this one loop anymore, because byte array / string
+                We need byte array for zips, but string for everything else. Argh.
                 */
                 while (_fmIsZip ? _archive.ReadNextEntry() : i < filesCount)
                 {
