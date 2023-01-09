@@ -239,8 +239,9 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 1; i < langsCount; i++)
         {
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + Languages[i] + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + Languages[i] + "/title.str";
+            string lang = Languages[i];
+            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + lang + "/title.str";
         }
 
         #endregion
@@ -250,8 +251,8 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < langsCount; i++)
         {
             string lang = Languages[i];
-            Languages_FS_Lang_FS[i] = "/" + Languages[i] + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + Languages[i] + " Language/";
+            Languages_FS_Lang_FS[i] = "/" + lang + "/";
+            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
 
             // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
             // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
