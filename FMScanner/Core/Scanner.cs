@@ -801,10 +801,8 @@ public sealed partial class Scanner : IDisposable
                 try
                 {
                     _archive = new ZipArchiveS(GetFileStreamFast(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
-
-                    // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
-                    // thrown while loading them. If this passes, we're definitely good.
-                    if (_archive.Entries.Count == 0)
+                    _archive.InitializeEntries();
+                    if (_archive.EntryCount == 0)
                     {
                         Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
                         return UnsupportedZip(fm.Path, null, null, "");
@@ -812,79 +810,10 @@ public sealed partial class Scanner : IDisposable
                 }
                 catch (Exception ex)
                 {
-                    #region Notes about semi-broken zips
-                    /*
-                    Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
-                    
-                    Known semi-broken files:
-                    Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
-                    1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
-
-                    Both files are byte-identical but just with different names.
-
-                    Note that my version of the second file (same name) is not broken, I got it from
-                    http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-                    scanner with.
-
-                    These files throw with "The archive entry was compressed using an unsupported compression method."
-                    They throw on both ZipArchiveFast() and regular built-in ZipArchive().
-
-                    The compression method for each file in the archive is:
-
-                    MISS15.MIS:                6
-                    UGUEST.TXT:                6
-                    INTRFACE/NEWGAME.STR:      1
-                    INTRFACE/UGUEST/GOALS.STR: 1
-                    STRINGS/MISSFLAG.STR:      1
-                    STRINGS/TITLES.STR:        6
-
-                    1 = Shrink
-                    6 = Implode
-
-                    (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-
-                   .NET zip (all versions AFAIK) only supports Deflate.
-
-                    There also seem to be other errors, involving "headers" and "data past the end of archive".
-                    I don't really know enough about the zip format to understand these that much.
-
-                    7z.exe can handle these files, so we could use that as a fallback, but:
-
-                    7z.exe reports:
-
-                    ERRORS:
-                    Headers Error
-
-                    WARNINGS:
-                    There are data after the end of archive
-
-                    And it considers the error to be "fatal" even though it succeeds in this case (the
-                    extracted dir diffs identical with the extracted dir of the working one).
-                    But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-                    dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-                    not result in intact files on disk) error. If we just match by "Headers error" and/or
-                    "data past end" who knows if sometimes those might actually result in bad output and not
-                    others. I don't know. So we're going to continue to fail in this case, but at least tell
-                    the user what's wrong and give them an actionable suggestion.
-                    */
-                    #endregion
-                    if (ex is ZipCompressionMethodException zipEx)
-                    {
-                        Log(fm.Path + ": fm is zip.\r\n" +
-                            "UNSUPPORTED COMPRESSION METHOD\r\n" +
-                            "Zip contains one or more files compressed with an unsupported method. " +
-                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
-                            "Returning 'Unknown' game type.", zipEx);
-                        return UnknownZip(fm.Path, null, zipEx, "");
-                    }
-                    // Invalid zip file, whatever, move on
-                    else
-                    {
-                        Log(fm.Path + ": fm is zip, exception in " +
-                            nameof(ZipArchiveS) +
-                            " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                        return UnsupportedZip(fm.Path, null, ex, "");
-                    }
+                    Log(fm.Path + ": fm is zip, exception in " +
+                        nameof(ZipArchiveS) +
+                        " construction or reading. Returning 'Unsupported' game type.", ex);
+                    return UnsupportedZip(fm.Path, null, ex, "");
                 }
             }
             else
@@ -979,7 +908,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Cache FM data
 
-        bool success = ReadAndCacheFMData(
+        (bool success, Exception? zipReadException) = ReadAndCacheFMData(
             fm.Path,
             fmData,
             baseDirFiles,
@@ -992,6 +921,83 @@ public sealed partial class Scanner : IDisposable
 
         if (!success)
         {
+            if (zipReadException != null)
+            {
+                #region Notes about semi-broken zips
+                /*
+                Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+
+                Known semi-broken files:
+                Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+                1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+                Both files are byte-identical but just with different names.
+
+                Note that my version of the second file (same name) is not broken, I got it from
+                http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+                scanner with.
+
+                These files throw with "The archive entry was compressed using an unsupported compression method."
+                They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+                The compression method for each file in the archive is:
+
+                MISS15.MIS:                6
+                UGUEST.TXT:                6
+                INTRFACE/NEWGAME.STR:      1
+                INTRFACE/UGUEST/GOALS.STR: 1
+                STRINGS/MISSFLAG.STR:      1
+                STRINGS/TITLES.STR:        6
+
+                1 = Shrink
+                6 = Implode
+
+                (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+               .NET zip (all versions AFAIK) only supports Deflate.
+
+                There also seem to be other errors, involving "headers" and "data past the end of archive".
+                I don't really know enough about the zip format to understand these that much.
+
+                7z.exe can handle these files, so we could use that as a fallback, but:
+
+                7z.exe reports:
+
+                ERRORS:
+                Headers Error
+
+                WARNINGS:
+                There are data after the end of archive
+
+                And it considers the error to be "fatal" even though it succeeds in this case (the
+                extracted dir diffs identical with the extracted dir of the working one).
+                But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+                dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+                not result in intact files on disk) error. If we just match by "Headers error" and/or
+                "data past end" who knows if sometimes those might actually result in bad output and not
+                others. I don't know. So we're going to continue to fail in this case, but at least tell
+                the user what's wrong and give them an actionable suggestion.
+                */
+                #endregion
+                if (zipReadException is ZipCompressionMethodException zipEx)
+                {
+                    Log(fm.Path + ": fm is zip.\r\n" +
+                        "UNSUPPORTED COMPRESSION METHOD\r\n" +
+                        "Zip contains one or more files compressed with an unsupported method. " +
+                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
+                        "Returning 'Unknown' game type.", zipEx);
+                    return UnknownZip(fm.Path, null, zipEx, "");
+                }
+                // Invalid zip file, whatever, move on
+                else
+                {
+                    Log(fm.Path + ": fm is zip, exception in " +
+                        nameof(ZipArchiveS) +
+                        " entries getting. Returning 'Unsupported' game type.", zipReadException);
+                    return UnsupportedZip(fm.Path, null, zipReadException, "");
+                }
+            }
+
             string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
             Log(fm.Path + ": fm is " + ext + ", " +
                 nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
@@ -1770,7 +1776,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private bool ReadAndCacheFMData(
+    private (bool Succeeded, Exception? ZipReadException) ReadAndCacheFMData(
         string fmPath,
         ScannedFMData fmd,
         List<NameAndIndex> baseDirFiles,
@@ -1785,6 +1791,8 @@ public sealed partial class Scanner : IDisposable
 
         bool t3Found = false;
         var t3GmpFiles = new List<NameAndIndex>();
+
+        #region Local functions
 
         static bool MapFileExists(string path)
         {
@@ -1842,16 +1850,29 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
+        #endregion
+
         if (_fmIsZip || _fmDirFileInfos.Count > 0)
         {
-            int filesCount = _fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count;
-            for (int i = 0; i < filesCount; i++)
+            int filesCount = _fmIsZip ? _archive.EntryCount : _fmDirFileInfos.Count;
+            int i = 0;
+            try
             {
-                string fn = _fmIsZip
-                    ? _archive.Entries[i].FullName
-                    : _fmIsSevenZip
-                        ? _fmDirFileInfos[i].FullName
-                        : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
+                /*
+                @ScanExp(ReadAndCacheFMData) todos:
+                -Don't set filename string in ReadNextEntry()
+                -Have ReadNextEntry() return current ref struct entry
+                -Only check filename byte array + length in here
+                -If it turns out we want to convert this ref struct entry to a proper entry, do so and handle
+                 the count/expected count values so we don't get a mismatch exception afterwards
+                */
+                while (_fmIsZip ? _archive.ReadNextEntry() : i < filesCount)
+                {
+                    string fn = _fmIsZip
+                        ? _archive.Entries[i].FullName
+                        : _fmIsSevenZip
+                            ? _fmDirFileInfos[i].FullName
+                            : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
 
@@ -1859,161 +1880,177 @@ public sealed partial class Scanner : IDisposable
 
 #endif
 
-                int index = _fmIsZip ? i : -1;
+                    int index = _fmIsZip ? i : -1;
 
-                if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                    fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
-                {
-                    if (t3Found)
+                    if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
+                        fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
                     {
-                        if (fn.ExtIsGmp())
+                        if (t3Found)
                         {
-                            if (_scanOptions.ScanMissionCount)
+                            if (fn.ExtIsGmp())
                             {
-                                // We only want the filename; we already know it's in the right folder
-                                t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                if (_scanOptions.ScanMissionCount)
+                                {
+                                    // We only want the filename; we already know it's in the right folder
+                                    t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                }
+                                i++;
+                                continue;
                             }
-                            continue;
+                        }
+                        else
+                        {
+                            if (fn.ExtIsIbt() ||
+                                fn.ExtIsCbt() ||
+                                fn.ExtIsNed() ||
+                                fn.ExtIsUnr())
+                            {
+                                fmd.Game = Game.Thief3;
+                                t3Found = true;
+                                i++;
+                                continue;
+                            }
+                            else if (fn.ExtIsGmp())
+                            {
+                                fmd.Game = Game.Thief3;
+                                t3Found = true;
+                                if (_scanOptions.ScanMissionCount)
+                                {
+                                    // We only want the filename; we already know it's in the right folder
+                                    t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                }
+                                i++;
+                                continue;
+                            }
                         }
                     }
-                    else
+                    // We can't early-out if !t3Found here because if we find it after this point, we'll be
+                    // missing however many of these we skipped before we detected Thief 3
+                    else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                             fn.PathStartsWithI(FMDirs.T3FMExtras2S))
                     {
-                        if (fn.ExtIsIbt() ||
-                            fn.ExtIsCbt() ||
-                            fn.ExtIsNed() ||
-                            fn.ExtIsUnr())
-                        {
-                            fmd.Game = Game.Thief3;
-                            t3Found = true;
-                            continue;
-                        }
-                        else if (fn.ExtIsGmp())
-                        {
-                            fmd.Game = Game.Thief3;
-                            t3Found = true;
-                            if (_scanOptions.ScanMissionCount)
-                            {
-                                // We only want the filename; we already know it's in the right folder
-                                t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
-                            }
-                            continue;
-                        }
+                        t3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
+                        i++;
+                        continue;
                     }
-                }
-                // We can't early-out if !t3Found here because if we find it after this point, we'll be
-                // missing however many of these we skipped before we detected Thief 3
-                else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                         fn.PathStartsWithI(FMDirs.T3FMExtras2S))
-                {
-                    t3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
-                    continue;
-                }
-                else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
-                {
-                    baseDirFiles.Add(new NameAndIndex(fn, index));
-                    // Fallthrough so ScanCustomResources can use it
-                }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
-                {
-                    stringsDirFiles.Add(new NameAndIndex(fn, index));
-                    if (SS2FingerprintRequiredAndNotDone() &&
-                        (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                    else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
+                    {
+                        baseDirFiles.Add(new NameAndIndex(fn, index));
+                        // Fallthrough so ScanCustomResources can use it
+                    }
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
+                    {
+                        stringsDirFiles.Add(new NameAndIndex(fn, index));
+                        if (SS2FingerprintRequiredAndNotDone() &&
+                            (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                        {
+                            _ss2Fingerprinted = true;
+                        }
+
+                        SetLanguageFound(fn);
+                        i++;
+                        continue;
+                    }
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
+                    {
+                        intrfaceDirFiles.Add(new NameAndIndex(fn, index));
+                        SetLanguageFound(fn);
+                        // Fallthrough so ScanCustomResources can use it
+                    }
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
+                    {
+                        booksDirFiles.Add(new NameAndIndex(fn, index));
+                        SetLanguageFound(fn);
+                        i++;
+                        continue;
+                    }
+                    else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
+                             (fn.PathStartsWithI(FMDirs.CutscenesS) ||
+                              fn.PathStartsWithI(FMDirs.Snd2S)))
                     {
                         _ss2Fingerprinted = true;
+                        // Fallthrough so ScanCustomResources can use it
                     }
 
-                    SetLanguageFound(fn);
+                    // Inlined for performance. We cut the time roughly in half by doing this.
+                    if (!t3Found && _scanOptions.ScanCustomResources)
+                    {
+                        if (fmd.HasAutomap == null && AutomapFileExists(fn))
+                        {
+                            fmd.HasAutomap = true;
+                        }
+                        else if (fmd.HasMap == null && MapFileExists(fn))
+                        {
+                            fmd.HasMap = true;
+                        }
+                        else if (fmd.HasCustomMotions == null &&
+                                 fn.PathStartsWithI(FMDirs.MotionsS) &&
+                                 // @ScanExp: MotionFileExtensions check
+                                 FileExtensionFound(fn, MotionFileExtensions))
+                        {
+                            fmd.HasCustomMotions = true;
+                        }
+                        else if (fmd.HasMovies == null &&
+                                 (fn.PathStartsWithI(FMDirs.MoviesS) || fn.PathStartsWithI(FMDirs.CutscenesS)) &&
+                                 fn.HasFileExtension())
+                        {
+                            fmd.HasMovies = true;
+                        }
+                        else if (fmd.HasCustomTextures == null &&
+                                 fn.PathStartsWithI(FMDirs.FamS) &&
+                                 // @ScanExp: ImageFileExtensions check
+                                 FileExtensionFound(fn, ImageFileExtensions))
+                        {
+                            fmd.HasCustomTextures = true;
+                        }
+                        else if (fmd.HasCustomObjects == null &&
+                                 fn.PathStartsWithI(FMDirs.ObjS) &&
+                                 fn.ExtIsBin())
+                        {
+                            fmd.HasCustomObjects = true;
+                        }
+                        else if (fmd.HasCustomCreatures == null &&
+                                 fn.PathStartsWithI(FMDirs.MeshS) &&
+                                 fn.ExtIsBin())
+                        {
+                            fmd.HasCustomCreatures = true;
+                        }
+                        else if ((fmd.HasCustomScripts == null &&
+                                  !fn.Rel_ContainsDirSep() &&
+                                  // @ScanExp: ScriptFileExtensions check
+                                  FileExtensionFound(fn, ScriptFileExtensions)) ||
+                                 (fn.PathStartsWithI(FMDirs.ScriptsS) &&
+                                  fn.HasFileExtension()))
+                        {
+                            fmd.HasCustomScripts = true;
+                        }
+                        else if (fmd.HasCustomSounds == null &&
+                                 (fn.PathStartsWithI(FMDirs.SndS) || fn.PathStartsWithI(FMDirs.Snd2S)) &&
+                                 fn.HasFileExtension())
+                        {
+                            fmd.HasCustomSounds = true;
+                        }
+                        else if (fmd.HasCustomSubtitles == null &&
+                                 fn.PathStartsWithI(FMDirs.SubtitlesS) &&
+                                 fn.ExtIsSub())
+                        {
+                            fmd.HasCustomSubtitles = true;
+                        }
+                    }
+                    i++;
+                }
+            }
+            catch (Exception ex) when (_fmIsZip)
+            {
+                return (false, ex);
+            }
 
-                    continue;
-                }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
-                {
-                    intrfaceDirFiles.Add(new NameAndIndex(fn, index));
-                    SetLanguageFound(fn);
-                    // Fallthrough so ScanCustomResources can use it
-                }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
-                {
-                    booksDirFiles.Add(new NameAndIndex(fn, index));
-                    SetLanguageFound(fn);
-                    continue;
-                }
-                else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
-                         (fn.PathStartsWithI(FMDirs.CutscenesS) ||
-                          fn.PathStartsWithI(FMDirs.Snd2S)))
-                {
-                    _ss2Fingerprinted = true;
-                    // Fallthrough so ScanCustomResources can use it
-                }
-
-                // Inlined for performance. We cut the time roughly in half by doing this.
-                if (!t3Found && _scanOptions.ScanCustomResources)
-                {
-                    if (fmd.HasAutomap == null && AutomapFileExists(fn))
-                    {
-                        fmd.HasAutomap = true;
-                    }
-                    else if (fmd.HasMap == null && MapFileExists(fn))
-                    {
-                        fmd.HasMap = true;
-                    }
-                    else if (fmd.HasCustomMotions == null &&
-                             fn.PathStartsWithI(FMDirs.MotionsS) &&
-                             // @ScanExp: MotionFileExtensions check
-                             FileExtensionFound(fn, MotionFileExtensions))
-                    {
-                        fmd.HasCustomMotions = true;
-                    }
-                    else if (fmd.HasMovies == null &&
-                             (fn.PathStartsWithI(FMDirs.MoviesS) || fn.PathStartsWithI(FMDirs.CutscenesS)) &&
-                             fn.HasFileExtension())
-                    {
-                        fmd.HasMovies = true;
-                    }
-                    else if (fmd.HasCustomTextures == null &&
-                             fn.PathStartsWithI(FMDirs.FamS) &&
-                             // @ScanExp: ImageFileExtensions check
-                             FileExtensionFound(fn, ImageFileExtensions))
-                    {
-                        fmd.HasCustomTextures = true;
-                    }
-                    else if (fmd.HasCustomObjects == null &&
-                             fn.PathStartsWithI(FMDirs.ObjS) &&
-                             fn.ExtIsBin())
-                    {
-                        fmd.HasCustomObjects = true;
-                    }
-                    else if (fmd.HasCustomCreatures == null &&
-                             fn.PathStartsWithI(FMDirs.MeshS) &&
-                             fn.ExtIsBin())
-                    {
-                        fmd.HasCustomCreatures = true;
-                    }
-                    else if ((fmd.HasCustomScripts == null &&
-                              !fn.Rel_ContainsDirSep() &&
-                              // @ScanExp: ScriptFileExtensions check
-                              FileExtensionFound(fn, ScriptFileExtensions)) ||
-                             (fn.PathStartsWithI(FMDirs.ScriptsS) &&
-                              fn.HasFileExtension()))
-                    {
-                        fmd.HasCustomScripts = true;
-                    }
-                    else if (fmd.HasCustomSounds == null &&
-                             (fn.PathStartsWithI(FMDirs.SndS) || fn.PathStartsWithI(FMDirs.Snd2S)) &&
-                             fn.HasFileExtension())
-                    {
-                        fmd.HasCustomSounds = true;
-                    }
-                    else if (fmd.HasCustomSubtitles == null &&
-                             fn.PathStartsWithI(FMDirs.SubtitlesS) &&
-                             fn.ExtIsSub())
-                    {
-                        fmd.HasCustomSubtitles = true;
-                    }
-                }
+            if (_fmIsZip && i != _archive.EntryCount)
+            {
+                throw new InvalidDataException(SR.NumEntriesWrong);
             }
 
             // Thief 3 FMs can have empty base dirs, and we don't scan for custom resources for T3
@@ -2022,7 +2059,7 @@ public sealed partial class Scanner : IDisposable
                 if (baseDirFiles.Count == 0)
                 {
                     Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.", stackTrace: false);
-                    return false;
+                    return (false, null);
                 }
 
                 if (_scanOptions.ScanCustomResources)
@@ -2083,7 +2120,7 @@ public sealed partial class Scanner : IDisposable
                 if (baseDirFiles.Count == 0)
                 {
                     Log(fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.", stackTrace: false);
-                    return false;
+                    return (false, null);
                 }
 
                 foreach (string f in EnumFiles(FMDirs.StringsS, SearchOption.AllDirectories))
@@ -2210,7 +2247,7 @@ public sealed partial class Scanner : IDisposable
             }
 
             // Cut it right here for Thief 3: we don't need anything else
-            return true;
+            return (true, null);
         }
 
         #endregion
@@ -2230,7 +2267,7 @@ public sealed partial class Scanner : IDisposable
         if (misFiles.Count == 0)
         {
             Log(fmPath + ": No .mis files in base dir. Returning false.", stackTrace: false);
-            return false;
+            return (false, null);
         }
 
         #endregion
@@ -2346,7 +2383,7 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        return true;
+        return (true, null);
     }
 
     #region Read FM info files

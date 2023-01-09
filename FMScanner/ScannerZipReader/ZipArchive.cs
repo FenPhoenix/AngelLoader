@@ -243,6 +243,100 @@ internal sealed class ZipArchiveS : IDisposable
 
     private bool _entriesInitialized;
 
+    internal int EntryCount => (int)_expectedNumberOfEntries;
+
+    internal void InitializeEntries()
+    {
+        if (!_entriesInitialized)
+        {
+            if (_bundle.Entries.Capacity > 25_000)
+            {
+                _bundle.Entries.Capacity = 0;
+                _bundle.Entries.Count = 0;
+            }
+
+            if (_bundle.Entries.Capacity < (int)_expectedNumberOfEntries)
+            {
+                _bundle.Entries.Capacity = (int)_expectedNumberOfEntries;
+            }
+
+            _bundle.Entries.Count = 0;
+
+            try
+            {
+                // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
+                _archiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
+            }
+            catch (EndOfStreamException ex)
+            {
+                throw new InvalidDataException(SR.CentralDirectoryInvalid + "\r\nInner exception:\r\n" + ex);
+            }
+        }
+
+        _entriesInitialized = true;
+    }
+
+    internal bool ReadNextEntry()
+    {
+        bool success = ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _bundle, out var currentHeader);
+        if (!success) return false;
+
+        ZipArchiveSEntry entry;
+        if (_bundle.Entries.Count > _expectedNumberOfEntries)
+        {
+            entry = _bundle.Entries[(int)_expectedNumberOfEntries];
+            if (entry == null!)
+            {
+                entry = new ZipArchiveSEntry(currentHeader);
+                _bundle.Entries[(int)_expectedNumberOfEntries] = entry;
+            }
+            else
+            {
+                entry.Set(currentHeader);
+            }
+        }
+        else
+        {
+            entry = new ZipArchiveSEntry(currentHeader);
+            _bundle.Entries.Add(entry);
+        }
+
+        if (currentHeader.DiskNumberStart != _numberOfThisDisk)
+        {
+            ThrowHelper.SplitSpanned();
+        }
+        else
+        {
+            CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
+            if (compressionMethod != CompressionMethodValues.Stored &&
+                compressionMethod != CompressionMethodValues.Deflate &&
+                compressionMethod != CompressionMethodValues.Deflate64)
+            {
+                switch (compressionMethod)
+                {
+                    case CompressionMethodValues.BZip2:
+                    case CompressionMethodValues.LZMA:
+                        string msg = string.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
+                        UnopenableArchives[entry] = msg;
+                        if (!_allowUnsupportedEntries)
+                        {
+                            ThrowHelper.ZipCompressionMethodException(msg);
+                        }
+                        break;
+                    default:
+                        UnopenableArchives[entry] = SR.UnsupportedCompression;
+                        if (!_allowUnsupportedEntries)
+                        {
+                            ThrowHelper.ZipCompressionMethodException(SR.UnsupportedCompression);
+                        }
+                        break;
+                }
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// The collection of entries that are currently in the ZipArchive. This may not accurately represent the actual entries that are present in the underlying file or stream.
     /// </summary>
@@ -255,105 +349,6 @@ internal sealed class ZipArchiveS : IDisposable
         get
         {
             ThrowIfDisposed();
-
-            if (!_entriesInitialized)
-            {
-                if (_bundle.Entries.Capacity > 25_000)
-                {
-                    _bundle.Entries.Capacity = 0;
-                    _bundle.Entries.Count = 0;
-                }
-
-                if (_bundle.Entries.Capacity < (int)_expectedNumberOfEntries)
-                {
-                    _bundle.Entries.Capacity = (int)_expectedNumberOfEntries;
-                }
-
-                _bundle.Entries.Count = (int)_expectedNumberOfEntries;
-
-                #region Read central directory
-
-                try
-                {
-                    // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
-
-                    _archiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
-
-                    long numberOfEntries = 0;
-
-                    //read the central directory
-                    while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _bundle, out var currentHeader))
-                    {
-                        ZipArchiveSEntry entry;
-                        if (_bundle.Entries.Count > numberOfEntries)
-                        {
-                            entry = _bundle.Entries[(int)numberOfEntries];
-                            if (entry == null!)
-                            {
-                                entry = new ZipArchiveSEntry(currentHeader);
-                                _bundle.Entries[(int)numberOfEntries] = entry;
-                            }
-                            else
-                            {
-                                entry.Set(currentHeader);
-                            }
-                        }
-                        else
-                        {
-                            entry = new ZipArchiveSEntry(currentHeader);
-                            _bundle.Entries.Add(entry);
-                        }
-
-                        numberOfEntries++;
-
-                        if (currentHeader.DiskNumberStart != _numberOfThisDisk)
-                        {
-                            ThrowHelper.SplitSpanned();
-                        }
-                        else
-                        {
-                            CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
-                            if (compressionMethod != CompressionMethodValues.Stored &&
-                                compressionMethod != CompressionMethodValues.Deflate &&
-                                compressionMethod != CompressionMethodValues.Deflate64)
-                            {
-                                switch (compressionMethod)
-                                {
-                                    case CompressionMethodValues.BZip2:
-                                    case CompressionMethodValues.LZMA:
-                                        string msg = string.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
-                                        UnopenableArchives[entry] = msg;
-                                        if (!_allowUnsupportedEntries)
-                                        {
-                                            ThrowHelper.ZipCompressionMethodException(msg);
-                                        }
-                                        break;
-                                    default:
-                                        UnopenableArchives[entry] = SR.UnsupportedCompression;
-                                        if (!_allowUnsupportedEntries)
-                                        {
-                                            ThrowHelper.ZipCompressionMethodException(SR.UnsupportedCompression);
-                                        }
-                                        break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (numberOfEntries != _expectedNumberOfEntries)
-                    {
-                        throw new InvalidDataException(SR.NumEntriesWrong);
-                    }
-                }
-                catch (EndOfStreamException ex)
-                {
-                    throw new InvalidDataException(SR.CentralDirectoryInvalid + "\r\nInner exception:\r\n" + ex);
-                }
-
-                _entriesInitialized = true;
-
-                #endregion
-            }
 
             return _bundle.Entries;
         }
