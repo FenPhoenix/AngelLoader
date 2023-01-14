@@ -1082,14 +1082,14 @@ public sealed partial class MainForm : DarkFormBase,
         const int minVisible = 200;
 
         Point loc = Config.MainWindowLocation;
-        Rectangle bounds = Screen.FromControl(this).Bounds;
+        Rectangle screenBounds = Screen.FromControl(this).Bounds;
 
-        if (loc.X < bounds.Left - (Width - minVisible) || loc.X > bounds.Right - minVisible)
+        if (loc.X < screenBounds.Left - (Width - minVisible) || loc.X > screenBounds.Right - minVisible)
         {
             loc.X = Defaults.MainWindowLocation.X;
         }
         // Don't let it go any amount past the top of the screen, because that's where the title bar is
-        if (loc.Y < bounds.Top || loc.Y > bounds.Bottom - minVisible)
+        if (loc.Y < screenBounds.Top || loc.Y > screenBounds.Bottom - minVisible)
         {
             loc.Y = Defaults.MainWindowLocation.Y;
         }

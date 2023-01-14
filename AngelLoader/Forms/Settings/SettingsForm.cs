@@ -272,8 +272,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #endregion
 
-        Width = Math.Min(config.SettingsWindowSize.Width, Screen.FromControl(this).WorkingArea.Width);
-        Height = Math.Min(config.SettingsWindowSize.Height, Screen.FromControl(this).WorkingArea.Height);
+        Rectangle screenBounds = Screen.FromControl(this).WorkingArea;
+        Width = Math.Min(config.SettingsWindowSize.Width, screenBounds.Width);
+        Height = Math.Min(config.SettingsWindowSize.Height, screenBounds.Height);
         MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
 
         #region Set page UI state
