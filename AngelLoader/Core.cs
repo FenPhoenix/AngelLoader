@@ -682,6 +682,9 @@ internal static class Core
         {
             // Just always force refresh of FM to make sure whatever we've changed will take.
             // We don't care about possible unnecessary refreshes because we only happen on settings OK click.
+            // @DISPLAYED_FM_SYNC(OpenSettings() SortAndSetFilter() call):
+            // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field
+            // is not referencing a stale FM object that no longer exists in the list!
             await View.SortAndSetFilter(forceDisplayFM: true, keepSelection: keepSel);
         }
 
@@ -989,7 +992,9 @@ internal static class Core
                 View.SetWaitCursor(false);
                 await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
-
+            // @DISPLAYED_FM_SYNC(RefreshFMsListFromDisk() SortAndSetFilter() call):
+            // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field
+            // is not referencing a stale FM object that no longer exists in the list!
             await View.SortAndSetFilter(selFM, forceDisplayFM: true);
         }
         finally

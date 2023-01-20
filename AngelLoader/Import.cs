@@ -255,6 +255,9 @@ internal static class Import
         }
 
         // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+        // @DISPLAYED_FM_SYNC(ImportFrom() SortAndSetFilter() call):
+        // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field
+        // is not referencing a stale FM object that no longer exists in the list!
         await Core.View.SortAndSetFilter(forceDisplayFM: true);
     }
 
