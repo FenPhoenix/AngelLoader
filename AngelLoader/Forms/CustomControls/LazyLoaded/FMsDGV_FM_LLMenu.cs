@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
@@ -68,6 +69,12 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private ToolStripMenuItemCustom OpenInDromEdMenuItem = null!;
     private ToolStripSeparator OpenFMFolderSep = null!;
     private ToolStripMenuItemCustom OpenFMFolderMenuItem = null!;
+    // @vNext(Copy FM folder path):
+    // We could allow copying this even if the FM is not installed, because we can still construct it.
+    // This would be so you could paste it into Thief Buddy without having to split your install/play task, like
+    // you'd otherwise have to install first, then copy-paste the folder, then play if you wanted to use Thief Buddy
+    // all the time.
+    private ToolStripMenuItemCustom CopyFMFolderPathMenuItem = null!;
     private ToolStripMenuItemCustom ScanFMMenuItem = null!;
     private ToolStripMenuItemCustom ConvertAudioMenuItem = null!;
     private ToolStripMenuItemCustom ConvertWAVsTo16BitMenuItem = null!;
@@ -229,7 +236,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             OpenInDromEdSep = new ToolStripSeparator(),
             OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
             OpenFMFolderSep = new ToolStripSeparator(),
-            OpenFMFolderMenuItem = new ToolStripMenuItemCustom{ Image = Images.Folder },
+            OpenFMFolderMenuItem = new ToolStripMenuItemCustom { Image = Images.Folder },
+            CopyFMFolderPathMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
             ScanFMMenuItem = new ToolStripMenuItemCustom(),
             ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
@@ -281,6 +289,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         DeleteFromDBMenuItem.Click += AsyncMenuItems_Click;
         OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
         OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
+        CopyFMFolderPathMenuItem.Click += AsyncMenuItems_Click;
         ScanFMMenuItem.Click += AsyncMenuItems_Click;
         ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
         ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
@@ -320,6 +329,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         OpenFMFolderSep.Visible = _openFMFolderMenuItemVisible;
         OpenFMFolderMenuItem.Visible = _openFMFolderMenuItemVisible;
+        CopyFMFolderPathMenuItem.Visible = _openFMFolderMenuItemVisible;
 
         ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
 
@@ -388,6 +398,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         SetOpenInDromEdMenuItemText(sayShockEd);
 
         OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
+        CopyFMFolderPathMenuItem.Text = LText.FMsList.FMMenu_CopyFMFolderPath;
 
         SetScanFMText(multiSelected);
 
@@ -637,6 +648,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             OpenFMFolderSep.Visible = value;
             OpenFMFolderMenuItem.Visible = value;
+            CopyFMFolderPathMenuItem.Visible = value;
         }
         else
         {
@@ -774,6 +786,15 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else if (sender == OpenFMFolderMenuItem)
         {
             Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
+        }
+        else if (sender == CopyFMFolderPathMenuItem)
+        {
+            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+            if (Utils.FMIsReallyInstalled(fm, out string fmInstalledPath))
+            {
+                // @DIRSEP: Backslashes to be a good citizen, the user might paste this anywhere
+                Clipboard.SetText(fmInstalledPath.ToBackSlashes());
+            }
         }
         else if (sender == ScanFMMenuItem)
         {
