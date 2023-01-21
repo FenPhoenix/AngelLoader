@@ -792,8 +792,16 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
             if (Utils.FMIsReallyInstalled(fm, out string fmInstalledPath))
             {
-                // @DIRSEP: Backslashes to be a good citizen, the user might paste this anywhere
-                Clipboard.SetText(fmInstalledPath.ToBackSlashes());
+                try
+                {
+                    // @DIRSEP: Backslashes to be a good citizen, the user might paste this anywhere
+                    Clipboard.SetText(fmInstalledPath.ToBackSlashes(), TextDataFormat.UnicodeText);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ErrorText.ClipboardCopy, ex);
+                    Core.Dialogs.ShowAlert("Couldn't copy the FM folder path text to the clipboard.", LText.AlertMessages.Alert);
+                }
             }
         }
         else if (sender == ScanFMMenuItem)
