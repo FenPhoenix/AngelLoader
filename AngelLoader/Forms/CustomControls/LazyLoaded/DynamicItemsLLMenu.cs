@@ -42,7 +42,6 @@ internal sealed class DynamicItemsLLMenu : IDarkable
 
         _menu = new DarkContextMenu(_owner)
         {
-            Tag = LoadType.Lazy,
             DarkModeEnabled = _darkModeEnabled
         };
 

@@ -64,7 +64,7 @@ internal sealed class MainLLMenu : IDarkable
     {
         if (_constructed) return;
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
         _menu.Items.AddRange(new ToolStripItem[]
         {
             GameVersionsMenuItem = new ToolStripMenuItemCustom(),

@@ -25,7 +25,7 @@ internal sealed class TopRightLLMenu : IDarkable
             {
                 #region Instantiation and hookup events
 
-                _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+                _menu = new DarkContextMenu(_owner);
 
                 // Can't use InitializedArray() because the menu wants the array to be of a base type even though the
                 // items will be of a derived type, to avoid the stupid covariance warning

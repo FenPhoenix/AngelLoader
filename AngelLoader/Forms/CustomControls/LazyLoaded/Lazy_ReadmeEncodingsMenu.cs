@@ -122,7 +122,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
         // Stupid weird code in an attempt to squeeze a little bit more perf out of this thing for faster
         // initial show
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
 
         _menu.SuspendLayout();
 

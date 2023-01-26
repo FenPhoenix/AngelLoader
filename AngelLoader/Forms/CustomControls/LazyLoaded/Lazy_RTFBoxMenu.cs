@@ -45,7 +45,7 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
     {
         if (_constructed) return;
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
         _menu.Items.AddRange(new ToolStripItem[]
         {
             CopyMenuItem = new ToolStripMenuItemCustom(),

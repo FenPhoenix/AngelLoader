@@ -65,7 +65,7 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
     {
         if (_constructed) return;
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
 
         for (int i = 0, modI = 0; i < SupportedGameCount; i++)
         {

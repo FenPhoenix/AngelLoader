@@ -213,9 +213,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #region Instantiation
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
-        RatingMenu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
-        FinishedOnMenu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
+        RatingMenu = new DarkContextMenu(_owner);
+        FinishedOnMenu = new DarkContextMenu(_owner);
 
         #endregion
 

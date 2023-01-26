@@ -57,7 +57,7 @@ internal sealed class FilterControlsLLMenu : IDarkable
     {
         if (_constructed) return;
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
         _menu.Items.AddRange(new ToolStripItem[]
         {
             TitleMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Title },

@@ -44,7 +44,7 @@ internal sealed class PlayOriginalT2InMultiplayerLLMenu : IDarkable
     {
         if (_constructed) return;
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
         MenuItem = new ToolStripMenuItemCustom
         {
             GameIndex = GameIndex.Thief2,

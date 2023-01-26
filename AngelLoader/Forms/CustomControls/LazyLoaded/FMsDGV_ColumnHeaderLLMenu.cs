@@ -120,7 +120,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 
         #region Instantiation
 
-        _menu = new DarkContextMenu(_owner) { Tag = LoadType.Lazy };
+        _menu = new DarkContextMenu(_owner);
 
         #endregion
 
