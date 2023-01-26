@@ -350,6 +350,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         #endregion
 
         _menu.DarkModeEnabled = _darkModeEnabled;
+        RatingMenu.DarkModeEnabled = _darkModeEnabled;
         FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
         _constructed = true;
@@ -447,16 +448,16 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    internal ContextMenuStrip GetFinishedOnMenu()
-    {
-        Construct();
-        return FinishedOnMenu;
-    }
-
     internal ContextMenuStrip GetRatingMenu()
     {
         Construct();
         return RatingMenu;
+    }
+
+    internal ContextMenuStrip GetFinishedOnMenu()
+    {
+        Construct();
+        return FinishedOnMenu;
     }
 
     internal void SetPlayFMMenuItemEnabled(bool value)
