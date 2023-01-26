@@ -288,8 +288,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         DeleteFMMenuItem.Click += AsyncMenuItems_Click;
         DeleteFromDBMenuItem.Click += AsyncMenuItems_Click;
         OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
-        OpenFMFolderMenuItem.Click += AsyncMenuItems_Click;
-        CopyFMFolderPathMenuItem.Click += AsyncMenuItems_Click;
+        OpenFMFolderMenuItem.Click += OpenFMFolderMenuItem_Click;
+        CopyFMFolderPathMenuItem.Click += CopyFMFolderPathMenuItem_Click;
         ScanFMMenuItem.Click += AsyncMenuItems_Click;
         ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
         ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
@@ -783,27 +783,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
             if (fm.Installed || await FMInstallAndPlay.Install(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
         }
-        else if (sender == OpenFMFolderMenuItem)
-        {
-            Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
-        }
-        else if (sender == CopyFMFolderPathMenuItem)
-        {
-            FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            if (Utils.FMIsReallyInstalled(fm, out string fmInstalledPath))
-            {
-                try
-                {
-                    // @DIRSEP: Backslashes to be a good citizen, the user might paste this anywhere
-                    Clipboard.SetText(fmInstalledPath.ToBackSlashes(), TextDataFormat.UnicodeText);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ErrorText.ClipboardCopy, ex);
-                    Core.Dialogs.ShowAlert("Couldn't copy the FM folder path text to the clipboard.", LText.AlertMessages.Alert);
-                }
-            }
-        }
         else if (sender == ScanFMMenuItem)
         {
             await FMScan.ScanSelectedFMs();
@@ -821,6 +800,29 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             await Core.PinOrUnpinFM(pin: sender == PinToTopMenuItem
                 ? !_owner.FMsDGV.GetMainSelectedFM().Pinned
                 : sender == ExplicitPinToTopMenuItem);
+        }
+    }
+
+    private void OpenFMFolderMenuItem_Click(object sender, EventArgs e)
+    {
+        Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
+    }
+
+    private void CopyFMFolderPathMenuItem_Click(object sender, EventArgs e)
+    {
+        FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+        if (Utils.FMIsReallyInstalled(fm, out string fmInstalledPath))
+        {
+            try
+            {
+                // @DIRSEP: Backslashes to be a good citizen, the user might paste this anywhere
+                Clipboard.SetText(fmInstalledPath.ToBackSlashes(), TextDataFormat.UnicodeText);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ErrorText.ClipboardCopy, ex);
+                Core.Dialogs.ShowAlert("Couldn't copy the FM folder path text to the clipboard.", LText.AlertMessages.Alert);
+            }
         }
     }
 
