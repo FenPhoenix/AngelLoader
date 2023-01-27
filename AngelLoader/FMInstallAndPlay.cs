@@ -318,6 +318,24 @@ internal static class FMInstallAndPlay
             }
         }
 
+        // @ThiefBuddy: Code in progress (Play FM)
+        if (fm.Game.ConvertsToDarkThief(out gameIndex))
+        {
+            string thiefBuddyExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Thief Buddy v1.2", "Thief Buddy.exe");
+            if (File.Exists(thiefBuddyExe))
+            {
+                try
+                {
+                    string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                    ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
+                }
+                catch (Exception ex)
+                {
+                    Log("Couldn't run Thief Buddy", ex);
+                }
+            }
+        }
+
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
         if (!StartExe(gameExe, workingPath, args)) return false;
