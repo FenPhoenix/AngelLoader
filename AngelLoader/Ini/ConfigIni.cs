@@ -96,6 +96,16 @@ internal static partial class Ini
         config.SteamExe = valTrimmed;
     }
 
+    private static void Config_ThiefBuddyExe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.ThiefBuddyExe = valTrimmed;
+    }
+
+    private static void Config_UseThiefBuddy_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.UseThiefBuddy = valTrimmed.EqualsTrue();
+    }
+
     private static void Config_FMsBackupPath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FMsBackupPath = valTrimmed;
@@ -773,6 +783,8 @@ internal static partial class Ini
 
         { "LaunchGamesWithSteam", new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
         { "SteamExe", new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
+        { "ThiefBuddyExe", new Config_DelegatePointerWrapper(&Config_ThiefBuddyExe_Set) },
+        { "UseThiefBuddy", new Config_DelegatePointerWrapper(&Config_UseThiefBuddy_Set) },
         { "FMsBackupPath", new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
         { "FMArchivePath", new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
         { "FMArchivePathsIncludeSubfolders", new Config_DelegatePointerWrapper(&Config_FMArchivePathsIncludeSubfolders_Set) },
@@ -1127,6 +1139,9 @@ internal static partial class Ini
         sb.Append("SteamExe=").AppendLine(config.SteamExe);
 
         #endregion
+
+        sb.Append("ThiefBuddyExe=").AppendLine(config.ThiefBuddyExe);
+        sb.Append("UseThiefBuddy=").Append(config.UseThiefBuddy).AppendLine();
 
         sb.Append("FMsBackupPath=").AppendLine(config.FMsBackupPath.Trim());
         foreach (string path in config.FMArchivePaths)

@@ -221,6 +221,9 @@ public sealed class ConfigData
 
     // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): End
 
+    internal string ThiefBuddyExe = "";
+    internal bool UseThiefBuddy = true;
+
     #endregion
 
     #region Selected FMs

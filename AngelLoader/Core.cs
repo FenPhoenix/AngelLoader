@@ -494,6 +494,9 @@ internal static class Core
         Config.SteamExe = outConfig.SteamExe;
         Config.LaunchGamesWithSteam = outConfig.LaunchGamesWithSteam;
 
+        Config.ThiefBuddyExe = outConfig.ThiefBuddyExe;
+        Config.UseThiefBuddy = outConfig.UseThiefBuddy;
+
         Config.FMsBackupPath = outConfig.FMsBackupPath;
 
         Config.FMArchivePaths.ClearAndAdd(outConfig.FMArchivePaths);

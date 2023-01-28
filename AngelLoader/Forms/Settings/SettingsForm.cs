@@ -183,12 +183,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #region Errorable textboxes
 
-        ErrorableControls = new Control[SupportedGameCount + 3];
+        ErrorableControls = new Control[SupportedGameCount + 4];
         Array.Copy(GameExeTextBoxes, 0, ErrorableControls, 0, SupportedGameCount);
 
         ErrorableControls[SupportedGameCount] = PathsPage.SteamExeTextBox;
-        ErrorableControls[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
-        ErrorableControls[SupportedGameCount + 2] = PathsPage.FMArchivePathsListBox;
+        ErrorableControls[SupportedGameCount + 1] = PathsPage.ThiefBuddyExeTextBox;
+        ErrorableControls[SupportedGameCount + 2] = PathsPage.BackupPathTextBox;
+        ErrorableControls[SupportedGameCount + 3] = PathsPage.FMArchivePathsListBox;
 
         #endregion
 
@@ -323,6 +324,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
         PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked = config.LaunchGamesWithSteam;
         SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
+
+        PathsPage.ThiefBuddyExeTextBox.Text = config.ThiefBuddyExe;
+        PathsPage.UseThiefBuddyCheckBox.Checked = config.UseThiefBuddy;
 
         PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
@@ -573,6 +577,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         PathsPage.SteamExeBrowseButton.Click += ExePathBrowseButtons_Click;
 
+        PathsPage.ThiefBuddyExeTextBox.Leave += ExePathTextBoxes_Leave;
+        PathsPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
+
         PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
         PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
 
@@ -717,6 +724,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
             PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
+
+            PathsPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.Paths_ThiefBuddyOptions;
+            PathsPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.Paths_PathToThiefBuddyExecutable;
+            PathsPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
+            PathsPage.UseThiefBuddyCheckBox.Text = LText.SettingsWindow.Paths_UseThiefBuddy;
 
             PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
             PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
@@ -1028,6 +1040,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
         OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
 
+        OutConfig.ThiefBuddyExe = PathsPage.ThiefBuddyExeTextBox.Text.Trim();
+        OutConfig.UseThiefBuddy = PathsPage.UseThiefBuddyCheckBox.Checked;
+
         OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
         // Manual so we can use Trim() on each
@@ -1272,6 +1287,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 tb = GameExeTextBoxes[i];
                 break;
             }
+        }
+        if (tb == null && sender == PathsPage.ThiefBuddyExeBrowseButton)
+        {
+            tb = PathsPage.ThiefBuddyExeTextBox;
         }
         tb ??= PathsPage.SteamExeTextBox;
 

@@ -687,6 +687,10 @@ internal sealed class LText_Class
         internal readonly string Paths_PathToSteamExecutable = "Path to Steam executable (optional):";
         internal readonly string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
         [FenGenBlankLine]
+        internal readonly string Paths_ThiefBuddyOptions = "Thief Buddy options";
+        internal readonly string Paths_PathToThiefBuddyExecutable = "Path to Thief Buddy executable (optional):";
+        internal readonly string Paths_UseThiefBuddy = "If Thief Buddy exists, run it when playing FMs";
+        [FenGenBlankLine]
         internal readonly string Paths_Other = "Other";
         internal readonly string Paths_BackupPath = "Backup path (required):";
         internal readonly string Paths_FMArchivePaths = "FM archive paths";
