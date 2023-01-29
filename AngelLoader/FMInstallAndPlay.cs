@@ -1158,7 +1158,7 @@ internal static class FMInstallAndPlay
     private const int _gamelodr_ExpectedSize = 48;
 
     // @AutoQuickSaveLoad: Handle exceptions and so on
-    internal static void StarGameAndLoadQuickSave_Test(FanMission fm, string fmInstalledPath, string gamePath)
+    internal static void StartGameAndLoadQuickSave_Test(FanMission fm, string fmInstalledPath, string gamePath)
     {
         int loadGameX0;
         int loadGameY0;
