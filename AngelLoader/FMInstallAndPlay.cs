@@ -1154,6 +1154,37 @@ internal static class FMInstallAndPlay
         }
     }
 
+    private const int _mainr_ExpectedSize = 32;
+    private const int _gamelodr_ExpectedSize = 48;
+
+    // @AutoQuickSaveLoad: Handle exceptions and so on
+    internal static void StarGameAndLoadQuickSave_Test(FanMission fm, string fmInstalledPath, string gamePath)
+    {
+        int loadGameX0;
+        int loadGameY0;
+        int loadGameX1;
+        int loadGameY1;
+
+        string fmMainR = Path.Combine(fmInstalledPath, "intrface", "mainr.bin");
+        if (File.Exists(fmMainR) && new FileInfo(fmMainR).Length == _mainr_ExpectedSize)
+        {
+            using (var br = new BinaryReader(File.OpenRead(fmMainR), Encoding.ASCII, leaveOpen: false))
+            {
+                // Skip past "New Game" one (4x int16 (x0,y0,x1,y1) = 8 bytes)
+                br.BaseStream.Seek(8, SeekOrigin.Begin);
+                // This is "Load Game", the one we want
+                loadGameX0 = br.ReadInt16();
+                loadGameY0 = br.ReadInt16();
+                loadGameX1 = br.ReadInt16();
+                loadGameY1 = br.ReadInt16();
+            }
+        }
+        else
+        {
+            // TODO: Pull the game one out of the crf file (or modded one, if mods can replace it?)
+        }
+    }
+
     #endregion
 
     #region Install/Uninstall
