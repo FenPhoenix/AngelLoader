@@ -286,6 +286,30 @@ internal static class Paths
 
     internal const string MissFlagStr = "missflag.str";
 
+    private static string? _thiefBuddyDefaultExePath;
+    internal static string ThiefBuddyDefaultExePath
+    {
+        get
+        {
+            if (_thiefBuddyDefaultExePath == null)
+            {
+                try
+                {
+                    _thiefBuddyDefaultExePath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "Thief Buddy",
+                        "Thief Buddy.exe");
+                }
+                catch
+                {
+                    _thiefBuddyDefaultExePath = "";
+                }
+            }
+
+            return _thiefBuddyDefaultExePath;
+        }
+    }
+
     #region Game config files
 
     internal const string DarkCfg = "dark.cfg";
