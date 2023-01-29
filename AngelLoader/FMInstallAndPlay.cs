@@ -324,7 +324,7 @@ internal static class FMInstallAndPlay
         {
             string thiefBuddyExe =
                 Config.ThiefBuddyExe.IsEmpty()
-                    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Thief Buddy v1.2", "Thief Buddy.exe")
+                    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Thief Buddy", "Thief Buddy.exe")
                     : Config.ThiefBuddyExe;
 
             if (File.Exists(thiefBuddyExe))
