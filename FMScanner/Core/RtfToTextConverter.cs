@@ -2144,11 +2144,11 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetCharFromConversionList(int codePoint, int[] _fontTable, out char[] finalChars)
+    private bool GetCharFromConversionList(int codePoint, int[] fontTable, out char[] finalChars)
     {
         if (codePoint is >= 0x20 and <= 0xFF)
         {
-            finalChars = ConvertFromUtf32(_fontTable[codePoint - 0x20]) ?? _unicodeUnknownCharArray;
+            finalChars = ConvertFromUtf32(fontTable[codePoint - 0x20]) ?? _unicodeUnknownCharArray;
         }
         else
         {
