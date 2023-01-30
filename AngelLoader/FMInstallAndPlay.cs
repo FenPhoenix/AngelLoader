@@ -318,59 +318,7 @@ internal static class FMInstallAndPlay
             }
         }
 
-        // @ThiefBuddy: Code in progress (Play FM)
-        if (Config.UseThiefBuddy &&
-            fm.Game.ConvertsToDarkThief(out gameIndex))
-        {
-            string thiefBuddyExe =
-                Config.ThiefBuddyExe.IsEmpty()
-                    ? Paths.ThiefBuddyDefaultExePath
-                    : Config.ThiefBuddyExe;
-
-            if (File.Exists(thiefBuddyExe))
-            {
-                bool runThiefBuddy = true;
-
-                if (Config.ThiefBuddyExe.IsEmpty())
-                {
-                    Config.ThiefBuddyExe = thiefBuddyExe;
-
-                    // @ThiefBuddy: Localize this
-                    // @ThiefBuddy: Do we want an "always ask" / ask-per-FM option?
-                    (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                        message: "Thief Buddy was found installed. Do you want to set it to run automatically whenever you play an FM? You can always change this later in Settings.",
-                        title: LText.AlertMessages.Confirm,
-                        icon: MBoxIcon.Information,
-                        yes: "Always use Thief Buddy",
-                        no: "Don't use Thief Buddy"
-                    );
-
-                    switch (result)
-                    {
-                        case MBoxButton.Yes:
-                            runThiefBuddy = true;
-                            break;
-                        case MBoxButton.No:
-                            runThiefBuddy = false;
-                            Config.UseThiefBuddy = false;
-                            break;
-                    }
-                }
-
-                if (runThiefBuddy)
-                {
-                    try
-                    {
-                        string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
-                        ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Couldn't run Thief Buddy", ex);
-                    }
-                }
-            }
-        }
+        RunThiefBuddyIfRequired(fm);
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
@@ -701,6 +649,63 @@ internal static class FMInstallAndPlay
         else
         {
             return (false, "", "", "");
+        }
+    }
+
+    private static void RunThiefBuddyIfRequired(FanMission fm)
+    {
+        // @ThiefBuddy: Code in progress (Play FM)
+        if (Config.UseThiefBuddy &&
+            fm.Game.ConvertsToDarkThief(out GameIndex gameIndex))
+        {
+            string thiefBuddyExe =
+                Config.ThiefBuddyExe.IsEmpty()
+                    ? Paths.ThiefBuddyDefaultExePath
+                    : Config.ThiefBuddyExe;
+
+            if (File.Exists(thiefBuddyExe))
+            {
+                bool runThiefBuddy = true;
+
+                if (Config.ThiefBuddyExe.IsEmpty())
+                {
+                    Config.ThiefBuddyExe = thiefBuddyExe;
+
+                    // @ThiefBuddy: Localize this
+                    // @ThiefBuddy: Do we want an "always ask" / ask-per-FM option?
+                    (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                        message: "Thief Buddy was found installed. Do you want to set it to run automatically whenever you play an FM? You can always change this later in Settings.",
+                        title: LText.AlertMessages.Confirm,
+                        icon: MBoxIcon.Information,
+                        yes: "Always use Thief Buddy",
+                        no: "Don't use Thief Buddy"
+                    );
+
+                    switch (result)
+                    {
+                        case MBoxButton.Yes:
+                            runThiefBuddy = true;
+                            break;
+                        case MBoxButton.No:
+                            runThiefBuddy = false;
+                            Config.UseThiefBuddy = false;
+                            break;
+                    }
+                }
+
+                if (runThiefBuddy)
+                {
+                    try
+                    {
+                        string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                        ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Couldn't run Thief Buddy", ex);
+                    }
+                }
+            }
         }
     }
 
