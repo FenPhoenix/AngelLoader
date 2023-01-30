@@ -142,7 +142,6 @@ public static class Common
 
     #endregion
 
-
     // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
     // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
     // array all the time in a ToArray() call"? Hooray!

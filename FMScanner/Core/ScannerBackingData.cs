@@ -455,6 +455,8 @@ public sealed partial class Scanner
         new byte[_newDarkOffset2]
     };
 
+    // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
+    // complicating things any further than they already are.
     private const int _gameDetectStringBufferLength = 9;
     private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
 

@@ -3864,9 +3864,6 @@ public sealed partial class Scanner : IDisposable
         through the stream sequentially until we hit each one.
         */
 
-        // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
-        // complicating things any further than they already are.
-        const int locationBytesToRead = 9;
         bool foundAtNewDarkLocation = false;
         bool foundAtOldDarkThief2Location = false;
 
