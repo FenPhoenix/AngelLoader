@@ -195,9 +195,10 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
     {
         switch (destinationType)
         {
-            // IgnoreButDontSkipGroup is only relevant for plaintext extraction. As we're only parsing color
+            // CanBeDestOrNotDest is only relevant for plaintext extraction. As we're only parsing color
             // tables, we can just skip groups so marked.
-            case DestinationType.IgnoreButDontSkipGroup:
+            // @vNext: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
+            case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
                 return Error.OK;

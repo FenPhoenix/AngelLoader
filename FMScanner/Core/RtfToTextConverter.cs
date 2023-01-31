@@ -1412,10 +1412,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     {
         switch (destinationType)
         {
-            case DestinationType.IgnoreButDontSkipGroup:
-                // The group this destination is in may contain text we want to extract, so parse it as normal.
-                // We will still skip over the next nested destination group we find, if any, unless it too is
-                // marked as ignore-but-don't-skip.
+            case DestinationType.CanBeDestOrNotDest:
+                // Stupid crazy type of control word, see description for enum field
                 return Error.OK;
             case DestinationType.FieldInstruction:
                 return HandleFieldInstruction();
