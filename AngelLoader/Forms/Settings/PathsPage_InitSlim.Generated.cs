@@ -67,7 +67,7 @@ sealed partial class PathsPage
         this.PagePanel.Controls.Add(this.ActualPathsPanel);
         this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 965);
+        this.PagePanel.Size = new System.Drawing.Size(440, 847);
         this.PagePanel.TabIndex = 3;
         // 
         // ActualPathsPanel
@@ -78,7 +78,7 @@ sealed partial class PathsPage
         this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
         this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
         this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
-        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 952);
+        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 824);
         this.ActualPathsPanel.TabIndex = 4;
         // 
         // LayoutFLP
@@ -88,7 +88,7 @@ sealed partial class PathsPage
         this.LayoutFLP.Controls.Add(this.OtherGroupBox);
         this.LayoutFLP.Controls.Add(this.FMArchivePathsGroupBox);
         this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-        this.LayoutFLP.Location = new System.Drawing.Point(0, 553);
+        this.LayoutFLP.Location = new System.Drawing.Point(0, 437);
         this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
         this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
         this.LayoutFLP.Size = new System.Drawing.Size(440, 392);
@@ -217,7 +217,6 @@ sealed partial class PathsPage
         this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
         this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
         this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 252);
-        this.SteamOptionsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
         this.SteamOptionsGroupBox.TabIndex = 1;
         this.SteamOptionsGroupBox.TabStop = false;
@@ -453,7 +452,7 @@ sealed partial class PathsPage
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 965);
+        this.Size = new System.Drawing.Size(440, 847);
         this.PagePanel.ResumeLayout(false);
         this.ActualPathsPanel.ResumeLayout(false);
         this.LayoutFLP.ResumeLayout(false);
