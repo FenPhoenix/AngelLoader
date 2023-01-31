@@ -32,14 +32,19 @@ partial class ThiefBuddyPage
     private void InitializeComponent()
     {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.ThiefBuddyOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.RunTBPanel = new System.Windows.Forms.Panel();
+            this.RunThiefBuddyWhenPlayingFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.RunTBAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.RunTBNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.RunTBAskRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.ThiefBuddyExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ThiefBuddyExeBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ThiefBuddyExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.UseThiefBuddyCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.ThiefBuddyOptionsGroupBox.SuspendLayout();
+            this.RunTBPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -53,28 +58,75 @@ partial class ThiefBuddyPage
             this.PagePanel.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.TabIndex = 1;
             // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-            this.DummyAutoScrollPanel.TabIndex = 12;
-            // 
             // ThiefBuddyOptionsGroupBox
             // 
             this.ThiefBuddyOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ThiefBuddyOptionsGroupBox.Controls.Add(this.RunTBPanel);
             this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeLabel);
             this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeBrowseButton);
             this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeTextBox);
-            this.ThiefBuddyOptionsGroupBox.Controls.Add(this.UseThiefBuddyCheckBox);
             this.ThiefBuddyOptionsGroupBox.Location = new System.Drawing.Point(8, 8);
             this.ThiefBuddyOptionsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.ThiefBuddyOptionsGroupBox.Name = "ThiefBuddyOptionsGroupBox";
-            this.ThiefBuddyOptionsGroupBox.Size = new System.Drawing.Size(424, 104);
+            this.ThiefBuddyOptionsGroupBox.Size = new System.Drawing.Size(424, 184);
             this.ThiefBuddyOptionsGroupBox.TabIndex = 13;
             this.ThiefBuddyOptionsGroupBox.TabStop = false;
             this.ThiefBuddyOptionsGroupBox.Text = "Thief Buddy options";
+            // 
+            // RunTBPanel
+            // 
+            this.RunTBPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RunTBPanel.Controls.Add(this.RunThiefBuddyWhenPlayingFMsLabel);
+            this.RunTBPanel.Controls.Add(this.RunTBAlwaysRadioButton);
+            this.RunTBPanel.Controls.Add(this.RunTBNeverRadioButton);
+            this.RunTBPanel.Controls.Add(this.RunTBAskRadioButton);
+            this.RunTBPanel.Location = new System.Drawing.Point(16, 72);
+            this.RunTBPanel.Name = "RunTBPanel";
+            this.RunTBPanel.Size = new System.Drawing.Size(392, 100);
+            this.RunTBPanel.TabIndex = 5;
+            // 
+            // RunThiefBuddyWhenPlayingFMsLabel
+            // 
+            this.RunThiefBuddyWhenPlayingFMsLabel.AutoSize = true;
+            this.RunThiefBuddyWhenPlayingFMsLabel.Location = new System.Drawing.Point(0, 0);
+            this.RunThiefBuddyWhenPlayingFMsLabel.Name = "RunThiefBuddyWhenPlayingFMsLabel";
+            this.RunThiefBuddyWhenPlayingFMsLabel.Size = new System.Drawing.Size(178, 13);
+            this.RunThiefBuddyWhenPlayingFMsLabel.TabIndex = 5;
+            this.RunThiefBuddyWhenPlayingFMsLabel.Text = "Run Thief Buddy when playing FMs:";
+            // 
+            // RunTBAlwaysRadioButton
+            // 
+            this.RunTBAlwaysRadioButton.AutoSize = true;
+            this.RunTBAlwaysRadioButton.Location = new System.Drawing.Point(8, 24);
+            this.RunTBAlwaysRadioButton.Name = "RunTBAlwaysRadioButton";
+            this.RunTBAlwaysRadioButton.Size = new System.Drawing.Size(58, 17);
+            this.RunTBAlwaysRadioButton.TabIndex = 4;
+            this.RunTBAlwaysRadioButton.Text = "Always";
+            this.RunTBAlwaysRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // RunTBNeverRadioButton
+            // 
+            this.RunTBNeverRadioButton.AutoSize = true;
+            this.RunTBNeverRadioButton.Location = new System.Drawing.Point(8, 72);
+            this.RunTBNeverRadioButton.Name = "RunTBNeverRadioButton";
+            this.RunTBNeverRadioButton.Size = new System.Drawing.Size(54, 17);
+            this.RunTBNeverRadioButton.TabIndex = 4;
+            this.RunTBNeverRadioButton.Text = "Never";
+            this.RunTBNeverRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // RunTBAskRadioButton
+            // 
+            this.RunTBAskRadioButton.AutoSize = true;
+            this.RunTBAskRadioButton.Checked = true;
+            this.RunTBAskRadioButton.Location = new System.Drawing.Point(8, 48);
+            this.RunTBAskRadioButton.Name = "RunTBAskRadioButton";
+            this.RunTBAskRadioButton.Size = new System.Drawing.Size(94, 17);
+            this.RunTBAskRadioButton.TabIndex = 4;
+            this.RunTBAskRadioButton.TabStop = true;
+            this.RunTBAskRadioButton.Text = "Ask every time";
+            this.RunTBAskRadioButton.UseVisualStyleBackColor = true;
             // 
             // ThiefBuddyExeLabel
             // 
@@ -108,17 +160,12 @@ partial class ThiefBuddyPage
             this.ThiefBuddyExeTextBox.Size = new System.Drawing.Size(320, 20);
             this.ThiefBuddyExeTextBox.TabIndex = 1;
             // 
-            // UseThiefBuddyCheckBox
+            // DummyAutoScrollPanel
             // 
-            this.UseThiefBuddyCheckBox.AutoSize = true;
-            this.UseThiefBuddyCheckBox.Checked = true;
-            this.UseThiefBuddyCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.UseThiefBuddyCheckBox.Location = new System.Drawing.Point(16, 72);
-            this.UseThiefBuddyCheckBox.Name = "UseThiefBuddyCheckBox";
-            this.UseThiefBuddyCheckBox.Size = new System.Drawing.Size(238, 17);
-            this.UseThiefBuddyCheckBox.TabIndex = 0;
-            this.UseThiefBuddyCheckBox.Text = "If Thief Buddy exists, run it when playing FMs";
-            this.UseThiefBuddyCheckBox.UseVisualStyleBackColor = true;
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
+            this.DummyAutoScrollPanel.TabIndex = 12;
             // 
             // ThiefBuddyPage
             // 
@@ -130,6 +177,8 @@ partial class ThiefBuddyPage
             this.PagePanel.ResumeLayout(false);
             this.ThiefBuddyOptionsGroupBox.ResumeLayout(false);
             this.ThiefBuddyOptionsGroupBox.PerformLayout();
+            this.RunTBPanel.ResumeLayout(false);
+            this.RunTBPanel.PerformLayout();
             this.ResumeLayout(false);
 
     }
@@ -143,5 +192,9 @@ partial class ThiefBuddyPage
     internal CustomControls.DarkLabel ThiefBuddyExeLabel;
     internal CustomControls.DarkButton ThiefBuddyExeBrowseButton;
     internal CustomControls.DarkTextBox ThiefBuddyExeTextBox;
-    internal CustomControls.DarkCheckBox UseThiefBuddyCheckBox;
+    internal CustomControls.DarkRadioButton RunTBNeverRadioButton;
+    internal CustomControls.DarkRadioButton RunTBAskRadioButton;
+    internal CustomControls.DarkRadioButton RunTBAlwaysRadioButton;
+    internal System.Windows.Forms.Panel RunTBPanel;
+    internal CustomControls.DarkLabel RunThiefBuddyWhenPlayingFMsLabel;
 }

@@ -688,10 +688,6 @@ internal sealed class LText_Class
         internal readonly string Paths_PathToSteamExecutable = "Path to Steam executable (optional):";
         internal readonly string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
         [FenGenBlankLine]
-        internal readonly string Paths_ThiefBuddyOptions = "Thief Buddy options";
-        internal readonly string Paths_PathToThiefBuddyExecutable = "Path to Thief Buddy executable (optional):";
-        internal readonly string Paths_UseThiefBuddy = "If Thief Buddy exists, run it when playing FMs";
-        [FenGenBlankLine]
         internal readonly string Paths_Other = "Other";
         internal readonly string Paths_BackupPath = "Backup path (required):";
         internal readonly string Paths_FMArchivePaths = "FM archive paths";
@@ -789,6 +785,13 @@ internal sealed class LText_Class
             "\"Fuzzy search\" means, for example, you might enter \"kingstory\" and the filter would match",
             "the FM title \"King's Story\". With this option disabled, the filter would match exact text only.")]
         internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title and author";
+        [FenGenBlankLine]
+        internal readonly string ThiefBuddy_ThiefBuddyOptions = "Thief Buddy options";
+        internal readonly string ThiefBuddy_PathToThiefBuddyExecutable = "Path to Thief Buddy executable (optional):";
+        internal readonly string ThiefBuddy_RunThiefBuddyWhenPlayingFMs = "Run Thief Buddy when playing FMs:";
+        internal readonly string ThiefBuddy_RunAlways = "Always";
+        internal readonly string ThiefBuddy_RunAskEveryTime = "Ask every time";
+        internal readonly string ThiefBuddy_RunNever = "Never";
     }
 
     internal sealed class DateFilterBox_Class

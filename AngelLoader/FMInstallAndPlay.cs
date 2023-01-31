@@ -655,7 +655,7 @@ internal static class FMInstallAndPlay
     private static void RunThiefBuddyIfRequired(FanMission fm)
     {
         // @ThiefBuddy: Code in progress (Play FM)
-        if (Config.UseThiefBuddy &&
+        if (Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
             fm.Game.ConvertsToDarkThief(out GameIndex gameIndex))
         {
             string thiefBuddyExe =
@@ -671,8 +671,8 @@ internal static class FMInstallAndPlay
                 {
                     Config.ThiefBuddyExe = thiefBuddyExe;
 
-                    // @ThiefBuddy: Do we want an "always ask" / ask-per-FM option?
-                    (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                    // @ThiefBuddy: Test thoroughly!
+                    (MBoxButton result, bool dontAskAgain) = Core.Dialogs.ShowMultiChoiceDialog(
                         message: LText.ThiefBuddy.ThiefBuddyAutodetectedFirstTime,
                         title: LText.AlertMessages.Confirm,
                         icon: MBoxIcon.Information,
@@ -684,10 +684,15 @@ internal static class FMInstallAndPlay
                     {
                         case MBoxButton.Yes:
                             runThiefBuddy = true;
+                            Config.RunThiefBuddyOnFMPlay = dontAskAgain
+                                ? RunThiefBuddyOnFMPlay.Always
+                                : RunThiefBuddyOnFMPlay.Ask;
                             break;
                         case MBoxButton.No:
                             runThiefBuddy = false;
-                            Config.UseThiefBuddy = false;
+                            Config.RunThiefBuddyOnFMPlay = dontAskAgain
+                                ? RunThiefBuddyOnFMPlay.Never
+                                : RunThiefBuddyOnFMPlay.Ask;
                             break;
                     }
                 }

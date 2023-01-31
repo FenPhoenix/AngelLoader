@@ -109,9 +109,13 @@ internal static partial class Ini
         config.ThiefBuddyExe = valTrimmed;
     }
 
-    private static void Config_UseThiefBuddy_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_RunThiefBuddyOnFMPlay_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.UseThiefBuddy = valTrimmed.EqualsTrue();
+        FieldInfo? field = typeof(RunThiefBuddyOnFMPlay).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.RunThiefBuddyOnFMPlay = (RunThiefBuddyOnFMPlay)field.GetValue(null);
+        }
     }
 
     private static void Config_FMsBackupPath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -793,7 +797,7 @@ internal static partial class Ini
         { "LaunchGamesWithSteam", new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
         { "SteamExe", new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
         { "ThiefBuddyExe", new Config_DelegatePointerWrapper(&Config_ThiefBuddyExe_Set) },
-        { "UseThiefBuddy", new Config_DelegatePointerWrapper(&Config_UseThiefBuddy_Set) },
+        { "RunThiefBuddyOnFMPlay", new Config_DelegatePointerWrapper(&Config_RunThiefBuddyOnFMPlay_Set) },
         { "FMsBackupPath", new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
         { "FMArchivePath", new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
         { "FMArchivePathsIncludeSubfolders", new Config_DelegatePointerWrapper(&Config_FMArchivePathsIncludeSubfolders_Set) },
@@ -1150,9 +1154,6 @@ internal static partial class Ini
 
         #endregion
 
-        sb.Append("ThiefBuddyExe=").AppendLine(config.ThiefBuddyExe);
-        sb.Append("UseThiefBuddy=").Append(config.UseThiefBuddy).AppendLine();
-
         sb.Append("FMsBackupPath=").AppendLine(config.FMsBackupPath.Trim());
         foreach (string path in config.FMArchivePaths)
         {
@@ -1197,6 +1198,9 @@ internal static partial class Ini
         sb.Append("Language=").AppendLine(config.Language);
         sb.Append("WebSearchUrl=").AppendLine(config.WebSearchUrl);
         sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
+
+        sb.Append("ThiefBuddyExe=").AppendLine(config.ThiefBuddyExe);
+        sb.Append("RunThiefBuddyOnFMPlay=").Append(config.RunThiefBuddyOnFMPlay).AppendLine();
 
         #endregion
 

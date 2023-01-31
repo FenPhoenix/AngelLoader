@@ -221,9 +221,6 @@ public sealed class ConfigData
 
     // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): End
 
-    internal string ThiefBuddyExe = "";
-    internal bool UseThiefBuddy = true;
-
     #endregion
 
     #region Selected FMs
@@ -434,6 +431,13 @@ public sealed class ConfigData
     internal bool AskedToScanForMisCounts;
 
     internal bool EnableFuzzySearch;
+
+    #region Thief Buddy
+
+    internal string ThiefBuddyExe = "";
+    internal RunThiefBuddyOnFMPlay RunThiefBuddyOnFMPlay = RunThiefBuddyOnFMPlay.Ask;
+
+    #endregion
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

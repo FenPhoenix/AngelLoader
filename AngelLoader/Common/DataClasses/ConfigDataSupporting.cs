@@ -73,6 +73,13 @@ internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
 internal enum ConfirmBeforeInstall { Always, OnlyForMultiple, Never }
 
+internal enum RunThiefBuddyOnFMPlay
+{
+    Always,
+    Ask,
+    Never
+}
+
 public enum VisualTheme { Classic, Dark }
 
 #region Top-right tabs

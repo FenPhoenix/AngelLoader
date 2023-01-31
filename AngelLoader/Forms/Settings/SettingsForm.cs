@@ -570,7 +570,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             #region Thief Buddy page
 
             ThiefBuddyPage.ThiefBuddyExeTextBox.Text = config.ThiefBuddyExe;
-            ThiefBuddyPage.UseThiefBuddyCheckBox.Checked = config.UseThiefBuddy;
+
+            switch (config.RunThiefBuddyOnFMPlay)
+            {
+                case RunThiefBuddyOnFMPlay.Always:
+                    ThiefBuddyPage.RunTBAlwaysRadioButton.Checked = true;
+                    break;
+                case RunThiefBuddyOnFMPlay.Never:
+                    ThiefBuddyPage.RunTBNeverRadioButton.Checked = true;
+                    break;
+                case RunThiefBuddyOnFMPlay.Ask:
+                default:
+                    ThiefBuddyPage.RunTBAskRadioButton.Checked = true;
+                    break;
+            }
 
             #endregion
         }
@@ -860,10 +873,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 ThiefBuddyRadioButton.Text = NonLocalizableText.ThiefBuddy;
 
-                ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.Paths_ThiefBuddyOptions;
-                ThiefBuddyPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.Paths_PathToThiefBuddyExecutable;
+                // @ThiefBuddy: Add explanatory paragraph of what TB is maybe?
+                ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.ThiefBuddy_ThiefBuddyOptions;
+                ThiefBuddyPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.ThiefBuddy_PathToThiefBuddyExecutable;
                 ThiefBuddyPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(ThiefBuddyPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
-                ThiefBuddyPage.UseThiefBuddyCheckBox.Text = LText.SettingsWindow.Paths_UseThiefBuddy;
+                ThiefBuddyPage.RunThiefBuddyWhenPlayingFMsLabel.Text = LText.SettingsWindow.ThiefBuddy_RunThiefBuddyWhenPlayingFMs;
+                ThiefBuddyPage.RunTBAlwaysRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunAlways;
+                ThiefBuddyPage.RunTBAskRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunAskEveryTime;
+                ThiefBuddyPage.RunTBNeverRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunNever;
 
                 #endregion
             }
@@ -1232,7 +1249,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             #region Thief Buddy page
 
             OutConfig.ThiefBuddyExe = ThiefBuddyPage.ThiefBuddyExeTextBox.Text.Trim();
-            OutConfig.UseThiefBuddy = ThiefBuddyPage.UseThiefBuddyCheckBox.Checked;
+            OutConfig.RunThiefBuddyOnFMPlay =
+                ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
+                ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
+                RunThiefBuddyOnFMPlay.Ask;
 
             #endregion
         }
