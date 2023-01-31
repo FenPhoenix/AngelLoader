@@ -8,7 +8,11 @@ public partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
 
     public ThiefBuddyPage()
     {
+#if DEBUG
         InitializeComponent();
+#else
+        InitSlim();
+#endif
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
