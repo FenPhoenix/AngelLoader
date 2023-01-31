@@ -671,14 +671,13 @@ internal static class FMInstallAndPlay
                 {
                     Config.ThiefBuddyExe = thiefBuddyExe;
 
-                    // @ThiefBuddy: Localize this
                     // @ThiefBuddy: Do we want an "always ask" / ask-per-FM option?
                     (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                        message: "Thief Buddy was found installed. Do you want to set it to run automatically whenever you play an FM? You can always change this later in Settings.",
+                        message: LText.ThiefBuddy.ThiefBuddyAutodetectedFirstTime,
                         title: LText.AlertMessages.Confirm,
                         icon: MBoxIcon.Information,
-                        yes: "Always use Thief Buddy",
-                        no: "Don't use Thief Buddy"
+                        yes: LText.ThiefBuddy.AlwaysUse,
+                        no: LText.ThiefBuddy.NeverUse
                     );
 
                     switch (result)
@@ -702,6 +701,7 @@ internal static class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
+                        Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
                         Log("Couldn't run Thief Buddy", ex);
                     }
                 }

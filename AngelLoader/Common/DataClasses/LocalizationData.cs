@@ -53,6 +53,7 @@ internal sealed class LText_Class
     internal readonly ScanAllFMsBox_Class ScanAllFMsBox = new();
     internal readonly CharacterEncoding_Class CharacterEncoding = new();
     internal readonly AddFMsToSet_Class AddFMsToSet = new();
+    internal readonly ThiefBuddy_Class ThiefBuddy = new();
 
     internal sealed class Meta_Class
     {
@@ -909,5 +910,13 @@ internal sealed class LText_Class
         internal readonly string AddFM_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy this FM to.";
         internal readonly string AddFMs_Dialog_ChooseArchiveDir = "You have multiple FM archive directories. Please choose one to copy these FMs to.";
         internal readonly string AddFM_Add = "Add";
+    }
+
+    internal sealed class ThiefBuddy_Class
+    {
+        internal readonly string ThiefBuddyAutodetectedFirstTime = "Thief Buddy was found installed. Do you want to set it to automatically run whenever you play an FM? You can always change this later in Settings -> Paths.";
+        internal readonly string AlwaysUse = "Always use Thief Buddy";
+        internal readonly string NeverUse = "Don't use Thief Buddy";
+        internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
     }
 }
