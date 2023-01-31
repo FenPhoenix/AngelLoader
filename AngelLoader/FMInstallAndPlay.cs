@@ -318,7 +318,7 @@ internal static class FMInstallAndPlay
             }
         }
 
-        RunThiefBuddyIfRequired(fm);
+        if (!RunThiefBuddyIfRequired(fm)) return false;
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
@@ -652,66 +652,55 @@ internal static class FMInstallAndPlay
         }
     }
 
-    private static void RunThiefBuddyIfRequired(FanMission fm)
+    private static bool RunThiefBuddyIfRequired(FanMission fm)
     {
+        Config.AutodetectThiefBuddyExe();
+
         // @ThiefBuddy: Code in progress (Play FM)
-        if (Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
-            fm.Game.ConvertsToDarkThief(out GameIndex gameIndex))
+        if (fm.Game.ConvertsToDarkThief(out GameIndex gameIndex) &&
+            !Config.ThiefBuddyExe.IsWhiteSpace() &&
+            Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
+            File.Exists(Config.ThiefBuddyExe))
         {
-            string thiefBuddyExe =
-                Config.ThiefBuddyExe.IsEmpty()
-                    ? Paths.ThiefBuddyDefaultExePath
-                    : Config.ThiefBuddyExe;
+            bool runThiefBuddy = true;
 
-            if (File.Exists(thiefBuddyExe))
+            if (Config.RunThiefBuddyOnFMPlay == RunThiefBuddyOnFMPlay.Ask)
             {
-                bool runThiefBuddy = true;
+                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.ShowMultiChoiceDialog(
+                    message: LText.ThiefBuddy.AskToRunThiefBuddy,
+                    title: LText.AlertMessages.Confirm,
+                    icon: MBoxIcon.None,
+                    yes: LText.ThiefBuddy.RunThiefBuddy,
+                    no: LText.ThiefBuddy.DontRunThiefBuddy,
+                    cancel: LText.Global.Cancel,
+                    checkBoxText: LText.AlertMessages.DontAskAgain
+                );
 
-                if (Config.ThiefBuddyExe.IsEmpty())
+                if (result == MBoxButton.Cancel) return false;
+
+                Config.RunThiefBuddyOnFMPlay = dontAskAgain
+                    ? result == MBoxButton.Yes ? RunThiefBuddyOnFMPlay.Always : RunThiefBuddyOnFMPlay.Never
+                    : RunThiefBuddyOnFMPlay.Ask;
+
+                runThiefBuddy = result == MBoxButton.Yes;
+            }
+
+            if (runThiefBuddy)
+            {
+                try
                 {
-                    Config.ThiefBuddyExe = thiefBuddyExe;
-
-                    // @ThiefBuddy: Test thoroughly!
-                    (MBoxButton result, bool dontAskAgain) = Core.Dialogs.ShowMultiChoiceDialog(
-                        message: LText.ThiefBuddy.ThiefBuddyAutodetectedFirstTime,
-                        title: LText.AlertMessages.Confirm,
-                        icon: MBoxIcon.Information,
-                        yes: LText.ThiefBuddy.AlwaysUse,
-                        no: LText.ThiefBuddy.NeverUse
-                    );
-
-                    switch (result)
-                    {
-                        case MBoxButton.Yes:
-                            runThiefBuddy = true;
-                            Config.RunThiefBuddyOnFMPlay = dontAskAgain
-                                ? RunThiefBuddyOnFMPlay.Always
-                                : RunThiefBuddyOnFMPlay.Ask;
-                            break;
-                        case MBoxButton.No:
-                            runThiefBuddy = false;
-                            Config.RunThiefBuddyOnFMPlay = dontAskAgain
-                                ? RunThiefBuddyOnFMPlay.Never
-                                : RunThiefBuddyOnFMPlay.Ask;
-                            break;
-                    }
+                    string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                    ProcessStart_UseShellExecute(new ProcessStartInfo(Config.ThiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
                 }
-
-                if (runThiefBuddy)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
-                        ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
-                    }
-                    catch (Exception ex)
-                    {
-                        Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
-                        Log("Couldn't run Thief Buddy", ex);
-                    }
+                    Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
+                    Log("Couldn't run Thief Buddy", ex);
                 }
             }
         }
+
+        return true;
     }
 
     #endregion

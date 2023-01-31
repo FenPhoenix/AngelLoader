@@ -437,6 +437,14 @@ public sealed class ConfigData
     internal string ThiefBuddyExe = "";
     internal RunThiefBuddyOnFMPlay RunThiefBuddyOnFMPlay = RunThiefBuddyOnFMPlay.Ask;
 
+    internal void AutodetectThiefBuddyExe()
+    {
+        if (ThiefBuddyExe.IsWhiteSpace())
+        {
+            ThiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
+        }
+    }
+
     #endregion
 
 #if !ReleaseBeta && !ReleasePublic

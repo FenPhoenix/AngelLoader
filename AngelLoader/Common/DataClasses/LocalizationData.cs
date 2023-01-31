@@ -917,9 +917,9 @@ internal sealed class LText_Class
 
     internal sealed class ThiefBuddy_Class
     {
-        internal readonly string ThiefBuddyAutodetectedFirstTime = "Thief Buddy was found installed. Do you want to set it to automatically run whenever you play an FM? You can always change this later in Settings -> Paths.";
-        internal readonly string AlwaysUse = "Always use Thief Buddy";
-        internal readonly string NeverUse = "Don't use Thief Buddy";
+        internal readonly string AskToRunThiefBuddy = "Do you want to run Thief Buddy (a quicksave backup helper) for this FM?";
+        internal readonly string RunThiefBuddy = "Run Thief Buddy";
+        internal readonly string DontRunThiefBuddy = "Don't run Thief Buddy";
         internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
     }
 }
