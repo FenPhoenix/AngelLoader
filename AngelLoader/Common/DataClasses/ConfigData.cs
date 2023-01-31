@@ -439,7 +439,7 @@ public sealed class ConfigData
 
     internal void AutodetectThiefBuddyExe()
     {
-        if (ThiefBuddyExe.IsWhiteSpace())
+        if (ThiefBuddyExe.IsWhiteSpace() && File.Exists(Paths.ThiefBuddyDefaultExePath))
         {
             ThiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
         }
