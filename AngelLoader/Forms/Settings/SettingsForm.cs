@@ -585,6 +585,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     break;
             }
 
+            ThiefBuddyPage.RunTBPanel.Enabled = !ThiefBuddyPage.ThiefBuddyExeTextBox.Text.IsWhiteSpace();
+
             #endregion
         }
 
@@ -653,7 +655,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
 
             ThiefBuddyPage.ThiefBuddyExeTextBox.Leave += ExePathTextBoxes_Leave;
+            ThiefBuddyPage.ThiefBuddyExeTextBox.TextChanged += ThiefBuddyExeTextBox_TextChanged;
             ThiefBuddyPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
+            ThiefBuddyPage.AutodetectButton.Click += ThiefBuddy_AutodetectButton_Click;
         }
 
         #endregion
@@ -875,12 +879,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 // @ThiefBuddy: Add explanatory paragraph of what TB is maybe?
                 ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.ThiefBuddy_ThiefBuddyOptions;
+
                 ThiefBuddyPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.ThiefBuddy_PathToThiefBuddyExecutable;
                 ThiefBuddyPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(ThiefBuddyPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
+                ThiefBuddyPage.AutodetectButton.Text = LText.Global.Autodetect;
+
                 ThiefBuddyPage.RunThiefBuddyWhenPlayingFMsLabel.Text = LText.SettingsWindow.ThiefBuddy_RunThiefBuddyWhenPlayingFMs;
                 ThiefBuddyPage.RunTBAlwaysRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunAlways;
                 ThiefBuddyPage.RunTBAskRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunAskEveryTime;
                 ThiefBuddyPage.RunTBNeverRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunNever;
+
+                ThiefBuddyPage.WhatIsTBHelpLabel.Text = LText.SettingsWindow.ThiefBuddy_Help;
+                ThiefBuddyPage.GetTBLinkLabel.Text = LText.SettingsWindow.ThiefBuddy_Get;
 
                 #endregion
             }
@@ -1735,6 +1745,24 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     #region Other page
 
     private void WebSearchURLResetButton_Click(object sender, EventArgs e) => OtherPage.WebSearchUrlTextBox.Text = Defaults.WebSearchUrl;
+
+    #endregion
+
+    #region Thief Buddy page
+
+    private void ThiefBuddyExeTextBox_TextChanged(object sender, EventArgs e)
+    {
+        ThiefBuddyPage.RunTBPanel.Enabled = !ThiefBuddyPage.ThiefBuddyExeTextBox.Text.IsWhiteSpace();
+    }
+
+    private void ThiefBuddy_AutodetectButton_Click(object sender, EventArgs e)
+    {
+        if (File.Exists(Paths.ThiefBuddyDefaultExePath))
+        {
+            ThiefBuddyPage.ThiefBuddyExeTextBox.Text = Paths.ThiefBuddyDefaultExePath;
+            ShowPathError(ThiefBuddyPage.ThiefBuddyExeTextBox, false);
+        }
+    }
 
     #endregion
 
