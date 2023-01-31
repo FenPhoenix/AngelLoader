@@ -15,6 +15,7 @@ partial class SettingsForm
         this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
         this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
+        this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
@@ -83,10 +84,12 @@ partial class SettingsForm
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ControlDark;
+        this.MainSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel1;
         // 
         // MainSplitContainer.Panel1
         // 
         this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+        this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
@@ -95,9 +98,23 @@ partial class SettingsForm
         // 
         this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
         this.MainSplitContainer.Panel2.Controls.Add(this.PagePanel);
+        this.MainSplitContainer.RefreshSiblingFirst = false;
         this.MainSplitContainer.Size = new System.Drawing.Size(694, 613);
         this.MainSplitContainer.SplitterDistance = 155;
         this.MainSplitContainer.TabIndex = 5;
+        // 
+        // ThiefBuddyRadioButton
+        // 
+        this.ThiefBuddyRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.ThiefBuddyRadioButton.BackColor = System.Drawing.SystemColors.Control;
+        this.ThiefBuddyRadioButton.Checked = false;
+        this.ThiefBuddyRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.ThiefBuddyRadioButton.Location = new System.Drawing.Point(8, 80);
+        this.ThiefBuddyRadioButton.Size = new System.Drawing.Size(136, 23);
+        this.ThiefBuddyRadioButton.TabIndex = 3;
+        this.ThiefBuddyRadioButton.UseVisualStyleBackColor = true;
+        this.ThiefBuddyRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // OtherRadioButton
         // 
@@ -105,11 +122,12 @@ partial class SettingsForm
         | System.Windows.Forms.AnchorStyles.Right)));
         this.OtherRadioButton.BackColor = System.Drawing.SystemColors.Control;
         this.OtherRadioButton.Checked = false;
+        this.OtherRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
         this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
         this.OtherRadioButton.TabIndex = 2;
         this.OtherRadioButton.UseVisualStyleBackColor = true;
-        this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
+        this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // AppearanceRadioButton
         // 
@@ -117,11 +135,12 @@ partial class SettingsForm
         | System.Windows.Forms.AnchorStyles.Right)));
         this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.Control;
         this.AppearanceRadioButton.Checked = false;
+        this.AppearanceRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
         this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
         this.AppearanceRadioButton.TabIndex = 1;
         this.AppearanceRadioButton.UseVisualStyleBackColor = true;
-        this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
+        this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // PathsRadioButton
         // 
@@ -129,11 +148,12 @@ partial class SettingsForm
         | System.Windows.Forms.AnchorStyles.Right)));
         this.PathsRadioButton.BackColor = System.Drawing.SystemColors.Control;
         this.PathsRadioButton.Checked = false;
+        this.PathsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
         this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
         this.PathsRadioButton.TabIndex = 0;
         this.PathsRadioButton.UseVisualStyleBackColor = true;
-        this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PathsRadioButton_CheckedChanged);
+        this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // PagePanel
         // 

@@ -70,6 +70,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly PathsPage PathsPage;
     private readonly AppearancePage AppearancePage;
     private readonly OtherPage OtherPage;
+    private readonly ThiefBuddyPage ThiefBuddyPage;
 
     private enum PathError { True, False }
 
@@ -130,6 +131,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage = new PathsPage { Visible = false };
         AppearancePage = new AppearancePage { Visible = false };
         OtherPage = new OtherPage { Visible = false };
+        ThiefBuddyPage = new ThiefBuddyPage { Visible = false };
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -187,15 +189,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         Array.Copy(GameExeTextBoxes, 0, ErrorableControls, 0, SupportedGameCount);
 
         ErrorableControls[SupportedGameCount] = PathsPage.SteamExeTextBox;
-        ErrorableControls[SupportedGameCount + 1] = PathsPage.ThiefBuddyExeTextBox;
-        ErrorableControls[SupportedGameCount + 2] = PathsPage.BackupPathTextBox;
-        ErrorableControls[SupportedGameCount + 3] = PathsPage.FMArchivePathsListBox;
+        ErrorableControls[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
+        ErrorableControls[SupportedGameCount + 2] = PathsPage.FMArchivePathsListBox;
+        ErrorableControls[SupportedGameCount + 3] = ThiefBuddyPage.ThiefBuddyExeTextBox;
 
         #endregion
 
         // @GENGAMES (Settings): End
 
-        PageRadioButtons = new[] { PathsRadioButton, AppearanceRadioButton, OtherRadioButton };
+        PageRadioButtons = new[]
+        {
+            PathsRadioButton,
+            AppearanceRadioButton,
+            OtherRadioButton,
+            ThiefBuddyRadioButton
+        };
 
         AssertR(PageRadioButtons.Length == SettingsTabsCount, "Page button count doesn't match " + nameof(SettingsTabsCount));
 
@@ -226,15 +234,23 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else
         {
-            Pages = new ISettingsPage[] { PathsPage, AppearancePage, OtherPage };
+            Pages = new ISettingsPage[]
+            {
+                PathsPage,
+                AppearancePage,
+                OtherPage,
+                ThiefBuddyPage
+            };
 
             AssertR(Pages.Length == SettingsTabsCount, "Page count doesn't match " + nameof(SettingsTabsCount));
 
             PagePanel.Controls.Add(AppearancePage);
             PagePanel.Controls.Add(OtherPage);
+            PagePanel.Controls.Add(ThiefBuddyPage);
 
             AppearancePage.Dock = DockStyle.Fill;
             OtherPage.Dock = DockStyle.Fill;
+            ThiefBuddyPage.Dock = DockStyle.Fill;
         }
 
         #endregion
@@ -252,6 +268,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 PathsRadioButton.Checked = true;
                 AppearanceRadioButton.Hide();
                 OtherRadioButton.Hide();
+                ThiefBuddyRadioButton.Hide();
             }
             else
             {
@@ -262,6 +279,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         break;
                     case SettingsTab.Other:
                         OtherRadioButton.Checked = true;
+                        break;
+                    case SettingsTab.ThiefBuddy:
+                        ThiefBuddyRadioButton.Checked = true;
                         break;
                     case SettingsTab.Paths:
                     default:
@@ -324,9 +344,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
         PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked = config.LaunchGamesWithSteam;
         SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
-
-        PathsPage.ThiefBuddyExeTextBox.Text = config.ThiefBuddyExe;
-        PathsPage.UseThiefBuddyCheckBox.Checked = config.UseThiefBuddy;
 
         PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
@@ -549,6 +566,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
 
             #endregion
+
+            #region Thief Buddy page
+
+            ThiefBuddyPage.ThiefBuddyExeTextBox.Text = config.ThiefBuddyExe;
+            ThiefBuddyPage.UseThiefBuddyCheckBox.Checked = config.UseThiefBuddy;
+
+            #endregion
         }
 
         #endregion
@@ -576,9 +600,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.SteamExeTextBox.TextChanged += SteamExeTextBox_TextChanged;
 
         PathsPage.SteamExeBrowseButton.Click += ExePathBrowseButtons_Click;
-
-        PathsPage.ThiefBuddyExeTextBox.Leave += ExePathTextBoxes_Leave;
-        PathsPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
 
         PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
         PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
@@ -617,6 +638,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             AppearancePage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
 
             OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
+
+            ThiefBuddyPage.ThiefBuddyExeTextBox.Leave += ExePathTextBoxes_Leave;
+            ThiefBuddyPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
         }
 
         #endregion
@@ -725,11 +749,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
 
-            PathsPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.Paths_ThiefBuddyOptions;
-            PathsPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.Paths_PathToThiefBuddyExecutable;
-            PathsPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
-            PathsPage.UseThiefBuddyCheckBox.Text = LText.SettingsWindow.Paths_UseThiefBuddy;
-
             PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
             PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
             PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
@@ -834,6 +853,17 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
                 OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
+
+                #endregion
+
+                #region Thief Buddy page
+
+                ThiefBuddyRadioButton.Text = NonLocalizableText.ThiefBuddy;
+
+                ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.Paths_ThiefBuddyOptions;
+                ThiefBuddyPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.Paths_PathToThiefBuddyExecutable;
+                ThiefBuddyPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(ThiefBuddyPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
+                ThiefBuddyPage.UseThiefBuddyCheckBox.Text = LText.SettingsWindow.Paths_UseThiefBuddy;
 
                 #endregion
             }
@@ -963,6 +993,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         OutConfig.SettingsTab =
             AppearanceRadioButton.Checked ? SettingsTab.Appearance :
             OtherRadioButton.Checked ? SettingsTab.Other :
+            ThiefBuddyRadioButton.Checked ? SettingsTab.ThiefBuddy :
             SettingsTab.Paths;
         OutConfig.SettingsWindowSize = Size;
         OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
@@ -1039,9 +1070,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
         OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
-
-        OutConfig.ThiefBuddyExe = PathsPage.ThiefBuddyExeTextBox.Text.Trim();
-        OutConfig.UseThiefBuddy = PathsPage.UseThiefBuddyCheckBox.Checked;
 
         OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
@@ -1200,12 +1228,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OutConfig.EnableFuzzySearch = OtherPage.EnableFuzzySearchCheckBox.Checked;
 
             #endregion
+
+            #region Thief Buddy page
+
+            OutConfig.ThiefBuddyExe = ThiefBuddyPage.ThiefBuddyExeTextBox.Text.Trim();
+            OutConfig.UseThiefBuddy = ThiefBuddyPage.UseThiefBuddyCheckBox.Checked;
+
+            #endregion
         }
     }
 
     #region Page selection handler
 
-    private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled) return;
 
@@ -1288,9 +1323,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 break;
             }
         }
-        if (tb == null && sender == PathsPage.ThiefBuddyExeBrowseButton)
+        // @ThiefBuddy: Go to Thief Buddy page if its path is wrong
+        if (tb == null && sender == ThiefBuddyPage.ThiefBuddyExeBrowseButton)
         {
-            tb = PathsPage.ThiefBuddyExeTextBox;
+            tb = ThiefBuddyPage.ThiefBuddyExeTextBox;
         }
         tb ??= PathsPage.SteamExeTextBox;
 
@@ -1789,6 +1825,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Dispose();
             AppearancePage.Dispose();
             OtherPage.Dispose();
+            ThiefBuddyPage.Dispose();
         }
         base.Dispose(disposing);
     }

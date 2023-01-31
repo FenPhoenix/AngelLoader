@@ -14,6 +14,8 @@ internal static partial class NonLocalizableText
     internal static readonly string FMSelEllipses = "FMSel...";
     internal static readonly string NewDarkLoaderEllipses = "NewDarkLoader...";
 
+    internal static readonly string ThiefBuddy = "Thief Buddy";
+
     internal static readonly string License =
         "MIT License\r\n\r\n" +
         "Copyright (c) 2018-" + CurrentYear + " Brian Tobin (FenPhoenix)\r\n\r\n" +

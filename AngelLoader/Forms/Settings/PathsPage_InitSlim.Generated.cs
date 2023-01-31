@@ -9,11 +9,6 @@ sealed partial class PathsPage
     {
         this.PagePanel = new System.Windows.Forms.Panel();
         this.ActualPathsPanel = new System.Windows.Forms.Panel();
-        this.ThiefBuddyOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.ThiefBuddyExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.ThiefBuddyExeBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.ThiefBuddyExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.UseThiefBuddyCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.BackupPathPanel = new System.Windows.Forms.Panel();
@@ -55,7 +50,6 @@ sealed partial class PathsPage
         this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
         this.PagePanel.SuspendLayout();
         this.ActualPathsPanel.SuspendLayout();
-        this.ThiefBuddyOptionsGroupBox.SuspendLayout();
         this.LayoutFLP.SuspendLayout();
         this.OtherGroupBox.SuspendLayout();
         this.BackupPathPanel.SuspendLayout();
@@ -80,61 +74,12 @@ sealed partial class PathsPage
         // 
         this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.ActualPathsPanel.Controls.Add(this.ThiefBuddyOptionsGroupBox);
         this.ActualPathsPanel.Controls.Add(this.LayoutFLP);
         this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
         this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
         this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
         this.ActualPathsPanel.Size = new System.Drawing.Size(440, 952);
         this.ActualPathsPanel.TabIndex = 4;
-        // 
-        // ThiefBuddyOptionsGroupBox
-        // 
-        this.ThiefBuddyOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeLabel);
-        this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeBrowseButton);
-        this.ThiefBuddyOptionsGroupBox.Controls.Add(this.ThiefBuddyExeTextBox);
-        this.ThiefBuddyOptionsGroupBox.Controls.Add(this.UseThiefBuddyCheckBox);
-        this.ThiefBuddyOptionsGroupBox.Location = new System.Drawing.Point(8, 440);
-        this.ThiefBuddyOptionsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.ThiefBuddyOptionsGroupBox.Size = new System.Drawing.Size(424, 104);
-        this.ThiefBuddyOptionsGroupBox.TabIndex = 5;
-        this.ThiefBuddyOptionsGroupBox.TabStop = false;
-        // 
-        // ThiefBuddyExeLabel
-        // 
-        this.ThiefBuddyExeLabel.AutoSize = true;
-        this.ThiefBuddyExeLabel.Location = new System.Drawing.Point(16, 24);
-        this.ThiefBuddyExeLabel.TabIndex = 3;
-        // 
-        // ThiefBuddyExeBrowseButton
-        // 
-        this.ThiefBuddyExeBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyExeBrowseButton.AutoSize = true;
-        this.ThiefBuddyExeBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.ThiefBuddyExeBrowseButton.Location = new System.Drawing.Point(336, 39);
-        this.ThiefBuddyExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
-        this.ThiefBuddyExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.ThiefBuddyExeBrowseButton.Size = new System.Drawing.Size(75, 23);
-        this.ThiefBuddyExeBrowseButton.TabIndex = 2;
-        this.ThiefBuddyExeBrowseButton.UseVisualStyleBackColor = true;
-        // 
-        // ThiefBuddyExeTextBox
-        // 
-        this.ThiefBuddyExeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyExeTextBox.Location = new System.Drawing.Point(16, 40);
-        this.ThiefBuddyExeTextBox.Size = new System.Drawing.Size(320, 20);
-        this.ThiefBuddyExeTextBox.TabIndex = 1;
-        // 
-        // UseThiefBuddyCheckBox
-        // 
-        this.UseThiefBuddyCheckBox.AutoSize = true;
-        this.UseThiefBuddyCheckBox.Checked = true;
-        this.UseThiefBuddyCheckBox.Location = new System.Drawing.Point(16, 72);
-        this.UseThiefBuddyCheckBox.TabIndex = 0;
-        this.UseThiefBuddyCheckBox.UseVisualStyleBackColor = true;
         // 
         // LayoutFLP
         // 
@@ -511,8 +456,6 @@ sealed partial class PathsPage
         this.Size = new System.Drawing.Size(440, 965);
         this.PagePanel.ResumeLayout(false);
         this.ActualPathsPanel.ResumeLayout(false);
-        this.ThiefBuddyOptionsGroupBox.ResumeLayout(false);
-        this.ThiefBuddyOptionsGroupBox.PerformLayout();
         this.LayoutFLP.ResumeLayout(false);
         this.OtherGroupBox.ResumeLayout(false);
         this.BackupPathPanel.ResumeLayout(false);

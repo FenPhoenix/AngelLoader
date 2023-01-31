@@ -342,7 +342,13 @@ internal sealed class TagsFilter
 
 #endregion
 
-internal enum SettingsTab { Paths, Appearance, Other }
+internal enum SettingsTab
+{
+    Paths,
+    Appearance,
+    Other,
+    ThiefBuddy
+}
 
 // TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
 // Naming this is brutally difficult. If we call it SelectedFM, it sounds like it's encapsulating an entire
