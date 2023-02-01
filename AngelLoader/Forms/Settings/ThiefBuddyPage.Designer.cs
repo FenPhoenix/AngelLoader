@@ -74,7 +74,7 @@ partial class ThiefBuddyPage
             // TBHelpPictureBox
             // 
             this.TBHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help;
-            this.TBHelpPictureBox.Location = new System.Drawing.Point(8, 188);
+            this.TBHelpPictureBox.Location = new System.Drawing.Point(8, 186);
             this.TBHelpPictureBox.Name = "TBHelpPictureBox";
             this.TBHelpPictureBox.Size = new System.Drawing.Size(16, 16);
             this.TBHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -180,12 +180,16 @@ partial class ThiefBuddyPage
             // 
             // WhatIsTBHelpLabel
             // 
-            this.WhatIsTBHelpLabel.AutoSize = true;
-            this.WhatIsTBHelpLabel.Location = new System.Drawing.Point(27, 188);
+            this.WhatIsTBHelpLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.WhatIsTBHelpLabel.Location = new System.Drawing.Point(27, 180);
+            this.WhatIsTBHelpLabel.MinimumSize = new System.Drawing.Size(0, 13);
             this.WhatIsTBHelpLabel.Name = "WhatIsTBHelpLabel";
-            this.WhatIsTBHelpLabel.Size = new System.Drawing.Size(229, 13);
+            this.WhatIsTBHelpLabel.Size = new System.Drawing.Size(389, 28);
             this.WhatIsTBHelpLabel.TabIndex = 8;
-            this.WhatIsTBHelpLabel.Text = "Thief Buddy is a quicksave backup helper tool.";
+            this.WhatIsTBHelpLabel.Text = "Thief Buddy, by VoiceActor, is a tool that allows you to make and restore multipl" +
+    "e quicksaves.";
+            this.WhatIsTBHelpLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ThiefBuddyPage
             // 

@@ -792,7 +792,7 @@ internal sealed class LText_Class
         internal readonly string ThiefBuddy_RunAlways = "Always";
         internal readonly string ThiefBuddy_RunAskEveryTime = "Ask every time";
         internal readonly string ThiefBuddy_RunNever = "Never";
-        internal readonly string ThiefBuddy_Help = "Thief Buddy is a tool that allows you to make and restore multiple quicksaves.";
+        internal readonly string ThiefBuddy_Help = "Thief Buddy, by VoiceActor, is a tool that allows you to make and restore multiple quicksaves.";
         internal readonly string ThiefBuddy_Get = "Get Thief Buddy";
     }
 
