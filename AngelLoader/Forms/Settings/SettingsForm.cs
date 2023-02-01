@@ -13,6 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
@@ -33,6 +34,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     #region Private fields
 
     private readonly ISettingsChangeableView? _ownerForm;
+
+    private readonly Timer _thiefBuddyExistenceCheckTimer;
+    private bool _thiefBuddyConsideredToExist;
 
     private readonly bool _startup;
     private readonly bool _cleanStart;
@@ -107,6 +111,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 #else
         InitSlim();
 #endif
+
+        _thiefBuddyExistenceCheckTimer = new Timer();
 
         _selfTheme = config.VisualTheme;
 
@@ -185,13 +191,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #region Errorable textboxes
 
-        ErrorableControls = new Control[SupportedGameCount + 4];
+        ErrorableControls = new Control[SupportedGameCount + 3];
         Array.Copy(GameExeTextBoxes, 0, ErrorableControls, 0, SupportedGameCount);
 
         ErrorableControls[SupportedGameCount] = PathsPage.SteamExeTextBox;
         ErrorableControls[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
         ErrorableControls[SupportedGameCount + 2] = PathsPage.FMArchivePathsListBox;
-        ErrorableControls[SupportedGameCount + 3] = ThiefBuddyPage.ThiefBuddyExeTextBox;
 
         #endregion
 
@@ -569,8 +574,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Thief Buddy page
 
-            ThiefBuddyPage.ThiefBuddyExeTextBox.Text = config.ThiefBuddyExe;
-
             switch (config.RunThiefBuddyOnFMPlay)
             {
                 case RunThiefBuddyOnFMPlay.Always:
@@ -585,7 +588,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     break;
             }
 
-            ThiefBuddyPage.RunTBPanel.Enabled = !ThiefBuddyPage.ThiefBuddyExeTextBox.Text.IsWhiteSpace();
+            UpdateThiefBuddyExistence_Sync();
 
             #endregion
         }
@@ -654,10 +657,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
 
-            ThiefBuddyPage.ThiefBuddyExeTextBox.Leave += ExePathTextBoxes_Leave;
-            ThiefBuddyPage.ThiefBuddyExeTextBox.TextChanged += ThiefBuddyExeTextBox_TextChanged;
-            ThiefBuddyPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
-            ThiefBuddyPage.AutodetectButton.Click += ThiefBuddy_AutodetectButton_Click;
+            _thiefBuddyExistenceCheckTimer.Tick += ThiefBuddyExistenceCheckTimer_Tick;
+            _thiefBuddyExistenceCheckTimer.Interval = 1000;
+            _thiefBuddyExistenceCheckTimer.Start();
 
             ThiefBuddyPage.GetTBLinkLabel.LinkClicked += ThiefBuddyPage_GetTBLinkLabel_LinkClicked;
         }
@@ -879,12 +881,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 ThiefBuddyRadioButton.Text = NonLocalizableText.ThiefBuddy;
 
-                // @ThiefBuddy: Add explanatory paragraph of what TB is maybe?
                 ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.ThiefBuddy_ThiefBuddyOptions;
 
-                ThiefBuddyPage.ThiefBuddyExeLabel.Text = LText.SettingsWindow.ThiefBuddy_PathToThiefBuddyExecutable;
-                ThiefBuddyPage.ThiefBuddyExeBrowseButton.SetTextForTextBoxButtonCombo(ThiefBuddyPage.ThiefBuddyExeTextBox, LText.Global.BrowseEllipses);
-                ThiefBuddyPage.AutodetectButton.Text = LText.Global.Autodetect;
+                UpdateThiefBuddyStatusLabel();
 
                 ThiefBuddyPage.RunThiefBuddyWhenPlayingFMsLabel.Text = LText.SettingsWindow.ThiefBuddy_RunThiefBuddyWhenPlayingFMs;
                 ThiefBuddyPage.RunTBAlwaysRadioButton.Text = LText.SettingsWindow.ThiefBuddy_RunAlways;
@@ -1260,7 +1259,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Thief Buddy page
 
-            OutConfig.ThiefBuddyExe = ThiefBuddyPage.ThiefBuddyExeTextBox.Text.Trim();
             OutConfig.RunThiefBuddyOnFMPlay =
                 ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
                 ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
@@ -1354,11 +1352,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 tb = GameExeTextBoxes[i];
                 break;
             }
-        }
-        // @ThiefBuddy: Go to Thief Buddy page if its path is wrong
-        if (tb == null && sender == ThiefBuddyPage.ThiefBuddyExeBrowseButton)
-        {
-            tb = ThiefBuddyPage.ThiefBuddyExeTextBox;
         }
         tb ??= PathsPage.SteamExeTextBox;
 
@@ -1752,18 +1745,55 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Thief Buddy page
 
-    private void ThiefBuddyExeTextBox_TextChanged(object sender, EventArgs e)
+    private async void ThiefBuddyExistenceCheckTimer_Tick(object sender, EventArgs e)
     {
-        ThiefBuddyPage.RunTBPanel.Enabled = !ThiefBuddyPage.ThiefBuddyExeTextBox.Text.IsWhiteSpace();
+        try
+        {
+            await UpdateThiefBuddyExistence_Async();
+        }
+        catch
+        {
+            // Ignore - in case the controls are disposed? I think that can happen...
+        }
     }
 
-    private void ThiefBuddy_AutodetectButton_Click(object sender, EventArgs e)
+#pragma warning disable IDE1006
+    /// <summary>
+    /// Do not call directly.
+    /// </summary>
+    private void _UpdateThiefBuddyExistence_CheckExistence()
     {
-        if (File.Exists(Paths.ThiefBuddyDefaultExePath))
-        {
-            ThiefBuddyPage.ThiefBuddyExeTextBox.Text = Paths.ThiefBuddyDefaultExePath;
-            ShowPathError(ThiefBuddyPage.ThiefBuddyExeTextBox, false);
-        }
+        string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
+        _thiefBuddyConsideredToExist = !thiefBuddyExe.IsWhiteSpace() && File.Exists(thiefBuddyExe);
+    }
+
+    /// <summary>
+    /// Do not call directly.
+    /// </summary>
+    private void _UpdateThiefBuddyExistence_SetUIExistence()
+    {
+        UpdateThiefBuddyStatusLabel();
+        ThiefBuddyPage.RunTBPanel.Enabled = _thiefBuddyConsideredToExist;
+    }
+#pragma warning restore IDE1006
+
+    private void UpdateThiefBuddyExistence_Sync()
+    {
+        _UpdateThiefBuddyExistence_CheckExistence();
+        _UpdateThiefBuddyExistence_SetUIExistence();
+    }
+
+    private async Task UpdateThiefBuddyExistence_Async()
+    {
+        await Task.Run(_UpdateThiefBuddyExistence_CheckExistence);
+        _UpdateThiefBuddyExistence_SetUIExistence();
+    }
+
+    private void UpdateThiefBuddyStatusLabel()
+    {
+        ThiefBuddyPage.TBInstallStatusLabel.Text = _thiefBuddyConsideredToExist
+            ? LText.SettingsWindow.ThiefBuddy_StatusInstalled
+            : LText.SettingsWindow.ThiefBuddy_StatusNotInstalled;
     }
 
     private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1874,6 +1904,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (disposing)
         {
+            _thiefBuddyExistenceCheckTimer.Dispose();
+
             components?.Dispose();
             // If we're on startup, only PathsPage will have been added, so others must be manually disposed.
             // Just dispose them all if they need it, to be thorough.

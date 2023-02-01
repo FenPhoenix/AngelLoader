@@ -434,16 +434,7 @@ public sealed class ConfigData
 
     #region Thief Buddy
 
-    internal string ThiefBuddyExe = "";
     internal RunThiefBuddyOnFMPlay RunThiefBuddyOnFMPlay = RunThiefBuddyOnFMPlay.Ask;
-
-    internal void AutodetectThiefBuddyExe()
-    {
-        if (ThiefBuddyExe.IsWhiteSpace() && File.Exists(Paths.ThiefBuddyDefaultExePath))
-        {
-            ThiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
-        }
-    }
 
     #endregion
 

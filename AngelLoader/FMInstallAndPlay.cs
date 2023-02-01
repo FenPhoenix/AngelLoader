@@ -654,13 +654,13 @@ internal static class FMInstallAndPlay
 
     private static bool RunThiefBuddyIfRequired(FanMission fm)
     {
-        Config.AutodetectThiefBuddyExe();
+        string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
 
         // @ThiefBuddy: Code in progress (Play FM)
         if (fm.Game.ConvertsToDarkThief(out GameIndex gameIndex) &&
-            !Config.ThiefBuddyExe.IsWhiteSpace() &&
             Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
-            File.Exists(Config.ThiefBuddyExe))
+            !thiefBuddyExe.IsWhiteSpace() &&
+            File.Exists(thiefBuddyExe))
         {
             bool runThiefBuddy = true;
 
@@ -690,7 +690,7 @@ internal static class FMInstallAndPlay
                 try
                 {
                     string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
-                    ProcessStart_UseShellExecute(new ProcessStartInfo(Config.ThiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
+                    ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
                 }
                 catch (Exception ex)
                 {

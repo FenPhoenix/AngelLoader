@@ -104,11 +104,6 @@ internal static partial class Ini
         config.SteamExe = valTrimmed;
     }
 
-    private static void Config_ThiefBuddyExe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
-    {
-        config.ThiefBuddyExe = valTrimmed;
-    }
-
     private static void Config_RunThiefBuddyOnFMPlay_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         FieldInfo? field = typeof(RunThiefBuddyOnFMPlay).GetField(valTrimmed, _bFlagsEnum);
@@ -796,7 +791,6 @@ internal static partial class Ini
 
         { "LaunchGamesWithSteam", new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
         { "SteamExe", new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
-        { "ThiefBuddyExe", new Config_DelegatePointerWrapper(&Config_ThiefBuddyExe_Set) },
         { "RunThiefBuddyOnFMPlay", new Config_DelegatePointerWrapper(&Config_RunThiefBuddyOnFMPlay_Set) },
         { "FMsBackupPath", new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
         { "FMArchivePath", new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
@@ -1199,7 +1193,6 @@ internal static partial class Ini
         sb.Append("WebSearchUrl=").AppendLine(config.WebSearchUrl);
         sb.Append("ConfirmPlayOnDCOrEnter=").Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
 
-        sb.Append("ThiefBuddyExe=").AppendLine(config.ThiefBuddyExe);
         sb.Append("RunThiefBuddyOnFMPlay=").Append(config.RunThiefBuddyOnFMPlay).AppendLine();
 
         #endregion

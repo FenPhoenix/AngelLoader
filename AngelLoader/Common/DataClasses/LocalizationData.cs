@@ -787,7 +787,8 @@ internal sealed class LText_Class
         internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title and author";
         [FenGenBlankLine]
         internal readonly string ThiefBuddy_ThiefBuddyOptions = "Thief Buddy options";
-        internal readonly string ThiefBuddy_PathToThiefBuddyExecutable = "Path to Thief Buddy executable (optional):";
+        internal readonly string ThiefBuddy_StatusInstalled = "Thief Buddy is installed.";
+        internal readonly string ThiefBuddy_StatusNotInstalled = "Thief Buddy is not installed.";
         internal readonly string ThiefBuddy_RunThiefBuddyWhenPlayingFMs = "Run Thief Buddy when playing FMs:";
         internal readonly string ThiefBuddy_RunAlways = "Always";
         internal readonly string ThiefBuddy_RunAskEveryTime = "Ask every time";

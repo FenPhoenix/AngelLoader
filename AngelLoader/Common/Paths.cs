@@ -286,12 +286,14 @@ internal static class Paths
 
     internal const string MissFlagStr = "missflag.str";
 
-    private static string? _thiefBuddyDefaultExePath;
+    #region Thief Buddy
+
+    private static readonly object _thiefBuddyLock = new();
     internal static string ThiefBuddyDefaultExePath
     {
         get
         {
-            if (_thiefBuddyDefaultExePath == null)
+            lock (_thiefBuddyLock)
             {
                 try
                 {
@@ -303,30 +305,22 @@ internal static class Paths
                     if (regKey != null)
                     {
                         object? regVal = regKey.GetValue("InstallLocation", defaultValue: -1);
-                        if (regVal is not (null or -1) && regVal is string installLocation)
-                        {
-                            _thiefBuddyDefaultExePath = Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe");
-                            return _thiefBuddyDefaultExePath;
-                        }
-                        else
-                        {
-                            _thiefBuddyDefaultExePath = "";
-                        }
-                    }
-                    else
-                    {
-                        _thiefBuddyDefaultExePath = "";
+                        return regVal is not (null or -1) && regVal is string installLocation
+                            ? Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe")
+                            : "";
                     }
                 }
                 catch
                 {
-                    _thiefBuddyDefaultExePath = "";
+                    return "";
                 }
-            }
 
-            return _thiefBuddyDefaultExePath;
+                return "";
+            }
         }
     }
+
+    #endregion
 
     #region Game config files
 

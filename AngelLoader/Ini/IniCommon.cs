@@ -838,8 +838,6 @@ internal static partial class Ini
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
         config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
-
-        config.AutodetectThiefBuddyExe();
     }
 
     #endregion
