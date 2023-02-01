@@ -694,8 +694,8 @@ internal static class FMInstallAndPlay
                 }
                 catch (Exception ex)
                 {
-                    Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
                     Log("Couldn't run Thief Buddy", ex);
+                    Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
                 }
             }
         }
