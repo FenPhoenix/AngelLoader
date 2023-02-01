@@ -295,10 +295,28 @@ internal static class Paths
             {
                 try
                 {
-                    _thiefBuddyDefaultExePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "Thief Buddy",
-                        "Thief Buddy.exe");
+                    RegistryKey? regKey = Registry.CurrentUser
+                        .OpenSubKey("SOFTWARE")?
+                        .OpenSubKey("VoiceActorWare")?
+                        .OpenSubKey("Thief Buddy");
+
+                    if (regKey != null)
+                    {
+                        object? regVal = regKey.GetValue("InstallLocation", defaultValue: -1);
+                        if (regVal is not (null or -1) && regVal is string installLocation)
+                        {
+                            _thiefBuddyDefaultExePath = Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe");
+                            return _thiefBuddyDefaultExePath;
+                        }
+                        else
+                        {
+                            _thiefBuddyDefaultExePath = "";
+                        }
+                    }
+                    else
+                    {
+                        _thiefBuddyDefaultExePath = "";
+                    }
                 }
                 catch
                 {
