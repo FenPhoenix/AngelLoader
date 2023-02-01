@@ -119,4 +119,6 @@ internal static partial class NonLocalizableText
             return _percentStrings;
         }
     }
+
+    internal static readonly string ThiefBuddyLink = "https://drive.google.com/drive/folders/1plHN_9b819QfpL0UQX6s2NBM3gb9yYGV";
 }

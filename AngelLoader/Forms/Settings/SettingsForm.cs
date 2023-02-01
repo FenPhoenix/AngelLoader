@@ -658,6 +658,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             ThiefBuddyPage.ThiefBuddyExeTextBox.TextChanged += ThiefBuddyExeTextBox_TextChanged;
             ThiefBuddyPage.ThiefBuddyExeBrowseButton.Click += ExePathBrowseButtons_Click;
             ThiefBuddyPage.AutodetectButton.Click += ThiefBuddy_AutodetectButton_Click;
+
+            ThiefBuddyPage.GetTBLinkLabel.LinkClicked += ThiefBuddyPage_GetTBLinkLabel_LinkClicked;
         }
 
         #endregion
@@ -1762,6 +1764,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             ThiefBuddyPage.ThiefBuddyExeTextBox.Text = Paths.ThiefBuddyDefaultExePath;
             ShowPathError(ThiefBuddyPage.ThiefBuddyExeTextBox, false);
         }
+    }
+
+    private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        Core.OpenLink(NonLocalizableText.ThiefBuddyLink);
     }
 
     #endregion
