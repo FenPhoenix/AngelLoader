@@ -656,7 +656,6 @@ internal static class FMInstallAndPlay
     {
         string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
 
-        // @ThiefBuddy: Code in progress (Play FM)
         if (fm.Game.ConvertsToDarkThief(out GameIndex gameIndex) &&
             Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
             !thiefBuddyExe.IsWhiteSpace() &&
