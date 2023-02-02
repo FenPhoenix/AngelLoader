@@ -6,6 +6,19 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.7.0:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.6.9_1.7.0.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.6.9_1.7.0.html)
+
+New images:  
+`setup_thief_buddy_tab.png`  
+
+Updated images:  
+`setup_paths_tab.png`  
+`setup_other_tab.png`  
+
 ### v1.6.9:
 
 #### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.6.8_1.6.9.html)
