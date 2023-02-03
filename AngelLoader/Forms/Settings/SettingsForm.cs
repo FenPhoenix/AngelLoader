@@ -1888,6 +1888,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 PathsPage.IsVisible ? HelpSections.PathsSettings :
                 AppearancePage.IsVisible ? HelpSections.AppearanceSettings :
                 OtherPage.IsVisible ? HelpSections.OtherSettings :
+                ThiefBuddyPage.IsVisible ? HelpSections.ThiefBuddySettings :
                 "";
 
             if (!section.IsEmpty()) Core.OpenHelpFile(section);

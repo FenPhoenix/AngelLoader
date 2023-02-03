@@ -112,6 +112,7 @@ public static class Misc
         internal static readonly string PathsSettings = "#settings_paths_section";
         internal static readonly string AppearanceSettings = "#settings_appearance_section";
         internal static readonly string OtherSettings = "#settings_other_section";
+        internal static readonly string ThiefBuddySettings = "#settings_thief_buddy_section";
 
         internal static readonly string MainWindow = "#main_window";
         internal static readonly string MissionList = "#mission_list";
