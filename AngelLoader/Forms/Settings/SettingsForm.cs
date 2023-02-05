@@ -52,8 +52,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private VisualTheme _selfTheme;
 
-    private readonly DarkRadioButtonCustom[] PageRadioButtons;
-    private readonly ISettingsPage[] Pages;
+    private readonly (DarkRadioButtonCustom Button, ISettingsPage Page)[] PageControls;
     private readonly int?[] _pageVScrollValues = new int?[SettingsTabsCount];
 
     private readonly DarkTextBox[] ExePathTextBoxes;
@@ -202,17 +201,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         // @GENGAMES (Settings): End
 
-        // IMPORTANT: PageRadioButtons: Don't reorder
-        PageRadioButtons = new[]
+        // IMPORTANT: Settings page controls: Don't reorder
+        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
         {
-            PathsRadioButton,
-            AppearanceRadioButton,
-            OtherRadioButton,
-            ThiefBuddyRadioButton
+            (PathsRadioButton, PathsPage),
+            (AppearanceRadioButton, AppearancePage),
+            (OtherRadioButton, OtherPage),
+            (ThiefBuddyRadioButton, ThiefBuddyPage)
         };
 
-        AssertR(PageRadioButtons.Length == SettingsTabsCount,
-            "Page button count doesn't match " + nameof(SettingsTabsCount));
+        AssertR(PageControls.Length == SettingsTabsCount, "Page control count doesn't match " + nameof(SettingsTabsCount));
         AssertR(HelpSections.SettingsPages.Length == SettingsTabsCount,
             nameof(HelpSections) + "." + nameof(HelpSections.SettingsPages) + " doesn't match " +
             nameof(SettingsTabsCount));
@@ -227,21 +225,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #region Add pages
 
-        // IMPORTANT: Pages: Don't reorder
-        Pages = new ISettingsPage[]
-        {
-            PathsPage,
-            AppearancePage,
-            OtherPage,
-            ThiefBuddyPage
-        };
-
-        AssertR(Pages.Length == SettingsTabsCount, "Page count doesn't match " + nameof(SettingsTabsCount));
-
         // We set DockStyle here so that it isn't set when we use the designer!
         for (int i = 0; i < SettingsTabsCount; i++)
         {
-            Pages[i].Dock = DockStyle.Fill;
+            PageControls[i].Page.Dock = DockStyle.Fill;
         }
 
         if (startup)
@@ -259,7 +246,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             for (int i = 0; i < SettingsTabsCount; i++)
             {
-                PagePanel.Controls.Add((Control)Pages[i]);
+                PagePanel.Controls.Add((Control)PageControls[i].Page);
             }
         }
 
@@ -278,13 +265,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 PathsRadioButton.Checked = true;
                 for (int i = 0; i < SettingsTabsCount; i++)
                 {
-                    DarkRadioButtonCustom button = PageRadioButtons[i];
+                    DarkRadioButtonCustom button = PageControls[i].Button;
                     if (button != PathsRadioButton) button.Hide();
                 }
             }
             else
             {
-                PageRadioButtons[(int)config.SettingsTab].Checked = true;
+                PageControls[(int)config.SettingsTab].Button.Checked = true;
             }
         }
 
@@ -695,11 +682,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     protected override void OnLoad(EventArgs e)
     {
-        foreach (DarkRadioButtonCustom button in PageRadioButtons)
+        foreach (var pageControl in PageControls)
         {
-            if (button.Checked)
+            if (pageControl.Button.Checked)
             {
-                ShowPage(Array.IndexOf(PageRadioButtons, button), initialCall: true);
+                ShowPage(Array.IndexOf(PageControls, pageControl), initialCall: true);
                 break;
             }
         }
@@ -1013,7 +1000,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         OutConfig.SettingsTab = SettingsTab.Paths;
         for (int i = 0; i < SettingsTabsCount; i++)
         {
-            if (PageRadioButtons[i].Checked)
+            if (PageControls[i].Button.Checked)
             {
                 OutConfig.SettingsTab = (SettingsTab)i;
                 break;
@@ -1028,7 +1015,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         for (int i = 0; i < SettingsTabsCount; i++)
         {
             SettingsTab tab = (SettingsTab)i;
-            OutConfig.SetSettingsTabVScrollPos(tab, _pageVScrollValues[i] ?? Pages[i].GetVScrollPos());
+            OutConfig.SetSettingsTabVScrollPos(tab, _pageVScrollValues[i] ?? PageControls[i].Page.GetVScrollPos());
         }
 
         #endregion
@@ -1276,18 +1263,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         using (new DisableEvents(this))
         {
-            foreach (DarkRadioButtonCustom b in PageRadioButtons)
+            foreach (var pageControl in PageControls)
             {
-                if (s != b) b.Checked = false;
+                if (s != pageControl.Button) pageControl.Button.Checked = false;
             }
         }
 
-        ShowPage(Array.IndexOf(PageRadioButtons, s));
+        ShowPage(Array.FindIndex(PageControls, x => x.Button == s));
     }
 
     private void ShowPage(int index, bool initialCall = false)
     {
-        if (Pages[index].IsVisible) return;
+        if (PageControls[index].Page.IsVisible) return;
 
         if (_startup)
         {
@@ -1296,7 +1283,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else
         {
-            int pagesLength = Pages.Length;
+            int pagesLength = PageControls.Length;
             if (index < 0 || index > pagesLength - 1) return;
 
             bool pagePosWasStored = _pageVScrollValues[index] != null;
@@ -1304,19 +1291,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 if (!initialCall && pagePosWasStored) MainSplitContainer.SuspendDrawing();
 
-                Pages[index].ShowPage();
-                for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].HidePage();
+                PageControls[index].Page.ShowPage();
+                for (int i = 0; i < pagesLength; i++) if (i != index) PageControls[i].Page.HidePage();
 
                 // Lazy-load for faster initial startup
                 if (pagePosWasStored)
                 {
-                    Pages[index].SetVScrollPos((int)_pageVScrollValues[index]!);
+                    PageControls[index].Page.SetVScrollPos((int)_pageVScrollValues[index]!);
                     if (!initialCall)
                     {
                         // Infuriating hack to get the scroll bar to show up in the right position (the content
                         // already does)
-                        Pages[index].HidePage();
-                        Pages[index].ShowPage();
+                        PageControls[index].Page.HidePage();
+                        PageControls[index].Page.ShowPage();
                     }
 
                     _pageVScrollValues[index] = null;
@@ -1880,16 +1867,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else if (e.KeyCode == Keys.F1)
         {
-            int pageIndex = -1;
-            for (int i = 0; i < SettingsTabsCount; i++)
-            {
-                if (Pages[i].IsVisible)
-                {
-                    pageIndex = i;
-                    break;
-                }
-            }
-
+            int pageIndex = Array.FindIndex(PageControls, static x => x.Page.IsVisible);
             if (pageIndex > -1)
             {
                 string section =
@@ -1919,7 +1897,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             // Just dispose them all if they need it, to be thorough.
             for (int i = 0; i < SettingsTabsCount; i++)
             {
-                Pages[i].Dispose();
+                PageControls[i].Page.Dispose();
             }
         }
         base.Dispose(disposing);
