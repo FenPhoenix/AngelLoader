@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms;
 
@@ -12,5 +13,7 @@ internal static class Interfaces
         int GetVScrollPos();
         void ShowPage();
         void HidePage();
+        DockStyle Dock { get; set; }
+        void Dispose();
     }
 }

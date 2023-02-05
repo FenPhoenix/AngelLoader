@@ -202,6 +202,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         // @GENGAMES (Settings): End
 
+        // IMPORTANT: PageRadioButtons: Don't reorder
         PageRadioButtons = new[]
         {
             PathsRadioButton,
@@ -210,7 +211,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             ThiefBuddyRadioButton
         };
 
-        AssertR(PageRadioButtons.Length == SettingsTabsCount, "Page button count doesn't match " + nameof(SettingsTabsCount));
+        AssertR(PageRadioButtons.Length == SettingsTabsCount,
+            "Page button count doesn't match " + nameof(SettingsTabsCount));
+        AssertR(HelpSections.SettingsPages.Length == SettingsTabsCount,
+            nameof(HelpSections) + "." + nameof(HelpSections.SettingsPages) + " doesn't match " +
+            nameof(SettingsTabsCount));
 
         // These are nullable because null values get put INTO them later. So not a mistake to fill them with
         // non-nullable ints right off the bat.
@@ -222,13 +227,26 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #region Add pages
 
-        PagePanel.Controls.Add(PathsPage);
+        // IMPORTANT: Pages: Don't reorder
+        Pages = new ISettingsPage[]
+        {
+            PathsPage,
+            AppearancePage,
+            OtherPage,
+            ThiefBuddyPage
+        };
+
+        AssertR(Pages.Length == SettingsTabsCount, "Page count doesn't match " + nameof(SettingsTabsCount));
+
         // We set DockStyle here so that it isn't set when we use the designer!
-        PathsPage.Dock = DockStyle.Fill;
+        for (int i = 0; i < SettingsTabsCount; i++)
+        {
+            Pages[i].Dock = DockStyle.Fill;
+        }
 
         if (startup)
         {
-            Pages = new ISettingsPage[] { PathsPage };
+            PagePanel.Controls.Add(PathsPage);
 
             PathsPage.PagePanel.Controls.Add(LangGroupBox);
             AppearancePage.PagePanel.Controls.Remove(LangGroupBox);
@@ -239,23 +257,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else
         {
-            Pages = new ISettingsPage[]
+            for (int i = 0; i < SettingsTabsCount; i++)
             {
-                PathsPage,
-                AppearancePage,
-                OtherPage,
-                ThiefBuddyPage
-            };
-
-            AssertR(Pages.Length == SettingsTabsCount, "Page count doesn't match " + nameof(SettingsTabsCount));
-
-            PagePanel.Controls.Add(AppearancePage);
-            PagePanel.Controls.Add(OtherPage);
-            PagePanel.Controls.Add(ThiefBuddyPage);
-
-            AppearancePage.Dock = DockStyle.Fill;
-            OtherPage.Dock = DockStyle.Fill;
-            ThiefBuddyPage.Dock = DockStyle.Fill;
+                PagePanel.Controls.Add((Control)Pages[i]);
+            }
         }
 
         #endregion
@@ -271,28 +276,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
                 PathsRadioButton.Checked = true;
-                AppearanceRadioButton.Hide();
-                OtherRadioButton.Hide();
-                ThiefBuddyRadioButton.Hide();
+                for (int i = 0; i < SettingsTabsCount; i++)
+                {
+                    DarkRadioButtonCustom button = PageRadioButtons[i];
+                    if (button != PathsRadioButton) button.Hide();
+                }
             }
             else
             {
-                switch (config.SettingsTab)
-                {
-                    case SettingsTab.Appearance:
-                        AppearanceRadioButton.Checked = true;
-                        break;
-                    case SettingsTab.Other:
-                        OtherRadioButton.Checked = true;
-                        break;
-                    case SettingsTab.ThiefBuddy:
-                        ThiefBuddyRadioButton.Checked = true;
-                        break;
-                    case SettingsTab.Paths:
-                    default:
-                        PathsRadioButton.Checked = true;
-                        break;
-                }
+                PageRadioButtons[(int)config.SettingsTab].Checked = true;
             }
         }
 
@@ -1018,11 +1010,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         #region Save window state
 
         // Special case: these are meta, so they should always be set even if the user clicked Cancel
-        OutConfig.SettingsTab =
-            AppearanceRadioButton.Checked ? SettingsTab.Appearance :
-            OtherRadioButton.Checked ? SettingsTab.Other :
-            ThiefBuddyRadioButton.Checked ? SettingsTab.ThiefBuddy :
-            SettingsTab.Paths;
+        OutConfig.SettingsTab = SettingsTab.Paths;
+        for (int i = 0; i < SettingsTabsCount; i++)
+        {
+            if (PageRadioButtons[i].Checked)
+            {
+                OutConfig.SettingsTab = (SettingsTab)i;
+                break;
+            }
+        }
+
         OutConfig.SettingsWindowSize = Size;
         OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
 
@@ -1883,15 +1880,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else if (e.KeyCode == Keys.F1)
         {
-            string section =
-                _startup ? HelpSections.InitialSettings :
-                PathsPage.IsVisible ? HelpSections.PathsSettings :
-                AppearancePage.IsVisible ? HelpSections.AppearanceSettings :
-                OtherPage.IsVisible ? HelpSections.OtherSettings :
-                ThiefBuddyPage.IsVisible ? HelpSections.ThiefBuddySettings :
-                "";
+            int pageIndex = -1;
+            for (int i = 0; i < SettingsTabsCount; i++)
+            {
+                if (Pages[i].IsVisible)
+                {
+                    pageIndex = i;
+                    break;
+                }
+            }
 
-            if (!section.IsEmpty()) Core.OpenHelpFile(section);
+            if (pageIndex > -1)
+            {
+                string section =
+                    _startup
+                        ? HelpSections.InitialSettings
+                        : HelpSections.SettingsPages[pageIndex];
+
+                if (!section.IsEmpty()) Core.OpenHelpFile(section);
+            }
         }
 
         base.OnKeyDown(e);
@@ -1910,10 +1917,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             components?.Dispose();
             // If we're on startup, only PathsPage will have been added, so others must be manually disposed.
             // Just dispose them all if they need it, to be thorough.
-            PathsPage.Dispose();
-            AppearancePage.Dispose();
-            OtherPage.Dispose();
-            ThiefBuddyPage.Dispose();
+            for (int i = 0; i < SettingsTabsCount; i++)
+            {
+                Pages[i].Dispose();
+            }
         }
         base.Dispose(disposing);
     }

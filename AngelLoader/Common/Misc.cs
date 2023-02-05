@@ -109,10 +109,14 @@ public static class Misc
     internal static class HelpSections
     {
         internal static readonly string InitialSettings = "#initial_setup";
-        internal static readonly string PathsSettings = "#settings_paths_section";
-        internal static readonly string AppearanceSettings = "#settings_appearance_section";
-        internal static readonly string OtherSettings = "#settings_other_section";
-        internal static readonly string ThiefBuddySettings = "#settings_thief_buddy_section";
+
+        internal static readonly string[] SettingsPages =
+        {
+            "#settings_paths_section",
+            "#settings_appearance_section",
+            "#settings_other_section",
+            "#settings_thief_buddy_section"
+        };
 
         internal static readonly string MainWindow = "#main_window";
         internal static readonly string MissionList = "#mission_list";

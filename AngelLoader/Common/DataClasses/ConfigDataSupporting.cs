@@ -349,6 +349,7 @@ internal sealed class TagsFilter
 
 #endregion
 
+// IMPORTANT: SettingsTab enum used as indexes; don't reorder
 internal enum SettingsTab
 {
     Paths,
