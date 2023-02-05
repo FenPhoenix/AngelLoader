@@ -8,11 +8,11 @@ internal static class Interfaces
     [PublicAPI]
     internal interface ISettingsPage
     {
-        bool IsVisible { get; }
+        bool Visible { get; }
         void SetVScrollPos(int value);
         int GetVScrollPos();
-        void ShowPage();
-        void HidePage();
+        void Show();
+        void Hide();
         DockStyle Dock { get; set; }
         void Dispose();
     }

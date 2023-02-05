@@ -1274,7 +1274,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void ShowPage(int index, bool initialCall = false)
     {
-        if (PageControls[index].Page.IsVisible) return;
+        if (PageControls[index].Page.Visible) return;
 
         if (_startup)
         {
@@ -1291,8 +1291,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 if (!initialCall && pagePosWasStored) MainSplitContainer.SuspendDrawing();
 
-                PageControls[index].Page.ShowPage();
-                for (int i = 0; i < pagesLength; i++) if (i != index) PageControls[i].Page.HidePage();
+                PageControls[index].Page.Show();
+                for (int i = 0; i < pagesLength; i++) if (i != index) PageControls[i].Page.Hide();
 
                 // Lazy-load for faster initial startup
                 if (pagePosWasStored)
@@ -1302,8 +1302,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     {
                         // Infuriating hack to get the scroll bar to show up in the right position (the content
                         // already does)
-                        PageControls[index].Page.HidePage();
-                        PageControls[index].Page.ShowPage();
+                        PageControls[index].Page.Hide();
+                        PageControls[index].Page.Show();
                     }
 
                     _pageVScrollValues[index] = null;
@@ -1867,7 +1867,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else if (e.KeyCode == Keys.F1)
         {
-            int pageIndex = Array.FindIndex(PageControls, static x => x.Page.IsVisible);
+            int pageIndex = Array.FindIndex(PageControls, static x => x.Page.Visible);
             if (pageIndex > -1)
             {
                 string section =

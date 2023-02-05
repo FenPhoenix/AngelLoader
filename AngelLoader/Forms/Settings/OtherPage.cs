@@ -6,8 +6,6 @@ namespace AngelLoader.Forms;
 
 public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
 {
-    public bool IsVisible => Visible;
-
     public OtherPage()
     {
 #if DEBUG
@@ -20,10 +18,6 @@ public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
 
     public int GetVScrollPos() => PagePanel.VerticalScroll.Value;
-
-    public void ShowPage() => Show();
-
-    public void HidePage() => Hide();
 
     private void WebSearchUrlResetButton_Paint(object sender, PaintEventArgs e)
     {
