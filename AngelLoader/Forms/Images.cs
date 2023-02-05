@@ -974,6 +974,9 @@ public static class Images
 
     #region Misc
 
+    private static Bitmap? _helpSmall;
+    public static Bitmap HelpSmall => _helpSmall ??= Resources.Help;
+
     private static Bitmap? _mods_16;
     private static Bitmap? _mods_16_Dark;
     public static Bitmap Mods_16 =>

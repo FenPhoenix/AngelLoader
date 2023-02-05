@@ -153,7 +153,6 @@ sealed partial class PathsPage
         // 
         // BackupHelpPictureBox
         // 
-        this.BackupHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help;
         this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
         this.BackupHelpPictureBox.Name = "BackupHelpPictureBox";
         this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);

@@ -2,7 +2,7 @@
 using AL_Common;
 
 namespace AngelLoader.Forms;
-public partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
+public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
 {
     public bool IsVisible => Visible;
 
@@ -13,6 +13,8 @@ public partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
 #else
         InitSlim();
 #endif
+
+        TBHelpPictureBox.Image = Images.HelpSmall;
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);

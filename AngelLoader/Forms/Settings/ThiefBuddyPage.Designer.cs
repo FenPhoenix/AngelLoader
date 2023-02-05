@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms;
 
-partial class ThiefBuddyPage
+sealed partial class ThiefBuddyPage
 {
     /// <summary> 
     /// Required designer variable.
@@ -170,7 +170,6 @@ partial class ThiefBuddyPage
             // 
             // TBHelpPictureBox
             // 
-            this.TBHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help;
             this.TBHelpPictureBox.Location = new System.Drawing.Point(8, 186);
             this.TBHelpPictureBox.Name = "TBHelpPictureBox";
             this.TBHelpPictureBox.Size = new System.Drawing.Size(16, 16);

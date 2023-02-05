@@ -19,6 +19,8 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 #else
         InitSlim();
 #endif
+
+        BackupHelpPictureBox.Image = Images.HelpSmall;
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
