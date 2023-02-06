@@ -163,6 +163,7 @@ public sealed partial class Scanner : IDisposable
         /// non-English.
         /// </summary>
         internal readonly bool Scan;
+        internal readonly bool UseForDateDetect;
         internal readonly bool IsGlml;
         internal readonly List<string> Lines = new();
         internal string Text = "";
@@ -183,18 +184,20 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        public ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan)
+        public ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
             Scan = scan;
+            UseForDateDetect = useForDateDetect;
         }
 
-        public ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan)
+        public ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             IsGlml = isGlml;
             _lastModifiedDate = lastModifiedDate;
             Scan = scan;
+            UseForDateDetect = useForDateDetect;
         }
     }
 
@@ -1511,9 +1514,13 @@ public sealed partial class Scanner : IDisposable
         if (parsedDateTime.Date != null) return parsedDateTime.Date;
 
         // Look for the first readme file's last modified date
-        if (_readmeFiles.Count > 0 && _readmeFiles[0].LastModifiedDate.Year > 1998)
+        for (int i = 0; i < _readmeFiles.Count; i++)
         {
-            return _readmeFiles[0].LastModifiedDate;
+            ReadmeInternal readme = _readmeFiles[i];
+            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
+            {
+                return readme.LastModifiedDate;
+            }
         }
 
         // Look for the first used .mis file's last modified date
@@ -2725,7 +2732,16 @@ public sealed partial class Scanner : IDisposable
 
             if (readmeSize == 0) continue;
 
-            bool scanThisReadme = !readmeFile.Name.ExtIsHtml() && readmeFile.Name.IsEnglishReadme();
+            bool scanThisReadme =
+                !readmeFile.Name.ExtIsHtml() &&
+                readmeFile.Name.IsEnglishReadme();
+
+            // Files containing these phrases are almost certain to be script info files, whose dates will be the
+            // release date of their respective script package, and so should be ignored when detecting the FM's
+            // release date
+            bool useThisReadmeForDateDetect =
+                !readmeFile.Name.ContainsI("copyright") &&
+                !readmeFile.Name.ContainsI("tnhScript");
 
             // We still add the readme even if we're not going to store nor scan its contents, because we
             // still may need to look at its last modified date.
@@ -2734,7 +2750,8 @@ public sealed partial class Scanner : IDisposable
                 _readmeFiles.Add(new ReadmeInternal(
                     isGlml: isGlml,
                     lastModifiedDateRaw: readmeEntry!.LastWriteTime,
-                    scan: scanThisReadme
+                    scan: scanThisReadme,
+                    useForDateDetect: useThisReadmeForDateDetect
                 ));
             }
             else
@@ -2742,7 +2759,8 @@ public sealed partial class Scanner : IDisposable
                 _readmeFiles.Add(new ReadmeInternal(
                     isGlml: isGlml,
                     lastModifiedDate: (DateTime)lastModifiedDate!,
-                    scan: scanThisReadme
+                    scan: scanThisReadme,
+                    useForDateDetect: useThisReadmeForDateDetect
                 ));
             }
 
