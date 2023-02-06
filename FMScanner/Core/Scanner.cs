@@ -1426,12 +1426,6 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    /*
-    TODO: Do some bullshit where we compare the readme date vs. the date in the readme
-    So we can do some guesswork on whether the readme dates are near enough to correct or not
-
-    If we wanted, we could also fuzzy-match the swapped day to within like 5 days each direction for example.
-    */
     private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
     {
         ParsedDateTime GetReadmeParsedDateTime()
