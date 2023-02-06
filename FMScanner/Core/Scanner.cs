@@ -1647,7 +1647,7 @@ public sealed partial class Scanner : IDisposable
                     {
                         switch (numInt)
                         {
-                            case >= 1000 and <= 9999:
+                            case > 31 and <= 9999:
                                 unambiguousYearFound = true;
                                 break;
                             case > 12 and <= 31:
