@@ -1409,53 +1409,105 @@ public sealed partial class Scanner : IDisposable
 
     #region Dates
 
+    private readonly ref struct ParsedDateTime
+    {
+        private readonly bool _isAmbiguous;
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal bool IsAmbiguous => Date != null && _isAmbiguous;
+        internal readonly DateTime? Date;
+
+        internal ParsedDateTime(DateTime? date, bool isAmbiguous)
+        {
+            _isAmbiguous = isAmbiguous;
+            Date = date;
+        }
+    }
+
     /*
     TODO: Do some bullshit where we compare the readme date vs. the date in the readme
     So we can do some guesswork on whether the readme dates are near enough to correct or not
-
-    @vNext(Scanner date detection improvement):
-    if readme parsed date is ambiguous:
-        if readme files contain one with a date whose month and day are swapped with the readme parsed date:
-            return that one
-        else if first used mis file date is one whose month and day are swapped with the readme parsed date:
-            return that one
-        else:
-            return whatever we would have returned before
 
     If we wanted, we could also fuzzy-match the swapped day to within like 5 days each direction for example.
     */
     private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
     {
-        // Look in the readme
-        DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
-
-        // Search for updated dates FIRST, because they'll be the correct ones!
-        string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
-        DateTime? dt = null;
-        bool dtIsAmbiguous = false;
-        if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
-
-        if (ds.IsEmpty() || dt == null)
+        ParsedDateTime GetReadmeParsedDateTime()
         {
-            ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+            // Look in the readme
+            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
+
+            // Search for updated dates FIRST, because they'll be the correct ones!
+            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
+            DateTime? dt = null;
+            bool dtIsAmbiguous = false;
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (ds.IsEmpty() || dt == null)
+            {
+                ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+            }
+
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (topDT != null && dt != null)
+            {
+                return !topDtIsAmbiguous && dtIsAmbiguous
+                    ? new ParsedDateTime(topDT, false)
+                    : !dtIsAmbiguous && topDtIsAmbiguous
+                        ? new ParsedDateTime(dt, false)
+                        : DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0
+                            ? new ParsedDateTime(topDT, topDtIsAmbiguous)
+                            : new ParsedDateTime(dt, dtIsAmbiguous);
+            }
+            else if (topDT != null)
+            {
+                return new ParsedDateTime(topDT, topDtIsAmbiguous);
+            }
+            else if (dt != null)
+            {
+                return new ParsedDateTime(dt, dtIsAmbiguous);
+            }
+
+            return new ParsedDateTime(null, false);
         }
 
-        if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+        static bool DateEquals_SwappedDayAndMonth(DateTime date1, DateTime date2)
+        {
+            // Don't consider minutes/seconds/etc in equality check, we don't care
+            return date1.Year == date2.Year &&
+                   date1.Day == date2.Month &&
+                   date1.Month == date2.Day;
+        }
 
-        if (topDT != null && dt != null)
+        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
+
+        if (parsedDateTime.IsAmbiguous)
         {
-            return !topDtIsAmbiguous && dtIsAmbiguous ? topDT
-                : !dtIsAmbiguous && topDtIsAmbiguous ? dt
-                : DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0 ? topDT : dt;
+            for (int i = 0; i < _readmeFiles.Count; i++)
+            {
+                DateTime readmeDate = _readmeFiles[i].LastModifiedDate;
+
+                DateTime pdt = (DateTime)parsedDateTime.Date;
+
+                if (readmeDate.Year > 1998 && DateEquals_SwappedDayAndMonth(readmeDate, pdt))
+                {
+                    // Should just use the readme date for max perf I guess, but this keeps all other fields the
+                    // same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
+                    // Thus bumping them by a few hours. Look into this at some point.
+                    return new DateTime(
+                        pdt.Year,
+                        pdt.Day,
+                        pdt.Month,
+                        pdt.Hour,
+                        pdt.Minute,
+                        pdt.Second,
+                        pdt.Millisecond
+                    );
+                }
+            }
         }
-        else if (topDT != null)
-        {
-            return topDT;
-        }
-        else if (dt != null)
-        {
-            return dt;
-        }
+
+        if (parsedDateTime.Date != null) return parsedDateTime.Date;
 
         // Look for the first readme file's last modified date
         if (_readmeFiles.Count > 0 && _readmeFiles[0].LastModifiedDate.Year > 1998)
@@ -1549,6 +1601,8 @@ public sealed partial class Scanner : IDisposable
     }
 
     // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
+    // TODO(Scanner/StringToDate()): We should consider identical month/day numbers non-ambiguous
+    // (eg. 2/2/2000, and only if they're both between 1 and 12 of course)
     private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
