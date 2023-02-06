@@ -1409,8 +1409,21 @@ public sealed partial class Scanner : IDisposable
 
     #region Dates
 
-    // TODO: Do some bullshit where we compare the readme date vs. the date in the readme
-    // So we can do some guesswork on whether the readme dates are near enough to correct or not
+    /*
+    TODO: Do some bullshit where we compare the readme date vs. the date in the readme
+    So we can do some guesswork on whether the readme dates are near enough to correct or not
+
+    @vNext(Scanner date detection improvement):
+    if readme parsed date is ambiguous:
+        if readme files contain one with a date whose month and day are swapped with the readme parsed date:
+            return that one
+        else if first used mis file date is one whose month and day are swapped with the readme parsed date:
+            return that one
+        else:
+            return whatever we would have returned before
+
+    If we wanted, we could also fuzzy-match the swapped day to within like 5 days each direction for example.
+    */
     private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
     {
         // Look in the readme
