@@ -1472,13 +1472,14 @@ public sealed partial class Scanner : IDisposable
 
         if (parsedDateTime.IsAmbiguous)
         {
+            DateTime pdt = (DateTime)parsedDateTime.Date;
+
             for (int i = 0; i < _readmeFiles.Count; i++)
             {
-                DateTime readmeDate = _readmeFiles[i].LastModifiedDate;
+                ReadmeInternal readme = _readmeFiles[i];
+                DateTime readmeDate = readme.LastModifiedDate;
 
-                DateTime pdt = (DateTime)parsedDateTime.Date;
-
-                if (readmeDate.Year > 1998 && readmeDate.Year == pdt.Year)
+                if (readme.UseForDateDetect && readmeDate.Year > 1998 && readmeDate.Year == pdt.Year)
                 {
                     if (readmeDate.Month == pdt.Month &&
                         readmeDate.Day == pdt.Day)
