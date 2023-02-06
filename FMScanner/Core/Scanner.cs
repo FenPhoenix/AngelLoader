@@ -1471,14 +1471,6 @@ public sealed partial class Scanner : IDisposable
             return new ParsedDateTime(null, false);
         }
 
-        static bool DateEquals_SwappedDayAndMonth(DateTime date1, DateTime date2)
-        {
-            // Don't consider minutes/seconds/etc in equality check, we don't care
-            return date1.Year == date2.Year &&
-                   date1.Day == date2.Month &&
-                   date1.Month == date2.Day;
-        }
-
         ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
 
         if (parsedDateTime.IsAmbiguous)
@@ -1489,20 +1481,29 @@ public sealed partial class Scanner : IDisposable
 
                 DateTime pdt = (DateTime)parsedDateTime.Date;
 
-                if (readmeDate.Year > 1998 && DateEquals_SwappedDayAndMonth(readmeDate, pdt))
+                if (readmeDate.Year > 1998 && readmeDate.Year == pdt.Year)
                 {
-                    // Should just use the readme date for max perf I guess, but this keeps all other fields the
-                    // same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
-                    // Thus bumping them by a few hours. Look into this at some point.
-                    return new DateTime(
-                        pdt.Year,
-                        pdt.Day,
-                        pdt.Month,
-                        pdt.Hour,
-                        pdt.Minute,
-                        pdt.Second,
-                        pdt.Millisecond
-                    );
+                    if (readmeDate.Month == pdt.Month &&
+                        readmeDate.Day == pdt.Day)
+                    {
+                        return pdt;
+                    }
+                    else if (readmeDate.Day == pdt.Month &&
+                             readmeDate.Month == pdt.Day)
+                    {
+                        // Should just use the readme date for max perf I guess, but this keeps all other fields
+                        // the same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
+                        // Thus bumping them by a few hours. Look into this at some point.
+                        return new DateTime(
+                            pdt.Year,
+                            pdt.Day,
+                            pdt.Month,
+                            pdt.Hour,
+                            pdt.Minute,
+                            pdt.Second,
+                            pdt.Millisecond
+                        );
+                    }
                 }
             }
         }
@@ -1528,7 +1529,6 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_fmDirFileInfos.Count > 0)
                 {
-                    // @vNext: wtf, why is the non-path-prefixed name used here?! Doesn't it never match?
                     string fn = _fmIsSevenZip ? usedMisFiles[0].Name : _fmWorkingPath + usedMisFiles[0].Name;
                     // This loop is guaranteed to find something, because we will have quit early if we had no
                     // used .mis files.
