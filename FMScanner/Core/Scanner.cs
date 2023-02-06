@@ -1476,9 +1476,8 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_fmDirFileInfos.Count > 0)
                 {
-                    string fn =
-                        _fmIsSevenZip ? usedMisFiles[0].Name :
-                            _fmWorkingPath + usedMisFiles[0].Name;
+                    // @vNext: wtf, why is the non-path-prefixed name used here?! Doesn't it never match?
+                    string fn = _fmIsSevenZip ? usedMisFiles[0].Name : _fmWorkingPath + usedMisFiles[0].Name;
                     // This loop is guaranteed to find something, because we will have quit early if we had no
                     // used .mis files.
                     FileInfoCustom? misFile = null;
