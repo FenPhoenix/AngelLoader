@@ -3828,8 +3828,8 @@ public sealed partial class MainForm : DarkFormBase,
                 try
                 {
                     FMsDGV.Columns.RemoveAt((int)Column.Rating);
-                    FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn!);
-                    if (newRatingColumn!.HeaderCell is DataGridViewColumnHeaderCellCustom cell)
+                    FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn);
+                    if (newRatingColumn.HeaderCell is DataGridViewColumnHeaderCellCustom cell)
                     {
                         cell.DarkModeEnabled = Config.DarkMode;
                     }

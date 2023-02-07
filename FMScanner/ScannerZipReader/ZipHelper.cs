@@ -18,7 +18,9 @@ internal static class ThrowHelper
     internal static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
     internal static void InvalidData(string message) => throw new InvalidDataException(message);
     internal static void IOException(string message) => throw new IOException(message);
+#if false
     internal static void NotSupported(string message) => throw new NotSupportedException(message);
+#endif
     internal static void ReadModeCapabilities() => throw new ArgumentException(SR.ReadModeCapabilities);
     internal static void SplitSpanned() => throw new InvalidDataException(SR.SplitSpanned);
     internal static void ZipCompressionMethodException(string message) => throw new ZipCompressionMethodException(message);

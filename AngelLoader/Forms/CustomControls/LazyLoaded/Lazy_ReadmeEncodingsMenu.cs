@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
