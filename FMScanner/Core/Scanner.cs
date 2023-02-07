@@ -1493,13 +1493,14 @@ public sealed partial class Scanner : IDisposable
                         // the same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
                         // Thus bumping them by a few hours. Look into this at some point.
                         return new DateTime(
-                            pdt.Year,
-                            pdt.Day,
-                            pdt.Month,
-                            pdt.Hour,
-                            pdt.Minute,
-                            pdt.Second,
-                            pdt.Millisecond
+                            year: pdt.Year,
+                            month: pdt.Day,
+                            day: pdt.Month,
+                            hour: pdt.Hour,
+                            minute: pdt.Minute,
+                            second: pdt.Second,
+                            millisecond: pdt.Millisecond,
+                            kind: pdt.Kind
                         );
                     }
                 }
