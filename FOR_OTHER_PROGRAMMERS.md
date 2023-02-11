@@ -135,9 +135,11 @@ Due to the above point, note that AngelLoader_Stub (the C++ project) can _**not*
 
 ## Could AngelLoader be made to run (or run better) on Linux?
 
-AL can't really be a _native_ Linux app for reasons relating to it having to interface with a Windows game that's going to be running on Wine. For example, the game would have to run AngelLoader_Stub.dll, which must be a Windows dll, but then that dll is normally placed in AL's install directory, which would be on the Linux side, not Wine. Further, AL has to temporarily modify certain game config files, which are on the Wine side. I guess it might be able to be worked around, but it wouldn't work as it is now anyway.
+~~AL can't really be a _native_ Linux app for reasons relating to it having to interface with a Windows game that's going to be running on Wine. For example, the game would have to run AngelLoader_Stub.dll, which must be a Windows dll, but then that dll is normally placed in AL's install directory, which would be on the Linux side, not Wine. Further, AL has to temporarily modify certain game config files, which are on the Wine side. I guess it might be able to be worked around, but it wouldn't work as it is now anyway.~~
 
-But I'm not an expert on Linux or Wine (in fact I don't know much at all), so maybe native Linux and Wine apps can connect in harmony. I just don't know. You'd have to ask someone more knowledgeable or research it if you're interested.
+~~But I'm not an expert on Linux or Wine (in fact I don't know much at all), so maybe native Linux and Wine apps can connect in harmony. I just don't know. You'd have to ask someone more knowledgeable or research it if you're interested.~~
+
+Turns out, it looks like native apps can interop with Wine after all, according to the pinned comment [here](https://www.youtube.com/watch?v=eef4aE0XjVU). So if we had a cross-platform UI that would let us show rtf in some way or another, we could just make it native on .NET 5+ and write some Wine interop code.
 
 As for having AL just run better on Wine, that's kinda on Wine unfortunately. We're using WinForms and .NET Framework (not modern .NET, for reasons stated above), and neither of those work particularly great on Wine. In my testing, I couldn't get AL to run usably at all on Linux, but others have, but the UI won't be perfect and especially dark mode will be _very_ not perfect.
 
