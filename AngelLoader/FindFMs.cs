@@ -835,5 +835,7 @@ internal static class FindFMs
 
         FMDataIniList.TrimExcess();
         FMsViewList.TrimExcess();
+
+        Ini.ReadDateAccuracyFile();
     }
 }

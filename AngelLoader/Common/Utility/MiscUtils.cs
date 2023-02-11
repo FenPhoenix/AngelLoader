@@ -326,4 +326,20 @@ public static partial class Utils
     }
 
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
+    internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
+    {
+        DateAccuracy.Green => "Green",
+        DateAccuracy.Yellow => "Yellow",
+        DateAccuracy.Red => "Red",
+        _ => "Null"
+    };
+
+    internal static DateAccuracy DateAccuracy_Deserialize(string str) => str switch
+    {
+        "Green" => DateAccuracy.Green,
+        "Yellow" => DateAccuracy.Yellow,
+        "Red" => DateAccuracy.Red,
+        _ => DateAccuracy.Null
+    };
 }

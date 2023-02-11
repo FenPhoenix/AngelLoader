@@ -83,3 +83,11 @@ public enum Difficulty : uint
     Expert = 4,
     Extreme = 8
 }
+
+public enum DateAccuracy
+{
+    Null,
+    Green,
+    Yellow,
+    Red
+}
