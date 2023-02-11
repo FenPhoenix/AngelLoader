@@ -974,6 +974,17 @@ public static class Images
 
     #region Misc
 
+    private static Bitmap? _dateAccuracyRed;
+    public static Bitmap DateAccuracy_Red => _dateAccuracyRed ??= CreateDateAccuracyImage(DateAccuracy.Red);
+
+    private static Bitmap? _dateAccuracyYellow;
+    public static Bitmap DateAccuracy_Yellow => _dateAccuracyYellow ??= CreateDateAccuracyImage(DateAccuracy.Yellow);
+
+    private static Bitmap? _dateAccuracyGreen;
+    public static Bitmap DateAccuracy_Green => _dateAccuracyGreen ??= CreateDateAccuracyImage(DateAccuracy.Green);
+
+    // ---
+
     private static Bitmap? _helpSmall;
     public static Bitmap HelpSmall => _helpSmall ??= Resources.Help;
 
@@ -1191,6 +1202,26 @@ public static class Images
             brush,
             new RectangleF(-0.5f, -0.5f, 20.8f, 20.8f)
         );
+    }
+
+    private static Bitmap CreateDateAccuracyImage(DateAccuracy da)
+    {
+        AssertR(da != DateAccuracy.Null, "da is null");
+
+        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+        using var g = Graphics.FromImage(ret);
+
+        var brush = da switch
+        {
+            DateAccuracy.Red => Brushes.Red,
+            DateAccuracy.Yellow => Brushes.Yellow,
+            _ => Brushes.Green
+        };
+
+        g.FillRectangle(brush, 6, 6, 8, 8);
+        g.DrawRectangle(Pens.Black, 5, 5, 9, 9);
+
+        return ret;
     }
 
     private static Bitmap CreateGreenCheckCircleImage()

@@ -62,6 +62,7 @@ sealed partial class MainForm
         this.FilterBarScrollRightButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.FilterBarScrollLeftButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.FMsDGV = new AngelLoader.Forms.CustomControls.DataGridViewCustom();
+        this.DateAccuracyColumn = new System.Windows.Forms.DataGridViewImageColumn();
         this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
         this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
         this.MisCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -379,6 +380,7 @@ sealed partial class MainForm
         this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
         this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DateAccuracyColumn,
             this.GameTypeColumn,
             this.InstalledColumn,
             this.MisCountColumn,
@@ -424,6 +426,16 @@ sealed partial class MainForm
         this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
         this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
         this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
+        // 
+        // DateAccuracyColumn
+        // 
+        this.DateAccuracyColumn.HeaderText = "DA";
+        this.DateAccuracyColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+        this.DateAccuracyColumn.MinimumWidth = 25;
+        this.DateAccuracyColumn.Name = "DateAccuracyColumn";
+        this.DateAccuracyColumn.ReadOnly = true;
+        this.DateAccuracyColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+        this.DateAccuracyColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
         // 
         // GameTypeColumn
         // 
@@ -1222,6 +1234,7 @@ sealed partial class MainForm
 
     internal CustomControls.DataGridViewCustom FMsDGV;
 
+    internal System.Windows.Forms.DataGridViewImageColumn DateAccuracyColumn;
     internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
     internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn MisCountColumn;

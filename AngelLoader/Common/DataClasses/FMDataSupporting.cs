@@ -87,7 +87,7 @@ public enum Difficulty : uint
 public enum DateAccuracy
 {
     Null,
-    Green,
+    Red,
     Yellow,
-    Red
+    Green
 }

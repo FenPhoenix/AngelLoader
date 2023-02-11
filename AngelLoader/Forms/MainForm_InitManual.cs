@@ -42,6 +42,7 @@ public sealed partial class MainForm
         FilterBarScrollRightButton = new DarkArrowButton();
         FilterBarScrollLeftButton = new DarkArrowButton();
         FMsDGV = new DataGridViewCustom();
+        DateAccuracyColumn = new DataGridViewImageColumn();
         GameTypeColumn = new DataGridViewImageColumn();
         InstalledColumn = new DataGridViewImageColumn();
         MisCountColumn = new DataGridViewTextBoxColumn();
@@ -318,6 +319,7 @@ public sealed partial class MainForm
         FMsDGV.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
         FMsDGV.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         FMsDGV.Columns.AddRange(
+            DateAccuracyColumn,
             GameTypeColumn,
             InstalledColumn,
             MisCountColumn,
@@ -349,6 +351,15 @@ public sealed partial class MainForm
         FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
         FMsDGV.KeyDown += FMsDGV_KeyDown;
         FMsDGV.MouseDown += FMsDGV_MouseDown;
+        // 
+        // DateAccuracyColumn
+        // 
+        DateAccuracyColumn.HeaderText = "DA";
+        DateAccuracyColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
+        DateAccuracyColumn.MinimumWidth = 25;
+        DateAccuracyColumn.ReadOnly = true;
+        DateAccuracyColumn.Resizable = DataGridViewTriState.True;
+        DateAccuracyColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
         // 
         // GameTypeColumn
         // 

@@ -1254,6 +1254,37 @@ public sealed partial class MainForm : DarkFormBase,
         {
             System.Diagnostics.Trace.WriteLine("");
         }
+        else if (e.KeyCode == Keys.Space && (FMsDGV.Focused || ReadmeRichTextBox.Focused || MainSplitContainer.Panel2.Focused))
+        {
+            FanMission? fm = GetMainSelectedFMOrNull();
+            if (fm != null)
+            {
+                if (e.Shift)
+                {
+                    fm.DateAccuracy = DateAccuracy.Green;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.Control && e.Alt)
+                {
+                    fm.DateAccuracy = DateAccuracy.Yellow;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.Control)
+                {
+                    fm.DateAccuracy = DateAccuracy.Red;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.Alt)
+                {
+                    fm.DateAccuracy = DateAccuracy.Null;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    e.SuppressKeyPress = true;
+                }
+            }
+        }
 #endif
 
         if (ViewBlocked) return;
@@ -3566,6 +3597,16 @@ public sealed partial class MainForm : DarkFormBase,
 
         switch ((Column)e.ColumnIndex)
         {
+            case Column.DateAccuracy:
+                e.Value = fm.DateAccuracy switch
+                {
+                    DateAccuracy.Red => Images.DateAccuracy_Red,
+                    DateAccuracy.Yellow => Images.DateAccuracy_Yellow,
+                    DateAccuracy.Green => Images.DateAccuracy_Green,
+                    _ => Images.Blank
+                };
+                break;
+
             case Column.Game:
                 e.Value =
                     fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :
