@@ -1259,29 +1259,29 @@ public sealed partial class MainForm : DarkFormBase,
             FanMission? fm = GetMainSelectedFMOrNull();
             if (fm != null)
             {
+                void SetAccuracy(DateAccuracy da)
+                {
+                    fm.DateAccuracy = da;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    Ini.WriteFullFMDataIni();
+                    e.SuppressKeyPress = true;
+                }
+
                 if (e.Shift)
                 {
-                    fm.DateAccuracy = DateAccuracy.Green;
-                    RefreshFMsListRowsOnlyKeepSelection();
-                    e.SuppressKeyPress = true;
+                    SetAccuracy(DateAccuracy.Green);
                 }
                 else if (e.Control && e.Alt)
                 {
-                    fm.DateAccuracy = DateAccuracy.Yellow;
-                    RefreshFMsListRowsOnlyKeepSelection();
-                    e.SuppressKeyPress = true;
+                    SetAccuracy(DateAccuracy.Yellow);
                 }
                 else if (e.Control)
                 {
-                    fm.DateAccuracy = DateAccuracy.Red;
-                    RefreshFMsListRowsOnlyKeepSelection();
-                    e.SuppressKeyPress = true;
+                    SetAccuracy(DateAccuracy.Red);
                 }
                 else if (e.Alt)
                 {
-                    fm.DateAccuracy = DateAccuracy.Null;
-                    RefreshFMsListRowsOnlyKeepSelection();
-                    e.SuppressKeyPress = true;
+                    SetAccuracy(DateAccuracy.Null);
                 }
             }
         }
