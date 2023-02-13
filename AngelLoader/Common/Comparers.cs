@@ -174,6 +174,8 @@ internal static class Comparers
                 y.DateAccuracy == DateAccuracy.Null ? 1 :
                 x.DateAccuracy < y.DateAccuracy ? -1 : 1;
 
+            ret = -ret;
+
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
