@@ -522,6 +522,19 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     #region Mouse
 
+    protected override void OnCellMouseDown(DataGridViewCellMouseEventArgs e)
+    {
+        // Prevent the last selected row from being de-selected - that would put us into an undefined state!
+        if (ModifierKeys == Keys.Control &&
+            RowCount > 0 &&
+            GetRowSelectedCount() == 1 &&
+            Rows[e.RowIndex].Selected)
+        {
+            return;
+        }
+        base.OnCellMouseDown(e);
+    }
+
     protected override void OnMouseEnter(EventArgs e)
     {
         _mouseHere = true;
