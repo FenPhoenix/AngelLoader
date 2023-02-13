@@ -524,9 +524,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     protected override void OnCellMouseDown(DataGridViewCellMouseEventArgs e)
     {
-        var modifierKeys = ModifierKeys;
-
         // Prevent the last selected row from being de-selected - that would put us into an undefined state!
+        Keys modifierKeys = ModifierKeys;
         if (modifierKeys is Keys.Control or (Keys.Control | Keys.Shift) &&
             RowCount > 0 &&
             GetRowSelectedCount() == 1 &&
