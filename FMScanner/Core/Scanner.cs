@@ -1626,13 +1626,13 @@ public sealed partial class Scanner : IDisposable
         }
 
         dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
-        dateString = Regex.Replace(dateString, @"\s+", " ");
         // Auldale Chess Tournament saying "March ~8, 2006"
         dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
-        dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
-        dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
-        dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
-        dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
+        dateString = Regex.Replace(dateString, @"\s*-\s*", " ");
+        dateString = Regex.Replace(dateString, @"\s*/\s*", " ");
+        dateString = Regex.Replace(dateString, @"\s*of\s*", " ");
+        dateString = Regex.Replace(dateString, @"\s*\.\s*", " ");
+        dateString = Regex.Replace(dateString, @"\s+", " ");
 
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
         Match match = DaySuffixesRegex.Match(dateString);

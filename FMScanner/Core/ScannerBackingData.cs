@@ -275,68 +275,42 @@ public sealed partial class Scanner
     _dateFormats =
     {
         ("MMM d yy", false),
-        ("MMM d, yy", false),
         ("MMM dd yy", false),
-        ("MMM dd, yy", false),
 
         ("MMM d yyyy", false),
-        ("MMM d, yyyy", false),
         ("MMM dd yyyy", false),
-        ("MMM dd, yyyy", false),
 
         ("MMMM d yy", false),
-        ("MMMM d, yy", false),
         ("MMMM dd yy", false),
-        ("MMMM dd, yy", false),
 
         ("MMMM d yyyy", false),
-        ("MMMM d, yyyy", false),
         ("MMMM dd yyyy", false),
-        ("MMMM dd, yyyy", false),
 
         ("d MMM yy", true),
-        ("d MMM, yy", true),
         ("dd MMM yy", true),
-        ("dd MMM, yy", true),
 
         ("d MMM yyyy", false),
-        ("d MMM, yyyy", false),
         ("dd MMM yyyy", false),
-        ("dd MMM, yyyy", false),
 
         ("d MMMM yy", true),
-        ("d MMMM, yy", true),
         ("dd MMMM yy", true),
-        ("dd MMMM, yy", true),
         ("d MMMM yyyy", false),
-        ("d MMMM, yyyy", false),
         ("dd MMMM yyyy", false),
-        ("dd MMMM, yyyy", false),
 
         ("yyyy MMM d", false),
         ("yyyy MMM dd", false),
         ("yyyy MMMM d", false),
         ("yyyy MMMM dd", false),
 
-        ("MM/dd/yyyy", true),
-        ("dd/MM/yyyy", true),
-        ("MM/dd/yy", true),
-        ("dd/MM/yy", true),
+        ("MM dd yyyy", true),
+        ("dd MM yyyy", true),
+        ("MM dd yy", true),
+        ("dd MM yy", true),
 
-        ("M/d/yyyy", true),
-        ("d/M/yyyy", true),
-        ("M/d/yy", true),
-        ("d/M/yy", true),
-
-        ("MM-dd-yyyy", true),
-        ("dd-MM-yyyy", true),
-        ("MM-dd-yy", true),
-        ("dd-MM-yy", true),
-
-        ("M-d-yyyy", true),
-        ("d-M-yyyy", true),
-        ("M-d-yy", true),
-        ("d-M-yy", true)
+        ("M d yyyy", true),
+        ("d M yyyy", true),
+        ("M d yy", true),
+        ("d M yy", true),
     };
 
     private readonly string[]
@@ -357,6 +331,7 @@ public sealed partial class Scanner
 
         "Jan",
         "Feb",
+        "Febr",
         "Mar",
         "Apr",
         // "May" left out because it's already three letters and thus already exists in the full name set
@@ -364,6 +339,7 @@ public sealed partial class Scanner
         "Jul",
         "Aug",
         "Sep",
+        "Sept",
         "Oct",
         "Nov",
         "Dec"
