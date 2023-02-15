@@ -1641,6 +1641,9 @@ public sealed partial class Scanner : IDisposable
         dateString = Regex.Replace(dateString, "Martch ", "Mar ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         dateString = Regex.Replace(dateString, "Feburary ", "February ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
+        // Cute...
+        dateString = dateString.Replace("Y2K", "2000");
+
         dateString = dateString.Trim(CA_Period);
         dateString = dateString.Trim(CA_Parens);
 
