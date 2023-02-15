@@ -341,39 +341,66 @@ public sealed partial class Scanner
     };
 
     private readonly string[]
-    _monthNamesEnglish =
-    {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        _monthNamesEnglish =
+        {
+            // These are matched by German "Januar" / "Februar"
+            //"January",
+            //"February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
 
-        "Jan",
-        "Feb",
-        "Febr",
-        "Mar",
-        "Apr",
-        // "May" left out because it's already three letters and thus already exists in the full name set
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Sept",
-        "Oct",
-        "Nov",
-        "Dec",
+            "Jan",
+            "Feb",
+            "Febr",
+            "Mar",
+            "Apr",
+            // "May" left out because it's already three letters and thus already exists in the full name set
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
 
-        "Feburary",
-        "Martch"
-    };
+            "Feburary",
+            "Martch",
+
+            // French
+            "janvier",
+            "février",
+            "fevrier",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "aout",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre",
+            "decembre",
+
+            // German
+            "Januar",
+            "Februar",
+            "März",
+            "Marz",
+            "Juni",
+            "Juli",
+            "Oktober",
+            "Dezember",
+        };
 
     #endregion
 
