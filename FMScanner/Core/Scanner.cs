@@ -1638,8 +1638,10 @@ public sealed partial class Scanner : IDisposable
 
         dateString = Regex.Replace(dateString, "Febr ", "Feb ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         dateString = Regex.Replace(dateString, "Sept ", "Sep ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        dateString = Regex.Replace(dateString, "Martch ", "Mar ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        dateString = Regex.Replace(dateString, "Feburary ", "February ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        dateString = Regex.Replace(dateString, "Martch", "Mar", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "Feburary", "February", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "Jully", "July", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         // Cute...
         dateString = Regex.Replace(dateString, "Y2K", "2000", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

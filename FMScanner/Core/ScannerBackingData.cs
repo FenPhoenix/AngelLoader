@@ -374,6 +374,7 @@ public sealed partial class Scanner
 
             "Feburary",
             "Martch",
+            "Jully",
 
             // French
             "janvier",
