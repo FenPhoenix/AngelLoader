@@ -1634,6 +1634,9 @@ public sealed partial class Scanner : IDisposable
         dateString = Regex.Replace(dateString, @"\s*\.\s*", " ");
         dateString = Regex.Replace(dateString, @"\s+", " ");
 
+        dateString = dateString.Trim(CA_Period);
+        dateString = dateString.Trim(CA_Parens);
+
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
         Match match = DaySuffixesRegex.Match(dateString);
         if (match.Success)

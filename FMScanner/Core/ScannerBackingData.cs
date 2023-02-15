@@ -143,6 +143,7 @@ public sealed partial class Scanner
     private readonly char[] CA_DoubleQuote = { '\"' };
     private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
+    private readonly char[] CA_Parens = { '(', ')' };
     private readonly string[] CRLF_CR_LF = { "\r\n", "\r", "\n" };
     private readonly string[] SA_DoubleSpaces = { "  " };
     private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
