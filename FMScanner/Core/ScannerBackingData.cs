@@ -177,21 +177,47 @@ public sealed partial class Scanner
 
     private readonly string[] SA_LatestUpdateDateDetect =
     {
-        "Update Date",
-        "Updated Date",
         "Update date",
         "Updated date",
-        "Update", "Updated",
-        "Last Updated",
+        "Update",
+        "Updated",
         "Last updated",
-        "Last Update",
-        "Last update"
+        "Last update",
+
+        "Latest update",
+        "Date of update",
+        "Version date",
+        "Rereleased",
+        "Re-release",
+        "Re-released",
+        "Date of rerelease",
+        "Date of re-release",
+        "Date rereleased",
+        "Date re-released",
+        "Revision date",
+        "Release of latest revision",
+        "Release date of latest revision"
     };
 
     private readonly string[] SA_ReleaseDateDetect =
     {
-        "Date Of Release", "Date of Release",
-        "Date of release", "Release Date", "Release date"
+        "Date of release",
+        "Release date",
+
+        "Date of completion",
+        "Date finished",
+        // "Released" before "Originally released" to give it higher priority
+        "Released",
+        "Originally released",
+        "Date:",
+        "Original date of release",
+        "Official release date",
+        "Released on",
+        "Release",
+        "Releasedate",
+        "Date released",
+        "Finished",
+        "Completion date"
     };
 
 #if FMScanner_FullCode

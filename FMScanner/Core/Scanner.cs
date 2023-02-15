@@ -208,6 +208,7 @@ public sealed partial class Scanner : IDisposable
         None,
         Title,
         Author,
+        ReleaseDate,
 #if FMScanner_FullCode
         Version,
         NewDarkMinimumVersion
@@ -1434,14 +1435,14 @@ public sealed partial class Scanner : IDisposable
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_LatestUpdateDateDetect);
             DateTime? dt = null;
             bool dtIsAmbiguous = false;
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (ds.IsEmpty() || dt == null)
             {
-                ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_ReleaseDateDetect);
             }
 
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
@@ -2992,6 +2993,10 @@ public sealed partial class Scanner : IDisposable
                 case SpecialLogic.Title when
                     lineStartTrimmed.StartsWithI("Title & Description") ||
                     lineStartTrimmed.StartsWithGL("Title screen"):
+                case SpecialLogic.ReleaseDate when
+                lineStartTrimmed.StartsWithI("Release information") ||
+                lineStartTrimmed.StartsWithI("Release version") ||
+                lineStartTrimmed.StartsWithI("Released for"):
 #if FMScanner_FullCode
                 case SpecialLogic.Version when
                     lineStartTrimmed.StartsWithI("Version History") ||
