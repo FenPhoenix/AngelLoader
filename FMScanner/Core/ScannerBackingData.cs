@@ -217,7 +217,17 @@ public sealed partial class Scanner
         "Releasedate",
         "Date released",
         "Finished",
-        "Completion date"
+        "Completion date",
+
+        // French: "Release date"
+        "Date de sortie",
+        // French: "Launch date"
+        "Date de lancement",
+
+        // German: "Publication date"
+        "Erscheinungsdatum",
+        // German: "Release date"
+        "Releasedatum"
     };
 
 #if FMScanner_FullCode
