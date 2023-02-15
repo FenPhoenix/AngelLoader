@@ -2741,7 +2741,9 @@ public sealed partial class Scanner : IDisposable
             // release date
             bool useThisReadmeForDateDetect =
                 !readmeFile.Name.ContainsI("copyright") &&
-                !readmeFile.Name.ContainsI("tnhScript");
+                !readmeFile.Name.ContainsI("tnhScript") &&
+                !readmeFile.Name.ContainsI("nvscript") &&
+                !readmeFile.Name.ContainsI("shtup");
 
             // We still add the readme even if we're not going to store nor scan its contents, because we
             // still may need to look at its last modified date.
