@@ -369,7 +369,10 @@ public sealed partial class Scanner
         "Sept",
         "Oct",
         "Nov",
-        "Dec"
+        "Dec",
+
+        "Feburary",
+        "Martch"
     };
 
     #endregion

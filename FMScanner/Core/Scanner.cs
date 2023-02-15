@@ -1631,9 +1631,15 @@ public sealed partial class Scanner : IDisposable
         dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
         dateString = Regex.Replace(dateString, @"\s*-\s*", " ");
         dateString = Regex.Replace(dateString, @"\s*/\s*", " ");
+        // TODO: Make this case-insensitive
         dateString = Regex.Replace(dateString, @"\s*of\s*", " ");
         dateString = Regex.Replace(dateString, @"\s*\.\s*", " ");
         dateString = Regex.Replace(dateString, @"\s+", " ");
+
+        dateString = Regex.Replace(dateString, "Febr ", "Feb ");
+        dateString = Regex.Replace(dateString, "Sept ", "Sep ");
+        dateString = Regex.Replace(dateString, "Martch ", "Mar ");
+        dateString = dateString.Replace("Feburary", "February");
 
         dateString = dateString.Trim(CA_Period);
         dateString = dateString.Trim(CA_Parens);
