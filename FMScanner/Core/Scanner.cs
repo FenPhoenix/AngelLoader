@@ -1614,17 +1614,15 @@ public sealed partial class Scanner : IDisposable
     }
 
     // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
-    // TODO(Scanner/StringToDate()): We should consider identical month/day numbers non-ambiguous
-    // (eg. 2/2/2000, and only if they're both between 1 and 12 of course)
     private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
         if (Regex.Match(dateString, @"[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})").Success)
         {
-            string temp = Regex.Replace(dateString, @"\s*\.\s*", ".");
+            string dateStringTemp = Regex.Replace(dateString, @"\s*\.\s*", ".");
             if (DateTime.TryParseExact(
-                    temp,
+                    dateStringTemp,
                     _dateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
@@ -1641,7 +1639,6 @@ public sealed partial class Scanner : IDisposable
         dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
         dateString = Regex.Replace(dateString, @"\s*-\s*", " ");
         dateString = Regex.Replace(dateString, @"\s*/\s*", " ");
-        // TODO: Make this case-insensitive
         dateString = Regex.Replace(dateString, @"\s*of\s*", " ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         dateString = Regex.Replace(dateString, @"\s*\.\s*", " ");
         dateString = Regex.Replace(dateString, @"\s+", " ");
@@ -1747,6 +1744,13 @@ public sealed partial class Scanner : IDisposable
 
         if (isAmbiguous)
         {
+            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
+            {
+                isAmbiguous = false;
+                dateTime = resultNotNull;
+                return true;
+            }
+
             string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
             if (nums.Length == 3)
             {
