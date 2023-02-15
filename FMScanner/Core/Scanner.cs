@@ -1642,7 +1642,38 @@ public sealed partial class Scanner : IDisposable
         dateString = Regex.Replace(dateString, "Feburary ", "February ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         // Cute...
-        dateString = dateString.Replace("Y2K", "2000");
+        dateString = Regex.Replace(dateString, "Y2K", "2000", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        // @vNext: We could also detect dates with appropriate culture and it would do this automatically
+        // Test which way is faster.
+
+        // French
+        dateString = Regex.Replace(dateString, "janvier", "Jan", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "f(é|e)vrier", "Feb", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "mars", "Mar", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "avril", "Apr", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "mai", "May", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "juin", "Jun", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "juillet", "Jul", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "aout", "Aug", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "septembre", "Sep", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "octobre", "Oct", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "novembre", "Nov", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "d(é|e)cembre", "Dec", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        // German
+        dateString = Regex.Replace(dateString, "Januar ", "Jan", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "Februar ", "Feb", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "M(ä|a)rz", "Mar", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        // April, same as English
+        // Mai, same as French
+        dateString = Regex.Replace(dateString, "Juni", "Jun", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        dateString = Regex.Replace(dateString, "Juli", "Jul", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        // August, same as English
+        // September, same as English
+        dateString = Regex.Replace(dateString, "Oktober", "Oct", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        // November, same as English
+        dateString = Regex.Replace(dateString, "Dezember", "Dec", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         dateString = dateString.Trim(CA_Period);
         dateString = dateString.Trim(CA_Parens);
