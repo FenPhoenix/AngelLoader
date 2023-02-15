@@ -1618,9 +1618,9 @@ public sealed partial class Scanner : IDisposable
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (Regex.Match(dateString, @"[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})").Success)
+        if (Regex.Match(dateString, @"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*").Success)
         {
-            string dateStringTemp = Regex.Replace(dateString, @"\s*\.\s*", ".");
+            string dateStringTemp = Regex.Replace(dateString, @"\s*\.\s*", ".").Trim(CA_Period);
             if (DateTime.TryParseExact(
                     dateStringTemp,
                     _dateFormatsEuropean,
