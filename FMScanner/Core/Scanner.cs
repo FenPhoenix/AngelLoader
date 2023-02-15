@@ -1449,13 +1449,22 @@ public sealed partial class Scanner : IDisposable
 
             if (topDT != null && dt != null)
             {
-                return !topDtIsAmbiguous && dtIsAmbiguous
-                    ? new ParsedDateTime(topDT, false)
-                    : !dtIsAmbiguous && topDtIsAmbiguous
-                        ? new ParsedDateTime(dt, false)
-                        : DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0
-                            ? new ParsedDateTime(topDT, topDtIsAmbiguous)
-                            : new ParsedDateTime(dt, dtIsAmbiguous);
+                if (!topDtIsAmbiguous && dtIsAmbiguous)
+                {
+                    return new ParsedDateTime(topDT, false);
+                }
+                else if (!dtIsAmbiguous && topDtIsAmbiguous)
+                {
+                    return new ParsedDateTime(dt, false);
+                }
+                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
+                {
+                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
+                }
+                else
+                {
+                    return new ParsedDateTime(dt, dtIsAmbiguous);
+                }
             }
             else if (topDT != null)
             {
@@ -1611,17 +1620,18 @@ public sealed partial class Scanner : IDisposable
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
+        if (Regex.Match(dateString, @"[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})").Success)
         {
+            string temp = Regex.Replace(dateString, @"\s*\.\s*", ".");
             if (DateTime.TryParseExact(
-                    dateString,
+                    temp,
                     _dateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
                     out DateTime eurDateResult))
             {
                 dateTime = eurDateResult;
-                isAmbiguous = true;
+                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
                 return true;
             }
         }
