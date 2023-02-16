@@ -662,6 +662,90 @@ public sealed partial class Scanner
         new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
+    #region Release date detection
+
+    private readonly Regex EuropeanDateRegex =
+        new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex PeriodWithOptionalSurroundingSpacesRegex =
+        new Regex(@"\s*\.\s*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DateSeparatorsRegex =
+        // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
+        new Regex(@"\s*(,|~|-|/|\.)\s*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DateOfSeparatorRegex =
+        new Regex(@"\s*of\s*",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex OneOrMoreWhiteSpaceCharsRegex =
+        new Regex(@"\s+", RegexOptions.Compiled);
+
+    private readonly Regex FebrRegex =
+        new Regex("Febr ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex SeptRegex =
+        new Regex("Sept ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex Y2KRegex =
+        new Regex("Y2K",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex JanuaryVariationsRegex =
+        new Regex("(janvier|Januar )",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex FebruaryVariationsRegex =
+        new Regex("(Feburary|f(é|e)vrier|Februar )",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MarchVariationsRegex =
+        new Regex("(Martch|mars|M(ä|a)rz)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex AprilVariationsRegex =
+        new Regex("avril",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex MayVariationsRegex =
+        new Regex("mai",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex JuneVariationsRegex =
+        new Regex("(juin|Juni)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex JulyVariationsRegex =
+        new Regex("(Jully|juillet|Juli)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex AugustVariationsRegex =
+        new Regex("aout",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex SeptemberVariationsRegex =
+        new Regex("septembre",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex OctoberVariationsRegex =
+        new Regex("(octobre|Oktober)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex NovemberVariationsRegex =
+        new Regex("novembre",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DecemberVariationsRegex =
+        new Regex("(d(é|e)cembre|Dezember)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    #endregion
+
     #endregion
 
     /// <summary>
