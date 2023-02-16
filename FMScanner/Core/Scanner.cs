@@ -2947,6 +2947,15 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
+                    if (specialLogic == SpecialLogic.ReleaseDate)
+                    {
+                        Match m = AnyNumberRegex.Match(ret);
+                        if (m.Success)
+                        {
+                            ret = ret.Substring(0, m.Index + 1);
+                        }
+                    }
+
                     return ret;
                 }
             }

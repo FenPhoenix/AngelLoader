@@ -675,6 +675,10 @@ public sealed partial class Scanner
 
     #region Release date detection
 
+    private readonly Regex AnyNumberRegex =
+        new Regex("[0123456789]",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+
     private readonly Regex EuropeanDateRegex =
         new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
