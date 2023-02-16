@@ -407,6 +407,7 @@ public sealed partial class Scanner
             "mai",
             "juin",
             "juillet",
+            "juiller",
             "août",
             "aout",
             "septembre",
@@ -736,7 +737,7 @@ public sealed partial class Scanner
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex JulyVariationsRegex =
-        new Regex("(Jully|juillet|Juli)",
+        new Regex("(Jully|juille(t|r)|Juli)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AugustVariationsRegex =
