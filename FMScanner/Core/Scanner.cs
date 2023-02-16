@@ -1427,6 +1427,19 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
+    private readonly ref struct MisFileDateTime
+    {
+        private readonly bool _succeeded;
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal readonly bool Succeeded => Date != null && _succeeded;
+        internal readonly DateTime? Date;
+        internal MisFileDateTime(bool succeeded, DateTime? date)
+        {
+            _succeeded = succeeded;
+            Date = date;
+        }
+    }
+
     private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
     {
         ParsedDateTime GetReadmeParsedDateTime()
@@ -1478,6 +1491,88 @@ public sealed partial class Scanner : IDisposable
             return new ParsedDateTime(null, false);
         }
 
+        static MisFileDateTime GetMisFileDate(Scanner scanner, List<NameAndIndex> usedMisFiles)
+        {
+            // Look for the first used .mis file's last modified date
+            if (usedMisFiles.Count > 0)
+            {
+                DateTime misFileDate;
+                if (scanner._fmIsZip)
+                {
+                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                }
+                else
+                {
+                    if (scanner._fmDirFileInfos.Count > 0)
+                    {
+                        string fn = scanner._fmIsSevenZip ? usedMisFiles[0].Name : scanner._fmWorkingPath + usedMisFiles[0].Name;
+                        // This loop is guaranteed to find something, because we will have quit early if we had no
+                        // used .mis files.
+                        FileInfoCustom? misFile = null;
+                        for (int i = 0; i < scanner._fmDirFileInfos.Count; i++)
+                        {
+                            FileInfoCustom f = scanner._fmDirFileInfos[i];
+                            if (f.FullName.PathEqualsI(fn))
+                            {
+                                misFile = f;
+                                break;
+                            }
+                        }
+                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
+                    }
+                    else
+                    {
+                        var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
+                        misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                    }
+                }
+
+                if (misFileDate.Year > 1998)
+                {
+                    return new MisFileDateTime(true, misFileDate);
+                }
+                else
+                {
+                    return new MisFileDateTime(false, null);
+                }
+            }
+
+            return new MisFileDateTime(false, null);
+        }
+
+        DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
+        {
+            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
+            {
+                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
+                    fileLastModifiedDate.Day == readmeParsedDate.Day)
+                {
+                    return readmeParsedDate;
+                }
+                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
+                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
+                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
+                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
+                {
+                    return new DateTime(
+                        year: readmeParsedDate.Year,
+                        month: readmeParsedDate.Day,
+                        day: readmeParsedDate.Month,
+                        hour: readmeParsedDate.Hour,
+                        minute: readmeParsedDate.Minute,
+                        second: readmeParsedDate.Second,
+                        millisecond: readmeParsedDate.Millisecond,
+                        kind: readmeParsedDate.Kind
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        MisFileDateTime misFileDateTime = new(false, null);
+
         ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
 
         if (parsedDateTime.IsAmbiguous)
@@ -1489,29 +1584,22 @@ public sealed partial class Scanner : IDisposable
                 ReadmeInternal readme = _readmeFiles[i];
                 DateTime readmeLastModifiedDate = readme.LastModifiedDate;
 
-                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998 && readmeLastModifiedDate.Year == readmeParsedDate.Year)
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
                 {
-                    if (readmeLastModifiedDate.Month == readmeParsedDate.Month &&
-                        readmeLastModifiedDate.Day == readmeParsedDate.Day)
-                    {
-                        return readmeParsedDate;
-                    }
-                    else if ((readmeLastModifiedDate.Day == readmeParsedDate.Month &&
-                              Math.Abs(readmeLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
-                             (readmeLastModifiedDate.Month == readmeParsedDate.Day &&
-                              Math.Abs(readmeLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
-                    {
-                        return new DateTime(
-                            year: readmeParsedDate.Year,
-                            month: readmeParsedDate.Day,
-                            day: readmeParsedDate.Month,
-                            hour: readmeParsedDate.Hour,
-                            minute: readmeParsedDate.Minute,
-                            second: readmeParsedDate.Second,
-                            millisecond: readmeParsedDate.Millisecond,
-                            kind: readmeParsedDate.Kind
-                        );
-                    }
+                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+
+            misFileDateTime = GetMisFileDate(this, usedMisFiles);
+            if (misFileDateTime.Succeeded)
+            {
+                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
+
+                if (misFileLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
                 }
             }
         }
@@ -1528,49 +1616,9 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        // Look for the first used .mis file's last modified date
-        if (usedMisFiles.Count > 0)
-        {
-            DateTime misFileDate;
-            if (_fmIsZip)
-            {
-                misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                    _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-            }
-            else
-            {
-                if (_fmDirFileInfos.Count > 0)
-                {
-                    string fn = _fmIsSevenZip ? usedMisFiles[0].Name : _fmWorkingPath + usedMisFiles[0].Name;
-                    // This loop is guaranteed to find something, because we will have quit early if we had no
-                    // used .mis files.
-                    FileInfoCustom? misFile = null;
-                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                    {
-                        FileInfoCustom f = _fmDirFileInfos[i];
-                        if (f.FullName.PathEqualsI(fn))
-                        {
-                            misFile = f;
-                            break;
-                        }
-                    }
-                    misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
-                }
-                else
-                {
-                    var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                }
-            }
-
-            if (misFileDate.Year > 1998)
-            {
-                return misFileDate;
-            }
-        }
-
-        // If we still don't have anything, give up: we've made a good-faith effort.
-        return null;
+        return misFileDateTime.Succeeded
+            ? misFileDateTime.Date.Value
+            : GetMisFileDate(this, usedMisFiles).Date;
     }
 
     private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
