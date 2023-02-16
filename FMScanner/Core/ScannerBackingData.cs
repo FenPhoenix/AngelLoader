@@ -221,15 +221,25 @@ public sealed partial class Scanner
         // "Date of Release"
         "DOR:",
 
-        // French: "Release date"
-        "Date de sortie",
-        // French: "Launch date"
-        "Date de lancement",
+        #region French
 
-        // German: "Publication date"
+        // "Release date"
+        "Date de sortie",
+        // "Launch date"
+        "Date de lancement",
+        // "Date of completion
+        "Date de réalisation",
+
+        #endregion
+
+        #region German
+
+        // "Publication date"
         "Erscheinungsdatum",
-        // German: "Release date"
+        // "Release date"
         "Releasedatum"
+
+        #endregion
     };
 
 #if FMScanner_FullCode
@@ -397,6 +407,7 @@ public sealed partial class Scanner
             "mai",
             "juin",
             "juillet",
+            "août",
             "aout",
             "septembre",
             "octobre",
@@ -725,8 +736,8 @@ public sealed partial class Scanner
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AugustVariationsRegex =
-        new Regex("aout",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("ao(u|û)t",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex SeptemberVariationsRegex =
         new Regex("septembre",
