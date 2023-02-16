@@ -1706,6 +1706,7 @@ public sealed partial class Scanner : IDisposable
 
         dateString = dateString.Trim(CA_Period);
         dateString = dateString.Trim(CA_Parens);
+        dateString = dateString.Trim();
 
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
         Match match = DaySuffixesRegex.Match(dateString);
