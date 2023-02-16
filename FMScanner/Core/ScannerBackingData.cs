@@ -229,6 +229,8 @@ public sealed partial class Scanner
         "Date de lancement",
         // "Date of completion
         "Date de réalisation",
+        // "Release date"
+        "Date de parution",
 
         #endregion
 
