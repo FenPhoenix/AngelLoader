@@ -218,6 +218,8 @@ public sealed partial class Scanner
         "Date released",
         "Finished",
         "Completion date",
+        // "Date of Release"
+        "DOR:",
 
         // French: "Release date"
         "Date de sortie",

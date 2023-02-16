@@ -1482,35 +1482,34 @@ public sealed partial class Scanner : IDisposable
 
         if (parsedDateTime.IsAmbiguous)
         {
-            DateTime pdt = (DateTime)parsedDateTime.Date;
+            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
 
             for (int i = 0; i < _readmeFiles.Count; i++)
             {
                 ReadmeInternal readme = _readmeFiles[i];
-                DateTime readmeDate = readme.LastModifiedDate;
+                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
 
-                if (readme.UseForDateDetect && readmeDate.Year > 1998 && readmeDate.Year == pdt.Year)
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998 && readmeLastModifiedDate.Year == readmeParsedDate.Year)
                 {
-                    if (readmeDate.Month == pdt.Month &&
-                        readmeDate.Day == pdt.Day)
+                    if (readmeLastModifiedDate.Month == readmeParsedDate.Month &&
+                        readmeLastModifiedDate.Day == readmeParsedDate.Day)
                     {
-                        return pdt;
+                        return readmeParsedDate;
                     }
-                    else if (readmeDate.Day == pdt.Month &&
-                             readmeDate.Month == pdt.Day)
+                    else if ((readmeLastModifiedDate.Day == readmeParsedDate.Month &&
+                              Math.Abs(readmeLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
+                             (readmeLastModifiedDate.Month == readmeParsedDate.Day &&
+                              Math.Abs(readmeLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
                     {
-                        // Should just use the readme date for max perf I guess, but this keeps all other fields
-                        // the same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
-                        // Thus bumping them by a few hours. Look into this at some point.
                         return new DateTime(
-                            year: pdt.Year,
-                            month: pdt.Day,
-                            day: pdt.Month,
-                            hour: pdt.Hour,
-                            minute: pdt.Minute,
-                            second: pdt.Second,
-                            millisecond: pdt.Millisecond,
-                            kind: pdt.Kind
+                            year: readmeParsedDate.Year,
+                            month: readmeParsedDate.Day,
+                            day: readmeParsedDate.Month,
+                            hour: readmeParsedDate.Hour,
+                            minute: readmeParsedDate.Minute,
+                            second: readmeParsedDate.Second,
+                            millisecond: readmeParsedDate.Millisecond,
+                            kind: readmeParsedDate.Kind
                         );
                     }
                 }
