@@ -678,6 +678,18 @@ public sealed partial class Scanner
 
     #region Release date detection
 
+    private readonly Regex MultipleColonsRegex =
+        new Regex(":{2,}",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MultipleDashesRegex =
+        new Regex("-{2,}",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MultipleUnicodeDashesRegex =
+        new Regex(@"\u2013{2,}",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
     private readonly Regex AnyNumberRegex =
         new Regex("[0123456789]",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);

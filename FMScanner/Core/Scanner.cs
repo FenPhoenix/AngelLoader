@@ -3062,11 +3062,7 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private
-#if !FMScanner_FullCode
-    static
-#endif
-    string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+    private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
@@ -3123,6 +3119,13 @@ public sealed partial class Scanner : IDisposable
 
             if (lineStartsWithKeyAndSeparatorChar)
             {
+                if (specialLogic == SpecialLogic.ReleaseDate)
+                {
+                    lineStartTrimmed = MultipleColonsRegex.Replace(lineStartTrimmed, ":");
+                    lineStartTrimmed = MultipleDashesRegex.Replace(lineStartTrimmed, "-");
+                    lineStartTrimmed = MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
+                }
+
                 int indexColon = lineStartTrimmed.IndexOf(':');
                 int indexDash = lineStartTrimmed.IndexOf('-');
                 int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013');
@@ -3134,7 +3137,14 @@ public sealed partial class Scanner : IDisposable
                 if (index == -1) index = indexUnicodeDash;
 
                 string finalValue = lineStartTrimmed.Substring(index + 1).Trim();
-                if (!finalValue.IsEmpty()) return finalValue;
+                if (!finalValue.IsEmpty())
+                {
+                    return finalValue;
+                }
+                else if (specialLogic == SpecialLogic.ReleaseDate && lineIndex < lines.Count - 1)
+                {
+                    return lines[lineIndex + 1].Trim();
+                }
             }
             else
             {
