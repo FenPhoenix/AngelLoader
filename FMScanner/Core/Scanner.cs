@@ -1528,20 +1528,15 @@ public sealed partial class Scanner : IDisposable
                     }
                 }
 
-                if (misFileDate.Year > 1998)
-                {
-                    return new MisFileDateTime(true, misFileDate);
-                }
-                else
-                {
-                    return new MisFileDateTime(false, null);
-                }
+                return misFileDate.Year > 1998
+                    ? new MisFileDateTime(true, misFileDate)
+                    : new MisFileDateTime(false, null);
             }
 
             return new MisFileDateTime(false, null);
         }
 
-        DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
+        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
         {
             if (fileLastModifiedDate.Year == readmeParsedDate.Year)
             {
