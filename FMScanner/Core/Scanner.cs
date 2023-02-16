@@ -1643,8 +1643,10 @@ public sealed partial class Scanner : IDisposable
         // Cute...
         dateString = Y2KRegex.Replace(dateString, "2000");
 
-        // @vNext: We could also detect dates with appropriate culture and it would do this automatically
-        // Test which way is faster.
+        // We could also detect dates with appropriate culture and it would do most of this automatically (apart
+        // from the misspelling handling), but this is more than fast enough already - about the same speed as
+        // before, now that all regexes are cached and compiled.
+        // That's insanely nice given how much extra work we're now doing.
 
         dateString = JanuaryVariationsRegex.Replace(dateString, "Jan");
         dateString = FebruaryVariationsRegex.Replace(dateString, "Feb");
