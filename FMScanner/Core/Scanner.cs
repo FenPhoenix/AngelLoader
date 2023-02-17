@@ -1431,7 +1431,7 @@ public sealed partial class Scanner : IDisposable
     {
         private readonly bool _succeeded;
         [MemberNotNullWhen(true, nameof(Date))]
-        internal readonly bool Succeeded => Date != null && _succeeded;
+        internal bool Succeeded => Date != null && _succeeded;
         internal readonly DateTime? Date;
         internal MisFileDateTime(bool succeeded, DateTime? date)
         {

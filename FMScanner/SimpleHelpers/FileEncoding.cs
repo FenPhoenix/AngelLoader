@@ -252,7 +252,7 @@ public sealed class FileEncoding
             }
         }
 
-        // execute charset detector                
+        // execute charset detector
         _ude.Feed(inputData, start, count);
         _ude.DataEnd();
         if (_ude.IsDone() && !_ude.Charset.IsEmpty())
