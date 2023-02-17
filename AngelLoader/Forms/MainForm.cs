@@ -48,7 +48,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -263,12 +262,14 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
-        using var sw = new StreamWriter(@"C:\al_dates_new.txt");
+#if DateAccTest
+        using var sw = new System.IO.StreamWriter(@"C:\al_dates_new.txt");
         foreach (FanMission fm in FMDataIniList)
         {
             sw.WriteLine(GetFMId(fm));
             sw.WriteLine(fm.ReleaseDate.DateTime?.ToString("MMMM dd yyyy", DateTimeFormatInfo.InvariantInfo) ?? "<null>");
         }
+#endif
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
