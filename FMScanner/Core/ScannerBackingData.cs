@@ -227,8 +227,9 @@ public sealed partial class Scanner
         "Date de sortie",
         // "Launch date"
         "Date de lancement",
-        // "Date of completion
+        // "Date of completion"
         "Date de réalisation",
+        "Date de realisation",
         // "Release date"
         "Date de parution",
 
@@ -239,7 +240,9 @@ public sealed partial class Scanner
         // "Publication date"
         "Erscheinungsdatum",
         // "Release date"
-        "Releasedatum"
+        "Releasedatum",
+        // "Issue date"
+        "Ausgabedatum"
 
         #endregion
     };
@@ -688,7 +691,7 @@ public sealed partial class Scanner
     #region Release date detection
 
     private readonly Regex MultipleColonsRegex =
-        new Regex(":{2,}",
+        new Regex(@"(:\s*)+",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex MultipleDashesRegex =
@@ -699,9 +702,13 @@ public sealed partial class Scanner
         new Regex(@"\u2013{2,}",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-    private readonly Regex AnyNumberRegex =
+    private readonly Regex AnyNumberRTLRegex =
         new Regex("[0123456789]",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+
+    private readonly Regex NewDarkAndNumberRegex =
+        new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex EuropeanDateRegex =
         new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",

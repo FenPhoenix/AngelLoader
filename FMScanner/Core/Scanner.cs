@@ -2993,10 +2993,16 @@ public sealed partial class Scanner : IDisposable
                 {
                     if (specialLogic == SpecialLogic.ReleaseDate)
                     {
-                        Match m = AnyNumberRegex.Match(ret);
-                        if (m.Success)
+                        Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
+                        if (newDarkMatch.Success)
                         {
-                            ret = ret.Substring(0, m.Index + 1);
+                            ret = ret.Substring(0, newDarkMatch.Index);
+                        }
+
+                        Match rtlNumberMatch = AnyNumberRTLRegex.Match(ret);
+                        if (rtlNumberMatch.Success)
+                        {
+                            ret = ret.Substring(0, rtlNumberMatch.Index + 1);
                         }
                     }
 
@@ -3097,20 +3103,22 @@ public sealed partial class Scanner : IDisposable
 
             bool lineStartsWithKey = false;
             bool lineStartsWithKeyAndSeparatorChar = false;
+            int indexAfterKey = -1;
             for (int i = 0; i < keys.Length; i++)
             {
-                string x = keys[i];
+                string key = keys[i];
 
                 // Either in given case or in all caps, but not in lowercase, because that's given me at least
                 // one false positive
-                if (lineStartTrimmed.StartsWithGU(x))
+                if (lineStartTrimmed.StartsWithGU(key))
                 {
                     lineStartsWithKey = true;
                     // Regex perf: fast enough not to worry about it
-                    if (Regex.Match(lineStartTrimmed, "^" + x + @"\s*(:|-|\u2013)",
+                    if (Regex.Match(lineStartTrimmed, "^" + key + @"\s*(:|-|\u2013)",
                             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success)
                     {
                         lineStartsWithKeyAndSeparatorChar = true;
+                        indexAfterKey = key.Length;
                         break;
                     }
                 }
@@ -3126,9 +3134,10 @@ public sealed partial class Scanner : IDisposable
                     lineStartTrimmed = MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
                 }
 
-                int indexColon = lineStartTrimmed.IndexOf(':');
-                int indexDash = lineStartTrimmed.IndexOf('-');
-                int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013');
+                // Don't count these chars if they're part of a key
+                int indexColon = lineStartTrimmed.IndexOf(':', indexAfterKey);
+                int indexDash = lineStartTrimmed.IndexOf('-', indexAfterKey);
+                int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013', indexAfterKey);
 
                 int index = indexColon > -1 && indexDash > -1
                     ? Math.Min(indexColon, indexDash)
