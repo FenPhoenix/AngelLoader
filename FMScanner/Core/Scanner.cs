@@ -1462,6 +1462,9 @@ public sealed partial class Scanner : IDisposable
 
             if (topDT != null && dt != null)
             {
+                // @vNext: We don't check the ambiguous date against the file(s) in this case
+                // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
+                // like we needed to.
                 if (!topDtIsAmbiguous && dtIsAmbiguous)
                 {
                     return new ParsedDateTime(topDT, false);
@@ -1682,6 +1685,10 @@ public sealed partial class Scanner : IDisposable
 
         dateString = FebrRegex.Replace(dateString, "Feb ");
         dateString = SeptRegex.Replace(dateString, "Sep ");
+        dateString = OktRegex.Replace(dateString, "Oct ");
+
+        dateString = HalloweenRegex.Replace(dateString, "Oct 31");
+        dateString = ChristmasRegex.Replace(dateString, "Dec 25");
 
         // Cute...
         dateString = Y2KRegex.Replace(dateString, "2000");

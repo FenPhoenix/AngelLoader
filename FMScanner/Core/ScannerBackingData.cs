@@ -237,6 +237,7 @@ public sealed partial class Scanner
         "Completion date",
         // "Date of Release"
         "DOR:",
+        "First release",
 
         #region French
 
@@ -256,10 +257,13 @@ public sealed partial class Scanner
 
         // "Publication date"
         "Erscheinungsdatum",
+        "Datum der erscheinung",
         // "Release date"
         "Releasedatum",
         // "Issue date"
-        "Ausgabedatum"
+        "Ausgabedatum",
+        // "Released on"
+        "Erschienen am"
 
         #endregion
     };
@@ -455,6 +459,7 @@ public sealed partial class Scanner
             "Juni",
             "Juli",
             "Oktober",
+            "Okt",
             "Dezember",
         };
 
@@ -755,6 +760,10 @@ public sealed partial class Scanner
         new Regex("Sept ",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private readonly Regex OktRegex =
+        new Regex("Okt ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private readonly Regex Y2KRegex =
         new Regex("Y2K",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -797,6 +806,14 @@ public sealed partial class Scanner
 
     private readonly Regex OctoberVariationsRegex =
         new Regex("(octobre|Oktober)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex HalloweenRegex =
+        new Regex("Halloween",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex ChristmasRegex =
+        new Regex("Christmas",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex NovemberVariationsRegex =
