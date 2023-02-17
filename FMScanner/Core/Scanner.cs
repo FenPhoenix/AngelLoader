@@ -3202,7 +3202,7 @@ public sealed partial class Scanner : IDisposable
         ret = ret.RemoveUnpairedLeadingOrTrailingQuotes();
 
         // Remove duplicate spaces
-        ret = Regex.Replace(ret, @"\s{2,}", " ");
+        ret = MultipleWhiteSpaceRegex.Replace(ret, " ");
         ret = ret.Replace('\t', ' ');
 
         #region Parentheses
@@ -3902,7 +3902,7 @@ public sealed partial class Scanner : IDisposable
             if (fn.EqualsI("rus") ||
                 fn.EndsWithI("_ru") ||
                 fn.EndsWithI("_rus") ||
-                Regex.Match(fn, "[a-z]+RUS$").Success ||
+                RusRegex.Match(fn).Success ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
                 langs.Add("russian");

@@ -809,6 +809,12 @@ public sealed partial class Scanner
 
     #endregion
 
+    private readonly Regex MultipleWhiteSpaceRegex =
+        new Regex(@"\s{2,}", RegexOptions.Compiled);
+
+    private readonly Regex RusRegex =
+        new Regex("[a-z]+RUS$", RegexOptions.Compiled);
+
     #endregion
 
     /// <summary>
