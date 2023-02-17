@@ -104,7 +104,7 @@ internal static partial class Ini
     }
 
 #if DateAccTest
-    private const string _dateAccuracyFile = @"C:\AngelLoader\Data\DateAccuracy.ini";
+    private static readonly string _dateAccuracyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DateAccuracy.ini");
 
     internal static void ReadDateAccuracyFile()
     {
