@@ -3086,6 +3086,7 @@ public sealed partial class Scanner : IDisposable
                 case SpecialLogic.ReleaseDate when
                     lineStartTrimmed.StartsWithI("Release information") ||
                     lineStartTrimmed.StartsWithI("Release version") ||
+                    lineStartTrimmed.StartsWithI("Release: version") ||
                     lineStartTrimmed.StartsWithI("Released for"):
 #if FMScanner_FullCode
                 case SpecialLogic.Version when
