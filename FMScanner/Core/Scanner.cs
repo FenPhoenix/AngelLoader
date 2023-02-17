@@ -208,6 +208,7 @@ public sealed partial class Scanner : IDisposable
         None,
         Title,
         Author,
+        ReleaseDate,
 #if FMScanner_FullCode
         Version,
         NewDarkMinimumVersion
@@ -1426,6 +1427,19 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
+    private readonly ref struct MisFileDateTime
+    {
+        private readonly bool _succeeded;
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal readonly bool Succeeded => Date != null && _succeeded;
+        internal readonly DateTime? Date;
+        internal MisFileDateTime(bool succeeded, DateTime? date)
+        {
+            _succeeded = succeeded;
+            Date = date;
+        }
+    }
+
     private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
     {
         ParsedDateTime GetReadmeParsedDateTime()
@@ -1434,27 +1448,36 @@ public sealed partial class Scanner : IDisposable
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_LatestUpdateDateDetect);
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_LatestUpdateDateDetect);
             DateTime? dt = null;
             bool dtIsAmbiguous = false;
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (ds.IsEmpty() || dt == null)
             {
-                ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_ReleaseDateDetect);
             }
 
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (topDT != null && dt != null)
             {
-                return !topDtIsAmbiguous && dtIsAmbiguous
-                    ? new ParsedDateTime(topDT, false)
-                    : !dtIsAmbiguous && topDtIsAmbiguous
-                        ? new ParsedDateTime(dt, false)
-                        : DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0
-                            ? new ParsedDateTime(topDT, topDtIsAmbiguous)
-                            : new ParsedDateTime(dt, dtIsAmbiguous);
+                if (!topDtIsAmbiguous && dtIsAmbiguous)
+                {
+                    return new ParsedDateTime(topDT, false);
+                }
+                else if (!dtIsAmbiguous && topDtIsAmbiguous)
+                {
+                    return new ParsedDateTime(dt, false);
+                }
+                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
+                {
+                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
+                }
+                else
+                {
+                    return new ParsedDateTime(dt, dtIsAmbiguous);
+                }
             }
             else if (topDT != null)
             {
@@ -1468,41 +1491,110 @@ public sealed partial class Scanner : IDisposable
             return new ParsedDateTime(null, false);
         }
 
+        static MisFileDateTime GetMisFileDate(Scanner scanner, List<NameAndIndex> usedMisFiles)
+        {
+            // Look for the first used .mis file's last modified date
+            if (usedMisFiles.Count > 0)
+            {
+                DateTime misFileDate;
+                if (scanner._fmIsZip)
+                {
+                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                }
+                else
+                {
+                    if (scanner._fmDirFileInfos.Count > 0)
+                    {
+                        string fn = scanner._fmIsSevenZip ? usedMisFiles[0].Name : scanner._fmWorkingPath + usedMisFiles[0].Name;
+                        // This loop is guaranteed to find something, because we will have quit early if we had no
+                        // used .mis files.
+                        FileInfoCustom? misFile = null;
+                        for (int i = 0; i < scanner._fmDirFileInfos.Count; i++)
+                        {
+                            FileInfoCustom f = scanner._fmDirFileInfos[i];
+                            if (f.FullName.PathEqualsI(fn))
+                            {
+                                misFile = f;
+                                break;
+                            }
+                        }
+                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
+                    }
+                    else
+                    {
+                        var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
+                        misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                    }
+                }
+
+                return misFileDate.Year > 1998
+                    ? new MisFileDateTime(true, misFileDate)
+                    : new MisFileDateTime(false, null);
+            }
+
+            return new MisFileDateTime(false, null);
+        }
+
+        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
+        {
+            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
+            {
+                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
+                    fileLastModifiedDate.Day == readmeParsedDate.Day)
+                {
+                    return readmeParsedDate;
+                }
+                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
+                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
+                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
+                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
+                {
+                    return new DateTime(
+                        year: readmeParsedDate.Year,
+                        month: readmeParsedDate.Day,
+                        day: readmeParsedDate.Month,
+                        hour: readmeParsedDate.Hour,
+                        minute: readmeParsedDate.Minute,
+                        second: readmeParsedDate.Second,
+                        millisecond: readmeParsedDate.Millisecond,
+                        kind: readmeParsedDate.Kind
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        MisFileDateTime misFileDateTime = new(false, null);
+
         ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
 
         if (parsedDateTime.IsAmbiguous)
         {
-            DateTime pdt = (DateTime)parsedDateTime.Date;
+            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
 
             for (int i = 0; i < _readmeFiles.Count; i++)
             {
                 ReadmeInternal readme = _readmeFiles[i];
-                DateTime readmeDate = readme.LastModifiedDate;
+                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
 
-                if (readme.UseForDateDetect && readmeDate.Year > 1998 && readmeDate.Year == pdt.Year)
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
                 {
-                    if (readmeDate.Month == pdt.Month &&
-                        readmeDate.Day == pdt.Day)
-                    {
-                        return pdt;
-                    }
-                    else if (readmeDate.Day == pdt.Month &&
-                             readmeDate.Month == pdt.Day)
-                    {
-                        // Should just use the readme date for max perf I guess, but this keeps all other fields
-                        // the same. BUG/TODO: These dates may get double-DateTimeOffsetUnixWhatever-converted...
-                        // Thus bumping them by a few hours. Look into this at some point.
-                        return new DateTime(
-                            year: pdt.Year,
-                            month: pdt.Day,
-                            day: pdt.Month,
-                            hour: pdt.Hour,
-                            minute: pdt.Minute,
-                            second: pdt.Second,
-                            millisecond: pdt.Millisecond,
-                            kind: pdt.Kind
-                        );
-                    }
+                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+
+            misFileDateTime = GetMisFileDate(this, usedMisFiles);
+            if (misFileDateTime.Succeeded)
+            {
+                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
+
+                if (misFileLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
                 }
             }
         }
@@ -1519,49 +1611,9 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        // Look for the first used .mis file's last modified date
-        if (usedMisFiles.Count > 0)
-        {
-            DateTime misFileDate;
-            if (_fmIsZip)
-            {
-                misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                    _archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-            }
-            else
-            {
-                if (_fmDirFileInfos.Count > 0)
-                {
-                    string fn = _fmIsSevenZip ? usedMisFiles[0].Name : _fmWorkingPath + usedMisFiles[0].Name;
-                    // This loop is guaranteed to find something, because we will have quit early if we had no
-                    // used .mis files.
-                    FileInfoCustom? misFile = null;
-                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                    {
-                        FileInfoCustom f = _fmDirFileInfos[i];
-                        if (f.FullName.PathEqualsI(fn))
-                        {
-                            misFile = f;
-                            break;
-                        }
-                    }
-                    misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
-                }
-                else
-                {
-                    var fi = new FileInfo(Path.Combine(_fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                }
-            }
-
-            if (misFileDate.Year > 1998)
-            {
-                return misFileDate;
-            }
-        }
-
-        // If we still don't have anything, give up: we've made a good-faith effort.
-        return null;
+        return misFileDateTime.Succeeded
+            ? misFileDateTime.Date.Value
+            : GetMisFileDate(this, usedMisFiles).Date;
     }
 
     private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
@@ -1604,35 +1656,57 @@ public sealed partial class Scanner : IDisposable
     }
 
     // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
-    // TODO(Scanner/StringToDate()): We should consider identical month/day numbers non-ambiguous
-    // (eg. 2/2/2000, and only if they're both between 1 and 12 of course)
     private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (Regex.Match(dateString, @"[0123456789]{1,2}\.[0123456789]{1,2}\.([0123456789]{4}|[0123456789]{2})").Success)
+        if (EuropeanDateRegex.Match(dateString).Success)
         {
+            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(CA_Period);
             if (DateTime.TryParseExact(
-                    dateString,
+                    dateStringTemp,
                     _dateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
                     out DateTime eurDateResult))
             {
                 dateTime = eurDateResult;
-                isAmbiguous = true;
+                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
                 return true;
             }
         }
 
-        dateString = Regex.Replace(dateString, @"\s*,\s*", " ");
-        dateString = Regex.Replace(dateString, @"\s+", " ");
-        // Auldale Chess Tournament saying "March ~8, 2006"
-        dateString = Regex.Replace(dateString, @"\s*~\s*", " ");
-        dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
-        dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
-        dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
-        dateString = Regex.Replace(dateString, @"\s*\.\s*", "/");
+        dateString = DateSeparatorsRegex.Replace(dateString, " ");
+        dateString = DateOfSeparatorRegex.Replace(dateString, " ");
+        dateString = OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
+
+        dateString = FebrRegex.Replace(dateString, "Feb ");
+        dateString = SeptRegex.Replace(dateString, "Sep ");
+
+        // Cute...
+        dateString = Y2KRegex.Replace(dateString, "2000");
+
+        // We could also detect dates with appropriate culture and it would do most of this automatically (apart
+        // from the misspelling handling), but this is more than fast enough already - about the same speed as
+        // before, now that all regexes are cached and compiled.
+        // That's insanely nice given how much extra work we're now doing.
+
+        dateString = JanuaryVariationsRegex.Replace(dateString, "Jan");
+        dateString = FebruaryVariationsRegex.Replace(dateString, "Feb");
+        dateString = MarchVariationsRegex.Replace(dateString, "Mar");
+        dateString = AprilVariationsRegex.Replace(dateString, "Apr");
+        dateString = MayVariationsRegex.Replace(dateString, "May");
+        dateString = JuneVariationsRegex.Replace(dateString, "Jun");
+        dateString = JulyVariationsRegex.Replace(dateString, "Jul");
+        dateString = AugustVariationsRegex.Replace(dateString, "Aug");
+        dateString = SeptemberVariationsRegex.Replace(dateString, "Sep");
+        dateString = OctoberVariationsRegex.Replace(dateString, "Oct");
+        dateString = NovemberVariationsRegex.Replace(dateString, "Nov");
+        dateString = DecemberVariationsRegex.Replace(dateString, "Dec");
+
+        dateString = dateString.Trim(CA_Period);
+        dateString = dateString.Trim(CA_Parens);
+        dateString = dateString.Trim();
 
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
         Match match = DaySuffixesRegex.Match(dateString);
@@ -1691,6 +1765,13 @@ public sealed partial class Scanner : IDisposable
 
         if (isAmbiguous)
         {
+            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
+            {
+                isAmbiguous = false;
+                dateTime = resultNotNull;
+                return true;
+            }
+
             string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
             if (nums.Length == 3)
             {
@@ -1703,7 +1784,7 @@ public sealed partial class Scanner : IDisposable
                     {
                         switch (numInt)
                         {
-                            case > 31 and <= 9999:
+                            case 0 or (> 31 and <= 9999):
                                 unambiguousYearFound = true;
                                 break;
                             case > 12 and <= 31:
@@ -2737,7 +2818,9 @@ public sealed partial class Scanner : IDisposable
             // release date
             bool useThisReadmeForDateDetect =
                 !readmeFile.Name.ContainsI("copyright") &&
-                !readmeFile.Name.ContainsI("tnhScript");
+                !readmeFile.Name.ContainsI("tnhScript") &&
+                !readmeFile.Name.ContainsI("nvscript") &&
+                !readmeFile.Name.ContainsI("shtup");
 
             // We still add the readme even if we're not going to store nor scan its contents, because we
             // still may need to look at its last modified date.
@@ -2908,6 +2991,21 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
+                    if (specialLogic == SpecialLogic.ReleaseDate)
+                    {
+                        Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
+                        if (newDarkMatch.Success)
+                        {
+                            ret = ret.Substring(0, newDarkMatch.Index);
+                        }
+
+                        Match rtlNumberMatch = AnyNumberRTLRegex.Match(ret);
+                        if (rtlNumberMatch.Success)
+                        {
+                            ret = ret.Substring(0, rtlNumberMatch.Index + 1);
+                        }
+                    }
+
                     return ret;
                 }
             }
@@ -2970,11 +3068,7 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private
-#if !FMScanner_FullCode
-    static
-#endif
-    string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+    private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
@@ -2989,6 +3083,10 @@ public sealed partial class Scanner : IDisposable
                 case SpecialLogic.Title when
                     lineStartTrimmed.StartsWithI("Title & Description") ||
                     lineStartTrimmed.StartsWithGL("Title screen"):
+                case SpecialLogic.ReleaseDate when
+                lineStartTrimmed.StartsWithI("Release information") ||
+                lineStartTrimmed.StartsWithI("Release version") ||
+                lineStartTrimmed.StartsWithI("Released for"):
 #if FMScanner_FullCode
                 case SpecialLogic.Version when
                     lineStartTrimmed.StartsWithI("Version History") ||
@@ -3005,20 +3103,22 @@ public sealed partial class Scanner : IDisposable
 
             bool lineStartsWithKey = false;
             bool lineStartsWithKeyAndSeparatorChar = false;
+            int indexAfterKey = -1;
             for (int i = 0; i < keys.Length; i++)
             {
-                string x = keys[i];
+                string key = keys[i];
 
                 // Either in given case or in all caps, but not in lowercase, because that's given me at least
                 // one false positive
-                if (lineStartTrimmed.StartsWithGU(x))
+                if (lineStartTrimmed.StartsWithGU(key))
                 {
                     lineStartsWithKey = true;
                     // Regex perf: fast enough not to worry about it
-                    if (Regex.Match(lineStartTrimmed, "^" + x + @"\s*(:|-|\u2013)",
+                    if (Regex.Match(lineStartTrimmed, "^" + key + @"\s*(:|-|\u2013)",
                             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success)
                     {
                         lineStartsWithKeyAndSeparatorChar = true;
+                        indexAfterKey = key.Length;
                         break;
                     }
                 }
@@ -3027,9 +3127,17 @@ public sealed partial class Scanner : IDisposable
 
             if (lineStartsWithKeyAndSeparatorChar)
             {
-                int indexColon = lineStartTrimmed.IndexOf(':');
-                int indexDash = lineStartTrimmed.IndexOf('-');
-                int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013');
+                if (specialLogic == SpecialLogic.ReleaseDate)
+                {
+                    lineStartTrimmed = MultipleColonsRegex.Replace(lineStartTrimmed, ":");
+                    lineStartTrimmed = MultipleDashesRegex.Replace(lineStartTrimmed, "-");
+                    lineStartTrimmed = MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
+                }
+
+                // Don't count these chars if they're part of a key
+                int indexColon = lineStartTrimmed.IndexOf(':', indexAfterKey);
+                int indexDash = lineStartTrimmed.IndexOf('-', indexAfterKey);
+                int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013', indexAfterKey);
 
                 int index = indexColon > -1 && indexDash > -1
                     ? Math.Min(indexColon, indexDash)
@@ -3038,7 +3146,14 @@ public sealed partial class Scanner : IDisposable
                 if (index == -1) index = indexUnicodeDash;
 
                 string finalValue = lineStartTrimmed.Substring(index + 1).Trim();
-                if (!finalValue.IsEmpty()) return finalValue;
+                if (!finalValue.IsEmpty())
+                {
+                    return finalValue;
+                }
+                else if (specialLogic == SpecialLogic.ReleaseDate && lineIndex < lines.Count - 1)
+                {
+                    return lines[lineIndex + 1].Trim();
+                }
             }
             else
             {

@@ -83,3 +83,13 @@ public enum Difficulty : uint
     Expert = 4,
     Extreme = 8
 }
+
+#if DateAccTest
+public enum DateAccuracy
+{
+    Null,
+    Red,
+    Yellow,
+    Green
+}
+#endif

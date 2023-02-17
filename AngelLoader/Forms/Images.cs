@@ -1870,4 +1870,39 @@ public static class Images
     #endregion
 
     #endregion
+
+    #region Release date accuracy testing
+
+#if DateAccTest
+    private static Bitmap CreateDateAccuracyImage(DateAccuracy da)
+    {
+        AssertR(da != DateAccuracy.Null, "da is null");
+
+        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+        using var g = Graphics.FromImage(ret);
+
+        var brush = da switch
+        {
+            DateAccuracy.Red => Brushes.Red,
+            DateAccuracy.Yellow => Brushes.Yellow,
+            _ => Brushes.Green
+        };
+
+        g.FillRectangle(brush, 6, 6, 8, 8);
+        g.DrawRectangle(Pens.Black, 5, 5, 9, 9);
+
+        return ret;
+    }
+
+    private static Bitmap? _dateAccuracyRed;
+    public static Bitmap DateAccuracy_Red => _dateAccuracyRed ??= CreateDateAccuracyImage(DateAccuracy.Red);
+
+    private static Bitmap? _dateAccuracyYellow;
+    public static Bitmap DateAccuracy_Yellow => _dateAccuracyYellow ??= CreateDateAccuracyImage(DateAccuracy.Yellow);
+
+    private static Bitmap? _dateAccuracyGreen;
+    public static Bitmap DateAccuracy_Green => _dateAccuracyGreen ??= CreateDateAccuracyImage(DateAccuracy.Green);
+#endif
+
+    #endregion
 }

@@ -1222,6 +1222,9 @@ sealed partial class MainForm
 
     internal CustomControls.DataGridViewCustom FMsDGV;
 
+#if DateAccTest
+    internal System.Windows.Forms.DataGridViewImageColumn DateAccuracyColumn;
+#endif
     internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
     internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn MisCountColumn;

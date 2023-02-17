@@ -892,6 +892,9 @@ internal static class Core
     {
         var comparer = column switch
         {
+#if DateAccTest
+            Column.DateAccuracy => Comparers.FMDateAccuracy,
+#endif
             Column.Game => Comparers.FMGame,
             Column.Installed => Comparers.FMInstalled,
             Column.MissionCount => Comparers.FMMisCount,

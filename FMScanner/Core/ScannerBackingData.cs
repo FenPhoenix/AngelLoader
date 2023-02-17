@@ -143,6 +143,7 @@ public sealed partial class Scanner
     private readonly char[] CA_DoubleQuote = { '\"' };
     private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
+    private readonly char[] CA_Parens = { '(', ')' };
     private readonly string[] CRLF_CR_LF = { "\r\n", "\r", "\n" };
     private readonly string[] SA_DoubleSpaces = { "  " };
     private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
@@ -176,21 +177,74 @@ public sealed partial class Scanner
 
     private readonly string[] SA_LatestUpdateDateDetect =
     {
-        "Update Date",
-        "Updated Date",
         "Update date",
         "Updated date",
-        "Update", "Updated",
-        "Last Updated",
+        "Update",
+        "Updated",
         "Last updated",
-        "Last Update",
-        "Last update"
+        "Last update",
+
+        "Latest update",
+        "Date of update",
+        "Version date",
+        "Rereleased",
+        "Re-release",
+        "Re-released",
+        "Date of rerelease",
+        "Date of re-release",
+        "Date rereleased",
+        "Date re-released",
+        "Revision date",
+        "Release of latest revision",
+        "Release date of latest revision"
     };
 
     private readonly string[] SA_ReleaseDateDetect =
     {
-        "Date Of Release", "Date of Release",
-        "Date of release", "Release Date", "Release date"
+        "Date of release",
+        "Release date",
+
+        "Date of completion",
+        "Date finished",
+        // "Released" before "Originally released" to give it higher priority
+        "Released",
+        "Originally released",
+        "Date:",
+        "Original date of release",
+        "Official release date",
+        "Released on",
+        "Release",
+        "Releasedate",
+        "Date released",
+        "Finished",
+        "Completion date",
+        // "Date of Release"
+        "DOR:",
+
+        #region French
+
+        // "Release date"
+        "Date de sortie",
+        // "Launch date"
+        "Date de lancement",
+        // "Date of completion"
+        "Date de réalisation",
+        "Date de realisation",
+        // "Release date"
+        "Date de parution",
+
+        #endregion
+
+        #region German
+
+        // "Publication date"
+        "Erscheinungsdatum",
+        // "Release date"
+        "Releasedatum",
+        // "Issue date"
+        "Ausgabedatum"
+
+        #endregion
     };
 
 #if FMScanner_FullCode
@@ -275,99 +329,117 @@ public sealed partial class Scanner
     _dateFormats =
     {
         ("MMM d yy", false),
-        ("MMM d, yy", false),
         ("MMM dd yy", false),
-        ("MMM dd, yy", false),
 
         ("MMM d yyyy", false),
-        ("MMM d, yyyy", false),
         ("MMM dd yyyy", false),
-        ("MMM dd, yyyy", false),
 
         ("MMMM d yy", false),
-        ("MMMM d, yy", false),
         ("MMMM dd yy", false),
-        ("MMMM dd, yy", false),
 
         ("MMMM d yyyy", false),
-        ("MMMM d, yyyy", false),
         ("MMMM dd yyyy", false),
-        ("MMMM dd, yyyy", false),
 
         ("d MMM yy", true),
-        ("d MMM, yy", true),
         ("dd MMM yy", true),
-        ("dd MMM, yy", true),
 
         ("d MMM yyyy", false),
-        ("d MMM, yyyy", false),
         ("dd MMM yyyy", false),
-        ("dd MMM, yyyy", false),
 
         ("d MMMM yy", true),
-        ("d MMMM, yy", true),
         ("dd MMMM yy", true),
-        ("dd MMMM, yy", true),
         ("d MMMM yyyy", false),
-        ("d MMMM, yyyy", false),
         ("dd MMMM yyyy", false),
-        ("dd MMMM, yyyy", false),
+
+        ("yyyy M d", true),
+        ("yyyy M dd", true),
+        ("yyyy MM d", true),
+        ("yyyy MM dd", true),
+        ("yyyy d M", true),
+        ("yyyy dd M", true),
+        ("yyyy d MM", true),
+        ("yyyy dd MM", true),
 
         ("yyyy MMM d", false),
         ("yyyy MMM dd", false),
         ("yyyy MMMM d", false),
         ("yyyy MMMM dd", false),
 
-        ("MM/dd/yyyy", true),
-        ("dd/MM/yyyy", true),
-        ("MM/dd/yy", true),
-        ("dd/MM/yy", true),
+        ("MM dd yyyy", true),
+        ("dd MM yyyy", true),
+        ("MM dd yy", true),
+        ("dd MM yy", true),
 
-        ("M/d/yyyy", true),
-        ("d/M/yyyy", true),
-        ("M/d/yy", true),
-        ("d/M/yy", true),
-
-        ("MM-dd-yyyy", true),
-        ("dd-MM-yyyy", true),
-        ("MM-dd-yy", true),
-        ("dd-MM-yy", true),
-
-        ("M-d-yyyy", true),
-        ("d-M-yyyy", true),
-        ("M-d-yy", true),
-        ("d-M-yy", true)
+        ("M d yyyy", true),
+        ("d M yyyy", true),
+        ("M d yy", true),
+        ("d M yy", true),
     };
 
     private readonly string[]
-    _monthNamesEnglish =
-    {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        _monthNamesEnglish =
+        {
+            // These are matched by German "Januar" / "Februar"
+            //"January",
+            //"February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
 
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        // "May" left out because it's already three letters and thus already exists in the full name set
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    };
+            "Jan",
+            "Feb",
+            "Febr",
+            "Mar",
+            "Apr",
+            // "May" left out because it's already three letters and thus already exists in the full name set
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+
+            "Feburary",
+            "Martch",
+            "Jully",
+
+            // French
+            "janvier",
+            "février",
+            "fevrier",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "juiller",
+            "août",
+            "aout",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre",
+            "decembre",
+
+            // German
+            "Januar",
+            "Februar",
+            "März",
+            "Marz",
+            "Juni",
+            "Juli",
+            "Oktober",
+            "Dezember",
+        };
 
     #endregion
 
@@ -615,6 +687,110 @@ public sealed partial class Scanner
     private readonly Regex TitleByAuthorRegex =
         new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    #region Release date detection
+
+    private readonly Regex MultipleColonsRegex =
+        new Regex(@"(:\s*)+",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MultipleDashesRegex =
+        new Regex("-{2,}",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MultipleUnicodeDashesRegex =
+        new Regex(@"\u2013{2,}",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex AnyNumberRTLRegex =
+        new Regex("[0123456789]",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+
+    private readonly Regex NewDarkAndNumberRegex =
+        new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex EuropeanDateRegex =
+        new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex PeriodWithOptionalSurroundingSpacesRegex =
+        new Regex(@"\s*\.\s*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DateSeparatorsRegex =
+        // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
+        new Regex(@"\s*(,|~|-|/|\.)\s*",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DateOfSeparatorRegex =
+        new Regex(@"\s*of\s*",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex OneOrMoreWhiteSpaceCharsRegex =
+        new Regex(@"\s+", RegexOptions.Compiled);
+
+    private readonly Regex FebrRegex =
+        new Regex("Febr ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex SeptRegex =
+        new Regex("Sept ",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex Y2KRegex =
+        new Regex("Y2K",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex JanuaryVariationsRegex =
+        new Regex("(janvier|Januar )",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex FebruaryVariationsRegex =
+        new Regex("(Feburary|f(é|e)vrier|Februar )",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex MarchVariationsRegex =
+        new Regex("(Martch|mars|M(ä|a)rz)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex AprilVariationsRegex =
+        new Regex("avril",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex MayVariationsRegex =
+        new Regex("mai",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex JuneVariationsRegex =
+        new Regex("(juin|Juni)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex JulyVariationsRegex =
+        new Regex("(Jully|juille(t|r)|Juli)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex AugustVariationsRegex =
+        new Regex("ao(u|û)t",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex SeptemberVariationsRegex =
+        new Regex("septembre",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private readonly Regex OctoberVariationsRegex =
+        new Regex("(octobre|Oktober)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex NovemberVariationsRegex =
+        new Regex("novembre",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    private readonly Regex DecemberVariationsRegex =
+        new Regex("(d(é|e)cembre|Dezember)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+    #endregion
 
     #endregion
 

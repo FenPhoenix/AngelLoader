@@ -22,6 +22,11 @@ internal static class Comparers
     private static FMTitleComparer? _fmTitleComparer;
     internal static IDirectionalSortFMComparer FMTitle => _fmTitleComparer ??= new FMTitleComparer();
 
+#if DateAccTest
+    private static FMDateAccuracyComparer? _fmDateAccuracyComparer;
+    internal static IDirectionalSortFMComparer FMDateAccuracy => _fmDateAccuracyComparer ??= new FMDateAccuracyComparer();
+#endif
+
     private static FMGameComparer? _fmGameComparer;
     internal static IDirectionalSortFMComparer FMGame => _fmGameComparer ??= new FMGameComparer();
 
@@ -158,6 +163,26 @@ internal static class Comparers
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
+
+#if DateAccTest
+    internal sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
+    {
+        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+
+        public int Compare(FanMission x, FanMission y)
+        {
+            int ret =
+                x.DateAccuracy == y.DateAccuracy ? TitleCompare(x, y) :
+                x.DateAccuracy == DateAccuracy.Null ? -1 :
+                y.DateAccuracy == DateAccuracy.Null ? 1 :
+                x.DateAccuracy < y.DateAccuracy ? -1 : 1;
+
+            ret = -ret;
+
+            return SortDirection == SortDirection.Ascending ? ret : -ret;
+        }
+    }
+#endif
 
     internal sealed class FMGameComparer : IDirectionalSortFMComparer
     {

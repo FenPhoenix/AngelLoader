@@ -152,4 +152,9 @@ public sealed class FanMission
     [FenGenNumericEmpty(-1)]
     [FenGenMaxDigits(10)]
     internal int MisCount = -1;
+
+#if DateAccTest
+    [FenGenIgnore]
+    internal DateAccuracy DateAccuracy = DateAccuracy.Null;
+#endif
 }

@@ -103,6 +103,48 @@ internal static partial class Ini
         }
     }
 
+#if DateAccTest
+    private static readonly string _dateAccuracyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DateAccuracy.ini");
+
+    internal static void ReadDateAccuracyFile()
+    {
+        if (!File.Exists(_dateAccuracyFile)) return;
+
+        var dict = new DictionaryI<FanMission>(FMDataIniList.Count);
+        foreach (FanMission fm in FMDataIniList)
+        {
+            dict[fm.InstalledDir] = fm;
+        }
+
+        var lines = File_ReadAllLines_List(_dateAccuracyFile);
+        foreach (var line in lines)
+        {
+            string lineT = line.Trim();
+            if (lineT.IsEmpty()) continue;
+
+            int eqIndex = lineT.LastIndexOf('=');
+            if (eqIndex == -1) continue;
+
+            string instDir = lineT.Substring(0, eqIndex);
+            string value = lineT.Substring(eqIndex + 1);
+
+            if (dict.TryGetValue(instDir, out FanMission? fm))
+            {
+                fm.DateAccuracy = DateAccuracy_Deserialize(value);
+            }
+        }
+    }
+
+    private static void WriteDateAccuracyFile()
+    {
+        using var sw = new StreamWriter(_dateAccuracyFile);
+        foreach (FanMission fm in FMDataIniList)
+        {
+            sw.WriteLine(fm.InstalledDir + "=" + DateAccuracy_Serialize(fm.DateAccuracy));
+        }
+    }
+#endif
+
     internal static void WriteFullFMDataIni(bool makeBackup = false)
     {
         try
@@ -124,6 +166,9 @@ internal static partial class Ini
                 }
             }
             WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+#if DateAccTest
+            WriteDateAccuracyFile();
+#endif
         }
         catch (Exception ex)
         {

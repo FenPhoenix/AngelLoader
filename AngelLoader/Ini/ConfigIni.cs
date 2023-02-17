@@ -538,6 +538,13 @@ internal static partial class Ini
 
     #region Columns
 
+#if DateAccTest
+    private static void Config_ColumnDateAccuracy_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddColumn(config, valTrimmed, Column.DateAccuracy);
+    }
+#endif
+
     private static void Config_ColumnGame_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Game);
@@ -893,6 +900,9 @@ internal static partial class Ini
 
         #region Columns
 
+#if DateAccTest
+        { "ColumnDateAccuracy", new Config_DelegatePointerWrapper(&Config_ColumnDateAccuracy_Set) },
+#endif
         { "ColumnGame", new Config_DelegatePointerWrapper(&Config_ColumnGame_Set) },
         { "ColumnInstalled", new Config_DelegatePointerWrapper(&Config_ColumnInstalled_Set) },
         { "ColumnMissionCount", new Config_DelegatePointerWrapper(&Config_ColumnMisCount_Set) },

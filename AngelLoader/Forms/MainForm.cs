@@ -48,6 +48,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -262,6 +263,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
+        using var sw = new StreamWriter(@"C:\al_dates_new.txt");
+        foreach (FanMission fm in FMDataIniList)
+        {
+            sw.WriteLine(GetFMId(fm));
+            sw.WriteLine(fm.ReleaseDate.DateTime?.ToString("MMMM dd yyyy", DateTimeFormatInfo.InvariantInfo) ?? "<null>");
+        }
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
@@ -599,6 +606,19 @@ public sealed partial class MainForm : DarkFormBase,
             SortMode = DataGridViewColumnSortMode.Programmatic
         };
 
+#if DateAccTest
+        DateAccuracyColumn = new DataGridViewImageColumn
+        {
+            HeaderCell = new DataGridViewColumnHeaderCellCustom(),
+            HeaderText = "DA",
+            ImageLayout = DataGridViewImageCellLayout.Zoom,
+            MinimumWidth = 25,
+            ReadOnly = true,
+            Resizable = DataGridViewTriState.True,
+            SortMode = DataGridViewColumnSortMode.Programmatic
+        };
+#endif
+
         #endregion
 
 #if DEBUG
@@ -821,6 +841,18 @@ public sealed partial class MainForm : DarkFormBase,
         {
             button.DarkModeBackColor = DarkColors.Fen_DarkBackground;
         }
+
+#if DateAccTest
+        try
+        {
+            CellValueNeededDisabled = true;
+            FMsDGV.Columns.Insert(0, DateAccuracyColumn);
+        }
+        finally
+        {
+            CellValueNeededDisabled = false;
+        }
+#endif
     }
 
     // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -1254,6 +1286,39 @@ public sealed partial class MainForm : DarkFormBase,
         {
             System.Diagnostics.Trace.WriteLine("");
         }
+#if DateAccTest
+        else if (e.KeyCode == Keys.Space && (FMsDGV.Focused || ReadmeRichTextBox.Focused || MainSplitContainer.Panel2.Focused))
+        {
+            FanMission? fm = GetMainSelectedFMOrNull();
+            if (fm != null)
+            {
+                void SetAccuracy(DateAccuracy da)
+                {
+                    fm.DateAccuracy = da;
+                    RefreshFMsListRowsOnlyKeepSelection();
+                    Ini.WriteFullFMDataIni();
+                    e.SuppressKeyPress = true;
+                }
+
+                if (e.Shift)
+                {
+                    SetAccuracy(DateAccuracy.Green);
+                }
+                else if (e.Control && e.Alt)
+                {
+                    SetAccuracy(DateAccuracy.Yellow);
+                }
+                else if (e.Control)
+                {
+                    SetAccuracy(DateAccuracy.Red);
+                }
+                else if (e.Alt)
+                {
+                    SetAccuracy(DateAccuracy.Null);
+                }
+            }
+        }
+#endif
 #endif
 
         if (ViewBlocked) return;
@@ -3566,6 +3631,17 @@ public sealed partial class MainForm : DarkFormBase,
 
         switch ((Column)e.ColumnIndex)
         {
+#if DateAccTest
+            case Column.DateAccuracy:
+                e.Value = fm.DateAccuracy switch
+                {
+                    DateAccuracy.Red => Images.DateAccuracy_Red,
+                    DateAccuracy.Yellow => Images.DateAccuracy_Yellow,
+                    DateAccuracy.Green => Images.DateAccuracy_Green,
+                    _ => Images.Blank
+                };
+                break;
+#endif
             case Column.Game:
                 e.Value =
                     fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :
