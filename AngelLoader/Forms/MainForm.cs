@@ -606,6 +606,19 @@ public sealed partial class MainForm : DarkFormBase,
             SortMode = DataGridViewColumnSortMode.Programmatic
         };
 
+#if DateAccTest
+        DateAccuracyColumn = new DataGridViewImageColumn
+        {
+            HeaderCell = new DataGridViewColumnHeaderCellCustom(),
+            HeaderText = "DA",
+            ImageLayout = DataGridViewImageCellLayout.Zoom,
+            MinimumWidth = 25,
+            ReadOnly = true,
+            Resizable = DataGridViewTriState.True,
+            SortMode = DataGridViewColumnSortMode.Programmatic
+        };
+#endif
+
         #endregion
 
 #if DEBUG
@@ -828,6 +841,18 @@ public sealed partial class MainForm : DarkFormBase,
         {
             button.DarkModeBackColor = DarkColors.Fen_DarkBackground;
         }
+
+#if DateAccTest
+        try
+        {
+            CellValueNeededDisabled = true;
+            FMsDGV.Columns.Insert(0, DateAccuracyColumn);
+        }
+        finally
+        {
+            CellValueNeededDisabled = false;
+        }
+#endif
     }
 
     // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -1261,6 +1286,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             System.Diagnostics.Trace.WriteLine("");
         }
+#if DateAccTest
         else if (e.KeyCode == Keys.Space && (FMsDGV.Focused || ReadmeRichTextBox.Focused || MainSplitContainer.Panel2.Focused))
         {
             FanMission? fm = GetMainSelectedFMOrNull();
@@ -1292,6 +1318,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
         }
+#endif
 #endif
 
         if (ViewBlocked) return;
@@ -3604,6 +3631,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         switch ((Column)e.ColumnIndex)
         {
+#if DateAccTest
             case Column.DateAccuracy:
                 e.Value = fm.DateAccuracy switch
                 {
@@ -3613,7 +3641,7 @@ public sealed partial class MainForm : DarkFormBase,
                     _ => Images.Blank
                 };
                 break;
-
+#endif
             case Column.Game:
                 e.Value =
                     fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) ? Images.FMsList_GameIcons[(int)gameIndex] :

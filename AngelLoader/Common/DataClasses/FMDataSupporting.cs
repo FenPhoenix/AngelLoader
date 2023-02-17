@@ -84,6 +84,7 @@ public enum Difficulty : uint
     Extreme = 8
 }
 
+#if DateAccTest
 public enum DateAccuracy
 {
     Null,
@@ -91,3 +92,4 @@ public enum DateAccuracy
     Yellow,
     Green
 }
+#endif

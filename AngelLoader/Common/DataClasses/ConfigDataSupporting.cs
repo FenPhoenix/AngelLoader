@@ -27,7 +27,9 @@ internal sealed class ColumnData
 // Public for interface use
 public enum Column
 {
+#if DateAccTest
     DateAccuracy,
+#endif
     Game,
     Installed,
     MissionCount,

@@ -327,6 +327,7 @@ public static partial class Utils
 
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
+#if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
         DateAccuracy.Green => "Green",
@@ -342,4 +343,5 @@ public static partial class Utils
         "Red" => DateAccuracy.Red,
         _ => DateAccuracy.Null
     };
+#endif
 }

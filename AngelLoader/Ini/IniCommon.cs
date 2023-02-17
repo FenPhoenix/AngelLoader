@@ -103,6 +103,7 @@ internal static partial class Ini
         }
     }
 
+#if DateAccTest
     private const string _dateAccuracyFile = @"C:\AngelLoader\Data\DateAccuracy.ini";
 
     internal static void ReadDateAccuracyFile()
@@ -142,6 +143,7 @@ internal static partial class Ini
             sw.WriteLine(fm.InstalledDir + "=" + DateAccuracy_Serialize(fm.DateAccuracy));
         }
     }
+#endif
 
     internal static void WriteFullFMDataIni(bool makeBackup = false)
     {
@@ -164,7 +166,9 @@ internal static partial class Ini
                 }
             }
             WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+#if DateAccTest
             WriteDateAccuracyFile();
+#endif
         }
         catch (Exception ex)
         {

@@ -25,12 +25,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<DefineConstants>DEBUG;TRACE;Debug,DateAccTest</DefineConstants>
 		<OutputPath>bin\x86\Debug\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<DefineConstants>DEBUG;TRACE;Debug,DateAccTest</DefineConstants>
 		<OutputPath>bin\x64\Debug\</OutputPath>
 	</PropertyGroup>
 
