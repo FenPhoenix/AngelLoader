@@ -48,13 +48,13 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x86'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,DateAccTest</DefineConstants>
+		<DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
 		<OutputPath>bin\x86\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,DateAccTest</DefineConstants>
+		<DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
