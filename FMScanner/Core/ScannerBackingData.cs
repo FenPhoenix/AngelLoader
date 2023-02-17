@@ -719,9 +719,9 @@ public sealed partial class Scanner
         new Regex(@"\u2013{2,}",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-    private readonly Regex AnyNumberRTLRegex =
-        new Regex("[0123456789]",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+    private readonly Regex AnyDateNumberRTLRegex =
+        new Regex("(Y2K|[0123456789])",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
 
     private readonly Regex NewDarkAndNumberRegex =
         new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",

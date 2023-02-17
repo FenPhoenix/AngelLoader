@@ -2999,10 +2999,10 @@ public sealed partial class Scanner : IDisposable
                             ret = ret.Substring(0, newDarkMatch.Index);
                         }
 
-                        Match rtlNumberMatch = AnyNumberRTLRegex.Match(ret);
+                        Match rtlNumberMatch = AnyDateNumberRTLRegex.Match(ret);
                         if (rtlNumberMatch.Success)
                         {
-                            ret = ret.Substring(0, rtlNumberMatch.Index + 1);
+                            ret = ret.Substring(0, rtlNumberMatch.Index + rtlNumberMatch.Length);
                         }
                     }
 
