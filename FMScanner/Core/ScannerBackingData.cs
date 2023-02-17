@@ -153,11 +153,19 @@ public sealed partial class Scanner
 
     #region Field detect strings
 
+    // IMPORTANT(Field detect strings): Always use lowercase for letters where you want case insensitivity!
+    // This gets matched with "given case or upper case" to prevent false positives from lowercase first letters.
+
     private readonly string[] SA_TitleDetect =
     {
-        "Title of the Mission", "Title of the mission",
-        "Title", "Mission Title", "Mission title", "Mission Name", "Mission name", "Level Name",
-        "Level name", "Mission:", "Mission ", "Campaign Title", "Campaign title",
+        "Title of the mission",
+        "Title",
+        "Mission title",
+        "Mission name",
+        "Level name",
+        "Mission:",
+        "Mission ",
+        "Campaign title",
         "The name of Mission:",
         // TODO: @TEMP_HACK: This works for the one mission that has it in this casing
         // Rewrite this code in here so we can have more detailed detection options than just
@@ -167,10 +175,19 @@ public sealed partial class Scanner
 
     private readonly string[] SA_AuthorDetect =
     {
-        "Author", "Authors", "Autor",
-        "Created by", "Devised by", "Designed by", "Author=", "Made by",
-        "FM Author", "Mission Author", "Mission author", "Mission Creator", "Mission creator",
-        "The author:", "author:",
+        "Author",
+        "Authors",
+        "Autor",
+        "Created by",
+        "Devised by",
+        "Designed by",
+        "Author=",
+        "Made by",
+        "FM Author",
+        "Mission author",
+        "Mission creator",
+        "The author:",
+        "author:",
         // TODO: @TEMP_HACK: See above
         "Fan Mission/Map Author"
     };
