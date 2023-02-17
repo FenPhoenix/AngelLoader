@@ -348,6 +348,15 @@ public sealed partial class Scanner
         ("d MMMM yyyy", false),
         ("dd MMMM yyyy", false),
 
+        ("yyyy M d", true),
+        ("yyyy M dd", true),
+        ("yyyy MM d", true),
+        ("yyyy MM dd", true),
+        ("yyyy d M", true),
+        ("yyyy dd M", true),
+        ("yyyy d MM", true),
+        ("yyyy dd MM", true),
+
         ("yyyy MMM d", false),
         ("yyyy MMM dd", false),
         ("yyyy MMMM d", false),
