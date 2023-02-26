@@ -652,6 +652,12 @@ public sealed partial class MainForm : DarkFormBase,
             _topRightTabs[i].SetOwner(this);
         }
 
+        // For right-clicking on tabs
+        TopRightTabControl.MouseClick += TopRightTabBar_MouseClick;
+
+        // For right-clicking on blank space in tab bar
+        TopSplitContainer.Panel2.MouseClick += TopRightTabBar_MouseClick;
+
         #region Construct + init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -5142,5 +5148,18 @@ public sealed partial class MainForm : DarkFormBase,
     private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
     {
         MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
+    }
+
+    private void TopRightTabBar_MouseClick(object _, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right)
+        {
+            Point pt = TopRightTabControl.PointToClient_Fast(Native.GetCursorPosition_Fast());
+            Rectangle rect = TopRightTabControl.GetTabBarRect();
+            if (rect.Contains(pt))
+            {
+                TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
+            }
+        }
     }
 }

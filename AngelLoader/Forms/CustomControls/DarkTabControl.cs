@@ -409,5 +409,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     [PublicAPI]
     public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
 
+    public Rectangle GetTabBarRect() => new(0, 0, Width, GetTabRect(0).Height);
+
     #endregion
 }

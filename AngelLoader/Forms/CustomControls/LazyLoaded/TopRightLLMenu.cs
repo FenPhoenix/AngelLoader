@@ -52,12 +52,46 @@ internal sealed class TopRightLLMenu : IDarkable
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
 
+                _menu.Closed += MenuClosed;
+
                 _constructed = true;
 
                 Localize();
             }
 
             return _menu;
+        }
+    }
+
+    private void MenuClosed(object sender, ToolStripDropDownClosedEventArgs e)
+    {
+        /*
+        Fix: OnPaint() has a bizarre bug where if it's drawn one tab with the hot color, then you right-click for
+        a menu, then move the mouse onto another tab, then right-click for a menu again, now the first hot button
+        is just ALWAYS drawn hot even if you move the mouse on and off the second hot button a trillion times -
+        which causes THE BUTTON YOU'RE MOUSING OVER to change colors properly of course, but the first button you
+        moused over (or all but the last in the chain if you did this multiple times) is now permanently drawn in
+        hot colors, until you mouse on and off THAT particular button.
+
+        Even though it always redraws all tabs whenever it redraws any.
+
+        Even though Trace.WriteLine() debugging clearly shows that all values are correct for the tab to be drawn
+        non-hot (and correct for all other tabs too for that matter), and it is using the correct non-hot brush.
+                
+        Even though the very next line after the brush gets decided, it unconditionally fills the frigging
+        rectangle with the frigging non-hot brush.
+
+        Clearly. Unambiguously. It. Is. Using. The. Non-hot. Brush.
+
+        Except it isn't, somehow.
+        
+        I guess the framework doesn't let facts get in its way.
+
+        Anyway. If we do this it fixes it, pointless clunkily.
+        */
+        if (Config.DarkMode)
+        {
+            _owner.TopRightTabControl.Invalidate(_owner.TopRightTabControl.GetTabBarRect());
         }
     }
 
