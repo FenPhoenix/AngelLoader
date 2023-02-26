@@ -52,6 +52,8 @@ internal static class Native
         public int y;
     }
 
+    #region Cursor
+
     private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
 
     [DllImport("user32.dll")]
@@ -92,6 +94,8 @@ internal static class Native
     }
 
     public static Point ClientCursorPos(this Control c) => c.PointToClient_Fast(GetCursorPosition_Fast());
+
+    #endregion
 
     #region SendMessage/PostMessage
 
