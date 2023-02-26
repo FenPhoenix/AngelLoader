@@ -654,48 +654,53 @@ internal static class FMInstallAndPlay
 
     private static bool RunThiefBuddyIfRequired(FanMission fm)
     {
+        if (!fm.Game.ConvertsToDarkThief(out GameIndex gameIndex) ||
+            Config.RunThiefBuddyOnFMPlay == RunThiefBuddyOnFMPlay.Never)
+        {
+            return true;
+        }
+
         string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
 
-        if (fm.Game.ConvertsToDarkThief(out GameIndex gameIndex) &&
-            Config.RunThiefBuddyOnFMPlay != RunThiefBuddyOnFMPlay.Never &&
-            !thiefBuddyExe.IsWhiteSpace() &&
-            File.Exists(thiefBuddyExe))
+        if (thiefBuddyExe.IsWhiteSpace() || !File.Exists(thiefBuddyExe))
         {
-            bool runThiefBuddy = true;
+            return true;
+        }
 
-            if (Config.RunThiefBuddyOnFMPlay == RunThiefBuddyOnFMPlay.Ask)
+        bool runThiefBuddy = true;
+
+        if (Config.RunThiefBuddyOnFMPlay == RunThiefBuddyOnFMPlay.Ask)
+        {
+            (MBoxButton result, bool dontAskAgain) = Core.Dialogs.ShowMultiChoiceDialog(
+                message: LText.ThiefBuddy.AskToRunThiefBuddy,
+                title: LText.AlertMessages.Confirm,
+                icon: MBoxIcon.None,
+                yes: LText.ThiefBuddy.RunThiefBuddy,
+                no: LText.ThiefBuddy.DontRunThiefBuddy,
+                cancel: LText.Global.Cancel,
+                checkBoxText: LText.AlertMessages.DontAskAgain
+            );
+
+            if (result == MBoxButton.Cancel) return false;
+
+            Config.RunThiefBuddyOnFMPlay = dontAskAgain
+                ? result == MBoxButton.Yes ? RunThiefBuddyOnFMPlay.Always : RunThiefBuddyOnFMPlay.Never
+                : RunThiefBuddyOnFMPlay.Ask;
+
+            runThiefBuddy = result == MBoxButton.Yes;
+        }
+
+        if (runThiefBuddy)
+        {
+            try
             {
-                (MBoxButton result, bool dontAskAgain) = Core.Dialogs.ShowMultiChoiceDialog(
-                    message: LText.ThiefBuddy.AskToRunThiefBuddy,
-                    title: LText.AlertMessages.Confirm,
-                    icon: MBoxIcon.None,
-                    yes: LText.ThiefBuddy.RunThiefBuddy,
-                    no: LText.ThiefBuddy.DontRunThiefBuddy,
-                    cancel: LText.Global.Cancel,
-                    checkBoxText: LText.AlertMessages.DontAskAgain
-                );
-
-                if (result == MBoxButton.Cancel) return false;
-
-                Config.RunThiefBuddyOnFMPlay = dontAskAgain
-                    ? result == MBoxButton.Yes ? RunThiefBuddyOnFMPlay.Always : RunThiefBuddyOnFMPlay.Never
-                    : RunThiefBuddyOnFMPlay.Ask;
-
-                runThiefBuddy = result == MBoxButton.Yes;
+                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
             }
-
-            if (runThiefBuddy)
+            catch (Exception ex)
             {
-                try
-                {
-                    string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
-                    ProcessStart_UseShellExecute(new ProcessStartInfo(thiefBuddyExe, "\"" + fmInstalledPath + "\" -startwatch"));
-                }
-                catch (Exception ex)
-                {
-                    Log("Couldn't run Thief Buddy", ex);
-                    Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
-                }
+                Log("Couldn't run Thief Buddy", ex);
+                Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
             }
         }
 
