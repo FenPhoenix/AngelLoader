@@ -200,7 +200,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         if (_spacePressed) return;
 
-        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        if (!ClientRectangle.Contains(this.ClientCursorPos()))
         {
             SetControlState(DarkControlState.Normal);
         }
@@ -223,7 +223,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         _spacePressed = false;
 
-        SetControlState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+        SetControlState(!ClientRectangle.Contains(this.ClientCursorPos())
             ? DarkControlState.Normal
             : DarkControlState.Hover);
     }

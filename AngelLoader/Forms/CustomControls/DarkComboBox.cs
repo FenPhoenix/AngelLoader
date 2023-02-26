@@ -182,7 +182,7 @@ public class DarkComboBox : ComboBox, IDarkable
 
         if (!_darkModeEnabled) return;
 
-        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        if (!ClientRectangle.Contains(this.ClientCursorPos()))
         {
             // Don't invalidate here, fixes the issue where if you click and move the mouse quickly onto any
             // item in the dropdown, that item's text will become the main text somehow.
@@ -202,7 +202,7 @@ public class DarkComboBox : ComboBox, IDarkable
 
         if (!_darkModeEnabled) return;
 
-        SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+        SetButtonState(ClientRectangle.Contains(this.ClientCursorPos())
             ? DarkControlState.Hover
             : DarkControlState.Normal);
     }
@@ -213,7 +213,7 @@ public class DarkComboBox : ComboBox, IDarkable
 
         if (!_darkModeEnabled) return;
 
-        SetButtonState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+        SetButtonState(ClientRectangle.Contains(this.ClientCursorPos())
             ? DarkControlState.Hover
             : DarkControlState.Normal);
     }

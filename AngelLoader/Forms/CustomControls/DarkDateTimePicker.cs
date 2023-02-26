@@ -55,7 +55,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
         if (!_darkModeEnabled) return;
 
         var (_, buttonRect) = GetDTPInfoAndButtonRect();
-        bool newMouseOverButton = buttonRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()));
+        bool newMouseOverButton = buttonRect.Contains(this.ClientCursorPos());
 
         if (newMouseOverButton != _mouseOverButton)
         {

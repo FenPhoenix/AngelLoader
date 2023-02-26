@@ -306,8 +306,8 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
         if (!Resizing && _sibling != null)
         {
             int sibCursorPos = IsStacked
-                ? _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).X
-                : _sibling.Panel1.PointToClient_Fast(Native.GetCursorPosition_Fast()).Y;
+                ? _sibling.Panel1.ClientCursorPos().X
+                : _sibling.Panel1.ClientCursorPos().Y;
 
             int sibSplitterPos = IsStacked
                 ? _sibling.Panel1.Width

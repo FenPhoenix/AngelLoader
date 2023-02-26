@@ -194,7 +194,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 
         g.FillRectangle(DarkColors.HeaderBackgroundBrush, clipRect);
 
-        Point mousePos = Controls[0].PointToClient_Fast(Native.GetCursorPosition_Fast());
+        Point mousePos = Controls[0].ClientCursorPos();
 
         var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
         bool upHot = upArea.Contains(mousePos);

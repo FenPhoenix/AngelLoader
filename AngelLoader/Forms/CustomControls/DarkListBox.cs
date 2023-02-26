@@ -316,7 +316,7 @@ public class DarkListBox : ListView, IDarkable
     {
         m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
 
-        var modCursorPos = new Point(2, this.PointToClient_Fast(Native.GetCursorPosition_Fast()).Y);
+        var modCursorPos = new Point(2, this.ClientCursorPos().Y);
 
         ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 

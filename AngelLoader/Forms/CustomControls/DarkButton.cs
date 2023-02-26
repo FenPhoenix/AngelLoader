@@ -266,7 +266,7 @@ public class DarkButton : Button, IDarkable
 
         if (_spacePressed) return;
 
-        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        if (!ClientRectangle.Contains(this.ClientCursorPos()))
         {
             SetButtonState(DarkControlState.Normal);
         }
@@ -289,7 +289,7 @@ public class DarkButton : Button, IDarkable
 
         _spacePressed = false;
 
-        SetButtonState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+        SetButtonState(!ClientRectangle.Contains(this.ClientCursorPos())
             ? DarkControlState.Normal
             : DarkControlState.Hover);
     }
@@ -317,7 +317,7 @@ public class DarkButton : Button, IDarkable
         {
             _spacePressed = false;
 
-            SetButtonState(!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+            SetButtonState(!ClientRectangle.Contains(this.ClientCursorPos())
                 ? DarkControlState.Normal
                 : DarkControlState.Hover);
         }

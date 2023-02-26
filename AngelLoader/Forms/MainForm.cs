@@ -4955,7 +4955,7 @@ public sealed partial class MainForm : DarkFormBase,
         Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(new Point(0, 0)));
         Size rcs = fullArea ? control.Size : control.ClientSize;
 
-        Point ptc = this.PointToClient_Fast(Native.GetCursorPosition_Fast());
+        Point ptc = this.ClientCursorPos();
 
         // Don't create eleventy billion Rectangle objects per second
         return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
@@ -5154,7 +5154,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (e.Button == MouseButtons.Right)
         {
-            Point pt = TopRightTabControl.PointToClient_Fast(Native.GetCursorPosition_Fast());
+            Point pt = TopRightTabControl.ClientCursorPos();
             Rectangle rect = TopRightTabControl.GetTabBarRect();
             if (rect.Contains(pt))
             {

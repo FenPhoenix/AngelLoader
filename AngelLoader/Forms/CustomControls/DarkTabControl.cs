@@ -177,7 +177,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
                     SolidBrush backColorBrush = focused
                         ? DarkColors.LightBackgroundBrush
-                        : Enabled && tabRect.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+                        : Enabled && tabRect.Contains(this.ClientCursorPos())
                             ? DarkColors.Fen_HotTabBackgroundBrush
                             : DarkColors.Fen_DeselectedTabBackgroundBrush;
 

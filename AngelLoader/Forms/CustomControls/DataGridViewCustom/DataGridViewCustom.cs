@@ -729,7 +729,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         {
             int displayIndex = Columns[e.ColumnIndex].DisplayIndex;
 
-            bool mouseOver = e.CellBounds.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()));
+            bool mouseOver = e.CellBounds.Contains(this.ClientCursorPos());
 
             // If we wanted to match classic mode, this is what we would use to start with
             /*

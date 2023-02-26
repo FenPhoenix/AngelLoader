@@ -159,7 +159,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
         if (_spacePressed) return;
 
-        if (!ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast())))
+        if (!ClientRectangle.Contains(this.ClientCursorPos()))
         {
             SetControlState(DarkControlState.Normal);
         }
@@ -182,7 +182,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
         _spacePressed = false;
 
-        SetControlState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+        SetControlState(ClientRectangle.Contains(this.ClientCursorPos())
             ? DarkControlState.Hover
             : DarkControlState.Normal);
     }
@@ -210,7 +210,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         {
             _spacePressed = false;
 
-            SetControlState(ClientRectangle.Contains(this.PointToClient_Fast(Native.GetCursorPosition_Fast()))
+            SetControlState(ClientRectangle.Contains(this.ClientCursorPos())
                 ? DarkControlState.Hover
                 : DarkControlState.Normal);
         }

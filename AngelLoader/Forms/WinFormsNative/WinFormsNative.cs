@@ -91,6 +91,8 @@ internal static class Native
         return new Point(_globalNativePoint.x, _globalNativePoint.y);
     }
 
+    public static Point ClientCursorPos(this Control c) => c.PointToClient_Fast(GetCursorPosition_Fast());
+
     #region SendMessage/PostMessage
 
     [DllImport("user32.dll")]
