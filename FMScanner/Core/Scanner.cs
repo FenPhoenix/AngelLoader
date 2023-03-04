@@ -585,14 +585,16 @@ public sealed partial class Scanner : IDisposable
 
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // 50 entries is more than we're ever likely to need in this list, but still small enough not to
+                // be wasteful.
+                var fileNamesList = new List<string>(50);
+                uint extractorFilesCount;
                 /*
                 We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
                 involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
                 we can get last write times in DateTime format and not have to parse possible localized
                 text dates out of the output stream.
                 */
-                var fileNamesList = new List<string>();
-                uint extractorFilesCount;
                 using (var _sevenZipArchive = new SevenZipExtractor(fm.Path) { PreserveDirectoryStructure = true })
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -610,13 +612,13 @@ public sealed partial class Scanner : IDisposable
                         // Always extract readmes no matter what, so our .7z caching is always correct.
                         // Also maybe we would need to always extract them regardless for other reasons, but
                         // yeah.
-                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                        if (fn.IsValidReadme() && entry.Size > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                               (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                                fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
                              dirSeps == 0))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
                         // Only extract these if we need them!
                         else if ((_scanOptions.ScanGameType
@@ -624,31 +626,31 @@ public sealed partial class Scanner : IDisposable
                                   || _scanOptions.ScanNewDarkRequired
 #endif
                                  ) &&
-                                 !entry.FileName.Rel_ContainsDirSep() &&
-                                 (entry.FileName.ExtIsMis() ||
-                                  entry.FileName.ExtIsGam()))
+                                 !fn.Rel_ContainsDirSep() &&
+                                 (fn.ExtIsMis() ||
+                                  fn.ExtIsGam()))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
-                        else if (!entry.FileName.Rel_ContainsDirSep() &&
-                                 (entry.FileName.EqualsI(FMFiles.FMInfoXml) ||
-                                  entry.FileName.EqualsI(FMFiles.FMIni) ||
-                                  entry.FileName.EqualsI(FMFiles.ModIni)))
+                        else if (!fn.Rel_ContainsDirSep() &&
+                                 (fn.EqualsI(FMFiles.FMInfoXml) ||
+                                  fn.EqualsI(FMFiles.FMIni) ||
+                                  fn.EqualsI(FMFiles.ModIni)))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
-                        else if (entry.FileName.PathStartsWithI(FMDirs.StringsS) &&
-                                 entry.FileName.PathEndsWithI(FMFiles.SMissFlag))
+                        else if (fn.PathStartsWithI(FMDirs.StringsS) &&
+                                 fn.PathEndsWithI(FMFiles.SMissFlag))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
-                        else if (entry.FileName.PathEndsWithI(FMFiles.SNewGameStr))
+                        else if (fn.PathEndsWithI(FMFiles.SNewGameStr))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
-                        else if (EndsWithTitleFile(entry.FileName))
+                        else if (EndsWithTitleFile(fn))
                         {
-                            fileNamesList.Add(entry.FileName);
+                            fileNamesList.Add(fn);
                         }
 
                         _fmDirFileInfos.Add(new FileInfoCustom(entry));
@@ -1902,6 +1904,7 @@ public sealed partial class Scanner : IDisposable
         #region Add BaseDirFiles
 
         bool t3Found = false;
+        // @PERF_TODO: Recycle/lazy-load this
         var t3GmpFiles = new List<NameAndIndex>();
 
         static bool MapFileExists(string path)
@@ -4099,10 +4102,13 @@ public sealed partial class Scanner : IDisposable
                    buffer[len - 2] == 'M';
         }
 
-        using (var br = _fmIsZip
-                   ? new BinaryReader(_archive.OpenEntry(misFileZipEntry), Encoding.ASCII, false)
-                   : new BinaryReader(GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, false))
+        Stream? misStream = null;
+        try
         {
+            misStream = _fmIsZip
+                ? _archive.OpenEntry(misFileZipEntry)
+                : GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
+
             for (int i = 0; i < _locations.Length; i++)
             {
                 if (
@@ -4120,14 +4126,14 @@ public sealed partial class Scanner : IDisposable
                 {
                     buffer = _zipOffsetBuffers[i];
                     int length = _zipOffsets[i];
-                    int bytesRead = br.BaseStream.ReadAll(buffer, 0, length);
+                    int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
                 }
                 else
                 {
                     buffer = _gameDetectStringBuffer;
-                    br.BaseStream.Position = _locations[i];
-                    int bytesRead = br.BaseStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
+                    misStream.Position = _locations[i];
+                    int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
                     if (bytesRead < _gameDetectStringBufferLength) break;
                 }
 
@@ -4173,6 +4179,10 @@ public sealed partial class Scanner : IDisposable
             }
 
             if (!foundAtNewDarkLocation) ret.NewDarkRequired = false;
+        }
+        finally
+        {
+            misStream?.Dispose();
         }
 
         #endregion
@@ -4241,6 +4251,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
+            // @PERF_TODO: Replace BinaryReaders with custom versions that reuse buffers etc.
             using var br = new BinaryReader(GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, leaveOpen: false);
 
             uint tocOffset = br.ReadUInt32();
@@ -4455,6 +4466,7 @@ public sealed partial class Scanner : IDisposable
 
         stream.Position = 0;
 
+        // @PERF_TODO: Can we use a custom StreamReader?
         using var sr = new StreamReader(stream, encoding);
         return sr.ReadToEnd();
     }
