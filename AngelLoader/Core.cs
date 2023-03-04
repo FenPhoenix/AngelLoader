@@ -2085,7 +2085,7 @@ internal static class Core
     #region Get special exes
 
     /// <summary>
-    /// Returns the full path of the editor for <paramref name="gameIndex"/> if and only if it exists on disk.
+    /// Returns the full path of the editor for <paramref name="gameIndex"/> if it exists on disk.
     /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="gameIndex"/>
     /// is not Dark.
     /// </summary>
@@ -2473,8 +2473,7 @@ internal static class Core
         if (!View.MultipleFMsSelected())
         {
             fm = View.GetMainSelectedFMOrNull();
-            if (fm != null && GameIsKnownAndSupported(fm.Game) &&
-                !fm.MarkedUnavailable)
+            if (fm != null && GameIsKnownAndSupported(fm.Game) && !fm.MarkedUnavailable)
             {
                 return true;
             }
