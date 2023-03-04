@@ -2857,6 +2857,7 @@ public sealed partial class Scanner : IDisposable
 
             // try-finally instead of using, because we only want to initialize the readme stream if _fmIsZip
             Stream? readmeStream = null;
+            Stream? readmeHeaderStream = null;
             try
             {
                 if (_fmIsZip)
@@ -2880,7 +2881,6 @@ public sealed partial class Scanner : IDisposable
 
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                Stream? readmeHeaderStream = null;
                 try
                 {
                     readmeHeaderStream = _fmIsZip
@@ -2951,6 +2951,7 @@ public sealed partial class Scanner : IDisposable
             finally
             {
                 readmeStream?.Dispose();
+                readmeHeaderStream?.Dispose();
             }
         }
     }
