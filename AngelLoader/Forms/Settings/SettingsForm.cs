@@ -133,15 +133,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
+        #region Instantiate pages
+
         PathsPage = new PathsPage { Visible = false };
         AppearancePage = new AppearancePage { Visible = false };
         OtherPage = new OtherPage { Visible = false };
         ThiefBuddyPage = new ThiefBuddyPage { Visible = false };
 
+        #endregion
+
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
 
         // @GENGAMES (Settings): Begin
+
+        #region Instantiate control arrays
 
         GameExeLabels = new[]
         {
@@ -200,6 +206,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         #endregion
 
         // @GENGAMES (Settings): End
+
+        #endregion
 
         // IMPORTANT: Settings page controls: Don't reorder
         PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
@@ -586,6 +594,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // Comes last so we don't have to use any DisableEvents blocks
         #region Hook up page events
 
+        #region Paths page
+
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameExeTextBoxes[i].Leave += ExePathTextBoxes_Leave;
@@ -604,10 +614,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.AddFMArchivePathButton.Click += AddFMArchivePathButton_Click;
         PathsPage.RemoveFMArchivePathButton.Click += RemoveFMArchivePathButton_Click;
 
+        #endregion
+
         LangComboBox.SelectedIndexChanged += LanguageComboBox_SelectedIndexChanged;
 
         if (!startup)
         {
+            #region Appearance page
+
             AppearancePage.ClassicThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
             AppearancePage.DarkThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
 
@@ -634,50 +648,26 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             AppearancePage.DateSeparator2TextBox.TextChanged += DateCustomValue_Changed;
             AppearancePage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
 
+            #endregion
+
+            #region Other page
+
             OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
+
+            #endregion
+
+            #region Thief Buddy page
 
             _thiefBuddyExistenceCheckTimer.Tick += ThiefBuddyExistenceCheckTimer_Tick;
             _thiefBuddyExistenceCheckTimer.Interval = 1000;
             _thiefBuddyExistenceCheckTimer.Start();
 
             ThiefBuddyPage.GetTBLinkLabel.LinkClicked += ThiefBuddyPage_GetTBLinkLabel_LinkClicked;
+
+            #endregion
         }
 
         #endregion
-    }
-
-    private void SetTheme(VisualTheme theme, bool startup)
-    {
-        _selfTheme = theme;
-
-        // Some parts of the code check this (eg. theme renderers) so we need to set it. We'll revert it
-        // back to the passed-in theme if we cancel.
-        Config.VisualTheme = theme;
-
-        try
-        {
-            if (!startup) MainSplitContainer.SuspendDrawing();
-
-            SetThemeBase(
-                theme,
-                static x => x is SplitterPanel,
-                capacity: 150
-            );
-
-            SetRatingImage();
-            for (int i = 0; i < ErrorableControls.Length; i++)
-            {
-                ShowPathError(ErrorableControls[i], PathErrorIsSet(ErrorableControls[i]));
-            }
-            // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
-            // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
-            // even if we DID want to do more reflection crap!)
-            ErrorIconPictureBox.Image = Images.RedExclCircle;
-        }
-        finally
-        {
-            if (!startup) MainSplitContainer.ResumeDrawing();
-        }
     }
 
     protected override void OnLoad(EventArgs e)
@@ -713,6 +703,40 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.LayoutFLP.PerformLayout();
 
         base.OnShown(e);
+    }
+
+    private void SetTheme(VisualTheme theme, bool startup)
+    {
+        _selfTheme = theme;
+
+        // Some parts of the code check this (eg. theme renderers) so we need to set it. We'll revert it
+        // back to the passed-in theme if we cancel.
+        Config.VisualTheme = theme;
+
+        try
+        {
+            if (!startup) MainSplitContainer.SuspendDrawing();
+
+            SetThemeBase(
+                theme,
+                static x => x is SplitterPanel,
+                capacity: 150
+            );
+
+            SetRatingImage();
+            for (int i = 0; i < ErrorableControls.Length; i++)
+            {
+                ShowPathError(ErrorableControls[i], PathErrorIsSet(ErrorableControls[i]));
+            }
+            // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
+            // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
+            // even if we DID want to do more reflection crap!)
+            ErrorIconPictureBox.Image = Images.RedExclCircle;
+        }
+        finally
+        {
+            if (!startup) MainSplitContainer.ResumeDrawing();
+        }
     }
 
     private void Localize(bool suspendResume = true)
@@ -881,113 +905,36 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    /// <summary>
-    /// Sets or removes error visuals as necessary, and returns a bool for whether there were errors or not.
-    /// </summary>
-    /// <returns><see langword="true"/> if there were errors, <see langword="false"/> otherwise.</returns>
-    private bool CheckForErrors()
+    protected override void OnKeyDown(KeyEventArgs e)
     {
-        bool error = false;
-        //bool backupPathIsArchivePathError = false;
-
-        // TODO: Check for cam_mod.ini etc. to be thorough
-
-        foreach (DarkTextBox tb in ExePathTextBoxes)
+        if (e.KeyCode == Keys.Escape)
         {
-            if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
+            if (MainSplitContainer.IsSplitterFixed)
             {
-                error = true;
-                ShowPathError(tb, true);
+                MainSplitContainer.CancelResize();
+                e.SuppressKeyPress = true;
+            }
+            else
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+            }
+        }
+        else if (e.KeyCode == Keys.F1)
+        {
+            int pageIndex = Array.FindIndex(PageControls, static x => x.Page.Visible);
+            if (pageIndex > -1)
+            {
+                string section =
+                    _startup
+                        ? HelpSections.InitialSettings
+                        : HelpSections.SettingsPages[pageIndex];
+
+                if (!section.IsEmpty()) Core.OpenHelpFile(section);
             }
         }
 
-        if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
-        {
-            error = true;
-            ShowPathError(PathsPage.BackupPathTextBox, true);
-        }
-
-        // Disabled for now... as it's a restriction tightening thing...
-        //foreach (string item in PathsPage.FMArchivePathsListBox.Items)
-        //{
-        //    if (PathsPage.BackupPathTextBox.Text.PathEqualsI_Dir(item))
-        //    {
-        //        error = true;
-        //        backupPathIsArchivePathError = true;
-        //        ShowPathError(PathsPage.BackupPathTextBox, true);
-        //    }
-        //}
-
-        foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
-        {
-            if (!Directory.Exists(path))
-            {
-                error = true;
-                ShowPathError(PathsPage.FMArchivePathsListBox, true);
-                break;
-            }
-        }
-
-        if (error)
-        {
-            // Currently, all errors happen on the Paths page, so go to that page automatically.
-            PathsRadioButton.Checked = true;
-
-            // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
-            // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
-            // to make it clear.
-            foreach (Control control in ErrorableControls)
-            {
-                if (PathErrorIsSet(control))
-                {
-                    PathsPage.PagePanel.ScrollControlIntoView(control);
-                    break;
-                }
-            }
-
-            // See above
-            //if (backupPathIsArchivePathError)
-            //{
-            //    MessageBox.Show(
-            //        LText.AlertMessages.Settings_Paths_BackupPathIsAnArchivePath,
-            //        LText.AlertMessages.Alert,
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Error);
-            //}
-
-            return true;
-        }
-        else
-        {
-            foreach (Control control in ErrorableControls)
-            {
-                if (control is DarkTextBox tb)
-                {
-                    tb.BackColor = _selfTheme == VisualTheme.Dark
-                        ? tb.DarkModeBackColor
-                        : SystemColors.Window;
-                }
-                else if (control is DarkListBox lb)
-                {
-                    Color color = _selfTheme == VisualTheme.Dark
-                        ? DarkColors.LightBackground
-                        : SystemColors.Window;
-
-                    lb.BackColor = color;
-
-                    foreach (ListViewItem item in lb.Items)
-                    {
-                        item.BackColor = color;
-                    }
-                }
-
-                control.Tag = PathError.False;
-            }
-            ErrorIconPictureBox.Hide();
-            ErrorLabel.Hide();
-        }
-
-        return false;
+        base.OnKeyDown(e);
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
@@ -1249,6 +1196,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 RunThiefBuddyOnFMPlay.Ask;
 
             #endregion
+        }
+    }
+
+    private void SetCursors(bool wait)
+    {
+        if (wait)
+        {
+            _ownerForm?.SetWaitCursor(true);
+            Cursor = Cursors.WaitCursor;
+        }
+        else
+        {
+            _ownerForm?.SetWaitCursor(false);
+            Cursor = Cursors.Default;
         }
     }
 
@@ -1787,18 +1748,115 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #endregion
 
-    private void SetCursors(bool wait)
+    #region Errors
+
+    /// <summary>
+    /// Sets or removes error visuals as necessary, and returns a bool for whether there were errors or not.
+    /// </summary>
+    /// <returns><see langword="true"/> if there were errors, <see langword="false"/> otherwise.</returns>
+    private bool CheckForErrors()
     {
-        if (wait)
+        bool error = false;
+        //bool backupPathIsArchivePathError = false;
+
+        // TODO: Check for cam_mod.ini etc. to be thorough
+
+        foreach (DarkTextBox tb in ExePathTextBoxes)
         {
-            _ownerForm?.SetWaitCursor(true);
-            Cursor = Cursors.WaitCursor;
+            if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
+            {
+                error = true;
+                ShowPathError(tb, true);
+            }
+        }
+
+        if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
+        {
+            error = true;
+            ShowPathError(PathsPage.BackupPathTextBox, true);
+        }
+
+        // Disabled for now... as it's a restriction tightening thing...
+        //foreach (string item in PathsPage.FMArchivePathsListBox.Items)
+        //{
+        //    if (PathsPage.BackupPathTextBox.Text.PathEqualsI_Dir(item))
+        //    {
+        //        error = true;
+        //        backupPathIsArchivePathError = true;
+        //        ShowPathError(PathsPage.BackupPathTextBox, true);
+        //    }
+        //}
+
+        foreach (string path in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
+        {
+            if (!Directory.Exists(path))
+            {
+                error = true;
+                ShowPathError(PathsPage.FMArchivePathsListBox, true);
+                break;
+            }
+        }
+
+        if (error)
+        {
+            // Currently, all errors happen on the Paths page, so go to that page automatically.
+            PathsRadioButton.Checked = true;
+
+            // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
+            // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
+            // to make it clear.
+            foreach (Control control in ErrorableControls)
+            {
+                if (PathErrorIsSet(control))
+                {
+                    PathsPage.PagePanel.ScrollControlIntoView(control);
+                    break;
+                }
+            }
+
+            // See above
+            //if (backupPathIsArchivePathError)
+            //{
+            //    MessageBox.Show(
+            //        LText.AlertMessages.Settings_Paths_BackupPathIsAnArchivePath,
+            //        LText.AlertMessages.Alert,
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Error);
+            //}
+
+            return true;
         }
         else
         {
-            _ownerForm?.SetWaitCursor(false);
-            Cursor = Cursors.Default;
+            foreach (Control control in ErrorableControls)
+            {
+                if (control is DarkTextBox tb)
+                {
+                    tb.BackColor = _selfTheme == VisualTheme.Dark
+                        ? tb.DarkModeBackColor
+                        : SystemColors.Window;
+                }
+                else if (control is DarkListBox lb)
+                {
+                    Color color = _selfTheme == VisualTheme.Dark
+                        ? DarkColors.LightBackground
+                        : SystemColors.Window;
+
+                    lb.BackColor = color;
+
+                    foreach (ListViewItem item in lb.Items)
+                    {
+                        item.BackColor = color;
+                    }
+                }
+
+                control.Tag = PathError.False;
+            }
+            ErrorIconPictureBox.Hide();
+            ErrorLabel.Hide();
         }
+
+        return false;
     }
 
     private void ShowPathError(Control control, bool shown)
@@ -1850,37 +1908,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private static bool PathErrorIsSet(Control control) => control.Tag is PathError.True;
 
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Escape)
-        {
-            if (MainSplitContainer.IsSplitterFixed)
-            {
-                MainSplitContainer.CancelResize();
-                e.SuppressKeyPress = true;
-            }
-            else
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            }
-        }
-        else if (e.KeyCode == Keys.F1)
-        {
-            int pageIndex = Array.FindIndex(PageControls, static x => x.Page.Visible);
-            if (pageIndex > -1)
-            {
-                string section =
-                    _startup
-                        ? HelpSections.InitialSettings
-                        : HelpSections.SettingsPages[pageIndex];
-
-                if (!section.IsEmpty()) Core.OpenHelpFile(section);
-            }
-        }
-
-        base.OnKeyDown(e);
-    }
+    #endregion
 
     /// <summary>
     /// Clean up any resources being used.
