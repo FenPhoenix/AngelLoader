@@ -116,6 +116,12 @@ public sealed partial class Scanner : IDisposable
     private byte[]? _diskFileStreamBuffer;
     private byte[] DiskFileStreamBuffer => _diskFileStreamBuffer ??= new byte[4096];
 
+    private DirectoryInfo? _fmWorkingPathDirInfo;
+    private DirectoryInfo FMWorkingPathDirInfo => _fmWorkingPathDirInfo ??= new DirectoryInfo(_fmWorkingPath);
+
+    private string? _fmWorkingPathDirName;
+    private string FMWorkingPathDirName => _fmWorkingPathDirName ??= FMWorkingPathDirInfo.Name;
+
     #endregion
 
     #region Private classes
@@ -731,7 +737,7 @@ public sealed partial class Scanner : IDisposable
 
                 #endregion
 
-                string listFile = Path.Combine(tempPath, new DirectoryInfo(_fmWorkingPath).Name + ".7zl");
+                string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
 
                 Fen7z.Result result = Fen7z.Extract(
                     sevenZipWorkingPath: Path.GetDirectoryName(_sevenZipExePath)!,
@@ -917,7 +923,7 @@ public sealed partial class Scanner : IDisposable
                 // @PERF_TODO: Use fast string-only name getter
                 // Case against: Being built-in, this way is safe and complete. ArchiveName is monumentally
                 // important, we don't want to mess around.
-                : new DirectoryInfo(_fmWorkingPath).Name
+                : FMWorkingPathDirName
         };
 
         // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
@@ -945,7 +951,7 @@ public sealed partial class Scanner : IDisposable
                 if (_fmDirFileInfos.Count == 0)
                 {
                     // PERF: AddRange() is a fat slug, do Add() in a loop instead
-                    FileInfo[] fileInfos = new DirectoryInfo(_fmWorkingPath).GetFiles("*", SearchOption.AllDirectories);
+                    FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
                     // Don't reduce capacity, as that causes a reallocation
                     if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
                     for (int i = 0; i < fileInfos.Length; i++)
