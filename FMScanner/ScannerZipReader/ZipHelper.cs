@@ -57,7 +57,7 @@ internal sealed class ZipReusableBundleS : IDisposable
         // Avoid calling Read() because it allocates a 1-byte buffer every time (ridiculous)
         int num = stream.Read(_buffer, 0, 1);
         if (num <= 0) ThrowHelper.EndOfFile();
-        return (byte)num;
+        return _buffer[0];
     }
 
     /// <summary>Reads a 2-byte unsigned integer from the current stream using little-endian encoding and advances the position of the stream by two bytes.</summary>
