@@ -338,6 +338,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         try
         {
+            bool inPreloadedState = false;
+
             // Use a rough heuristic to guess if we're going to take long enough to warrant a wait cursor.
             // Load time is not about the file size per se, it's just that a big file size probably means
             // big images, which are slow to load.
@@ -346,11 +348,15 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             // of it.
             if (fileType is ReadmeType.RichText)
             {
-                long size = new FileInfo(path).Length;
-                if (size > ByteSize.KB * 300)
+                inPreloadedState = InPreloadedState(path, _darkModeEnabled);
+                if (!inPreloadedState)
                 {
-                    _owner.Cursor = Cursors.WaitCursor;
-                    needsCursorReset = true;
+                    long size = new FileInfo(path).Length;
+                    if (size > ByteSize.KB * 300)
+                    {
+                        _owner.Cursor = Cursors.WaitCursor;
+                        needsCursorReset = true;
+                    }
                 }
             }
 
@@ -364,8 +370,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                 case ReadmeType.RichText:
                     _currentReadmeSupportsEncodingChange = false;
 
-                    bool inPreloadedState = false;
-                    if (fileType != ReadmeType.RichText || !(inPreloadedState = InPreloadedState(path, _darkModeEnabled)))
+                    if (fileType != ReadmeType.RichText || !inPreloadedState)
                     {
                         _currentReadmeBytes = File.ReadAllBytes(path);
                     }
