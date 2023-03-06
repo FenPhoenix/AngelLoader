@@ -28,6 +28,7 @@ internal static class ThrowHelper
 
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
+// TODO(ZipReusableBundleS): See if we can combine this with the common one
 internal sealed class ZipReusableBundleS : IDisposable
 {
     internal readonly ListFast<ZipArchiveSEntry> Entries = new(0);
