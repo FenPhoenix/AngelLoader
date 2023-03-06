@@ -4258,27 +4258,26 @@ public sealed partial class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
-            // @PERF_TODO: Replace BinaryReaders with custom versions that reuse buffers etc.
-            using var br = new BinaryReader(GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer), Encoding.ASCII, leaveOpen: false);
+            using var stream = GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
 
-            uint tocOffset = br.ReadUInt32();
+            uint tocOffset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
-            br.BaseStream.Position = tocOffset;
+            stream.Position = tocOffset;
 
-            uint invCount = br.ReadUInt32();
+            uint invCount = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
             for (int i = 0; i < invCount; i++)
             {
-                int bytesRead = br.BaseStream.ReadAll(_misChunkHeaderBuffer, 0, 12);
-                uint offset = br.ReadUInt32();
-                uint length = br.ReadUInt32();
+                int bytesRead = stream.ReadAll(_misChunkHeaderBuffer, 0, 12);
+                uint offset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
+                uint length = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(OBJ_MAP)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
-                br.BaseStream.Position = offset + 24;
+                stream.Position = offset + 24;
 
-                byte[] content = br.ReadBytes((int)length);
+                byte[] content = BinaryRead.ReadBytes(stream, (int)length);
                 ret.Game = content.Contains(RopeyArrow)
                     ? Game.Thief2
                     : Game.Thief1;
