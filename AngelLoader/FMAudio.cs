@@ -169,7 +169,6 @@ internal static class FMAudio
                     try
                     {
                         using var fs = File.OpenRead(file);
-                        using var br = new BinaryReader(fs, Encoding.ASCII);
 
                         _ = fs.ReadAll(_buffer4.Cleared(), 0, 4);
                         if (!_buffer4.SequenceEqual(_riff)) return -1;
@@ -184,7 +183,7 @@ internal static class FMAudio
 
                         fs.Seek(18, SeekOrigin.Current);
 
-                        ushort bits = br.ReadUInt16();
+                        ushort bits = BinaryRead.ReadUInt16(fs, _buffer4);
                         return bits;
                     }
                     catch
