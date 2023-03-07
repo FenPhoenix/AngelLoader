@@ -35,6 +35,7 @@ internal static class WriConversion
         const ushort WIDENT_NO_OLE_VALUE = 48690;  // 0137062 octal
         const ushort WTOOL_VALUE = 43776;          // 0125400 octal
 
+        // Framework BinaryReader is fine here, because this is run for exactly one FM ever, so who cares
         using var br = new BinaryReader(stream, Encoding.ASCII, leaveOpen: true);
 
         ushort wIdent = br.ReadUInt16();

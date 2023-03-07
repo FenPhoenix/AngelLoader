@@ -1033,14 +1033,14 @@ internal static class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using var br = new BinaryReader(File.OpenRead(misFile), Encoding.ASCII, leaveOpen: false);
+                    using FileStream fs = File.OpenRead(misFile);
 
-                    long streamLength = br.BaseStream.Length;
+                    long streamLength = fs.Length;
 
                     if (streamLength > MAPPARAM_NewDarkLocation + _MAPPARAM_Bytes.Length)
                     {
-                        br.BaseStream.Position = MAPPARAM_NewDarkLocation;
-                        byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
+                        fs.Position = MAPPARAM_NewDarkLocation;
+                        byte[] buffer = BinaryRead.ReadBytes(fs, _MAPPARAM_Bytes.Length);
                         if (buffer.SequenceEqual(_MAPPARAM_Bytes))
                         {
                             return false;
@@ -1052,8 +1052,8 @@ internal static class FMInstallAndPlay
                     if (!atLeastOneOldDarkMissionFound &&
                         streamLength > MAPPARAM_OldDarkLocation + _MAPPARAM_Bytes.Length)
                     {
-                        br.BaseStream.Position = MAPPARAM_OldDarkLocation;
-                        byte[] buffer = br.ReadBytes(_MAPPARAM_Bytes.Length);
+                        fs.Position = MAPPARAM_OldDarkLocation;
+                        byte[] buffer = BinaryRead.ReadBytes(fs, _MAPPARAM_Bytes.Length);
                         if (buffer.SequenceEqual(_MAPPARAM_Bytes))
                         {
                             atLeastOneOldDarkMissionFound = true;
@@ -1065,15 +1065,15 @@ internal static class FMInstallAndPlay
             }
             else
             {
-                using var br = new BinaryReader(File.OpenRead(smallestUsedMisFile), Encoding.ASCII, leaveOpen: false);
+                using FileStream fs = File.OpenRead(smallestUsedMisFile);
 
-                if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > br.BaseStream.Length)
+                if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.Length)
                 {
                     return false;
                 }
 
-                br.BaseStream.Position = DARKMISS_NewDarkLocation;
-                byte[] buffer = br.ReadBytes(_DARKMISS_Bytes.Length);
+                fs.Position = DARKMISS_NewDarkLocation;
+                byte[] buffer = BinaryRead.ReadBytes(fs, _DARKMISS_Bytes.Length);
 
                 return !buffer.SequenceEqual(_DARKMISS_Bytes);
             }
