@@ -391,6 +391,8 @@ public sealed partial class Scanner : IDisposable
             _ss2Fingerprinted = false;
             _fmWorkingPathDirName = null;
             _fmWorkingPathDirInfo = null;
+            _fmIsZip = false;
+            _fmIsSevenZip = false;
 
             bool nullAlreadyAdded = false;
 
