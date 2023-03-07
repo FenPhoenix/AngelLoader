@@ -389,6 +389,8 @@ public sealed partial class Scanner : IDisposable
             _readmeFiles.Clear();
             _fmDirFileInfos.Clear();
             _ss2Fingerprinted = false;
+            _fmWorkingPathDirName = null;
+            _fmWorkingPathDirInfo = null;
 
             bool nullAlreadyAdded = false;
 
