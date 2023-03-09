@@ -177,36 +177,25 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     internal void SetSplitterPercent(float percent, bool setIfFullScreen, bool suspendResume = true)
     {
-        if (FullScreen && !setIfFullScreen)
-        {
-            _storedSplitterPercent = percent;
-            return;
-        }
-
-        try
-        {
-            if (suspendResume) this.SuspendDrawing();
-            SplitterPercent = percent;
-        }
-        catch
-        {
-            // Leave it at the default
-        }
-        finally
-        {
-            if (suspendResume) this.ResumeDrawing();
-        }
-    }
-
-    internal void ResetSplitterPercent(float percent, bool setIfFullScreen)
-    {
         if (!setIfFullScreen && FullScreen)
         {
             _storedSplitterPercent = percent;
         }
         else
         {
-            SplitterPercent = percent;
+            try
+            {
+                if (suspendResume) this.SuspendDrawing();
+                SplitterPercent = percent;
+            }
+            catch
+            {
+                // Leave it at the default
+            }
+            finally
+            {
+                if (suspendResume) this.ResumeDrawing();
+            }
         }
     }
 

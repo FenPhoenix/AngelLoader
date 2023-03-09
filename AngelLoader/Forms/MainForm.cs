@@ -2862,8 +2862,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ResetLayoutButton_Click(object sender, EventArgs e)
     {
-        MainSplitContainer.ResetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
-        TopSplitContainer.ResetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
+        MainSplitContainer.SetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
+        TopSplitContainer.SetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
         if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
     }
 
