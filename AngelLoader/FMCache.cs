@@ -160,6 +160,7 @@ internal static class FMCache
                 {
                     ZipExtract(fmArchivePath, fmCachePath, readmes);
 
+                    // @HTMLRefExtraction(FMCache):
                     // TODO: Support HTML ref extraction for .7z files too
                     // Will require full extract for the same reason scan does - we need to scan files to
                     // know what other files to scan, etc. and a full extract is with 99.9999% certainty

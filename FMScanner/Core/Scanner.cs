@@ -1364,14 +1364,15 @@ public sealed partial class Scanner : IDisposable
 
         var readmes = new List<(string Source, string Dest)>();
 
+        /*
+        @HTMLRefExtraction(CopySevenZipReadmesToCacheDir):
+        We don't have the facility to do an HTML reference extraction here (7z scanner readme copy).
+        */
+
         foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
         {
             if (f.IsValidReadme())
             {
-                // If any HTML files found, give up - we don't have the facility to do a recursive
-                // linked-file scan here at the moment
-                if (f.ExtIsHtml()) return;
-
                 readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
             }
         }
@@ -1389,9 +1390,6 @@ public sealed partial class Scanner : IDisposable
                 {
                     if (f.IsValidReadme())
                     {
-                        // Ditto the above
-                        if (f.ExtIsHtml()) return;
-
                         readmes.Add((f, Path.Combine(cachePath, readmeDir, Path.GetFileName(f))));
                     }
                 }
