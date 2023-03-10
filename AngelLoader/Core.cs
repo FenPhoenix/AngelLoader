@@ -2282,6 +2282,14 @@ internal static class Core
 
         View.UpdateAllFMUIDataExceptReadme(fm);
 
+        if (fm.ForceReadmeReCache)
+        {
+            // We'll have already refreshed the cache during the scan, and the whole point is to avoid doing it again
+            refreshCache = !fm.Archive.ExtIs7z();
+            fm.ForceReadmeReCache = false;
+            Ini.WriteFullFMDataIni();
+        }
+
         FMCache.CacheData cacheData = await FMCache.GetCacheableData(fm, refreshCache);
 
         #region Readme

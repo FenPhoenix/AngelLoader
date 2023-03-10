@@ -775,6 +775,11 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else if (sender == ScanFMMenuItem)
         {
             await FMScan.ScanSelectedFMs();
+            FanMission? mainFM = _owner.GetMainSelectedFMOrNull();
+            if (mainFM is { ForceReadmeReCache: true })
+            {
+                _owner._displayedFM = await Core.DisplayFM();
+            }
         }
         else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
         {

@@ -62,6 +62,9 @@ public sealed class FanMission
 
     internal bool NoReadmes;
 
+    // Lazy value to say that we should re-cache readmes on next select.
+    internal bool ForceReadmeReCache;
+
     [FenGenIgnore]
     private string _selectedReadme = "";
     // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box

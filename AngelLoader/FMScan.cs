@@ -30,6 +30,7 @@ internal static class FMScan
     /// <param name="scanOptions">Pass null for default scan options.</param>
     /// <param name="scanFullIfNew"></param>
     /// <param name="hideBoxIfZip"></param>
+    /// <param name="setForceReCacheReadmes"></param>
     /// <param name="scanMessage"></param>
     /// <returns></returns>
     internal static Task<bool> ScanFMs(
@@ -37,6 +38,7 @@ internal static class FMScan
         FMScanner.ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
         bool hideBoxIfZip = false,
+        bool setForceReCacheReadmes = false,
         string? scanMessage = null)
     {
         // Shove the whole thing into a thread, otherwise the progress box will be half-blocked still somehow
@@ -395,6 +397,7 @@ internal static class FMScan
                     }
 
                     sel.MarkedScanned = true;
+                    if (setForceReCacheReadmes) sel.ForceReadmeReCache = true;
 
                     #endregion
                 }
@@ -474,7 +477,7 @@ internal static class FMScan
         List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
         if (fms.Count == 1)
         {
-            if (await ScanFMs(fms, hideBoxIfZip: true))
+            if (await ScanFMs(fms, hideBoxIfZip: true, setForceReCacheReadmes: true))
             {
                 Core.View.RefreshFM(fms[0]);
             }
@@ -484,7 +487,7 @@ internal static class FMScan
             FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
             if (scanOptions == null) return;
 
-            if (await ScanFMs(fms, scanOptions))
+            if (await ScanFMs(fms, scanOptions, setForceReCacheReadmes: true))
             {
                 // @MULTISEL(Scan selected FMs): Do we want to sort and set filter here too?
                 // Because we might scan FMs and they end up being something that's filtered out?

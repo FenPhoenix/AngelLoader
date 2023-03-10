@@ -91,7 +91,7 @@ public sealed partial class MainForm : DarkFormBase,
     need to check the accuracy of the selection itself (eg. in FMsDGV nav) so we can check this field, which
     will always be accurate. Or if for whatever other reason we decide it's better to check this then we can.
     */
-    private FanMission? _displayedFM;
+    internal FanMission? _displayedFM;
 
     #region Window size/location
 

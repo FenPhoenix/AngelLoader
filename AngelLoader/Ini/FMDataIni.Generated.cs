@@ -120,6 +120,12 @@ internal static partial class Ini
         fm.NoReadmes = val.EndEqualsTrue(eqIndex + 1);
     }
 
+    private static void FMData_ForceReadmeReCache_Set(FanMission fm, string val, int eqIndex)
+    {
+        val = val.Trim();
+        fm.ForceReadmeReCache = val.EndEqualsTrue(eqIndex + 1);
+    }
+
     private static void FMData_SelectedReadme_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Substring(eqIndex + 1);
@@ -349,6 +355,7 @@ internal static partial class Ini
         { "Game", new FMData_DelegatePointerWrapper(&FMData_Game_Set) },
         { "Installed", new FMData_DelegatePointerWrapper(&FMData_Installed_Set) },
         { "NoReadmes", new FMData_DelegatePointerWrapper(&FMData_NoReadmes_Set) },
+        { "ForceReadmeReCache", new FMData_DelegatePointerWrapper(&FMData_ForceReadmeReCache_Set) },
         { "SelectedReadme", new FMData_DelegatePointerWrapper(&FMData_SelectedReadme_Set) },
         { "ReadmeEncoding", new FMData_DelegatePointerWrapper(&FMData_ReadmeEncoding_Set) },
         { "SizeBytes", new FMData_DelegatePointerWrapper(&FMData_SizeBytes_Set) },
@@ -463,6 +470,10 @@ internal static partial class Ini
             if (fm.NoReadmes)
             {
                 sb.AppendLine("NoReadmes=True");
+            }
+            if (fm.ForceReadmeReCache)
+            {
+                sb.AppendLine("ForceReadmeReCache=True");
             }
             if (!string.IsNullOrEmpty(fm.SelectedReadme))
             {
