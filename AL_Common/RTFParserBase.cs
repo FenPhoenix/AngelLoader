@@ -489,7 +489,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    public sealed class UnGetStack
+    protected sealed class UnGetStack
     {
         private char[] _array;
         private int _capacity;
