@@ -286,18 +286,20 @@ internal static class Core
         {
             splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                     LText.SplashScreen.LoadingMainApp);
-            // Set beforehand to avoid the cross-thread font access problem
+            // We set this beforehand because we thought there was some cross-thread font access problem, but
+            // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this
+            // still works, so keeping it.
             splashScreen.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
-            // IMPORTANT: Begin no-splash-screen-call zone
-            // The FM finder will update the splash screen from another thread (accessing only the graphics
-            // context, so no cross-thread Control access exceptions), so any calls in here are potential
-            // race conditions.
             try
             {
                 splashScreen.LockPainting(true);
 
                 Error[]? gameDataErrors = null;
                 Exception? ex = null;
+                // IMPORTANT: Begin no-splash-screen-call zone
+                // The FM finder will update the splash screen from another thread (accessing only the graphics
+                // context, so no cross-thread Control access exceptions), so any calls in here are potential
+                // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
                     if (setGameData) gameDataErrors = SetGameDataInitial();
@@ -314,6 +316,7 @@ internal static class Core
                 View.InitThreadable();
 
                 findFMsTask.Wait();
+                // IMPORTANT: End no-splash-screen-call zone
 
                 if (gameDataErrors != null)
                 {
@@ -333,7 +336,6 @@ internal static class Core
             {
                 splashScreen.LockPainting(false);
             }
-            // IMPORTANT: End no-splash-screen-call zone
 
             return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen);
         }
