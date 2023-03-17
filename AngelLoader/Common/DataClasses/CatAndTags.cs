@@ -128,7 +128,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
 
     public CatAndTagsList this[int index] => new(_list[index], _dict[_list[index]]);
 
-#if false 
+#if false
     public bool RemoveAt(int index)
     {
         string item = _list[index];

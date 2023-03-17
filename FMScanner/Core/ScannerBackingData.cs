@@ -396,7 +396,7 @@ public sealed partial class Scanner
         ("M d yyyy", true),
         ("d M yyyy", true),
         ("M d yy", true),
-        ("d M yy", true),
+        ("d M yy", true)
     };
 
     private readonly string[]
@@ -462,7 +462,7 @@ public sealed partial class Scanner
             "Juli",
             "Oktober",
             "Okt",
-            "Dezember",
+            "Dezember"
         };
 
     #endregion

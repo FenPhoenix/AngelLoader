@@ -36,7 +36,7 @@ internal enum HResult
 #if false
     /// <summary>
     /// S_FALSE
-    /// </summary> 
+    /// </summary>
     False = 0x0001,
 
     /// <summary>
