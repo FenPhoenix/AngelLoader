@@ -1101,7 +1101,7 @@ internal static class FMInstallAndPlay
 
             const string key_default_game_palette = "default_game_palette";
 
-            using var sr = new StreamReader(file);
+            using var sr = new StreamReader(file, UTF8Encoding_CED.Encoding);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();

@@ -50,16 +50,40 @@ public static class Common
     /// </summary>
     public sealed class UTF8Encoding_CED : UTF8Encoding
     {
-        private static Encoding? _encoding;
-        public static Encoding Encoding => _encoding ??= new UTF8Encoding_CED();
+        private static volatile Encoding? _encoding;
+        public static Encoding Encoding
+        {
+            get
+            {
+                if (_encoding == null)
+                {
+                    _encoding = new UTF8Encoding_CED();
+                }
+                return _encoding;
+            }
+        }
 
         public UTF8Encoding_CED() : base(true) { }
 
-        private Encoder? _encoder;
-        public override Encoder GetEncoder() => _encoder ??= base.GetEncoder();
+        private volatile Encoder? _encoder;
+        public override Encoder GetEncoder()
+        {
+            if (_encoder == null)
+            {
+                _encoder = base.GetEncoder();
+            }
+            return _encoder;
+        }
 
-        private Decoder? _decoder;
-        public override Decoder GetDecoder() => _decoder ??= base.GetDecoder();
+        private volatile Decoder? _decoder;
+        public override Decoder GetDecoder()
+        {
+            if (_decoder == null)
+            {
+                _decoder = base.GetDecoder();
+            }
+            return _decoder;
+        }
     }
 
     /// <summary>
@@ -67,16 +91,40 @@ public static class Common
     /// </summary>
     public sealed class UTF8EncodingNoBOM_CED : UTF8Encoding
     {
-        private static Encoding? _encoding;
-        public static Encoding Encoding => _encoding ??= new UTF8EncodingNoBOM_CED();
+        private static volatile Encoding? _encoding;
+        public static Encoding Encoding
+        {
+            get
+            {
+                if (_encoding == null)
+                {
+                    _encoding = new UTF8EncodingNoBOM_CED();
+                }
+                return _encoding;
+            }
+        }
 
         public UTF8EncodingNoBOM_CED() : base(false, true) { }
 
-        private Encoder? _encoder;
-        public override Encoder GetEncoder() => _encoder ??= base.GetEncoder();
+        private volatile Encoder? _encoder;
+        public override Encoder GetEncoder()
+        {
+            if (_encoder == null)
+            {
+                _encoder = base.GetEncoder();
+            }
+            return _encoder;
+        }
 
-        private Decoder? _decoder;
-        public override Decoder GetDecoder() => _decoder ??= base.GetDecoder();
+        private volatile Decoder? _decoder;
+        public override Decoder GetDecoder()
+        {
+            if (_decoder == null)
+            {
+                _decoder = base.GetDecoder();
+            }
+            return _decoder;
+        }
     }
 
     #region Custom hash tables
