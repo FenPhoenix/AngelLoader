@@ -271,7 +271,7 @@ public static partial class Utils
         }
         catch
         {
-            enc = UTF8Encoding_CED.Encoding;
+            enc = Encoding.UTF8;
         }
 
         return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);

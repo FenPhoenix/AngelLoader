@@ -45,23 +45,6 @@ public static class Common
         }
     }
 
-    /// <summary>
-    /// CED = Cached Encoder/Decoder
-    /// </summary>
-    public sealed class UTF8Encoding_CED : UTF8Encoding
-    {
-        private static Encoding? _encoding;
-        public static Encoding Encoding => _encoding ??= new UTF8Encoding_CED();
-
-        public UTF8Encoding_CED() : base(encoderShouldEmitUTF8Identifier: true) { }
-
-        private Encoder? _encoder;
-        public override Encoder GetEncoder() => _encoder ??= base.GetEncoder();
-
-        private Decoder? _decoder;
-        public override Decoder GetDecoder() => _decoder ??= base.GetDecoder();
-    }
-
     #region Custom hash tables
 
     private static readonly PathComparer _pathComparer = new();
@@ -818,7 +801,7 @@ public static class Common
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using var sr = new StreamReader(path, UTF8Encoding_CED.Encoding);
+        using var sr = new StreamReader(path, Encoding.UTF8);
         while (sr.ReadLine() is { } str)
         {
             ret.Add(str);

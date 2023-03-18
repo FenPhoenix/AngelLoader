@@ -35,7 +35,7 @@ internal static partial class Ini
     // file is re-generated. I could make it so it doesn't get removed, but meh.
     internal static void AddLanguageFromFile(string file, string key, DictionaryI<string> langDict)
     {
-        using var sr = new StreamReader(file, UTF8Encoding_CED.Encoding);
+        using var sr = new StreamReader(file, Encoding.UTF8);
 
         bool inMeta = false;
         while (sr.ReadLine() is { } line)
@@ -256,7 +256,7 @@ internal static partial class Ini
         fmsList.Clear();
 
         using var fs = File.OpenRead(fileName);
-        using var sr = new StreamReader(fs, UTF8Encoding_CED.Encoding);
+        using var sr = new StreamReader(fs, Encoding.UTF8);
 
         bool fmsListIsEmpty = true;
 

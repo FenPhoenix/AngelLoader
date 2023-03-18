@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using AL_Common;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 
 namespace FMScanner.ScannerZipReader;
 
@@ -67,7 +66,7 @@ internal sealed class ZipArchiveSEntry
 
         // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
         // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-        FullName = UTF8Encoding_CED.Encoding.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
+        FullName = Encoding.UTF8.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
         // Turns out we don't even need the Name property, as the only thing we used it for was checking
         // the extension.
     }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
 
@@ -61,7 +61,7 @@ public sealed class ZipArchiveEntry
 
         // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
         // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-        FullName = cd.Filename != null ? UTF8Encoding_CED.Encoding.GetString(cd.Filename).ToForwardSlashes() : "";
+        FullName = cd.Filename != null ? Encoding.UTF8.GetString(cd.Filename).ToForwardSlashes() : "";
         // Turns out we don't even need the Name property, as the only thing we used it for was checking
         // the extension.
     }

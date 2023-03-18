@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using static AL_Common.Common;
 
 namespace AL_Common;
 
@@ -299,7 +298,7 @@ public sealed class StreamReaderCustom
         }
         else if (_byteLen >= 3 && _byteBuffer[0] == 239 && _byteBuffer[1] == 187 && _byteBuffer[2] == 191)
         {
-            _encoding = UTF8Encoding_CED.Encoding;
+            _encoding = Encoding.UTF8;
             CompressBuffer(3);
             flag = true;
         }

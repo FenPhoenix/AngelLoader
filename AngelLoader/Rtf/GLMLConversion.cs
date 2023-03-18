@@ -16,7 +16,7 @@ internal static class GLMLConversion
     internal static string GLMLToRTF(byte[] glmlBytes, bool darkModeEnabled)
     {
         // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
-        string glml = UTF8Encoding_CED.Encoding.GetString(glmlBytes);
+        string glml = Encoding.UTF8.GetString(glmlBytes);
 
         static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 

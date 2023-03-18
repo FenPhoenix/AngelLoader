@@ -1321,7 +1321,7 @@ internal static partial class Ini
 
         sb.Append("EnableFuzzySearch=").Append(config.EnableFuzzySearch).AppendLine();
 
-        using var sw = new StreamWriter(fileName, false, UTF8Encoding_CED.Encoding);
+        using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
         sw.Write(sb.ToString());
     }
 }
