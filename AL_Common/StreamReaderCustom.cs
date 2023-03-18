@@ -220,6 +220,8 @@ public sealed class StreamReaderCustom
         return num1;
     }
 
+    private readonly StringBuilder _readToEndSB = new();
+
     /// <summary>Reads all characters from the current position to the end of the stream.</summary>
     /// <returns>The rest of the stream as a string, from the current position to the end. If the current position is at the end of the stream, returns an empty string ("").</returns>
     /// <exception cref="T:System.OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
@@ -228,15 +230,16 @@ public sealed class StreamReaderCustom
     {
         if (_stream == null)
             __Error.ReaderClosed();
-        StringBuilder stringBuilder = new StringBuilder(_charLen - _charPos);
+        _readToEndSB.EnsureCapacity(_charLen - _charPos);
+        _readToEndSB.Clear();
         do
         {
-            stringBuilder.Append(_charBuffer, _charPos, _charLen - _charPos);
+            _readToEndSB.Append(_charBuffer, _charPos, _charLen - _charPos);
             _charPos = _charLen;
             ReadBuffer();
         }
         while (_charLen > 0);
-        return stringBuilder.ToString();
+        return _readToEndSB.ToString();
     }
 
     private void CompressBuffer(int n)
@@ -245,6 +248,8 @@ public sealed class StreamReaderCustom
         _byteLen -= n;
     }
 
+    // @MEM(StreamReaderCustom.DetectEncoding()): This modifies the cached encoding stuff, so it causes extra allocations
+    // It also creates new encodings...
     private void DetectEncoding()
     {
         if (_byteLen < 2)
@@ -438,6 +443,8 @@ public sealed class StreamReaderCustom
             __Error.ReaderClosed();
         if (_charPos == _charLen && ReadBuffer() == 0)
             return (string)null;
+        // @MEM(SRC.ReadLine()): Can we cache this StringBuilder?
+        // I remember trying before but couldn't get it to work with it cached, but...
         StringBuilder stringBuilder = (StringBuilder)null;
         do
         {

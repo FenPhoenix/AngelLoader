@@ -817,6 +817,7 @@ public static class Common
     // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
     // you get with the built-in methods
 
+    // @MEM(File_ReadAllLines_List): Lang reading calls this for every lang, we could have an SRC version
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
