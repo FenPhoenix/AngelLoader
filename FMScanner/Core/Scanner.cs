@@ -2410,11 +2410,11 @@ public sealed partial class Scanner : IDisposable
             if (_fmIsZip)
             {
                 using var es = _archive.OpenEntry(_archive.Entries[missFlag.Index]);
-                mfLines = ReadAllLines(es, Encoding.UTF8);
+                mfLines = ReadAllLines(es, UTF8Encoding_CED.Encoding);
             }
             else
             {
-                mfLines = ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
+                mfLines = ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), UTF8Encoding_CED.Encoding);
             }
 
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
