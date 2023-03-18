@@ -824,7 +824,7 @@ internal static class FMInstallAndPlay
                     missFlagLines.Add(curLine);
                 }
 
-                File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
+                File.WriteAllLines(missFlagFile, missFlagLines, UTF8EncodingNoBOM_CED.Encoding);
             }
             catch (Exception ex)
             {

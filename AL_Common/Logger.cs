@@ -83,7 +83,7 @@ public static class Logger
 
         try
         {
-            using var sw = new StreamWriter(File.OpenWrite(_logFile), UTF8Encoding_CED.Encoding);
+            using var sw = new StreamWriter(File.OpenWrite(_logFile), UTF8EncodingNoBOM_CED.Encoding);
             sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
         }
         catch (Exception logEx)
@@ -126,7 +126,7 @@ public static class Logger
         {
             _lock.EnterWriteLock();
 
-            using var sw = new StreamWriter(_logFile, append: true, UTF8Encoding_CED.Encoding);
+            using var sw = new StreamWriter(_logFile, append: true, UTF8EncodingNoBOM_CED.Encoding);
 
             string methodNameStr = callerMemberName + "\r\n";
             sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
