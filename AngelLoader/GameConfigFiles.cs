@@ -111,7 +111,7 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using (var sr = new StreamReader(camModIni, UTF8Encoding_CED.Encoding))
+        using (var sr = new StreamReader(camModIni))
         {
             /*
              Conforms to the way NewDark reads it:
@@ -931,7 +931,7 @@ internal static class GameConfigFiles
         {
             try
             {
-                using var sr = new StreamReader(dlFile, UTF8Encoding_CED.Encoding);
+                using var sr = new StreamReader(dlFile);
                 string? line1 = sr.ReadLine();
                 string? line2 = sr.ReadLine();
                 string? line3 = sr.ReadLine();

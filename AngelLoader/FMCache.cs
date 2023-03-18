@@ -264,7 +264,7 @@ internal static class FMCache
                 string content;
                 using (var es = re.Open())
                 {
-                    using var sr = new StreamReader(es, UTF8Encoding_CED.Encoding);
+                    using var sr = new StreamReader(es);
                     content = sr.ReadToEnd();
                 }
 

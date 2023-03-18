@@ -461,7 +461,7 @@ internal static class FMBackupAndRestore
 
                             if (Canceled(ct)) return;
 
-                            using var sr = new StreamReader(eo, UTF8Encoding_CED.Encoding);
+                            using var sr = new StreamReader(eo);
 
                             if (Canceled(ct)) return;
 

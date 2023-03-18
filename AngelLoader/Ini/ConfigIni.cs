@@ -987,7 +987,7 @@ internal static partial class Ini
     {
         try
         {
-            using var sr = new StreamReader(path, UTF8Encoding_CED.Encoding);
+            using var sr = new StreamReader(path);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();
