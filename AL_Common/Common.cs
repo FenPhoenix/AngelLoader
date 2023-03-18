@@ -312,15 +312,25 @@ public static class Common
         return fs;
     }
 
-    public static StreamReader GetStreamReaderFast(string path, Encoding encoding, byte[] buffer)
-    {
-        return new StreamReader(GetFileStreamFast(path, buffer), encoding);
-    }
+    //public static StreamReader GetStreamReaderFast(string path, Encoding encoding, byte[] buffer)
+    //{
+    //    return new StreamReader(GetFileStreamFast(path, buffer), encoding);
+    //}
 
-    public static StreamReader GetStreamReaderFast(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, byte[] buffer)
-    {
-        return new StreamReader(GetFileStreamFast(path, buffer), encoding, detectEncodingFromByteOrderMarks);
-    }
+    //public static StreamReader GetStreamReaderFast(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, byte[] buffer)
+    //{
+    //    return new StreamReader(GetFileStreamFast(path, buffer), encoding, detectEncodingFromByteOrderMarks);
+    //}
+
+    //public static StreamReaderCustom.SRC_Wrapper GetStreamReaderFast(string path, Encoding encoding, byte[] buffer)
+    //{
+    //    return new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(path, buffer), encoding);
+    //}
+
+    //public static StreamReaderCustom.SRC_Wrapper GetStreamReaderFast(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, byte[] buffer)
+    //{
+    //    return new StreamReader(GetFileStreamFast(path, buffer), encoding, detectEncodingFromByteOrderMarks);
+    //}
 
     #region Stream reading
 

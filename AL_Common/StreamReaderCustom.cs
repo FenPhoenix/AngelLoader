@@ -6,45 +6,51 @@ using System.Text;
 
 namespace AL_Common;
 
-public class StreamReaderCustom
+public sealed class StreamReaderCustom
 {
-    internal sealed class SRC_Context
+    public readonly ref struct SRC_Wrapper
     {
+        private readonly StreamReaderCustom _reader;
+
+        public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr)
+        {
+            _reader = sr;
+            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks);
+        }
+
+        public void Dispose() => _reader.DeInit();
     }
 
-    internal readonly SRC_Context Context;
-
-    private const int DefaultFileStreamBufferSize = 4096;
-    private const int MinBufferSize = 128;
-    private Stream _stream;
-
-    // Allocated stuff
-    private Encoding _encoding;
-    private Decoder _decoder;
     private readonly byte[] _byteBuffer;
 
-    private Dictionary<int, char[]> _charBuffers;
-    private char[] _charBuffer;
+    private Stream? _stream;
 
-    private Dictionary<Encoding, byte[]> _perEncodingPreambles;
-    private byte[] _preamble;
+    // Allocated stuff
+    private Encoding? _encoding;
+    private Decoder? _decoder;
+
+    private int _maxCharsPerBuffer;
+    private readonly Dictionary<int, char[]> _charBuffers;
+    private char[] _charBuffer = Array.Empty<char>();
 
     private int _charPos;
     private int _charLen;
-    private int _byteLen;
     private int _bytePos;
-    private int _maxCharsPerBuffer;
+    private int _byteLen;
+
     private bool _detectEncoding;
+
+    private readonly Dictionary<Encoding, byte[]> _perEncodingPreambles;
+    private byte[] _preamble = Array.Empty<byte>();
+
     private bool _checkPreamble;
     private bool _isBlocked;
-    private bool _closable;
 
-    private static int DefaultBufferSize => 1024;
+    private const int _defaultBufferSize = 1024;
 
     public StreamReaderCustom()
     {
-        //Context = new SRC_Context();
-        _byteBuffer = new byte[DefaultBufferSize];
+        _byteBuffer = new byte[_defaultBufferSize];
 
         _charBuffers = new Dictionary<int, char[]>(10)
         {
@@ -60,56 +66,53 @@ public class StreamReaderCustom
     public void Init(
       Stream stream,
       Encoding encoding,
-      bool detectEncodingFromByteOrderMarks,
-      byte[] buffer,
-      bool leaveOpen)
+      bool detectEncodingFromByteOrderMarks)
     {
         _stream = stream;
+
         _encoding = encoding;
         _decoder = encoding.GetDecoder();
 
-        int bufferSize = buffer.Length;
-        if (bufferSize < 128) bufferSize = 128;
-        //_byteBuffer = new byte[bufferSize];
+        _maxCharsPerBuffer = encoding.GetMaxCharCount(_defaultBufferSize);
+        if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
+        {
+            _charBuffer = maxCharsBuffer;
+        }
+        else
+        {
+            _charBuffer = new char[_maxCharsPerBuffer];
+            _charBuffers[_maxCharsPerBuffer] = _charBuffer;
+        }
 
-        _maxCharsPerBuffer = encoding.GetMaxCharCount(bufferSize);
-        _charBuffer = new char[_maxCharsPerBuffer];
-        _byteLen = 0;
+        _charPos = 0;
+        _charLen = 0;
         _bytePos = 0;
+        _byteLen = 0;
+
         _detectEncoding = detectEncodingFromByteOrderMarks;
-        _preamble = encoding.GetPreamble();
+
+        if (_perEncodingPreambles.TryGetValue(encoding, out byte[] preamble))
+        {
+            _preamble = preamble;
+        }
+        else
+        {
+            _preamble = encoding.GetPreamble();
+            _perEncodingPreambles[encoding] = _preamble;
+        }
+
         _checkPreamble = _preamble.Length != 0;
         _isBlocked = false;
-        _closable = !leaveOpen;
     }
 
-    /// <summary>Closes the <see cref="T:System.IO.StreamReaderCustom" /> object and the underlying stream, and releases any system resources associated with the reader.</summary>
-    public void Close() => Dispose(true);
-
-    /// <summary>Closes the underlying stream, releases the unmanaged resources used by the <see cref="T:System.IO.StreamReaderCustom" />, and optionally releases the managed resources.</summary>
-    /// <param name="disposing">
-    /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
-    protected void Dispose(bool disposing)
+    public void DeInit()
     {
-        try
-        {
-            if (!(!LeaveOpen & disposing) || _stream == null)
-                return;
-            _stream.Close();
-        }
-        finally
-        {
-            if (!LeaveOpen && _stream != null)
-            {
-                _stream = (Stream)null;
-                _encoding = (Encoding)null;
-                _decoder = (Decoder)null;
-                //_byteBuffer = (byte[])null;
-                _charBuffer = (char[])null;
-                _charPos = 0;
-                _charLen = 0;
-            }
-        }
+        _stream?.Dispose();
+        _stream = null;
+        _encoding = null;
+        _decoder = null;
+        _preamble = Array.Empty<byte>();
+        _charBuffer = Array.Empty<char>();
     }
 
     /// <summary>Gets the current character encoding that the current <see cref="T:System.IO.StreamReaderCustom" /> object is using.</summary>
@@ -119,8 +122,6 @@ public class StreamReaderCustom
     /// <summary>Returns the underlying stream.</summary>
     /// <returns>The underlying stream.</returns>
     public Stream BaseStream => _stream;
-
-    internal bool LeaveOpen => !_closable;
 
     /// <summary>Clears the internal buffer.</summary>
     public void DiscardBufferedData()

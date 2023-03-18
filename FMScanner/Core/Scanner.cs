@@ -79,6 +79,7 @@ public sealed partial class Scanner : IDisposable
 
     private ZipArchiveS _archive = null!;
     private readonly ZipReusableBundleS _zipBundle;
+    private readonly StreamReaderCustom _streamReaderCustom = new();
 
     #endregion
 
@@ -4474,9 +4475,8 @@ public sealed partial class Scanner : IDisposable
 
         stream.Position = 0;
 
-        // @PERF_TODO: Can we use a custom StreamReader?
-        using var sr = new StreamReader(stream, encoding);
-        return sr.ReadToEnd();
+        using var _ = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
+        return _streamReaderCustom.ReadToEnd();
     }
 
     /// <summary>
@@ -4489,8 +4489,9 @@ public sealed partial class Scanner : IDisposable
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
-        return sr.ReadToEnd();
+        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
+        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, true, _streamReaderCustom);
+        return _streamReaderCustom.ReadToEnd();
     }
 
     #endregion
@@ -4517,8 +4518,8 @@ public sealed partial class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
         memStream.Position = 0;
 
-        using var sr = new StreamReader(memStream, encoding, false);
-        while (sr.ReadLine() is { } line) lines.Add(line);
+        using var _ = new StreamReaderCustom.SRC_Wrapper(memStream, encoding, false, _streamReaderCustom);
+        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4535,8 +4536,9 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>();
 
-        using var sr = GetStreamReaderFast(file, encoding, DiskFileStreamBuffer);
-        while (sr.ReadLine() is { } line) lines.Add(line);
+        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
+        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, true, _streamReaderCustom);
+        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4545,12 +4547,12 @@ public sealed partial class Scanner : IDisposable
 
     #region ReadAllLines (as is)
 
-    private static List<string> ReadAllLines(Stream stream, Encoding encoding)
+    private List<string> ReadAllLines(Stream stream, Encoding encoding)
     {
         var lines = new List<string>();
 
-        using var sr = new StreamReader(stream, encoding, false);
-        while (sr.ReadLine() is { } line) lines.Add(line);
+        using var _ = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
+        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4559,8 +4561,9 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var sr = GetStreamReaderFast(file, encoding, false, DiskFileStreamBuffer);
-        while (sr.ReadLine() is { } line) lines.Add(line);
+        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
+        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, false, _streamReaderCustom);
+        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4577,5 +4580,6 @@ public sealed partial class Scanner : IDisposable
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _archive?.Dispose();
         _zipBundle.Dispose();
+        _streamReaderCustom.DeInit();
     }
 }
