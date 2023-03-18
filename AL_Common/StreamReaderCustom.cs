@@ -35,16 +35,27 @@ public sealed class StreamReaderCustom
         public void Dispose() => Reader.DeInit();
     }
 
-    private readonly byte[] _byteBuffer;
+    private const int _knownEncodingCount = 140;
+
+    private readonly byte[] _byteBuffer = new byte[_defaultBufferSize];
 
     private Stream _stream = null!;
 
     // Allocated stuff
     private Encoding _encoding = null!;
+
+    private readonly Dictionary<Encoding, Decoder> _decoders = new(_knownEncodingCount);
     private Decoder _decoder = null!;
 
     private int _maxCharsPerBuffer;
-    private readonly Dictionary<int, char[]> _charBuffers;
+    private readonly Dictionary<int, char[]> _charBuffers = new(10)
+    {
+        { 1024, new char[1024] },
+        { 1025, new char[1025] },
+        { 513, new char[513] },
+        { 514, new char[514] },
+        { 1027, new char[1027] }
+    };
     private char[] _charBuffer = Array.Empty<char>();
 
     private int _charPos;
@@ -54,28 +65,13 @@ public sealed class StreamReaderCustom
 
     private bool _detectEncoding;
 
-    private readonly Dictionary<Encoding, byte[]> _perEncodingPreambles;
+    private readonly Dictionary<Encoding, byte[]> _perEncodingPreambles = new(_knownEncodingCount);
     private byte[] _preamble = Array.Empty<byte>();
 
     private bool _checkPreamble;
     private bool _isBlocked;
 
     private const int _defaultBufferSize = 1024;
-
-    public StreamReaderCustom()
-    {
-        _byteBuffer = new byte[_defaultBufferSize];
-
-        _charBuffers = new Dictionary<int, char[]>(10)
-        {
-            { 1024, new char[1024] },
-            { 1025, new char[1025] },
-            { 513, new char[513] },
-            { 514, new char[514] },
-            { 1027, new char[1027] }
-        };
-        _perEncodingPreambles = new Dictionary<Encoding, byte[]>(10);
-    }
 
     public void Init(
       Stream stream,
@@ -85,7 +81,16 @@ public sealed class StreamReaderCustom
         _stream = stream;
 
         _encoding = encoding;
-        _decoder = encoding.GetDecoder();
+
+        if (_decoders.TryGetValue(encoding, out Decoder decoder))
+        {
+            _decoder = decoder;
+        }
+        else
+        {
+            _decoder = encoding.GetDecoder();
+            _decoders[encoding] = _decoder;
+        }
 
         _maxCharsPerBuffer = encoding.GetMaxCharCount(_defaultBufferSize);
         if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
