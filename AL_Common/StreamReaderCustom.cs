@@ -6,8 +6,15 @@ using System.Text;
 
 namespace AL_Common;
 
+/// <summary>
+/// Meant to be instantiated once and reused via <see cref="T:AL_Common.StreamReaderCustom.SRC_Wrapper"/>.
+/// </summary>
 public sealed class StreamReaderCustom
 {
+    /// <summary>
+    /// For convenience of using-semantics, but without actually constructing or disposing the underlying
+    /// <see cref="T:StreamReaderCustom"/> object (allocation avoidance).
+    /// </summary>
     public readonly ref struct SRC_Wrapper
     {
         public readonly StreamReaderCustom Reader;
@@ -122,8 +129,8 @@ public sealed class StreamReaderCustom
         _charBuffer = Array.Empty<char>();
     }
 
-    /// <summary>Gets the current character encoding that the current <see cref="T:StreamReaderCustom" /> object is using.</summary>
-    /// /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Read()" /> method of <see cref="T:StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Read()" /> method.</returns>
+    /// <summary>Gets the current character encoding that the current <see cref="T:AL_Common.StreamReaderCustom" /> object is using.</summary>
+    /// /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Read()" /> method of <see cref="T:AL_Common.StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Read()" /> method.</returns>
     public Encoding CurrentEncoding => _encoding;
 
     /// <summary>Returns the underlying stream.</summary>
