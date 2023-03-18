@@ -114,7 +114,7 @@ public sealed class StreamReaderCustom
 
     public void DeInit()
     {
-        _stream?.Dispose();
+        if (_stream != null!) _stream.Dispose();
         _stream = null!;
         _encoding = null!;
         _decoder = null!;
@@ -122,8 +122,8 @@ public sealed class StreamReaderCustom
         _charBuffer = Array.Empty<char>();
     }
 
-    /// <summary>Gets the current character encoding that the current <see cref="T:System.IO.StreamReaderCustom" /> object is using.</summary>
-    /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Overload:System.IO.StreamReaderCustom.Read" /> method of <see cref="T:System.IO.StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Overload:System.IO.StreamReaderCustom.Read" /> method.</returns>
+    /// <summary>Gets the current character encoding that the current <see cref="T:StreamReaderCustom" /> object is using.</summary>
+    /// /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Read()" /> method of <see cref="T:StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Read()" /> method.</returns>
     public Encoding CurrentEncoding => _encoding;
 
     /// <summary>Returns the underlying stream.</summary>
@@ -136,7 +136,7 @@ public sealed class StreamReaderCustom
         _byteLen = 0;
         _charLen = 0;
         _charPos = 0;
-        if (_encoding != null)
+        if (_encoding != null!)
             _decoder = _encoding.GetDecoder();
         _isBlocked = false;
     }
@@ -149,7 +149,7 @@ public sealed class StreamReaderCustom
     {
         get
         {
-            if (_stream == null)
+            if (_stream == null!)
                 __Error.ReaderClosed();
             return _charPos >= _charLen && ReadBuffer() == 0;
         }
@@ -160,7 +160,7 @@ public sealed class StreamReaderCustom
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     public int Peek()
     {
-        if (_stream == null)
+        if (_stream == null!)
             __Error.ReaderClosed();
         return _charPos == _charLen && (_isBlocked || ReadBuffer() == 0) ? -1 : (int)_charBuffer[_charPos];
     }
@@ -170,7 +170,7 @@ public sealed class StreamReaderCustom
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     public int Read()
     {
-        if (_stream == null)
+        if (_stream == null!)
             __Error.ReaderClosed();
         if (_charPos == _charLen && ReadBuffer() == 0)
             return -1;
@@ -198,7 +198,7 @@ public sealed class StreamReaderCustom
             throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), ("ArgumentOutOfRange_NeedNonNegNum"));
         if (buffer.Length - index < count)
             throw new ArgumentException(("Argument_InvalidOffLen"));
-        if (_stream == null)
+        if (_stream == null!)
             __Error.ReaderClosed();
         int num1 = 0;
         bool readToUserBuffer = false;
@@ -213,7 +213,7 @@ public sealed class StreamReaderCustom
                     num2 = count;
                 if (!readToUserBuffer)
                 {
-                    Buffer.BlockCopy((Array)_charBuffer, _charPos * 2, (Array)buffer, (index + num1) * 2, num2 * 2);
+                    Buffer.BlockCopy(_charBuffer, _charPos * 2, buffer, (index + num1) * 2, num2 * 2);
                     _charPos += num2;
                 }
                 num1 += num2;
@@ -235,7 +235,7 @@ public sealed class StreamReaderCustom
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     public string ReadToEnd()
     {
-        if (_stream == null)
+        if (_stream == null!)
             __Error.ReaderClosed();
         _readToEndSB.EnsureCapacity(_charLen - _charPos);
         _readToEndSB.Clear();
@@ -251,7 +251,7 @@ public sealed class StreamReaderCustom
 
     private void CompressBuffer(int n)
     {
-        Buffer.BlockCopy((Array)_byteBuffer, n, (Array)_byteBuffer, 0, _byteLen - n);
+        Buffer.BlockCopy(_byteBuffer, n, _byteBuffer, 0, _byteLen - n);
         _byteLen -= n;
     }
 
@@ -263,36 +263,36 @@ public sealed class StreamReaderCustom
             return;
         _detectEncoding = false;
         bool flag = false;
-        if (_byteBuffer[0] == (byte)254 && _byteBuffer[1] == byte.MaxValue)
+        if (_byteBuffer[0] == 254 && _byteBuffer[1] == byte.MaxValue)
         {
-            _encoding = (Encoding)new UnicodeEncoding(true, true);
+            _encoding = new UnicodeEncoding(true, true);
             CompressBuffer(2);
             flag = true;
         }
-        else if (_byteBuffer[0] == byte.MaxValue && _byteBuffer[1] == (byte)254)
+        else if (_byteBuffer[0] == byte.MaxValue && _byteBuffer[1] == 254)
         {
-            if (_byteLen < 4 || _byteBuffer[2] != (byte)0 || _byteBuffer[3] != (byte)0)
+            if (_byteLen < 4 || _byteBuffer[2] != 0 || _byteBuffer[3] != 0)
             {
-                _encoding = (Encoding)new UnicodeEncoding(false, true);
+                _encoding = new UnicodeEncoding(false, true);
                 CompressBuffer(2);
                 flag = true;
             }
             else
             {
-                _encoding = (Encoding)new UTF32Encoding(false, true);
+                _encoding = new UTF32Encoding(false, true);
                 CompressBuffer(4);
                 flag = true;
             }
         }
-        else if (_byteLen >= 3 && _byteBuffer[0] == (byte)239 && _byteBuffer[1] == (byte)187 && _byteBuffer[2] == (byte)191)
+        else if (_byteLen >= 3 && _byteBuffer[0] == 239 && _byteBuffer[1] == 187 && _byteBuffer[2] == 191)
         {
             _encoding = Encoding.UTF8;
             CompressBuffer(3);
             flag = true;
         }
-        else if (_byteLen >= 4 && _byteBuffer[0] == (byte)0 && _byteBuffer[1] == (byte)0 && _byteBuffer[2] == (byte)254 && _byteBuffer[3] == byte.MaxValue)
+        else if (_byteLen >= 4 && _byteBuffer[0] == 0 && _byteBuffer[1] == 0 && _byteBuffer[2] == 254 && _byteBuffer[3] == byte.MaxValue)
         {
-            _encoding = (Encoding)new UTF32Encoding(true, true);
+            _encoding = new UTF32Encoding(true, true);
             CompressBuffer(4);
             flag = true;
         }
