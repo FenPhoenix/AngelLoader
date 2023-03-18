@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,6 +8,12 @@ namespace AL_Common;
 
 public class StreamReaderCustom
 {
+    internal sealed class SRC_Context
+    {
+    }
+
+    internal readonly SRC_Context Context;
+
     private const int DefaultFileStreamBufferSize = 4096;
     private const int MinBufferSize = 128;
     private Stream _stream;
@@ -14,8 +21,12 @@ public class StreamReaderCustom
     // Allocated stuff
     private Encoding _encoding;
     private Decoder _decoder;
-    private byte[] _byteBuffer;
+    private readonly byte[] _byteBuffer;
+
+    private Dictionary<int, char[]> _charBuffers;
     private char[] _charBuffer;
+
+    private Dictionary<Encoding, byte[]> _perEncodingPreambles;
     private byte[] _preamble;
 
     private int _charPos;
@@ -28,50 +39,25 @@ public class StreamReaderCustom
     private bool _isBlocked;
     private bool _closable;
 
-    internal static int DefaultBufferSize => 1024;
+    private static int DefaultBufferSize => 1024;
 
-    /// <summary>Initializes a new instance of the <see cref="T:System.IO.StreamReaderCustom" /> class for the specified stream, with the specified character encoding, byte order mark detection option, and buffer size.</summary>
-    /// <param name="stream">The stream to be read.</param>
-    /// <param name="encoding">The character encoding to use.</param>
-    /// <param name="detectEncodingFromByteOrderMarks">Indicates whether to look for byte order marks at the beginning of the file.</param>
-    /// <param name="bufferSize">The minimum buffer size.</param>
-    /// <exception cref="T:System.ArgumentException">The stream does not support reading.</exception>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="stream" /> or <paramref name="encoding" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">
-    /// <paramref name="bufferSize" /> is less than or equal to zero.</exception>
-    public StreamReaderCustom(
-      Stream stream,
-      Encoding encoding,
-      bool detectEncodingFromByteOrderMarks,
-      byte[] buffer)
-      : this(stream, encoding, detectEncodingFromByteOrderMarks, buffer, false)
+    public StreamReaderCustom()
     {
+        //Context = new SRC_Context();
+        _byteBuffer = new byte[DefaultBufferSize];
+
+        _charBuffers = new Dictionary<int, char[]>(10)
+        {
+            { 1024, new char[1024] },
+            { 1025, new char[1025] },
+            { 513, new char[513] },
+            { 514, new char[514] },
+            { 1027, new char[1027] }
+        };
+        _perEncodingPreambles = new Dictionary<Encoding, byte[]>(10);
     }
 
-    /// <summary>Initializes a new instance of the <see cref="T:System.IO.StreamReaderCustom" /> class for the specified stream based on the specified character encoding, byte order mark detection option, and buffer size, and optionally leaves the stream open.</summary>
-    /// <param name="stream">The stream to read.</param>
-    /// <param name="encoding">The character encoding to use.</param>
-    /// <param name="detectEncodingFromByteOrderMarks">
-    /// <see langword="true" /> to look for byte order marks at the beginning of the file; otherwise, <see langword="false" />.</param>
-    /// <param name="bufferSize">The minimum buffer size.</param>
-    /// <param name="leaveOpen">
-    /// <see langword="true" /> to leave the stream open after the <see cref="T:System.IO.StreamReaderCustom" /> object is disposed; otherwise, <see langword="false" />.</param>
-    public StreamReaderCustom(
-      Stream stream,
-      Encoding encoding,
-      bool detectEncodingFromByteOrderMarks,
-      byte[] buffer,
-      bool leaveOpen)
-    {
-        if (stream == null || encoding == null)
-            throw new ArgumentNullException(stream == null ? nameof(stream) : nameof(encoding));
-        if (!stream.CanRead)
-            throw new ArgumentException(("Argument_StreamNotReadable"));
-        Init(stream, encoding, detectEncodingFromByteOrderMarks, buffer, leaveOpen);
-    }
-
-    private void Init(
+    public void Init(
       Stream stream,
       Encoding encoding,
       bool detectEncodingFromByteOrderMarks,
@@ -84,7 +70,7 @@ public class StreamReaderCustom
 
         int bufferSize = buffer.Length;
         if (bufferSize < 128) bufferSize = 128;
-        _byteBuffer = new byte[bufferSize];
+        //_byteBuffer = new byte[bufferSize];
 
         _maxCharsPerBuffer = encoding.GetMaxCharCount(bufferSize);
         _charBuffer = new char[_maxCharsPerBuffer];
@@ -118,7 +104,7 @@ public class StreamReaderCustom
                 _stream = (Stream)null;
                 _encoding = (Encoding)null;
                 _decoder = (Decoder)null;
-                _byteBuffer = (byte[])null;
+                //_byteBuffer = (byte[])null;
                 _charBuffer = (char[])null;
                 _charPos = 0;
                 _charLen = 0;
@@ -128,17 +114,11 @@ public class StreamReaderCustom
 
     /// <summary>Gets the current character encoding that the current <see cref="T:System.IO.StreamReaderCustom" /> object is using.</summary>
     /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Overload:System.IO.StreamReaderCustom.Read" /> method of <see cref="T:System.IO.StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Overload:System.IO.StreamReaderCustom.Read" /> method.</returns>
-    public Encoding CurrentEncoding
-    {
-        get => _encoding;
-    }
+    public Encoding CurrentEncoding => _encoding;
 
     /// <summary>Returns the underlying stream.</summary>
     /// <returns>The underlying stream.</returns>
-    public Stream BaseStream
-    {
-        get => _stream;
-    }
+    public Stream BaseStream => _stream;
 
     internal bool LeaveOpen => !_closable;
 
@@ -256,39 +236,6 @@ public class StreamReaderCustom
         }
         while (_charLen > 0);
         return stringBuilder.ToString();
-    }
-
-    /// <summary>Reads a specified maximum number of characters from the current stream and writes the data to a buffer, beginning at the specified index.</summary>
-    /// <param name="buffer">When this method returns, contains the specified character array with the values between <paramref name="index" /> and (index + count - 1) replaced by the characters read from the current source.</param>
-    /// <param name="index">The position in <paramref name="buffer" /> at which to begin writing.</param>
-    /// <param name="count">The maximum number of characters to read.</param>
-    /// <returns>The number of characters that have been read. The number will be less than or equal to <paramref name="count" />, depending on whether all input characters have been read.</returns>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="buffer" /> is <see langword="null" />.</exception>
-    /// <exception cref="T:System.ArgumentException">The buffer length minus <paramref name="index" /> is less than <paramref name="count" />.</exception>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">
-    /// <paramref name="index" /> or <paramref name="count" /> is negative.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.StreamReaderCustom" /> is closed.</exception>
-    /// <exception cref="T:System.IO.IOException">An I/O error occurred.</exception>
-    public int ReadBlock([In, Out] char[] buffer, int index, int count)
-    {
-        if (buffer == null)
-            throw new ArgumentNullException(nameof(buffer), ("ArgumentNull_Buffer"));
-        if (index < 0 || count < 0)
-            throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), ("ArgumentOutOfRange_NeedNonNegNum"));
-        if (buffer.Length - index < count)
-            throw new ArgumentException(("Argument_InvalidOffLen"));
-        if (_stream == null)
-            __Error.ReaderClosed();
-
-        int num1 = 0;
-        int num2;
-        do
-        {
-            num1 += num2 = Read(buffer, index + num1, count - num1);
-        }
-        while (num2 > 0 && num1 < count);
-        return num1;
     }
 
     private void CompressBuffer(int n)
@@ -528,7 +475,7 @@ public class StreamReaderCustom
         return stringBuilder.ToString();
     }
 
-    internal static class __Error
+    private static class __Error
     {
         internal static void ReaderClosed() => throw new ObjectDisposedException(null, ("ObjectDisposed_ReaderClosed"));
     }
