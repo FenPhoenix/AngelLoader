@@ -101,7 +101,7 @@ public static class Fen7z
         {
             try
             {
-                File.WriteAllLines(listFile, fileNamesList, UTF8EncodingNoBOM_CED.Encoding);
+                File.WriteAllLines(listFile, fileNamesList);
             }
             catch (Exception ex)
             {

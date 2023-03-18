@@ -315,7 +315,7 @@ public static partial class Utils
     {
         try
         {
-            File.WriteAllLines(file, lines, UTF8EncodingNoBOM_CED.Encoding);
+            File.WriteAllLines(file, lines);
             return true;
         }
         catch (Exception ex)

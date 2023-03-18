@@ -53,24 +53,7 @@ public static class Common
         private static Encoding? _encoding;
         public static Encoding Encoding => _encoding ??= new UTF8Encoding_CED();
 
-        public UTF8Encoding_CED() : base(true) { }
-
-        private Encoder? _encoder;
-        public override Encoder GetEncoder() => _encoder ??= base.GetEncoder();
-
-        private Decoder? _decoder;
-        public override Decoder GetDecoder() => _decoder ??= base.GetDecoder();
-    }
-
-    /// <summary>
-    /// CED = Cached Encoder/Decoder
-    /// </summary>
-    public sealed class UTF8EncodingNoBOM_CED : UTF8Encoding
-    {
-        private static Encoding? _encoding;
-        public static Encoding Encoding => _encoding ??= new UTF8EncodingNoBOM_CED();
-
-        public UTF8EncodingNoBOM_CED() : base(false, true) { }
+        public UTF8Encoding_CED() : base(encoderShouldEmitUTF8Identifier: true) { }
 
         private Encoder? _encoder;
         public override Encoder GetEncoder() => _encoder ??= base.GetEncoder();
