@@ -4475,8 +4475,8 @@ public sealed partial class Scanner : IDisposable
 
         stream.Position = 0;
 
-        using var _ = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
-        return _streamReaderCustom.ReadToEnd();
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
+        return sr.Reader.ReadToEnd();
     }
 
     /// <summary>
@@ -4489,9 +4489,8 @@ public sealed partial class Scanner : IDisposable
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
-        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, true, _streamReaderCustom);
-        return _streamReaderCustom.ReadToEnd();
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
+        return sr.Reader.ReadToEnd();
     }
 
     #endregion
@@ -4518,8 +4517,8 @@ public sealed partial class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
         memStream.Position = 0;
 
-        using var _ = new StreamReaderCustom.SRC_Wrapper(memStream, encoding, false, _streamReaderCustom);
-        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(memStream, encoding, false, _streamReaderCustom);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4536,9 +4535,8 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>();
 
-        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
-        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, true, _streamReaderCustom);
-        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4551,8 +4549,8 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var _ = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
-        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }
@@ -4561,9 +4559,8 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var fs = GetFileStreamFast(file, DiskFileStreamBuffer);
-        using var _ = new StreamReaderCustom.SRC_Wrapper(fs, encoding, false, _streamReaderCustom);
-        while (_streamReaderCustom.ReadLine() is { } line) lines.Add(line);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, false, _streamReaderCustom);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
     }

@@ -10,24 +10,31 @@ public sealed class StreamReaderCustom
 {
     public readonly ref struct SRC_Wrapper
     {
-        private readonly StreamReaderCustom _reader;
+        public readonly StreamReaderCustom Reader;
 
+        /// <summary>
+        /// The stream will be disposed when this struct is disposed.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="encoding"></param>
+        /// <param name="detectEncodingFromByteOrderMarks"></param>
+        /// <param name="sr"></param>
         public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr)
         {
-            _reader = sr;
+            Reader = sr;
             sr.Init(stream, encoding, detectEncodingFromByteOrderMarks);
         }
 
-        public void Dispose() => _reader.DeInit();
+        public void Dispose() => Reader.DeInit();
     }
 
     private readonly byte[] _byteBuffer;
 
-    private Stream? _stream;
+    private Stream _stream = null!;
 
     // Allocated stuff
-    private Encoding? _encoding;
-    private Decoder? _decoder;
+    private Encoding _encoding = null!;
+    private Decoder _decoder = null!;
 
     private int _maxCharsPerBuffer;
     private readonly Dictionary<int, char[]> _charBuffers;
@@ -108,9 +115,9 @@ public sealed class StreamReaderCustom
     public void DeInit()
     {
         _stream?.Dispose();
-        _stream = null;
-        _encoding = null;
-        _decoder = null;
+        _stream = null!;
+        _encoding = null!;
+        _decoder = null!;
         _preamble = Array.Empty<byte>();
         _charBuffer = Array.Empty<char>();
     }
@@ -300,8 +307,8 @@ public sealed class StreamReaderCustom
 
     private bool IsPreamble()
     {
-        if (!_checkPreamble)
-            return _checkPreamble;
+        if (!_checkPreamble) return _checkPreamble;
+
         int num1 = _byteLen >= _preamble.Length ? _preamble.Length - _bytePos : _byteLen - _bytePos;
         int num2 = 0;
         while (num2 < num1)
@@ -315,6 +322,7 @@ public sealed class StreamReaderCustom
             ++num2;
             ++_bytePos;
         }
+
         if (_checkPreamble && _bytePos == _preamble.Length)
         {
             CompressBuffer(_preamble.Length);
@@ -322,10 +330,11 @@ public sealed class StreamReaderCustom
             _checkPreamble = false;
             _detectEncoding = false;
         }
+
         return _checkPreamble;
     }
 
-    internal int ReadBuffer()
+    private int ReadBuffer()
     {
         _charLen = 0;
         _charPos = 0;
@@ -433,19 +442,20 @@ public sealed class StreamReaderCustom
         return charIndex;
     }
 
+    private readonly StringBuilder _readLineSB = new();
+
     /// <summary>Reads a line of characters from the current stream and returns the data as a string.</summary>
     /// <returns>The next line from the input stream, or <see langword="null" /> if the end of the input stream is reached.</returns>
     /// <exception cref="T:System.OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public string ReadLine()
+    public string? ReadLine()
     {
-        if (_stream == null)
+        if (_stream == null!)
             __Error.ReaderClosed();
         if (_charPos == _charLen && ReadBuffer() == 0)
-            return (string)null;
-        // @MEM(SRC.ReadLine()): Can we cache this StringBuilder?
-        // I remember trying before but couldn't get it to work with it cached, but...
-        StringBuilder stringBuilder = (StringBuilder)null;
+            return null;
+        bool sbCreated = false;
+        _readLineSB.Clear();
         do
         {
             int charPos = _charPos;
@@ -457,10 +467,10 @@ public sealed class StreamReaderCustom
                     case '\n':
                     case '\r':
                         string str;
-                        if (stringBuilder != null)
+                        if (sbCreated)
                         {
-                            stringBuilder.Append(_charBuffer, _charPos, charPos - _charPos);
-                            str = stringBuilder.ToString();
+                            _readLineSB.Append(_charBuffer, _charPos, charPos - _charPos);
+                            str = _readLineSB.ToString();
                         }
                         else
                             str = new string(_charBuffer, _charPos, charPos - _charPos);
@@ -475,12 +485,15 @@ public sealed class StreamReaderCustom
             }
             while (charPos < _charLen);
             int charCount = _charLen - _charPos;
-            if (stringBuilder == null)
-                stringBuilder = new StringBuilder(charCount + 80);
-            stringBuilder.Append(_charBuffer, _charPos, charCount);
+            if (!sbCreated)
+            {
+                _readLineSB.EnsureCapacity(charCount + 80);
+                sbCreated = true;
+            }
+            _readLineSB.Append(_charBuffer, _charPos, charCount);
         }
         while (ReadBuffer() > 0);
-        return stringBuilder.ToString();
+        return _readLineSB.ToString();
     }
 
     private static class __Error
