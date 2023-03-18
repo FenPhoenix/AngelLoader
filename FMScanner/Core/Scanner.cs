@@ -2,12 +2,21 @@
 //#define FMScanner_FullCode
 #define Enable7zReadmeCacheCode
 
-// Null notes:
-// -Lists are nullable because we want to avoid allocating new Lists all over the place.
-// -Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
-// -Strings are non-nullable because assigning them the empty string "" is basically free.
-// -A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
-//  are non-nullable.
+/*
+Null notes:
+-Lists are nullable because we want to avoid allocating new Lists all over the place.
+-Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
+-Strings are non-nullable because assigning them the empty string "" is basically free.
+-A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
+ are non-nullable.
+*/
+
+/*
+@MEM(Scanner readme line splitting):
+We could just get the full text and then allocate an array of int pairs for start and length of each line,
+then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
+be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
+*/
 
 //#define ScanSynchronous
 //#define DEBUG_RANDOMIZE_DIR_SEPS
