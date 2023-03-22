@@ -3143,12 +3143,25 @@ public sealed partial class Scanner : IDisposable
                 if (lineStartTrimmed.StartsWithGU(key))
                 {
                     lineStartsWithKey = true;
-                    // Regex perf: fast enough not to worry about it
-                    if (Regex.Match(lineStartTrimmed, "^" + key + @"\s*(:|-|\u2013)",
-                            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success)
+
+                    int keyLength = key.Length;
+
+                    for (int afterKeyIndex = keyLength; afterKeyIndex < lineStartTrimmed.Length; afterKeyIndex++)
                     {
-                        lineStartsWithKeyAndSeparatorChar = true;
-                        indexAfterKey = key.Length;
+                        char c = lineStartTrimmed[afterKeyIndex];
+                        if (!char.IsWhiteSpace(c))
+                        {
+                            if (c is ':' or '-' or '\u2013')
+                            {
+                                lineStartsWithKeyAndSeparatorChar = true;
+                                indexAfterKey = keyLength;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (lineStartsWithKeyAndSeparatorChar)
+                    {
                         break;
                     }
                 }
