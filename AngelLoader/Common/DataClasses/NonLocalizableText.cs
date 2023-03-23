@@ -73,8 +73,8 @@ internal static partial class NonLocalizableText
     internal static readonly string SevenZip_Link_Text = "7-Zip";
     internal static readonly string SevenZip_Link = "https://www.7-zip.org/";
 
-    internal static readonly string SevenZipSharp_Link_Text = "SquidBox.SevenZipSharp";
-    internal static readonly string SevenZipSharp_Link = "https://github.com/squid-box/SevenZipSharp";
+    internal static readonly string SharpCompress_Link_Text = "SharpCompress";
+    internal static readonly string SharpCompress_Link = "https://github.com/adamhathcock/sharpcompress";
 
     internal static readonly string FFmpeg_Link_Text = "ffmpeg";
     internal static readonly string FFmpeg_Link = "https://ffmpeg.org/";

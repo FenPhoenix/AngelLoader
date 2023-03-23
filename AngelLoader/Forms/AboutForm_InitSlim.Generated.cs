@@ -13,7 +13,7 @@ partial class AboutForm
         this.LicenseTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.SevenZipLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
-        this.SevenZipSharpLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
+        this.SharpCompressLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.FFmpegLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.FFmpegDotNetLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.SimpleHelpersDotNetLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
@@ -86,13 +86,13 @@ partial class AboutForm
         this.SevenZipLinkLabel.TabStop = true;
         this.SevenZipLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
         // 
-        // SevenZipSharpLinkLabel
+        // SharpCompressLinkLabel
         // 
-        this.SevenZipSharpLinkLabel.AutoSize = true;
-        this.SevenZipSharpLinkLabel.Location = new System.Drawing.Point(32, 404);
-        this.SevenZipSharpLinkLabel.TabIndex = 7;
-        this.SevenZipSharpLinkLabel.TabStop = true;
-        this.SevenZipSharpLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
+        this.SharpCompressLinkLabel.AutoSize = true;
+        this.SharpCompressLinkLabel.Location = new System.Drawing.Point(32, 404);
+        this.SharpCompressLinkLabel.TabIndex = 7;
+        this.SharpCompressLinkLabel.TabStop = true;
+        this.SharpCompressLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabels_LinkClicked);
         // 
         // FFmpegLinkLabel
         // 
@@ -215,7 +215,7 @@ partial class AboutForm
         this.Controls.Add(this.SimpleHelpersDotNetLinkLabel);
         this.Controls.Add(this.FFmpegDotNetLinkLabel);
         this.Controls.Add(this.FFmpegLinkLabel);
-        this.Controls.Add(this.SevenZipSharpLinkLabel);
+        this.Controls.Add(this.SharpCompressLinkLabel);
         this.Controls.Add(this.OpenSansLinkLabel);
         this.Controls.Add(this.EasyHookLinkLabel);
         this.Controls.Add(this.DarkUILinkLabel);

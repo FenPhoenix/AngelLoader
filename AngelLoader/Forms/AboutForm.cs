@@ -58,7 +58,7 @@ public sealed partial class AboutForm : DarkFormBase
 
         GitHubLinkLabel.Text = NonLocalizableText.AL_GitHub_Link;
         SevenZipLinkLabel.Text = NonLocalizableText.SevenZip_Link_Text;
-        SevenZipSharpLinkLabel.Text = NonLocalizableText.SevenZipSharp_Link_Text;
+        SharpCompressLinkLabel.Text = NonLocalizableText.SharpCompress_Link_Text;
         FFmpegLinkLabel.Text = NonLocalizableText.FFmpeg_Link_Text;
         FFmpegDotNetLinkLabel.Text = NonLocalizableText.FFmpegDotNet_Link_Text;
         SimpleHelpersDotNetLinkLabel.Text = NonLocalizableText.SimpleHelpersDotNet_Link_Text;
@@ -94,7 +94,7 @@ public sealed partial class AboutForm : DarkFormBase
         string link =
             sender == GitHubLinkLabel ? NonLocalizableText.AL_GitHub_Link :
             sender == SevenZipLinkLabel ? NonLocalizableText.SevenZip_Link :
-            sender == SevenZipSharpLinkLabel ? NonLocalizableText.SevenZipSharp_Link :
+            sender == SharpCompressLinkLabel ? NonLocalizableText.SharpCompress_Link :
             sender == FFmpegLinkLabel ? NonLocalizableText.FFmpeg_Link :
             sender == FFmpegDotNetLinkLabel ? NonLocalizableText.FFmpegDotNet_Link :
             sender == SimpleHelpersDotNetLinkLabel ? NonLocalizableText.SimpleHelpersDotNet_Link :
