@@ -18,13 +18,6 @@ set fenGenArgs=-resx_r -bd_r
 %FenGen% %fenGenArgs%
 rem ---
 
-rem Still copy this for SevenZipSharp's use
-if %PlatformName% == x86 (
-"%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
-) else (
-"%system%xcopy" "%TargetDir%x64\7z.dll" "%TargetDir%" /y
-)
-
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%TargetDir%\7z32\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%TargetDir%\7z64\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\*.ttf" "%TargetDir%" /y /i
@@ -37,6 +30,7 @@ del /F "%TargetDir%*xunit*.dll"
 del /F "%TargetDir%*TestPlatform*.dll"
 del /F "%TargetDir%testhost.dll"
 del /F "%TargetDir%EasyLoad*.dll"
+del /F "%TargetDir%System.Text.Encoding.CodePages.dll"
 if %PlatformName% == x86 (
 del /F "%TargetDir%EasyHook64.dll"
 ) else (
@@ -63,11 +57,6 @@ if %ConfigurationName% == Release_Public (
 rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
 "%system%xcopy" "%SolutionDir%docs\doc\English\*.html" "%TargetDir%doc\" /y /i
 "%system%xcopy" "%SolutionDir%docs\doc\English\images" "%TargetDir%doc\images" /y /i /e
-
-del /F "%TargetDir%7z64.dll"
-if %PlatformName% == x64 (
-	ren "%TargetDir%7z.dll" "7z64.dll"
-)
 
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.

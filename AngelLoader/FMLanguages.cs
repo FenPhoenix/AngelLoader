@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
-using SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -234,36 +234,19 @@ internal static class FMLanguages
 
         var ret = new List<string>(SupportedLanguageCount);
 
-        bool[] FoundLangInArchive = new bool[SupportedLanguageCount];
+        bool[] foundLangInArchive = new bool[SupportedLanguageCount];
 
-        ZipArchiveFast? zipArchive = null;
-        SevenZipExtractor? sevenZipArchive = null;
         try
         {
             bool fmIsZip = archivePath.ExtIsZip();
 
-            if (fmIsZip)
+            static (bool EarlyOutEnglish, List<string>? Languages)
+            Search(string fn, bool earlyOutOnEnglish, bool[] foundLangInArchive, List<string> ret)
             {
-                zipArchive = new ZipArchiveFast(File.OpenRead(archivePath), allowUnsupportedEntries: true);
-            }
-            else
-            {
-                sevenZipArchive = new SevenZipExtractor(archivePath);
-            }
-
-            int filesCount = fmIsZip ? zipArchive!.Entries.Count : (int)sevenZipArchive!.FilesCount;
-            for (int i = 0; i < filesCount; i++)
-            {
-                string fn = fmIsZip
-                    // ZipArchiveFast guarantees full names to never contain backslashes
-                    ? zipArchive!.Entries[i].FullName
-                    // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
-                    : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
-
                 for (int j = 0; j < SupportedLanguageCount; j++)
                 {
                     string sl = SupportedLanguages[j];
-                    if (!FoundLangInArchive[j])
+                    if (!foundLangInArchive[j])
                     {
                         // Do as few string operations as humanly possible
                         int index = fn.IndexOf(FSPrefixedLangs[j], StringComparison.OrdinalIgnoreCase);
@@ -274,9 +257,36 @@ internal static class FMLanguages
                         {
                             if (earlyOutOnEnglish && j == 0) return (true, new List<string> { "English" });
                             ret.Add(sl);
-                            FoundLangInArchive[j] = true;
+                            foundLangInArchive[j] = true;
                         }
                     }
+                }
+
+                return (false, null);
+            }
+
+            if (fmIsZip)
+            {
+                using var zipArchive = new ZipArchiveFast(File.OpenRead(archivePath), allowUnsupportedEntries: true);
+                int filesCount = zipArchive.Entries.Count;
+                for (int i = 0; i < filesCount; i++)
+                {
+                    // ZipArchiveFast guarantees full names to never contain backslashes
+                    string fn = zipArchive.Entries[i].FullName;
+                    var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
+                    if (result.EarlyOutEnglish) return (true, result.Languages!);
+                }
+            }
+            else
+            {
+                using var sevenZipArchive = SevenZipArchive.Open(archivePath);
+                foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
+                {
+                    if (entry.IsAnti) continue;
+
+                    string fn = entry.Key.ToForwardSlashes();
+                    var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
+                    if (result.EarlyOutEnglish) return (true, result.Languages!);
                 }
             }
         }
@@ -284,11 +294,6 @@ internal static class FMLanguages
         {
             Log("Scanning archive '" + archivePath + "' for languages failed.", ex);
             return (false, new List<string>());
-        }
-        finally
-        {
-            zipArchive?.Dispose();
-            sevenZipArchive?.Dispose();
         }
 
         return (true, ret);

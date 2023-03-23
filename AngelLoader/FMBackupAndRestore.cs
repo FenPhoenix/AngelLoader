@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -673,16 +673,17 @@ internal static class FMBackupAndRestore
         }
         else
         {
-            using var archive = new SevenZipExtractor(fmArchivePath);
+            using var archive = SevenZipArchive.Open(fmArchivePath);
 
-            int entriesCount = archive.ArchiveFileData.Count;
+            int entriesCount = archive.Entries.Count;
 
             var entriesFullNamesHash = new HashSetPathI(entriesCount);
 
-            for (int i = 0; i < entriesCount; i++)
+            foreach (SevenZipArchiveEntry entry in archive.Entries)
             {
-                ArchiveFileInfo entry = archive.ArchiveFileData[i];
-                string efn = entry.FileName.ToBackSlashes();
+                if (entry.IsAnti) continue;
+
+                string efn = entry.Key.ToBackSlashes();
 
                 entriesFullNamesHash.Add(efn);
 
@@ -705,15 +706,16 @@ internal static class FMBackupAndRestore
 
                         if (useOnlySize)
                         {
-                            if ((ulong)fi.Length != entry.Size)
+                            if (fi.Length != entry.Size)
                             {
                                 changedList.Add(efn);
                             }
                             continue;
                         }
 
-                        if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
-                            (ulong)fi.Length != entry.Size)
+                        if (entry.LastModifiedTime != null &&
+                            fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime() ||
+                            fi.Length != entry.Size)
                         {
                             changedList.Add(efn);
                         }

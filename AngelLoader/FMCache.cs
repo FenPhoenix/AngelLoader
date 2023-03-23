@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
-using SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -362,22 +362,25 @@ internal static class FMCache
 
             Directory.CreateDirectory(fmCachePath);
 
-            using var extractor = new SevenZipExtractor(fmArchivePath);
+            using var extractor = SevenZipArchive.Open(fmArchivePath);
 
-            int extractorFilesCount = extractor.ArchiveFileData.Count;
-            for (int i = 0; i < extractorFilesCount; i++)
+            ICollection<SevenZipArchiveEntry> entries = extractor.Entries;
+
+            int extractorFilesCount = entries.Count;
+            foreach (SevenZipArchiveEntry entry in entries)
             {
-                ArchiveFileInfo entry = extractor.ArchiveFileData[i];
-                string fn = entry.FileName;
+                if (entry.IsAnti) continue;
+
+                string fn = entry.Key;
                 int dirSeps;
-                if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                if (fn.IsValidReadme() && entry.Size > 0 &&
                     (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                       (fn.PathStartsWithI(_t3ReadmeDir1S) ||
                        fn.PathStartsWithI(_t3ReadmeDir2S))) ||
                      dirSeps == 0))
                 {
-                    fileNamesList.Add(entry.FileName);
-                    readmes.Add(entry.FileName);
+                    fileNamesList.Add(fn);
+                    readmes.Add(fn);
                 }
             }
 

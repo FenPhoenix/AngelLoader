@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.FMBackupAndRestore;
@@ -1652,9 +1652,9 @@ internal static class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var extractor = new SevenZipExtractor(fmArchivePath))
+            using (var extractor = SevenZipArchive.Open(fmArchivePath))
             {
-                entriesCount = extractor.ArchiveFileData.Count;
+                entriesCount = extractor.Entries.Count;
             }
 
             void ReportProgress(Fen7z.ProgressReport pr)

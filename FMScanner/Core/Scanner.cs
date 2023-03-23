@@ -37,7 +37,7 @@ using AL_Common.FastZipReader;
 using FMScanner.ScannerZipReader;
 using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
-using SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -141,7 +141,7 @@ public sealed partial class Scanner : IDisposable
         internal readonly string FullName;
         internal readonly long Length;
 
-        private ArchiveFileInfo? _archiveFileInfo;
+        private SevenZipArchiveEntry? _archiveFileInfo;
 
         private DateTime? _lastWriteTime;
         internal DateTime LastWriteTime
@@ -150,7 +150,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_archiveFileInfo != null)
                 {
-                    _lastWriteTime = ((ArchiveFileInfo)_archiveFileInfo).LastWriteTime;
+                    _lastWriteTime = _archiveFileInfo.LastModifiedTime;
                     _archiveFileInfo = null;
                 }
                 return (DateTime)_lastWriteTime!;
@@ -164,10 +164,10 @@ public sealed partial class Scanner : IDisposable
             _lastWriteTime = fileInfo.LastWriteTime;
         }
 
-        internal FileInfoCustom(ArchiveFileInfo archiveFileInfo)
+        internal FileInfoCustom(SevenZipArchiveEntry archiveFileInfo)
         {
-            FullName = archiveFileInfo.FileName;
-            Length = (long)archiveFileInfo.Size;
+            FullName = archiveFileInfo.Key;
+            Length = archiveFileInfo.Size;
             _archiveFileInfo = archiveFileInfo;
         }
     }
@@ -608,25 +608,30 @@ public sealed partial class Scanner : IDisposable
                 // 50 entries is more than we're ever likely to need in this list, but still small enough not to
                 // be wasteful.
                 var fileNamesList = new List<string>(50);
-                uint extractorFilesCount;
+                int extractorFilesCount = 0;
                 /*
                 We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
                 involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
                 we can get last write times in DateTime format and not have to parse possible localized
                 text dates out of the output stream.
                 */
-                using (var _sevenZipArchive = new SevenZipExtractor(fm.Path) { PreserveDirectoryStructure = true })
+                using var fs = File.OpenRead(fm.Path);
+                using (var _sevenZipArchive = SevenZipArchive.Open(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    sevenZipSize = (ulong)_sevenZipArchive.PackedSize;
-                    extractorFilesCount = _sevenZipArchive.FilesCount;
-                    for (int i = 0; i < extractorFilesCount; i++)
+                    // @vNext: Make a file stream that caches its own length
+                    sevenZipSize = (ulong)fs.Length;
+                    foreach (SevenZipArchiveEntry entry in _sevenZipArchive.Entries)
                     {
+                        if (entry.IsAnti) continue;
+
+                        extractorFilesCount++;
+
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        ArchiveFileInfo entry = _sevenZipArchive.ArchiveFileData[i];
-                        string fn = entry.FileName;
+                        string fn = entry.Key;
+
                         int dirSeps;
 
                         // Always extract readmes no matter what, so our .7z caching is always correct.
@@ -758,7 +763,7 @@ public sealed partial class Scanner : IDisposable
                     sevenZipPathAndExe: _sevenZipExePath,
                     archivePath: fm.Path,
                     outputPath: _fmWorkingPath,
-                    entriesCount: (int)extractorFilesCount,
+                    entriesCount: extractorFilesCount,
                     listFile: listFile,
                     fileNamesList: fileNamesList,
                     cancellationToken: cancellationToken);

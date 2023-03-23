@@ -75,10 +75,6 @@ internal static class Core
         // Perf: The only thing the splash screen needs is the theme
         Config.VisualTheme = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
-        bool sevenZipDllNotFound = false;
-
-        string sevenZipDll = Environment.Is64BitProcess ? "7z64.dll" : "7z.dll";
-
         using Task startupWorkTask = Task.Run(() =>
         {
             #region Old FMScanner log file delete
@@ -92,24 +88,6 @@ internal static class Core
             {
                 // ignore
             }
-
-            #endregion
-
-            #region 7z.dll existence check
-
-            // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
-            // at any time
-            string sevenZipDllLocation = Path.Combine(Paths.Startup, sevenZipDll);
-            if (!File.Exists(sevenZipDllLocation))
-            {
-                sevenZipDllNotFound = true;
-                return;
-            }
-
-            // Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
-            // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
-            // (so that includes our bin\x86\whatever dirs).
-            //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
 
             #endregion
 
@@ -152,22 +130,6 @@ internal static class Core
         splashScreen.Show(Config.VisualTheme);
 
         startupWorkTask.Wait();
-
-        if (sevenZipDllNotFound)
-        {
-            splashScreen.Hide();
-
-            // Not localizable because we don't want to do anything until we've checked this, and getting
-            // the right language would mean trying to read multiple different files and whatever junk, and
-            // we don't want to add the potential for even more errors here.
-            Dialogs.ShowAlert_Stock(
-                "Fatal error: " + sevenZipDll + " was not found in the application startup directory.",
-                "Error",
-                MBoxButtons.OK,
-                MBoxIcon.Error);
-            Environment.Exit(-1);
-            return;
-        }
 
         #region Read languages
 
