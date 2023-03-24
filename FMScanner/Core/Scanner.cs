@@ -614,7 +614,7 @@ public sealed partial class Scanner : IDisposable
                 we can get last write times in DateTime format and not have to parse possible localized
                 text dates out of the output stream.
                 */
-                using var fs = File.OpenRead(fm.Path);
+                using var fs = GetFileStreamFast(fm.Path, DiskFileStreamBuffer);
                 using (var sevenZipArchive = SevenZipArchive.Open(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
