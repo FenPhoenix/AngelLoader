@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
 using static System.StringComparison;
@@ -259,6 +261,100 @@ internal static class Utility
 
     #region StartsWith and EndsWith
 
+    private readonly ref struct StringCompareReturn
+    {
+        internal readonly bool RequiresStringComparison;
+        internal readonly int Compare;
+
+        public StringCompareReturn(int compare)
+        {
+            RequiresStringComparison = false;
+            Compare = compare;
+        }
+
+        public StringCompareReturn(bool requiresStringComparison)
+        {
+            RequiresStringComparison = requiresStringComparison;
+            Compare = 0;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool EqualsI(this string str1, string str2)
+    {
+        if (str1.Length != str2.Length) return false;
+
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan(), str2.AsSpan());
+        return result.RequiresStringComparison ? str1.Equals(str2, OrdinalIgnoreCase) : result.Compare == 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool StartsWithI(this string str1, string str2)
+    {
+        int str1Len = str1.Length;
+        int str2Len = str2.Length;
+
+        if (str1Len < str2Len) return false;
+
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan().Slice(0, str2Len), str2.AsSpan());
+        return result.RequiresStringComparison ? str1.StartsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool EndsWithI(this string str1, string str2)
+    {
+        int str1Len = str1.Length;
+        int str2Len = str2.Length;
+
+        if (str1Len < str2Len) return false;
+
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan().Slice(str1Len - str2Len), str2.AsSpan());
+        return result.RequiresStringComparison ? str1.EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
+    }
+
+    private static unsafe StringCompareReturn CompareToOrdinalIgnoreCase(
+        ReadOnlySpan<char> strA,
+        ReadOnlySpan<char> strB)
+    {
+        int num1 = Math.Min(strA.Length, strB.Length);
+        fixed (char* chPtr1 = &MemoryMarshal.GetReference(strA))
+        fixed (char* chPtr2 = &MemoryMarshal.GetReference(strB))
+        {
+            char* chPtr3 = chPtr1;
+            char* chPtr4 = chPtr2;
+            while (num1 != 0 &&
+                   //*chPtr3 <= '\u007F' &&
+                   // Only check the needle for non-ASCII chars, matching our old custom StartsWith/EndsWith
+                   // function, and avoiding 99.9999% of ToString() allocations that would otherwise happen here.
+                   *chPtr4 <= '\u007F')
+            {
+                int num3 = (int)*chPtr3;
+                int num4 = (int)*chPtr4;
+                if (num3 == num4)
+                {
+                    ++chPtr3;
+                    ++chPtr4;
+                    --num1;
+                }
+                else
+                {
+                    if ((uint)(num3 - 97) <= 25U)
+                        num3 -= 32;
+                    if ((uint)(num4 - 97) <= 25U)
+                        num4 -= 32;
+                    if (num3 != num4)
+                        return new StringCompareReturn(compare: num3 - num4);
+                    ++chPtr3;
+                    ++chPtr4;
+                    --num1;
+                }
+            }
+            if (num1 == 0)
+                return new StringCompareReturn(compare: strA.Length - strB.Length);
+            return new StringCompareReturn(requiresStringComparison: true);
+        }
+    }
+
     private enum CaseComparison
     {
         CaseSensitive,
@@ -268,17 +364,6 @@ internal static class Utility
     }
 
     private enum StartOrEnd { Start, End }
-
-    /// <summary>
-    /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    internal static bool StartsWithI(this string str, string value)
-    {
-        return StartsWithOrEndsWithFast(str, value, CaseComparison.CaseInsensitive, StartOrEnd.Start);
-    }
 
     /// <summary>
     /// StartsWith (given case or uppercase). Uses a fast ASCII compare where possible.
@@ -300,17 +385,6 @@ internal static class Utility
     internal static bool StartsWithGL(this string str, string value)
     {
         return StartsWithOrEndsWithFast(str, value, CaseComparison.GivenOrLower, StartOrEnd.Start);
-    }
-
-    /// <summary>
-    /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    internal static bool EndsWithI(this string str, string value)
-    {
-        return StartsWithOrEndsWithFast(str, value, CaseComparison.CaseInsensitive, StartOrEnd.End);
     }
 
     private static bool StartsWithOrEndsWithFast(this string str, string value,
