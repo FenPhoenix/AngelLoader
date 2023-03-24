@@ -328,13 +328,16 @@ internal static class Utility
 
         for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
         {
+            char sc = str[si];
+            char vc = value[vi];
+
             // If we find a non-ASCII character, give up and run the slow check on the whole string. We do
             // this because one .NET char doesn't necessarily equal one Unicode char. Multiple .NET chars
             // might be needed. So we grit our teeth and take the perf hit of letting .NET handle it.
             // This is tuned for ASCII being the more common case, so we can save an advance check for non-
             // ASCII chars, at the expense of being slightly (probably insignificantly) slower if there are
             // in fact non-ASCII chars in value.
-            if (value[vi] > 127)
+            if (vc > 127)
             {
                 switch (caseComparison)
                 {
@@ -361,15 +364,15 @@ internal static class Utility
                 }
             }
 
-            if (str[si].IsAsciiUpper() && value[vi].IsAsciiLower())
+            if (sc.IsAsciiUpper() && vc.IsAsciiLower())
             {
-                if (caseComparison == CaseComparison.GivenOrLower || str[si] != value[vi] - 32) return false;
+                if (caseComparison == CaseComparison.GivenOrLower || sc != vc - 32) return false;
             }
-            else if (value[vi].IsAsciiUpper() && str[si].IsAsciiLower())
+            else if (vc.IsAsciiUpper() && sc.IsAsciiLower())
             {
-                if (caseComparison == CaseComparison.GivenOrUpper || str[si] != value[vi] + 32) return false;
+                if (caseComparison == CaseComparison.GivenOrUpper || sc != vc + 32) return false;
             }
-            else if (str[si] != value[vi])
+            else if (sc != vc)
             {
                 return false;
             }
