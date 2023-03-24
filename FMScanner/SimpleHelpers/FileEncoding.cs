@@ -88,7 +88,7 @@ public sealed class FileEncoding
     /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
     public Encoding? DetectFileEncoding(string inputFilename)
     {
-        using var stream = Common.GetFileStreamFast(inputFilename, _fileStreamBuffer);
+        using var stream = Common.GetReadModeFileStreamWithCachedBuffer(inputFilename, _fileStreamBuffer);
         return DetectFileEncoding(stream);
     }
 

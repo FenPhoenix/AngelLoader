@@ -265,7 +265,7 @@ public static class Common
     private static bool? _fieldStreamBufferFieldFound;
     private static FieldInfo? _fieldStreamBufferFieldInfo;
 
-    public static FileStream GetFileStreamFast(string path, byte[] buffer)
+    public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
         buffer.Clear();
 

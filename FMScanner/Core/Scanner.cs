@@ -614,7 +614,7 @@ public sealed partial class Scanner : IDisposable
                 we can get last write times in DateTime format and not have to parse possible localized
                 text dates out of the output stream.
                 */
-                using var fs = GetFileStreamFast(fm.Path, DiskFileStreamBuffer);
+                using var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
                 using (var sevenZipArchive = SevenZipArchive.Open(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -824,7 +824,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    _archive = new ZipArchiveS(GetFileStreamFast(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
+                    _archive = new ZipArchiveS(GetReadModeFileStreamWithCachedBuffer(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
 
                     // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                     // thrown while loading them. If this passes, we're definitely good.
@@ -2906,7 +2906,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     readmeHeaderStream = _fmIsZip
                         ? readmeStream!
-                        : GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer);
+                        : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
 
                     // stupid micro-optimization
                     const int rtfHeaderBytesLength = 6;
@@ -2939,7 +2939,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else
                     {
-                        using var fs = GetFileStreamFast(readmeFileOnDisk, DiskFileStreamBuffer);
+                        using var fs = GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
                         (success, text) = RtfConverter.Convert(fs, readmeFileLen);
                     }
 
@@ -4142,7 +4142,7 @@ public sealed partial class Scanner : IDisposable
         {
             misStream = _fmIsZip
                 ? _archive.OpenEntry(misFileZipEntry)
-                : GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
+                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
 
             for (int i = 0; i < _locations.Length; i++)
             {
@@ -4286,7 +4286,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
-            using var stream = GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
+            using var stream = GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
 
             uint tocOffset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
@@ -4342,7 +4342,7 @@ public sealed partial class Scanner : IDisposable
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
         if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : GetFileStreamFast(misFileOnDisk, DiskFileStreamBuffer);
+            using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
             if (StreamContainsIdentString(
                     stream,
                     MAPPARAM,
@@ -4514,7 +4514,7 @@ public sealed partial class Scanner : IDisposable
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
@@ -4560,7 +4560,7 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>();
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4584,7 +4584,7 @@ public sealed partial class Scanner : IDisposable
     {
         var lines = new List<string>();
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetFileStreamFast(file, DiskFileStreamBuffer), encoding, false, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, false, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
