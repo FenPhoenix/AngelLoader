@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
 using static System.StringComparison;
+using static AL_Common.Common;
 
 namespace FMScanner;
 
@@ -260,24 +261,6 @@ internal static class Utility
     #endregion
 
     #region StartsWith and EndsWith
-
-    private readonly ref struct StringCompareReturn
-    {
-        internal readonly bool RequiresStringComparison;
-        internal readonly int Compare;
-
-        public StringCompareReturn(int compare)
-        {
-            RequiresStringComparison = false;
-            Compare = compare;
-        }
-
-        public StringCompareReturn(bool requiresStringComparison)
-        {
-            RequiresStringComparison = requiresStringComparison;
-            Compare = 0;
-        }
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool EqualsI(this string str1, string str2)

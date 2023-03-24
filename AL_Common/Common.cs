@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using JetBrains.Annotations;
 using static System.StringComparison;
@@ -358,6 +359,7 @@ public static class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
         (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
@@ -845,6 +847,7 @@ public static class Common
     // Not like any OS is likely to use anything other than '/' or '\' anyway.
 
     // We hope not to have to call this too often, but it's here as a fallback.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string CanonicalizePath(string value) => value.ToBackSlashes();
 
     /// <summary>
@@ -935,29 +938,20 @@ public static class Common
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathEqualsI(this string first, string second)
     {
         if (first == second) return true;
 
-        int firstLen = first.Length;
-        if (firstLen != second.Length) return false;
+        int firstLength = first.Length;
+        int secondLength = second.Length;
 
-        for (int i = 0; i < firstLen; i++)
-        {
-            char fc = first[i];
-            char sc = second[i];
+        if (firstLength != secondLength) return false;
 
-            if (fc > 127 || sc > 127)
-            {
-                // Non-ASCII slow path
-                return first.Equals(second, OrdinalIgnoreCase) ||
-                       CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
-            }
-
-            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-        }
-
-        return true;
+        StringCompareReturn result = CompareToOrdinalIgnoreCase_Path(first.AsSpan(), second.AsSpan());
+        return result.RequiresStringComparison
+            ? first.Equals(second, OrdinalIgnoreCase) || CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase)
+            : result.Compare == 0;
     }
 
     /// <summary>
@@ -966,54 +960,37 @@ public static class Common
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathStartsWithI(this string first, string second)
     {
-        if (first.Length < second.Length) return false;
+        int firstLength = first.Length;
+        int secondLength = second.Length;
 
-        for (int i = 0; i < second.Length; i++)
-        {
-            char fc = first[i];
-            char sc = second[i];
+        if (firstLength < secondLength) return false;
 
-            if (fc > 127 || sc > 127)
-            {
-                // Non-ASCII slow path
-                return first.StartsWith(second, OrdinalIgnoreCase) ||
-                       CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-            }
-
-            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-        }
-
-        return true;
+        StringCompareReturn result = CompareToOrdinalIgnoreCase_Path(first.AsSpan().Slice(0, secondLength), second.AsSpan());
+        return result.RequiresStringComparison
+            ? first.StartsWith(second, OrdinalIgnoreCase) || CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase)
+            : result.Compare == 0;
     }
-
     /// <summary>
     /// Path ends-with check ignoring case and directory separator differences.
     /// </summary>
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathEndsWithI(this string first, string second)
     {
-        if (first.Length < second.Length) return false;
+        int firstLength = first.Length;
+        int secondLength = second.Length;
 
-        for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
-        {
-            char fc = first[fi];
-            char sc = second[si];
+        if (firstLength < secondLength) return false;
 
-            if (fc > 127 || sc > 127)
-            {
-                // Non-ASCII slow path
-                return first.EndsWith(second, OrdinalIgnoreCase) ||
-                       CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-            }
-
-            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
-        }
-
-        return true;
+        StringCompareReturn result = CompareToOrdinalIgnoreCase_Path(first.AsSpan().Slice(firstLength - secondLength), second.AsSpan());
+        return result.RequiresStringComparison
+            ? first.EndsWith(second, OrdinalIgnoreCase) || CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase)
+            : result.Compare == 0;
     }
 
     #region Disabled until needed
@@ -1068,6 +1045,7 @@ public static class Common
 
     #region Equality / StartsWith / EndsWith
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathSequenceEqualI_Dir(this IList<string> first, IList<string> second)
     {
         int firstCount;
@@ -1077,6 +1055,7 @@ public static class Common
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathSequenceEqualI(this IList<string> first, IList<string> second)
     {
         int firstCount;
@@ -1086,11 +1065,6 @@ public static class Common
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2) =>
-        char1.EqualsIAscii(char2) ||
-        (char1.IsDirSep() && char2.IsDirSep());
-
     /// <summary>
     /// Path equality check ignoring case and directory separator differences. Directory version: Ignores
     /// trailing path separators.
@@ -1098,10 +1072,70 @@ public static class Common
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PathEqualsI_Dir(this string first, string second) => first.TrimEnd(CA_BS_FS).PathEqualsI(second.TrimEnd(CA_BS_FS));
 
     #endregion
 
+    public readonly ref struct StringCompareReturn
+    {
+        public readonly bool RequiresStringComparison;
+        public readonly int Compare;
+
+        public StringCompareReturn(int compare)
+        {
+            RequiresStringComparison = false;
+            Compare = compare;
+        }
+
+        public StringCompareReturn(bool requiresStringComparison)
+        {
+            RequiresStringComparison = requiresStringComparison;
+            Compare = 0;
+        }
+    }
+
+    private static unsafe StringCompareReturn CompareToOrdinalIgnoreCase_Path(
+        ReadOnlySpan<char> strA,
+        ReadOnlySpan<char> strB)
+    {
+        int num1 = Math.Min(strA.Length, strB.Length);
+        fixed (char* chPtr1 = &MemoryMarshal.GetReference(strA))
+        fixed (char* chPtr2 = &MemoryMarshal.GetReference(strB))
+        {
+            char* chPtr3 = chPtr1;
+            char* chPtr4 = chPtr2;
+            while (num1 != 0 &&
+                   //*chPtr3 <= '\u007F' &&
+                   // Only check the needle for non-ASCII chars, matching our old custom StartsWith/EndsWith
+                   // function, and avoiding 99.9999% of ToString() allocations that would otherwise happen here.
+                   *chPtr4 <= '\u007F')
+            {
+                int num3 = (int)*chPtr3;
+                int num4 = (int)*chPtr4;
+                if (num3 == num4)
+                {
+                    ++chPtr3;
+                    ++chPtr4;
+                    --num1;
+                }
+                else
+                {
+                    if ((uint)(num3 - 97) <= 25U) num3 -= 32;
+                    if ((uint)(num4 - 97) <= 25U) num4 -= 32;
+                    if ((uint)num3 == '/') num3 = '\\';
+                    if ((uint)num4 == '/') num4 = '\\';
+                    if (num3 != num4) return new StringCompareReturn(compare: num3 - num4);
+                    ++chPtr3;
+                    ++chPtr4;
+                    --num1;
+                }
+            }
+            if (num1 == 0)
+                return new StringCompareReturn(compare: strA.Length - strB.Length);
+            return new StringCompareReturn(requiresStringComparison: true);
+        }
+    }
     #endregion
 
     /// <summary>
