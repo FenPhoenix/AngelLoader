@@ -514,7 +514,7 @@ internal static class Utility
         Closing
     }
 
-    internal static string GLMLToText(string glml)
+    internal static string GLMLToPlainText(string glml)
     {
         var sb = new StringBuilder(glml.Length);
         var subSB = new StringBuilder(16);

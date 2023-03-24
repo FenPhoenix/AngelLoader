@@ -616,13 +616,13 @@ public sealed partial class Scanner : IDisposable
                 text dates out of the output stream.
                 */
                 using var fs = File.OpenRead(fm.Path);
-                using (var _sevenZipArchive = SevenZipArchive.Open(fs))
+                using (var sevenZipArchive = SevenZipArchive.Open(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // @vNext: Make a file stream that caches its own length
                     sevenZipSize = (ulong)fs.Length;
-                    foreach (SevenZipArchiveEntry entry in _sevenZipArchive.Entries)
+                    foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
                     {
                         if (entry.IsAnti) continue;
 
@@ -2966,7 +2966,7 @@ public sealed partial class Scanner : IDisposable
                         ? ReadAllTextE(readmeStream!)
                         : ReadAllTextE(readmeFileOnDisk);
 
-                    if (last.IsGlml) last.Text = Utility.GLMLToText(last.Text);
+                    if (last.IsGlml) last.Text = Utility.GLMLToPlainText(last.Text);
 
                     last.Lines.ClearAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                 }
