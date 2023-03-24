@@ -714,8 +714,8 @@ internal static class FMBackupAndRestore
                             continue;
                         }
 
-                        if (entry.LastModifiedTime != null &&
-                            fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime() ||
+                        if ((entry.LastModifiedTime != null &&
+                            fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime()) ||
                             fi.Length != entry.Size)
                         {
                             changedList.Add(efn);
