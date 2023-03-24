@@ -78,7 +78,7 @@ public static class Fen7z
     /// <param name="sevenZipPathAndExe"></param>
     /// <param name="archivePath"></param>
     /// <param name="outputPath"></param>
-    /// <param name="entriesCount"></param>
+    /// <param name="entriesCount">Only used if <paramref name="progress"/> is provided (non-null).</param>
     /// <param name="listFile"></param>
     /// <param name="fileNamesList"></param>
     /// <param name="cancellationToken"></param>

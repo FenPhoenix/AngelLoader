@@ -608,7 +608,6 @@ public sealed partial class Scanner : IDisposable
                 // 50 entries is more than we're ever likely to need in this list, but still small enough not to
                 // be wasteful.
                 var fileNamesList = new List<string>(50);
-                int extractorFilesCount = 0;
                 /*
                 We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
                 involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
@@ -624,11 +623,6 @@ public sealed partial class Scanner : IDisposable
                     sevenZipSize = (ulong)fs.Length;
                     foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
                     {
-                        // Not sure if we should count "anti" entries - I've never see any anyway, so I don't
-                        // know what would happen, but let's just count all of them for now, as that matches the
-                        // previous behavior...
-                        extractorFilesCount++;
-
                         if (entry.IsAnti) continue;
 
                         cancellationToken.ThrowIfCancellationRequested();
@@ -766,7 +760,8 @@ public sealed partial class Scanner : IDisposable
                     sevenZipPathAndExe: _sevenZipExePath,
                     archivePath: fm.Path,
                     outputPath: _fmWorkingPath,
-                    entriesCount: extractorFilesCount,
+                    // We're not reporting progress, so this param is unused
+                    entriesCount: 0,
                     listFile: listFile,
                     fileNamesList: fileNamesList,
                     cancellationToken: cancellationToken);
