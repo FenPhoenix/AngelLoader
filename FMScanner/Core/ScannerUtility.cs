@@ -357,13 +357,9 @@ internal static class Utility
 
     private enum CaseComparison
     {
-        CaseSensitive,
-        CaseInsensitive,
         GivenOrUpper,
         GivenOrLower
     }
-
-    private enum StartOrEnd { Start, End }
 
     /// <summary>
     /// StartsWith (given case or uppercase). Uses a fast ASCII compare where possible.
@@ -373,7 +369,7 @@ internal static class Utility
     /// <returns></returns>
     internal static bool StartsWithGU(this string str, string value)
     {
-        return StartsWithOrEndsWithFast(str, value, CaseComparison.GivenOrUpper, StartOrEnd.Start);
+        return StartsWithFast(str, value, CaseComparison.GivenOrUpper);
     }
 
     /// <summary>
@@ -384,11 +380,10 @@ internal static class Utility
     /// <returns></returns>
     internal static bool StartsWithGL(this string str, string value)
     {
-        return StartsWithOrEndsWithFast(str, value, CaseComparison.GivenOrLower, StartOrEnd.Start);
+        return StartsWithFast(str, value, CaseComparison.GivenOrLower);
     }
 
-    private static bool StartsWithOrEndsWithFast(this string str, string value,
-        CaseComparison caseComparison, StartOrEnd startOrEnd)
+    private static bool StartsWithFast(this string str, string value, CaseComparison caseComparison)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -396,11 +391,9 @@ internal static class Utility
         // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
         // subtracting 32.
 
-        bool start = startOrEnd == StartOrEnd.Start;
-        int siStart = start ? 0 : str.Length - value.Length;
-        int siEnd = start ? value.Length : str.Length;
+        int valueLength = value.Length;
 
-        for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
+        for (int si = 0, vi = 0; si < valueLength; si++, vi++)
         {
             char sc = str[si];
             char vc = value[vi];
@@ -415,26 +408,12 @@ internal static class Utility
             {
                 switch (caseComparison)
                 {
-                    case CaseComparison.CaseSensitive:
-                        return start
-                            ? str.StartsWith(value, Ordinal)
-                            : str.EndsWith(value, Ordinal);
-                    case CaseComparison.CaseInsensitive:
-                        return start
-                            ? str.StartsWith(value, OrdinalIgnoreCase)
-                            : str.EndsWith(value, OrdinalIgnoreCase);
                     case CaseComparison.GivenOrUpper:
-                        return start
-                            ? str.StartsWith(value, Ordinal) ||
-                              str.StartsWith(value.ToUpperInvariant(), Ordinal)
-                            : str.EndsWith(value, Ordinal) ||
-                              str.EndsWith(value.ToUpperInvariant(), Ordinal);
+                        return str.StartsWith(value, Ordinal) ||
+                               str.StartsWith(value.ToUpperInvariant(), Ordinal);
                     case CaseComparison.GivenOrLower:
-                        return start
-                            ? str.StartsWith(value, Ordinal) ||
-                              str.StartsWith(value.ToLowerInvariant(), Ordinal)
-                            : str.EndsWith(value, Ordinal) ||
-                              str.EndsWith(value.ToLowerInvariant(), Ordinal);
+                        return str.StartsWith(value, Ordinal) ||
+                               str.StartsWith(value.ToLowerInvariant(), Ordinal);
                 }
             }
 
