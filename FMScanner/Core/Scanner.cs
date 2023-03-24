@@ -624,9 +624,12 @@ public sealed partial class Scanner : IDisposable
                     sevenZipSize = (ulong)fs.Length;
                     foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
                     {
-                        if (entry.IsAnti) continue;
-
+                        // Not sure if we should count "anti" entries - I've never see any anyway, so I don't
+                        // know what would happen, but let's just count all of them for now, as that matches the
+                        // previous behavior...
                         extractorFilesCount++;
+
+                        if (entry.IsAnti) continue;
 
                         cancellationToken.ThrowIfCancellationRequested();
 
