@@ -59,9 +59,9 @@ internal static class Utility
     {
         int dotIndex = value.IndexOf('.');
         return dotIndex > -1 &&
-               ((dotIndex == 9 && value.StartsWithI("fminfo-en")) ||
-                (dotIndex == 10 && value.StartsWithI("fminfo-eng")) ||
-                !(dotIndex > 6 && value.StartsWithI("fminfo")));
+               ((dotIndex == 9 && value.StartsWithI_Local("fminfo-en")) ||
+                (dotIndex == 10 && value.StartsWithI_Local("fminfo-eng")) ||
+                !(dotIndex > 6 && value.StartsWithI_Local("fminfo")));
     }
 
     internal static bool IsValidReadme(this string readme) =>
@@ -280,7 +280,7 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EqualsI(this string str1, string str2)
+    internal static bool EqualsI_Local(this string str1, string str2)
     {
         if (str1.Length != str2.Length) return false;
 
@@ -289,7 +289,7 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool StartsWithI(this string str1, string str2)
+    internal static bool StartsWithI_Local(this string str1, string str2)
     {
         int str1Len = str1.Length;
         int str2Len = str2.Length;
@@ -301,7 +301,7 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EndsWithI(this string str1, string str2)
+    internal static bool EndsWithI_Local(this string str1, string str2)
     {
         int str1Len = str1.Length;
         int str2Len = str2.Length;
@@ -312,6 +312,7 @@ internal static class Utility
         return result.RequiresStringComparison ? str1.EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
     }
 
+    // Copied from .NET 7 and slightly modified
     private static unsafe StringCompareReturn CompareToOrdinalIgnoreCase(
         ReadOnlySpan<char> strA,
         ReadOnlySpan<char> strB)

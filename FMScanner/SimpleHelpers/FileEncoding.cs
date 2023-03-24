@@ -311,7 +311,7 @@ public sealed class FileEncoding
         */
 
         // check result
-        return _encodingName.IsEmpty() || _encodingName.EqualsI("utf-7") ? null : Encoding.GetEncoding(_encodingName);
+        return _encodingName.IsEmpty() || _encodingName.EqualsI_Local("utf-7") ? null : Encoding.GetEncoding(_encodingName);
     }
 
     private void IncrementFrequency(string charset)

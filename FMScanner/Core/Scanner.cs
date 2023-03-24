@@ -655,9 +655,9 @@ public sealed partial class Scanner : IDisposable
                             fileNamesList.Add(fn);
                         }
                         else if (!fn.Rel_ContainsDirSep() &&
-                                 (fn.EqualsI(FMFiles.FMInfoXml) ||
-                                  fn.EqualsI(FMFiles.FMIni) ||
-                                  fn.EqualsI(FMFiles.ModIni)))
+                                 (fn.EqualsI_Local(FMFiles.FMInfoXml) ||
+                                  fn.EqualsI_Local(FMFiles.FMIni) ||
+                                  fn.EqualsI_Local(FMFiles.ModIni)))
                         {
                             fileNamesList.Add(fn);
                         }
@@ -1051,7 +1051,7 @@ public sealed partial class Scanner : IDisposable
             {
                 finalTitle = value;
             }
-            else if (!finalTitle.EqualsI(value) && !altTitles.ContainsI(value))
+            else if (!finalTitle.EqualsI_Local(value) && !altTitles.ContainsI(value))
             {
                 altTitles.Add(value);
             }
@@ -1101,7 +1101,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
-                    if (f.Name.EqualsI(FMFiles.FMInfoXml))
+                    if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
                     {
                         var (title, author, version, releaseDate) = ReadFMInfoXml(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(title);
@@ -1123,7 +1123,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
-                    if (f.Name.EqualsI(FMFiles.FMIni))
+                    if (f.Name.EqualsI_Local(FMFiles.FMIni))
                     {
                         var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(title);
@@ -1147,7 +1147,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = baseDirFiles[i];
-                    if (f.Name.EqualsI(FMFiles.ModIni))
+                    if (f.Name.EqualsI_Local(FMFiles.ModIni))
                     {
                         var (title, author) = ReadModIni(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(title);
@@ -1282,7 +1282,7 @@ public sealed partial class Scanner : IDisposable
                     fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
                 }
 
-                if (fmData.Author.StartsWithI("By "))
+                if (fmData.Author.StartsWithI_Local("By "))
                 {
                     fmData.Author = fmData.Author.Substring(2).Trim();
                 }
@@ -1331,9 +1331,9 @@ public sealed partial class Scanner : IDisposable
                 if (ai == -1) ai = fmData.Author.IndexOf('-');
                 if (ai == -1) ai = fmData.Author.Length;
                 string anonAuthor = fmData.Author.Substring(0, ai);
-                if (anonAuthor.EqualsI("Anon") ||
-                    anonAuthor.EqualsI("Withheld") ||
-                    anonAuthor.EqualsI("Unknown") ||
+                if (anonAuthor.EqualsI_Local("Anon") ||
+                    anonAuthor.EqualsI_Local("Withheld") ||
+                    anonAuthor.EqualsI_Local("Unknown") ||
                     anonAuthor.SimilarityTo("Anonymous", OrdinalIgnoreCase) > 0.75)
                 {
                     SetMiscTag(fmData, "unknown author");
@@ -1852,7 +1852,7 @@ public sealed partial class Scanner : IDisposable
             Debug.Assert(lang == lang.ToLowerInvariant(),
                 "lang != lang.ToLowerInvariant() - lang is not lowercase");
 
-            if (englishIsUncertain && lang.EqualsI("english")) continue;
+            if (englishIsUncertain && lang.EqualsI_Local("english")) continue;
 
             if (fmData.TagsString.Contains(lang))
             {
@@ -1882,7 +1882,7 @@ public sealed partial class Scanner : IDisposable
                 list.RemoveAt(i);
                 i--;
             }
-            else if (list[i].EqualsI(tag))
+            else if (list[i].EqualsI_Local(tag))
             {
                 if (tagFound)
                 {
@@ -1961,7 +1961,7 @@ public sealed partial class Scanner : IDisposable
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (fn.EndsWithI(array[i]))
+                if (fn.EndsWithI_Local(array[i]))
                 {
                     return true;
                 }
@@ -2330,7 +2330,7 @@ public sealed partial class Scanner : IDisposable
                         for (int i = 0; i < t3GmpFiles.Count; i++)
                         {
                             NameAndIndex item = t3GmpFiles[i];
-                            if (!item.Name.EqualsI(FMFiles.EntryGmp))
+                            if (!item.Name.EqualsI_Local(FMFiles.EntryGmp))
                             {
                                 usedMisFiles.Add(item);
                             }
@@ -2425,7 +2425,7 @@ public sealed partial class Scanner : IDisposable
                 NameAndIndex mf = misFiles[mfI];
 
                 // Obtuse nonsense to avoid string allocations (perf)
-                if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
+                if (mf.Name.StartsWithI_Local("miss") && mf.Name[4] != '.')
                 {
                     // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
                     // character and not get a -1 index. And since we know our file starts with "miss", the
@@ -2434,7 +2434,7 @@ public sealed partial class Scanner : IDisposable
                     for (int mflI = 0; mflI < mfLines.Count; mflI++)
                     {
                         string line = mfLines[mflI];
-                        if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
+                        if (line.StartsWithI_Local("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                         {
                             bool numsMatch = true;
                             for (int li = 4; li < 4 + count; li++)
@@ -2570,24 +2570,24 @@ public sealed partial class Scanner : IDisposable
         // Quick n dirty, works fine and is fast
         foreach (string line in iniLines)
         {
-            if (line.StartsWithI("NiceName="))
+            if (line.StartsWithI_Local("NiceName="))
             {
                 inDescr = false;
                 fmIni.NiceName = line.Substring(9).Trim();
             }
-            else if (line.StartsWithI("ReleaseDate="))
+            else if (line.StartsWithI_Local("ReleaseDate="))
             {
                 inDescr = false;
                 fmIni.ReleaseDate = line.Substring(12).Trim();
             }
-            else if (line.StartsWithI("Tags="))
+            else if (line.StartsWithI_Local("Tags="))
             {
                 inDescr = false;
                 fmIni.Tags = line.Substring(5).Trim();
             }
             // Sometimes Descr values are literally multi-line. DON'T. DO. THAT. Use \n.
             // But I have to deal with it anyway.
-            else if (line.StartsWithI("Descr="))
+            else if (line.StartsWithI_Local("Descr="))
             {
                 inDescr = true;
 #if FMScanner_FullCode
@@ -2660,7 +2660,7 @@ public sealed partial class Scanner : IDisposable
             for (int i = 0; i < tagsArray.Length; i++)
             {
                 string tag = tagsArray[i];
-                if (tag.StartsWithI("author:")) authors.Add(tag);
+                if (tag.StartsWithI_Local("author:")) authors.Add(tag);
             }
 
             string authorString = "";
@@ -2744,7 +2744,7 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < lines.Count; i++)
         {
             string lineT = lines[i].Trim();
-            if (lineT.EqualsI("[modName]"))
+            if (lineT.EqualsI_Local("[modName]"))
             {
                 while (i < lines.Count - 1)
                 {
@@ -2761,7 +2761,7 @@ public sealed partial class Scanner : IDisposable
                     i++;
                 }
             }
-            else if (lineT.EqualsI("[authors]"))
+            else if (lineT.EqualsI_Local("[authors]"))
             {
                 while (i < lines.Count - 1)
                 {
@@ -3062,7 +3062,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < lines.Count; i++)
                 {
                     string lineT = lines[i].Trim();
-                    if (!lineT.EqualsI("Author") && !lineT.EqualsI("Author:")) continue;
+                    if (!lineT.EqualsI_Local("Author") && !lineT.EqualsI_Local("Author:")) continue;
 
                     if (i < lines.Count - 2)
                     {
@@ -3113,13 +3113,13 @@ public sealed partial class Scanner : IDisposable
             {
                 // I can't believe fallthrough is actually useful (for visual purposes only, but still!)
                 case SpecialLogic.Title when
-                    lineStartTrimmed.StartsWithI("Title & Description") ||
+                    lineStartTrimmed.StartsWithI_Local("Title & Description") ||
                     lineStartTrimmed.StartsWithGL("Title screen"):
                 case SpecialLogic.ReleaseDate when
-                    lineStartTrimmed.StartsWithI("Release information") ||
-                    lineStartTrimmed.StartsWithI("Release version") ||
-                    lineStartTrimmed.StartsWithI("Release: version") ||
-                    lineStartTrimmed.StartsWithI("Released for"):
+                    lineStartTrimmed.StartsWithI_Local("Release information") ||
+                    lineStartTrimmed.StartsWithI_Local("Release version") ||
+                    lineStartTrimmed.StartsWithI_Local("Release: version") ||
+                    lineStartTrimmed.StartsWithI_Local("Released for"):
 #if FMScanner_FullCode
                 case SpecialLogic.Version when
                     lineStartTrimmed.StartsWithI("Version History") ||
@@ -3128,7 +3128,7 @@ public sealed partial class Scanner : IDisposable
                     VersionExclude1Regex.Match(lineStartTrimmed).Success:
 #endif
                 case SpecialLogic.Author when
-                    lineStartTrimmed.StartsWithI("Authors note"):
+                    lineStartTrimmed.StartsWithI_Local("Authors note"):
                     continue;
             }
 
@@ -3212,7 +3212,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < keys.Length; i++)
                 {
                     string key = keys[i];
-                    if (!lineStartTrimmed.StartsWithI(key)) continue;
+                    if (!lineStartTrimmed.StartsWithI_Local(key)) continue;
 
                     // It's supposed to be finding a space after a key; this prevents it from finding the
                     // first space in the key itself if there is one.
@@ -3308,18 +3308,18 @@ public sealed partial class Scanner : IDisposable
             {
                 string lineT = lines[i].Trim();
                 if (i > 0 &&
-                    (lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
-                     lineT.StartsWithI("Original concept by ") ||
-                     lineT.StartsWithI("Created by ") ||
-                     lineT.StartsWithI("A Thief 2 fan") ||
-                     lineT.StartsWithI("A Thief Gold fan") ||
-                     lineT.StartsWithI("A Thief 1 fan") ||
-                     lineT.StartsWithI("A Thief fan") ||
-                     lineT.StartsWithI("A fan mission") ||
-                     lineT.StartsWithI("A Thief 3") ||
+                    (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: ") ||
+                     lineT.StartsWithI_Local("Original concept by ") ||
+                     lineT.StartsWithI_Local("Created by ") ||
+                     lineT.StartsWithI_Local("A Thief 2 fan") ||
+                     lineT.StartsWithI_Local("A Thief Gold fan") ||
+                     lineT.StartsWithI_Local("A Thief 1 fan") ||
+                     lineT.StartsWithI_Local("A Thief fan") ||
+                     lineT.StartsWithI_Local("A fan mission") ||
+                     lineT.StartsWithI_Local("A Thief 3") ||
                      AThief3Mission.Match(lineT).Success ||
-                     lineT.StartsWithI("A System Shock") ||
-                     lineT.StartsWithI("An SS2")))
+                     lineT.StartsWithI_Local("A System Shock") ||
+                     lineT.StartsWithI_Local("An SS2")))
                 {
                     for (int j = 0; j < i; j++)
                     {
@@ -3386,13 +3386,13 @@ public sealed partial class Scanner : IDisposable
                     title[0] != '#' && title[0] != '$' && title[0] != '%' && title[0] != '^' &&
                     title[0] != '&' && title[0] != '*' && title[0] != '(' && title[0] != ')' &&
                     // entire titles
-                    !title.EqualsI("Play") && !title.EqualsI("Start") &&
-                    !title.EqualsI("Begin") && !title.EqualsI("Begin...") &&
-                    !title.EqualsI("skip training") &&
+                    !title.EqualsI_Local("Play") && !title.EqualsI_Local("Start") &&
+                    !title.EqualsI_Local("Begin") && !title.EqualsI_Local("Begin...") &&
+                    !title.EqualsI_Local("skip training") &&
                     // starting strings
-                    !title.StartsWithI("Let's go") && !title.StartsWithI("Let's rock this boat") &&
-                    !title.StartsWithI("Play ") && !title.StartsWithI("Continue") &&
-                    !title.StartsWithI("Start ") && !title.StartsWithI("Begin "))
+                    !title.StartsWithI_Local("Let's go") && !title.StartsWithI_Local("Let's rock this boat") &&
+                    !title.StartsWithI_Local("Play ") && !title.StartsWithI_Local("Continue") &&
+                    !title.StartsWithI_Local("Start ") && !title.StartsWithI_Local("Begin "))
                 {
                     return title;
                 }
@@ -3447,7 +3447,7 @@ public sealed partial class Scanner : IDisposable
                 string umf = usedMisFiles[umfIndex].Name;
                 int umfDotIndex = umf.IndexOf('.');
 
-                if (umfDotIndex > 4 && umf.StartsWithI("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
+                if (umfDotIndex > 4 && umf.StartsWithI_Local("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
                 {
                     titles.Add(title);
                 }
@@ -3545,7 +3545,7 @@ public sealed partial class Scanner : IDisposable
         {
             for (int i = 0; i < tfLinesD.Count; i++)
             {
-                if (tfLinesD[i].StartsWithI(line.Substring(0, indexOfColon)))
+                if (tfLinesD[i].StartsWithI_Local(line.Substring(0, indexOfColon)))
                 {
                     return true;
                 }
@@ -3559,7 +3559,7 @@ public sealed partial class Scanner : IDisposable
             // Note: the Trim() is important, don't remove it
             string line = titlesStrLines[i].Trim();
             if (!line.IsEmpty() &&
-                line.StartsWithI("title_") &&
+                line.StartsWithI_Local("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
                 line.CharCountIsAtLeast('\"', 2) &&
                 !TFLinesDAny(line, indexOfColon, tfLinesD))
@@ -3618,7 +3618,7 @@ public sealed partial class Scanner : IDisposable
         {
             foreach (string title in titles)
             {
-                if (title.StartsWithI("by ")) titleStartsWithBy = true;
+                if (title.StartsWithI_Local("by ")) titleStartsWithBy = true;
                 if (title.ContainsI(" by ")) titleContainsBy = true;
             }
         }
@@ -3644,12 +3644,12 @@ public sealed partial class Scanner : IDisposable
             if (i == 0 && titleStartsWithBy) continue;
 
             string lineT = topLines[i].Trim();
-            if (lineT.StartsWithI("By ") || lineT.StartsWithI("By: "))
+            if (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: "))
             {
                 string author = lineT.Substring(lineT.IndexOf(' ')).TrimStart();
                 if (!author.IsEmpty()) return author;
             }
-            else if (lineT.EqualsI("By"))
+            else if (lineT.EqualsI_Local("By"))
             {
                 if (!titleContainsBy && i < topLines.Count - 1)
                 {
@@ -3783,7 +3783,7 @@ public sealed partial class Scanner : IDisposable
                 }
 
                 string lineT = line.Trim(CA_Asterisk).Trim(CA_Hyphen).Trim();
-                if (lineT.EqualsI("Copyright Information") || lineT.EqualsI("Copyright"))
+                if (lineT.EqualsI_Local("Copyright Information") || lineT.EqualsI_Local("Copyright"))
                 {
                     inCopyrightSection = true;
                 }
@@ -3939,15 +3939,15 @@ public sealed partial class Scanner : IDisposable
             for (int j = 0; j < Languages.Length; j++)
             {
                 string lang = Languages[j];
-                if (fn.StartsWithI(lang)) langs.Add(lang);
+                if (fn.StartsWithI_Local(lang)) langs.Add(lang);
             }
 
             // "Italiano" will be caught by StartsWithI("italian")
 
             // Extra logic to account for whatever-style naming
-            if (fn.EqualsI("rus") ||
-                fn.EndsWithI("_ru") ||
-                fn.EndsWithI("_rus") ||
+            if (fn.EqualsI_Local("rus") ||
+                fn.EndsWithI_Local("_ru") ||
+                fn.EndsWithI_Local("_rus") ||
                 RusRegex.Match(fn).Success ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
@@ -3969,7 +3969,7 @@ public sealed partial class Scanner : IDisposable
             {
                 langs.Add("dutch");
             }
-            else if (fn.EqualsI("huntext"))
+            else if (fn.EqualsI_Local("huntext"))
             {
                 langs.Add("hungarian");
             }
