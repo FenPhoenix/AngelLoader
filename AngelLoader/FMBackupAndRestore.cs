@@ -26,8 +26,6 @@ for writing. Even if you put it after the using block, it throws. So always set 
 
 @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
-
-@vNext(SharpCompress): Test entry date identicality with old SevenZipSharp
 */
 
 internal static class FMBackupAndRestore
