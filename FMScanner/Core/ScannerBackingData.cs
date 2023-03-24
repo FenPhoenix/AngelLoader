@@ -1,5 +1,7 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
@@ -848,15 +850,48 @@ public sealed partial class Scanner
             if (x.IsEmpty()) return -1;
             if (y.IsEmpty()) return 1;
 
-            int xIndex1;
-            string xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);
-            int yIndex1;
-            string yNum = y.Substring(yIndex1 = y.IndexOf('_') + 1, y.IndexOf(':') - yIndex1);
+            int xIndex1 = x.IndexOf('_');
+            int xIndex2 = x.IndexOf(':', xIndex1);
 
-            while (xNum.Length < yNum.Length) xNum = '0' + xNum;
-            while (yNum.Length < xNum.Length) yNum = '0' + yNum;
+            int yIndex1 = y.IndexOf('_');
+            int yIndex2 = y.IndexOf(':', yIndex1);
 
-            return string.CompareOrdinal(xNum, yNum);
+            // int32 max digits minus 1 (to avoid having to check for overflow)
+            const int maxDigits = 9;
+
+            int xNum = 0;
+            int xEnd = Math.Min(xIndex2, xIndex1 + maxDigits);
+            for (int i = xIndex1 + 1; i < xEnd; i++)
+            {
+                char c = x[i];
+                if (c.IsAsciiNumeric())
+                {
+                    xNum *= 10;
+                    xNum += c - '0';
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            int yNum = 0;
+            int yEnd = Math.Min(yIndex2, yIndex1 + maxDigits);
+            for (int i = yIndex1 + 1; i < yEnd; i++)
+            {
+                char c = y[i];
+                if (c.IsAsciiNumeric())
+                {
+                    yNum *= 10;
+                    yNum += c - '0';
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            return xNum - yNum;
         }
     }
 }

@@ -3122,7 +3122,7 @@ public sealed partial class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI_Local("Released for"):
 #if FMScanner_FullCode
                 case SpecialLogic.Version when
-                    lineStartTrimmed.StartsWithI("Version History") ||
+                    lineStartTrimmed.StartsWithI_Local("Version History") ||
                     lineStartTrimmed.ContainsI("NewDark") ||
                     lineStartTrimmed.ContainsI("64 Cubed") ||
                     VersionExclude1Regex.Match(lineStartTrimmed).Success:
