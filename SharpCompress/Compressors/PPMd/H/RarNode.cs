@@ -1,6 +1,5 @@
 using System;
 using System.Buffers.Binary;
-using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 

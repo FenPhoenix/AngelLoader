@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class StateRef

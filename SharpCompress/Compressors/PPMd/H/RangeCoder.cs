@@ -1,7 +1,6 @@
 #nullable disable
 
 using System.IO;
-using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
