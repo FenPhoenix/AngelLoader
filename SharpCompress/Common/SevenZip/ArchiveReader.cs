@@ -422,6 +422,7 @@ internal sealed class ArchiveReader
             type = ReadId();
             if (type == BlockType.NumUnpackStream)
             {
+                // @SharpCompress: Can we recycle this?
                 numUnpackStreamsInFolders = new List<int>(folders.Count);
                 for (var i = 0; i < folders.Count; i++)
                 {

@@ -615,7 +615,6 @@ public sealed partial class Scanner : IDisposable
                 text dates out of the output stream.
                 */
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
-                // @vNext/@MEM: SharpCompress uses Stream.ReadByte() calls that allocate ~500,000 1-byte buffers
                 using (var sevenZipArchive = new SevenZipArchive(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();

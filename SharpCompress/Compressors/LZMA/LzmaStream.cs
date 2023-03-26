@@ -7,6 +7,7 @@ using SharpCompress.Compressors.LZMA.LZ;
 
 namespace SharpCompress.Compressors.LZMA;
 
+// @SharpCompress: Recycle this and all its sub-fields
 public sealed class LzmaStream : Stream
 {
     private readonly Stream _inputStream;
