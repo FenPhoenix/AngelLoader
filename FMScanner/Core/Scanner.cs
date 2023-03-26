@@ -642,6 +642,12 @@ public sealed partial class Scanner : IDisposable
                             fileNamesList.Add(fn);
                         }
                         /*
+                        @SharpCompress(.mis and gam file perf thoughts):
+                        -We extract all .mis files because we don't know which will be used until we read missflag.str.
+                         But we should see if there's some heuristic we could use. We could guess on a single .mis file
+                         to extract, and then if we're wrong we go back and extract what we know to be a used .mis file.
+                         If we could do something better than blind guess-and-hope, that would be good.
+
                         @SharpCompress(.mis and gam file extracting tests):
                         -With only blindly getting the first .mis file we find, it's ~18.5s
                         -With getting only .mis files but not .gam files, it's ~22s
@@ -651,7 +657,7 @@ public sealed partial class Scanner : IDisposable
                         at least for the full scan.
 
                         -Many unused .mis files are ~177KB (180745, 180749, 181428 and similar)
-                        -Many, but not all, used .mis files are extremely smaller than the other ones, <1MB
+                        -Many, but not all, unused .mis files are extremely smaller than the other ones, <1MB
                         -But at least one is 12MB so whatever
                         -Checking the miss** dirs in the intrface dir is a good heuristic, but not perfect
                          (TM20AC_TPOAIR.zip has an "unused" miss20.mis but it has an intrface subdir)
@@ -773,21 +779,6 @@ public sealed partial class Scanner : IDisposable
                 }
 
                 #endregion
-
-                /* @SharpCompress(.gam and .mis performance thoughts)
-                -RabenbachV2.7z has more than one .gam file
-                 We should only extract the smallest one, matching what we do in the game type detector
-                -We extract all .mis files because we don't know which will be used until we read missflag.str.
-                 But we should see if there's some heuristic we could use. We could guess on a single .mis file
-                 to extract, and then if we're wrong we go back and extract what we know to be a used .mis file.
-                 If we could do something better than blind guess-and-hope, that would be good.
-                -For 7z FMs, we could say that if we have a .gam file we'll just skip extracting any .mis files
-                 and just scan the .gam, because that will overall probably be faster than extracting an entire
-                 .mis file just to do the fast SKYOBJVAR check which will almost certainly fail as 7z FMs are
-                 practically guaranteed to be NewDark anyway.
-                 But, we would have to know the .gam file comes before the .mis files in the solid block!
-                 Does the full SharpCompress tell us this info? We should look into it.
-                */
 
                 string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
 
