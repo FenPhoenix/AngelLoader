@@ -609,10 +609,10 @@ public sealed partial class Scanner : IDisposable
                 // be wasteful.
                 var fileNamesList = new List<string>(50);
                 /*
-                We still use SevenZipSharp for merely getting the file names and metadata, as that doesn't
-                involve any decompression and shouldn't trigger any out-of-memory errors. We use this so
-                we can get last write times in DateTime format and not have to parse possible localized
-                text dates out of the output stream.
+                We use SharpCompress for getting the file names and metadata, as that doesn't involve any
+                decompression and won't trigger any out-of-memory errors. We use this so we can get last write
+                times in DateTime format and not have to parse possible localized text dates out of the output
+                stream.
                 */
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
                 using (var sevenZipArchive = new SevenZipArchive(fs))
