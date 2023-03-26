@@ -114,12 +114,14 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SharpCompress" Version="0.33.0" />
+		<PackageReference Include="System.Buffers" Version="4.5.1" />
+		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\AL_Common\AL_Common.csproj" />
 		<ProjectReference Include="..\FMScanner\FMScanner.csproj" />
+		<ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

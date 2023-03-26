@@ -279,12 +279,13 @@ internal static class FMLanguages
             }
             else
             {
-                using var sevenZipArchive = SevenZipArchive.Open(archivePath);
+                using var fs = File.OpenRead(archivePath);
+                using var sevenZipArchive = new SevenZipArchive(fs);
                 foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
                 {
                     if (entry.IsAnti) continue;
 
-                    string fn = entry.Key.ToForwardSlashes();
+                    string fn = entry.FileName.ToForwardSlashes();
                     var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
                     if (result.EarlyOutEnglish) return (true, result.Languages!);
                 }

@@ -672,7 +672,8 @@ internal static class FMBackupAndRestore
         }
         else
         {
-            using var archive = SevenZipArchive.Open(fmArchivePath);
+            using var fs = File.OpenRead(fmArchivePath);
+            using var archive = new SevenZipArchive(fs);
 
             int entriesCount = archive.Entries.Count;
 
@@ -682,7 +683,7 @@ internal static class FMBackupAndRestore
             {
                 if (entry.IsAnti) continue;
 
-                string efn = entry.Key.ToBackSlashes();
+                string efn = entry.FileName.ToBackSlashes();
 
                 entriesFullNamesHash.Add(efn);
 
@@ -705,7 +706,7 @@ internal static class FMBackupAndRestore
 
                         if (useOnlySize)
                         {
-                            if (fi.Length != entry.Size)
+                            if (fi.Length != entry.UncompressedSize)
                             {
                                 changedList.Add(efn);
                             }
@@ -714,7 +715,7 @@ internal static class FMBackupAndRestore
 
                         if ((entry.LastModifiedTime != null &&
                             fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime()) ||
-                            fi.Length != entry.Size)
+                            fi.Length != entry.UncompressedSize)
                         {
                             changedList.Add(efn);
                         }

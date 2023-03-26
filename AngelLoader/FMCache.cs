@@ -362,25 +362,28 @@ internal static class FMCache
 
             Directory.CreateDirectory(fmCachePath);
 
-            using var extractor = SevenZipArchive.Open(fmArchivePath);
+            int extractorFilesCount;
 
-            ICollection<SevenZipArchiveEntry> entries = extractor.Entries;
-
-            int extractorFilesCount = entries.Count;
-            foreach (SevenZipArchiveEntry entry in entries)
+            using (var fs = File.OpenRead(fmArchivePath))
+            using (var extractor = new SevenZipArchive(fs))
             {
-                if (entry.IsAnti) continue;
-
-                string fn = entry.Key;
-                int dirSeps;
-                if (fn.IsValidReadme() && entry.Size > 0 &&
-                    (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                      (fn.PathStartsWithI(_t3ReadmeDir1S) ||
-                       fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                     dirSeps == 0))
+                ICollection<SevenZipArchiveEntry> entries = extractor.Entries;
+                extractorFilesCount = entries.Count;
+                foreach (SevenZipArchiveEntry entry in entries)
                 {
-                    fileNamesList.Add(fn);
-                    readmes.Add(fn);
+                    if (entry.IsAnti) continue;
+
+                    string fn = entry.FileName;
+                    int dirSeps;
+                    if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
+                        (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                          (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                           fn.PathStartsWithI(_t3ReadmeDir2S))) ||
+                         dirSeps == 0))
+                    {
+                        fileNamesList.Add(fn);
+                        readmes.Add(fn);
+                    }
                 }
             }
 

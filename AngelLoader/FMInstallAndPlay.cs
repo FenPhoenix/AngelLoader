@@ -1652,7 +1652,8 @@ internal static class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var extractor = SevenZipArchive.Open(fmArchivePath))
+            using (var fs = File.OpenRead(fmArchivePath))
+            using (var extractor = new SevenZipArchive(fs))
             {
                 entriesCount = extractor.Entries.Count;
             }

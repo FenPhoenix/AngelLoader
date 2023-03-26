@@ -150,7 +150,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_archiveFileInfo != null)
                 {
-                    _lastWriteTime = _archiveFileInfo.LastModifiedTime;
+                    _lastWriteTime = _archiveFileInfo.LastModifiedTime ?? DateTime.MinValue;
                     _archiveFileInfo = null;
                 }
                 return (DateTime)_lastWriteTime!;
@@ -166,8 +166,8 @@ public sealed partial class Scanner : IDisposable
 
         internal FileInfoCustom(SevenZipArchiveEntry archiveFileInfo)
         {
-            FullName = archiveFileInfo.Key;
-            Length = archiveFileInfo.Size;
+            FullName = archiveFileInfo.FileName;
+            Length = archiveFileInfo.UncompressedSize;
             _archiveFileInfo = archiveFileInfo;
         }
     }
@@ -614,9 +614,9 @@ public sealed partial class Scanner : IDisposable
                 we can get last write times in DateTime format and not have to parse possible localized
                 text dates out of the output stream.
                 */
-                using var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
+                using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
                 // @vNext/@MEM: SharpCompress uses Stream.ReadByte() calls that allocate ~500,000 1-byte buffers
-                using (var sevenZipArchive = SevenZipArchive.Open(fs))
+                using (var sevenZipArchive = new SevenZipArchive(fs))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -628,14 +628,14 @@ public sealed partial class Scanner : IDisposable
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        string fn = entry.Key;
+                        string fn = entry.FileName;
 
                         int dirSeps;
 
                         // Always extract readmes no matter what, so our .7z caching is always correct.
                         // Also maybe we would need to always extract them regardless for other reasons, but
                         // yeah.
-                        if (fn.IsValidReadme() && entry.Size > 0 &&
+                        if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                               (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                                fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||

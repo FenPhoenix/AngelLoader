@@ -50,6 +50,7 @@ AngelLoader contains portions of code from the following:
 - Ookii Dialogs by [Sven Groot](http://www.ookii.org/software/dialogs/), modified by [Caio Proiete](https://github.com/caioproiete/ookii-dialogs-winforms), and further modified and slimmed down by myself. This code is released under the BSD 3-clause license.
 - DarkUI by [Robin Perris](https://github.com/RobinPerris/DarkUI)
 - FFmpeg.NET by [Tobias Haimerl](https://github.com/cmxl/FFmpeg.NET)
+- SharpCompress (stripped down to the bare minimum for 7z archive entry enumeration) by [Adam Hathcock](https://github.com/adamhathcock/sharpcompress)
 
 FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
 - [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
