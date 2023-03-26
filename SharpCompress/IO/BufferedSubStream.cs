@@ -5,16 +5,16 @@ namespace SharpCompress.IO;
 
 internal sealed class BufferedSubStream : NonDisposingStream
 {
-    private long position;
-    private int cacheOffset;
-    private int cacheLength;
+    private long _position;
+    private int _cacheOffset;
+    private int _cacheLength;
     // @SharpCompress: Crappy static array for now, until we can figure out how to pass it in for the batch scan
-    private static readonly byte[] cache = new byte[32 << 10];
+    private static readonly byte[] _cache = new byte[32 << 10];
 
     public BufferedSubStream(Stream stream, long origin, long bytesToRead)
         : base(stream, throwOnDispose: false)
     {
-        position = origin;
+        _position = origin;
         BytesLeftToRead = bytesToRead;
     }
 
@@ -45,22 +45,22 @@ internal sealed class BufferedSubStream : NonDisposingStream
 
         if (count > 0)
         {
-            if (cacheLength == 0)
+            if (_cacheLength == 0)
             {
-                cacheOffset = 0;
-                Stream.Position = position;
-                cacheLength = Stream.Read(cache, 0, cache.Length);
-                position += cacheLength;
+                _cacheOffset = 0;
+                Stream.Position = _position;
+                _cacheLength = Stream.Read(_cache, 0, _cache.Length);
+                _position += _cacheLength;
             }
 
-            if (count > cacheLength)
+            if (count > _cacheLength)
             {
-                count = cacheLength;
+                count = _cacheLength;
             }
 
-            Buffer.BlockCopy(cache, cacheOffset, buffer, offset, count);
-            cacheOffset += count;
-            cacheLength -= count;
+            Buffer.BlockCopy(_cache, _cacheOffset, buffer, offset, count);
+            _cacheOffset += count;
+            _cacheLength -= count;
             BytesLeftToRead -= count;
         }
 
@@ -71,6 +71,5 @@ internal sealed class BufferedSubStream : NonDisposingStream
 
     public override void SetLength(long value) => throw new NotSupportedException();
 
-    public override void Write(byte[] buffer, int offset, int count) =>
-        throw new NotSupportedException();
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 }

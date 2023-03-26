@@ -619,7 +619,6 @@ public sealed partial class Scanner : IDisposable
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    // @vNext: Make a file stream that caches its own length
                     sevenZipSize = (ulong)fs.Length;
                     foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
                     {
