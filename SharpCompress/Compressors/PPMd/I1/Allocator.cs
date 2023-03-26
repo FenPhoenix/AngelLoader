@@ -2,10 +2,12 @@
 
 namespace SharpCompress.Compressors.PPMd.I1;
 
+/// <summary>
 /// Allocate a single, large array and then provide sections of this array to callers.  Callers are provided with
 /// instances of <see cref="Pointer"/> (which simply contain a single address value, representing a location
 /// in the large array).  Callers can then cast <see cref="Pointer"/> to one of the following structures (all
 /// of which also simply contain a single address value):
+/// </summary>
 internal sealed class Allocator
 {
     private const uint UNIT_SIZE = 12;
@@ -28,13 +30,13 @@ internal sealed class Allocator
     public uint _allocatorSize;
     public uint _glueCount;
     public Pointer _baseUnit;
-    public Pointer _lowUnit;
-    public Pointer _highUnit;
+    private Pointer _lowUnit;
+    private Pointer _highUnit;
     public Pointer _text;
     public Pointer _heap;
     public readonly MemoryNode[] _memoryNodes;
 
-    public byte[] _memory;
+    private byte[] _memory;
 
     /// <summary>
     /// Initializes static read-only arrays used by the <see cref="Allocator"/>.
@@ -145,7 +147,7 @@ internal sealed class Allocator
     /// <remarks>
     /// Because the array is on the large object heap it may not be freed immediately.
     /// </remarks>
-    public void Stop()
+    private void Stop()
     {
         if (_allocatorSize != 0)
         {
@@ -470,7 +472,7 @@ internal sealed class Allocator
         _glueCount = 1 << 13;
     }
 
-    private void CopyUnits(Pointer target, Pointer source, uint unitCount)
+    private static void CopyUnits(Pointer target, Pointer source, uint unitCount)
     {
         do
         {

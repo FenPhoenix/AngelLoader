@@ -16,7 +16,7 @@ public sealed class PpmdProperties
     public PpmdProperties(byte[] properties)
         : this(properties.AsSpan()) { }
 
-    public PpmdProperties(ReadOnlySpan<byte> properties)
+    private PpmdProperties(ReadOnlySpan<byte> properties)
     {
         if (properties.Length == 2)
         {
@@ -36,7 +36,7 @@ public sealed class PpmdProperties
     public int AllocatorSize
     {
         get => _allocatorSize;
-        set
+        private set
         {
             _allocatorSize = value;
             if (Version == PpmdVersion.I1)

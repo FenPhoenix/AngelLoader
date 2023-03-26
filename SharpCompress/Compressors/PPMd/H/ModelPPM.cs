@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 using Decoder = SharpCompress.Compressors.LZMA.RangeCoder.Decoder;
 
 namespace SharpCompress.Compressors.PPMd.H;
@@ -61,9 +60,9 @@ internal sealed class ModelPpm
 
     public int OrderFall => _orderFall;
 
-    public const int MAX_O = 64; /* maximum allowed model order */
+    private const int MAX_O = 64; /* maximum allowed model order */
 
-    public const int INT_BITS = 7;
+    private const int INT_BITS = 7;
 
     public const int PERIOD_BITS = 7;
 
@@ -634,51 +633,7 @@ internal sealed class ModelPpm
         var address = fs.GetSuccessor();
         _maxContext.Address = address;
         _minContext.Address = address;
-
-        //TODO-----debug
-        //		int pos = minContext.getFreqData().getStats();
-        //		State a = new State(getHeap());
-        //		a.Address=pos);
-        //		pos+=State.size;
-        //		a.Address=pos);
-        //--dbg end
     }
-
-    // Debug
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("ModelPPM[");
-        buffer.Append("\n  numMasked=");
-        buffer.Append(NumMasked);
-        buffer.Append("\n  initEsc=");
-        buffer.Append(_initEsc);
-        buffer.Append("\n  orderFall=");
-        buffer.Append(_orderFall);
-        buffer.Append("\n  maxOrder=");
-        buffer.Append(_maxOrder);
-        buffer.Append("\n  runLength=");
-        buffer.Append(RunLength);
-        buffer.Append("\n  initRL=");
-        buffer.Append(_initRl);
-        buffer.Append("\n  escCount=");
-        buffer.Append(_escCount);
-        buffer.Append("\n  prevSuccess=");
-        buffer.Append(_prevSuccess);
-        buffer.Append("\n  foundState=");
-        buffer.Append(FoundState);
-        buffer.Append("\n  coder=");
-        buffer.Append(Coder);
-        buffer.Append("\n  subAlloc=");
-        buffer.Append(SubAlloc);
-        buffer.Append("\n]");
-        return buffer.ToString();
-    }
-
-    // Debug
-    //    public void dumpHeap() {
-    //        subAlloc.dumpHeap();
-    //    }
 
     internal bool DecodeInit(Stream stream, int maxOrder, int maxMemory)
     {
@@ -711,7 +666,7 @@ internal sealed class ModelPpm
         return (_minContext.Address != 0);
     }
 
-    internal void NextContext()
+    private void NextContext()
     {
         var addr = FoundState.GetSuccessor();
         if (_orderFall == 0 && addr > SubAlloc.PText)
@@ -791,7 +746,7 @@ internal sealed class ModelPpm
             {
                 byte symbol;
                 BinSumm[off1][off2] =
-                    (bs + INTERVAL - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+                    (bs + INTERVAL - PpmContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
                 FoundState.Address = rs.Address;
                 symbol = (byte)rs.Symbol;
                 rs.IncrementFreq((rs.Freq < 128) ? 1 : 0);
@@ -800,7 +755,7 @@ internal sealed class ModelPpm
                 NextContext();
                 return symbol;
             }
-            bs = (bs - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+            bs = (bs - PpmContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
             BinSumm[off1][off2] = bs;
             _initEsc = PpmContext.EXP_ESCAPE[Utility.URShift(bs, 10)];
             int i;

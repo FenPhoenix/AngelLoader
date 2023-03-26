@@ -11,10 +11,9 @@ public sealed class BZip2Stream : Stream
     /// Create a BZip2Stream
     /// </summary>
     /// <param name="stream">The stream to read from</param>
-    /// <param name="decompressConcatenated">Decompress Concatenated</param>
-    public BZip2Stream(Stream stream, bool decompressConcatenated)
+    public BZip2Stream(Stream stream)
     {
-        this.stream = new CBZip2InputStream(stream, decompressConcatenated);
+        this.stream = new CBZip2InputStream(stream);
     }
 
     protected override void Dispose(bool disposing)

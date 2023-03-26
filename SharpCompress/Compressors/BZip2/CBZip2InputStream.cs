@@ -137,7 +137,6 @@ internal sealed class CBZip2InputStream : Stream
         storedCombinedCRC;
     private int computedBlockCRC,
         computedCombinedCRC;
-    private readonly bool decompressConcatenated;
 
     private int i2,
         count,
@@ -151,9 +150,8 @@ internal sealed class CBZip2InputStream : Stream
     private char z;
     private bool isDisposed;
 
-    public CBZip2InputStream(Stream zStream, bool decompressConcatenated)
+    public CBZip2InputStream(Stream zStream)
     {
-        this.decompressConcatenated = decompressConcatenated;
         ll8 = null;
         tt = null;
         BsSetStream(zStream);
@@ -173,7 +171,7 @@ internal sealed class CBZip2InputStream : Stream
         bsStream?.Dispose();
     }
 
-    internal static int[][] InitIntArray(int n1, int n2)
+    private static int[][] InitIntArray(int n1, int n2)
     {
         var a = new int[n1][];
         for (var k = 0; k < n1; ++k)
@@ -183,7 +181,7 @@ internal sealed class CBZip2InputStream : Stream
         return a;
     }
 
-    internal static char[][] InitCharArray(int n1, int n2)
+    private static char[][] InitCharArray(int n1, int n2)
     {
         var a = new char[n1][];
         for (var k = 0; k < n1; ++k)
@@ -327,7 +325,7 @@ internal sealed class CBZip2InputStream : Stream
             CrcError();
         }
 
-        computedCombinedCRC = (computedCombinedCRC << 1) | (int)(((uint)computedCombinedCRC) >> 31);
+        computedCombinedCRC = (computedCombinedCRC << 1) | computedCombinedCRC >>> 31;
         computedCombinedCRC ^= computedBlockCRC;
     }
 
@@ -339,7 +337,7 @@ internal sealed class CBZip2InputStream : Stream
             CrcError();
         }
 
-        var complete = !decompressConcatenated || !Initialize(false);
+        bool complete = !Initialize(false);
         if (complete)
         {
             BsFinishedWithStream();
@@ -415,7 +413,7 @@ internal sealed class CBZip2InputStream : Stream
 
     private int BsGetInt32() => BsGetint();
 
-    private void HbCreateDecodeTables(
+    private static void HbCreateDecodeTables(
         int[] limit,
         int[] basev,
         int[] perm,

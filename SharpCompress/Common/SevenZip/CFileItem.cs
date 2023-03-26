@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using System;
-
 namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CFileItem

@@ -3,7 +3,7 @@
 internal static class Crc
 {
     internal const uint INIT_CRC = 0xFFFFFFFF;
-    internal static readonly uint[] TABLE = new uint[4 * 256];
+    private static readonly uint[] TABLE = new uint[4 * 256];
 
     static Crc()
     {
@@ -29,7 +29,7 @@ internal static class Crc
 
     public static uint Finish(uint crc) => ~crc;
 
-    public static uint Update(uint crc, byte bt) => TABLE[(crc & 0xFF) ^ bt] ^ (crc >> 8);
+    private static uint Update(uint crc, byte bt) => TABLE[(crc & 0xFF) ^ bt] ^ (crc >> 8);
 
     public static uint Update(uint crc, uint value)
     {
@@ -40,7 +40,7 @@ internal static class Crc
             ^ TABLE[0x000 + (crc >> 24)];
     }
 
-    public static uint Update(uint crc, ulong value) =>
+    private static uint Update(uint crc, ulong value) =>
         Update(Update(crc, (uint)value), (uint)(value >> 32));
 
     public static uint Update(uint crc, long value) => Update(crc, (ulong)value);

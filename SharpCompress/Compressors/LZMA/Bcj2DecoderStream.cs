@@ -4,14 +4,14 @@ using System.IO;
 
 namespace SharpCompress.Compressors.LZMA;
 
-internal class Bcj2DecoderStream : DecoderStream2
+internal sealed class Bcj2DecoderStream : DecoderStream2
 {
     private const int K_NUM_TOP_BITS = 24;
     private const uint K_TOP_VALUE = (1 << K_NUM_TOP_BITS);
 
     private sealed class RangeDecoder
     {
-        internal readonly Stream _mStream;
+        private readonly Stream _mStream;
         internal uint _range;
         internal uint _code;
 
@@ -37,7 +37,7 @@ internal class Bcj2DecoderStream : DecoderStream2
         }
     }
 
-    private class StatusDecoder
+    private sealed class StatusDecoder
     {
         private const int NUM_MOVE_BITS = 5;
 
@@ -46,7 +46,7 @@ internal class Bcj2DecoderStream : DecoderStream2
 
         private uint _prob;
 
-        public StatusDecoder() => _prob = K_BIT_MODEL_TOTAL / 2;
+        internal StatusDecoder() => _prob = K_BIT_MODEL_TOTAL / 2;
 
         public uint Decode(RangeDecoder decoder)
         {

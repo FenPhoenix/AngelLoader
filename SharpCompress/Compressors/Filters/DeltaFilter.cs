@@ -11,8 +11,8 @@ internal sealed class DeltaFilter : Filter
     private readonly byte[] _history;
     private int _position;
 
-    public DeltaFilter(bool isEncoder, Stream baseStream, byte[] info)
-        : base(isEncoder, baseStream, 1)
+    public DeltaFilter(Stream baseStream, byte[] info)
+        : base(baseStream, 1)
     {
         _distance = info[0];
         _history = new byte[DISTANCE_MAX];

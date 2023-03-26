@@ -15,21 +15,15 @@ internal sealed class ArchiveDatabase
     internal List<int> _numUnpackStreamsVector;
     internal List<CFileItem> _files = new();
 
-    internal readonly List<int> _fileIndexToFolderIndexMap = new();
-
     internal void Clear()
     {
         _folders.Clear();
         _numUnpackStreamsVector = null!;
         _files.Clear();
-
-        _fileIndexToFolderIndexMap.Clear();
     }
 
     private void FillFolderStartFileIndex()
     {
-        _fileIndexToFolderIndexMap.Clear();
-
         var folderIndex = 0;
         var indexInFolder = 0;
         for (var i = 0; i < _files.Count; i++)
@@ -40,7 +34,6 @@ internal sealed class ArchiveDatabase
 
             if (emptyStream && indexInFolder == 0)
             {
-                _fileIndexToFolderIndexMap.Add(-1);
                 continue;
             }
 
@@ -63,8 +56,6 @@ internal sealed class ArchiveDatabase
                     folderIndex++;
                 }
             }
-
-            _fileIndexToFolderIndexMap.Add(folderIndex);
 
             if (emptyStream)
             {

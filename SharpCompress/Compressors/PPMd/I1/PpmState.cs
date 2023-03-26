@@ -34,7 +34,7 @@ internal struct PpmState
     /// <summary>
     /// Gets or sets the symbol.
     /// </summary>
-    public byte Symbol
+    public readonly byte Symbol
     {
         get => _memory[_address];
         set => _memory[_address] = value;
@@ -43,7 +43,7 @@ internal struct PpmState
     /// <summary>
     /// Gets or sets the frequency.
     /// </summary>
-    public byte Frequency
+    public readonly byte Frequency
     {
         get => _memory[_address + 1];
         set => _memory[_address + 1] = value;
@@ -52,7 +52,7 @@ internal struct PpmState
     /// <summary>
     /// Gets or sets the successor.
     /// </summary>
-    public Model.PpmContext Successor
+    public readonly Model.PpmContext Successor
     {
         get =>
             new Model.PpmContext(
@@ -77,7 +77,7 @@ internal struct PpmState
     /// </summary>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public PpmState this[int offset] => new PpmState((uint)(_address + (offset * SIZE)), _memory);
+    public readonly PpmState this[int offset] => new PpmState((uint)(_address + (offset * SIZE)), _memory);
 
     /// <summary>
     /// Allow a pointer to be implicitly converted to a PPM state.
@@ -174,7 +174,7 @@ internal struct PpmState
     /// </summary>
     /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to.</param>
-    public override bool Equals(object obj)
+    public readonly override bool Equals(object obj)
     {
         if (obj is PpmState state)
         {

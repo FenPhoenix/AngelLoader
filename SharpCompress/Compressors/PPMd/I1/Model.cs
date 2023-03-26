@@ -13,8 +13,8 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// </summary>
 internal sealed partial class Model
 {
-    public const uint SIGNATURE = 0x84acaf8fU;
-    public const int MAXIMUM_ORDER = 16; // maximum allowed model order
+    private const uint SIGNATURE = 0x84acaf8fU;
+    private const int MAXIMUM_ORDER = 16; // maximum allowed model order
 
     private const byte UPPER_FREQUENCY = 5;
     private const byte INTERVAL_BIT_COUNT = 7;
@@ -141,75 +141,6 @@ internal sealed partial class Model
         _emptySee2Context._summary = (ushort)(SIGNATURE & 0x0000ffff);
         _emptySee2Context._shift = (byte)((SIGNATURE >> 16) & 0x000000ff);
         _emptySee2Context._count = (byte)(SIGNATURE >> 24);
-    }
-
-    internal Coder EncodeStart(PpmdProperties properties)
-    {
-        _allocator = properties._allocator;
-        _coder = new Coder();
-        _coder.RangeEncoderInitialize();
-        StartModel(properties.ModelOrder, properties.RestorationMethod);
-        return _coder;
-    }
-
-    internal void EncodeBlock(Stream target, Stream source, bool final)
-    {
-        while (true)
-        {
-            _minimumContext = _maximumContext;
-            _numberStatistics = _minimumContext.NumberStatistics;
-
-            var c = source.ReadByte();
-            if (c < 0 && !final)
-            {
-                return;
-            }
-
-            if (_numberStatistics != 0)
-            {
-                EncodeSymbol1(c, _minimumContext);
-                _coder.RangeEncodeSymbol();
-            }
-            else
-            {
-                EncodeBinarySymbol(c, _minimumContext);
-                _coder.RangeShiftEncodeSymbol(TOTAL_BIT_COUNT);
-            }
-
-            while (_foundState == PpmState.ZERO)
-            {
-                _coder.RangeEncoderNormalize(target);
-                do
-                {
-                    _orderFall++;
-                    _minimumContext = _minimumContext.Suffix;
-                    if (_minimumContext == PpmContext.ZERO)
-                    {
-                        goto StopEncoding;
-                    }
-                } while (_minimumContext.NumberStatistics == _numberMasked);
-                EncodeSymbol2(c, _minimumContext);
-                _coder.RangeEncodeSymbol();
-            }
-
-            if (_orderFall == 0 && (Pointer)_foundState.Successor >= _allocator._baseUnit)
-            {
-                _maximumContext = _foundState.Successor;
-            }
-            else
-            {
-                UpdateModel(_minimumContext);
-                if (_escapeCount == 0)
-                {
-                    ClearMask();
-                }
-            }
-
-            _coder.RangeEncoderNormalize(target);
-        }
-
-        StopEncoding:
-        _coder.RangeEncoderFlush(target);
     }
 
     internal Coder DecodeStart(Stream source, PpmdProperties properties)

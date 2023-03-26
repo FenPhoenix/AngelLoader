@@ -2,8 +2,8 @@ namespace SharpCompress.Compressors.LZMA.RangeCoder;
 
 internal struct BitDecoder
 {
-    public const int K_NUM_BIT_MODEL_TOTAL_BITS = 11;
-    public const uint K_BIT_MODEL_TOTAL = (1 << K_NUM_BIT_MODEL_TOTAL_BITS);
+    private const int K_NUM_BIT_MODEL_TOTAL_BITS = 11;
+    private const uint K_BIT_MODEL_TOTAL = (1 << K_NUM_BIT_MODEL_TOTAL_BITS);
     private const int K_NUM_MOVE_BITS = 5;
 
     private uint _prob;

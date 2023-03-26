@@ -5,8 +5,7 @@ namespace SharpCompress.Compressors.Filters;
 
 internal abstract class Filter : Stream
 {
-    protected readonly bool _isEncoder;
-    protected readonly Stream _baseStream;
+    private readonly Stream _baseStream;
 
     private readonly byte[] _tail;
     private readonly byte[] _window;
@@ -15,9 +14,8 @@ internal abstract class Filter : Stream
     private bool _endReached;
     private bool _isDisposed;
 
-    protected Filter(bool isEncoder, Stream baseStream, int lookahead)
+    protected Filter(Stream baseStream, int lookahead)
     {
-        _isEncoder = isEncoder;
         _baseStream = baseStream;
         _tail = new byte[lookahead - 1];
         _window = new byte[_tail.Length * 2];
@@ -34,11 +32,11 @@ internal abstract class Filter : Stream
         _baseStream.Dispose();
     }
 
-    public override bool CanRead => !_isEncoder;
+    public override bool CanRead => true;
 
     public override bool CanSeek => false;
 
-    public override bool CanWrite => _isEncoder;
+    public override bool CanWrite => false;
 
     public override void Flush() => throw new NotSupportedException();
 

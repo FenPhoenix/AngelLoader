@@ -31,7 +31,7 @@ namespace SharpCompress.Compressors.BZip2;
 
 internal sealed class CRC
 {
-    public static readonly int[] crc32Table =
+    private static readonly int[] crc32Table =
     {
         0x00000000,
         0x04c11db7,
@@ -307,5 +307,5 @@ internal sealed class CRC
         globalCrc = (globalCrc << 8) ^ crc32Table[temp];
     }
 
-    internal int globalCrc;
+    private int globalCrc;
 }

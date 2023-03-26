@@ -32,7 +32,7 @@ internal abstract class Base
 
         public void UpdateShortRep() => _index = (uint)(_index < 7 ? 9 : 11);
 
-        public bool IsCharState() => _index < 7;
+        public readonly bool IsCharState() => _index < 7;
     }
 
     public const int K_NUM_POS_SLOT_BITS = 6;

@@ -67,7 +67,7 @@ public sealed class Decoder
 
             public void Create() => _decoders = new BitDecoder[0x300];
 
-            public void Init()
+            public readonly void Init()
             {
                 for (var i = 0; i < 0x300; i++)
                 {

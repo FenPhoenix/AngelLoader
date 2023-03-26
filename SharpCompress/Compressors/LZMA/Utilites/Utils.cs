@@ -39,15 +39,11 @@ internal enum BlockType : byte
 
 internal static class Utils
 {
-    public static DateTime TranslateTime(long time) =>
-        // FILETIME = 100-nanosecond intervals since January 1, 1601 (UTC)
-        DateTime.FromFileTimeUtc(time).ToLocalTime();
-
-    public static DateTime? TranslateTime(long? time)
+    internal static DateTime? TranslateTime(long? time)
     {
         if (time.HasValue && time.Value >= 0 && time.Value <= 2650467743999999999) //maximum Windows file time 31.12.9999
         {
-            return TranslateTime(time.Value);
+            return DateTime.FromFileTimeUtc(time.Value).ToLocalTime();
         }
         return null;
     }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Buffers.Binary;
-using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
@@ -89,7 +88,7 @@ internal sealed class PpmContext : Pointer
 
     internal State GetOneState() => _oneState;
 
-    internal void SetOneState(StateRef oneState) => _oneState.SetValues(oneState);
+    private void SetOneState(StateRef oneState) => _oneState.SetValues(oneState);
 
     internal int GetSuffix()
     {
@@ -100,7 +99,7 @@ internal sealed class PpmContext : Pointer
         return _suffix;
     }
 
-    internal void SetSuffix(PpmContext suffix) => SetSuffix(suffix.Address);
+    private void SetSuffix(PpmContext suffix) => SetSuffix(suffix.Address);
 
     internal void SetSuffix(int suffix)
     {
@@ -142,7 +141,7 @@ internal sealed class PpmContext : Pointer
         return pc.Address;
     }
 
-    internal void Rescale(ModelPpm model)
+    private void Rescale(ModelPpm model)
     {
         int oldNs = NumStats,
             i = NumStats - 1,
@@ -246,7 +245,7 @@ internal sealed class PpmContext : Pointer
         return ret;
     }
 
-    internal int GetMean(int summ, int shift, int round) =>
+    internal static int GetMean(int summ, int shift, int round) =>
         (Utility.URShift((summ + (1 << (shift - round))), (shift)));
 
     internal void DecodeBinSymbol(ModelPpm model)
@@ -515,27 +514,7 @@ internal sealed class PpmContext : Pointer
         coder.SubRange.LowCount = hiCnt - p.Freq;
         coder.SubRange.HighCount = hiCnt;
         Update1(model, p.Address);
-        return (true);
-    }
-
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("PPMContext[");
-        buffer.Append("\n  Address=");
-        buffer.Append(Address);
-        buffer.Append("\n  size=");
-        buffer.Append(SIZE);
-        buffer.Append("\n  numStats=");
-        buffer.Append(NumStats);
-        buffer.Append("\n  Suffix=");
-        buffer.Append(GetSuffix());
-        buffer.Append("\n  freqData=");
-        buffer.Append(FreqData);
-        buffer.Append("\n  oneState=");
-        buffer.Append(_oneState);
-        buffer.Append("\n]");
-        return buffer.ToString();
+        return true;
     }
 
     static PpmContext() => UNION_SIZE = Math.Max(FreqData.SIZE, State.SIZE);

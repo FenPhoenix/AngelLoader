@@ -32,7 +32,7 @@ internal sealed class Decoder
         // Stream.ReleaseStream();
         _stream = null;
 
-    public void Normalize()
+    private void Normalize()
     {
         while (_range < K_TOP_VALUE)
         {

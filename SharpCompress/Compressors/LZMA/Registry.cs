@@ -37,20 +37,20 @@ internal static class DecoderRegistry
                 }
                 return inStreams.Single();
             case K_DELTA:
-                return new DeltaFilter(false, inStreams.Single(), info);
+                return new DeltaFilter(inStreams.Single(), info);
             case K_LZMA:
             case K_LZMA2:
                 return new LzmaStream(info, inStreams.Single(), -1, limit);
             case CMethodId.K_AES_ID:
                 throw new Common.CryptographicException("7Zip archive is encrypted; this is not supported.");
             case K_BCJ:
-                return new BCJFilter(false, inStreams.Single());
+                return new BCJFilter(inStreams.Single());
             case K_BCJ2:
                 return new Bcj2DecoderStream(inStreams, info);
             case K_B_ZIP2:
-                return new BZip2Stream(inStreams.Single(), true);
+                return new BZip2Stream(inStreams.Single());
             case K_PPMD:
-                return new PpmdStream(new PpmdProperties(info), inStreams.Single(), false);
+                return new PpmdStream(new PpmdProperties(info), inStreams.Single());
             case K_DEFLATE:
                 return new DeflateStream(inStreams.Single(), CompressionMode.Decompress);
             default:

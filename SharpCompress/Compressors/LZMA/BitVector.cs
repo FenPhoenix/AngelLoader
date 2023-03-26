@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 namespace SharpCompress.Compressors.LZMA;
 
@@ -63,15 +62,5 @@ internal sealed class BitVector
         var mask = 1u << (index & 31);
         _mBits[index >> 5] |= mask;
         return (bits & mask) != 0;
-    }
-
-    public override string ToString()
-    {
-        var sb = new StringBuilder(Length);
-        for (var i = 0; i < Length; i++)
-        {
-            sb.Append(this[i] ? 'x' : '.');
-        }
-        return sb.ToString();
     }
 }
