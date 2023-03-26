@@ -752,6 +752,21 @@ public sealed partial class Scanner : IDisposable
 
                 #endregion
 
+                /* @SharpCompress(.gam and .mis performance thoughts)
+                -RabenbachV2.7z has more than one .gam file
+                 We should only extract the smallest one, matching what we do in the game type detector
+                -We extract all .mis files because we don't know which will be used until we read missflag.str.
+                 But we should see if there's some heuristic we could use. We could guess on a single .mis file
+                 to extract, and then if we're wrong we go back and extract what we know to be a used .mis file.
+                 If we could do something better than blind guess-and-hope, that would be good.
+                -For 7z FMs, we could say that if we have a .gam file we'll just skip extracting any .mis files
+                 and just scan the .gam, because that will overall probably be faster than extracting an entire
+                 .mis file just to do the fast SKYOBJVAR check which will almost certainly fail as 7z FMs are
+                 practically guaranteed to be NewDark anyway.
+                 But, we would have to know the .gam file comes before the .mis files in the solid block!
+                 Does the full SharpCompress tell us this info? We should look into it.
+                */
+
                 string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
 
                 Fen7z.Result result = Fen7z.Extract(
