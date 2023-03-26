@@ -262,10 +262,45 @@ public static class Common
 
     #region Methods
 
+    public sealed class FileStream_LengthCached : FileStream
+    {
+        private long _length = -1;
+        public override long Length
+        {
+            get
+            {
+                if (_length == -1)
+                {
+                    _length = base.Length;
+                }
+                return _length;
+            }
+        }
+
+        public FileStream_LengthCached(
+            string path,
+            FileMode mode,
+            FileAccess access,
+            FileShare share,
+            int bufferSize)
+            : base(path, mode, access, share, bufferSize)
+        {
+        }
+
+        public FileStream_LengthCached(
+            string path,
+            FileMode mode,
+            FileAccess access,
+            FileShare share)
+            : base(path, mode, access, share)
+        {
+        }
+    }
+
     private static bool? _fieldStreamBufferFieldFound;
     private static FieldInfo? _fieldStreamBufferFieldInfo;
 
-    public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
+    public static FileStream_LengthCached GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
         buffer.Clear();
 
@@ -276,6 +311,7 @@ public static class Common
                 // @NET5(FileStream buffering): Newer .NETs (since the FileStream "strategy" additions) are totally different
                 // We'd have to see if they added a way to pass in a buffer, and if not, we'd have to write totally
                 // different code to get at the buffer here for newer .NETs.
+                // typeof(FileStream) (base type) because that's the type where the buffer field is
                 _fieldStreamBufferFieldInfo = typeof(FileStream)
                     .GetField(
                         "_buffer",
@@ -293,8 +329,8 @@ public static class Common
 
         var fs =
             _fieldStreamBufferFieldFound == true
-                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
-                : new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                ? new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
+                : new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         if (_fieldStreamBufferFieldFound == true)
         {
