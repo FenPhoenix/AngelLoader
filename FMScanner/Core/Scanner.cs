@@ -641,6 +641,26 @@ public sealed partial class Scanner : IDisposable
                         {
                             fileNamesList.Add(fn);
                         }
+                        /*
+                        @SharpCompress(.mis and gam file extracting tests):
+                        -With only blindly getting the first .mis file we find, it's ~18.5s
+                        -With getting only .mis files but not .gam files, it's ~22s
+                        -With getting all .mis and .gam files, it's ~22.3s
+
+                        So if we're somehow able to only get the first .mis file, we come out noticeably ahead,
+                        at least for the full scan.
+
+                        -Many unused .mis files are ~177KB (180745, 180749, 181428 and similar)
+                        -Many, but not all, used .mis files are extremely smaller than the other ones, <1MB
+                        -But at least one is 12MB so whatever
+                        -Checking the miss** dirs in the intrface dir is a good heuristic, but not perfect
+                         (TM20AC_TPOAIR.zip has an "unused" miss20.mis but it has an intrface subdir)
+                         But also, that "unused" miss20.mis is still valid and correct, containing "RopeyArrow",
+                         and "SKYOBJVAR" is at the expected NewDark place
+                        -We should create 7z files from the known unused-mis-containing zip set to test accuracy
+                         with.
+                        It's nasty business, but 22.3 to 18.5 is a good savings if we can do it...
+                        */
                         // Only extract these if we need them!
                         else if ((_scanOptions.ScanGameType
 #if FMScanner_FullCode
@@ -648,8 +668,10 @@ public sealed partial class Scanner : IDisposable
 #endif
                                  ) &&
                                  !fn.Rel_ContainsDirSep() &&
-                                 (fn.ExtIsMis() ||
-                                  fn.ExtIsGam()))
+                                 (fn.ExtIsMis()
+                                 // 7z scans don't use .gam files, so shave a small amount of time off here
+                                 //|| fn.ExtIsGam()
+                                 ))
                         {
                             fileNamesList.Add(fn);
                         }
@@ -4008,35 +4030,40 @@ public sealed partial class Scanner : IDisposable
 
         #region Choose smallest .gam file
 
-        NameAndIndex[] gamFiles = baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
         NameAndIndex? smallestGamFile = null;
 
-        if (gamFiles.Length > 0)
+        // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
+        if (_fmIsZip)
         {
-            if (gamFiles.Length == 1)
-            {
-                smallestGamFile = gamFiles[0];
-            }
-            else
-            {
-                var gamSizeList = new List<(NameAndIndex Gam, long Size)>(gamFiles.Length);
-                foreach (NameAndIndex gam in gamFiles)
-                {
-                    long length;
-                    if (_fmIsZip)
-                    {
-                        length = _archive.Entries[gam.Index].Length;
-                    }
-                    else
-                    {
-                        string? gamFullPath = null;
-                        FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
-                        length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
-                    }
-                    gamSizeList.Add((gam, length));
-                }
+            NameAndIndex[] gamFiles = baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
 
-                smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
+            if (gamFiles.Length > 0)
+            {
+                if (gamFiles.Length == 1)
+                {
+                    smallestGamFile = gamFiles[0];
+                }
+                else
+                {
+                    var gamSizeList = new List<(NameAndIndex Gam, long Size)>(gamFiles.Length);
+                    foreach (NameAndIndex gam in gamFiles)
+                    {
+                        long length;
+                        if (_fmIsZip)
+                        {
+                            length = _archive.Entries[gam.Index].Length;
+                        }
+                        else
+                        {
+                            string? gamFullPath = null;
+                            FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
+                            length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
+                        }
+                        gamSizeList.Add((gam, length));
+                    }
+
+                    smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
+                }
             }
         }
 
