@@ -1033,7 +1033,7 @@ internal static class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using FileStream fs = File.OpenRead(misFile);
+                    using FileStream fs = File_OpenReadFast(misFile);
 
                     long streamLength = fs.Length;
 
@@ -1065,7 +1065,7 @@ internal static class FMInstallAndPlay
             }
             else
             {
-                using FileStream fs = File.OpenRead(smallestUsedMisFile);
+                using FileStream fs = File_OpenReadFast(smallestUsedMisFile);
 
                 if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.Length)
                 {
@@ -1652,7 +1652,7 @@ internal static class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var fs = File.OpenRead(fmArchivePath))
+            using (var fs = File_OpenReadFast(fmArchivePath))
             using (var extractor = new SevenZipArchive(fs))
             {
                 entriesCount = extractor.Entries.Count;

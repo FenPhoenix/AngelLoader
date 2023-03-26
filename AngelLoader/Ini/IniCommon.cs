@@ -255,7 +255,7 @@ internal static partial class Ini
     {
         fmsList.Clear();
 
-        using var fs = File.OpenRead(fileName);
+        using var fs = File_OpenReadFast(fileName);
         using var sr = new StreamReader(fs, Encoding.UTF8);
 
         bool fmsListIsEmpty = true;

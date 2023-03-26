@@ -274,7 +274,7 @@ public static partial class Utils
             enc = Encoding.UTF8;
         }
 
-        return new ZipArchive(File.OpenRead(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
+        return new ZipArchive(File_OpenReadFast(fileName), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
     internal static void LogFMInfo(

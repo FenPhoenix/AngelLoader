@@ -167,7 +167,7 @@ internal static class FMAudio
                     // minute.
                     try
                     {
-                        using var fs = File.OpenRead(file);
+                        using var fs = File_OpenReadFast(file);
 
                         _ = fs.ReadAll(_buffer4.Cleared(), 0, 4);
                         if (!_buffer4.SequenceEqual(_riff)) return -1;
