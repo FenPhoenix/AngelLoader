@@ -132,6 +132,28 @@ public sealed partial class Scanner : IDisposable
     private string? _fmWorkingPathDirName;
     private string FMWorkingPathDirName => _fmWorkingPathDirName ??= FMWorkingPathDirInfo.Name;
 
+    // 50 entries is more than we're ever likely to need in this list, but still small enough not to be wasteful.
+    private List<string>? _sevenZipExtractedFilesList;
+    private List<string> SevenZipExtractedFilesList => _sevenZipExtractedFilesList ??= new List<string>(50);
+
+    private List<string>? _sevenZipExtractedFilesTempList;
+    private List<string> SevenZipExtractedFilesTempList => _sevenZipExtractedFilesTempList ??= new List<string>(50);
+
+    private readonly List<NameAndIndex> _baseDirFiles = new(20);
+    private readonly List<NameAndIndex> _misFiles = new(20);
+    private readonly List<NameAndIndex> _usedMisFiles = new(20);
+    private readonly List<NameAndIndex> _stringsDirFiles = new();
+    private readonly List<NameAndIndex> _intrfaceDirFiles = new();
+    private readonly List<NameAndIndex> _booksDirFiles = new();
+
+    private readonly List<NameAndIndex> _readmeDirFiles = new(10);
+
+    private List<NameAndIndex>? _t3FMExtrasDirFiles;
+    private List<NameAndIndex> T3FMExtrasDirFiles => _t3FMExtrasDirFiles ??= new List<NameAndIndex>(10);
+
+    private List<NameAndIndex>? _t3GmpFiles;
+    private List<NameAndIndex> T3GmpFiles => _t3GmpFiles ??= new List<NameAndIndex>(20);
+
     #endregion
 
     #region Private classes
@@ -221,7 +243,6 @@ public sealed partial class Scanner : IDisposable
 
     private enum SpecialLogic
     {
-        None,
         Title,
         Author,
         ReleaseDate,
@@ -360,6 +381,31 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    private void ResetCachedFields()
+    {
+        _readmeFiles.Clear();
+        _fmDirFileInfos.Clear();
+        _ss2Fingerprinted = false;
+        _fmWorkingPathDirName = null;
+        _fmWorkingPathDirInfo = null;
+        _fmIsZip = false;
+        _fmIsSevenZip = false;
+        _sevenZipExtractedFilesList?.Clear();
+        _sevenZipExtractedFilesTempList?.Clear();
+
+        _baseDirFiles.Clear();
+        _misFiles.Clear();
+        _usedMisFiles.Clear();
+        _stringsDirFiles.Clear();
+        _intrfaceDirFiles.Clear();
+        _booksDirFiles.Clear();
+
+        _readmeDirFiles.Clear();
+
+        _t3FMExtrasDirFiles?.Clear();
+        _t3GmpFiles?.Clear();
+    }
+
     private List<ScannedFMDataAndError>
     ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
              IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
@@ -396,13 +442,7 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 0; i < missions.Count; i++)
         {
-            _readmeFiles.Clear();
-            _fmDirFileInfos.Clear();
-            _ss2Fingerprinted = false;
-            _fmWorkingPathDirName = null;
-            _fmWorkingPathDirInfo = null;
-            _fmIsZip = false;
-            _fmIsSevenZip = false;
+            ResetCachedFields();
 
             bool nullAlreadyAdded = false;
 
@@ -595,6 +635,11 @@ public sealed partial class Scanner : IDisposable
 
             try
             {
+                // Stupid micro-optimization:
+                // Init them both just once, avoiding the constant null checks on the properties
+                var fileNamesList = SevenZipExtractedFilesList;
+                var tempList = SevenZipExtractedFilesTempList;
+
                 static bool EndsWithTitleFile(string fileName)
                 {
                     return fileName.PathEndsWithI("/titles.str") ||
@@ -605,10 +650,6 @@ public sealed partial class Scanner : IDisposable
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // 50 entries is more than we're ever likely to need in this list, but still small enough not to
-                // be wasteful.
-                // @SharpCompress/@MEM: Recycle this
-                var fileNamesList = new List<string>(50);
                 /*
                 We use SharpCompress for getting the file names and metadata, as that doesn't involve any
                 decompression and won't trigger any out-of-memory errors. We use this so we can get last write
@@ -712,8 +753,6 @@ public sealed partial class Scanner : IDisposable
                 // Some files could have multiple copies in different folders, but we only want to extract
                 // the one we're going to use. We separate out this more complex and self-dependent logic
                 // here. Doing this nonsense is still faster than extracting to disk.
-
-                var tempList = new List<string>(fileNamesList.Count);
 
                 static void PopulateTempList(
                     List<string> fileNamesList,
@@ -1020,27 +1059,9 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        // @PERF_TODO: Recycle these
-        var baseDirFiles = new List<NameAndIndex>();
-        var misFiles = new List<NameAndIndex>();
-        var usedMisFiles = new List<NameAndIndex>();
-        var stringsDirFiles = new List<NameAndIndex>();
-        var intrfaceDirFiles = new List<NameAndIndex>();
-        var booksDirFiles = new List<NameAndIndex>();
-        var t3FMExtrasDirFiles = new List<NameAndIndex>();
-
         #region Cache FM data
 
-        bool success = ReadAndCacheFMData(
-            fm.Path,
-            fmData,
-            baseDirFiles,
-            misFiles,
-            usedMisFiles,
-            stringsDirFiles,
-            intrfaceDirFiles,
-            booksDirFiles,
-            t3FMExtrasDirFiles);
+        bool success = ReadAndCacheFMData(fm.Path, fmData);
 
         if (!success)
         {
@@ -1055,9 +1076,9 @@ public sealed partial class Scanner : IDisposable
 
         bool fmIsT3 = fmData.Game == Game.Thief3;
 
-        fmData.Type = usedMisFiles.Count > 1 ? FMType.Campaign : FMType.FanMission;
+        fmData.Type = _usedMisFiles.Count > 1 ? FMType.Campaign : FMType.FanMission;
 
-        fmData.MissionCount = usedMisFiles.Count;
+        fmData.MissionCount = _usedMisFiles.Count;
 
         if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
         {
@@ -1100,7 +1121,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanGameType)
             {
-                var (newDarkRequired, game) = GetGameTypeAndEngine(baseDirFiles, usedMisFiles);
+                var (newDarkRequired, game) = GetGameTypeAndEngine(_baseDirFiles, _usedMisFiles);
 #if FMScanner_FullCode
                 if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
 #endif
@@ -1126,9 +1147,9 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
             {
-                for (int i = 0; i < baseDirFiles.Count; i++)
+                for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
-                    NameAndIndex f = baseDirFiles[i];
+                    NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
                     {
                         var (title, author, version, releaseDate) = ReadFMInfoXml(f);
@@ -1148,9 +1169,9 @@ public sealed partial class Scanner : IDisposable
             // I think we need to always scan fm.ini even if we're not returning any of its fields, because
             // of tags, I think for some reason we're needing to read tags always?
             {
-                for (int i = 0; i < baseDirFiles.Count; i++)
+                for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
-                    NameAndIndex f = baseDirFiles[i];
+                    NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMIni))
                     {
                         var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
@@ -1172,9 +1193,9 @@ public sealed partial class Scanner : IDisposable
             {
                 // SS2 file
                 // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
-                for (int i = 0; i < baseDirFiles.Count; i++)
+                for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
-                    NameAndIndex f = baseDirFiles[i];
+                    NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.ModIni))
                     {
                         var (title, author) = ReadModIni(f);
@@ -1193,14 +1214,11 @@ public sealed partial class Scanner : IDisposable
 
         #region Read, cache, and set readme files
 
-        // @PERF_TODO: Recycle this
-        var readmeDirFiles = new List<NameAndIndex>();
+        foreach (NameAndIndex f in _baseDirFiles) _readmeDirFiles.Add(f);
 
-        foreach (NameAndIndex f in baseDirFiles) readmeDirFiles.Add(f);
+        if (fmIsT3) foreach (NameAndIndex f in T3FMExtrasDirFiles) _readmeDirFiles.Add(f);
 
-        if (fmIsT3) foreach (NameAndIndex f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
-
-        ReadAndCacheReadmeFiles(readmeDirFiles);
+        ReadAndCacheReadmeFiles(_readmeDirFiles);
 
         #endregion
 
@@ -1223,7 +1241,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanReleaseDate && fmData.LastUpdateDate == null)
         {
-            fmData.LastUpdateDate = GetReleaseDate(usedMisFiles);
+            fmData.LastUpdateDate = GetReleaseDate(_usedMisFiles);
         }
 
         #endregion
@@ -1239,7 +1257,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                )
             {
-                var (titleFrom0, titleFromN, cNames) = GetMissionNames(stringsDirFiles, misFiles, usedMisFiles);
+                var (titleFrom0, titleFromN, cNames) = GetMissionNames(_stringsDirFiles, _misFiles, _usedMisFiles);
                 if (_scanOptions.ScanTitle)
                 {
                     SetOrAddTitle(titleFrom0);
@@ -1259,7 +1277,7 @@ public sealed partial class Scanner : IDisposable
         {
             SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, titles: null, SA_TitleDetect));
 
-            if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(intrfaceDirFiles));
+            if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(_intrfaceDirFiles));
 
             List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
             if (topOfReadmeTitles?.Count > 0)
@@ -1338,7 +1356,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanTags)
             {
-                var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
+                var getLangs = GetLanguages(_baseDirFiles, _booksDirFiles, _intrfaceDirFiles, _stringsDirFiles);
                 fmData.Languages = getLangs.Langs.ToArray();
                 if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
 #if FMScanner_FullCode
@@ -1939,22 +1957,11 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private bool ReadAndCacheFMData(
-        string fmPath,
-        ScannedFMData fmd,
-        List<NameAndIndex> baseDirFiles,
-        List<NameAndIndex> misFiles,
-        List<NameAndIndex> usedMisFiles,
-        List<NameAndIndex> stringsDirFiles,
-        List<NameAndIndex> intrfaceDirFiles,
-        List<NameAndIndex> booksDirFiles,
-        List<NameAndIndex> t3FMExtrasDirFiles)
+    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd)
     {
         #region Add BaseDirFiles
 
         bool t3Found = false;
-        // @PERF_TODO: Recycle/lazy-load this
-        var t3GmpFiles = new List<NameAndIndex>();
 
         static bool MapFileExists(string path)
         {
@@ -2038,7 +2045,7 @@ public sealed partial class Scanner : IDisposable
                             if (_scanOptions.ScanMissionCount)
                             {
                                 // We only want the filename; we already know it's in the right folder
-                                t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
                             }
                             continue;
                         }
@@ -2061,7 +2068,7 @@ public sealed partial class Scanner : IDisposable
                             if (_scanOptions.ScanMissionCount)
                             {
                                 // We only want the filename; we already know it's in the right folder
-                                t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
                             }
                             continue;
                         }
@@ -2072,17 +2079,17 @@ public sealed partial class Scanner : IDisposable
                 else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                          fn.PathStartsWithI(FMDirs.T3FMExtras2S))
                 {
-                    t3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
+                    T3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
                     continue;
                 }
                 else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
                 {
-                    baseDirFiles.Add(new NameAndIndex(fn, index));
+                    _baseDirFiles.Add(new NameAndIndex(fn, index));
                     // Fallthrough so ScanCustomResources can use it
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                 {
-                    stringsDirFiles.Add(new NameAndIndex(fn, index));
+                    _stringsDirFiles.Add(new NameAndIndex(fn, index));
                     if (SS2FingerprintRequiredAndNotDone() &&
                         (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                          fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
@@ -2095,12 +2102,12 @@ public sealed partial class Scanner : IDisposable
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
                 {
-                    intrfaceDirFiles.Add(new NameAndIndex(fn, index));
+                    _intrfaceDirFiles.Add(new NameAndIndex(fn, index));
                     // Fallthrough so ScanCustomResources can use it
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
                 {
-                    booksDirFiles.Add(new NameAndIndex(fn, index));
+                    _booksDirFiles.Add(new NameAndIndex(fn, index));
                     continue;
                 }
                 else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
@@ -2178,7 +2185,7 @@ public sealed partial class Scanner : IDisposable
             // Thief 3 FMs can have empty base dirs, and we don't scan for custom resources for T3
             if (!t3Found)
             {
-                if (baseDirFiles.Count == 0)
+                if (_baseDirFiles.Count == 0)
                 {
                     Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.", stackTrace: false);
                     return false;
@@ -2213,7 +2220,7 @@ public sealed partial class Scanner : IDisposable
                         if (f.ExtIsGmp())
                         {
                             // We only want the filename; we already know it's in the right folder
-                            t3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                            T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
                         }
                     }
                 }
@@ -2222,24 +2229,24 @@ public sealed partial class Scanner : IDisposable
 
             foreach (string f in EnumFiles(SearchOption.TopDirectoryOnly))
             {
-                baseDirFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                _baseDirFiles.Add(new NameAndIndex(Path.GetFileName(f)));
             }
 
             if (t3Found)
             {
                 foreach (string f in EnumFiles(FMDirs.T3FMExtras1S, SearchOption.TopDirectoryOnly))
                 {
-                    t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
+                    T3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                 }
 
                 foreach (string f in EnumFiles(FMDirs.T3FMExtras2S, SearchOption.TopDirectoryOnly))
                 {
-                    t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
+                    T3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                 }
             }
             else
             {
-                if (baseDirFiles.Count == 0)
+                if (_baseDirFiles.Count == 0)
                 {
                     Log(fmPath + ": 'fm is dir' codepath: No files in base dir. Returning false.", stackTrace: false);
                     return false;
@@ -2247,7 +2254,7 @@ public sealed partial class Scanner : IDisposable
 
                 foreach (string f in EnumFiles(FMDirs.StringsS, SearchOption.AllDirectories))
                 {
-                    stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
+                    _stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     if (SS2FingerprintRequiredAndNotDone() &&
                         (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                          f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
@@ -2260,12 +2267,12 @@ public sealed partial class Scanner : IDisposable
 
                 foreach (string f in EnumFiles(FMDirs.IntrfaceS, SearchOption.AllDirectories))
                 {
-                    intrfaceDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
+                    _intrfaceDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                 }
 
                 foreach (string f in EnumFiles(FMDirs.BooksS, SearchOption.AllDirectories))
                 {
-                    booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
+                    _booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                 }
 
                 if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
@@ -2283,7 +2290,7 @@ public sealed partial class Scanner : IDisposable
 
                     if (_scanOptions.ScanCustomResources)
                     {
-                        foreach (NameAndIndex f in intrfaceDirFiles)
+                        foreach (NameAndIndex f in _intrfaceDirFiles)
                         {
                             if (fmd.HasAutomap == null && AutomapFileExists(f.Name))
                             {
@@ -2320,7 +2327,7 @@ public sealed partial class Scanner : IDisposable
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
-                            BaseDirScriptFileExtensions(baseDirFiles, ScriptFileExtensions) ||
+                            BaseDirScriptFileExtensions(_baseDirFiles, ScriptFileExtensions) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
                              FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
 
@@ -2349,18 +2356,18 @@ public sealed partial class Scanner : IDisposable
         {
             if (_scanOptions.ScanMissionCount)
             {
-                switch (t3GmpFiles.Count)
+                switch (T3GmpFiles.Count)
                 {
                     case 1:
-                        usedMisFiles.Add(t3GmpFiles[0]);
+                        _usedMisFiles.Add(T3GmpFiles[0]);
                         break;
                     case > 1:
-                        for (int i = 0; i < t3GmpFiles.Count; i++)
+                        for (int i = 0; i < T3GmpFiles.Count; i++)
                         {
-                            NameAndIndex item = t3GmpFiles[i];
+                            NameAndIndex item = T3GmpFiles[i];
                             if (!item.Name.EqualsI_Local(FMFiles.EntryGmp))
                             {
-                                usedMisFiles.Add(item);
+                                _usedMisFiles.Add(item);
                             }
                         }
                         break;
@@ -2375,16 +2382,16 @@ public sealed partial class Scanner : IDisposable
 
         #region Add MisFiles and check for none
 
-        for (int i = 0; i < baseDirFiles.Count; i++)
+        for (int i = 0; i < _baseDirFiles.Count; i++)
         {
-            NameAndIndex f = baseDirFiles[i];
+            NameAndIndex f = _baseDirFiles[i];
             if (f.Name.ExtIsMis())
             {
-                misFiles.Add(new NameAndIndex(Path.GetFileName(f.Name), f.Index));
+                _misFiles.Add(new NameAndIndex(Path.GetFileName(f.Name), f.Index));
             }
         }
 
-        if (misFiles.Count == 0)
+        if (_misFiles.Count == 0)
         {
             Log(fmPath + ": No .mis files in base dir. Returning false.", stackTrace: false);
             return false;
@@ -2395,12 +2402,12 @@ public sealed partial class Scanner : IDisposable
         #region Cache list of used .mis files
 
         NameAndIndex? missFlag = null;
-        if (stringsDirFiles.Count > 0)
+        if (_stringsDirFiles.Count > 0)
         {
             // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
-            for (int i = 0; i < stringsDirFiles.Count; i++)
+            for (int i = 0; i < _stringsDirFiles.Count; i++)
             {
-                NameAndIndex item = stringsDirFiles[i];
+                NameAndIndex item = _stringsDirFiles[i];
                 if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
                 {
                     missFlag = item;
@@ -2409,9 +2416,9 @@ public sealed partial class Scanner : IDisposable
             }
             if (missFlag == null)
             {
-                for (int i = 0; i < stringsDirFiles.Count; i++)
+                for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
-                    NameAndIndex item = stringsDirFiles[i];
+                    NameAndIndex item = _stringsDirFiles[i];
                     if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
                     {
                         missFlag = item;
@@ -2421,9 +2428,9 @@ public sealed partial class Scanner : IDisposable
             }
             if (missFlag == null)
             {
-                for (int i = 0; i < stringsDirFiles.Count; i++)
+                for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
-                    NameAndIndex item = stringsDirFiles[i];
+                    NameAndIndex item = _stringsDirFiles[i];
                     if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
                     {
                         missFlag = item;
@@ -2448,9 +2455,9 @@ public sealed partial class Scanner : IDisposable
                 mfLines = ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
             }
 
-            for (int mfI = 0; mfI < misFiles.Count; mfI++)
+            for (int mfI = 0; mfI < _misFiles.Count; mfI++)
             {
-                NameAndIndex mf = misFiles[mfI];
+                NameAndIndex mf = _misFiles[mfI];
 
                 // Obtuse nonsense to avoid string allocations (perf)
                 if (mf.Name.StartsWithI_Local("miss") && mf.Name[4] != '.')
@@ -2485,7 +2492,7 @@ public sealed partial class Scanner : IDisposable
                                       (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
                                       line[qIndex + 5] == '\"'))
                                 {
-                                    usedMisFiles.Add(mf);
+                                    _usedMisFiles.Add(mf);
                                 }
                             }
                         }
@@ -2495,7 +2502,7 @@ public sealed partial class Scanner : IDisposable
         }
 
         // Fallback we hope never happens, but... sometimes it does
-        if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles);
+        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles);
 
         #endregion
 
