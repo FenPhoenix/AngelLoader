@@ -9,9 +9,9 @@ public sealed class PpmdProperties
     private int _allocatorSize;
     internal Allocator? _allocator;
 
-    public int ModelOrder { get; }
-    public PpmdVersion Version { get; } = PpmdVersion.I1;
-    internal ModelRestorationMethod RestorationMethod { get; }
+    public readonly int ModelOrder;
+    public readonly PpmdVersion Version = PpmdVersion.I1;
+    internal readonly ModelRestorationMethod RestorationMethod;
 
     public PpmdProperties(byte[] properties)
         : this(properties.AsSpan()) { }

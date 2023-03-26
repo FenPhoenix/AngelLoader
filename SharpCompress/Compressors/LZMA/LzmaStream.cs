@@ -10,6 +10,8 @@ namespace SharpCompress.Compressors.LZMA;
 // @SharpCompress: Recycle this and all its sub-fields
 public sealed class LzmaStream : Stream
 {
+    private readonly byte[] _properties;
+
     private readonly Stream _inputStream;
     private readonly long _inputSize;
     private readonly long _outputSize;
@@ -248,6 +250,4 @@ public sealed class LzmaStream : Stream
     public override void SetLength(long value) => throw new NotSupportedException();
 
     public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-    private readonly byte[] _properties;
 }

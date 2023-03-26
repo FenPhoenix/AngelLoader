@@ -27,7 +27,7 @@ public sealed class SevenZipArchive : IDisposable
                 for (var i = 0; i < database._files.Count; i++)
                 {
                     CFileItem file = database._files[i];
-                    entries[i] = new SevenZipArchiveEntry(new SevenZipFilePart(file));
+                    entries[i] = new SevenZipArchiveEntry(file);
                 }
 
                 _lazyEntries = new ReadOnlyCollection<SevenZipArchiveEntry>(entries);

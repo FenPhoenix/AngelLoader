@@ -20,7 +20,7 @@ internal sealed class ModelPpm
         }
     }
 
-    public SubAllocator SubAlloc { get; } = new();
+    public readonly SubAllocator SubAlloc = new();
 
     public See2Context DummySee2Cont => _dummySee2Cont;
 

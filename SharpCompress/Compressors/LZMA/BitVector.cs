@@ -26,7 +26,7 @@ internal sealed class BitVector
         }
     }
 
-    public int Length { get; }
+    public readonly int Length;
 
     public bool this[int index]
     {
