@@ -607,6 +607,7 @@ public sealed partial class Scanner : IDisposable
 
                 // 50 entries is more than we're ever likely to need in this list, but still small enough not to
                 // be wasteful.
+                // @SharpCompress/@MEM: Recycle this
                 var fileNamesList = new List<string>(50);
                 /*
                 We use SharpCompress for getting the file names and metadata, as that doesn't involve any
