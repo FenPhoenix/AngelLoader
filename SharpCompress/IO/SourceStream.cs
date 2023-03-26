@@ -6,12 +6,9 @@ namespace SharpCompress.IO;
 
 internal sealed class SourceStream : Stream
 {
-    private readonly Stream _onlyStream;
+    private readonly Stream _stream;
 
-    internal SourceStream(Stream stream)
-    {
-        _onlyStream = stream;
-    }
+    internal SourceStream(Stream stream) => _stream = stream;
 
     public override bool CanRead => true;
 
@@ -19,15 +16,15 @@ internal sealed class SourceStream : Stream
 
     public override bool CanWrite => false;
 
-    public override long Length => _onlyStream.Length;
+    public override long Length => _stream.Length;
 
     public override long Position
     {
-        get => _onlyStream.Position;
+        get => _stream.Position;
         set => Seek(value, SeekOrigin.Begin);
     }
 
-    public override void Flush() => _onlyStream.Flush();
+    public override void Flush() => _stream.Flush();
 
     public override int Read(byte[] buffer, int offset, int count)
     {
@@ -41,19 +38,19 @@ internal sealed class SourceStream : Stream
 
         while (count != 0 && r != 0)
         {
-            r = _onlyStream.Read(
+            r = _stream.Read(
                 buffer,
                 offset,
-                (int)Math.Min(count, _onlyStream.Length - _onlyStream.Position)
+                (int)Math.Min(count, _stream.Length - _stream.Position)
             );
             count -= r;
             offset += r;
 
-            if (count != 0 && _onlyStream.Position == _onlyStream.Length)
+            if (count != 0 && _stream.Position == _stream.Length)
             {
                 // Current stream switched
                 // Add length of previous stream
-                _onlyStream.Seek(0, SeekOrigin.Begin);
+                _stream.Seek(0, SeekOrigin.Begin);
                 r = -1; //BugFix: reset to allow loop if count is still not 0 - was breaking split zipx (lzma xz etc)
             }
         }
@@ -67,13 +64,13 @@ internal sealed class SourceStream : Stream
         return Read(FEN_COMMON.Byte1, 0, 1) == 0 ? -1 : (int)FEN_COMMON.Byte1[0];
     }
 
-    public override long Seek(long offset, SeekOrigin origin) => _onlyStream.Seek(offset, origin);
+    public override long Seek(long offset, SeekOrigin origin) => _stream.Seek(offset, origin);
 
     public override void SetLength(long value) => throw new NotImplementedException();
 
     public override void Write(byte[] buffer, int offset, int count) => throw new NotImplementedException();
 
-    public override void Close() => _onlyStream.Dispose();
+    public override void Close() => _stream.Dispose();
 
     protected override void Dispose(bool disposing)
     {
