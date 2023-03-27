@@ -50,14 +50,14 @@ internal sealed class CBZip2InputStream : Stream
     private void MakeMaps()
     {
         int i;
-        nInUse = 0;
+        _nInUse = 0;
         for (i = 0; i < 256; i++)
         {
-            if (inUse[i])
+            if (_inUse[i])
             {
-                seqToUnseq[nInUse] = (char)i;
-                unseqToSeq[i] = (char)nInUse;
-                nInUse++;
+                _seqToUnseq[_nInUse] = (char)i;
+                _unseqToSeq[i] = (char)_nInUse;
+                _nInUse++;
             }
         }
     }
@@ -66,62 +66,62 @@ internal sealed class CBZip2InputStream : Stream
     index of the last char in the block, so
     the block size == last + 1.
     */
-    private int last;
+    private int _last;
 
     /*
     index in zptr[] of original string after sorting.
     */
-    private int origPtr;
+    private int _origPtr;
 
     /*
     always: in the range 0 .. 9.
     The current block size is 100000 * this number.
     */
-    private int blockSize100k;
+    private int _blockSize100k;
 
-    private bool blockRandomised;
+    private bool _blockRandomised;
 
-    private int bsBuff;
-    private int bsLive;
-    private readonly CRC mCrc = new CRC();
+    private int _bsBuff;
+    private int _bsLive;
+    private readonly CRC _mCrc = new CRC();
 
-    private readonly bool[] inUse = new bool[256];
-    private int nInUse;
+    private readonly bool[] _inUse = new bool[256];
+    private int _nInUse;
 
-    private readonly char[] seqToUnseq = new char[256];
-    private readonly char[] unseqToSeq = new char[256];
+    private readonly char[] _seqToUnseq = new char[256];
+    private readonly char[] _unseqToSeq = new char[256];
 
-    private readonly char[] selector = new char[BZip2Constants.MAX_SELECTORS];
-    private readonly char[] selectorMtf = new char[BZip2Constants.MAX_SELECTORS];
+    private readonly char[] _selector = new char[BZip2Constants.MAX_SELECTORS];
+    private readonly char[] _selectorMtf = new char[BZip2Constants.MAX_SELECTORS];
 
-    private int[] tt;
-    private char[] ll8;
+    private int[] _tt;
+    private char[] _ll8;
 
     /*
     freq table collected to save a pass over the data
     during decompression.
     */
-    private readonly int[] unzftab = new int[256];
+    private readonly int[] _unzftab = new int[256];
 
-    private readonly int[][] limit = InitIntArray(
+    private readonly int[][] _limit = InitIntArray(
         BZip2Constants.N_GROUPS,
         BZip2Constants.MAX_ALPHA_SIZE
     );
-    private readonly int[][] basev = InitIntArray(
+    private readonly int[][] _basev = InitIntArray(
         BZip2Constants.N_GROUPS,
         BZip2Constants.MAX_ALPHA_SIZE
     );
-    private readonly int[][] perm = InitIntArray(
+    private readonly int[][] _perm = InitIntArray(
         BZip2Constants.N_GROUPS,
         BZip2Constants.MAX_ALPHA_SIZE
     );
-    private readonly int[] minLens = new int[BZip2Constants.N_GROUPS];
+    private readonly int[] _minLens = new int[BZip2Constants.N_GROUPS];
 
-    private Stream bsStream;
+    private Stream _bsStream;
 
-    private bool streamEnd;
+    private bool _streamEnd;
 
-    private int currentChar = -1;
+    private int _currentChar = -1;
 
     private const int START_BLOCK_STATE = 1;
     private const int RAND_PART_A_STATE = 2;
@@ -131,29 +131,29 @@ internal sealed class CBZip2InputStream : Stream
     private const int NO_RAND_PART_B_STATE = 6;
     private const int NO_RAND_PART_C_STATE = 7;
 
-    private int currentState = START_BLOCK_STATE;
+    private int _currentState = START_BLOCK_STATE;
 
-    private int storedBlockCRC,
-        storedCombinedCRC;
-    private int computedBlockCRC,
-        computedCombinedCRC;
+    private int _storedBlockCRC,
+        _storedCombinedCRC;
+    private int _computedBlockCRC,
+        _computedCombinedCRC;
 
-    private int i2,
-        count,
-        chPrev,
-        ch2;
-    private int i,
-        tPos;
-    private int rNToGo;
-    private int rTPos;
-    private int j2;
-    private char z;
-    private bool isDisposed;
+    private int _i2,
+        _count,
+        _chPrev,
+        _ch2;
+    private int _i,
+        _tPos;
+    private int _rNToGo;
+    private int _rTPos;
+    private int _j2;
+    private char _z;
+    private bool _isDisposed;
 
     public CBZip2InputStream(Stream zStream)
     {
-        ll8 = null;
-        tt = null;
+        _ll8 = null;
+        _tt = null;
         BsSetStream(zStream);
         Initialize(true);
         InitBlock();
@@ -162,13 +162,13 @@ internal sealed class CBZip2InputStream : Stream
 
     protected override void Dispose(bool disposing)
     {
-        if (isDisposed)
+        if (_isDisposed)
         {
             return;
         }
-        isDisposed = true;
+        _isDisposed = true;
         base.Dispose(disposing);
-        bsStream?.Dispose();
+        _bsStream?.Dispose();
     }
 
     private static int[][] InitIntArray(int n1, int n2)
@@ -193,12 +193,12 @@ internal sealed class CBZip2InputStream : Stream
 
     public override int ReadByte()
     {
-        if (streamEnd)
+        if (_streamEnd)
         {
             return -1;
         }
-        var retChar = currentChar;
-        switch (currentState)
+        var retChar = _currentChar;
+        switch (_currentState)
         {
             case START_BLOCK_STATE:
                 break;
@@ -224,9 +224,9 @@ internal sealed class CBZip2InputStream : Stream
 
     private bool Initialize(bool isFirstStream)
     {
-        var magic0 = bsStream.ReadByte();
-        var magic1 = bsStream.ReadByte();
-        var magic2 = bsStream.ReadByte();
+        var magic0 = _bsStream.ReadByte();
+        var magic1 = _bsStream.ReadByte();
+        var magic2 = _bsStream.ReadByte();
         if (magic0 == -1 && !isFirstStream)
         {
             return false;
@@ -235,17 +235,17 @@ internal sealed class CBZip2InputStream : Stream
         {
             throw new IOException("Not a BZIP2 marked stream");
         }
-        var magic3 = bsStream.ReadByte();
+        var magic3 = _bsStream.ReadByte();
         if (magic3 < '1' || magic3 > '9')
         {
             BsFinishedWithStream();
-            streamEnd = true;
+            _streamEnd = true;
             return false;
         }
 
         SetDecompressStructureSizes(magic3 - '0');
-        bsLive = 0;
-        computedCombinedCRC = 0;
+        _bsLive = 0;
+        _computedCombinedCRC = 0;
         return true;
     }
 
@@ -294,45 +294,45 @@ internal sealed class CBZip2InputStream : Stream
         )
         {
             BadBlockHeader();
-            streamEnd = true;
+            _streamEnd = true;
             return;
         }
 
-        storedBlockCRC = BsGetInt32();
+        _storedBlockCRC = BsGetInt32();
 
         if (BsR(1) == 1)
         {
-            blockRandomised = true;
+            _blockRandomised = true;
         }
         else
         {
-            blockRandomised = false;
+            _blockRandomised = false;
         }
 
         //        currBlockNo++;
         GetAndMoveToFrontDecode();
 
-        mCrc.InitialiseCRC();
-        currentState = START_BLOCK_STATE;
+        _mCrc.InitialiseCRC();
+        _currentState = START_BLOCK_STATE;
     }
 
     private void EndBlock()
     {
-        computedBlockCRC = mCrc.GetFinalCRC();
+        _computedBlockCRC = _mCrc.GetFinalCRC();
         /* A bad CRC is considered a fatal error. */
-        if (storedBlockCRC != computedBlockCRC)
+        if (_storedBlockCRC != _computedBlockCRC)
         {
             CrcError();
         }
 
-        computedCombinedCRC = (computedCombinedCRC << 1) | computedCombinedCRC >>> 31;
-        computedCombinedCRC ^= computedBlockCRC;
+        _computedCombinedCRC = (_computedCombinedCRC << 1) | _computedCombinedCRC >>> 31;
+        _computedCombinedCRC ^= _computedBlockCRC;
     }
 
     private bool Complete()
     {
-        storedCombinedCRC = BsGetInt32();
-        if (storedCombinedCRC != computedCombinedCRC)
+        _storedCombinedCRC = BsGetInt32();
+        if (_storedCombinedCRC != _computedCombinedCRC)
         {
             CrcError();
         }
@@ -341,7 +341,7 @@ internal sealed class CBZip2InputStream : Stream
         if (complete)
         {
             BsFinishedWithStream();
-            streamEnd = true;
+            _streamEnd = true;
         }
 
         // Look for the next .bz2 stream if decompressing
@@ -357,27 +357,27 @@ internal sealed class CBZip2InputStream : Stream
 
     private void BsFinishedWithStream()
     {
-        bsStream?.Dispose();
-        bsStream = null;
+        _bsStream?.Dispose();
+        _bsStream = null;
     }
 
     private void BsSetStream(Stream f)
     {
-        bsStream = f;
-        bsLive = 0;
-        bsBuff = 0;
+        _bsStream = f;
+        _bsLive = 0;
+        _bsBuff = 0;
     }
 
     private int BsR(int n)
     {
         int v;
-        while (bsLive < n)
+        while (_bsLive < n)
         {
             int zzi;
             int thech = '\0';
             try
             {
-                thech = (char)bsStream.ReadByte();
+                thech = (char)_bsStream.ReadByte();
             }
             catch (IOException)
             {
@@ -388,12 +388,12 @@ internal sealed class CBZip2InputStream : Stream
                 CompressedStreamEOF();
             }
             zzi = thech;
-            bsBuff = (bsBuff << 8) | (zzi & 0xff);
-            bsLive += 8;
+            _bsBuff = (_bsBuff << 8) | (zzi & 0xff);
+            _bsLive += 8;
         }
 
-        v = (bsBuff >> (bsLive - n)) & ((1 << n) - 1);
-        bsLive -= n;
+        v = (_bsBuff >> (_bsLive - n)) & ((1 << n) - 1);
+        _bsLive -= n;
         return v;
     }
 
@@ -501,7 +501,7 @@ internal sealed class CBZip2InputStream : Stream
 
         for (i = 0; i < 256; i++)
         {
-            inUse[i] = false;
+            _inUse[i] = false;
         }
 
         for (i = 0; i < 16; i++)
@@ -512,14 +512,14 @@ internal sealed class CBZip2InputStream : Stream
                 {
                     if (BsR(1) == 1)
                     {
-                        inUse[(i * 16) + j] = true;
+                        _inUse[(i * 16) + j] = true;
                     }
                 }
             }
         }
 
         MakeMaps();
-        alphaSize = nInUse + 2;
+        alphaSize = _nInUse + 2;
 
         /* Now the selectors */
         nGroups = BsR(3);
@@ -531,7 +531,7 @@ internal sealed class CBZip2InputStream : Stream
             {
                 j++;
             }
-            selectorMtf[i] = (char)j;
+            _selectorMtf[i] = (char)j;
         }
 
         /* Undo the MTF values for the selectors. */
@@ -546,7 +546,7 @@ internal sealed class CBZip2InputStream : Stream
 
             for (i = 0; i < nSelectors; i++)
             {
-                v = selectorMtf[i];
+                v = _selectorMtf[i];
                 tmp = pos[v];
                 while (v > 0)
                 {
@@ -554,7 +554,7 @@ internal sealed class CBZip2InputStream : Stream
                     v--;
                 }
                 pos[0] = tmp;
-                selector[i] = tmp;
+                _selector[i] = tmp;
             }
         }
 
@@ -595,8 +595,8 @@ internal sealed class CBZip2InputStream : Stream
                     minLen = len[t][i];
                 }
             }
-            HbCreateDecodeTables(limit[t], basev[t], perm[t], len[t], minLen, maxLen, alphaSize);
-            minLens[t] = minLen;
+            HbCreateDecodeTables(_limit[t], _basev[t], _perm[t], len[t], minLen, maxLen, alphaSize);
+            _minLens[t] = minLen;
         }
     }
 
@@ -611,11 +611,11 @@ internal sealed class CBZip2InputStream : Stream
             groupNo,
             groupPos;
 
-        limitLast = BZip2Constants.baseBlockSize * blockSize100k;
-        origPtr = BsGetIntVS(24);
+        limitLast = BZip2Constants.baseBlockSize * _blockSize100k;
+        _origPtr = BsGetIntVS(24);
 
         RecvDecodingTables();
-        EOB = nInUse + 1;
+        EOB = _nInUse + 1;
         groupNo = -1;
         groupPos = 0;
 
@@ -627,7 +627,7 @@ internal sealed class CBZip2InputStream : Stream
         */
         for (i = 0; i <= 255; i++)
         {
-            unzftab[i] = 0;
+            _unzftab[i] = 0;
         }
 
         for (i = 0; i <= 255; i++)
@@ -635,7 +635,7 @@ internal sealed class CBZip2InputStream : Stream
             yy[i] = (char)i;
         }
 
-        last = -1;
+        _last = -1;
 
         {
             int zt,
@@ -648,21 +648,21 @@ internal sealed class CBZip2InputStream : Stream
                 groupPos = BZip2Constants.G_SIZE;
             }
             groupPos--;
-            zt = selector[groupNo];
-            zn = minLens[zt];
+            zt = _selector[groupNo];
+            zn = _minLens[zt];
             zvec = BsR(zn);
-            while (zvec > limit[zt][zn])
+            while (zvec > _limit[zt][zn])
             {
                 zn++;
                 {
                     {
-                        while (bsLive < 1)
+                        while (_bsLive < 1)
                         {
                             int zzi;
                             var thech = '\0';
                             try
                             {
-                                thech = (char)bsStream.ReadByte();
+                                thech = (char)_bsStream.ReadByte();
                             }
                             catch (IOException)
                             {
@@ -673,16 +673,16 @@ internal sealed class CBZip2InputStream : Stream
                                 CompressedStreamEOF();
                             }
                             zzi = thech;
-                            bsBuff = (bsBuff << 8) | (zzi & 0xff);
-                            bsLive += 8;
+                            _bsBuff = (_bsBuff << 8) | (zzi & 0xff);
+                            _bsLive += 8;
                         }
                     }
-                    zj = (bsBuff >> (bsLive - 1)) & 1;
-                    bsLive--;
+                    zj = (_bsBuff >> (_bsLive - 1)) & 1;
+                    _bsLive--;
                 }
                 zvec = (zvec << 1) | zj;
             }
-            nextSym = perm[zt][zvec - basev[zt][zn]];
+            nextSym = _perm[zt][zvec - _basev[zt][zn]];
         }
 
         while (true)
@@ -719,21 +719,21 @@ internal sealed class CBZip2InputStream : Stream
                             groupPos = BZip2Constants.G_SIZE;
                         }
                         groupPos--;
-                        zt = selector[groupNo];
-                        zn = minLens[zt];
+                        zt = _selector[groupNo];
+                        zn = _minLens[zt];
                         zvec = BsR(zn);
-                        while (zvec > limit[zt][zn])
+                        while (zvec > _limit[zt][zn])
                         {
                             zn++;
                             {
                                 {
-                                    while (bsLive < 1)
+                                    while (_bsLive < 1)
                                     {
                                         int zzi;
                                         var thech = '\0';
                                         try
                                         {
-                                            thech = (char)bsStream.ReadByte();
+                                            thech = (char)_bsStream.ReadByte();
                                         }
                                         catch (IOException)
                                         {
@@ -744,31 +744,31 @@ internal sealed class CBZip2InputStream : Stream
                                             CompressedStreamEOF();
                                         }
                                         zzi = thech;
-                                        bsBuff = (bsBuff << 8) | (zzi & 0xff);
-                                        bsLive += 8;
+                                        _bsBuff = (_bsBuff << 8) | (zzi & 0xff);
+                                        _bsLive += 8;
                                     }
                                 }
-                                zj = (bsBuff >> (bsLive - 1)) & 1;
-                                bsLive--;
+                                zj = (_bsBuff >> (_bsLive - 1)) & 1;
+                                _bsLive--;
                             }
                             zvec = (zvec << 1) | zj;
                         }
-                        nextSym = perm[zt][zvec - basev[zt][zn]];
+                        nextSym = _perm[zt][zvec - _basev[zt][zn]];
                     }
                 } while (nextSym == BZip2Constants.RUNA || nextSym == BZip2Constants.RUNB);
 
                 s++;
-                ch = seqToUnseq[yy[0]];
-                unzftab[ch] += s;
+                ch = _seqToUnseq[yy[0]];
+                _unzftab[ch] += s;
 
                 while (s > 0)
                 {
-                    last++;
-                    ll8[last] = ch;
+                    _last++;
+                    _ll8[_last] = ch;
                     s--;
                 }
 
-                if (last >= limitLast)
+                if (_last >= limitLast)
                 {
                     BlockOverrun();
                 }
@@ -776,15 +776,15 @@ internal sealed class CBZip2InputStream : Stream
             else
             {
                 char tmp;
-                last++;
-                if (last >= limitLast)
+                _last++;
+                if (_last >= limitLast)
                 {
                     BlockOverrun();
                 }
 
                 tmp = yy[nextSym - 1];
-                unzftab[seqToUnseq[tmp]]++;
-                ll8[last] = seqToUnseq[tmp];
+                _unzftab[_seqToUnseq[tmp]]++;
+                _ll8[_last] = _seqToUnseq[tmp];
 
                 /*
                 This loop is hammered during decompression,
@@ -818,37 +818,37 @@ internal sealed class CBZip2InputStream : Stream
                         groupPos = BZip2Constants.G_SIZE;
                     }
                     groupPos--;
-                    zt = selector[groupNo];
-                    zn = minLens[zt];
+                    zt = _selector[groupNo];
+                    zn = _minLens[zt];
                     zvec = BsR(zn);
-                    while (zvec > limit[zt][zn])
+                    while (zvec > _limit[zt][zn])
                     {
                         zn++;
                         {
                             {
-                                while (bsLive < 1)
+                                while (_bsLive < 1)
                                 {
                                     int zzi;
                                     var thech = '\0';
                                     try
                                     {
-                                        thech = (char)bsStream.ReadByte();
+                                        thech = (char)_bsStream.ReadByte();
                                     }
                                     catch (IOException)
                                     {
                                         CompressedStreamEOF();
                                     }
                                     zzi = thech;
-                                    bsBuff = (bsBuff << 8) | (zzi & 0xff);
-                                    bsLive += 8;
+                                    _bsBuff = (_bsBuff << 8) | (zzi & 0xff);
+                                    _bsLive += 8;
                                 }
                             }
-                            zj = (bsBuff >> (bsLive - 1)) & 1;
-                            bsLive--;
+                            zj = (_bsBuff >> (_bsLive - 1)) & 1;
+                            _bsLive--;
                         }
                         zvec = (zvec << 1) | zj;
                     }
-                    nextSym = perm[zt][zvec - basev[zt][zn]];
+                    nextSym = _perm[zt][zvec - _basev[zt][zn]];
                 }
             }
         }
@@ -860,32 +860,32 @@ internal sealed class CBZip2InputStream : Stream
         char ch;
 
         cftab[0] = 0;
-        for (i = 1; i <= 256; i++)
+        for (_i = 1; _i <= 256; _i++)
         {
-            cftab[i] = unzftab[i - 1];
+            cftab[_i] = _unzftab[_i - 1];
         }
-        for (i = 1; i <= 256; i++)
+        for (_i = 1; _i <= 256; _i++)
         {
-            cftab[i] += cftab[i - 1];
+            cftab[_i] += cftab[_i - 1];
         }
 
-        for (i = 0; i <= last; i++)
+        for (_i = 0; _i <= _last; _i++)
         {
-            ch = ll8[i];
-            tt[cftab[ch]] = i;
+            ch = _ll8[_i];
+            _tt[cftab[ch]] = _i;
             cftab[ch]++;
         }
 
-        tPos = tt[origPtr];
+        _tPos = _tt[_origPtr];
 
-        count = 0;
-        i2 = 0;
-        ch2 = 256; /* not a char and not EOF */
+        _count = 0;
+        _i2 = 0;
+        _ch2 = 256; /* not a char and not EOF */
 
-        if (blockRandomised)
+        if (_blockRandomised)
         {
-            rNToGo = 0;
-            rTPos = 0;
+            _rNToGo = 0;
+            _rTPos = 0;
             SetupRandPartA();
         }
         else
@@ -896,27 +896,27 @@ internal sealed class CBZip2InputStream : Stream
 
     private void SetupRandPartA()
     {
-        if (i2 <= last)
+        if (_i2 <= _last)
         {
-            chPrev = ch2;
-            ch2 = ll8[tPos];
-            tPos = tt[tPos];
-            if (rNToGo == 0)
+            _chPrev = _ch2;
+            _ch2 = _ll8[_tPos];
+            _tPos = _tt[_tPos];
+            if (_rNToGo == 0)
             {
-                rNToGo = BZip2Constants.rNums[rTPos];
-                rTPos++;
-                if (rTPos == 512)
+                _rNToGo = BZip2Constants.rNums[_rTPos];
+                _rTPos++;
+                if (_rTPos == 512)
                 {
-                    rTPos = 0;
+                    _rTPos = 0;
                 }
             }
-            rNToGo--;
-            ch2 ^= (rNToGo == 1) ? 1 : 0;
-            i2++;
+            _rNToGo--;
+            _ch2 ^= (_rNToGo == 1) ? 1 : 0;
+            _i2++;
 
-            currentChar = ch2;
-            currentState = RAND_PART_B_STATE;
-            mCrc.UpdateCRC(ch2);
+            _currentChar = _ch2;
+            _currentState = RAND_PART_B_STATE;
+            _mCrc.UpdateCRC(_ch2);
         }
         else
         {
@@ -928,16 +928,16 @@ internal sealed class CBZip2InputStream : Stream
 
     private void SetupNoRandPartA()
     {
-        if (i2 <= last)
+        if (_i2 <= _last)
         {
-            chPrev = ch2;
-            ch2 = ll8[tPos];
-            tPos = tt[tPos];
-            i2++;
+            _chPrev = _ch2;
+            _ch2 = _ll8[_tPos];
+            _tPos = _tt[_tPos];
+            _i2++;
 
-            currentChar = ch2;
-            currentState = NO_RAND_PART_B_STATE;
-            mCrc.UpdateCRC(ch2);
+            _currentChar = _ch2;
+            _currentState = NO_RAND_PART_B_STATE;
+            _mCrc.UpdateCRC(_ch2);
         }
         else
         {
@@ -949,37 +949,37 @@ internal sealed class CBZip2InputStream : Stream
 
     private void SetupRandPartB()
     {
-        if (ch2 != chPrev)
+        if (_ch2 != _chPrev)
         {
-            currentState = RAND_PART_A_STATE;
-            count = 1;
+            _currentState = RAND_PART_A_STATE;
+            _count = 1;
             SetupRandPartA();
         }
         else
         {
-            count++;
-            if (count >= 4)
+            _count++;
+            if (_count >= 4)
             {
-                z = ll8[tPos];
-                tPos = tt[tPos];
-                if (rNToGo == 0)
+                _z = _ll8[_tPos];
+                _tPos = _tt[_tPos];
+                if (_rNToGo == 0)
                 {
-                    rNToGo = BZip2Constants.rNums[rTPos];
-                    rTPos++;
-                    if (rTPos == 512)
+                    _rNToGo = BZip2Constants.rNums[_rTPos];
+                    _rTPos++;
+                    if (_rTPos == 512)
                     {
-                        rTPos = 0;
+                        _rTPos = 0;
                     }
                 }
-                rNToGo--;
-                z ^= (char)((rNToGo == 1) ? 1 : 0);
-                j2 = 0;
-                currentState = RAND_PART_C_STATE;
+                _rNToGo--;
+                _z ^= (char)((_rNToGo == 1) ? 1 : 0);
+                _j2 = 0;
+                _currentState = RAND_PART_C_STATE;
                 SetupRandPartC();
             }
             else
             {
-                currentState = RAND_PART_A_STATE;
+                _currentState = RAND_PART_A_STATE;
                 SetupRandPartA();
             }
         }
@@ -987,43 +987,43 @@ internal sealed class CBZip2InputStream : Stream
 
     private void SetupRandPartC()
     {
-        if (j2 < z)
+        if (_j2 < _z)
         {
-            currentChar = ch2;
-            mCrc.UpdateCRC(ch2);
-            j2++;
+            _currentChar = _ch2;
+            _mCrc.UpdateCRC(_ch2);
+            _j2++;
         }
         else
         {
-            currentState = RAND_PART_A_STATE;
-            i2++;
-            count = 0;
+            _currentState = RAND_PART_A_STATE;
+            _i2++;
+            _count = 0;
             SetupRandPartA();
         }
     }
 
     private void SetupNoRandPartB()
     {
-        if (ch2 != chPrev)
+        if (_ch2 != _chPrev)
         {
-            currentState = NO_RAND_PART_A_STATE;
-            count = 1;
+            _currentState = NO_RAND_PART_A_STATE;
+            _count = 1;
             SetupNoRandPartA();
         }
         else
         {
-            count++;
-            if (count >= 4)
+            _count++;
+            if (_count >= 4)
             {
-                z = ll8[tPos];
-                tPos = tt[tPos];
-                currentState = NO_RAND_PART_C_STATE;
-                j2 = 0;
+                _z = _ll8[_tPos];
+                _tPos = _tt[_tPos];
+                _currentState = NO_RAND_PART_C_STATE;
+                _j2 = 0;
                 SetupNoRandPartC();
             }
             else
             {
-                currentState = NO_RAND_PART_A_STATE;
+                _currentState = NO_RAND_PART_A_STATE;
                 SetupNoRandPartA();
             }
         }
@@ -1031,29 +1031,29 @@ internal sealed class CBZip2InputStream : Stream
 
     private void SetupNoRandPartC()
     {
-        if (j2 < z)
+        if (_j2 < _z)
         {
-            currentChar = ch2;
-            mCrc.UpdateCRC(ch2);
-            j2++;
+            _currentChar = _ch2;
+            _mCrc.UpdateCRC(_ch2);
+            _j2++;
         }
         else
         {
-            currentState = NO_RAND_PART_A_STATE;
-            i2++;
-            count = 0;
+            _currentState = NO_RAND_PART_A_STATE;
+            _i2++;
+            _count = 0;
             SetupNoRandPartA();
         }
     }
 
     private void SetDecompressStructureSizes(int newSize100k)
     {
-        if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k && blockSize100k <= 9))
+        if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= _blockSize100k && _blockSize100k <= 9))
         {
             // throw new IOException("Invalid block size");
         }
 
-        blockSize100k = newSize100k;
+        _blockSize100k = newSize100k;
 
         if (newSize100k == 0)
         {
@@ -1061,8 +1061,8 @@ internal sealed class CBZip2InputStream : Stream
         }
 
         var n = BZip2Constants.baseBlockSize * newSize100k;
-        ll8 = new char[n];
-        tt = new int[n];
+        _ll8 = new char[n];
+        _tt = new int[n];
     }
 
     public override void Flush() { }
