@@ -101,6 +101,9 @@ public static class Fen7z
         {
             try
             {
+                // @MEM(Fen7z): Allow passing a buffer that gets set on the write stream
+                // Just like the buffer-taking reflection-based read stream we have.
+                // Scan, byte[4096]: 49 / 201,292
                 File.WriteAllLines(listFile, fileNamesList);
             }
             catch (Exception ex)

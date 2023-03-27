@@ -324,6 +324,7 @@ public sealed class FileEncoding
     {
         if (_encodingFrequency.Count == 0) return null;
         // ASCII should be the last option, since other encodings often has ASCII included...
+        // @MEM(FileEncoding): This LINQ stuff allocates a lot. int[1]: 9,361 / 149,776 (x2!)
         string? ret = _encodingFrequency
             .OrderByDescending(static i => i.Value * (i.Key != "ASCII" ? 1 : 0))
             .FirstOrDefault().Key;

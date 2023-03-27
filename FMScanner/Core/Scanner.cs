@@ -4030,6 +4030,8 @@ public sealed partial class Scanner : IDisposable
     {
         var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
 
+        // @MEM(GetGameTypeAndEngine OrderBy etc.):
+        // 146 / 2,920
         #region Choose smallest .gam file
 
         NameAndIndex? smallestGamFile = null;
