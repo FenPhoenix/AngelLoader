@@ -2,9 +2,13 @@ using System;
 
 namespace SharpCompress.Compressors.LZMA;
 
-internal sealed class BitVector
+internal readonly ref struct BitVector
 {
+    // @SharpCompress: Recycle this
     private readonly uint[] _mBits;
+
+    // Just to be explicit to tell it not to allocate an array
+    public BitVector() => _mBits = null!;
 
     public BitVector(int length)
     {

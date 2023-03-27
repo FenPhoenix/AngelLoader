@@ -727,8 +727,8 @@ internal sealed class ArchiveReader
         }
 
         var emptyStreamVector = new BitVector(numFiles);
-        BitVector emptyFileVector = null;
-        BitVector antiFileVector = null;
+        var emptyFileVector = new BitVector();
+        var antiFileVector = new BitVector();
         var numEmptyStreams = 0;
 
         for (; ; )
