@@ -463,6 +463,7 @@ internal sealed class ArchiveReader
             }
         }
 
+        // @SharpCompress: Allocation hotspot: 288 / 882,592
         unpackSizes = new List<long>(folders.Count);
         for (var i = 0; i < numUnpackStreamsInFolders.Count; i++)
         {

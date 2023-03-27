@@ -1,5 +1,7 @@
 namespace SharpCompress.Compressors.LZMA.RangeCoder;
 
+// @SharpCompress There are many arrays of these that are created over and over. Cache and recycle them.
+// // 1596 / 1,296,288
 internal struct BitDecoder
 {
     private const int K_NUM_BIT_MODEL_TOTAL_BITS = 11;

@@ -11,6 +11,7 @@ public sealed class SevenZipArchive : IDisposable
     private bool _disposed;
     private readonly SourceStream _srcStream;
 
+    // @SharpCompress: Reuse one list of entries like we do with zips
     private ReadOnlyCollection<SevenZipArchiveEntry>? _lazyEntries;
     public ReadOnlyCollection<SevenZipArchiveEntry> Entries
     {
