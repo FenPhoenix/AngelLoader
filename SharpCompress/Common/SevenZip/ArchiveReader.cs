@@ -311,12 +311,9 @@ internal sealed class ArchiveReader
 
     private void ReadPackInfo(
         out long dataOffset,
-        out List<long> packSizes,
-        out List<uint?> packCrCs
+        out List<long> packSizes
     )
     {
-        packCrCs = null;
-
         dataOffset = checked((long)ReadNumber());
 
         var numPackStreams = ReadNum();
@@ -339,19 +336,10 @@ internal sealed class ArchiveReader
             }
             if (type == BlockType.Crc)
             {
-                packCrCs = ReadHashDigests(numPackStreams);
+                _ = ReadHashDigests(numPackStreams);
                 continue;
             }
             SkipData();
-        }
-
-        if (packCrCs is null)
-        {
-            packCrCs = new List<uint?>(numPackStreams);
-            for (var i = 0; i < numPackStreams; i++)
-            {
-                packCrCs.Add(null);
-            }
         }
     }
 
@@ -548,7 +536,6 @@ internal sealed class ArchiveReader
         List<byte[]> dataVector,
         out long dataOffset,
         out List<long> packSizes,
-        out List<uint?> packCrCs,
         out List<CFolder> folders,
         out List<int> numUnpackStreamsInFolders,
         out List<long> unpackSizes,
@@ -556,7 +543,6 @@ internal sealed class ArchiveReader
     {
         dataOffset = long.MinValue;
         packSizes = null;
-        packCrCs = null;
         folders = null;
         numUnpackStreamsInFolders = null;
         unpackSizes = null;
@@ -569,7 +555,7 @@ internal sealed class ArchiveReader
                 case BlockType.End:
                     return;
                 case BlockType.PackInfo:
-                    ReadPackInfo(out dataOffset, out packSizes, out packCrCs);
+                    ReadPackInfo(out dataOffset, out packSizes);
                     break;
                 case BlockType.UnpackInfo:
                     ReadUnpackInfo(dataVector, out folders);
@@ -594,7 +580,6 @@ internal sealed class ArchiveReader
             null,
             out var dataStartPos,
             out var packSizes,
-            out _,
             out var folders,
             out _,
             out _,
@@ -674,7 +659,6 @@ internal sealed class ArchiveReader
         {
             ReadStreamsInfo(
                 dataVector,
-                out _,
                 out _,
                 out _,
                 out db._folders,
