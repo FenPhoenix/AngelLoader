@@ -708,6 +708,9 @@ public sealed partial class Scanner : IDisposable
                         -We should create 7z files from the known unused-mis-containing zip set to test accuracy
                          with.
                         It's nasty business, but 22.3 to 18.5 is a good savings if we can do it...
+                        -UPDATE 2023/3/26:
+                         The intrface miss** dir heuristic is not good after all, there's tons of FMs with valid
+                         mis files that don't have a matching intrface subdir.
                         */
                         // Only extract these if we need them!
                         else if ((_scanOptions.ScanGameType
