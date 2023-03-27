@@ -138,6 +138,7 @@ internal sealed class ArchiveReader
         }
     }
 
+#if false
     private void ReadNumberVector(List<byte[]> dataVector, int numFiles, Action<int, long?> action)
     {
         var defined = ReadOptionalBitVector(numFiles);
@@ -162,13 +163,34 @@ internal sealed class ArchiveReader
         List<byte[]> dataVector,
         int numFiles,
         Action<int, long?> action
-    ) =>
-        ReadNumberVector(
-            dataVector,
-            numFiles,
-            (index, value) => action(index, value)
-        );
+    )
+    {
+        //ReadNumberVector(
+        //    dataVector,
+        //    numFiles,
+        //    (index, value) => action(index, value)
+        //);
 
+        var defined = ReadOptionalBitVector(numFiles);
+
+        using var streamSwitch = new CStreamSwitch();
+        streamSwitch.Set(this, dataVector);
+
+        for (var i = 0; i < numFiles; i++)
+        {
+            if (defined[i])
+            {
+                action(i, checked((long)ReadUInt64()));
+            }
+            else
+            {
+                action(i, null);
+            }
+        }
+    }
+#endif
+
+#if false
     private void ReadAttributeVector(
         List<byte[]> dataVector,
         int numFiles,
@@ -190,6 +212,7 @@ internal sealed class ArchiveReader
             }
         }
     }
+#endif
 
     #endregion
 
@@ -731,6 +754,19 @@ internal sealed class ArchiveReader
                     }
                     break;
                 case BlockType.WinAttributes:
+                {
+                    // FenPhoenix 2023: We don't use it so just read past it
+                    var boolVector = ReadOptionalBitVector(numFiles);
+                    using var streamSwitch = new CStreamSwitch();
+                    streamSwitch.Set(this, dataVector);
+                    for (var i = 0; i < numFiles; i++)
+                    {
+                        if (boolVector[i])
+                        {
+                            ReadUInt32();
+                        }
+                    }
+                    /*
                     ReadAttributeVector(
                         dataVector,
                         numFiles,
@@ -759,7 +795,9 @@ internal sealed class ArchiveReader
                             }
                         }
                     );
-                    break;
+                    */
+                }
+                break;
                 case BlockType.EmptyStream:
                     emptyStreamVector = ReadBitVector(numFiles);
                     for (var i = 0; i < emptyStreamVector.Length; i++)
@@ -810,15 +848,34 @@ internal sealed class ArchiveReader
                     //);
                     break;
                 case BlockType.MTime:
-                    ReadDateTimeVector(
-                        dataVector,
-                        numFiles,
-                        delegate (int i, long? time)
+                {
+                    var defined = ReadOptionalBitVector(numFiles);
+
+                    using var streamSwitch = new CStreamSwitch();
+                    streamSwitch.Set(this, dataVector);
+
+                    for (var i = 0; i < numFiles; i++)
+                    {
+                        if (defined[i])
                         {
-                            db._files[i].MTime = time;
+                            //action(i, checked((long)ReadUInt64()));
+                            db._files[i].MTime = checked((long)ReadUInt64());
                         }
-                    );
-                    break;
+                        else
+                        {
+                            db._files[i].MTime = null;
+                        }
+                    }
+                    //ReadDateTimeVector(
+                    //    dataVector,
+                    //    numFiles,
+                    //    delegate (int i, long? time)
+                    //    {
+                    //        db._files[i].MTime = time;
+                    //    }
+                    //);
+                }
+                break;
                 case BlockType.Dummy:
                     for (long j = 0; j < size; j++)
                     {
