@@ -1539,7 +1539,7 @@ internal static class Core
 #if ENABLE_README_TESTS
     internal static async void ReadmeTest()
     {
-        using (var sw = new StreamWriter(@"C:\readme_test_new.txt"))
+        using (var sw = new StreamWriter(@"C:\readme_test_old.txt"))
         {
             var langs = Config.LanguageNames.Keys.ToList();
             langs.Sort(StringComparer.Ordinal);
