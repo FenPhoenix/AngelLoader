@@ -15,11 +15,11 @@ public sealed class SevenZipArchiveEntry
     /// <summary>
     /// This is a 7Zip Anti item
     /// </summary>
-    public bool IsAnti { get; internal set; }
+    public bool IsAnti;
 
-    public string FileName { get; internal set; }
+    public string FileName;
 
-    public long UncompressedSize { get; internal set; }
+    public long UncompressedSize;
 
     // Because null can be a valid value, we need an extra flag bool
     private bool _lastModifiedTimeSet;
@@ -38,5 +38,5 @@ public sealed class SevenZipArchiveEntry
         }
     }
 
-    public bool IsDirectory { get; internal set; }
+    public bool IsDirectory;
 }

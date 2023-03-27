@@ -42,7 +42,8 @@ internal sealed class DataReader
         _ending = offset + length;
     }
 
-    public int Offset { get; private set; }
+    //public int Offset { get; private set; }
+    public int Offset;
 
     public byte ReadByte()
     {

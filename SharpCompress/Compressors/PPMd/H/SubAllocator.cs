@@ -6,13 +6,17 @@ namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class SubAllocator
 {
-    public int FakeUnitsStart => _fakeUnitsStart;
+    //public int FakeUnitsStart => _fakeUnitsStart;
+    public int FakeUnitsStart;
 
-    public int HeapEnd => _heapEnd;
+    //public int HeapEnd => _heapEnd;
+    public int HeapEnd;
 
-    public int PText => _pText;
+    //public int PText => _pText;
+    public int PText;
 
-    public byte[] Heap => _heap;
+    //public byte[] Heap => _heap;
+    public byte[] Heap;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'N4 '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
     private const int N1 = 4;
@@ -45,12 +49,14 @@ internal sealed class SubAllocator
     private readonly RarNode[] _freeList = new RarNode[N_INDEXES];
 
     // byte *pText, *UnitsStart,*HeapEnd,*FakeUnitsStart;
-    private int _pText,
-        _unitsStart,
-        _heapEnd,
-        _fakeUnitsStart;
 
-    private byte[] _heap;
+    //private int _pText,
+    //    _unitsStart,
+    //    _heapEnd,
+    //    _fakeUnitsStart;
+    private int _unitsStart;
+
+    //private byte[] _heap;
 
     private int _freeListPos;
 
@@ -74,7 +80,7 @@ internal sealed class SubAllocator
         _freeList[indx].SetNext(temp);
     }
 
-    public void IncPText() => _pText++;
+    public void IncPText() => PText++;
 
     private int RemoveNode(int indx)
     {
@@ -112,7 +118,7 @@ internal sealed class SubAllocator
             _subAllocatorSize = 0;
 
             //ArrayFactory.BYTES_FACTORY.recycle(heap);
-            _heap = null;
+            Heap = null;
             _heapStart = 1;
 
             // rarfree(HeapStart);
@@ -142,9 +148,9 @@ internal sealed class SubAllocator
         _tempMemBlockPos = realAllocSize;
         realAllocSize += RarMemBlock.SIZE;
 
-        _heap = new byte[realAllocSize];
+        Heap = new byte[realAllocSize];
         _heapStart = 1;
-        _heapEnd = _heapStart + allocSize - UNIT_SIZE;
+        HeapEnd = _heapStart + allocSize - UNIT_SIZE;
         _subAllocatorSize = t;
 
         // Bug fixed
@@ -157,15 +163,15 @@ internal sealed class SubAllocator
         // Init freeList
         for (int i = 0, pos = _freeListPos; i < _freeList.Length; i++, pos += RarNode.SIZE)
         {
-            _freeList[i] = new RarNode(_heap);
+            _freeList[i] = new RarNode(Heap);
             _freeList[i].Address = pos;
         }
 
         // Init temp fields
-        _tempRarNode = new RarNode(_heap);
-        _tempRarMemBlock1 = new RarMemBlock(_heap);
-        _tempRarMemBlock2 = new RarMemBlock(_heap);
-        _tempRarMemBlock3 = new RarMemBlock(_heap);
+        _tempRarNode = new RarNode(Heap);
+        _tempRarMemBlock1 = new RarMemBlock(Heap);
+        _tempRarMemBlock2 = new RarMemBlock(Heap);
+        _tempRarMemBlock3 = new RarMemBlock(Heap);
 
         return true;
     }
@@ -181,7 +187,7 @@ internal sealed class SubAllocator
             sz;
         if (_loUnit != _hiUnit)
         {
-            _heap[_loUnit] = 0;
+            Heap[_loUnit] = 0;
         }
         for (i = 0, s0.SetPrev(s0), s0.SetNext(s0); i < N_INDEXES; i++)
         {
@@ -245,9 +251,9 @@ internal sealed class SubAllocator
                 _glueCount--;
                 i = U2B(_indx2Units[indx]);
                 var j = FIXED_UNIT_SIZE * _indx2Units[indx];
-                if (_fakeUnitsStart - _pText > j)
+                if (FakeUnitsStart - PText > j)
                 {
-                    _fakeUnitsStart -= j;
+                    FakeUnitsStart -= j;
                     _unitsStart -= i;
                     return _unitsStart;
                 }
@@ -301,7 +307,7 @@ internal sealed class SubAllocator
         if (ptr != 0)
         {
             // memcpy(ptr,OldPtr,U2B(OldNU));
-            Array.Copy(_heap, oldPtr, _heap, ptr, U2B(oldNu));
+            Array.Copy(Heap, oldPtr, Heap, ptr, U2B(oldNu));
             InsertNode(oldPtr, i0);
         }
         return ptr;
@@ -325,7 +331,7 @@ internal sealed class SubAllocator
             // for (int i = 0; i < U2B(NewNU); i++) {
             // heap[ptr + i] = heap[OldPtr + i];
             // }
-            Array.Copy(_heap, oldPtr, _heap, ptr, U2B(newNu));
+            Array.Copy(Heap, oldPtr, Heap, ptr, U2B(newNu));
             InsertNode(oldPtr, i0);
             return ptr;
         }
@@ -335,15 +341,15 @@ internal sealed class SubAllocator
 
     public void FreeUnits(int ptr, int oldNu) => InsertNode(ptr, _units2Indx[oldNu - 1]);
 
-    public void DecPText(int dPText) => _pText -= dPText;
+    public void DecPText(int dPText) => PText -= dPText;
 
     public void InitSubAllocator()
     {
         int i,
             k;
-        new Span<byte>(_heap, _freeListPos, SizeOfFreeList()).Clear();
+        new Span<byte>(Heap, _freeListPos, SizeOfFreeList()).Clear();
 
-        _pText = _heapStart;
+        PText = _heapStart;
 
         var size2 = FIXED_UNIT_SIZE * (_subAllocatorSize / 8 / FIXED_UNIT_SIZE * 7);
         var realSize2 = size2 / FIXED_UNIT_SIZE * UNIT_SIZE;
@@ -351,7 +357,7 @@ internal sealed class SubAllocator
         var realSize1 = (size1 / FIXED_UNIT_SIZE * UNIT_SIZE) + (size1 % FIXED_UNIT_SIZE);
         _hiUnit = _heapStart + _subAllocatorSize;
         _loUnit = _unitsStart = _heapStart + realSize1;
-        _fakeUnitsStart = _heapStart + size1;
+        FakeUnitsStart = _heapStart + size1;
         _hiUnit = _loUnit + realSize2;
 
         for (i = 0, k = 1; i < N1; i++, k += 1)

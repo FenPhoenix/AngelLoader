@@ -22,9 +22,11 @@ internal sealed class ModelPpm
 
     public readonly SubAllocator SubAlloc = new();
 
-    public See2Context DummySee2Cont => _dummySee2Cont;
+    //public See2Context DummySee2Cont => _dummySee2Cont;
+    public See2Context DummySee2Cont;
 
-    public int InitRl => _initRl;
+    //public int InitRl => _initRl;
+    public int InitRl;
 
     public int EscCount
     {
@@ -52,13 +54,16 @@ internal sealed class ModelPpm
 
     public readonly int[][] BinSumm = new int[128][];
 
-    internal RangeCoder Coder { get; private set; }
+    //internal RangeCoder Coder { get; private set; }
+    internal RangeCoder Coder;
 
-    internal State FoundState { get; private set; }
+    //internal State FoundState { get; private set; }
+    internal State FoundState;
 
     public byte[] Heap => SubAlloc.Heap;
 
-    public int OrderFall => _orderFall;
+    //public int OrderFall => _orderFall;
+    public int OrderFall;
 
     private const int MAX_O = 64; /* maximum allowed model order */
 
@@ -79,16 +84,18 @@ internal sealed class ModelPpm
 
     private readonly See2Context[][] _see2Cont = new See2Context[25][];
 
-    private See2Context _dummySee2Cont;
+    // private See2Context _dummySee2Cont;
 
     private PpmContext _minContext; //medContext
 
     private PpmContext _maxContext;
 
+    //private int _initEsc,
+    //    _orderFall,
+    //    _maxOrder,
+    //    _initRl;
     private int _initEsc,
-        _orderFall,
-        _maxOrder,
-        _initRl;
+        _maxOrder;
 
     private readonly int[] _ns2Indx = new int[256];
 
@@ -160,12 +167,12 @@ internal sealed class ModelPpm
     {
         new Span<int>(CharMask).Clear();
         SubAlloc.InitSubAllocator();
-        _initRl = -(_maxOrder < 12 ? _maxOrder : 12) - 1;
+        InitRl = -(_maxOrder < 12 ? _maxOrder : 12) - 1;
         var addr = SubAlloc.AllocContext();
         _minContext.Address = addr;
         _maxContext.Address = addr;
         _minContext.SetSuffix(0);
-        _orderFall = _maxOrder;
+        OrderFall = _maxOrder;
         _minContext.NumStats = 256;
         _minContext.FreqData.SummFreq = _minContext.NumStats + 1;
 
@@ -175,7 +182,7 @@ internal sealed class ModelPpm
 
         var state = new State(SubAlloc.Heap);
         addr = _minContext.FreqData.GetStats();
-        RunLength = _initRl;
+        RunLength = InitRl;
         _prevSuccess = 0;
         for (var i = 0; i < 256; i++)
         {
@@ -288,7 +295,7 @@ internal sealed class ModelPpm
             Coder.AriDecNormalize();
             do
             {
-                _orderFall++;
+                OrderFall++;
                 _minContext.Address = _minContext.GetSuffix(); // =MinContext->Suffix;
                 if (_minContext.Address <= SubAlloc.PText || _minContext.Address > SubAlloc.HeapEnd)
                 {
@@ -302,7 +309,7 @@ internal sealed class ModelPpm
             Coder.Decode();
         }
         var symbol = FoundState.Symbol;
-        if ((_orderFall == 0) && FoundState.GetSuccessor() > SubAlloc.PText)
+        if ((OrderFall == 0) && FoundState.GetSuccessor() > SubAlloc.PText)
         {
             // MinContext=MaxContext=FoundState->Successor;
             var addr = FoundState.GetSuccessor();
@@ -505,7 +512,7 @@ internal sealed class ModelPpm
                 }
             }
         }
-        if (_orderFall == 0)
+        if (OrderFall == 0)
         {
             FoundState.SetSuccessor(CreateSuccessors(true, p));
             _minContext.Address = FoundState.GetSuccessor();
@@ -539,7 +546,7 @@ internal sealed class ModelPpm
                     return;
                 }
             }
-            if (--_orderFall == 0)
+            if (--OrderFall == 0)
             {
                 successor.Address = fs.GetSuccessor();
                 if (_maxContext.Address != _minContext.Address)
@@ -653,7 +660,7 @@ internal sealed class ModelPpm
         //medContext = new PPMContext(Heap);
         _maxContext = new PpmContext(Heap);
         FoundState = new State(Heap);
-        _dummySee2Cont = new See2Context();
+        DummySee2Cont = new See2Context();
         for (var i = 0; i < 25; i++)
         {
             for (var j = 0; j < 16; j++)
@@ -669,7 +676,7 @@ internal sealed class ModelPpm
     private void NextContext()
     {
         var addr = FoundState.GetSuccessor();
-        if (_orderFall == 0 && addr > SubAlloc.PText)
+        if (OrderFall == 0 && addr > SubAlloc.PText)
         {
             _minContext.Address = addr;
             _maxContext.Address = addr;
@@ -777,7 +784,7 @@ internal sealed class ModelPpm
                 numMasked = _minContext.NumStats;
             do
             {
-                _orderFall++;
+                OrderFall++;
                 _minContext.Address = _minContext.GetSuffix();
                 if (_minContext.Address <= SubAlloc.PText || _minContext.Address > SubAlloc.HeapEnd)
                 {

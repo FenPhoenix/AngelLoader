@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using SharpCompress.Common.SevenZip;
 using SharpCompress.Compressors.BZip2;
 using SharpCompress.Compressors.Filters;
 using SharpCompress.Compressors.PPMd;
@@ -20,15 +19,16 @@ internal static class DecoderRegistry
     private const uint K_BCJ2 = 0x0303011B;
     private const uint K_DEFLATE = 0x040108;
     private const uint K_B_ZIP2 = 0x040202;
+    private const ulong K_AES_ID = 0x06F10701;
 
     internal static Stream CreateDecoderStream(
-        CMethodId id,
+        ulong id,
         Stream[] inStreams,
         byte[] info,
         long limit
     )
     {
-        switch (id._id)
+        switch (id)
         {
             case K_COPY:
                 if (info != null)
@@ -41,7 +41,7 @@ internal static class DecoderRegistry
             case K_LZMA:
             case K_LZMA2:
                 return new LzmaStream(info, inStreams.Single(), -1, limit);
-            case CMethodId.K_AES_ID:
+            case K_AES_ID:
                 throw new Common.CryptographicException("7Zip archive is encrypted; this is not supported.");
             case K_BCJ:
                 return new BCJFilter(inStreams.Single());

@@ -55,7 +55,8 @@ internal sealed class RangeCoder
         }
     }
 
-    internal SubRange SubRange { get; private set; }
+    //internal SubRange SubRange { get; private set; }
+    internal SubRange SubRange;
 
     internal long GetCurrentShiftCount(int shift)
     {

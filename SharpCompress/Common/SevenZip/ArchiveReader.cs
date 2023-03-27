@@ -242,7 +242,7 @@ internal sealed class ArchiveReader
             {
                 id |= (ulong)longId[idSize - 1 - j] << (8 * j);
             }
-            coder._methodId = new CMethodId(id);
+            coder._methodId = id;
 
             if ((mainByte & 0x10) != 0)
             {
