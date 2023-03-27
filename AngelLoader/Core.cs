@@ -1,4 +1,4 @@
-﻿//#define ENABLE_SAFE_README_IDENTICALITY_TEST
+﻿//#define ENABLE_README_TESTS
 
 /*
 NOTE(Core notes):
@@ -1536,7 +1536,7 @@ internal static class Core
         return (readmeOnDisk, ReadmeType.PlainText);
     }
 
-#if ENABLE_SAFE_README_IDENTICALITY_TEST
+#if ENABLE_README_TESTS
     internal static async void ReadmeTest()
     {
         using (var sw = new StreamWriter(@"C:\readme_test_new.txt"))
@@ -1555,6 +1555,44 @@ internal static class Core
                 }
             }
             Config.Language = "English";
+        }
+    }
+
+    internal static async Task ReadmeEncodingIdenticalityTest()
+    {
+        using (var sw = new StreamWriter(@"C:\_readme_encoding_test_old.txt"))
+        {
+            foreach (FanMission fm in FMsViewList)
+            {
+                bool wroteFMName = false;
+                var cache = await FMCache.GetCacheableData(fm, false);
+                string oldFMSelectedReadme = fm.SelectedReadme;
+                foreach (string readme in cache.Readmes)
+                {
+                    fm.SelectedReadme = readme;
+                    (string readmePath, ReadmeType readmeType) = GetReadmeFileAndType(fm);
+                    if (readmeType == ReadmeType.PlainText)
+                    {
+                        if (!wroteFMName)
+                        {
+                            sw.WriteLine(fm.InstalledDir);
+                            wroteFMName = true;
+                        }
+                        sw.WriteLine(readme);
+                        var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                        Encoding? encoding = fe.DetectFileEncoding(readmePath);
+                        if (encoding != null)
+                        {
+                            sw.WriteLine(encoding.EncodingName + " (" + encoding.CodePage + ")");
+                        }
+                        else
+                        {
+                            sw.WriteLine("<null>");
+                        }
+                    }
+                    fm.SelectedReadme = oldFMSelectedReadme;
+                }
+            }
         }
     }
 #endif
