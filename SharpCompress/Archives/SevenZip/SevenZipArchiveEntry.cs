@@ -1,23 +1,25 @@
-﻿using System;
-using SharpCompress.Common.SevenZip;
+﻿#nullable disable
+
+using System;
 using SharpCompress.Compressors.LZMA.Utilities;
 
 namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchiveEntry
 {
-    private readonly CFileItem FilePart;
+    internal SevenZipArchiveEntry() => HasStream = true;
 
-    internal SevenZipArchiveEntry(CFileItem part) => FilePart = part;
+    internal bool HasStream;
+    internal long? MTime;
 
     /// <summary>
     /// This is a 7Zip Anti item
     /// </summary>
-    public bool IsAnti => FilePart.IsAnti;
+    public bool IsAnti { get; internal set; }
 
-    public string FileName => FilePart.Name;
+    public string FileName { get; internal set; }
 
-    public long UncompressedSize => FilePart.Size;
+    public long UncompressedSize { get; internal set; }
 
     // Because null can be a valid value, we need an extra flag bool
     private bool _lastModifiedTimeSet;
@@ -28,7 +30,7 @@ public sealed class SevenZipArchiveEntry
         {
             if (!_lastModifiedTimeSet)
             {
-                _lastModifiedTime = Utils.TranslateTime(FilePart.MTime);
+                _lastModifiedTime = Utils.TranslateTime(MTime);
                 _lastModifiedTimeSet = true;
             }
 
@@ -36,5 +38,5 @@ public sealed class SevenZipArchiveEntry
         }
     }
 
-    public bool IsDirectory => FilePart.IsDir;
+    public bool IsDirectory { get; internal set; }
 }

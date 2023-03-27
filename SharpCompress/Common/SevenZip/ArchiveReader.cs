@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
 using SharpCompress.Compressors.LZMA.Utilities;
 
@@ -696,10 +697,10 @@ internal sealed class ArchiveReader
         }
 
         var numFiles = ReadNum();
-        db._files = new List<CFileItem>(numFiles);
+        db._files = new List<SevenZipArchiveEntry>(numFiles);
         for (var i = 0; i < numFiles; i++)
         {
-            db._files.Add(new CFileItem());
+            db._files.Add(new SevenZipArchiveEntry());
         }
 
         var emptyStreamVector = new BitVector(numFiles);
@@ -725,7 +726,7 @@ internal sealed class ArchiveReader
                         streamSwitch.Set(this, dataVector);
                         for (var i = 0; i < db._files.Count; i++)
                         {
-                            db._files[i].Name = _currentReader.ReadString();
+                            db._files[i].FileName = _currentReader.ReadString();
                         }
                     }
                     break;
@@ -848,17 +849,17 @@ internal sealed class ArchiveReader
             file.HasStream = !emptyStreamVector[i];
             if (file.HasStream)
             {
-                file.IsDir = false;
+                file.IsDirectory = false;
                 file.IsAnti = false;
-                file.Size = unpackSizes[sizeIndex];
+                file.UncompressedSize = unpackSizes[sizeIndex];
                 sizeIndex++;
             }
             else
             {
-                file.IsDir = !emptyFileVector[emptyFileIndex];
+                file.IsDirectory = !emptyFileVector[emptyFileIndex];
                 file.IsAnti = antiFileVector[emptyFileIndex];
                 emptyFileIndex++;
-                file.Size = 0;
+                file.UncompressedSize = 0;
             }
         }
     }

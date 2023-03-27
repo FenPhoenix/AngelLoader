@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.Common.SevenZip;
 
@@ -13,7 +14,7 @@ internal sealed class ArchiveDatabase
 
     internal List<CFolder> _folders = new();
     internal List<int> _numUnpackStreamsVector;
-    internal List<CFileItem> _files = new();
+    internal List<SevenZipArchiveEntry> _files = new();
 
     internal void Clear()
     {
