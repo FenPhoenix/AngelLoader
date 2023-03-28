@@ -1562,7 +1562,10 @@ internal static class Core
     {
         using (var sw = new StreamWriter(@"C:\_readme_encoding_test_old.txt"))
         {
-            foreach (FanMission fm in FMsViewList)
+            var fms = new List<FanMission>(FMsViewList);
+            fms = fms.OrderBy(static x => x.InstalledDir, StringComparer.OrdinalIgnoreCase).ToList();
+
+            foreach (FanMission fm in fms)
             {
                 bool wroteFMName = false;
                 var cache = await FMCache.GetCacheableData(fm, false);
