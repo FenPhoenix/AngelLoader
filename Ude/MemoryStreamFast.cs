@@ -1,8 +1,7 @@
 ﻿using System;
+using System.IO;
 
 namespace Ude.NetStandard;
-
-using System.IO;
 
 public sealed class MemoryStreamFast
 {
