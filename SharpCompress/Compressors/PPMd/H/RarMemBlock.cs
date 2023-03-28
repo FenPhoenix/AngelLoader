@@ -49,8 +49,10 @@ internal sealed class RarMemBlock : Pointer
 
     internal void Remove()
     {
-        var temp = new RarMemBlock(Memory);
-        temp.Address = GetPrev();
+        var temp = new RarMemBlock(Memory)
+        {
+            Address = GetPrev()
+        };
         temp.SetNext(GetNext()); // prev.setNext(next);
         temp.Address = GetNext();
         temp.SetPrev(GetPrev()); // next.setPrev(prev);

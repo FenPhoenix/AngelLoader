@@ -268,7 +268,7 @@ internal sealed class ModelPpm
 
         if (_minContext.Address <= SubAlloc.PText || _minContext.Address > SubAlloc.HeapEnd)
         {
-            return (-1);
+            return -1;
         }
 
         if (_minContext.NumStats != 1)
@@ -278,11 +278,11 @@ internal sealed class ModelPpm
                 || _minContext.FreqData.GetStats() > SubAlloc.HeapEnd
             )
             {
-                return (-1);
+                return -1;
             }
             if (!_minContext.DecodeSymbol1(this))
             {
-                return (-1);
+                return -1;
             }
         }
         else
@@ -299,12 +299,12 @@ internal sealed class ModelPpm
                 _minContext.Address = _minContext.GetSuffix(); // =MinContext->Suffix;
                 if (_minContext.Address <= SubAlloc.PText || _minContext.Address > SubAlloc.HeapEnd)
                 {
-                    return (-1);
+                    return -1;
                 }
             } while (_minContext.NumStats == NumMasked);
             if (!_minContext.DecodeSymbol2(this))
             {
-                return (-1);
+                return -1;
             }
             Coder.Decode();
         }
@@ -327,7 +327,7 @@ internal sealed class ModelPpm
             }
         }
         Coder.AriDecNormalize(); // ARI_DEC_NORMALIZE(Coder.code,Coder.low,Coder.range,Coder.UnpackRead);
-        return (symbol);
+        return symbol;
     }
 
     public See2Context[][] GetSee2Cont() => _see2Cont;
@@ -420,7 +420,7 @@ internal sealed class ModelPpm
         {
             if (pc.Address <= SubAlloc.PText)
             {
-                return (0);
+                return 0;
             }
             p.Address = pc.FreqData.GetStats();
             if (p.Symbol != upState.Symbol)
@@ -564,7 +564,7 @@ internal sealed class ModelPpm
         //        // Debug
         //        subAlloc.dumpHeap();
         ns = _minContext.NumStats;
-        s0 = _minContext.FreqData.SummFreq - (ns) - (fs.Freq - 1);
+        s0 = _minContext.FreqData.SummFreq - ns - (fs.Freq - 1);
         for (
             pc.Address = _maxContext.Address;
             pc.Address != _minContext.Address;
@@ -652,7 +652,7 @@ internal sealed class ModelPpm
         if (maxOrder == 1)
         {
             SubAlloc.StopSubAllocator();
-            return (false);
+            return false;
         }
         SubAlloc.StartSubAllocator(maxMemory);
         _minContext = new PpmContext(Heap);
@@ -670,7 +670,7 @@ internal sealed class ModelPpm
         }
         StartModelRare(maxOrder);
 
-        return (_minContext.Address != 0);
+        return _minContext.Address != 0;
     }
 
     private void NextContext()
@@ -704,7 +704,7 @@ internal sealed class ModelPpm
                 byte symbol;
                 decoder.Decode(0, (uint)s.Freq);
                 symbol = (byte)s.Symbol;
-                _minContext.update1_0(this, s.Address);
+                _minContext.Update1_0(this, s.Address);
                 NextContext();
                 return symbol;
             }

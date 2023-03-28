@@ -74,7 +74,9 @@ public sealed class MemoryStreamFast
                 _buffer = dst;
             }
             else
-                _buffer = null;
+            {
+                _buffer = Array.Empty<byte>();
+            }
             _capacity = value;
         }
     }
@@ -176,7 +178,9 @@ public sealed class MemoryStreamFast
                 _buffer[_position + num2] = buffer[offset + num2];
         }
         else
+        {
             Buffer.BlockCopy(buffer, offset, _buffer, _position, count);
+        }
         _position = num1;
     }
 

@@ -103,11 +103,12 @@ internal sealed class Allocator
         {
             _memoryNodes[index] = new MemoryNode(
                 (uint)(NODE_OFFSET + (index * MemoryNode.SIZE)),
-                _memory
-            );
-            _memoryNodes[index].Stamp = 0;
-            _memoryNodes[index].Next = MemoryNode.ZERO;
-            _memoryNodes[index].UnitCount = 0;
+                _memory)
+            {
+                Stamp = 0,
+                Next = MemoryNode.ZERO,
+                UnitCount = 0
+            };
         }
 
         _text = _heap;
@@ -204,7 +205,7 @@ internal sealed class Allocator
     {
         if (_highUnit != _lowUnit)
         {
-            return (_highUnit -= UNIT_SIZE);
+            return _highUnit -= UNIT_SIZE;
         }
         if (_memoryNodes[0].Available)
         {
@@ -405,10 +406,12 @@ internal sealed class Allocator
 
     private void GlueFreeBlocks()
     {
-        var memoryNode = new MemoryNode(LOCAL_OFFSET, _memory);
-        memoryNode.Stamp = 0;
-        memoryNode.Next = MemoryNode.ZERO;
-        memoryNode.UnitCount = 0;
+        var memoryNode = new MemoryNode(LOCAL_OFFSET, _memory)
+        {
+            Stamp = 0,
+            Next = MemoryNode.ZERO,
+            UnitCount = 0
+        };
 
         MemoryNode memoryNode0;
         MemoryNode memoryNode1;

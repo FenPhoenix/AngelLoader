@@ -39,7 +39,7 @@ internal sealed class RangeCoder
         get
         {
             _range = (_range / SubRange.Scale) & UINT_MASK;
-            return (int)((_code - _low) / (_range));
+            return (int)((_code - _low) / _range);
         }
     }
 
@@ -61,7 +61,7 @@ internal sealed class RangeCoder
     internal long GetCurrentShiftCount(int shift)
     {
         _range = Utility.URShift(_range, shift);
-        return ((_code - _low) / (_range)) & UINT_MASK;
+        return ((_code - _low) / _range) & UINT_MASK;
     }
 
     internal void Decode()

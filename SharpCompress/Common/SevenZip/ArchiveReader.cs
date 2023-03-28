@@ -274,9 +274,11 @@ internal sealed class ArchiveReader
         folder._bindPairs = new List<CBindPair>(numBindPairs);
         for (var i = 0; i < numBindPairs; i++)
         {
-            var bp = new CBindPair();
-            bp._inIndex = ReadNum();
-            bp._outIndex = ReadNum();
+            var bp = new CBindPair
+            {
+                _inIndex = ReadNum(),
+                _outIndex = ReadNum()
+            };
             folder._bindPairs.Add(bp);
         }
         if (numInStreams < numBindPairs)

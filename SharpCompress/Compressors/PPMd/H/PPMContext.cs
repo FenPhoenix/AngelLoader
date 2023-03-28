@@ -167,20 +167,22 @@ internal sealed class PpmContext : Pointer
         FreqData.IncrementSummFreq(4);
         escFreq = FreqData.SummFreq - p.Freq;
         adder = (model.OrderFall != 0) ? 1 : 0;
-        p.Freq = Utility.URShift((p.Freq + adder), 1);
+        p.Freq = Utility.URShift(p.Freq + adder, 1);
         FreqData.SummFreq = p.Freq;
         do
         {
             p.IncrementAddress();
             escFreq -= p.Freq;
-            p.Freq = Utility.URShift((p.Freq + adder), 1);
+            p.Freq = Utility.URShift(p.Freq + adder, 1);
             FreqData.IncrementSummFreq(p.Freq);
             temp.Address = p.Address - State.SIZE;
             if (p.Freq > temp.Freq)
             {
                 p1.Address = p.Address;
-                var tmp = new StateRef();
-                tmp.Values = p1;
+                var tmp = new StateRef
+                {
+                    Values = p1
+                };
                 var temp2 = new State(model.Heap);
                 var temp3 = new State(model.Heap);
                 do
@@ -216,7 +218,7 @@ internal sealed class PpmContext : Pointer
                     tmp.DecrementFreq(Utility.URShift(tmp.Freq, 1));
                     escFreq = Utility.URShift(escFreq, 1);
                 } while (escFreq > 1);
-                model.SubAlloc.FreeUnits(FreqData.GetStats(), Utility.URShift((oldNs + 1), 1));
+                model.SubAlloc.FreeUnits(FreqData.GetStats(), Utility.URShift(oldNs + 1, 1));
                 _oneState.SetValues(tmp);
                 model.FoundState.Address = _oneState.Address;
                 return;
@@ -224,8 +226,8 @@ internal sealed class PpmContext : Pointer
         }
         escFreq -= Utility.URShift(escFreq, 1);
         FreqData.IncrementSummFreq(escFreq);
-        int n0 = Utility.URShift((oldNs + 1), 1),
-            n1 = Utility.URShift((NumStats + 1), 1);
+        int n0 = Utility.URShift(oldNs + 1, 1),
+            n1 = Utility.URShift(NumStats + 1, 1);
         if (n0 != n1)
         {
             FreqData.SetStats(model.SubAlloc.ShrinkUnits(FreqData.GetStats(), n0, n1));
@@ -246,7 +248,7 @@ internal sealed class PpmContext : Pointer
     }
 
     internal static int GetMean(int summ, int shift, int round) =>
-        (Utility.URShift((summ + (1 << (shift - round))), (shift)));
+        Utility.URShift(summ + (1 << (shift - round)), shift);
 
     internal void DecodeBinSymbol(ModelPpm model)
     {
@@ -317,7 +319,7 @@ internal sealed class PpmContext : Pointer
         }
     }
 
-    internal void update1_0(ModelPpm model, int p)
+    internal void Update1_0(ModelPpm model, int p)
     {
         model.FoundState.Address = p;
         model.PrevSuccess = 2 * model.FoundState.Freq > FreqData.SummFreq ? 1 : 0;
@@ -388,7 +390,7 @@ internal sealed class PpmContext : Pointer
             psee2C.IncSumm((int)coder.SubRange.Scale);
             model.NumMasked = NumStats;
         }
-        return (true);
+        return true;
     }
 
     internal void Update2(ModelPpm model, int p)
@@ -461,10 +463,11 @@ internal sealed class PpmContext : Pointer
     {
         var coder = model.Coder;
         coder.SubRange.Scale = FreqData.SummFreq;
-        var p = new State(model.Heap);
-        p.Address = FreqData.GetStats();
-        int i,
-            hiCnt;
+        var p = new State(model.Heap)
+        {
+            Address = FreqData.GetStats()
+        };
+        int hiCnt;
         long count = coder.CurrentCount;
         if (count >= coder.SubRange.Scale)
         {
@@ -488,11 +491,11 @@ internal sealed class PpmContext : Pointer
         }
         if (model.FoundState.Address == 0)
         {
-            return (false);
+            return false;
         }
         model.PrevSuccess = 0;
         var numStats = NumStats;
-        i = numStats - 1;
+        int i = numStats - 1;
         while ((hiCnt += p.IncrementAddress().Freq) <= count)
         {
             if (--i == 0)
@@ -508,7 +511,7 @@ internal sealed class PpmContext : Pointer
                     model.CharMask[p.DecrementAddress().Symbol] = model.EscCount;
                 } while (--i != 0);
                 coder.SubRange.HighCount = coder.SubRange.Scale;
-                return (true);
+                return true;
             }
         }
         coder.SubRange.LowCount = hiCnt - p.Freq;

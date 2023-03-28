@@ -137,10 +137,12 @@ internal sealed partial class Model
 
         // Set the signature (identifying the algorithm).
 
-        _emptySee2Context = new See2Context();
-        _emptySee2Context._summary = (ushort)(SIGNATURE & 0x0000ffff);
-        _emptySee2Context._shift = (byte)((SIGNATURE >> 16) & 0x000000ff);
-        _emptySee2Context._count = (byte)(SIGNATURE >> 24);
+        _emptySee2Context = new See2Context
+        {
+            _summary = (ushort)(SIGNATURE & 0x0000ffff),
+            _shift = (byte)((SIGNATURE >> 16) & 0x000000ff),
+            _count = (byte)(SIGNATURE >> 24)
+        };
     }
 
     internal Coder DecodeStart(Stream source, PpmdProperties properties)

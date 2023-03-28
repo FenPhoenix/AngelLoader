@@ -69,7 +69,6 @@ public sealed class UTF8Prober : CharsetProber
 
         for (int i = offset; i < max; i++)
         {
-
             int codingState = _codingSM.NextState(buf[i]);
 
             if (codingState == SMModel.ERROR)

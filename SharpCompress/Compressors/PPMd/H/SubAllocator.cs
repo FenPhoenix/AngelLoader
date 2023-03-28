@@ -95,7 +95,7 @@ internal sealed class SubAllocator
 
     /* memblockptr */
 
-    private static int MbPtr(int basePtr, int items) => (basePtr + U2B(items));
+    private static int MbPtr(int basePtr, int items) => basePtr + U2B(items);
 
     private void SplitBlock(int pv, int oldIndx, int newIndx)
     {
@@ -163,8 +163,10 @@ internal sealed class SubAllocator
         // Init freeList
         for (int i = 0, pos = _freeListPos; i < _freeList.Length; i++, pos += RarNode.SIZE)
         {
-            _freeList[i] = new RarNode(Heap);
-            _freeList[i].Address = pos;
+            _freeList[i] = new RarNode(Heap)
+            {
+                Address = pos
+            };
         }
 
         // Init temp fields
@@ -257,7 +259,7 @@ internal sealed class SubAllocator
                     _unitsStart -= i;
                     return _unitsStart;
                 }
-                return (0);
+                return 0;
             }
         } while (_freeList[i].GetNext() == 0);
         var retVal = RemoveNode(i);
@@ -286,7 +288,7 @@ internal sealed class SubAllocator
     {
         if (_hiUnit != _loUnit)
         {
-            return (_hiUnit -= UNIT_SIZE);
+            return _hiUnit -= UNIT_SIZE;
         }
         if (_freeList[0].GetNext() != 0)
         {
