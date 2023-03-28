@@ -22,7 +22,7 @@ namespace AL_Common.FastZipReader.Deflate64Managed;
 internal sealed class OutputWindow
 {
     // With Deflate64 we can have up to a 65536 length as well as up to a 65538 distance. This means we need a Window that is at
-    // least 131074 bytes long so we have space to retrieve up to a full 64kb in lookback and place it in our buffer without 
+    // least 131074 bytes long so we have space to retrieve up to a full 64kb in lookback and place it in our buffer without
     // overwriting existing data. OutputWindow requires that the WindowSize be an exponent of 2, so we round up to 2^18.
     private const int WindowSize = 262144;
     private const int WindowMask = 262143;

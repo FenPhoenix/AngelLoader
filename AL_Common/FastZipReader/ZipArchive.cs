@@ -46,7 +46,7 @@ public sealed class ZipArchiveFast : IDisposable
     private long _expectedNumberOfEntries;
     private readonly Stream? _backingStream;
 
-    internal readonly Stream ArchiveStream;
+    private readonly Stream _archiveStream;
 
     private uint _numberOfThisDisk;
 
@@ -130,9 +130,9 @@ public sealed class ZipArchiveFast : IDisposable
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
-            ArchiveStream = stream;
+            _archiveStream = stream;
 
-            bundle.ArchiveSubReadStream.SetSuperStream(ArchiveStream);
+            bundle.ArchiveSubReadStream.SetSuperStream(_archiveStream);
 
             _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
             _isDisposed = false;
@@ -212,18 +212,18 @@ public sealed class ZipArchiveFast : IDisposable
 
         if (entry.StoredOffsetOfCompressedData != null)
         {
-            ArchiveStream.Seek((long)entry.StoredOffsetOfCompressedData, SeekOrigin.Begin);
+            _archiveStream.Seek((long)entry.StoredOffsetOfCompressedData, SeekOrigin.Begin);
             return true;
         }
 
-        if (entry.OffsetOfLocalHeader > ArchiveStream.Length)
+        if (entry.OffsetOfLocalHeader > _archiveStream.Length)
         {
             message = SR.LocalFileHeaderCorrupt;
             return false;
         }
 
-        ArchiveStream.Seek(entry.OffsetOfLocalHeader, SeekOrigin.Begin);
-        if (!ZipLocalFileHeader.TrySkipBlock(ArchiveStream, _bundle))
+        _archiveStream.Seek(entry.OffsetOfLocalHeader, SeekOrigin.Begin);
+        if (!ZipLocalFileHeader.TrySkipBlock(_archiveStream, _bundle))
         {
             message = SR.LocalFileHeaderCorrupt;
             return false;
@@ -232,9 +232,9 @@ public sealed class ZipArchiveFast : IDisposable
         // At this point, this is really just caching a FileStream.Position, which does have some logic in
         // its getter, but probably isn't slow enough to warrant being cached... but I guess ArchiveStream
         // could be any kind of stream, so better to guarantee performance than to hope for it, I guess.
-        entry.StoredOffsetOfCompressedData ??= ArchiveStream.Position;
+        entry.StoredOffsetOfCompressedData ??= _archiveStream.Position;
 
-        if (entry.StoredOffsetOfCompressedData + entry.CompressedLength > ArchiveStream.Length)
+        if (entry.StoredOffsetOfCompressedData + entry.CompressedLength > _archiveStream.Length)
         {
             message = SR.LocalFileHeaderCorrupt;
             return false;
@@ -267,12 +267,12 @@ public sealed class ZipArchiveFast : IDisposable
                 {
                     // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
 
-                    ArchiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
+                    _archiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
 
                     long numberOfEntries = 0;
 
                     //read the central directory
-                    while (ZipCentralDirectoryFileHeader.TryReadBlock(ArchiveStream, _bundle, out var currentHeader))
+                    while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _bundle, out var currentHeader))
                     {
                         var entry = new ZipArchiveEntry(currentHeader);
                         _entries.Add(entry);
@@ -338,16 +338,16 @@ public sealed class ZipArchiveFast : IDisposable
         try
         {
             // this seeks to the start of the end of central directory record
-            ArchiveStream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
-            if (!ZipHelpers.SeekBackwardsToSignature(ArchiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant, _bundle))
+            _archiveStream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
+            if (!ZipHelpers.SeekBackwardsToSignature(_archiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant, _bundle))
             {
                 throw new InvalidDataException(SR.EOCDNotFound);
             }
 
-            long eocdStart = ArchiveStream.Position;
+            long eocdStart = _archiveStream.Position;
 
             // read the EOCD
-            bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveStream, _bundle, out ZipEndOfCentralDirectoryBlock eocd);
+            bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(_archiveStream, _bundle, out ZipEndOfCentralDirectoryBlock eocd);
             Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
             if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
@@ -372,12 +372,12 @@ public sealed class ZipArchiveFast : IDisposable
             {
                 // we need to look for zip 64 EOCD stuff
                 // seek to the zip 64 EOCD locator
-                ArchiveStream.Seek(eocdStart - Zip64EndOfCentralDirectoryLocator.SizeOfBlockWithoutSignature, SeekOrigin.Begin);
+                _archiveStream.Seek(eocdStart - Zip64EndOfCentralDirectoryLocator.SizeOfBlockWithoutSignature, SeekOrigin.Begin);
                 // if we don't find it, assume it doesn't exist and use data from normal eocd
-                if (ZipHelpers.SeekBackwardsToSignature(ArchiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant, _bundle))
+                if (ZipHelpers.SeekBackwardsToSignature(_archiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant, _bundle))
                 {
                     // use locator to get to Zip64EOCD
-                    bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveStream, _bundle, out Zip64EndOfCentralDirectoryLocator locator);
+                    bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(_archiveStream, _bundle, out Zip64EndOfCentralDirectoryLocator locator);
                     Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                     if (locator.OffsetOfZip64EOCD > long.MaxValue)
@@ -386,10 +386,10 @@ public sealed class ZipArchiveFast : IDisposable
                     }
                     long zip64EOCDOffset = (long)locator.OffsetOfZip64EOCD;
 
-                    ArchiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
+                    _archiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                     // read Zip64EOCD
-                    if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveStream, _bundle, out Zip64EndOfCentralDirectoryRecord record))
+                    if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(_archiveStream, _bundle, out Zip64EndOfCentralDirectoryRecord record))
                     {
                         throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
                     }
@@ -414,7 +414,7 @@ public sealed class ZipArchiveFast : IDisposable
                 }
             }
 
-            if (_centralDirectoryStart > ArchiveStream.Length)
+            if (_centralDirectoryStart > _archiveStream.Length)
             {
                 throw new InvalidDataException(SR.FieldTooBigOffsetToCD);
             }
@@ -444,7 +444,7 @@ public sealed class ZipArchiveFast : IDisposable
     {
         if (disposing && !_isDisposed)
         {
-            ArchiveStream.Dispose();
+            _archiveStream.Dispose();
             _bundle.ArchiveSubReadStream.SetSuperStream(null);
             _backingStream?.Dispose();
 
