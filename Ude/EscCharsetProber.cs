@@ -48,8 +48,8 @@ public sealed class EscCharsetProber : CharsetProber
     {
         _codingSM = new CodingStateMachine[CHARSETS_NUM];
         _codingSM[0] = new CodingStateMachine(new HZSMModel());
-        _codingSM[2] = new CodingStateMachine(new ISO2022JPSMModel());
-        _codingSM[3] = new CodingStateMachine(new ISO2022KRSMModel());
+        _codingSM[1] = new CodingStateMachine(new ISO2022JPSMModel());
+        _codingSM[2] = new CodingStateMachine(new ISO2022KRSMModel());
         Reset();
     }
 
