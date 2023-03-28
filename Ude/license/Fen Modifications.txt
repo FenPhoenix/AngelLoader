@@ -1,0 +1,7 @@
+FenPhoenix modifications list:
+
+March 27, 2023:
+-Fixed a shadowed-variable bug which caused Cyrillic detection to often fail.
+-Changed the API to return enum members rather than strings, but they can be indexed into a string table if you want the encoding names. This helps my particular use case by making it easier to avoid extra allocations.
+-Removed code for detecting encodings that aren't supported by .NET.
+-Generally cleaned up the code.

@@ -33,27 +33,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using AL_Common;
+using Ude.NetStandard;
 
 namespace FMScanner.SimpleHelpers;
 
 public sealed class FileEncoding
 {
     /*
-    @CharEncoding: "Knife to the Heart" RUS_readme.txt encoding detection failure
-    We flat-out fail to detect the encoding of this readme, which is Win-1251 (Cyrillic). This happens even
-    if we bypass this code and just ask the UDE detector directly. However, Notepad++ detects this file's
-    encoding correctly, and it's using a C version of the same detector (Mozilla Universal Charset Detector).
-    Ude.NetStandard has a bug I guess(?) We should take a look at the code and see if we can fix it...
-
-    UPDATE: 
-    Actually Notepad++ is using some version of uchardet (by the looks of things, a really old version -
-    https://github.com/BYVoid/uchardet probably, judging by the readme and the "BYvoid" name in NPP source
-    /uchardet dir). So we should definitely switch to that, wrap or port as necessary.
+    We used to fail detecting Cyrillic on several readmes, but it turns out it was a simple shadowed-variable bug
+    in Ude.NetStandard. After fixing it, Cyrillic detection seems to be working well.
 
     Links of interest:
     
@@ -72,14 +63,18 @@ public sealed class FileEncoding
 
     private bool _started;
     private bool _done;
-    private readonly Dictionary<string, int> _encodingFrequency = new(StringComparer.Ordinal);
-    private readonly Ude.CharsetDetector _ude = new();
-    private readonly Ude.CharsetDetector _singleUde = new();
-    private string? _encodingName;
+    private readonly int[] _encodingFrequency = new int[CharsetDetector.CharsetCount];
+    // Stupid micro-optimization
+    private bool _encodingFrequencyTouched;
+    private readonly CharsetDetector _ude = new();
+    private readonly CharsetDetector _singleUde = new();
+    private Charset _encodingName;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[16 * 1024];
     private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
     private bool _canBeASCII = true;
+
+    private static string GetEncodingNameString(Charset charset) => CharsetDetector.CharsetToName[(int)charset];
 
     /// <summary>
     /// Tries to detect the file encoding.
@@ -103,6 +98,10 @@ public sealed class FileEncoding
         {
             Detect(inputStream);
             return Complete();
+        }
+        catch
+        {
+            return null;
         }
         finally
         {
@@ -198,9 +197,10 @@ public sealed class FileEncoding
         _started = false;
         _done = false;
         _encodingFrequency.Clear();
+        _encodingFrequencyTouched = false;
         _ude.Reset();
         _singleUde.Reset();
-        _encodingName = null;
+        _encodingName = Charset.Null;
         _canBeASCII = true;
     }
 
@@ -255,7 +255,7 @@ public sealed class FileEncoding
         // execute charset detector
         _ude.Feed(inputData, start, count);
         _ude.DataEnd();
-        if (_ude.IsDone() && !_ude.Charset.IsEmpty())
+        if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
             IncrementFrequency(_ude.Charset);
             _done = true;
@@ -271,7 +271,7 @@ public sealed class FileEncoding
             _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step);
             _singleUde.DataEnd();
             // update encoding frequency
-            if (_singleUde.Confidence > 0.3 && !_singleUde.Charset.IsEmpty())
+            if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)
             {
                 IncrementFrequency(_singleUde.Charset);
             }
@@ -289,7 +289,7 @@ public sealed class FileEncoding
     {
         _done = true;
         _ude.DataEnd();
-        if (_ude.IsDone() && !_ude.Charset.IsEmpty())
+        if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
             _encodingName = _ude.Charset;
         }
@@ -297,7 +297,7 @@ public sealed class FileEncoding
         _encodingName = GetCurrentEncoding();
 
         /*
-         Fen's Notes:
+         Fen:
          @NET5: GetEncoding(string): string could be "utf-7" and then we throw on .NET 5
          https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#utf-7-code-paths-are-obsolete
          Ude.NetStandard v1.2.0 at least does not appear to detect nor ever return the value "utf-7", and
@@ -311,32 +311,56 @@ public sealed class FileEncoding
         */
 
         // check result
-        return _encodingName.IsEmpty() || _encodingName.EqualsI_Local("utf-7") ? null : Encoding.GetEncoding(_encodingName);
+        return _encodingName == Charset.Null ? null : Encoding.GetEncoding(GetEncodingNameString(_encodingName));
     }
 
-    private void IncrementFrequency(string charset)
+    private void IncrementFrequency(Charset charset)
     {
-        _encodingFrequency.TryGetValue(charset, out int currentCount);
-        _encodingFrequency[charset] = ++currentCount;
+        // Fen: Matching original behavior with ranking ASCII the lowest always
+        _encodingFrequency[(int)charset] = charset == Charset.ASCII ? -1 : _encodingFrequency[(int)charset] + 1;
+        _encodingFrequencyTouched = true;
     }
 
-    private string? GetCurrentEncoding()
+    private Charset GetCurrentEncoding()
     {
-        if (_encodingFrequency.Count == 0) return null;
+        if (!_encodingFrequencyTouched) return Charset.Null;
+
         // ASCII should be the last option, since other encodings often has ASCII included...
-        // @MEM(FileEncoding): This LINQ stuff allocates a lot. int[1]: 9,361 / 149,776 (x2!)
-        string? ret = _encodingFrequency
-            .OrderByDescending(static i => i.Value * (i.Key != "ASCII" ? 1 : 0))
-            .FirstOrDefault().Key;
-
-        if (ret?.Equals("ASCII") == true)
+        // Fen: Matching original behavior of pushing ASCII to the bottom
+        int max = 0;
+        int maxIndex = -1;
+        int foundCount = 0;
+        bool foundAscii = false;
+        for (int i = 0; i < _encodingFrequency.Length; i++)
         {
-            // Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
-            // <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is
-            // the "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252.
-            // Also, if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so
-            // why not just get rid of any reference to ancient stuff if we can.
-            ret = !_canBeASCII ? "Windows-1252" : "UTF-8";
+            int freq = _encodingFrequency[i];
+            // For future debug
+            //Trace.WriteLine(((Charset)i) + " (count: " + freq + ")");
+            if (freq != 0)
+            {
+                if (freq == -1)
+                {
+                    foundAscii = true;
+                }
+                else if (freq > max)
+                {
+                    max = freq;
+                    maxIndex = i;
+                }
+                foundCount++;
+            }
+        }
+
+        Charset ret = foundCount == 1 && foundAscii ? Charset.ASCII : (Charset)maxIndex;
+
+        if (ret == Charset.ASCII)
+        {
+            // Fen: Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
+            // <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is the
+            // "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252. Also,
+            // if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so why not
+            // just get rid of any reference to ancient stuff if we can.
+            ret = !_canBeASCII ? Charset.Windows1252 : Charset.UTF8;
         }
 
         return ret;

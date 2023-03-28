@@ -1537,7 +1537,7 @@ internal static class Core
     }
 
 #if ENABLE_README_TESTS
-    internal static async void ReadmeTest()
+    internal static async void SafeReadmeIdenticalityTest()
     {
         using (var sw = new StreamWriter(@"C:\readme_test_old.txt"))
         {
@@ -1560,7 +1560,7 @@ internal static class Core
 
     internal static async Task ReadmeEncodingIdenticalityTest()
     {
-        using (var sw = new StreamWriter(@"C:\_readme_encoding_test_old.txt"))
+        using (var sw = new StreamWriter(@"C:\_readme_encoding_test_new.txt"))
         {
             var fms = new List<FanMission>(FMsViewList);
             fms = fms.OrderBy(static x => x.InstalledDir, StringComparer.OrdinalIgnoreCase).ToList();

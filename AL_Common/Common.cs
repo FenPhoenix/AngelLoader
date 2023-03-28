@@ -403,6 +403,9 @@ public static class Common
     public static bool IsAsciiAlpha(this char c) => (((uint)c - 'A') & ~0x20) < 26;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiAlpha(this byte b) => (((uint)b - 'A') & ~0x20) < 26;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

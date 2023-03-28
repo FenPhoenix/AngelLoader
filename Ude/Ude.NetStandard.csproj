@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>Ude.NetStandard</AssemblyTitle>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <VersionPrefix>1.0.2</VersionPrefix>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <Authors>yinyue200</Authors>
+    <TargetFrameworks>net472</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>Ude.NetStandard</AssemblyName>
+    <Description>Ude.NetStandard is a compiled C# port of Mozilla Universal Charset Detector for dotnet.</Description>
+    <Version>1.2</Version>
+    <RepositoryUrl>https://github.com/yinyue200/ude</RepositoryUrl>
+
+	<Nullable>enable</Nullable>
+	<LangVersion>latest</LangVersion>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Nullable" Version="1.3.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
+  </ItemGroup>
+</Project>

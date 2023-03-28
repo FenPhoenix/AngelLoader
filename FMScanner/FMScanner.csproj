@@ -90,12 +90,12 @@
     </PackageReference>
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
     <ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
+    <ProjectReference Include="..\Ude\Ude.NetStandard.csproj" />
   </ItemGroup>
 
 </Project>
