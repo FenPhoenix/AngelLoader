@@ -90,7 +90,7 @@ public abstract class CharsetProber
     /// <returns>filtered buffer</returns>
     protected static byte[] FilterWithoutEnglishLetters(byte[] buf, int offset, int len)
     {
-        using var ms = new MemoryStream(buf.Length);
+        var ms = new MemoryStreamFast(buf.Length);
         bool meetMSB = false;
         int max = offset + len;
         int prev = offset;
@@ -135,7 +135,7 @@ public abstract class CharsetProber
     /// <returns>a filtered copy of the input buffer</returns>
     protected static byte[] FilterWithEnglishLetters(byte[] buf, int offset, int len)
     {
-        using var ms = new MemoryStream(buf.Length);
+        var ms = new MemoryStreamFast(buf.Length);
         bool inTag = false;
         int max = offset + len;
         int prev = offset;
