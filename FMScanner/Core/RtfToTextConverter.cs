@@ -12,6 +12,9 @@ With RtfToPlainTextTest with "Any CPU" (which I believe means x64 in my case) th
 ~583ms, as opposed to ~940ms on x86. That's WAY faster and gets us to ~295MB/s!
 It also explains the discrepancy up there in the perf numbers with different apps...
 
+@MEM(Encoding.GetChars()): There's an overload that takes a char[] buffer in, but we're using the return-value versions!
+We're taking tons of allocations like that, we should change to passing our own cached buffer in!
+
 ---
 
 Note to self:
