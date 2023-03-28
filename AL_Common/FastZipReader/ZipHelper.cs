@@ -102,10 +102,6 @@ internal static class ZipHelpers
 
         while (bytesLeftToRead > 0)
         {
-            // @MEM: FileStream() has an internal buffer that you can't pass in, so it gets recreated ten trillion times
-            // Just reading the zips for total uncompressed size causes ~8MB of allocations in these file
-            // streams, when checking the ~1600 set.
-            // 2041 allocations of (4096 + 12 overhead per array object) = 8,384,428 bytes
             int bytesRead = stream.Read(buffer, totalBytesRead, bytesLeftToRead);
             if (bytesRead == 0) throw new IOException(SR.UnexpectedEndOfStream);
 
