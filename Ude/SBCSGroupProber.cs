@@ -72,7 +72,7 @@ public sealed class SBCSGroupProber : CharsetProber
         Reset();
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         //apply filter to original buffer, and we got new buffer back
         //depend on what script it is, we will feed them the new buffer
@@ -93,7 +93,7 @@ public sealed class SBCSGroupProber : CharsetProber
                 continue;
             }
 
-            ProbingState st = _probers[i].HandleData(newBuf, 0, newBuf.Length);
+            ProbingState st = _probers[i].HandleData(newBuf, 0, newBuf.Length, memoryStream);
 
             if (st == ProbingState.FoundIt)
             {

@@ -61,7 +61,7 @@ public abstract class UniversalDetector
         _lastChar = 0x00;
     }
 
-    public void Feed(byte[] buf, int offset, int len)
+    public void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         if (_done)
         {
@@ -153,7 +153,7 @@ public abstract class UniversalDetector
         {
             case InputState.EscASCII:
                 _escCharsetProber ??= new EscCharsetProber();
-                st = _escCharsetProber.HandleData(buf, offset, len);
+                st = _escCharsetProber.HandleData(buf, offset, len, memoryStream);
                 if (st == ProbingState.FoundIt)
                 {
                     _done = true;
@@ -166,7 +166,7 @@ public abstract class UniversalDetector
                     CharsetProber? prober = _charsetProbers[i];
                     if (prober != null)
                     {
-                        st = prober.HandleData(buf, offset, len);
+                        st = prober.HandleData(buf, offset, len, memoryStream);
                         if (st == ProbingState.FoundIt)
                         {
                             _done = true;

@@ -130,9 +130,9 @@ public sealed class Latin1Prober : CharsetProber
         }
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
-        byte[] newBuf = FilterWithEnglishLetters(buf, offset, len);
+        MemoryStreamFast newBuf = FilterWithEnglishLetters(buf, offset, len, memoryStream);
 
         for (int i = 0; i < newBuf.Length; i++)
         {

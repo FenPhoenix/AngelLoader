@@ -200,4 +200,6 @@ public sealed class MemoryStreamFast
         }
         _buffer[_position++] = value;
     }
+
+    public byte this[int index] => _buffer[index];
 }

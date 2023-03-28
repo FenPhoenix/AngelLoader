@@ -65,10 +65,11 @@ public abstract class CharsetProber
     /// <param name="buf">a buffer</param>
     /// <param name="offset">offset into buffer</param>
     /// <param name="len">number of bytes available into buffer</param>
+    /// <param name="memoryStream"></param>
     /// <returns>
     /// A <see cref="ProbingState"/>
     /// </returns>
-    public abstract ProbingState HandleData(byte[] buf, int offset, int len);
+    public abstract ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream);
 
     /// <summary>
     /// Reset prober state
@@ -133,9 +134,10 @@ public abstract class CharsetProber
     /// both English characters and upper ASCII characters.
     /// </summary>
     /// <returns>a filtered copy of the input buffer</returns>
-    protected static byte[] FilterWithEnglishLetters(byte[] buf, int offset, int len)
+    protected static MemoryStreamFast FilterWithEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
-        var ms = new MemoryStreamFast(buf.Length);
+        var ms = memoryStream ?? new MemoryStreamFast(buf.Length);
+        ms.SetLength(0);
         bool inTag = false;
         int max = offset + len;
         int prev = offset;
@@ -176,6 +178,6 @@ public abstract class CharsetProber
 
         ms.SetLength(ms.Position);
 
-        return ms.ToArray();
+        return ms;
     }
 }

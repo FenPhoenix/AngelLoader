@@ -73,6 +73,8 @@ public sealed class FileEncoding
     private readonly byte[] _buffer = new byte[16 * 1024];
     private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
     private bool _canBeASCII = true;
+    // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
+    private readonly MemoryStreamFast _memoryStream = new(Common.ByteSize.KB * 100);
 
     private static string GetEncodingNameString(Charset charset) => CharsetDetector.CharsetToName[(int)charset];
 
@@ -253,7 +255,7 @@ public sealed class FileEncoding
         }
 
         // execute charset detector
-        _ude.Feed(inputData, start, count);
+        _ude.Feed(inputData, start, count, _memoryStream);
         _ude.DataEnd();
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
@@ -268,7 +270,7 @@ public sealed class FileEncoding
         int step = count - start < udeFeedSize ? count - start : udeFeedSize;
         for (int pos = start; pos < count; pos += step)
         {
-            _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step);
+            _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step, _memoryStream);
             _singleUde.DataEnd();
             // update encoding frequency
             if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)

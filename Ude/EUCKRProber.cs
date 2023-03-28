@@ -55,7 +55,7 @@ public sealed class EUCKRProber : CharsetProber
         return Charset.EUC_KR;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 

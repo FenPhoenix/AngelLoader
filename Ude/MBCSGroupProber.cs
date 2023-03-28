@@ -86,9 +86,10 @@ public sealed class MBCSGroupProber : CharsetProber
         _state = ProbingState.Detecting;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         // do filtering to reduce load to probers
+        // @Ude: Byte array allocation
         byte[] highbyteBuf = new byte[len];
         int hptr = 0;
         //assume previous is not ascii, it will do no harm except add some noise
@@ -120,7 +121,7 @@ public sealed class MBCSGroupProber : CharsetProber
                 continue;
             }
 
-            ProbingState st = _probers[i].HandleData(highbyteBuf, 0, hptr);
+            ProbingState st = _probers[i].HandleData(highbyteBuf, 0, hptr, memoryStream);
             if (st == ProbingState.FoundIt)
             {
                 _bestGuess = i;

@@ -63,7 +63,7 @@ public sealed class UTF8Prober : CharsetProber
         _state = ProbingState.Detecting;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 

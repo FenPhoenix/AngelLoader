@@ -80,7 +80,7 @@ public sealed class SingleByteCharSetProber : CharsetProber
         Reset();
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 

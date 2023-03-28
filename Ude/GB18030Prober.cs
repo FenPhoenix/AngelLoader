@@ -55,7 +55,7 @@ public sealed class GB18030Prober : CharsetProber
 
     public override Charset GetCharsetName() => Charset.GB_18030;
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 

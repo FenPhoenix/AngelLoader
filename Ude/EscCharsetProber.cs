@@ -65,7 +65,7 @@ public sealed class EscCharsetProber : CharsetProber
         _detectedCharset = Charset.Null;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len)
+    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
