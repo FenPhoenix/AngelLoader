@@ -59,8 +59,8 @@ public abstract class SequenceModel
         float typicalPositiveRatio,
         Charset charsetName)
     {
-        this._charToOrderMap = charToOrderMap;
-        this._precedenceMatrix = precedenceMatrix;
+        _charToOrderMap = charToOrderMap;
+        _precedenceMatrix = precedenceMatrix;
         TypicalPositiveRatio = typicalPositiveRatio;
         CharsetName = charsetName;
     }

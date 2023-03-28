@@ -57,11 +57,11 @@ public sealed class BitPackage
     public BitPackage(int indexShift, int shiftMask,
         int bitShift, int unitMask, int[] data)
     {
-        this._indexShift = indexShift;
-        this._shiftMask = shiftMask;
-        this._bitShift = bitShift;
-        this._unitMask = unitMask;
-        this._data = data;
+        _indexShift = indexShift;
+        _shiftMask = shiftMask;
+        _bitShift = bitShift;
+        _unitMask = unitMask;
+        _data = data;
     }
 
     private static int Pack16bits(int a, int b)

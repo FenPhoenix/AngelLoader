@@ -58,10 +58,10 @@ public abstract class SMModel
     protected SMModel(BitPackage classTable, int classFactor,
         BitPackage stateTable, int[] charLenTable, Charset name)
     {
-        this._classTable = classTable;
+        _classTable = classTable;
         ClassFactor = classFactor;
-        this.StateTable = stateTable;
-        this.CharLenTable = charLenTable;
+        StateTable = stateTable;
+        CharLenTable = charLenTable;
         Name = name;
     }
 

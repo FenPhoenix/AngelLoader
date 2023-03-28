@@ -152,8 +152,8 @@ public sealed class CharsetDetector : UniversalDetector
 
     public override void Reset()
     {
-        this._charset = Charset.Null;
-        this._confidence = 0.0f;
+        _charset = Charset.Null;
+        _confidence = 0.0f;
         base.Reset();
     }
 
@@ -163,7 +163,7 @@ public sealed class CharsetDetector : UniversalDetector
 
     protected override void Report(Charset charset, float confidence)
     {
-        this._charset = charset;
-        this._confidence = confidence;
+        _charset = charset;
+        _confidence = confidence;
     }
 }
