@@ -179,6 +179,15 @@ internal sealed class ZipArchiveS : IDisposable
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
+                /*
+                @vNext(DeflateStream):
+                Turns out this line deep in the framework is just a regular call we can do ourselves:
+                
+                string str = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "clrcompression.dll");
+                
+                So really, we can just load that file in, and if it doesn't exist or anything fails, just fall
+                back to the built-in DeflateStream. Hallelujah.
+                */
                 uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress, leaveOpen: true);
                 break;
             case CompressionMethodValues.Deflate64:
