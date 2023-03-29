@@ -106,20 +106,20 @@ internal sealed class InflaterZlib : IDisposable
         }
         catch (Exception ex)
         {
-            throw new ZLibException(("ZLibErrorDLLLoadError"), ex);
+            throw new ZLibException("ZLibErrorDLLLoadError", ex);
         }
         switch (streamForInflate)
         {
             case ZLibNative.ErrorCode.VersionError:
-                throw new ZLibException(("ZLibErrorVersionMismatch"), "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorVersionMismatch", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
             case ZLibNative.ErrorCode.MemError:
-                throw new ZLibException(("ZLibErrorNotEnoughMemory"), "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorNotEnoughMemory", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
             case ZLibNative.ErrorCode.StreamError:
-                throw new ZLibException(("ZLibErrorIncorrectInitParameters"), "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorIncorrectInitParameters", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
             case ZLibNative.ErrorCode.Ok:
                 break;
             default:
-                throw new ZLibException(("ZLibErrorUnexpected"), "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorUnexpected", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
         }
     }
 
@@ -153,23 +153,23 @@ internal sealed class InflaterZlib : IDisposable
         }
         catch (Exception ex)
         {
-            throw new ZLibException(("ZLibErrorDLLLoadError"), ex);
+            throw new ZLibException("ZLibErrorDLLLoadError", ex);
         }
         switch (zlibErrorCode)
         {
             case ZLibNative.ErrorCode.BufError:
                 return zlibErrorCode;
             case ZLibNative.ErrorCode.MemError:
-                throw new ZLibException(("ZLibErrorNotEnoughMemory"), "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorNotEnoughMemory", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
             case ZLibNative.ErrorCode.DataError:
-                throw new InvalidDataException(("GenericInvalidData"));
+                throw new InvalidDataException("GenericInvalidData");
             case ZLibNative.ErrorCode.StreamError:
-                throw new ZLibException(("ZLibErrorInconsistentStream"), "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorInconsistentStream", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
             case ZLibNative.ErrorCode.Ok:
             case ZLibNative.ErrorCode.StreamEnd:
                 return zlibErrorCode;
             default:
-                throw new ZLibException(("ZLibErrorUnexpected"), "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
+                throw new ZLibException("ZLibErrorUnexpected", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
         }
     }
 

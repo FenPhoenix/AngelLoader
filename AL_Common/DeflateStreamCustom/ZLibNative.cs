@@ -11,15 +11,7 @@ namespace AL_Common.DeflateStreamCustom;
 
 internal static class ZLibNative
 {
-
     internal static readonly IntPtr ZNullPtr = (IntPtr)0;
-
-    [SecurityCritical]
-    public static ErrorCode CreateZLibStreamForInflate(
-      out ZLibStreamHandle zLibStreamHandle)
-    {
-        return CreateZLibStreamForInflate(out zLibStreamHandle, -15);
-    }
 
     [SecurityCritical]
     public static ErrorCode CreateZLibStreamForInflate(
@@ -50,7 +42,7 @@ internal static class ZLibNative
         ErrorNo = -1, // 0xFFFFFFFF
         Ok = 0,
         StreamEnd = 1,
-        NeedDictionary = 2,
+        NeedDictionary = 2
     }
 
     public enum CompressionLevel
@@ -96,31 +88,6 @@ internal static class ZLibNative
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     [SuppressUnmanagedCodeSecurity]
     [SecurityCritical]
-    private unsafe delegate ErrorCode DeflateInit2_Delegate(
-      ZStream* stream,
-      CompressionLevel level,
-      CompressionMethod method,
-      int windowBits,
-      int memLevel,
-      CompressionStrategy strategy,
-      [MarshalAs(UnmanagedType.LPStr)] string version,
-      int streamSize);
-
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    [SuppressUnmanagedCodeSecurity]
-    [SecurityCritical]
-    private unsafe delegate ErrorCode DeflateDelegate(
-      ZStream* stream,
-      FlushCode flush);
-
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    [SuppressUnmanagedCodeSecurity]
-    [SecurityCritical]
-    private unsafe delegate ErrorCode DeflateEndDelegate(ZStream* stream);
-
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    [SuppressUnmanagedCodeSecurity]
-    [SecurityCritical]
     private unsafe delegate ErrorCode InflateInit2_Delegate(
       ZStream* stream,
       int windowBits,
@@ -139,12 +106,7 @@ internal static class ZLibNative
     [SecurityCritical]
     private unsafe delegate ErrorCode InflateEndDelegate(ZStream* stream);
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    [SuppressUnmanagedCodeSecurity]
-    [SecurityCritical]
-    private delegate int ZlibCompileFlagsDelegate();
-
-    private class NativeMethods
+    private static class NativeMethods
     {
         [SuppressUnmanagedCodeSecurity]
         [SecurityCritical]
@@ -202,7 +164,7 @@ internal static class ZLibNative
             handle = IntPtr.Zero;
         }
 
-        public State InitializationState
+        private State InitializationState
         {
             [SecurityCritical]
             get => initializationState;
@@ -215,7 +177,9 @@ internal static class ZLibNative
             try
             {
                 if (zlibLibraryHandle == null || zlibLibraryHandle.IsInvalid)
+                {
                     return false;
+                }
                 switch (InitializationState)
                 {
                     case State.NotInitialized:
@@ -246,7 +210,9 @@ internal static class ZLibNative
             set
             {
                 if ((IntPtr)zStreamPtr == IntPtr.Zero)
+                {
                     return;
+                }
                 zStreamPtr->nextIn = value;
             }
         }
@@ -259,7 +225,9 @@ internal static class ZLibNative
             set
             {
                 if ((IntPtr)zStreamPtr == IntPtr.Zero)
+                {
                     return;
+                }
                 zStreamPtr->availIn = value;
             }
         }
@@ -272,7 +240,9 @@ internal static class ZLibNative
             set
             {
                 if ((IntPtr)zStreamPtr == IntPtr.Zero)
+                {
                     return;
+                }
                 zStreamPtr->nextOut = value;
             }
         }
@@ -285,7 +255,9 @@ internal static class ZLibNative
             set
             {
                 if ((IntPtr)zStreamPtr == IntPtr.Zero)
+                {
                     return;
+                }
                 zStreamPtr->availOut = value;
             }
         }
@@ -294,14 +266,18 @@ internal static class ZLibNative
         private void EnsureNotDisposed()
         {
             if (InitializationState == State.Disposed)
+            {
                 throw new ObjectDisposedException(GetType().Name);
+            }
         }
 
         [SecurityCritical]
         private void EnsureState(State requiredState)
         {
             if (InitializationState != requiredState)
+            {
                 throw new InvalidOperationException("InitializationState != " + requiredState.ToString());
+            }
         }
 
         [SecurityCritical]

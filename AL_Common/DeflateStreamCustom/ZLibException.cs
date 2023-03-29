@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AL_Common.DeflateStreamCustom;
 
 [Serializable]
-internal class ZLibException : IOException, ISerializable
+internal sealed class ZLibException : IOException, ISerializable
 {
-    private string zlibErrorContext;
-    private string zlibErrorMessage;
-    private ZLibNative.ErrorCode zlibErrorCode;
+    private string _zlibErrorContext;
+    private string _zlibErrorMessage;
+    private ZLibNative.ErrorCode _zlibErrorCode;
 
     public ZLibException(
       string message,
@@ -44,16 +40,16 @@ internal class ZLibException : IOException, ISerializable
     protected ZLibException(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
-        this.Init(info.GetString(nameof(zlibErrorContext)), (ZLibNative.ErrorCode)info.GetInt32(nameof(zlibErrorCode)), info.GetString(nameof(zlibErrorMessage)));
+        this.Init(info.GetString(nameof(_zlibErrorContext)), (ZLibNative.ErrorCode)info.GetInt32(nameof(_zlibErrorCode)), info.GetString(nameof(_zlibErrorMessage)));
     }
 
     [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
     void ISerializable.GetObjectData(SerializationInfo si, StreamingContext context)
     {
         this.GetObjectData(si, context);
-        si.AddValue("zlibErrorContext", (object)this.zlibErrorContext);
-        si.AddValue("zlibErrorCode", (int)this.zlibErrorCode);
-        si.AddValue("zlibErrorMessage", (object)this.zlibErrorMessage);
+        si.AddValue("zlibErrorContext", (object)this._zlibErrorContext);
+        si.AddValue("zlibErrorCode", (int)this._zlibErrorCode);
+        si.AddValue("zlibErrorMessage", (object)this._zlibErrorMessage);
     }
 
     private void Init() => this.Init("", ZLibNative.ErrorCode.Ok, "");
@@ -63,26 +59,26 @@ internal class ZLibException : IOException, ISerializable
       ZLibNative.ErrorCode zlibErrorCode,
       string zlibErrorMessage)
     {
-        this.zlibErrorContext = zlibErrorContext;
-        this.zlibErrorCode = zlibErrorCode;
-        this.zlibErrorMessage = zlibErrorMessage;
+        this._zlibErrorContext = zlibErrorContext;
+        this._zlibErrorCode = zlibErrorCode;
+        this._zlibErrorMessage = zlibErrorMessage;
     }
 
     public string ZLibContext
     {
         [PermissionSet(SecurityAction.LinkDemand, Unrestricted = true)]
-        get => this.zlibErrorContext;
+        get => this._zlibErrorContext;
     }
 
     public int ZLibErrorCode
     {
         [PermissionSet(SecurityAction.LinkDemand, Unrestricted = true)]
-        get => (int)this.zlibErrorCode;
+        get => (int)this._zlibErrorCode;
     }
 
     public string ZLibErrorMessage
     {
         [PermissionSet(SecurityAction.LinkDemand, Unrestricted = true)]
-        get => this.zlibErrorMessage;
+        get => this._zlibErrorMessage;
     }
 }
