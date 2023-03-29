@@ -5,6 +5,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.DeflateStreamCustom;
@@ -45,29 +46,8 @@ internal static class ZLibNative
         NeedDictionary = 2
     }
 
-    public enum CompressionLevel
-    {
-        DefaultCompression = -1, // 0xFFFFFFFF
-        NoCompression = 0,
-        BestSpeed = 1,
-        BestCompression = 9,
-    }
-
-    public enum CompressionStrategy
-    {
-        DefaultStrategy,
-        Filtered,
-        HuffmanOnly,
-        Rle,
-        Fixed,
-    }
-
-    public enum CompressionMethod
-    {
-        Deflated = 8,
-    }
-
-    internal struct ZStream
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    private struct ZStream
     {
         internal IntPtr nextIn;
         internal uint availIn;
@@ -276,7 +256,7 @@ internal static class ZLibNative
         {
             if (InitializationState != requiredState)
             {
-                throw new InvalidOperationException("InitializationState != " + requiredState.ToString());
+                throw new InvalidOperationException("InitializationState != " + requiredState);
             }
         }
 
@@ -309,7 +289,7 @@ internal static class ZLibNative
         }
 
         [SecurityCritical]
-        public unsafe ErrorCode InflateEnd()
+        private unsafe ErrorCode InflateEnd()
         {
             EnsureNotDisposed();
             EnsureState(State.InitializedForInflate);
@@ -344,7 +324,7 @@ internal static class ZLibNative
             byte* numPtr3 = numPtr1 + num4;
             int num5 = num2 - num4;
             for (int index = 0; index < num5; ++index)
-                numPtr3[index] = (byte)0;
+                numPtr3[index] = 0;
             return num1;
         }
 
@@ -400,7 +380,7 @@ internal static class ZLibNative
             }
         }
 
-        public enum State
+        private enum State
         {
             NotInitialized,
             InitializedForInflate,
