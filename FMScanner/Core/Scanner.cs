@@ -41,6 +41,7 @@ using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static FMScanner.Utility;
 
 namespace FMScanner;
 
@@ -3583,9 +3584,32 @@ public sealed partial class Scanner : IDisposable
         {
             for (int i = 0; i < tfLinesD.Count; i++)
             {
-                if (tfLinesD[i].StartsWithI_Local(line.Substring(0, indexOfColon)))
+                // Allocation avoidance
+
+                string tfLineD = tfLinesD[i];
+
+                ReadOnlySpan<char> tfLineDSpan = tfLineD.AsSpan();
+                ReadOnlySpan<char> lineSpan = line.AsSpan().Slice(0, indexOfColon);
+
+                int tfLineDSpanLen = tfLineDSpan.Length;
+                int lineSpanLen = lineSpan.Length;
+
+                if (tfLineDSpanLen >= lineSpanLen)
                 {
-                    return true;
+                    StringCompareReturn strCmpResult = CompareToOrdinalIgnoreCase(tfLineDSpan.Slice(0, lineSpanLen), lineSpan);
+                    bool result;
+                    if (strCmpResult.RequiresStringComparison)
+                    {
+                        // This path never gets hit in my ~1700 FM set, it's just a fallback in case it ever
+                        // encounters a corner case. I think it would require non-ASCII chars.
+                        result = tfLineD.StartsWith(line.Substring(0, indexOfColon), OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        result = strCmpResult.Compare == 0;
+                    }
+
+                    if (result) return true;
                 }
             }
             return false;
@@ -4576,6 +4600,7 @@ public sealed partial class Scanner : IDisposable
     /// <returns></returns>
     private List<string> ReadAllLinesE(Stream stream, long length)
     {
+        // @MEM: Cache these lists into one that we reuse
         var lines = new List<string>();
 
         // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in

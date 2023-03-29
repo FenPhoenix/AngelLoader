@@ -261,7 +261,7 @@ internal static class Utility
 
     #region StartsWith and EndsWith
 
-    private readonly ref struct StringCompareReturn
+    internal readonly ref struct StringCompareReturn
     {
         internal readonly bool RequiresStringComparison;
         internal readonly int Compare;
@@ -313,7 +313,7 @@ internal static class Utility
     }
 
     // Copied from .NET 7 and slightly modified
-    private static unsafe StringCompareReturn CompareToOrdinalIgnoreCase(
+    internal static unsafe StringCompareReturn CompareToOrdinalIgnoreCase(
         ReadOnlySpan<char> strA,
         ReadOnlySpan<char> strB)
     {
@@ -496,6 +496,7 @@ internal static class Utility
 
     internal static string GLMLToPlainText(string glml)
     {
+        // @MEM: We could cache these, and maybe even as ListFast<char>s to avoid the cruft of StringBuilder appending?
         var sb = new StringBuilder(glml.Length);
         var subSB = new StringBuilder(16);
 
@@ -566,6 +567,7 @@ internal static class Utility
 
                             if (success)
                             {
+                                // @MEM: We can use the version from the rtf converter to avoid allocs and exception throwing
                                 sb.Append(char.ConvertFromUtf32(result));
                             }
                             else
@@ -593,6 +595,7 @@ internal static class Utility
                             if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
                                 int.TryParse(value, out int result))
                             {
+                                // @MEM: We can use the version from the rtf converter to avoid allocs and exception throwing
                                 sb.Append(char.ConvertFromUtf32(result));
                             }
                             else
