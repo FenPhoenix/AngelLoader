@@ -3,11 +3,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
-using AL_Common.FastZipReader;
 
 namespace AL_Common.DeflateStreamCustom;
 
-internal class InflaterZlib : IDisposable
+internal sealed class InflaterZlib : IDisposable
 {
     private bool _finished;
     private bool _isDisposed;
@@ -62,7 +61,7 @@ internal class InflaterZlib : IDisposable
     }
 
     [SecuritySafeCritical]
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (_isDisposed)
             return;

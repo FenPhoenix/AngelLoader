@@ -18,7 +18,6 @@ public sealed class DeflateStreamCustom : Stream
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="stream" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.ArgumentException">
-    ///         <paramref name="mode" /> is not a valid <see cref="T:System.IO.Compression.CompressionMode" /> value.
     /// -or-
     /// <see cref="T:System.IO.Compression.CompressionMode" /> is <see cref="F:System.IO.Compression.CompressionMode.Compress" /> and <see cref="P:System.IO.Stream.CanWrite" /> is <see langword="false" />.
     /// -or-
@@ -141,7 +140,7 @@ public sealed class DeflateStreamCustom : Stream
     {
         if (_stream == null)
         {
-            throw new ObjectDisposedException((string)null, "ObjectDisposed_StreamClosed");
+            throw new ObjectDisposedException(null, "ObjectDisposed_StreamClosed");
         }
     }
 
@@ -160,22 +159,22 @@ public sealed class DeflateStreamCustom : Stream
             {
                 if (!_leaveOpen)
                 {
-                    if (_stream != null)
-                        _stream.Close();
+                    if (_stream != null!)
+                        _stream.Dispose();
                 }
             }
         }
         finally
         {
-            _stream = (Stream)null;
+            _stream = null!;
             try
             {
-                if (_inflater != null)
+                if (_inflater != null!)
                     _inflater.Dispose();
             }
             finally
             {
-                _inflater = null;
+                _inflater = null!;
                 base.Dispose(disposing);
             }
         }
