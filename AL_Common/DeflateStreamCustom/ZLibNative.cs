@@ -176,8 +176,8 @@ internal static class ZLibNative
             {
                 if ((IntPtr)zStreamPtr != IntPtr.Zero)
                 {
-                    Marshal.FreeHGlobal((IntPtr)(void*)zStreamPtr);
-                    zStreamPtr = (ZStream*)null;
+                    Marshal.FreeHGlobal((IntPtr)zStreamPtr);
+                    zStreamPtr = null;
                 }
             }
         }
@@ -308,7 +308,7 @@ internal static class ZLibNative
         }
 
         [SecurityCritical]
-        public unsafe string GetErrorMessage() => ZNullPtr.Equals((object)zStreamPtr->msg) ? string.Empty : new string((sbyte*)(void*)zStreamPtr->msg);
+        public unsafe string GetErrorMessage() => ZNullPtr.Equals(zStreamPtr->msg) ? string.Empty : new string((sbyte*)(void*)zStreamPtr->msg);
 
         [SecurityCritical]
         private static unsafe IntPtr AllocWithZeroOut(int byteCount)

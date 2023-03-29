@@ -12,7 +12,7 @@ internal sealed class InflaterZlib : IDisposable
     private bool _isDisposed;
     private ZLibNative.ZLibStreamHandle _zlibStream;
     private GCHandle _inputBufferHandle;
-    private readonly object _syncLock = new object();
+    private readonly object _syncLock = new();
     private int _isValid;
 
     internal InflaterZlib()
@@ -55,7 +55,7 @@ internal sealed class InflaterZlib : IDisposable
         }
         lock (_syncLock)
         {
-            _inputBufferHandle = GCHandle.Alloc((object)inputBuffer, GCHandleType.Pinned);
+            _inputBufferHandle = GCHandle.Alloc(inputBuffer, GCHandleType.Pinned);
             _isValid = 1;
             _zlibStream.NextIn = _inputBufferHandle.AddrOfPinnedObject() + startIndex;
             _zlibStream.AvailIn = (uint)count;
@@ -134,7 +134,7 @@ internal sealed class InflaterZlib : IDisposable
         {
             fixed (byte* numPtr = outputBuffer)
             {
-                _zlibStream.NextOut = (IntPtr)(void*)numPtr + offset;
+                _zlibStream.NextOut = (IntPtr)numPtr + offset;
                 _zlibStream.AvailOut = (uint)length;
                 ZLibNative.ErrorCode errorCode = Inflate(flushCode);
                 bytesRead = length - (int)_zlibStream.AvailOut;
