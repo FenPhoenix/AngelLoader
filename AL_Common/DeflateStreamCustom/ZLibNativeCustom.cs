@@ -1,4 +1,4 @@
-﻿#if NETFRAMEWORK
+﻿#if false && NETFRAMEWORK
 
 using System;
 using System.IO;

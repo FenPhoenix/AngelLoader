@@ -1,5 +1,5 @@
 ﻿// @NET5(DeflateStreamCustom): Modern .NETs rent the buffer from the shared array pool, so we don't need any of this nonsense in that case.
-#if NETFRAMEWORK
+#if false && NETFRAMEWORK
 
 using System;
 using System.IO;
