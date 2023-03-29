@@ -273,6 +273,10 @@ internal static class ZLibNative
             }
             finally
             {
+                // @Deflate(clrcompression.dll version): It's 1.2.11 here, but we need to do a framework check
+                // Technically we support back to 4.7.2, which uses zlib 1.2.3, and also we want to future-proof
+                // too. So we need to set a disable bool if this - or anything in here - fails, and switch back
+                // to the built-in DeflateStream.
                 errorCode = NativeZLibDLLStub.inflateInit2_Delegate(zStreamPtr, windowBits, "1.2.11", sizeof(ZStream));
                 initializationState = State.InitializedForInflate;
                 zlibLibraryHandle.DangerousAddRef(ref success);

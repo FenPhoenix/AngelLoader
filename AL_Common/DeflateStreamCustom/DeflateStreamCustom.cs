@@ -3,41 +3,32 @@ using System.IO;
 
 namespace AL_Common.DeflateStreamCustom;
 
+// @NET5(DeflateStreamCustom): This has to be replaced entirely for modern .NET
 public sealed class DeflateStreamCustom : Stream
 {
-    private Stream _stream;
-    private readonly bool _leaveOpen;
-    private InflaterZlib _inflater;
-    private readonly byte[] buffer;
+    // @Deflate(DeflateStreamCustom): Cache this whole thing, and cache the InflaterZlib too
 
-    /// <summary>Initializes a new instance of the <see cref="T:System.IO.Compression.DeflateStreamCustom" /> class by using the specified stream and compression mode, and optionally leaves the stream open.</summary>
+    private Stream _stream;
+    private InflaterZlib _inflater;
+    private readonly byte[] _buffer;
+
+    /// <summary>Initializes a new instance of the <see cref="T:System.IO.Compression.DeflateStreamCustom" /> class, and leaves the stream open.</summary>
     /// <param name="stream">The stream to compress or decompress.</param>
     /// <param name="buffer"></param>
-    /// <param name="leaveOpen">
-    /// <see langword="true" /> to leave the stream open after disposing the <see cref="T:System.IO.Compression.DeflateStreamCustom" /> object; otherwise, <see langword="false" />.</param>
     /// <exception cref="T:System.ArgumentNullException">
     /// <paramref name="stream" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.ArgumentException">
-    /// -or-
-    /// <see cref="T:System.IO.Compression.CompressionMode" /> is <see cref="F:System.IO.Compression.CompressionMode.Compress" /> and <see cref="P:System.IO.Stream.CanWrite" /> is <see langword="false" />.
-    /// -or-
-    /// <see cref="T:System.IO.Compression.CompressionMode" /> is <see cref="F:System.IO.Compression.CompressionMode.Decompress" /> and <see cref="P:System.IO.Stream.CanRead" /> is <see langword="false" />.</exception>
-    public DeflateStreamCustom(Stream stream, byte[] buffer, bool leaveOpen)
+    /// <see cref="P:System.IO.Stream.CanRead" /> is <see langword="false" />.</exception>
+    public DeflateStreamCustom(Stream stream, byte[] buffer)
     {
         _stream = stream;
-        _leaveOpen = leaveOpen;
         if (!_stream.CanRead)
         {
             throw new ArgumentException("NotReadableStream", nameof(stream));
         }
         _inflater = new InflaterZlib();
-        this.buffer = buffer;
+        _buffer = buffer;
     }
-
-    /// <summary>Gets a reference to the underlying stream.</summary>
-    /// <returns>A stream object that represents the underlying stream.</returns>
-    /// <exception cref="T:System.ObjectDisposedException">The underlying stream is closed.</exception>
-    public Stream BaseStream => _stream;
 
     /// <summary>Gets a value indicating whether the stream supports reading while decompressing a file.</summary>
     /// <returns>
@@ -113,10 +104,10 @@ public sealed class DeflateStreamCustom : Stream
             length1 -= num;
             if (length1 != 0 && !_inflater.Finished())
             {
-                int length2 = _stream.Read(buffer, 0, buffer.Length);
+                int length2 = _stream.Read(_buffer, 0, _buffer.Length);
                 if (length2 != 0)
                 {
-                    _inflater.SetInput(buffer, 0, length2);
+                    _inflater.SetInput(_buffer, 0, length2);
                 }
                 else
                 {
@@ -146,43 +137,27 @@ public sealed class DeflateStreamCustom : Stream
         }
     }
 
-    public override void Write(byte[] array, int offset, int count)
-    {
-    }
+    /// <summary>This operation is not supported and always throws a <see cref="T:System.NotSupportedException" />.</summary>
+    /// <exception cref="T:System.NotSupportedException">This property is not supported on this stream.</exception>
+    public override void Write(byte[] array, int offset, int count) => throw new NotSupportedException("NotSupported");
 
     /// <summary>Releases the unmanaged resources used by the <see cref="T:System.IO.Compression.DeflateStreamCustom" /> and optionally releases the managed resources.</summary>
     /// <param name="disposing">
     /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
+        _stream = null!;
         try
         {
-            if (disposing)
+            if (_inflater != null!)
             {
-                if (!_leaveOpen)
-                {
-                    if (_stream != null!)
-                    {
-                        _stream.Dispose();
-                    }
-                }
+                _inflater.Dispose();
             }
         }
         finally
         {
-            _stream = null!;
-            try
-            {
-                if (_inflater != null!)
-                {
-                    _inflater.Dispose();
-                }
-            }
-            finally
-            {
-                _inflater = null!;
-                base.Dispose(disposing);
-            }
+            _inflater = null!;
+            base.Dispose(disposing);
         }
     }
 }

@@ -174,7 +174,7 @@ internal sealed class ZipArchiveS : IDisposable
         return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream);
     }
 
-    // @vNext: Temporary
+    // @Deflate: Temporary
     private static readonly byte[] _deflateStreamBuffer = new byte[8192];
 
     private static Stream GetDataDecompressor(ZipArchiveSEntry entry, SubReadStream compressedStreamToRead)
@@ -184,7 +184,7 @@ internal sealed class ZipArchiveS : IDisposable
         {
             case CompressionMethodValues.Deflate:
                 /*
-                @vNext(DeflateStream):
+                @Deflate:
                 Turns out this line deep in the framework is just a regular call we can do ourselves:
                 
                 string str = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "clrcompression.dll");
@@ -200,8 +200,7 @@ internal sealed class ZipArchiveS : IDisposable
                 Or we could carry 1.2.13 with us. But then we don't get automatic updates. Not like we get those
                 with old Framework anyway, but, y'know...
                 */
-                //uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress, leaveOpen: true);
-                uncompressedStream = new DeflateStreamCustom(compressedStreamToRead, _deflateStreamBuffer, leaveOpen: true);
+                uncompressedStream = new DeflateStreamCustom(compressedStreamToRead, _deflateStreamBuffer);
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
