@@ -10,7 +10,7 @@ internal sealed class ZLibException : IOException, ISerializable
 {
     private string _zlibErrorContext;
     private string _zlibErrorMessage;
-    private ZLibNative.ErrorCode _zlibErrorCode;
+    private ZLibNativeCustom.ErrorCode _zlibErrorCode;
 
     public ZLibException(
       string message,
@@ -19,7 +19,7 @@ internal sealed class ZLibException : IOException, ISerializable
       string zlibErrorMessage)
       : base(message)
     {
-        this.Init(zlibErrorContext, (ZLibNative.ErrorCode)zlibErrorCode, zlibErrorMessage);
+        this.Init(zlibErrorContext, (ZLibNativeCustom.ErrorCode)zlibErrorCode, zlibErrorMessage);
     }
 
     public ZLibException() => this.Init();
@@ -40,7 +40,7 @@ internal sealed class ZLibException : IOException, ISerializable
     protected ZLibException(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
-        this.Init(info.GetString(nameof(_zlibErrorContext)), (ZLibNative.ErrorCode)info.GetInt32(nameof(_zlibErrorCode)), info.GetString(nameof(_zlibErrorMessage)));
+        this.Init(info.GetString(nameof(_zlibErrorContext)), (ZLibNativeCustom.ErrorCode)info.GetInt32(nameof(_zlibErrorCode)), info.GetString(nameof(_zlibErrorMessage)));
     }
 
     [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
@@ -52,11 +52,11 @@ internal sealed class ZLibException : IOException, ISerializable
         si.AddValue("zlibErrorMessage", (object)this._zlibErrorMessage);
     }
 
-    private void Init() => this.Init("", ZLibNative.ErrorCode.Ok, "");
+    private void Init() => this.Init("", ZLibNativeCustom.ErrorCode.Ok, "");
 
     private void Init(
       string zlibErrorContext,
-      ZLibNative.ErrorCode zlibErrorCode,
+      ZLibNativeCustom.ErrorCode zlibErrorCode,
       string zlibErrorMessage)
     {
         this._zlibErrorContext = zlibErrorContext;

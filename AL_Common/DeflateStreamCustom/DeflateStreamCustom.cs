@@ -9,7 +9,7 @@ public sealed class DeflateStreamCustom : Stream
     // @Deflate(DeflateStreamCustom): Cache this whole thing, and cache the InflaterZlib too
 
     private Stream _stream;
-    private InflaterZlib _inflater;
+    private InflaterZlibCustom _inflater;
     private readonly byte[] _buffer;
 
     /// <summary>Initializes a new instance of the <see cref="T:System.IO.Compression.DeflateStreamCustom" /> class, and leaves the stream open.</summary>
@@ -26,7 +26,7 @@ public sealed class DeflateStreamCustom : Stream
         {
             throw new ArgumentException("NotReadableStream", nameof(stream));
         }
-        _inflater = new InflaterZlib();
+        _inflater = new InflaterZlibCustom();
         _buffer = buffer;
     }
 

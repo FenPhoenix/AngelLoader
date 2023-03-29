@@ -6,16 +6,16 @@ using System.Threading;
 
 namespace AL_Common.DeflateStreamCustom;
 
-internal sealed class InflaterZlib : IDisposable
+internal sealed class InflaterZlibCustom : IDisposable
 {
     private bool _finished;
     private bool _isDisposed;
-    private ZLibNative.ZLibStreamHandle _zlibStream;
+    private ZLibNativeCustom.ZLibStreamHandle _zlibStream;
     private GCHandle _inputBufferHandle;
     private readonly object _syncLock = new();
     private int _isValid;
 
-    internal InflaterZlib()
+    internal InflaterZlibCustom()
     {
         _finished = false;
         _isDisposed = false;
@@ -32,7 +32,7 @@ internal sealed class InflaterZlib : IDisposable
         }
         try
         {
-            if (ReadInflateOutput(bytes, offset, length, ZLibNative.FlushCode.NoFlush, out int bytesRead) == ZLibNative.ErrorCode.StreamEnd)
+            if (ReadInflateOutput(bytes, offset, length, ZLibNativeCustom.FlushCode.NoFlush, out int bytesRead) == ZLibNativeCustom.ErrorCode.StreamEnd)
             {
                 _finished = true;
             }
@@ -87,7 +87,7 @@ internal sealed class InflaterZlib : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    ~InflaterZlib()
+    ~InflaterZlibCustom()
     {
         if (Environment.HasShutdownStarted)
         {
@@ -99,10 +99,10 @@ internal sealed class InflaterZlib : IDisposable
     [SecuritySafeCritical]
     private void InflateInit()
     {
-        ZLibNative.ErrorCode streamForInflate;
+        ZLibNativeCustom.ErrorCode streamForInflate;
         try
         {
-            streamForInflate = ZLibNative.CreateZLibStreamForInflate(out _zlibStream, -15);
+            streamForInflate = ZLibNativeCustom.CreateZLibStreamForInflate(out _zlibStream, -15);
         }
         catch (Exception ex)
         {
@@ -110,24 +110,24 @@ internal sealed class InflaterZlib : IDisposable
         }
         switch (streamForInflate)
         {
-            case ZLibNative.ErrorCode.VersionError:
+            case ZLibNativeCustom.ErrorCode.VersionError:
                 throw new ZLibException("ZLibErrorVersionMismatch", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
-            case ZLibNative.ErrorCode.MemError:
+            case ZLibNativeCustom.ErrorCode.MemError:
                 throw new ZLibException("ZLibErrorNotEnoughMemory", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
-            case ZLibNative.ErrorCode.StreamError:
+            case ZLibNativeCustom.ErrorCode.StreamError:
                 throw new ZLibException("ZLibErrorIncorrectInitParameters", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
-            case ZLibNative.ErrorCode.Ok:
+            case ZLibNativeCustom.ErrorCode.Ok:
                 break;
             default:
                 throw new ZLibException("ZLibErrorUnexpected", "inflateInit2_", (int)streamForInflate, _zlibStream.GetErrorMessage());
         }
     }
 
-    private unsafe ZLibNative.ErrorCode ReadInflateOutput(
+    private unsafe ZLibNativeCustom.ErrorCode ReadInflateOutput(
       byte[] outputBuffer,
       int offset,
       int length,
-      ZLibNative.FlushCode flushCode,
+      ZLibNativeCustom.FlushCode flushCode,
       out int bytesRead)
     {
         lock (_syncLock)
@@ -136,7 +136,7 @@ internal sealed class InflaterZlib : IDisposable
             {
                 _zlibStream.NextOut = (IntPtr)numPtr + offset;
                 _zlibStream.AvailOut = (uint)length;
-                ZLibNative.ErrorCode errorCode = Inflate(flushCode);
+                ZLibNativeCustom.ErrorCode errorCode = Inflate(flushCode);
                 bytesRead = length - (int)_zlibStream.AvailOut;
                 return errorCode;
             }
@@ -144,9 +144,9 @@ internal sealed class InflaterZlib : IDisposable
     }
 
     [SecuritySafeCritical]
-    private ZLibNative.ErrorCode Inflate(ZLibNative.FlushCode flushCode)
+    private ZLibNativeCustom.ErrorCode Inflate(ZLibNativeCustom.FlushCode flushCode)
     {
-        ZLibNative.ErrorCode zlibErrorCode;
+        ZLibNativeCustom.ErrorCode zlibErrorCode;
         try
         {
             zlibErrorCode = _zlibStream.Inflate(flushCode);
@@ -157,16 +157,16 @@ internal sealed class InflaterZlib : IDisposable
         }
         switch (zlibErrorCode)
         {
-            case ZLibNative.ErrorCode.BufError:
+            case ZLibNativeCustom.ErrorCode.BufError:
                 return zlibErrorCode;
-            case ZLibNative.ErrorCode.MemError:
+            case ZLibNativeCustom.ErrorCode.MemError:
                 throw new ZLibException("ZLibErrorNotEnoughMemory", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
-            case ZLibNative.ErrorCode.DataError:
+            case ZLibNativeCustom.ErrorCode.DataError:
                 throw new InvalidDataException("GenericInvalidData");
-            case ZLibNative.ErrorCode.StreamError:
+            case ZLibNativeCustom.ErrorCode.StreamError:
                 throw new ZLibException("ZLibErrorInconsistentStream", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
-            case ZLibNative.ErrorCode.Ok:
-            case ZLibNative.ErrorCode.StreamEnd:
+            case ZLibNativeCustom.ErrorCode.Ok:
+            case ZLibNativeCustom.ErrorCode.StreamEnd:
                 return zlibErrorCode;
             default:
                 throw new ZLibException("ZLibErrorUnexpected", "inflate_", (int)zlibErrorCode, _zlibStream.GetErrorMessage());
@@ -178,7 +178,7 @@ internal sealed class InflaterZlib : IDisposable
         lock (_syncLock)
         {
             _zlibStream.AvailIn = 0U;
-            _zlibStream.NextIn = ZLibNative.ZNullPtr;
+            _zlibStream.NextIn = ZLibNativeCustom.ZNullPtr;
             if (Interlocked.Exchange(ref _isValid, 0) == 0)
             {
                 return;

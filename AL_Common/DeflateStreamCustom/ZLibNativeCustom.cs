@@ -10,7 +10,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.DeflateStreamCustom;
 
-internal static class ZLibNative
+internal static class ZLibNativeCustom
 {
     internal static readonly IntPtr ZNullPtr = (IntPtr)0;
 
