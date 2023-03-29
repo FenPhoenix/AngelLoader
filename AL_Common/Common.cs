@@ -169,7 +169,7 @@ public static class Common
         private int _itemsArrayLength;
 
         /// <summary>
-        /// Do not set from outside. Properties are slow.
+        /// Properties are slow. You can set this from outside if you know what you're doing.
         /// </summary>
         public int Count;
 
@@ -199,6 +199,18 @@ public static class Common
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddRange(T[] items, int count)
+        {
+            EnsureCapacity(Count + count);
+            // We usually add small enough arrays that a loop is faster
+            for (int i = 0; i < count; i++)
+            {
+                ItemsArray[Count + i] = items[i];
+            }
+            Count += count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange(ListFast<T> items, int count)
         {
             EnsureCapacity(Count + count);
             // We usually add small enough arrays that a loop is faster
@@ -248,7 +260,7 @@ public static class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureCapacity(int min)
+        public void EnsureCapacity(int min)
         {
             if (_itemsArrayLength >= min) return;
             int num = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;

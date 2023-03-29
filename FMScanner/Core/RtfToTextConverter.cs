@@ -12,9 +12,6 @@ With RtfToPlainTextTest with "Any CPU" (which I believe means x64 in my case) th
 ~583ms, as opposed to ~940ms on x86. That's WAY faster and gets us to ~295MB/s!
 It also explains the discrepancy up there in the perf numbers with different apps...
 
-@MEM(Encoding.GetChars()): There's an overload that takes a char[] buffer in, but we're using the return-value versions!
-We're taking tons of allocations like that, we should change to passing our own cached buffer in!
-
 ---
 
 Note to self:
@@ -66,7 +63,6 @@ Other:
  so statistically it's likely it may not even hit broken text even if it exists.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -85,7 +81,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     private const int _windows1252 = 1252;
     private const int _shiftJisWin = 932;
     private const char _unicodeUnknown_Char = '\u25A1';
-    private readonly char[] _unicodeUnknownCharArray = { _unicodeUnknown_Char };
+
+    // 20 bytes * 4 for up to 4 bytes per char. Chars are 2 bytes but like whatever, why do math when you can
+    // over-provision.
+    private readonly ListFast<char> _charGeneralBuffer = new(20 * 4);
 
     #endregion
 
@@ -1067,8 +1066,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     private readonly byte[] _byteBuffer1 = new byte[1];
     private readonly byte[] _byteBuffer4 = new byte[4];
-    private readonly char[] _charBuffer1 = new char[1];
-    private readonly char[] _charBuffer2 = new char[2];
 
     #endregion
 
@@ -1323,7 +1320,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 // If our code point has been through a font translation table, it may be longer than 2 bytes.
                 if (param > 0xFFFF)
                 {
-                    char[]? chars = ConvertFromUtf32(param);
+                    ListFast<char>? chars = ConvertFromUtf32(param);
                     if (chars == null)
                     {
                         _unicodeBuffer.Add(_unicodeUnknown_Char);
@@ -1559,10 +1556,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         }
         else
         {
-            char[] finalChars;
+            ListFast<char> finalChars = _charGeneralBuffer;
             if (!success)
             {
-                finalChars = _unicodeUnknownCharArray;
+                SetListFastToUnknownChar(finalChars);
             }
             else
             {
@@ -1573,7 +1570,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                     if (fontEntry == null)
                     {
                         GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
-                        if (finalChars.Length == 0) finalChars = _unicodeUnknownCharArray;
+                        if (finalChars.Count == 0)
+                        {
+                            SetListFastToUnknownChar(finalChars);
+                        }
                     }
                     else
                     {
@@ -1591,11 +1591,21 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                             default:
                                 try
                                 {
-                                    finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
+                                    if (enc != null)
+                                    {
+                                        int sourceBufferCount = _hexBuffer.Count;
+                                        finalChars.EnsureCapacity(sourceBufferCount);
+                                        finalChars.Count = enc
+                                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
+                                    }
+                                    else
+                                    {
+                                        SetListFastToUnknownChar(finalChars);
+                                    }
                                 }
                                 catch
                                 {
-                                    finalChars = _unicodeUnknownCharArray;
+                                    SetListFastToUnknownChar(finalChars);
                                 }
                                 break;
                         }
@@ -1605,16 +1615,26 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 {
                     try
                     {
-                        finalChars = enc?.GetChars(_hexBuffer.ItemsArray, 0, _hexBuffer.Count) ?? _unicodeUnknownCharArray;
+                        if (enc != null)
+                        {
+                            int sourceBufferCount = _hexBuffer.Count;
+                            finalChars.EnsureCapacity(sourceBufferCount);
+                            finalChars.Count = enc
+                                .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
+                        }
+                        else
+                        {
+                            SetListFastToUnknownChar(finalChars);
+                        }
                     }
                     catch
                     {
-                        finalChars = _unicodeUnknownCharArray;
+                        SetListFastToUnknownChar(finalChars);
                     }
                 }
             }
 
-            PutChars(finalChars, finalChars.Length);
+            PutChars(finalChars, finalChars.Count);
         }
 
         return ResetBufferAndStateAndReturn();
@@ -1797,7 +1817,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         const int maxParams = 6;
         const int useCurrentScopeCodePage = -1;
 
-        char[] finalChars = Array.Empty<char>();
+        ListFast<char> finalChars = _charGeneralBuffer;
+        finalChars.Count = 0;
 
         #region Parse params
 
@@ -1831,7 +1852,15 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             }
             else if (ch == 'u')
             {
-                finalChars = ConvertFromUtf32(codePoint) ?? _unicodeUnknownCharArray;
+                ListFast<char>? chars = ConvertFromUtf32(codePoint);
+                if (chars != null)
+                {
+                    finalChars = chars;
+                }
+                else
+                {
+                    SetListFastToUnknownChar(finalChars);
+                }
                 break;
             }
             /*
@@ -1944,7 +1973,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         #endregion
 
-        if (finalChars.Length > 0) PutChars(finalChars, finalChars.Length);
+        if (finalChars.Count > 0) PutChars(finalChars, finalChars.Count);
 
         return RewindAndSkipGroup(ch);
     }
@@ -1983,9 +2012,9 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                     SymbolFont.Webdings => _webdingsFontToUnicode
                 };
 #pragma warning restore 8509
-                if (GetCharFromConversionList(ch, fontTable, out char[] result))
+                if (GetCharFromConversionList(ch, fontTable, out ListFast<char> result))
                 {
-                    _plainText.AddRange(result, result.Length);
+                    _plainText.AddRange(result, result.Count);
                 }
             }
             else
@@ -2010,6 +2039,20 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         return Error.OK;
     }
 
+    private Error PutChars(ListFast<char> ch, int count)
+    {
+        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
+        // need to duplicate any of the bare-char symbol font stuff here.
+
+        if (!(count == 1 && ch[0] == '\0') &&
+            _currentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_currentScope.InFontTable)
+        {
+            _plainText.AddRange(ch, count);
+        }
+        return Error.OK;
+    }
+
     #endregion
 
     #region Helpers
@@ -2020,7 +2063,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe char[] GetCharFromCodePage(int codePage, int codePoint)
+    private unsafe ListFast<char> GetCharFromCodePage(int codePage, int codePoint)
     {
         // BitConverter.GetBytes() does this, but it allocates a temp array every time.
         // I think I understand the general idea here but like yeah
@@ -2030,17 +2073,32 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         {
             if (codePage > -1)
             {
-                return GetEncodingFromCachedList(codePage).GetChars(_byteBuffer4);
+                _charGeneralBuffer.EnsureCapacity(4);
+                _charGeneralBuffer.Count = GetEncodingFromCachedList(codePage)
+                    .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
+                return _charGeneralBuffer;
             }
             else
             {
                 (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
-                return success && enc != null ? enc.GetChars(_byteBuffer4) : _unicodeUnknownCharArray;
+                if (success && enc != null)
+                {
+                    _charGeneralBuffer.EnsureCapacity(4);
+                    _charGeneralBuffer.Count = enc
+                        .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
+                    return _charGeneralBuffer;
+                }
+                else
+                {
+                    SetListFastToUnknownChar(_charGeneralBuffer);
+                    return _charGeneralBuffer;
+                }
             }
         }
         catch
         {
-            return _unicodeUnknownCharArray;
+            SetListFastToUnknownChar(_charGeneralBuffer);
+            return _charGeneralBuffer;
         }
     }
 
@@ -2144,27 +2202,39 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetCharFromConversionList(int codePoint, int[] fontTable, out char[] finalChars)
+    private bool GetCharFromConversionList(int codePoint, int[] fontTable, out ListFast<char> finalChars)
     {
+        finalChars = _charGeneralBuffer;
+
         if (codePoint is >= 0x20 and <= 0xFF)
         {
-            finalChars = ConvertFromUtf32(fontTable[codePoint - 0x20]) ?? _unicodeUnknownCharArray;
+            ListFast<char>? chars = ConvertFromUtf32(fontTable[codePoint - 0x20]);
+            if (chars != null)
+            {
+                finalChars = chars;
+            }
+            else
+            {
+                SetListFastToUnknownChar(finalChars);
+            }
         }
         else
         {
             if (codePoint > 255)
             {
-                finalChars = Array.Empty<char>();
+                finalChars.Count = 0;
                 return false;
             }
             try
             {
                 _byteBuffer1[0] = (byte)codePoint;
-                finalChars = GetEncodingFromCachedList(_windows1252).GetChars(_byteBuffer1);
+                finalChars.EnsureCapacity(1);
+                finalChars.Count = GetEncodingFromCachedList(_windows1252)
+                    .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
             }
             catch
             {
-                finalChars = _unicodeUnknownCharArray;
+                SetListFastToUnknownChar(finalChars);
             }
         }
 
@@ -2238,7 +2308,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private char[]? ConvertFromUtf32(int utf32)
+    private ListFast<char>? ConvertFromUtf32(int utf32)
     {
         uint utf32u = (uint)utf32;
 
@@ -2249,14 +2319,16 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         if (utf32u <= 0xFFFFu)
         {
-            _charBuffer1[0] = (char)utf32u;
-            return _charBuffer1;
+            _charGeneralBuffer.ItemsArray[0] = (char)utf32u;
+            _charGeneralBuffer.Count = 1;
+            return _charGeneralBuffer;
         }
 
-        _charBuffer2[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
-        _charBuffer2[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
+        _charGeneralBuffer.ItemsArray[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
+        _charGeneralBuffer.ItemsArray[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
+        _charGeneralBuffer.Count = 2;
 
-        return _charBuffer2;
+        return _charGeneralBuffer;
     }
 
     /// <summary>
@@ -2289,6 +2361,13 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             if (seq1.ItemsArray[ci] != seq2[ci]) return false;
         }
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SetListFastToUnknownChar(ListFast<char> list)
+    {
+        list.ItemsArray[0] = _unicodeUnknown_Char;
+        list.Count = 1;
     }
 
     #endregion
