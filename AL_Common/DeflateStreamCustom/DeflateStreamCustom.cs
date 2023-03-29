@@ -27,7 +27,9 @@ public sealed class DeflateStreamCustom : Stream
         _stream = stream;
         _leaveOpen = leaveOpen;
         if (!_stream.CanRead)
+        {
             throw new ArgumentException("NotReadableStream", nameof(stream));
+        }
         _inflater = new InflaterZlib();
         this.buffer = buffer;
     }
@@ -160,7 +162,9 @@ public sealed class DeflateStreamCustom : Stream
                 if (!_leaveOpen)
                 {
                     if (_stream != null!)
+                    {
                         _stream.Dispose();
+                    }
                 }
             }
         }
@@ -170,7 +174,9 @@ public sealed class DeflateStreamCustom : Stream
             try
             {
                 if (_inflater != null!)
+                {
                     _inflater.Dispose();
+                }
             }
             finally
             {

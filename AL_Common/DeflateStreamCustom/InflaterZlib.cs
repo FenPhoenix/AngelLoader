@@ -22,34 +22,37 @@ internal sealed class InflaterZlib : IDisposable
         InflateInit();
     }
 
-    public int AvailableOutput => (int)_zlibStream.AvailOut;
-
     public bool Finished() => _finished;
 
     public int Inflate(byte[] bytes, int offset, int length)
     {
         if (length == 0)
+        {
             return 0;
+        }
         try
         {
-            int bytesRead;
-            if (ReadInflateOutput(bytes, offset, length, ZLibNative.FlushCode.NoFlush, out bytesRead) == ZLibNative.ErrorCode.StreamEnd)
+            if (ReadInflateOutput(bytes, offset, length, ZLibNative.FlushCode.NoFlush, out int bytesRead) == ZLibNative.ErrorCode.StreamEnd)
+            {
                 _finished = true;
+            }
             return bytesRead;
         }
         finally
         {
             if (_zlibStream.AvailIn == 0U && _inputBufferHandle.IsAllocated)
+            {
                 DeallocateInputBufferHandle();
+            }
         }
     }
-
-    public bool NeedsInput() => _zlibStream.AvailIn == 0U;
 
     public void SetInput(byte[] inputBuffer, int startIndex, int count)
     {
         if (count == 0)
+        {
             return;
+        }
         lock (_syncLock)
         {
             _inputBufferHandle = GCHandle.Alloc((object)inputBuffer, GCHandleType.Pinned);
@@ -64,24 +67,32 @@ internal sealed class InflaterZlib : IDisposable
     private void Dispose(bool disposing)
     {
         if (_isDisposed)
+        {
             return;
+        }
         if (disposing)
+        {
             _zlibStream.Dispose();
+        }
         if (_inputBufferHandle.IsAllocated)
+        {
             DeallocateInputBufferHandle();
+        }
         _isDisposed = true;
     }
 
     public void Dispose()
     {
         Dispose(true);
-        GC.SuppressFinalize((object)this);
+        GC.SuppressFinalize(this);
     }
 
     ~InflaterZlib()
     {
         if (Environment.HasShutdownStarted)
+        {
             return;
+        }
         Dispose(false);
     }
 
@@ -169,7 +180,9 @@ internal sealed class InflaterZlib : IDisposable
             _zlibStream.AvailIn = 0U;
             _zlibStream.NextIn = ZLibNative.ZNullPtr;
             if (Interlocked.Exchange(ref _isValid, 0) == 0)
+            {
                 return;
+            }
             _inputBufferHandle.Free();
         }
     }
