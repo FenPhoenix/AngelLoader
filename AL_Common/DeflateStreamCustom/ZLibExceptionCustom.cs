@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+
+using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -82,3 +84,4 @@ internal sealed class ZLibException : IOException, ISerializable
         get => this._zlibErrorMessage;
     }
 }
+#endif

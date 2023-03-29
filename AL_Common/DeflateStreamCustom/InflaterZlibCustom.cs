@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -187,3 +189,4 @@ internal sealed class InflaterZlibCustom : IDisposable
         }
     }
 }
+#endif

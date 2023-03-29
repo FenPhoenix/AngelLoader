@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using AL_Common.DeflateStreamCustom;
 using AL_Common.FastZipReader;
 using AL_Common.FastZipReader.Deflate64Managed;
@@ -200,7 +199,11 @@ internal sealed class ZipArchiveS : IDisposable
                 Or we could carry 1.2.13 with us. But then we don't get automatic updates. Not like we get those
                 with old Framework anyway, but, y'know...
                 */
+#if NETFRAMEWORK
                 uncompressedStream = new DeflateStreamCustom(compressedStreamToRead, _deflateStreamBuffer);
+#else
+                uncompressedStream = new System.IO.Compression.DeflateStream(compressedStreamToRead, System.IO.Compression.CompressionMode.Decompress, leaveOpen: true);
+#endif
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode

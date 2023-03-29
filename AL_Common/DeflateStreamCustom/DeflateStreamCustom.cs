@@ -1,9 +1,11 @@
-﻿using System;
+﻿// @NET5(DeflateStreamCustom): Modern .NETs rent the buffer from the shared array pool, so we don't need any of this nonsense in that case.
+#if NETFRAMEWORK
+
+using System;
 using System.IO;
 
 namespace AL_Common.DeflateStreamCustom;
 
-// @NET5(DeflateStreamCustom): This has to be replaced entirely for modern .NET
 public sealed class DeflateStreamCustom : Stream
 {
     // @Deflate(DeflateStreamCustom): Cache this whole thing, and cache the InflaterZlib too
@@ -161,3 +163,4 @@ public sealed class DeflateStreamCustom : Stream
         }
     }
 }
+#endif
