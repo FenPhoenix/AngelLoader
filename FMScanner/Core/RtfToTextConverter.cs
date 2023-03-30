@@ -1410,6 +1410,13 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 // once per font change.
                 _currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
             }
+            // \fN supersedes \langN
+            _currentScope.Properties[(int)Property.Lang] = -1;
+        }
+        else if (propertyTableIndex == Property.Lang)
+        {
+            // 1024 = "undefined language", ignore it
+            if (val == 1024) return Error.OK;
         }
 
         _currentScope.Properties[(int)propertyTableIndex] = val;
@@ -2167,12 +2174,22 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     GetCurrentEncoding()
     {
         int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
+        int scopeLang = _currentScope.Properties[(int)Property.Lang];
 
         if (scopeFontNum == -1) scopeFontNum = _header.DefaultFontNum;
 
         _fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
 
-        int codePage = fontEntry?.CodePage ?? _header.CodePage;
+        int codePage;
+        if (scopeLang > -1)
+        {
+            int translatedCodePage = LangToCodePage[scopeLang];
+            codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage ?? _header.CodePage;
+        }
+        else
+        {
+            codePage = fontEntry?.CodePage ?? _header.CodePage;
+        }
 
         if (codePage == 42) return (true, true, null, fontEntry);
 

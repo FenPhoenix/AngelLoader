@@ -758,6 +758,74 @@ public abstract partial class RTFParserBase
 
     #endregion
 
+    protected static readonly int[] LangToCodePage = InitializedArray(16386, -1);
+
+    static RTFParserBase()
+    {
+        /*
+        There's a ton more languages than this, but it's not clear what code page they all translate to.
+        This should be enough to get on with for now though...
+        */
+
+        // Arabic
+        LangToCodePage[1065] = 1256;
+        LangToCodePage[1025] = 1256;
+        LangToCodePage[2049] = 1256;
+        LangToCodePage[3073] = 1256;
+        LangToCodePage[4097] = 1256;
+        LangToCodePage[5121] = 1256;
+        LangToCodePage[6145] = 1256;
+        LangToCodePage[7169] = 1256;
+        LangToCodePage[8193] = 1256;
+        LangToCodePage[9217] = 1256;
+        LangToCodePage[10241] = 1256;
+        LangToCodePage[11265] = 1256;
+        LangToCodePage[12289] = 1256;
+        LangToCodePage[13313] = 1256;
+        LangToCodePage[14337] = 1256;
+        LangToCodePage[15361] = 1256;
+        LangToCodePage[16385] = 1256;
+        LangToCodePage[1056] = 1256;
+        LangToCodePage[2118] = 1256;
+        LangToCodePage[2137] = 1256;
+        LangToCodePage[1119] = 1256;
+        LangToCodePage[1120] = 1256;
+        LangToCodePage[1123] = 1256;
+        LangToCodePage[1164] = 1256;
+
+        // Cyrillic
+        LangToCodePage[1049] = 1251;
+        LangToCodePage[1026] = 1251;
+        LangToCodePage[10266] = 1251;
+        LangToCodePage[1058] = 1251;
+        LangToCodePage[2073] = 1251;
+        LangToCodePage[3098] = 1251;
+        LangToCodePage[7194] = 1251;
+        LangToCodePage[8218] = 1251;
+        LangToCodePage[12314] = 1251;
+        LangToCodePage[1059] = 1251;
+        LangToCodePage[1064] = 1251;
+        LangToCodePage[2092] = 1251;
+        LangToCodePage[1071] = 1251;
+        LangToCodePage[1087] = 1251;
+        LangToCodePage[1088] = 1251;
+        LangToCodePage[2115] = 1251;
+        LangToCodePage[1092] = 1251;
+        LangToCodePage[1104] = 1251;
+        LangToCodePage[1133] = 1251;
+        LangToCodePage[1157] = 1251;
+
+        // Greek
+        LangToCodePage[1032] = 1253;
+
+        // Hebrew
+        LangToCodePage[1037] = 1255;
+        LangToCodePage[1085] = 1255;
+
+        // Vietnamese
+        LangToCodePage[1066] = 1258;
+    }
+
     protected void ResetBase()
     {
         #region Fixed-size fields
