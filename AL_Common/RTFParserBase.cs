@@ -52,6 +52,29 @@ Note the '?' is the usual Unicode fallback char at the end of the \u2341? keywor
 can be anything, even a keyword and all that other crap as we know.
 */
 
+/*
+@vNext(RTF Cyrillic (some Zontik FMs) issue):
+This may also occur in other FMs and/or with other codepages (have to check), but basically Windows RichEdit is
+"interpreting the spec differently" from LibreOffice (and possibly other apps, I don't have MS Office / Word)
+and is displaying what should be Cyrillic text in garbled Windows-1252. The reason is the \langN (see note)
+control word, which the spec is very vague about. It merely says: "Applies a language to a text run". It doesn't
+say what that means in any technical sense or what readers are supposed to do with it, but Windows RichEdit
+appears to simply ignore it. Other apps may interpret it as "use an appropriate codepage for this language",
+which is how LibreOffice - at least - is displaying the Cyrillic in these Zontik readmes correctly, as \lang1049
+is in effect for that text (1049 is language "Russian (Russia) 0x419 1049" per the language table in the spec).
+We can pre-parse the rtf before load (like we do for the color table, but always) and detect a \langN / current-
+font-codepage mismatch, and fix up the font table and then set the appropriate-codepage font for this scope
+alongside the \langN control word.
+
+Remember to have the parser return the extra length of the required inserts we can set it once and not have a
+zillion list copy allocations.
+
+We could also do this for the plaintext converter, and we wouldn't take any extra allocations then, we'd just
+override the current font codepage with the current \langN codepage, simple enough.
+
+*Note: There are also \langnpN, \langfeN, and \langfenpN which are similar and should be accounted for I guess.
+*/
+
 public abstract partial class RTFParserBase
 {
     #region Constants
