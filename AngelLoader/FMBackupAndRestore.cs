@@ -57,10 +57,10 @@ internal static class FMBackupAndRestore
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
     private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        RegexOptions.Compiled | IgnoreCaseInvariant);
 
     private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        RegexOptions.Compiled | IgnoreCaseInvariant);
 
     #endregion
 

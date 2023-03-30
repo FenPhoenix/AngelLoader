@@ -1910,7 +1910,7 @@ public sealed partial class Scanner : IDisposable
             }
 
             // PERF: 5ms over the whole 1098 set, whatever
-            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, IgnoreCaseInvariant);
             if (match.Success) continue;
 
             if (fmData.TagsString != "") fmData.TagsString += ", ";

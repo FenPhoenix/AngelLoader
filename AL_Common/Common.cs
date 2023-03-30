@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static System.StringComparison;
 
@@ -270,9 +271,8 @@ public static class Common
         }
     }
 
-    #endregion
-
-    #region Methods
+    private static bool? _fieldStreamBufferFieldFound;
+    private static FieldInfo? _fieldStreamBufferFieldInfo;
 
     public sealed class FileStream_LengthCached : FileStream
     {
@@ -309,8 +309,13 @@ public static class Common
         }
     }
 
-    private static bool? _fieldStreamBufferFieldFound;
-    private static FieldInfo? _fieldStreamBufferFieldInfo;
+    public const RegexOptions IgnoreCaseInvariant = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
+
+    #endregion
+
+    #region Methods
+
+    #region Stream reading
 
     public static FileStream_LengthCached GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
@@ -359,8 +364,6 @@ public static class Common
 
         return fs;
     }
-
-    #region Stream reading
 
     public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
     {
