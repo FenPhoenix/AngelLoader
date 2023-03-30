@@ -1354,6 +1354,13 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                     _header.DefaultFontSet = true;
                 }
                 break;
+            case SpecialType.DefaultLang:
+                if (!_header.DefaultLangSet)
+                {
+                    _header.DefaultLang = param;
+                    _header.DefaultLangSet = true;
+                }
+                break;
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
