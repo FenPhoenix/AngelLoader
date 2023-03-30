@@ -86,9 +86,9 @@ public abstract partial class RTFParserBase
         new Symbol("fldinst", 0, false, KeywordType.Destination, (int)DestinationType.FieldInstruction),
 
         // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
-        new Symbol("cs", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
-        new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
-        new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.IgnoreButDontSkipGroup),
+        new Symbol("cs", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
 
         #region Custom skip-destinations
 
