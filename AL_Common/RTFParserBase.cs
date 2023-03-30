@@ -84,6 +84,21 @@ identical to \langN, but needed when \noproof is written together with \lang1024
 the language of the text that is not being checked for spelling or grammar. Usually follows
 \langN."
 
+UPDATE 2:
+
+Actually it does explain them all in a roundabout way, but the explanations are in the \deflang section:
+
+"\deflangN: Defines default language to be used when the \plain control word is encountered. See the
+standard language table for a list of possible values for N."
+
+"\deflangfeN: Default language ID for East Asian text in Word."
+
+"\adeflangN: Default language ID for South Asian/Middle Eastern text in Word. The default languages are
+determined by the current primary editing language and the enabled editing languages (can
+be changed via Microsoft Office Language Settings applet)."
+
+So, yeah, like... wtf
+
 Also:
 
 "\noproof: Do not check spelling or grammar for text in the group. Serves the function of \lang1024
