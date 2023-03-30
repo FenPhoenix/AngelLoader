@@ -66,13 +66,33 @@ We can pre-parse the rtf before load (like we do for the color table, but always
 font-codepage mismatch, and fix up the font table and then set the appropriate-codepage font for this scope
 alongside the \langN control word.
 
-Remember to have the parser return the extra length of the required inserts we can set it once and not have a
+Remember to have the parser return the extra length of the required inserts so we can set it once and not have a
 zillion list copy allocations.
 
 We could also do this for the plaintext converter, and we wouldn't take any extra allocations then, we'd just
 override the current font codepage with the current \langN codepage, simple enough.
 
 *Note: There are also \langnpN, \langfeN, and \langfenpN which are similar and should be accounted for I guess.
+
+UPDATE: There's also \alangN, about which the spec says literally nothing other than that it exists and is a
+"language id". It doesn't say what the difference is between \alangN and \langN, nor for that matter what the
+difference is between \langN and \langfeN. The "np" versions do have an explanation:
+
+"langnpN: Applies a language to a text run. N is the language ID. The \plain control word resets the
+language property to the language defined by \deflangN in the document properties. It is
+identical to \langN, but needed when \noproof is written together with \lang1024 to preserve
+the language of the text that is not being checked for spelling or grammar. Usually follows
+\langN."
+
+Also:
+
+"\noproof: Do not check spelling or grammar for text in the group. Serves the function of \lang1024
+(undefined language). Usually \lang1024 is emitted with it for backward compatibility with old readers."
+
+So... I guess maybe our logic should be that non-1024 "np" versions supersede 1024 regular versions.
+But should they supersede regular versions always?
+
+We should also remember to ignore language 1024 when doing the font codepage match check.
 */
 
 public abstract partial class RTFParserBase
