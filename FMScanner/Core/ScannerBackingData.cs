@@ -730,7 +730,7 @@ public sealed partial class Scanner
 
     private readonly Regex AnyDateNumberRTLRegex =
         new Regex("(Y2K|[0123456789])",
-            RegexOptions.IgnoreCase |RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
 
     private readonly Regex NewDarkAndNumberRegex =
         new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
