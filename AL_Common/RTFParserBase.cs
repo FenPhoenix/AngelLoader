@@ -108,6 +108,10 @@ So... I guess maybe our logic should be that non-1024 "np" versions supersede 10
 But should they supersede regular versions always?
 
 We should also remember to ignore language 1024 when doing the font codepage match check.
+
+UPDATE 3:
+Hallelujah, turns out we can just insert \ansicpgN after each \langN and it changes the codepage right there, no
+extra fonts needed!
 */
 
 public abstract partial class RTFParserBase
