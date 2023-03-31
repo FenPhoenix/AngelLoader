@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+#if false
 using System.Runtime.InteropServices;
+#endif
 using System.Text;
 
 namespace AL_Common;
@@ -69,6 +71,7 @@ public sealed class StreamReaderCustom
     private byte[] _preamble = Array.Empty<byte>();
 
     private bool _checkPreamble;
+
     private bool _isBlocked;
 
     private const int _defaultBufferSize = 1024;
@@ -134,6 +137,8 @@ public sealed class StreamReaderCustom
         _charBuffer = Array.Empty<char>();
     }
 
+#if false
+
     /// <summary>Gets the current character encoding that the current <see cref="T:AL_Common.StreamReaderCustom" /> object is using.</summary>
     /// /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Read()" /> method of <see cref="T:AL_Common.StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Read()" /> method.</returns>
     public Encoding CurrentEncoding => _encoding;
@@ -167,6 +172,7 @@ public sealed class StreamReaderCustom
         }
     }
 
+
     /// <summary>Returns the next available character but does not consume it.</summary>
     /// <returns>An integer representing the next character to be read, or -1 if there are no characters to be read or if the stream does not support seeking.</returns>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
@@ -190,6 +196,7 @@ public sealed class StreamReaderCustom
         ++_charPos;
         return num;
     }
+
 
     /// <summary>Reads a specified maximum of characters from the current stream into a buffer, beginning at the specified index.</summary>
     /// <param name="buffer">When this method returns, contains the specified character array with the values between <paramref name="index" /> and (index + count - 1) replaced by the characters read from the current source.</param>
@@ -238,6 +245,8 @@ public sealed class StreamReaderCustom
         }
         return num1;
     }
+
+#endif
 
     private readonly StringBuilder _readToEndSB = new();
 
@@ -386,6 +395,8 @@ public sealed class StreamReaderCustom
         return _charLen;
     }
 
+#if false
+
     private int ReadBuffer(
       char[] userBuffer,
       int userOffset,
@@ -453,6 +464,8 @@ public sealed class StreamReaderCustom
         _isBlocked &= charIndex < desiredChars;
         return charIndex;
     }
+
+#endif
 
     private readonly StringBuilder _readLineSB = new();
 

@@ -424,7 +424,7 @@ public abstract partial class RTFParserBase
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null,
 // Entry 24
-            new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
+            new Symbol("emdash", 0, false, KeywordType.Character, '\x2014')
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

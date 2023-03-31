@@ -172,8 +172,10 @@ internal sealed class ZipArchiveS : IDisposable
         return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream);
     }
 
+#if false && NETFRAMEWORK
     // @Deflate: Temporary
     private static readonly byte[] _deflateStreamBuffer = new byte[8192];
+#endif
 
     private static Stream GetDataDecompressor(ZipArchiveSEntry entry, SubReadStream compressedStreamToRead)
     {
