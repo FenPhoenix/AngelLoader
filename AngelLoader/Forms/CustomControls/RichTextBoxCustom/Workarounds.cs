@@ -570,6 +570,10 @@ internal sealed partial class RichTextBoxCustom
     page as the current font, and maybe avoid some inserts (save a bit of memory?). But then on the other hand,
     we'd have to do a full-file parse always, instead of exiting after finding the color table. And that would
     certainly be slower than just blazing through with a byte search like we do here. So, meh.
+
+    @RTF(\langN processing): Should we support all \langN nums and just reset \ansicpg to default on ones we don't support?
+    What if we had like "\lang1049 blah blah blah \lang[some-unknown-num]" and no \fN after... we wouldn't
+    actually reset in that case. Is it likely to happen? I guess not, but could it?
     */
     private static byte[] ReplaceLangsWithAnsiCpg(byte[] bytes)
     {
