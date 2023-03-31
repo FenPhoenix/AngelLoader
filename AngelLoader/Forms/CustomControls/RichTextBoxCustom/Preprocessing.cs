@@ -60,6 +60,13 @@ internal sealed partial class RichTextBoxCustom
 
     private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits);
 
+    /*
+    @RTF(\langN processing):
+    We could do a proper parse for this and then we would be able to reject \langNs that point to the same code
+    page as the current font, and maybe avoid some inserts (save a bit of memory?). But then on the other hand,
+    we'd have to do a full-file parse always, instead of exiting after finding the color table. And that would
+    certainly be slower than just blazing through with a byte search like we do here. So, meh.
+    */
     private static byte[] ReplaceLangsWithAnsiCpg(byte[] bytes)
     {
         static int GetDigitsUpTo5(int number)
@@ -131,7 +138,17 @@ internal sealed partial class RichTextBoxCustom
             extraLength += ansiCpgLength + codePageDigitCount;
         }
 
-        // @vNext(Cyrillic)/@MEM: Temporary memory hog just to get it working
+        /*
+        @RTF(\langN)/@MEM: Temporary memory hog just to get it working
+        We should combine this in with GetDarkModeRTFBytes(), and then call it always, but have a bool saying
+        whether it's dark mode so we can skip the color table generation for light mode. Because the one-time
+        new byte array with the final size happens in there, so if we combine this in, we don't have to create
+        another byte array here.
+
+        Granted, we already exit early and return the same array we were passed in if we find no work to do,
+        so we're already in pretty decent shape. Our worst case is Beginning of Era Karath-Din's 4.5MB readme,
+        which is not that bad.
+        */
         byte[] newBytes = new byte[bytes.Length + extraLength];
 
         int lastIndex = 0;

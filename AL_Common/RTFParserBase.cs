@@ -53,7 +53,7 @@ can be anything, even a keyword and all that other crap as we know.
 */
 
 /*
-@vNext(RTF Cyrillic (some Zontik FMs) issue):
+@RTF(RTF Cyrillic (some Zontik FMs) issue):
 This may also occur in other FMs and/or with other codepages (have to check), but basically Windows RichEdit is
 "interpreting the spec differently" from LibreOffice (and possibly other apps, I don't have MS Office / Word)
 and is displaying what should be Cyrillic text in garbled Windows-1252. The reason is the \langN (see note)
