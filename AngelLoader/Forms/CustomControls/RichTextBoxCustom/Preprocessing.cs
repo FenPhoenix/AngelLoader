@@ -61,6 +61,14 @@ internal sealed partial class RichTextBoxCustom
     private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits);
 
     /*
+    Windows' RichEdit control doesn't support setting code page via \langN and its cousins, whereas LibreOffice
+    at least does, and I would guess MS Word probably does too but I don't know for sure.
+    So let's give it some help by adding \ansicpgN control words after every supported-value \langN, so it will
+    use the right codepage.
+    Fixes "The Mirror" and "Upside Down", and does no harm to others (diff tested all).
+
+    Note that there are other variations of \langN, but we don't need to support them for our use case here.
+
     @RTF(\langN processing):
     We could do a proper parse for this and then we would be able to reject \langNs that point to the same code
     page as the current font, and maybe avoid some inserts (save a bit of memory?). But then on the other hand,
@@ -132,11 +140,17 @@ internal sealed partial class RichTextBoxCustom
 
         int ansiCpgLength = _ansicpg.Length;
 
+        int cp1252Count = 0;
+
         for (int i = 0; i < langIndexes.Count; i++)
         {
-            (_, _, int codePageDigitCount) = langIndexes[i];
+            (_, int codePage, int codePageDigitCount) = langIndexes[i];
+            if (codePage == 1252) cp1252Count++;
             extraLength += ansiCpgLength + codePageDigitCount;
         }
+
+        // If it's all \lang1033 (1252), just leave them all alone (perf shortcut)
+        if (cp1252Count == langIndexes.Count) return bytes;
 
         /*
         @RTF(\langN)/@MEM: Temporary memory hog just to get it working

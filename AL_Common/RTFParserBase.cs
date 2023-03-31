@@ -52,68 +52,6 @@ Note the '?' is the usual Unicode fallback char at the end of the \u2341? keywor
 can be anything, even a keyword and all that other crap as we know.
 */
 
-/*
-@RTF(RTF Cyrillic (some Zontik FMs) issue):
-This may also occur in other FMs and/or with other codepages (have to check), but basically Windows RichEdit is
-"interpreting the spec differently" from LibreOffice (and possibly other apps, I don't have MS Office / Word)
-and is displaying what should be Cyrillic text in garbled Windows-1252. The reason is the \langN (see note)
-control word, which the spec is very vague about. It merely says: "Applies a language to a text run". It doesn't
-say what that means in any technical sense or what readers are supposed to do with it, but Windows RichEdit
-appears to simply ignore it. Other apps may interpret it as "use an appropriate codepage for this language",
-which is how LibreOffice - at least - is displaying the Cyrillic in these Zontik readmes correctly, as \lang1049
-is in effect for that text (1049 is language "Russian (Russia) 0x419 1049" per the language table in the spec).
-We can pre-parse the rtf before load (like we do for the color table, but always) and detect a \langN / current-
-font-codepage mismatch, and fix up the font table and then set the appropriate-codepage font for this scope
-alongside the \langN control word.
-
-Remember to have the parser return the extra length of the required inserts so we can set it once and not have a
-zillion list copy allocations.
-
-We could also do this for the plaintext converter, and we wouldn't take any extra allocations then, we'd just
-override the current font codepage with the current \langN codepage, simple enough.
-
-*Note: There are also \langnpN, \langfeN, and \langfenpN which are similar and should be accounted for I guess.
-
-UPDATE: There's also \alangN, about which the spec says literally nothing other than that it exists and is a
-"language id". It doesn't say what the difference is between \alangN and \langN, nor for that matter what the
-difference is between \langN and \langfeN. The "np" versions do have an explanation:
-
-"langnpN: Applies a language to a text run. N is the language ID. The \plain control word resets the
-language property to the language defined by \deflangN in the document properties. It is
-identical to \langN, but needed when \noproof is written together with \lang1024 to preserve
-the language of the text that is not being checked for spelling or grammar. Usually follows
-\langN."
-
-UPDATE 2:
-
-Actually it does explain them all in a roundabout way, but the explanations are in the \deflang section:
-
-"\deflangN: Defines default language to be used when the \plain control word is encountered. See the
-standard language table for a list of possible values for N."
-
-"\deflangfeN: Default language ID for East Asian text in Word."
-
-"\adeflangN: Default language ID for South Asian/Middle Eastern text in Word. The default languages are
-determined by the current primary editing language and the enabled editing languages (can
-be changed via Microsoft Office Language Settings applet)."
-
-So, yeah, like... wtf
-
-Also:
-
-"\noproof: Do not check spelling or grammar for text in the group. Serves the function of \lang1024
-(undefined language). Usually \lang1024 is emitted with it for backward compatibility with old readers."
-
-So... I guess maybe our logic should be that non-1024 "np" versions supersede 1024 regular versions.
-But should they supersede regular versions always?
-
-We should also remember to ignore language 1024 when doing the font codepage match check.
-
-UPDATE 3:
-Hallelujah, turns out we can just insert \ansicpgN after each \langN and it changes the codepage right there, no
-extra fonts needed!
-*/
-
 public abstract partial class RTFParserBase
 {
     #region Constants
@@ -758,16 +696,18 @@ public abstract partial class RTFParserBase
 
     #endregion
 
+    #region Lang to code page
+
     public const int MaxLangNumDigits = 5;
     public const int MaxLangNumIndex = 16385;
     public static readonly int[] LangToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
 
     static RTFParserBase()
     {
-        /*
-        There's a ton more languages than this, but it's not clear what code page they all translate to.
-        This should be enough to get on with for now though...
-        */
+        // There's a ton more languages than this, but it's not clear what code page they all translate to.
+        // This should be enough to get on with for now though...
+
+        // Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
 
         // Arabic
         LangToCodePage[1065] = 1256;
@@ -826,7 +766,12 @@ public abstract partial class RTFParserBase
 
         // Vietnamese
         LangToCodePage[1066] = 1258;
+
+        // Western European
+        LangToCodePage[1033] = 1252;
     }
+
+    #endregion
 
     protected void ResetBase()
     {
