@@ -225,6 +225,13 @@ public static class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddFast(T item) => ItemsArray[Count++] = item;
 
+        public void InsertAtZeroFast(T item)
+        {
+            Array.Copy(ItemsArray, 0, ItemsArray, 1, Count);
+            ItemsArray[0] = item;
+            Count++;
+        }
+
         /*
         Honestly, for fixed-size value types, doing an Array.Clear() is completely unnecessary. For reference
         types, you definitely want to clear it to get rid of all the references, but for ints or chars etc.,
@@ -422,6 +429,9 @@ public static class Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiNumeric(this byte c) => (uint)(c - '0') <= '9' - '0';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiAlphanumeric(this char c) => ((((uint)c - 'A') & ~0x20) < 26) || ((uint)(c - '0') <= '9' - '0');

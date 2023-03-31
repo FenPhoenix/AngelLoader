@@ -26,7 +26,7 @@ internal sealed partial class RichTextBoxCustom
             SetReadmeTypeAndColorState(_currentReadmeType);
             // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
             // selected or whatever
-            if (Visible) RefreshDarkModeState();
+            if (Visible) RefreshDarkModeState(preProcessedRtf: null, skipSuspend: false);
         }
     }
 
@@ -76,7 +76,10 @@ internal sealed partial class RichTextBoxCustom
                 }
                 else
                 {
-                    using var ms = new MemoryStream(_darkModeEnabled ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes) : _currentReadmeBytes);
+                    var bytes = _darkModeEnabled
+                        ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes)
+                        : _currentReadmeBytes;
+                    using var ms = new MemoryStream(bytes);
                     LoadFile(ms, RichTextBoxStreamType.RichText);
                 }
             }

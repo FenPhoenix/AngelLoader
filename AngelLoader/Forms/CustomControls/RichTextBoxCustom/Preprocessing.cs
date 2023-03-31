@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using AL_Common;
 using static AL_Common.Common;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -38,7 +41,7 @@ internal sealed partial class RichTextBoxCustom
     /// Perform pre-processing that needs to be done regardless of visual theme.
     /// </summary>
     /// <param name="bytes"></param>
-    private static void GlobalPreProcessRTF(byte[] bytes)
+    private static byte[] GlobalPreProcessRTF(byte[] bytes)
     {
         /*
         It's six of one half a dozen of the other - each method causes rare cases of images
@@ -51,6 +54,155 @@ internal sealed partial class RichTextBoxCustom
         */
         ReplaceByteSequence(bytes, _shppict, _shppictBlanked);
         ReplaceByteSequence(bytes, _nonshppict, _nonshppictBlanked);
+
+        return ReplaceLangsWithAnsiCpg(bytes);
+    }
+
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits);
+
+    private static byte[] ReplaceLangsWithAnsiCpg(byte[] bytes)
+    {
+        static int GetDigitsUpTo5(int number)
+        {
+            return
+                number <= 9 ? 1 :
+                number <= 99 ? 2 :
+                number <= 999 ? 3 :
+                number <= 9999 ? 4 :
+                5;
+        }
+
+        static ListFast<byte> CodePageToBytes(int codePage, int digits)
+        {
+            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
+            // a new byte array EVERY time through here (which is a lot)
+            _codePageBytes.ClearFast();
+
+            for (int i = 0; i < digits; i++)
+            {
+                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
+                codePage /= 10;
+            }
+
+            return _codePageBytes;
+        }
+
+        var langIndexes = new List<(int Index, int CodePage, int CodePageDigitCount)>();
+
+        int startFrom = 0;
+        while (startFrom > -1 && startFrom < bytes.Length - 1)
+        {
+            (int start, int end) = FindIndexOfLangWithNum(bytes, startFrom);
+            if (start > -1 && end > -1 &&
+                end - (start + 5) <= RTFParserBase.MaxLangNumDigits)
+            {
+                int num = 0;
+                for (int i = start + 5; i < end; i++)
+                {
+                    byte b = bytes[i];
+                    if (b.IsAsciiNumeric())
+                    {
+                        num *= 10;
+                        num += b - '0';
+                    }
+                }
+
+                if (num <= RTFParserBase.MaxLangNumIndex)
+                {
+                    int codePage = RTFParserBase.LangToCodePage[num];
+                    if (codePage > -1)
+                    {
+                        langIndexes.Add((end, codePage, GetDigitsUpTo5(codePage)));
+                    }
+                }
+            }
+            startFrom = end;
+        }
+
+        if (langIndexes.Count == 0) return bytes;
+
+        int extraLength = 0;
+
+        int ansiCpgLength = _ansicpg.Length;
+
+        for (int i = 0; i < langIndexes.Count; i++)
+        {
+            (_, _, int codePageDigitCount) = langIndexes[i];
+            extraLength += ansiCpgLength + codePageDigitCount;
+        }
+
+        // @vNext(Cyrillic)/@MEM: Temporary memory hog just to get it working
+        byte[] newBytes = new byte[bytes.Length + extraLength];
+
+        int lastIndex = 0;
+        int newBytePointer = 0;
+        for (int i = 0; i < langIndexes.Count; i++)
+        {
+            (int index, int codePage, int codePageDigitCount) = langIndexes[i];
+
+            ListFast<byte> cpgBytes = CodePageToBytes(codePage, codePageDigitCount);
+
+            ReadOnlySpan<byte> byteSpan = bytes.AsSpan(lastIndex, index - lastIndex);
+            byteSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+            lastIndex = index;
+
+            newBytePointer += byteSpan.Length;
+
+            ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
+            ansiCpgSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+            newBytePointer += ansiCpgLength;
+
+            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.ItemsArray.Length);
+            codePageSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+            newBytePointer += codePageDigitCount;
+        }
+
+        ReadOnlySpan<byte> segmentLast = bytes.AsSpan(lastIndex);
+        segmentLast.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+        return newBytes;
+    }
+
+    private static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
+    {
+        byte firstByte = _lang[0];
+        int index = Array.IndexOf(input, firstByte, start);
+
+        while (index > -1)
+        {
+            for (int i = 0; i < _lang.Length; i++)
+            {
+                if (index + i >= input.Length) return (-1, -1);
+                if (_lang[i] != input[index + i])
+                {
+                    if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
+                    break;
+                }
+
+                if (i == _lang.Length - 1)
+                {
+                    int firstDigitIndex = index + i + 1;
+
+                    int numIndex = firstDigitIndex;
+                    while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
+                    {
+                        numIndex++;
+                    }
+                    if (numIndex > firstDigitIndex)
+                    {
+                        return (index, numIndex);
+                    }
+                    else
+                    {
+                        index = numIndex;
+                    }
+                }
+            }
+        }
+
+        return (-1, -1);
     }
 
     [MemberNotNullWhen(true, nameof(_preProcessedRTF))]
@@ -75,7 +227,7 @@ internal sealed partial class RichTextBoxCustom
 
         try
         {
-            GlobalPreProcessRTF(_currentReadmeBytes);
+            _currentReadmeBytes = GlobalPreProcessRTF(_currentReadmeBytes);
 
             _preProcessedRTF = new PreProcessedRTF(
                 readmeFile,

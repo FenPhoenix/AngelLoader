@@ -758,7 +758,9 @@ public abstract partial class RTFParserBase
 
     #endregion
 
-    protected static readonly int[] LangToCodePage = InitializedArray(16386, -1);
+    public const int MaxLangNumDigits = 5;
+    public const int MaxLangNumIndex = 16385;
+    public static readonly int[] LangToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
 
     static RTFParserBase()
     {
