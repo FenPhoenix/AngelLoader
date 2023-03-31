@@ -175,8 +175,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         internal int CodePage;
         internal bool DefaultFontSet;
         internal int DefaultFontNum;
-        internal bool DefaultLangSet;
-        internal int DefaultLang;
 
         internal Header() => Reset();
 
@@ -185,8 +183,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             CodePage = _windows1252;
             DefaultFontSet = false;
             DefaultFontNum = 0;
-            DefaultLangSet = false;
-            DefaultLang = 0;
         }
     }
 
@@ -1352,13 +1348,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 {
                     _header.DefaultFontNum = param;
                     _header.DefaultFontSet = true;
-                }
-                break;
-            case SpecialType.DefaultLang:
-                if (!_header.DefaultLangSet)
-                {
-                    _header.DefaultLang = param;
-                    _header.DefaultLangSet = true;
                 }
                 break;
             case SpecialType.Charset:

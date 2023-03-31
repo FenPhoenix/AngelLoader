@@ -31,8 +31,6 @@ public abstract partial class RTFParserBase
 
         new Symbol("deff", 0, false, KeywordType.Special, (int)SpecialType.DefaultFont),
 
-        new Symbol("deflang", 0, false, KeywordType.Special, (int)SpecialType.DefaultLang),
-
         new Symbol("fonttbl", 0, false, KeywordType.Special, (int)SpecialType.FontTable),
         new Symbol("f", 0, false, KeywordType.Property, (int)Property.FontNum),
         new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
