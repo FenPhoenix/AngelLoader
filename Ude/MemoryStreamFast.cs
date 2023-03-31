@@ -35,6 +35,8 @@ public sealed class MemoryStreamFast
         return true;
     }
 
+#if false
+
     /// <summary>Returns the array of unsigned bytes from which this stream was created.</summary>
     /// <returns>The byte array from which this stream was created, or the underlying array if a byte array was not provided to the <see cref="T:System.IO.MemoryStreamFast" /> constructor during construction of the current instance.</returns>
     /// <exception cref="T:System.UnauthorizedAccessException">The <see langword="MemoryStreamFast" /> instance was not created with a publicly visible buffer.</exception>
@@ -49,6 +51,8 @@ public sealed class MemoryStreamFast
         buffer = new ArraySegment<byte>(_buffer, _origin, _length - _origin);
         return true;
     }
+
+#endif
 
     /// <summary>Gets or sets the number of bytes allocated for this stream.</summary>
     /// <returns>The length of the usable portion of the buffer for the stream.</returns>

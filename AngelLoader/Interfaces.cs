@@ -266,7 +266,9 @@ public interface IView : ISettingsChangeableView
 
     void RefreshAllSelectedFMs_Full();
 
+#if false
     void RefreshMainSelectedFMRow_Fast();
+#endif
 
     void RefreshAllSelectedFMs_UpdateInstallState();
 
@@ -306,7 +308,9 @@ public interface IView : ISettingsChangeableView
 
     FanMission? GetMainSelectedFMOrNull();
 
+#if false
     FanMission? GetMainSelectedFMOrNull_Fast();
+#endif
 
     FanMission? GetFMFromIndex(int index);
 
