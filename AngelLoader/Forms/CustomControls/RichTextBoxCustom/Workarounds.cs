@@ -571,6 +571,14 @@ internal sealed partial class RichTextBoxCustom
     we'd have to do a full-file parse always, instead of exiting after finding the color table. And that would
     certainly be slower than just blazing through with a byte search like we do here. So, meh.
 
+    @RTF(\langN processing):
+    2023-03-31:
+    We now only handle \lang1049, to limit the damage in case some other readme breaks us with the below.
+    The only known broken readmes are the two from The Mirror and Upside Down, and only Cyrillic (1049/1251)
+    is broken there.
+    However... this still catches a ton of readmes. Maybe we really should do a full parse, and hope to be able
+    to reject more iffy cases that way...
+
     @RTF(\langN processing): Should we support all \langN nums and just reset \ansicpg to default on ones we don't support?
     What if we had like "\lang1049 blah blah blah \lang[some-unknown-num]" and no \fN after... we wouldn't
     actually reset in that case. Is it likely to happen? I guess not, but could it?
@@ -688,19 +696,31 @@ internal sealed partial class RichTextBoxCustom
 
         int ansiCpgLength = _ansicpg.Length;
         int extraLength = 0;
+        int cp1251Count = 0;
         int cp1252Count = 0;
 
         for (int i = 0; i < langIndexes.Count; i++)
         {
             (_, int codePage, int codePageDigitCount) = langIndexes[i];
-            if (codePage == 1252) cp1252Count++;
+            if (codePage == 1251)
+            {
+                cp1251Count++;
+            }
+            else if (codePage == 1252)
+            {
+                cp1252Count++;
+            }
             extraLength += ansiCpgLength + codePageDigitCount;
         }
 
         #endregion
 
         // If it's all \lang1033 (1252), just leave them all alone (perf shortcut)
-        if (cp1252Count == langIndexes.Count) return bytes;
+        // Don't do anything unless we have \lang1049 (code page 1251)
+        if (cp1251Count == 0 || cp1252Count == langIndexes.Count)
+        {
+            return bytes;
+        }
 
         #region Fill out new byte array
 

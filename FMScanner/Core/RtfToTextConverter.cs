@@ -2170,7 +2170,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         _fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
 
         int codePage;
-        if (scopeLang > -1)
+        if (scopeLang is > -1 and <= MaxLangNumIndex)
         {
             int translatedCodePage = LangToCodePage[scopeLang];
             codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage ?? _header.CodePage;

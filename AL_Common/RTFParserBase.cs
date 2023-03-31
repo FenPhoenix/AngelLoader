@@ -706,6 +706,9 @@ public abstract partial class RTFParserBase
 
         // Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
 
+        // 2023-03-31: Only handle 1049, or 1033 when 1049 also exists, for now.
+
+#if false
         // Arabic
         LangToCodePage[1065] = 1256;
         LangToCodePage[1025] = 1256;
@@ -731,9 +734,11 @@ public abstract partial class RTFParserBase
         LangToCodePage[1120] = 1256;
         LangToCodePage[1123] = 1256;
         LangToCodePage[1164] = 1256;
+#endif
 
         // Cyrillic
         LangToCodePage[1049] = 1251;
+#if false
         LangToCodePage[1026] = 1251;
         LangToCodePage[10266] = 1251;
         LangToCodePage[1058] = 1251;
@@ -763,6 +768,7 @@ public abstract partial class RTFParserBase
 
         // Vietnamese
         LangToCodePage[1066] = 1258;
+#endif
 
         // Western European
         LangToCodePage[1033] = 1252;
