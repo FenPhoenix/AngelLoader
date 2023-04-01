@@ -589,6 +589,17 @@ internal static class RtfTheming
         doesn't have this problem, and why nobody ever noticed it before. Because of course Microsoft just
         removes features for absolutely no reason whatsoever, and introduces obvious bugs like the transparency
         issue. Well anyway.
+
+        @RTF(\lang): We could look for "\creatim\yrNNNN" and only fix up readmes older than a certain year.
+        Many, but not all, FM rtf readmes have this section.
+        According to http://www.jose.it-berater.org/richedit/rich_edit_control.htm, RichEdit 4.1 (msftedit.dll)
+        was introduced with Windows XP, so going by the year of its release is not useful. Because DarkLoader
+        used the old RichEdit 3.0 (or 2.0 or whatever), we should go roughly by NewDark release, 2012-2013ish
+        should be our cutoff point.
+        If we don't find a \creatim section, we'd just run the normal heuristic.
+
+        Of course we don't need to do this at all really, and it would require an extra byte search and all,
+        so... meh.
         */
 
         if (success && langWorkRequired && langItems?.Count > 0)
