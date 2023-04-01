@@ -58,7 +58,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
     [PublicAPI]
     public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
-    GetColorTable(byte[] rtfBytes, bool getColorTable)
+    GetData(byte[] rtfBytes, bool getColorTable)
     {
         try
         {

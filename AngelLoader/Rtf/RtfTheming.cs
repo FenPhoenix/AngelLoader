@@ -264,7 +264,7 @@ internal static class RtfTheming
         // and arrays for our readme bytes is going to blow out memory.
 
         (bool success, List<Color>? colorTable, _, int _, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
-            RtfDisplayedReadmeParser.GetColorTable(currentReadmeBytes, getColorTable: darkMode);
+            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
 
         int colorTableEntryLength = 0;
 
