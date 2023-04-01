@@ -96,7 +96,7 @@ public enum Charset
 /// </example>
 /// </para>
 /// </summary>
-public sealed class CharsetDetector : UniversalDetector
+public sealed class CharsetDetector
 {
     // @Ude: Static array, probably we want to keep it static because we use it all the time
     // IMPORTANT: These must be in the exact same order as the Ude.Charset enum members! (Done for perf)
@@ -132,9 +132,30 @@ public sealed class CharsetDetector : UniversalDetector
 
     public static readonly int CharsetCount = CharsetToName.Length;
 
+    private enum InputState { PureASCII = 0, EscASCII = 1, HighByte = 2 }
+
     private Charset _charset;
 
     private float _confidence;
+
+    private const float MINIMUM_THRESHOLD = 0.20f;
+
+    private InputState _inputState;
+    private bool _start;
+    private bool _gotData;
+    private bool _done;
+    private byte _lastChar;
+    private const int PROBERS_NUM = 3;
+    private readonly CharsetProber?[] _charsetProbers = new CharsetProber?[PROBERS_NUM];
+    private CharsetProber? _escCharsetProber;
+    private Charset _detectedCharset;
+
+    public CharsetDetector()
+    {
+        _start = true;
+        _inputState = InputState.PureASCII;
+        _lastChar = 0x00;
+    }
 
 #if false
     public void Feed(Stream stream)
@@ -150,20 +171,200 @@ public sealed class CharsetDetector : UniversalDetector
 
     public bool IsDone() => _done;
 
-    public override void Reset()
+    public void Reset()
     {
         _charset = Charset.Null;
         _confidence = 0.0f;
-        base.Reset();
+
+        _done = false;
+        _start = true;
+        _detectedCharset = Charset.Null;
+        _gotData = false;
+        _inputState = InputState.PureASCII;
+        _lastChar = 0x00;
+        _escCharsetProber?.Reset();
+        for (int i = 0; i < PROBERS_NUM; i++)
+        {
+            _charsetProbers[i]?.Reset();
+        }
     }
 
     public Charset Charset => _charset;
 
     public float Confidence => _confidence;
 
-    protected override void Report(Charset charset, float confidence)
+    private void Report(Charset charset, float confidence)
     {
         _charset = charset;
         _confidence = confidence;
+    }
+
+    public void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    {
+        if (_done)
+        {
+            return;
+        }
+
+        if (len > 0)
+        {
+            _gotData = true;
+        }
+
+        // If the data starts with BOM, we know it is UTF
+        if (_start)
+        {
+            _start = false;
+            if (len > 3)
+            {
+                switch (buf[0])
+                {
+                    case 0xEF:
+                        if (buf[1] == 0xBB && buf[2] == 0xBF)
+                        {
+                            _detectedCharset = Charset.UTF8;
+                        }
+                        break;
+                    case 0xFE:
+                        if (buf[1] == 0xFF)
+                        {
+                            _detectedCharset = Charset.UTF16BE;
+                        }
+                        break;
+                    case 0x00:
+                        if (buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF)
+                        {
+                            _detectedCharset = Charset.UTF32BE;
+                        }
+                        break;
+                    case 0xFF:
+                        if (buf[1] == 0xFE)
+                        {
+                            _detectedCharset = buf[2] == 0x00 && buf[3] == 0x00
+                                ? Charset.UTF32LE
+                                : Charset.UTF16LE;
+                        }
+                        break;
+                }  // switch
+            }
+            if (_detectedCharset != Charset.Null)
+            {
+                _done = true;
+                return;
+            }
+        }
+
+        for (int i = 0; i < len; i++)
+        {
+            // other than 0xa0, if every other character is ascii, the page is ascii
+            if ((buf[i] & 0x80) != 0 && buf[i] != 0xA0)
+            {
+                // we got a non-ascii byte (high-byte)
+                if (_inputState != InputState.HighByte)
+                {
+                    _inputState = InputState.HighByte;
+
+                    // kill EscCharsetProber if it is active
+                    _escCharsetProber = null;
+
+                    // start multibyte and singlebyte charset prober
+                    _charsetProbers[0] ??= new MBCSGroupProber();
+                    _charsetProbers[1] ??= new SBCSGroupProber();
+                    _charsetProbers[2] ??= new Latin1Prober();
+                }
+            }
+            else
+            {
+                if (_inputState == InputState.PureASCII &&
+                    (buf[i] == 0x1B || (buf[i] == 0x7B && _lastChar == 0x7E)))
+                {
+                    // found escape character or HZ "~{"
+                    _inputState = InputState.EscASCII;
+                }
+                _lastChar = buf[i];
+            }
+        }
+
+        ProbingState st;
+
+        switch (_inputState)
+        {
+            case InputState.EscASCII:
+                _escCharsetProber ??= new EscCharsetProber();
+                st = _escCharsetProber.HandleData(buf, offset, len, memoryStream);
+                if (st == ProbingState.FoundIt)
+                {
+                    _done = true;
+                    _detectedCharset = _escCharsetProber.GetCharsetName();
+                }
+                break;
+            case InputState.HighByte:
+                for (int i = 0; i < PROBERS_NUM; i++)
+                {
+                    CharsetProber? prober = _charsetProbers[i];
+                    if (prober != null)
+                    {
+                        st = prober.HandleData(buf, offset, len, memoryStream);
+                        if (st == ProbingState.FoundIt)
+                        {
+                            _done = true;
+                            _detectedCharset = prober.GetCharsetName();
+                            return;
+                        }
+                    }
+                }
+                break;
+                // default: pure ascii
+        }
+    }
+
+    /// <summary>
+    /// Notify detector that no further data is available.
+    /// </summary>
+    public void DataEnd()
+    {
+        if (!_gotData)
+        {
+            // we haven't got any data yet, return immediately
+            // caller program sometimes call DataEnd before anything has
+            // been sent to detector
+            return;
+        }
+
+        if (_detectedCharset != Charset.Null)
+        {
+            _done = true;
+            Report(_detectedCharset, 1.0f);
+            return;
+        }
+
+        if (_inputState == InputState.HighByte)
+        {
+            float maxProberConfidence = 0.0f;
+            int maxProber = 0;
+            for (int i = 0; i < PROBERS_NUM; i++)
+            {
+                CharsetProber? prober = _charsetProbers[i];
+                if (prober != null)
+                {
+                    float proberConfidence = prober.GetConfidence();
+                    if (proberConfidence > maxProberConfidence)
+                    {
+                        maxProberConfidence = proberConfidence;
+                        maxProber = i;
+                    }
+                }
+            }
+
+            if (maxProberConfidence > MINIMUM_THRESHOLD)
+            {
+                // @Ude: Can we rewrite this in a way that it knows it isn't null?
+                Report(_charsetProbers[maxProber]!.GetCharsetName(), maxProberConfidence);
+            }
+        }
+        else if (_inputState == InputState.PureASCII)
+        {
+            Report(Charset.ASCII, 1.0f);
+        }
     }
 }
