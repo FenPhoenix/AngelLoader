@@ -243,7 +243,8 @@ internal static class RtfTheming
         return colorEntriesBytesList;
     }
 
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits);
+    // +1 for adding a space after the digits
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits + 1);
 
     private static readonly byte[] _ansicpg =
     {
@@ -259,33 +260,6 @@ internal static class RtfTheming
 
     internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
     {
-        #region Local functions
-
-        static int GetDigitsUpTo5(int number)
-        {
-            return
-                number <= 9 ? 1 :
-                number <= 99 ? 2 :
-                number <= 999 ? 3 :
-                number <= 9999 ? 4 :
-                5;
-        }
-
-        static ListFast<byte> CodePageToBytes(int codePage, int digits)
-        {
-            _codePageBytes.ClearFast();
-
-            for (int i = 0; i < digits; i++)
-            {
-                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
-                codePage /= 10;
-            }
-
-            return _codePageBytes;
-        }
-
-        #endregion
-
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
 
@@ -442,6 +416,36 @@ internal static class RtfTheming
 
         if (success && langItems?.Count > 0)
         {
+            #region Local functions
+
+            static int GetDigitsUpTo5(int number)
+            {
+                return
+                    number <= 9 ? 1 :
+                    number <= 99 ? 2 :
+                    number <= 999 ? 3 :
+                    number <= 9999 ? 4 :
+                    5;
+            }
+
+            static ListFast<byte> CodePageToBytes(int codePage, int digits)
+            {
+                _codePageBytes.ClearFast();
+
+                for (int i = 0; i < digits; i++)
+                {
+                    _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
+                    codePage /= 10;
+                }
+
+                // Use the option for control words to have a space after them, for safety
+                _codePageBytes.Add((byte)' ');
+
+                return _codePageBytes;
+            }
+
+            #endregion
+
             int extraAnsiCpgCombinedLength = 0;
             int ansiCpgLength = _ansicpg.Length;
 
@@ -453,7 +457,8 @@ internal static class RtfTheming
                 item.Index += colorTableEntryLength;
                 int digitsCount = GetDigitsUpTo5(item.CodePage);
                 item.DigitsCount = digitsCount;
-                extraAnsiCpgCombinedLength += ansiCpgLength + digitsCount;
+                // +1 for adding a space after the digits
+                extraAnsiCpgCombinedLength += ansiCpgLength + digitsCount + 1;
             }
 
             #endregion
@@ -482,10 +487,11 @@ internal static class RtfTheming
 
                 newBytePointer += ansiCpgLength;
 
-                ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.ItemsArray.Length);
+                ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
                 codePageSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
 
-                newBytePointer += item.DigitsCount;
+                // +1 for adding a space after the digits
+                newBytePointer += item.DigitsCount + 1;
             }
 
             // One more to copy everything from the last index to the end

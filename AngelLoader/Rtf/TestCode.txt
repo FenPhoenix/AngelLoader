@@ -109,9 +109,7 @@ internal sealed partial class RichTextBoxCustom
                 }
                 else
                 {
-                    var bytes = _darkModeEnabled
-                        ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes)
-                        : _currentReadmeBytes;
+                    byte[] bytes = RtfTheming.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
                     using var ms = new MemoryStream(bytes);
                     LoadFile(ms, RichTextBoxStreamType.RichText);
 

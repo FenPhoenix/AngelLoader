@@ -245,27 +245,33 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
 
             int currentCodePage = fontEntry?.CodePage ?? _header.CodePage;
 
-            if (val is > -1 and <= MaxLangNumIndex)
+            if (currentLang > -1 && currentLang != 1024 && val != 1024)
             {
-                int langCodePage = LangToCodePage[val];
-                if (langCodePage > -1)
+                if (val is > -1 and <= MaxLangNumIndex)
                 {
-                    _langItems ??= new List<LangItem>();
-                    if (langCodePage != currentCodePage)
+                    int langCodePage = LangToCodePage[val];
+                    if (langCodePage == -1)
                     {
-                        //Trace.WriteLine(@"\lang" + val + " codepage (" + langCodePage + ") didn't match current font codepage (" + currentCodePage + ")");
-                        _langItems.Add(new LangItem((int)CurrentPos, langCodePage));
+                        _langItems ??= new List<LangItem>();
+                        _langItems.Add(new LangItem((int)CurrentPos, currentCodePage));
                     }
                 }
             }
-            else if (currentLang > -1)
+            else
             {
-                _langItems ??= new List<LangItem>();
-                _langItems.Add(new LangItem((int)CurrentPos, currentCodePage));
-            }
+                if (val is > -1 and <= MaxLangNumIndex)
+                {
+                    int langCodePage = LangToCodePage[val];
+                    if (langCodePage > -1 && langCodePage != currentCodePage)
+                    {
+                        _langItems ??= new List<LangItem>();
+                        _langItems.Add(new LangItem((int)CurrentPos, langCodePage));
+                    }
+                }
 
-            // 1024 = "undefined language", ignore it
-            if (val == 1024) return Error.OK;
+                // 1024 = "undefined language", ignore it
+                if (val == 1024) return Error.OK;
+            }
         }
 
         _currentScope.Properties[(int)propertyTableIndex] = val;
