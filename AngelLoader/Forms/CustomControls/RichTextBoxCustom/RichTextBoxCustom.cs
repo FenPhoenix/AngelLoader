@@ -378,7 +378,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                     // We control the format of GLML-converted files, so no need to do this for those
                     if (fileType == ReadmeType.RichText && !inPreloadedState)
                     {
-                        _currentReadmeBytes = GlobalPreProcessRTF(_currentReadmeBytes);
+                        GlobalPreProcessRTF(_currentReadmeBytes);
                     }
 
                     // This resets the font if false, so don't do it after the load or it messes up the RTF.

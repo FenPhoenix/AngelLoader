@@ -34,15 +34,31 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
     private List<Color>? _colorTable;
     private int _colorTableStartIndex;
     private int _colorTableEndIndex;
-    private bool _exiting;
+    private bool _foundColorTable;
+    private bool _getColorTable;
+
+    public sealed class LangItem
+    {
+        public int Index;
+        public readonly int CodePage;
+        public int DigitsCount;
+
+        public LangItem(int index, int codePage)
+        {
+            Index = index;
+            CodePage = codePage;
+        }
+    }
+
+    private List<LangItem>? _langItems;
 
     #endregion
 
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex)
-    GetColorTable(byte[] rtfBytes)
+    public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
+    GetColorTable(byte[] rtfBytes, bool getColorTable)
     {
         try
         {
@@ -50,16 +66,20 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
             // state to start with
             Reset(rtfBytes);
 
+            _getColorTable = getColorTable;
+
             Error error = ParseRtf();
             return error == Error.OK
                 ? (true, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
-                    ColorTableEndIndex: _colorTableEndIndex)
+                    ColorTableEndIndex: _colorTableEndIndex,
+                    LangItems: _langItems)
                 : (false, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
-                    ColorTableEndIndex: _colorTableEndIndex);
+                    ColorTableEndIndex: _colorTableEndIndex,
+                    LangItems: _langItems);
         }
         catch
         {
-            return (false, _colorTable, _colorTableStartIndex, _colorTableEndIndex);
+            return (false, _colorTable, _colorTableStartIndex, _colorTableEndIndex, _langItems);
         }
         finally
         {
@@ -78,11 +98,13 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
 
         _colorTableStartIndex = 0;
         _colorTableEndIndex = 0;
-        _exiting = false;
+        _foundColorTable = false;
+        _getColorTable = false;
 
         #endregion
 
         _colorTable = null;
+        _langItems = null;
 
         _rtfBytes = rtfBytes;
         base.ResetStreamBase(rtfBytes.Length);
@@ -92,8 +114,6 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
     {
         while (CurrentPos < Length)
         {
-            if (_exiting) return Error.OK;
-
             char ch = GetNextCharFast();
 
             if (_groupCount < 0) return Error.StackUnderflow;
@@ -147,6 +167,11 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
         _skipDestinationIfUnknown = false;
         switch (symbol.KeywordType)
         {
+            case KeywordType.Property:
+                if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
+                return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                    ? ChangeProperty((Property)symbol.Index, param)
+                    : Error.OK;
             case KeywordType.Destination:
                 return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
@@ -178,14 +203,72 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.ColorTable:
-                // Spec is to ignore any further color tables after the first one, which is fortunate for us
-                // because it makes us way faster (we quit as soon as we've parsed the color table, which is
-                // usually very close to the top of the file).
-                _exiting = true;
-                return ParseAndBuildColorTable();
+                // Spec is to ignore any further color tables after the first one
+                if (_getColorTable && !_foundColorTable)
+                {
+                    _foundColorTable = true;
+                    return ParseAndBuildColorTable();
+                }
+                else
+                {
+                    return Error.OK;
+                }
             default:
                 return Error.OK;
         }
+
+        return Error.OK;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Error ChangeProperty(Property propertyTableIndex, int val)
+    {
+        if (propertyTableIndex == Property.FontNum)
+        {
+            if (_currentScope.InFontTable)
+            {
+                _fontEntries.Add(val, new FontEntry());
+                return Error.OK;
+            }
+
+            // \fN supersedes \langN
+            _currentScope.Properties[(int)Property.Lang] = -1;
+        }
+        else if (propertyTableIndex == Property.Lang)
+        {
+            int currentLang = _currentScope.Properties[(int)Property.Lang];
+
+            int scopeFontNum = _currentScope.Properties[(int)Property.FontNum];
+            if (scopeFontNum == -1) scopeFontNum = _header.DefaultFontNum;
+
+            _fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
+
+            int currentCodePage = fontEntry?.CodePage ?? _header.CodePage;
+
+            if (val is > -1 and <= MaxLangNumIndex)
+            {
+                int langCodePage = LangToCodePage[val];
+                if (langCodePage > -1)
+                {
+                    _langItems ??= new List<LangItem>();
+                    if (langCodePage != currentCodePage)
+                    {
+                        //Trace.WriteLine(@"\lang" + val + " codepage (" + langCodePage + ") didn't match current font codepage (" + currentCodePage + ")");
+                        _langItems.Add(new LangItem((int)CurrentPos, langCodePage));
+                    }
+                }
+            }
+            else if (currentLang > -1)
+            {
+                _langItems ??= new List<LangItem>();
+                _langItems.Add(new LangItem((int)CurrentPos, currentCodePage));
+            }
+
+            // 1024 = "undefined language", ignore it
+            if (val == 1024) return Error.OK;
+        }
+
+        _currentScope.Properties[(int)propertyTableIndex] = val;
 
         return Error.OK;
     }
@@ -231,9 +314,8 @@ public sealed class RtfColorTableParser : AL_Common.RTFParserBase
             if (!GetNextChar(out char ch)) return ClearReturnFields(Error.EndOfFile);
             if (ch == '}')
             {
-                // No need to un-get, because we're exiting the parser immediately upon return no matter what,
-                // and we don't make any further get-char calls.
-                _colorTableEndIndex = ((int)CurrentPos - 1).ClampToZero();
+                UnGetChar('}');
+                _colorTableEndIndex = (int)CurrentPos;
                 break;
             }
             _colorTableSB.Append(ch);

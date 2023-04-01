@@ -39,7 +39,7 @@ internal sealed partial class RichTextBoxCustom
     /// Perform pre-processing that needs to be done regardless of visual theme.
     /// </summary>
     /// <param name="bytes"></param>
-    private static byte[] GlobalPreProcessRTF(byte[] bytes)
+    private static void GlobalPreProcessRTF(byte[] bytes)
     {
         /*
         It's six of one half a dozen of the other - each method causes rare cases of images
@@ -52,8 +52,6 @@ internal sealed partial class RichTextBoxCustom
         */
         ReplaceByteSequence(bytes, _shppict, _shppictBlanked);
         ReplaceByteSequence(bytes, _nonshppict, _nonshppictBlanked);
-
-        return ReplaceLangsWithAnsiCpg(bytes);
     }
 
     [MemberNotNullWhen(true, nameof(_preProcessedRTF))]
@@ -78,11 +76,11 @@ internal sealed partial class RichTextBoxCustom
 
         try
         {
-            _currentReadmeBytes = GlobalPreProcessRTF(_currentReadmeBytes);
+            GlobalPreProcessRTF(_currentReadmeBytes);
 
             _preProcessedRTF = new PreProcessedRTF(
                 readmeFile,
-                darkMode ? RtfTheming.GetDarkModeRTFBytes(_currentReadmeBytes) : _currentReadmeBytes,
+                RtfTheming.GetProcessedRTFBytes(_currentReadmeBytes, darkMode),
                 darkMode
             );
         }

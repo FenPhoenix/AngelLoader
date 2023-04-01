@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 
@@ -242,120 +243,262 @@ internal static class RtfTheming
         return colorEntriesBytesList;
     }
 
-    internal static byte[] GetDarkModeRTFBytes(byte[] currentReadmeBytes)
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits);
+
+    private static readonly byte[] _ansicpg =
     {
+        (byte)'\\',
+        (byte)'a',
+        (byte)'n',
+        (byte)'s',
+        (byte)'i',
+        (byte)'c',
+        (byte)'p',
+        (byte)'g'
+    };
+
+    internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
+    {
+        #region Local functions
+
+        static int GetDigitsUpTo5(int number)
+        {
+            return
+                number <= 9 ? 1 :
+                number <= 99 ? 2 :
+                number <= 999 ? 3 :
+                number <= 9999 ? 4 :
+                5;
+        }
+
+        static ListFast<byte> CodePageToBytes(int codePage, int digits)
+        {
+            _codePageBytes.ClearFast();
+
+            for (int i = 0; i < digits; i++)
+            {
+                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
+                codePage /= 10;
+            }
+
+            return _codePageBytes;
+        }
+
+        #endregion
+
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
 
-        (bool success, List<Color>? colorTable, _, int _) = RTFColorTableParser.GetColorTable(currentReadmeBytes);
+        (bool success, List<Color>? colorTable, _, int _, List<RtfColorTableParser.LangItem>? langItems) =
+            RTFColorTableParser.GetColorTable(currentReadmeBytes, getColorTable: darkMode);
 
         int colorTableEntryLength = 0;
 
         List<byte>? colorEntriesBytesList = null;
 
-        if (success)
+        if (success && darkMode)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
         }
 
-        byte[] darkModeBytes = new byte[currentReadmeBytes.Length + colorTableEntryLength + RTF_DarkBackgroundBytes.Length];
-
-        int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
-        int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
-
-        // Copy header
-        Array.Copy(
-            currentReadmeBytes,
-            0,
-            darkModeBytes,
-            0,
-            firstIndexPastHeader
-        );
-
-        // Copy color table
-        // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
-        // and not even have to awkwardly delete the old color table.
-        // Now watch Windows get an update that breaks that.
-        // @DarkModeNote: We could add code to delete the old color table at some point.
-        // This would make us some amount slower, and it's not necessary currently, so let's just not do it
-        // for now.
-        if (colorEntriesBytesList != null)
+        byte[] retBytes;
+        if (darkMode)
         {
-            for (int i = 0; i < colorTableEntryLength; i++)
+            retBytes = new byte[
+                currentReadmeBytes.Length +
+                colorTableEntryLength +
+                RTF_DarkBackgroundBytes.Length];
+
+            int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
+            int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
+
+            // Copy header
+            Array.Copy(
+                currentReadmeBytes,
+                0,
+                retBytes,
+                0,
+                firstIndexPastHeader
+            );
+
+            // Copy color table
+            // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
+            // and not even have to awkwardly delete the old color table.
+            // Now watch Windows get an update that breaks that.
+            // @DarkModeNote: We could add code to delete the old color table at some point.
+            // This would make us some amount slower, and it's not necessary currently, so let's just not do it
+            // for now.
+            if (colorEntriesBytesList != null)
             {
-                darkModeBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
+                for (int i = 0; i < colorTableEntryLength; i++)
+                {
+                    retBytes[firstIndexPastHeader + i] = colorEntriesBytesList[i];
+                }
             }
+
+            // Copy main body
+            Array.Copy(
+                currentReadmeBytes,
+                firstIndexPastHeader,
+                retBytes,
+                firstIndexPastHeader + colorTableEntryLength,
+                lastClosingBraceIndex - (firstIndexPastHeader - 1)
+            );
+
+            // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
+            // where the background stays the old color but turns to our new color when portions of the readme
+            // get painted (see Thork).
+            // Actually, Thork's readme is actually just weirdly broken, the background is sometimes yellow but
+            // paints over with white even on classic mode. So oh well.
+            // Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
+            ReplaceByteSequence(retBytes, _background, _backgroundBlanked);
+
+            // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
+            Array.Copy(
+                RTF_DarkBackgroundBytes,
+                0,
+                retBytes,
+                colorTableEntryLength + lastClosingBraceIndex,
+                RTF_DarkBackgroundBytes.Length
+            );
+
+            // Copy from the last closing brace to the end
+            Array.Copy(
+                currentReadmeBytes,
+                lastClosingBraceIndex,
+                retBytes,
+                colorTableEntryLength + RTF_DarkBackgroundBytes.Length + lastClosingBraceIndex,
+                currentReadmeBytes.Length - lastClosingBraceIndex
+            );
+
+            #region Issues/quirks/etc.
+
+            /*
+            @DarkModeNote(RTF/DarkTextMode) issues/quirks/etc:
+            -Image-as-first-item issue with the \cf0 inserts
+             If we put a \cf0 before a transparent image, it makes the background of it white.
+             See 2006-09-18_WC_WhatLiesBelow_v1
+             Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
+             WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
+            *Note: We don't put \cf0 inserts anymore, but the above still applies with having the default color
+             be bright which is what we have now.
+            -2022-07-01: The "white" is actually our dark mode default text color, which seems to affect
+             transparent images. It seems that if you leave the rtf "default color" unhooked, then it makes the
+             text black and the image transparent portions whatever color they should be (document background I
+             guess). But if we hook the default color, now it makes the text AND transparent image backgrounds
+             that color. Except I guess if the images are pngs or whatever the hell "proper" format it wants,
+             then transparency works actually properly.
+
+            -Beginning of Era Karath-Din:
+             It has dark text on a not-quite-white background, which inverts to light text on an also bright
+             background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
+             and worst case the user can always just select the text and it'll be visible, but note it...
+
+            -missionx_v113patch.rtf (CoSaS2_MissionX_v113)
+             This one has some text in boxes that's black-on-white. At least it's readable though, so not a show-
+             stopper.
+            */
+
+            #endregion
+
+            // Keep this for debug...
+            //System.IO.File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes);
+        }
+        else
+        {
+            retBytes = currentReadmeBytes;
         }
 
-        // Copy main body
-        Array.Copy(
-            currentReadmeBytes,
-            firstIndexPastHeader,
-            darkModeBytes,
-            firstIndexPastHeader + colorTableEntryLength,
-            lastClosingBraceIndex - (firstIndexPastHeader - 1)
-        );
-
-        // Disable any backgrounds that may already be in there, otherwise we sometimes get visual artifacts
-        // where the background stays the old color but turns to our new color when portions of the readme
-        // get painted (see Thork).
-        // Actually, Thork's readme is actually just weirdly broken, the background is sometimes yellow but
-        // paints over with white even on classic mode. So oh well.
-        // Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
-        ReplaceByteSequence(darkModeBytes, _background, _backgroundBlanked);
-
-        // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
-        Array.Copy(
-            RTF_DarkBackgroundBytes,
-            0,
-            darkModeBytes,
-            colorTableEntryLength + lastClosingBraceIndex,
-            RTF_DarkBackgroundBytes.Length
-        );
-
-        // Copy from the last closing brace to the end
-        Array.Copy(
-            currentReadmeBytes,
-            lastClosingBraceIndex,
-            darkModeBytes,
-            colorTableEntryLength + RTF_DarkBackgroundBytes.Length + lastClosingBraceIndex,
-            currentReadmeBytes.Length - lastClosingBraceIndex
-        );
-
-        #region Issues/quirks/etc.
+        #region Fix lack of support for setting codepage via \langN
 
         /*
-        @DarkModeNote(RTF/DarkTextMode) issues/quirks/etc:
-        -Image-as-first-item issue with the \cf0 inserts
-         If we put a \cf0 before a transparent image, it makes the background of it white.
-         See 2006-09-18_WC_WhatLiesBelow_v1
-         Not a huge deal really - lots of readmes end up with bright images due to non-transparency, and
-         WLB's transparent title image doesn't look good in dark mode anyway, but, you know...
-        *Note: We don't put \cf0 inserts anymore, but the above still applies with having the default color
-         be bright which is what we have now.
-        -2022-07-01: The "white" is actually our dark mode default text color, which seems to affect
-         transparent images. It seems that if you leave the rtf "default color" unhooked, then it makes the
-         text black and the image transparent portions whatever color they should be (document background I
-         guess). But if we hook the default color, now it makes the text AND transparent image backgrounds
-         that color. Except I guess if the images are pngs or whatever the hell "proper" format it wants,
-         then transparency works actually properly.
-       
-        -Beginning of Era Karath-Din:
-         It has dark text on a not-quite-white background, which inverts to light text on an also bright
-         background, due to us preventing downward lightness inversion. Probably too much trouble to fix,
-         and worst case the user can always just select the text and it'll be visible, but note it...
+        Windows' RichEdit control doesn't support setting code page via \langN and its cousins, whereas LibreOffice
+        at least does, and I would guess MS Word probably does too but I don't know for sure.
+        So let's give it some help by adding \ansicpgN control words after every supported-value \langN, so it will
+        use the right codepage.
+        Fixes "The Mirror" and "Upside Down", and does no harm to others (diff tested all).
 
-        -missionx_v113patch.rtf (CoSaS2_MissionX_v113)
-         This one has some text in boxes that's black-on-white. At least it's readable though, so not a show-
-         stopper.
+        Note that there are other variations of \langN, but we don't need to support them for our use case here.
+
+        @RTF(\langN processing):
+        We could do a proper parse for this and then we would be able to reject \langNs that point to the same code
+        page as the current font, and maybe avoid some inserts (save a bit of memory?). But then on the other hand,
+        we'd have to do a full-file parse always, instead of exiting after finding the color table. And that would
+        certainly be slower than just blazing through with a byte search like we do here. So, meh.
+
+        @RTF(\langN processing):
+        2023-03-31:
+        We now only handle \lang1049, to limit the damage in case some other readme breaks us with the below.
+        The only known broken readmes are the two from The Mirror and Upside Down, and only Cyrillic (1049/1251)
+        is broken there.
+        However... this still catches a ton of readmes. Maybe we really should do a full parse, and hope to be able
+        to reject more iffy cases that way...
+
+        @RTF(\langN processing): Should we support all \langN nums and just reset \ansicpg to default on ones we don't support?
+        What if we had like "\lang1049 blah blah blah \lang[some-unknown-num]" and no \fN after... we wouldn't
+        actually reset in that case. Is it likely to happen? I guess not, but could it?
         */
+
+        if (success && langItems?.Count > 0)
+        {
+            int extraAnsiCpgCombinedLength = 0;
+            int ansiCpgLength = _ansicpg.Length;
+
+            #region Calculate new byte array length
+
+            for (int i = 0; i < langItems.Count; i++)
+            {
+                RtfColorTableParser.LangItem item = langItems[i];
+                item.Index += colorTableEntryLength;
+                int digitsCount = GetDigitsUpTo5(item.CodePage);
+                item.DigitsCount = digitsCount;
+                extraAnsiCpgCombinedLength += ansiCpgLength + digitsCount;
+            }
+
+            #endregion
+
+            #region Fill out new byte array
+
+            // @RTF/@MEM: Still allocating an extra array for now, we can get rid of this later when we know we're accurate
+            byte[] newBytes = new byte[retBytes.Length + extraAnsiCpgCombinedLength];
+
+            int lastIndex = 0;
+            int newBytePointer = 0;
+            for (int i = 0; i < langItems.Count; i++)
+            {
+                RtfColorTableParser.LangItem item = langItems[i];
+
+                ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
+
+                ReadOnlySpan<byte> byteSpan = retBytes.AsSpan(lastIndex, item.Index - lastIndex);
+                byteSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+                lastIndex = item.Index;
+
+                newBytePointer += byteSpan.Length;
+
+                ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
+                ansiCpgSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+                newBytePointer += ansiCpgLength;
+
+                ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.ItemsArray.Length);
+                codePageSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+                newBytePointer += item.DigitsCount;
+            }
+
+            // One more to copy everything from the last index to the end
+            ReadOnlySpan<byte> segmentLast = retBytes.AsSpan(lastIndex);
+            segmentLast.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+
+            #endregion
+
+            return newBytes;
+        }
 
         #endregion
 
-        // Keep this for debug...
-        //System.IO.File.WriteAllBytes(@"C:\darkModeBytes.rtf", darkModeBytes);
-
-        return darkModeBytes;
+        return retBytes;
     }
 }

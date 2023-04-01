@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static AL_Common.Common;
@@ -148,6 +149,23 @@ public abstract partial class RTFParserBase
             UseDefaultParam = useDefaultParam;
             KeywordType = keywordType;
             Index = index;
+        }
+    }
+
+    // Class, but only instantiated once and then just reset, so it's fine
+    protected sealed class Header
+    {
+        public int CodePage;
+        public bool DefaultFontSet;
+        public int DefaultFontNum;
+
+        public Header() => Reset();
+
+        public void Reset()
+        {
+            CodePage = 1252;
+            DefaultFontSet = false;
+            DefaultFontNum = 0;
         }
     }
 
@@ -534,6 +552,99 @@ public abstract partial class RTFParserBase
         }
     }
 
+    protected sealed class FontEntry
+    {
+        // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
+        private const int _nameMaxLength = 9;
+
+        // We need to store names in case we get codepage 42 nonsense, we need to know which font to translate
+        // to Unicode (Wingdings, Webdings, or Symbol)
+        private readonly char[] _name = new char[_nameMaxLength];
+        private int _nameCharPos;
+
+        private bool _nameDone;
+
+        public int? CodePage;
+
+        public SymbolFont SymbolFont = SymbolFont.Unset;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool NameEquals(char[] array2)
+        {
+            if (_nameCharPos != array2.Length) return false;
+
+            for (int i = 0; i < _nameCharPos; i++)
+            {
+                if (_name[i] != array2[i]) return false;
+            }
+
+            return true;
+        }
+
+        public void AppendNameChar(char c)
+        {
+            if (!_nameDone && _nameCharPos < _nameMaxLength)
+            {
+                if (c == ';')
+                {
+                    _nameDone = true;
+                    return;
+                }
+                _name[_nameCharPos++] = c;
+            }
+        }
+    }
+
+    protected sealed class FontDictionary : Dictionary<int, FontEntry>
+    {
+        private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
+
+        // Based on my ~540 file set (which is most if not all the known ones as of 2022-05-06), this is
+        // about the ideal cutoff point. Any higher doesn't help us much until we get to ~30,000, and that's
+        // 30,000 * 12 bytes per object = 360,000 bytes. 1700 * 12 = 20400, much nicer.
+        private const int _switchPoint = 1700;
+
+        public FontEntry Top = default!;
+        public FontDictionary(int capacity) : base(capacity) { }
+
+        public new int Count;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public new void Add(int key, FontEntry value)
+        {
+            Top = value;
+            if (key >= _switchPoint)
+            {
+                base[key] = value;
+            }
+            else
+            {
+                _array[key] = value;
+            }
+            Count++;
+        }
+
+        public new void Clear()
+        {
+            base.Clear();
+            _array.Clear();
+            Count = 0;
+        }
+
+        public new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
+        {
+            if (key >= _switchPoint)
+            {
+                return base.TryGetValue(key, out value);
+            }
+            else
+            {
+                value = _array[key];
+                return value != null;
+            }
+        }
+    }
+
     #endregion
 
     #region Enums
@@ -691,6 +802,14 @@ public abstract partial class RTFParserBase
     // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
     protected int _groupCount;
 
+    // FMs can have 100+ of these...
+    // Highest measured was 131
+    // Fonts can specify themselves as whatever number they want, so we can't just count by index
+    // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+    protected readonly FontDictionary _fontEntries = new(150);
+
+    protected readonly Header _header = new();
+
     #endregion
 
     #region Lang to code page
@@ -795,6 +914,11 @@ public abstract partial class RTFParserBase
         #endregion
 
         _scopeStack.ClearFast();
+
+        // Types that contain only fixed-size value types
+        _header.Reset();
+
+        _fontEntries.Clear();
     }
 
     #region Stream

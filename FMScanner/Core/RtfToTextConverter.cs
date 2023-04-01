@@ -64,7 +64,6 @@ Other:
 */
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -113,120 +112,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             _stream.ReadAll(_buffer, 0, _bufferLen);
         }
         return _buffer[_bufferPos];
-    }
-
-    #endregion
-
-    #region Classes
-
-    private sealed class FontDictionary : Dictionary<int, FontEntry>
-    {
-        private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
-
-        // Based on my ~540 file set (which is most if not all the known ones as of 2022-05-06), this is
-        // about the ideal cutoff point. Any higher doesn't help us much until we get to ~30,000, and that's
-        // 30,000 * 12 bytes per object = 360,000 bytes. 1700 * 12 = 20400, much nicer.
-        private const int _switchPoint = 1700;
-
-        internal FontEntry Top = default!;
-        internal FontDictionary(int capacity) : base(capacity) { }
-
-        internal new int Count;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal new void Add(int key, FontEntry value)
-        {
-            Top = value;
-            if (key >= _switchPoint)
-            {
-                base[key] = value;
-            }
-            else
-            {
-                _array[key] = value;
-            }
-            Count++;
-        }
-
-        internal new void Clear()
-        {
-            base.Clear();
-            _array.Clear();
-            Count = 0;
-        }
-
-        internal new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
-        {
-            if (key >= _switchPoint)
-            {
-                return base.TryGetValue(key, out value);
-            }
-            else
-            {
-                value = _array[key];
-                return value != null;
-            }
-        }
-    }
-
-    // Class, but only instantiated once and then just reset, so it's fine
-    private sealed class Header
-    {
-        internal int CodePage;
-        internal bool DefaultFontSet;
-        internal int DefaultFontNum;
-
-        internal Header() => Reset();
-
-        internal void Reset()
-        {
-            CodePage = _windows1252;
-            DefaultFontSet = false;
-            DefaultFontNum = 0;
-        }
-    }
-
-    private sealed class FontEntry
-    {
-        // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
-        private const int _nameMaxLength = 9;
-
-        // We need to store names in case we get codepage 42 nonsense, we need to know which font to translate
-        // to Unicode (Wingdings, Webdings, or Symbol)
-        private readonly char[] _name = new char[_nameMaxLength];
-        private int _nameCharPos;
-
-        private bool _nameDone;
-
-        internal int? CodePage;
-
-        internal SymbolFont SymbolFont = SymbolFont.Unset;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal bool NameEquals(char[] array2)
-        {
-            if (_nameCharPos != array2.Length) return false;
-
-            for (int i = 0; i < _nameCharPos; i++)
-            {
-                if (_name[i] != array2[i]) return false;
-            }
-
-            return true;
-        }
-
-        internal void AppendNameChar(char c)
-        {
-            if (!_nameDone && _nameCharPos < _nameMaxLength)
-            {
-                if (c == ';')
-                {
-                    _nameDone = true;
-                    return;
-                }
-                _name[_nameCharPos++] = c;
-            }
-        }
     }
 
     #endregion
@@ -1028,13 +913,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     #region Resettables
 
-    private readonly Header _header = new();
-
-    // FMs can have 100+ of these...
-    // Highest measured was 131
-    // Fonts can specify themselves as whatever number they want, so we can't just count by index
-    // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-    private readonly FontDictionary _fontEntries = new(150);
     /*
     Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
     subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
@@ -1126,14 +1004,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         // Fixed-size value types
         _lastUsedFontWithCodePage42 = -1;
 
-        // Types that contain only fixed-size value types
-        _header.Reset();
-
         #endregion
 
         _hexBuffer.ClearFast();
         _unicodeBuffer.ClearFast();
-        _fontEntries.Clear();
         _plainText.ClearFast();
 
         // Extremely unlikely we'll hit any of these, but just for safety
