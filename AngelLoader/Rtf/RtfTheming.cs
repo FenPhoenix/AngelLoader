@@ -78,7 +78,7 @@ internal static class RtfTheming
     private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
     private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
 
-    #region RTF text coloring byte array nonsense
+    #region Colors
 
     private static readonly byte[] _colortbl =
     {
@@ -155,9 +155,37 @@ internal static class RtfTheming
         (byte)'x'
     };
 
+    private static readonly List<byte> _colorNumberBytes = new(3);
+
     #endregion
 
-    private static readonly List<byte> _colorNumberBytes = new(3);
+    #region Langs
+
+    // +1 for adding a space after the digits
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits + 1);
+
+    private static readonly byte[] _lang =
+    {
+        (byte)'\\',
+        (byte)'l',
+        (byte)'a',
+        (byte)'n',
+        (byte)'g'
+    };
+
+    private static readonly byte[] _ansicpg =
+    {
+        (byte)'\\',
+        (byte)'a',
+        (byte)'n',
+        (byte)'s',
+        (byte)'i',
+        (byte)'c',
+        (byte)'p',
+        (byte)'g'
+    };
+
+    #endregion
 
     #endregion
 
@@ -244,30 +272,6 @@ internal static class RtfTheming
 
         return colorEntriesBytesList;
     }
-
-    // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits + 1);
-
-    private static readonly byte[] _lang =
-    {
-        (byte)'\\',
-        (byte)'l',
-        (byte)'a',
-        (byte)'n',
-        (byte)'g'
-    };
-
-    private static readonly byte[] _ansicpg =
-    {
-        (byte)'\\',
-        (byte)'a',
-        (byte)'n',
-        (byte)'s',
-        (byte)'i',
-        (byte)'c',
-        (byte)'p',
-        (byte)'g'
-    };
 
     internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
     {
