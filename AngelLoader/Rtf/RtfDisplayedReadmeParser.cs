@@ -181,7 +181,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         {
             case KeywordType.Property:
                 if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                return _currentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _getLangs && _currentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeProperty((Property)symbol.Index, param)
                     : Error.OK;
             case KeywordType.Destination:

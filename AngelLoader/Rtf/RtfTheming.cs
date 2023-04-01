@@ -460,7 +460,7 @@ internal static class RtfTheming
 
         List<byte>? colorEntriesBytesList = null;
 
-        if (success && darkMode)
+        if (success && darkMode && colorTableFound)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
@@ -591,7 +591,7 @@ internal static class RtfTheming
         issue. Well anyway.
         */
 
-        if (success && langItems?.Count > 0)
+        if (success && langWorkRequired && langItems?.Count > 0)
         {
             int extraAnsiCpgCombinedLength = 0;
             int ansiCpgLength = _ansicpg.Length;
