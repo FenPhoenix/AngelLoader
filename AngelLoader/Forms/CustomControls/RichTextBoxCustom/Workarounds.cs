@@ -400,29 +400,6 @@ internal sealed partial class RichTextBoxCustom
     #endregion
 
     #region Workaround to fix black transparent regions in images
-
-    // ReSharper disable IdentifierTypo
-    private static readonly byte[] _lang =
-    {
-        (byte)'\\',
-        (byte)'l',
-        (byte)'a',
-        (byte)'n',
-        (byte)'g'
-    };
-
-    private static readonly byte[] _ansicpg =
-    {
-        (byte)'\\',
-        (byte)'a',
-        (byte)'n',
-        (byte)'s',
-        (byte)'i',
-        (byte)'c',
-        (byte)'p',
-        (byte)'g'
-    };
-
     private static readonly byte[] _shppict =
     {
 #if false
