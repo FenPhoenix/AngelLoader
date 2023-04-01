@@ -400,6 +400,7 @@ internal sealed partial class RichTextBoxCustom
     #endregion
 
     #region Workaround to fix black transparent regions in images
+
     private static readonly byte[] _shppict =
     {
 #if false
@@ -469,7 +470,6 @@ internal sealed partial class RichTextBoxCustom
         (byte)'x',
         (byte)'x'
     };
-    // ReSharper restore IdentifierTypo
 
     /*
     Alright kids, gather round while your ol' Grandpa Fen explains you the deal.
