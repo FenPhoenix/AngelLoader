@@ -580,6 +580,11 @@ internal static class RtfTheming
         Fixes "The Mirror" and "Upside Down", and does no harm to others (diff tested all).
 
         Note that there are other variations of \langN, but we don't need to support them for our use case here.
+
+        Amusing extra note: The "old" RichEdit (RichEd20.DLL) doesn't have this problem. Hence why DarkLoader
+        doesn't have this problem, and why nobody ever noticed it before. Because of course Microsoft just
+        removes features for absolutely no reason whatsoever, and introduces obvious bugs like the transparency
+        issue. Well anyway.
         */
 
         if (success && langItems?.Count > 0)
