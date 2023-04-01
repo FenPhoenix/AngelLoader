@@ -580,24 +580,6 @@ internal static class RtfTheming
         Fixes "The Mirror" and "Upside Down", and does no harm to others (diff tested all).
 
         Note that there are other variations of \langN, but we don't need to support them for our use case here.
-
-        @RTF(\langN processing):
-        We could do a proper parse for this and then we would be able to reject \langNs that point to the same code
-        page as the current font, and maybe avoid some inserts (save a bit of memory?). But then on the other hand,
-        we'd have to do a full-file parse always, instead of exiting after finding the color table. And that would
-        certainly be slower than just blazing through with a byte search like we do here. So, meh.
-
-        @RTF(\langN processing):
-        2023-03-31:
-        We now only handle \lang1049, to limit the damage in case some other readme breaks us with the below.
-        The only known broken readmes are the two from The Mirror and Upside Down, and only Cyrillic (1049/1251)
-        is broken there.
-        However... this still catches a ton of readmes. Maybe we really should do a full parse, and hope to be able
-        to reject more iffy cases that way...
-
-        @RTF(\langN processing): Should we support all \langN nums and just reset \ansicpg to default on ones we don't support?
-        What if we had like "\lang1049 blah blah blah \lang[some-unknown-num]" and no \fN after... we wouldn't
-        actually reset in that case. Is it likely to happen? I guess not, but could it?
         */
 
         if (success && langItems?.Count > 0)
