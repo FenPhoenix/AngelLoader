@@ -825,9 +825,9 @@ public abstract partial class RTFParserBase
 
         // Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
 
-        // 2023-03-31: With our new system, we should be able to handle the full set here again safely.
+        // 2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
 
-#if true
+#if false
         // Arabic
         LangToCodePage[1065] = 1256;
         LangToCodePage[1025] = 1256;
@@ -857,7 +857,7 @@ public abstract partial class RTFParserBase
 
         // Cyrillic
         LangToCodePage[1049] = 1251;
-#if true
+#if false
         LangToCodePage[1026] = 1251;
         LangToCodePage[10266] = 1251;
         LangToCodePage[1058] = 1251;

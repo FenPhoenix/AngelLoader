@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define PROCESS_README_TIME_TEST
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -246,6 +248,15 @@ internal static class RtfTheming
     // +1 for adding a space after the digits
     private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits + 1);
 
+    private static readonly byte[] _lang =
+    {
+        (byte)'\\',
+        (byte)'l',
+        (byte)'a',
+        (byte)'n',
+        (byte)'g'
+    };
+
     private static readonly byte[] _ansicpg =
     {
         (byte)'\\',
@@ -263,8 +274,183 @@ internal static class RtfTheming
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
 
+        #region Local functions
+
+        static int GetDigitsUpTo5(int number)
+        {
+            return
+                number <= 9 ? 1 :
+                number <= 99 ? 2 :
+                number <= 999 ? 3 :
+                number <= 9999 ? 4 :
+                5;
+        }
+
+        static ListFast<byte> CodePageToBytes(int codePage, int digits)
+        {
+            _codePageBytes.ClearFast();
+
+            for (int i = 0; i < digits; i++)
+            {
+                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
+                codePage /= 10;
+            }
+
+            // Use the option for control words to have a space after them, for safety
+            _codePageBytes.Add((byte)' ');
+
+            return _codePageBytes;
+        }
+
+        static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
+        {
+            byte firstByte = _lang[0];
+            int index = Array.IndexOf(input, firstByte, start);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < _lang.Length; i++)
+                {
+                    if (index + i >= input.Length) return (-1, -1);
+                    if (_lang[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
+                        break;
+                    }
+
+                    if (i == _lang.Length - 1)
+                    {
+                        int firstDigitIndex = index + i + 1;
+
+                        int numIndex = firstDigitIndex;
+                        while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
+                        {
+                            numIndex++;
+                        }
+                        if (numIndex > firstDigitIndex)
+                        {
+                            return (index, numIndex);
+                        }
+                        else
+                        {
+                            index = numIndex;
+                        }
+                    }
+                }
+            }
+
+            return (-1, -1);
+        }
+
+        #endregion
+
+#if PROCESS_README_TIME_TEST
+        TimeSpan totalTime = TimeSpan.Zero;
+#endif
+
+        /*
+        It's much faster on average to run pre-checks and be able to avoid an expensive parse.
+        We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
+        */
+
+        bool colorTableFound = false;
+        bool langWorkRequired = false;
+
+        if (darkMode)
+        {
+            #region Precheck for \colortbl
+
+#if PROCESS_README_TIME_TEST
+            var preCheckForColorTableTimer = new System.Diagnostics.Stopwatch();
+            preCheckForColorTableTimer.Start();
+#endif
+
+            colorTableFound = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
+
+#if PROCESS_README_TIME_TEST
+            preCheckForColorTableTimer.Stop();
+            var preCheckForColorTableTimerElapsed = preCheckForColorTableTimer.Elapsed;
+            totalTime = totalTime.Add(preCheckForColorTableTimerElapsed);
+            System.Diagnostics.Trace.WriteLine(nameof(preCheckForColorTableTimer) + " took:\r\n" + preCheckForColorTableTimerElapsed);
+#endif
+
+            #endregion
+        }
+
+        #region Precheck for \lang fixing work required
+
+#if PROCESS_README_TIME_TEST
+        var preCheckForLangsTimer = new System.Diagnostics.Stopwatch();
+        preCheckForLangsTimer.Start();
+#endif
+
+        int startFrom = 0;
+        while (startFrom > -1 && startFrom < currentReadmeBytes.Length - 1)
+        {
+            (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
+            if (start > -1 && end > -1 &&
+                end - (start + 5) <= RTFParserBase.MaxLangNumDigits)
+            {
+                int num = 0;
+                for (int i = start + 5; i < end; i++)
+                {
+                    byte b = currentReadmeBytes[i];
+                    if (b.IsAsciiNumeric())
+                    {
+                        num *= 10;
+                        num += b - '0';
+                    }
+                }
+
+                if (num <= RTFParserBase.MaxLangNumIndex)
+                {
+                    int codePage = RTFParserBase.LangToCodePage[num];
+                    // The only known broken readmes only need code page 1251 to fix them, so for now let's just
+                    // only support that, to exclude as many readmes as possible from an expensive full parse.
+#if true
+                    if (codePage is 1251)
+#else
+                    if (codePage is > -1 and not 1252)
+#endif
+                    {
+                        langWorkRequired = true;
+                    }
+                }
+            }
+            startFrom = end;
+        }
+
+#if PROCESS_README_TIME_TEST
+        preCheckForLangsTimer.Stop();
+        var preCheckForLangsTimerElapsed = preCheckForLangsTimer.Elapsed;
+        totalTime = totalTime.Add(preCheckForLangsTimerElapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(preCheckForLangsTimer) + " took:\r\n" + preCheckForLangsTimerElapsed);
+#endif
+
+        #endregion
+
+        #region Parse
+
+#if PROCESS_README_TIME_TEST
+        var parseTimer = new System.Diagnostics.Stopwatch();
+        parseTimer.Start();
+#endif
+
         (bool success, List<Color>? colorTable, _, int _, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
-            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
+            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode && colorTableFound, getLangs: langWorkRequired);
+
+#if PROCESS_README_TIME_TEST
+        parseTimer.Stop();
+        var parseTimerElapsed = parseTimer.Elapsed;
+        totalTime = totalTime.Add(parseTimerElapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(parseTimer) + " took:\r\n" + parseTimerElapsed);
+#endif
+
+        #endregion
+
+#if PROCESS_README_TIME_TEST
+        System.Diagnostics.Trace.WriteLine("Total time:\r\n" + totalTime);
+#endif
 
         int colorTableEntryLength = 0;
 
@@ -416,36 +602,6 @@ internal static class RtfTheming
 
         if (success && langItems?.Count > 0)
         {
-            #region Local functions
-
-            static int GetDigitsUpTo5(int number)
-            {
-                return
-                    number <= 9 ? 1 :
-                    number <= 99 ? 2 :
-                    number <= 999 ? 3 :
-                    number <= 9999 ? 4 :
-                    5;
-            }
-
-            static ListFast<byte> CodePageToBytes(int codePage, int digits)
-            {
-                _codePageBytes.ClearFast();
-
-                for (int i = 0; i < digits; i++)
-                {
-                    _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
-                    codePage /= 10;
-                }
-
-                // Use the option for control words to have a space after them, for safety
-                _codePageBytes.Add((byte)' ');
-
-                return _codePageBytes;
-            }
-
-            #endregion
-
             int extraAnsiCpgCombinedLength = 0;
             int ansiCpgLength = _ansicpg.Length;
 

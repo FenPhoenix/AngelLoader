@@ -36,6 +36,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     private int _colorTableEndIndex;
     private bool _foundColorTable;
     private bool _getColorTable;
+    private bool _getLangs;
 
     public sealed class LangItem
     {
@@ -58,7 +59,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
     [PublicAPI]
     public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
-    GetData(byte[] rtfBytes, bool getColorTable)
+    GetData(byte[] rtfBytes, bool getColorTable, bool getLangs)
     {
         try
         {
@@ -67,6 +68,14 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
             Reset(rtfBytes);
 
             _getColorTable = getColorTable;
+            _getLangs = getLangs;
+
+            if (!getLangs && !getColorTable)
+            {
+                return (false, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
+                    ColorTableEndIndex: _colorTableEndIndex,
+                    LangItems: _langItems);
+            }
 
             Error error = ParseRtf();
             return error == Error.OK
@@ -100,6 +109,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         _colorTableEndIndex = 0;
         _foundColorTable = false;
         _getColorTable = false;
+        _getLangs = false;
 
         #endregion
 
@@ -114,6 +124,8 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     {
         while (CurrentPos < Length)
         {
+            if (!_getLangs && _getColorTable && _foundColorTable) return Error.OK;
+
             char ch = GetNextCharFast();
 
             if (_groupCount < 0) return Error.StackUnderflow;
