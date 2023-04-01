@@ -14,7 +14,7 @@ namespace AngelLoader;
 // comment or invalidly in the middle of another group or something. I mean it won't, let's be honest, but
 // the color table is important enough to take the perf hit and the small amount of code duplication.
 
-public sealed class RtfColorTableParser : AL_Common.RTFParserBase
+public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 {
     #region Private fields
 

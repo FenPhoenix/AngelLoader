@@ -73,8 +73,8 @@ internal static class RtfTheming
 
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't
     // want to make a new one every time.
-    private static RtfColorTableParser? _rtfColorTableParser;
-    private static RtfColorTableParser RTFColorTableParser => _rtfColorTableParser ??= new RtfColorTableParser();
+    private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
+    private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
 
     #region RTF text coloring byte array nonsense
 
@@ -263,8 +263,8 @@ internal static class RtfTheming
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
 
-        (bool success, List<Color>? colorTable, _, int _, List<RtfColorTableParser.LangItem>? langItems) =
-            RTFColorTableParser.GetColorTable(currentReadmeBytes, getColorTable: darkMode);
+        (bool success, List<Color>? colorTable, _, int _, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
+            RtfDisplayedReadmeParser.GetColorTable(currentReadmeBytes, getColorTable: darkMode);
 
         int colorTableEntryLength = 0;
 
@@ -453,7 +453,7 @@ internal static class RtfTheming
 
             for (int i = 0; i < langItems.Count; i++)
             {
-                RtfColorTableParser.LangItem item = langItems[i];
+                RtfDisplayedReadmeParser.LangItem item = langItems[i];
                 item.Index += colorTableEntryLength;
                 int digitsCount = GetDigitsUpTo5(item.CodePage);
                 item.DigitsCount = digitsCount;
@@ -472,7 +472,7 @@ internal static class RtfTheming
             int newBytePointer = 0;
             for (int i = 0; i < langItems.Count; i++)
             {
-                RtfColorTableParser.LangItem item = langItems[i];
+                RtfDisplayedReadmeParser.LangItem item = langItems[i];
 
                 ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
