@@ -100,37 +100,37 @@ public sealed class CharsetDetector
 {
     // @Ude: Static array, probably we want to keep it static because we use it all the time
     // IMPORTANT: These must be in the exact same order as the Ude.Charset enum members! (Done for perf)
-    public static readonly string[] CharsetToName =
+    public static readonly int[] CharsetToCodePage =
     {
-        "",
-        "ASCII",
-        "Big5",
-        "EUC-JP",
-        "EUC-KR",
-        "HZ-GB-2312",
-        "IBM855",
-        "IBM866",
-        "ISO-2022-JP",
-        "ISO-2022-KR",
-        "ISO-8859-5",
-        "ISO-8859-7",
-        "ISO-8859-8", // Visual Hebrew
-        "KOI8-R",
-        "Shift-JIS",
-        "UTF-16BE",
-        "UTF-16LE",
-        "UTF-32BE",
-        "UTF-32LE",
-        "UTF-8",
-        "gb18030",
-        "windows-1251",
-        "windows-1252",
-        "windows-1253",
-        "windows-1255", // Logical Hebrew
-        "x-mac-cyrillic"
+        -1,
+        20127, // "ASCII"
+        950,   // "Big5"
+        51932, // "EUC-JP"
+        51949, // "EUC-KR"
+        52936, // "HZ-GB-2312"
+        855,   // "IBM855"
+        866,   // "IBM866"
+        50220, // "ISO-2022-JP"
+        50225, // "ISO-2022-KR"
+        28595, // "ISO-8859-5"
+        28597, // "ISO-8859-7"
+        28598, // "ISO-8859-8" // Visual Hebrew
+        20866, // "KOI8-R"
+        932,   // "Shift-JIS"
+        1201,  // "UTF-16BE"
+        1200,  // "UTF-16LE"
+        12001, // "UTF-32BE"
+        12000, // "UTF-32LE"
+        65001, // "UTF-8"
+        54936, // "gb18030"
+        1251,  // "windows-1251"
+        1252,  // "windows-1252"
+        1253,  // "windows-1253"
+        1255,  // "windows-1255" // Logical Hebrew
+        10007  // "x-mac-cyrillic"
     };
 
-    public static readonly int CharsetCount = CharsetToName.Length;
+    public static readonly int CharsetCount = CharsetToCodePage.Length;
 
     private enum InputState { PureASCII = 0, EscASCII = 1, HighByte = 2 }
 

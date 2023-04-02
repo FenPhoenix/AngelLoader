@@ -68,7 +68,7 @@ public sealed class FileEncoding
     private bool _encodingFrequencyTouched;
     private readonly CharsetDetector _ude = new();
     private readonly CharsetDetector _singleUde = new();
-    private Charset _encodingName;
+    private Charset _encodingCharset;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[16 * 1024];
     private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
@@ -76,7 +76,7 @@ public sealed class FileEncoding
     // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
     private readonly MemoryStreamFast _memoryStream = new(Common.ByteSize.KB * 100);
 
-    private static string GetEncodingNameString(Charset charset) => CharsetDetector.CharsetToName[(int)charset];
+    private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
 
     /// <summary>
     /// Tries to detect the file encoding.
@@ -202,7 +202,7 @@ public sealed class FileEncoding
         _encodingFrequencyTouched = false;
         _ude.Reset();
         _singleUde.Reset();
-        _encodingName = Charset.Null;
+        _encodingCharset = Charset.Null;
         _canBeASCII = true;
     }
 
@@ -279,7 +279,7 @@ public sealed class FileEncoding
             }
         }
         // vote for best encoding
-        _encodingName = GetCurrentEncoding();
+        _encodingCharset = GetCurrentEncoding();
         // update current encoding name
     }
 
@@ -293,13 +293,13 @@ public sealed class FileEncoding
         _ude.DataEnd();
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
-            _encodingName = _ude.Charset;
+            _encodingCharset = _ude.Charset;
         }
         // vote for best encoding
-        _encodingName = GetCurrentEncoding();
+        _encodingCharset = GetCurrentEncoding();
 
         // check result
-        return _encodingName == Charset.Null ? null : Encoding.GetEncoding(GetEncodingNameString(_encodingName));
+        return _encodingCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(_encodingCharset));
     }
 
     private void IncrementFrequency(Charset charset)
@@ -315,8 +315,8 @@ public sealed class FileEncoding
 
         // ASCII should be the last option, since other encodings often has ASCII included...
         // Fen: Matching original behavior of pushing ASCII to the bottom
-        int max = 0;
-        int maxIndex = -1;
+        int maxFreq = 0;
+        int maxFreqIndex = -1;
         int foundCount = 0;
         bool foundAscii = false;
         for (int i = 0; i < _encodingFrequency.Length; i++)
@@ -330,16 +330,16 @@ public sealed class FileEncoding
                 {
                     foundAscii = true;
                 }
-                else if (freq > max)
+                else if (freq > maxFreq)
                 {
-                    max = freq;
-                    maxIndex = i;
+                    maxFreq = freq;
+                    maxFreqIndex = i;
                 }
                 foundCount++;
             }
         }
 
-        Charset ret = foundCount == 1 && foundAscii ? Charset.ASCII : (Charset)maxIndex;
+        Charset ret = foundCount == 1 && foundAscii ? Charset.ASCII : (Charset)maxFreqIndex;
 
         if (ret == Charset.ASCII)
         {
