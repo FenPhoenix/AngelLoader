@@ -298,20 +298,6 @@ public sealed class FileEncoding
         // vote for best encoding
         _encodingName = GetCurrentEncoding();
 
-        /*
-         Fen:
-         @NET5: GetEncoding(string): string could be "utf-7" and then we throw on .NET 5
-         https://docs.microsoft.com/en-us/dotnet/core/compatibility/corefx#utf-7-code-paths-are-obsolete
-         Ude.NetStandard v1.2.0 at least does not appear to detect nor ever return the value "utf-7", and
-         it doesn't deal with .NET Encoding objects either, it returns encoding names as strings. Still,
-         let's put a guard check in here just for robustness in case we change to a different detector or
-         whatever.
-
-         There's another UTF-7 reference up in the byte order mark checker, but this is the only place where
-         we create an Encoding object and return a value back to the caller (the public methods both get their
-         values from here), so this one guard is the only one we need.
-        */
-
         // check result
         return _encodingName == Charset.Null ? null : Encoding.GetEncoding(GetEncodingNameString(_encodingName));
     }
