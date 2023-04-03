@@ -45,22 +45,22 @@ internal static class ThrowHelper
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
 public sealed class ZipReusableBundle : IDisposable
 {
-    public readonly ListFast<ZipArchiveFastEntry> Entries = new(0);
+    internal readonly ListFast<ZipArchiveFastEntry> Entries = new(0);
 
-    public readonly SubReadStream ArchiveSubReadStream = new();
+    internal readonly SubReadStream ArchiveSubReadStream = new();
 
     public readonly byte[] FileStreamBuffer = new byte[4096];
 
-    public readonly byte[] DataBuffer = new byte[ushort.MaxValue];
-    public readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
+    internal readonly byte[] DataBuffer = new byte[ushort.MaxValue];
+    internal readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
 
     private const int _backwardsSeekingBufferSize = 32;
-    public const int ThrowAwayBufferSize = 64;
+    internal const int ThrowAwayBufferSize = 64;
 
-    public readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
-    public readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
+    internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
+    internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
 
-    public readonly byte[] BinaryReadBuffer = new byte[16];
+    internal readonly byte[] BinaryReadBuffer = new byte[16];
 
     public void Dispose() => ArchiveSubReadStream.Dispose();
 }
@@ -108,8 +108,8 @@ public static class ZipHelpers
         }
     }
 
-    public const uint Mask32Bit = 0xFFFFFFFF;
-    public const ushort Mask16Bit = 0xFFFF;
+    internal const uint Mask32Bit = 0xFFFFFFFF;
+    internal const ushort Mask16Bit = 0xFFFF;
 
     /// <summary>
     /// Reads exactly bytesToRead out of stream, unless it is out of bytes
@@ -133,7 +133,7 @@ public static class ZipHelpers
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
-    public static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipReusableBundle bundle)
+    internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipReusableBundle bundle)
     {
         int bufferPointer = 0;
         uint currentSignature = 0;
@@ -174,7 +174,7 @@ public static class ZipHelpers
     }
 
     // Skip to a further position downstream (without relying on the stream being seekable)
-    public static void AdvanceToPosition(this Stream stream, long position, ZipReusableBundle bundle)
+    internal static void AdvanceToPosition(this Stream stream, long position, ZipReusableBundle bundle)
     {
         long numBytesLeft = position - stream.Position;
         Debug.Assert(numBytesLeft >= 0);
@@ -210,7 +210,7 @@ public static class ZipHelpers
         }
     }
 
-    public static unsafe int ReadInt32(byte[] value, int valueLength, int startIndex)
+    internal static unsafe int ReadInt32(byte[] value, int valueLength, int startIndex)
     {
         if ((long)(uint)startIndex >= (long)valueLength)
         {
@@ -231,7 +231,7 @@ public static class ZipHelpers
         }
     }
 
-    public static unsafe long ReadInt64(byte[] value, int valueLength, int startIndex)
+    internal static unsafe long ReadInt64(byte[] value, int valueLength, int startIndex)
     {
         if ((long)(uint)startIndex >= (long)valueLength)
         {

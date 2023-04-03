@@ -19,7 +19,7 @@ back to seeks.
 // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
 // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
-public readonly ref struct ZipGenericExtraField
+internal readonly ref struct ZipGenericExtraField
 {
     internal readonly ushort Tag;
     // returns size of data, not of the entire block
@@ -41,7 +41,7 @@ public readonly ref struct ZipGenericExtraField
 
     // shouldn't ever read the byte at position endExtraField
     // assumes we are positioned at the beginning of an extra field subfield
-    public static bool TryReadBlock(
+    internal static bool TryReadBlock(
         Stream stream,
         long endExtraField,
         ZipReusableBundle bundle,
@@ -72,7 +72,7 @@ public readonly ref struct ZipGenericExtraField
     }
 }
 
-public readonly ref struct Zip64ExtraField
+internal readonly ref struct Zip64ExtraField
 {
     // Size is size of the record not including the tag or size fields
     // If the extra field is going in the local header, it cannot include only
@@ -80,10 +80,10 @@ public readonly ref struct Zip64ExtraField
 
     private const ushort TagConstant = 1;
 
-    public readonly long? UncompressedSize;
-    public readonly long? CompressedSize;
-    public readonly long? LocalHeaderOffset;
-    public readonly int? StartDiskNumber;
+    internal readonly long? UncompressedSize;
+    internal readonly long? CompressedSize;
+    internal readonly long? LocalHeaderOffset;
+    internal readonly int? StartDiskNumber;
 
     private Zip64ExtraField(
         long? uncompressedSize,
@@ -111,7 +111,7 @@ public readonly ref struct Zip64ExtraField
     //
     // If there are more than one Zip64 extra fields, we take the first one that has the expected size
     //
-    public static Zip64ExtraField GetJustZip64Block(
+    internal static Zip64ExtraField GetJustZip64Block(
         Stream extraFieldStream,
         bool readUncompressedSize,
         bool readCompressedSize,
@@ -214,19 +214,19 @@ public readonly ref struct Zip64ExtraField
     }
 }
 
-public readonly ref struct Zip64EndOfCentralDirectoryLocator
+internal readonly ref struct Zip64EndOfCentralDirectoryLocator
 {
-    public const uint SignatureConstant = 0x07064B50;
-    public const int SizeOfBlockWithoutSignature = 16;
+    internal const uint SignatureConstant = 0x07064B50;
+    internal const int SizeOfBlockWithoutSignature = 16;
 
-    public readonly ulong OffsetOfZip64EOCD;
+    internal readonly ulong OffsetOfZip64EOCD;
 
     private Zip64EndOfCentralDirectoryLocator(ulong offsetOfZip64EOCD)
     {
         OffsetOfZip64EOCD = offsetOfZip64EOCD;
     }
 
-    public static bool TryReadBlock(
+    internal static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
@@ -247,14 +247,14 @@ public readonly ref struct Zip64EndOfCentralDirectoryLocator
     }
 }
 
-public readonly ref struct Zip64EndOfCentralDirectoryRecord
+internal readonly ref struct Zip64EndOfCentralDirectoryRecord
 {
     private const uint SignatureConstant = 0x06064B50;
 
-    public readonly uint NumberOfThisDisk;
-    public readonly ulong NumberOfEntriesOnThisDisk;
-    public readonly ulong NumberOfEntriesTotal;
-    public readonly ulong OffsetOfCentralDirectory;
+    internal readonly uint NumberOfThisDisk;
+    internal readonly ulong NumberOfEntriesOnThisDisk;
+    internal readonly ulong NumberOfEntriesTotal;
+    internal readonly ulong OffsetOfCentralDirectory;
 
     private Zip64EndOfCentralDirectoryRecord(
         uint numberOfThisDisk,
@@ -268,7 +268,7 @@ public readonly ref struct Zip64EndOfCentralDirectoryRecord
         OffsetOfCentralDirectory = offsetOfCentralDirectory;
     }
 
-    public static bool TryReadBlock(
+    internal static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
@@ -299,12 +299,12 @@ public readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 }
 
-public readonly ref struct ZipLocalFileHeader
+internal readonly ref struct ZipLocalFileHeader
 {
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    public static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
+    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -331,15 +331,15 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 {
     private const uint SignatureConstant = 0x02014B50;
 
-    public readonly ushort CompressionMethod;
-    public readonly uint LastModified;
-    public readonly long CompressedSize;
-    public readonly long UncompressedSize;
-    public readonly int DiskNumberStart;
-    public readonly long RelativeOffsetOfLocalHeader;
+    internal readonly ushort CompressionMethod;
+    internal readonly uint LastModified;
+    internal readonly long CompressedSize;
+    internal readonly long UncompressedSize;
+    internal readonly int DiskNumberStart;
+    internal readonly long RelativeOffsetOfLocalHeader;
 
-    public readonly byte[] Filename = Array.Empty<byte>();
-    public readonly ushort FilenameLength;
+    internal readonly byte[] Filename = Array.Empty<byte>();
+    internal readonly ushort FilenameLength;
 
     private ZipCentralDirectoryFileHeader(
         ushort compressionMethod,
@@ -363,7 +363,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 
     // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
     // in either case, the zip64 extra field info will be incorporated into other fields
-    public static bool TryReadBlock(
+    internal static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out ZipCentralDirectoryFileHeader header)
@@ -436,16 +436,16 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     }
 }
 
-public readonly ref struct ZipEndOfCentralDirectoryBlock
+internal readonly ref struct ZipEndOfCentralDirectoryBlock
 {
-    public const uint SignatureConstant = 0x06054B50;
-    public const int SizeOfBlockWithoutSignature = 18;
+    internal const uint SignatureConstant = 0x06054B50;
+    internal const int SizeOfBlockWithoutSignature = 18;
 
-    public readonly ushort NumberOfThisDisk;
-    public readonly ushort NumberOfTheDiskWithTheStartOfTheCentralDirectory;
-    public readonly ushort NumberOfEntriesInTheCentralDirectoryOnThisDisk;
-    public readonly ushort NumberOfEntriesInTheCentralDirectory;
-    public readonly uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
+    internal readonly ushort NumberOfThisDisk;
+    internal readonly ushort NumberOfTheDiskWithTheStartOfTheCentralDirectory;
+    internal readonly ushort NumberOfEntriesInTheCentralDirectoryOnThisDisk;
+    internal readonly ushort NumberOfEntriesInTheCentralDirectory;
+    internal readonly uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
 
     private ZipEndOfCentralDirectoryBlock(
         ushort numberOfThisDisk,
@@ -461,7 +461,7 @@ public readonly ref struct ZipEndOfCentralDirectoryBlock
         OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
     }
 
-    public static bool TryReadBlock(
+    internal static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out ZipEndOfCentralDirectoryBlock eocdBlock)

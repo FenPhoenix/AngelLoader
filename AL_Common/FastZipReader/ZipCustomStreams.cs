@@ -8,16 +8,16 @@ using System.IO;
 
 namespace AL_Common.FastZipReader;
 
-public sealed class SubReadStream : Stream
+internal sealed class SubReadStream : Stream
 {
     private long _startInSuperStream;
     private long _positionInSuperStream;
     private long _endInSuperStream;
     private Stream _superStream = null!;
 
-    public void SetSuperStream(Stream? stream) => _superStream = stream!;
+    internal void SetSuperStream(Stream? stream) => _superStream = stream!;
 
-    public void Set(long startPosition, long maxLength)
+    internal void Set(long startPosition, long maxLength)
     {
         _startInSuperStream = startPosition;
         _positionInSuperStream = startPosition;

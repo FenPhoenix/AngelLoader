@@ -13,9 +13,9 @@ public sealed class ZipArchiveFastEntry
 {
     #region Fields
 
-    public long OffsetOfLocalHeader;
-    public ZipArchiveFast.CompressionMethodValues CompressionMethod;
-    public long? StoredOffsetOfCompressedData;
+    internal long OffsetOfLocalHeader;
+    internal ZipArchiveFast.CompressionMethodValues CompressionMethod;
+    internal long? StoredOffsetOfCompressedData;
 
     #endregion
 
@@ -63,8 +63,8 @@ public sealed class ZipArchiveFastEntry
         // but entryname/extra length could be different in LH
         StoredOffsetOfCompressedData = null;
 
-        // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
-        // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
+        // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
+        // backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
         FullName = Encoding.UTF8.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
         // Turns out we don't even need the Name property, as the only thing we used it for was checking
         // the extension.

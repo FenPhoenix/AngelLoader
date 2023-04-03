@@ -18,7 +18,7 @@ public sealed class ZipArchiveFast : IDisposable
 {
     #region Enums
 
-    public enum CompressionMethodValues : ushort
+    internal enum CompressionMethodValues : ushort
     {
         Stored = 0,
         Deflate = 8,
