@@ -8,7 +8,7 @@ using SharpCompress.Compressors.PPMd.I1;
 
 namespace SharpCompress.Compressors.PPMd;
 
-public sealed class PpmdStream : Stream
+internal sealed class PpmdStream : Stream
 {
     private readonly PpmdProperties _properties;
     private readonly Stream _stream;
@@ -18,7 +18,7 @@ public sealed class PpmdStream : Stream
     private long _position;
     private bool _isDisposed;
 
-    public PpmdStream(PpmdProperties properties, Stream stream)
+    internal PpmdStream(PpmdProperties properties, Stream stream)
     {
         _properties = properties;
         _stream = stream;

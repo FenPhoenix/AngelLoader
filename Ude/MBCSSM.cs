@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public sealed class UTF8SMModel : SMModel
+internal sealed class UTF8SMModel : SMModel
 {
     private static readonly int[] UTF8_cls = {
         BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
@@ -107,7 +107,7 @@ public sealed class UTF8SMModel : SMModel
     private static readonly int[] UTF8CharLenTable =
         {0, 1, 0, 0, 0, 0, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6 };
 
-    public UTF8SMModel() : base(
+    internal UTF8SMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -122,7 +122,7 @@ public sealed class UTF8SMModel : SMModel
     }
 }
 
-public sealed class GB18030SMModel : SMModel
+internal sealed class GB18030SMModel : SMModel
 {
     private static readonly int[] GB18030_cls = {
         BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
@@ -175,7 +175,7 @@ public sealed class GB18030SMModel : SMModel
     // 2 here.
     private static readonly int[] GB18030CharLenTable = { 0, 1, 1, 1, 1, 1, 2 };
 
-    public GB18030SMModel() : base(
+    internal GB18030SMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -190,7 +190,7 @@ public sealed class GB18030SMModel : SMModel
     }
 }
 
-public sealed class BIG5SMModel : SMModel
+internal sealed class BIG5SMModel : SMModel
 {
     private static readonly int[] BIG5_cls = {
         BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
@@ -235,7 +235,7 @@ public sealed class BIG5SMModel : SMModel
 
     private static readonly int[] BIG5CharLenTable = { 0, 1, 1, 2, 0 };
 
-    public BIG5SMModel() : base(
+    internal BIG5SMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -250,7 +250,7 @@ public sealed class BIG5SMModel : SMModel
     }
 }
 
-public sealed class EUCJPSMModel : SMModel
+internal sealed class EUCJPSMModel : SMModel
 {
     private static readonly int[] EUCJP_cls = {
         //BitPacket.Pack4bits(5,4,4,4,4,4,4,4),  // 00 - 07
@@ -298,7 +298,7 @@ public sealed class EUCJPSMModel : SMModel
 
     private static readonly int[] EUCJPCharLenTable = { 2, 2, 2, 3, 1, 0 };
 
-    public EUCJPSMModel() : base(
+    internal EUCJPSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -313,7 +313,7 @@ public sealed class EUCJPSMModel : SMModel
     }
 }
 
-public sealed class EUCKRSMModel : SMModel
+internal sealed class EUCKRSMModel : SMModel
 {
     private static readonly int[] EUCKR_cls = {
         //BitPacket.Pack4bits(0,1,1,1,1,1,1,1),  // 00 - 07
@@ -358,7 +358,7 @@ public sealed class EUCKRSMModel : SMModel
 
     private static readonly int[] EUCKRCharLenTable = { 0, 1, 2, 0 };
 
-    public EUCKRSMModel() : base(
+    internal EUCKRSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -373,7 +373,7 @@ public sealed class EUCKRSMModel : SMModel
     }
 }
 
-public sealed class SJISSMModel : SMModel
+internal sealed class SJISSMModel : SMModel
 {
     private static readonly int[] SJIS_cls = {
         //BitPacket.Pack4bits(0,1,1,1,1,1,1,1),  // 00 - 07
@@ -421,7 +421,7 @@ public sealed class SJISSMModel : SMModel
 
     private static readonly int[] SJISCharLenTable = { 0, 1, 1, 2, 0, 0 };
 
-    public SJISSMModel() : base(
+    internal SJISSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,

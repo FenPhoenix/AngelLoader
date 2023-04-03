@@ -42,19 +42,19 @@ namespace Ude.NetStandard;
 /// <summary>
 /// Parallel state machine for the Coding Scheme Method
 /// </summary>
-public sealed class CodingStateMachine
+internal sealed class CodingStateMachine
 {
     private int _currentState;
     private readonly SMModel _model;
     private int _currentCharLen;
 
-    public CodingStateMachine(SMModel model)
+    internal CodingStateMachine(SMModel model)
     {
         _currentState = SMModel.START;
         _model = model;
     }
 
-    public int NextState(byte b)
+    internal int NextState(byte b)
     {
         // for each byte we get its class, if it is first byte,
         // we also get byte length
@@ -69,12 +69,12 @@ public sealed class CodingStateMachine
         return _currentState;
     }
 
-    public void Reset()
+    internal void Reset()
     {
         _currentState = SMModel.START;
     }
 
-    public int CurrentCharLen => _currentCharLen;
+    internal int CurrentCharLen => _currentCharLen;
 
-    public Charset ModelName => _model.Name;
+    internal Charset ModelName => _model.Name;
 }

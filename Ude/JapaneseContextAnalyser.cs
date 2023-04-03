@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public abstract class JapaneseContextAnalyser
+internal abstract class JapaneseContextAnalyser
 {
     private const int CATEGORIES_NUM = 6;
     private const int ENOUGH_REL_THRESHOLD = 100;
@@ -152,7 +152,7 @@ public abstract class JapaneseContextAnalyser
         Reset();
     }
 
-    public float GetConfidence()
+    internal float GetConfidence()
     {
         // This is just one way to calculate confidence. It works well for me.
         if (_totalRel > MINIMUM_DATA_THRESHOLD)
@@ -165,7 +165,7 @@ public abstract class JapaneseContextAnalyser
         }
     }
 
-    public void HandleOneChar(byte[] buf, int offset, int charLen)
+    internal void HandleOneChar(byte[] buf, int offset, int charLen)
     {
         if (_totalRel > MAX_REL_THRESHOLD)
         {
@@ -188,7 +188,7 @@ public abstract class JapaneseContextAnalyser
         _lastCharOrder = order;
     }
 
-    public void Reset()
+    internal void Reset()
     {
         _totalRel = 0;
         for (int i = 0; i < CATEGORIES_NUM; i++)
@@ -201,13 +201,13 @@ public abstract class JapaneseContextAnalyser
 
     protected abstract int GetOrder(byte[] buf, int offset);
 
-    public bool GotEnoughData()
+    internal bool GotEnoughData()
     {
         return _totalRel > ENOUGH_REL_THRESHOLD;
     }
 }
 
-public sealed class SJISContextAnalyser : JapaneseContextAnalyser
+internal sealed class SJISContextAnalyser : JapaneseContextAnalyser
 {
     private const byte HIRAGANA_FIRST_BYTE = 0x82;
 
@@ -226,7 +226,7 @@ public sealed class SJISContextAnalyser : JapaneseContextAnalyser
     }
 }
 
-public sealed class EUCJPContextAnalyser : JapaneseContextAnalyser
+internal sealed class EUCJPContextAnalyser : JapaneseContextAnalyser
 {
     private const byte HIRAGANA_FIRST_BYTE = 0xA4;
 

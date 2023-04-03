@@ -38,13 +38,13 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     private bool _getColorTable;
     private bool _getLangs;
 
-    public sealed class LangItem
+    internal sealed class LangItem
     {
-        public int Index;
-        public readonly int CodePage;
-        public int DigitsCount;
+        internal int Index;
+        internal readonly int CodePage;
+        internal int DigitsCount;
 
-        public LangItem(int index, int codePage)
+        internal LangItem(int index, int codePage)
         {
             Index = index;
             CodePage = codePage;
@@ -58,7 +58,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
+    internal (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
     GetData(byte[] rtfBytes, bool getColorTable, bool getLangs)
     {
         try

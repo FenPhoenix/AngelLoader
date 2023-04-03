@@ -42,6 +42,7 @@ public static class Fen7z
         Unknown = int.MaxValue
     }
 
+    [PublicAPI]
     public sealed class Result
     {
         public bool ErrorOccurred =>

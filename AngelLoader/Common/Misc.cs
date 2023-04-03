@@ -194,7 +194,7 @@ public static class Misc
     }
 }
 
-public static class Global
+internal static class Global
 {
     internal static readonly ConfigData Config = new();
 

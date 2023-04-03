@@ -8,7 +8,7 @@ using SharpCompress.Compressors.LZMA.LZ;
 namespace SharpCompress.Compressors.LZMA;
 
 // @SharpCompress: Recycle this and all its sub-fields
-public sealed class LzmaStream : Stream
+internal sealed class LzmaStream : Stream
 {
     private readonly byte[] _properties;
 
@@ -35,7 +35,7 @@ public sealed class LzmaStream : Stream
 
     private bool _isDisposed;
 
-    public LzmaStream(byte[] properties, Stream inputStream, long inputSize, long outputSize)
+    internal LzmaStream(byte[] properties, Stream inputStream, long inputSize, long outputSize)
     {
         _inputStream = inputStream;
         _inputSize = inputSize;

@@ -40,7 +40,7 @@
 
 namespace Ude.NetStandard;
 
-public sealed class HZSMModel : SMModel
+internal sealed class HZSMModel : SMModel
 {
     private static readonly int[] HZ_cls = {
         BitPackage.Pack4bits(1,0,0,0,0,0,0,0),  // 00 - 07
@@ -88,7 +88,7 @@ public sealed class HZSMModel : SMModel
 
     private static readonly int[] HZCharLenTable = { 0, 0, 0, 0, 0, 0 };
 
-    public HZSMModel() : base(
+    internal HZSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -103,7 +103,7 @@ public sealed class HZSMModel : SMModel
     }
 }
 
-public sealed class ISO2022JPSMModel : SMModel
+internal sealed class ISO2022JPSMModel : SMModel
 {
     private static readonly int[] ISO2022JP_cls = {
         BitPackage.Pack4bits(2,0,0,0,0,0,0,0),  // 00 - 07
@@ -154,7 +154,7 @@ public sealed class ISO2022JPSMModel : SMModel
 
     private static readonly int[] ISO2022JPCharLenTable = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    public ISO2022JPSMModel() : base(
+    internal ISO2022JPSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,
@@ -169,7 +169,7 @@ public sealed class ISO2022JPSMModel : SMModel
     }
 }
 
-public sealed class ISO2022KRSMModel : SMModel
+internal sealed class ISO2022KRSMModel : SMModel
 {
     private static readonly int[] ISO2022KR_cls = {
         BitPackage.Pack4bits(2,0,0,0,0,0,0,0),  // 00 - 07
@@ -216,7 +216,7 @@ public sealed class ISO2022KRSMModel : SMModel
 
     private static readonly int[] ISO2022KRCharLenTable = { 0, 0, 0, 0, 0, 0 };
 
-    public ISO2022KRSMModel() : base(
+    internal ISO2022KRSMModel() : base(
         new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
             BitPackage.SHIFT_MASK_4BITS,
             BitPackage.BIT_SHIFT_4BITS,

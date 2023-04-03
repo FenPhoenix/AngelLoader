@@ -33,15 +33,15 @@ using static AL_Common.Logger;
 
 namespace AngelLoader.FFmpeg.NET;
 
-public enum ConvertType
+internal enum ConvertType
 {
     AudioBitRateTo16Bit,
     FormatConvert
 }
 
-public static class Engine
+internal static class Engine
 {
-    public static async Task ConvertAsync(string input, string output, ConvertType convertType)
+    internal static async Task ConvertAsync(string input, string output, ConvertType convertType)
     {
         void LogInfo(string topMsg, Exception ex)
         {

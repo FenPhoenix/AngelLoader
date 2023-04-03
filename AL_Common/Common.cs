@@ -164,6 +164,7 @@ public static class Common
     /// </para>
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [PublicAPI]
     public sealed class ListFast<T>
     {
         public T[] ItemsArray;
@@ -245,7 +246,6 @@ public static class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFast() => Count = 0;
 
-        [PublicAPI]
         public int Capacity
         {
             get => _itemsArrayLength;

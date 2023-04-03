@@ -37,25 +37,25 @@
 
 namespace Ude.NetStandard;
 
-public sealed class EUCKRProber : CharsetProber
+internal sealed class EUCKRProber : CharsetProber
 {
     private readonly CodingStateMachine _codingSM;
     private readonly EUCKRDistributionAnalyser _distributionAnalyser;
     private readonly byte[] _lastChar = new byte[2];
 
-    public EUCKRProber()
+    internal EUCKRProber()
     {
         _codingSM = new CodingStateMachine(new EUCKRSMModel());
         _distributionAnalyser = new EUCKRDistributionAnalyser();
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.EUC_KR;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -99,12 +99,12 @@ public sealed class EUCKRProber : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         return _distributionAnalyser.GetConfidence();
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _state = ProbingState.Detecting;

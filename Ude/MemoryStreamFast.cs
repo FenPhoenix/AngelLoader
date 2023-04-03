@@ -87,13 +87,13 @@ public sealed class MemoryStreamFast
     /// <summary>Gets the length of the stream in bytes.</summary>
     /// <returns>The length of the stream in bytes.</returns>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    public long Length => _length - _origin;
+    internal long Length => _length - _origin;
 
     /// <summary>Gets or sets the current position within the stream.</summary>
     /// <returns>The current position within the stream.</returns>
     /// <exception cref="T:System.ArgumentOutOfRangeException">The position is set to a negative value or a value greater than <see cref="F:System.Int32.MaxValue" />.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    public long Position
+    internal long Position
     {
         get => _position - _origin;
         set
@@ -113,7 +113,7 @@ public sealed class MemoryStreamFast
     /// The current stream does not support writing.</exception>
     /// <exception cref="T:System.ArgumentOutOfRangeException">
     /// <paramref name="value" /> is negative or is greater than the maximum length of the <see cref="T:System.IO.MemoryStreamFast" />, where the maximum length is(<see cref="F:System.Int32.MaxValue" /> - origin), and origin is the index into the underlying buffer at which the stream starts.</exception>
-    public void SetLength(long value)
+    internal void SetLength(long value)
     {
         if (value < 0L || value > int.MaxValue)
             throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_StreamLength");
@@ -130,7 +130,7 @@ public sealed class MemoryStreamFast
 
     /// <summary>Writes the stream contents to a byte array, regardless of the <see cref="P:System.IO.MemoryStreamFast.Position" /> property.</summary>
     /// <returns>A new byte array.</returns>
-    public byte[] ToArray()
+    internal byte[] ToArray()
     {
         byte[] dst = new byte[_length - _origin];
         Buffer.BlockCopy(_buffer, _origin, dst, 0, _length - _origin);
@@ -152,7 +152,7 @@ public sealed class MemoryStreamFast
     /// <paramref name="offset" /> or <paramref name="count" /> are negative.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The current stream instance is closed.</exception>
-    public void Write(byte[] buffer, int offset, int count)
+    internal void Write(byte[] buffer, int offset, int count)
     {
         if (buffer == null)
             throw new ArgumentNullException(nameof(buffer), "ArgumentNull_Buffer");
@@ -193,7 +193,7 @@ public sealed class MemoryStreamFast
     /// -or-
     /// The current position is at the end of the stream, and the capacity cannot be modified.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The current stream is closed.</exception>
-    public void WriteByte(byte value)
+    internal void WriteByte(byte value)
     {
         if (_position >= _length)
         {
@@ -208,5 +208,5 @@ public sealed class MemoryStreamFast
         _buffer[_position++] = value;
     }
 
-    public byte this[int index] => _buffer[index];
+    internal byte this[int index] => _buffer[index];
 }

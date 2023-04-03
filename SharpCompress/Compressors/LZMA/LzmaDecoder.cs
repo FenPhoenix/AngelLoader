@@ -6,7 +6,7 @@ using SharpCompress.Compressors.LZMA.RangeCoder;
 
 namespace SharpCompress.Compressors.LZMA;
 
-public sealed class Decoder
+internal sealed class Decoder
 {
     private sealed class LenDecoder
     {
@@ -388,7 +388,7 @@ public sealed class Decoder
         return false;
     }
 
-    public void SetDecoderProperties(byte[] properties)
+    internal void SetDecoderProperties(byte[] properties)
     {
         if (properties.Length < 1)
         {

@@ -40,7 +40,7 @@ namespace Ude.NetStandard;
 
 // TODO: Using trigrams the detector should be able to discriminate between
 // latin-1 and iso8859-2
-public sealed class Latin1Prober : CharsetProber
+internal sealed class Latin1Prober : CharsetProber
 {
     private const int FREQ_CAT_NUM = 4;
 
@@ -110,17 +110,17 @@ public sealed class Latin1Prober : CharsetProber
     private byte _lastCharClass;
     private readonly int[] _freqCounter = new int[FREQ_CAT_NUM];
 
-    public Latin1Prober()
+    internal Latin1Prober()
     {
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.Windows1252;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _state = ProbingState.Detecting;
         _lastCharClass = OTH;
@@ -130,7 +130,7 @@ public sealed class Latin1Prober : CharsetProber
         }
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         MemoryStreamFast newBuf = FilterWithEnglishLetters(buf, offset, len, memoryStream);
 
@@ -149,7 +149,7 @@ public sealed class Latin1Prober : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         if (_state == ProbingState.NotMe)
         {

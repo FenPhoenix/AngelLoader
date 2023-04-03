@@ -1,6 +1,6 @@
 namespace SharpCompress.Compressors.PPMd;
 
-public enum PpmdVersion
+internal enum PpmdVersion
 {
     H,
     H7Z,

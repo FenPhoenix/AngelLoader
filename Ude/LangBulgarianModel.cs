@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public abstract class BulgarianModel : SequenceModel
+internal abstract class BulgarianModel : SequenceModel
 {
     //Model Table:
     //total sequences: 100%
@@ -183,7 +183,7 @@ public abstract class BulgarianModel : SequenceModel
     }
 }
 
-public sealed class Latin5BulgarianModel : BulgarianModel
+internal sealed class Latin5BulgarianModel : BulgarianModel
 {
     //255: Control characters that usually does not exist in any text
     //254: Carriage/Return
@@ -211,12 +211,12 @@ public sealed class Latin5BulgarianModel : BulgarianModel
         62,242,243,244, 58,245, 98,246,247,248,249,250,251, 91,252,253   //f0
     };
 
-    public Latin5BulgarianModel() : base(LATIN5_CHAR_TO_ORDER_MAP, Charset.ISO_8859_5)
+    internal Latin5BulgarianModel() : base(LATIN5_CHAR_TO_ORDER_MAP, Charset.ISO_8859_5)
     {
     }
 }
 
-public sealed class Win1251BulgarianModel : BulgarianModel
+internal sealed class Win1251BulgarianModel : BulgarianModel
 {
     private static readonly byte[] WIN1251__CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -237,7 +237,7 @@ public sealed class Win1251BulgarianModel : BulgarianModel
         7,  8,  5, 19, 29, 25, 22, 21, 27, 24, 17, 75, 52,253, 42, 16   //f0
     };
 
-    public Win1251BulgarianModel() : base(WIN1251__CHAR_TO_ORDER_MAP, Charset.Windows1251)
+    internal Win1251BulgarianModel() : base(WIN1251__CHAR_TO_ORDER_MAP, Charset.Windows1251)
     {
     }
 }

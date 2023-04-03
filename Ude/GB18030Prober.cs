@@ -39,13 +39,13 @@
 namespace Ude.NetStandard;
 
 // We use gb18030 to replace gb2312, because 18030 is a superset.
-public sealed class GB18030Prober : CharsetProber
+internal sealed class GB18030Prober : CharsetProber
 {
     private readonly CodingStateMachine _codingSM;
     private readonly GB18030DistributionAnalyser _analyser;
     private readonly byte[] _lastChar;
 
-    public GB18030Prober()
+    internal GB18030Prober()
     {
         _lastChar = new byte[2];
         _codingSM = new CodingStateMachine(new GB18030SMModel());
@@ -53,9 +53,9 @@ public sealed class GB18030Prober : CharsetProber
         Reset();
     }
 
-    public override Charset GetCharsetName() => Charset.GB_18030;
+    internal override Charset GetCharsetName() => Charset.GB_18030;
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -100,12 +100,12 @@ public sealed class GB18030Prober : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         return _analyser.GetConfidence();
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _state = ProbingState.Detecting;

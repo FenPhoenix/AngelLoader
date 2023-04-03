@@ -37,14 +37,14 @@
 
 namespace Ude.NetStandard;
 
-public sealed class EUCJPProber : CharsetProber
+internal sealed class EUCJPProber : CharsetProber
 {
     private readonly CodingStateMachine _codingSM;
     private readonly EUCJPContextAnalyser _contextAnalyser;
     private readonly EUCJPDistributionAnalyser _distributionAnalyser;
     private readonly byte[] _lastChar = new byte[2];
 
-    public EUCJPProber()
+    internal EUCJPProber()
     {
         _codingSM = new CodingStateMachine(new EUCJPSMModel());
         _distributionAnalyser = new EUCJPDistributionAnalyser();
@@ -52,12 +52,12 @@ public sealed class EUCJPProber : CharsetProber
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.EUC_JP;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -102,7 +102,7 @@ public sealed class EUCJPProber : CharsetProber
         return _state;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _state = ProbingState.Detecting;
@@ -110,7 +110,7 @@ public sealed class EUCJPProber : CharsetProber
         _distributionAnalyser.Reset();
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         float contxtCf = _contextAnalyser.GetConfidence();
         float distribCf = _distributionAnalyser.GetConfidence();

@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public sealed class SBCSGroupProber : CharsetProber
+internal sealed class SBCSGroupProber : CharsetProber
 {
     private const int PROBERS_NUM = 13;
     private readonly CharsetProber[] _probers = new CharsetProber[PROBERS_NUM];
@@ -46,7 +46,7 @@ public sealed class SBCSGroupProber : CharsetProber
     private int _bestGuess;
     private int _activeNum;
 
-    public SBCSGroupProber()
+    internal SBCSGroupProber()
     {
         _probers[0] = new SingleByteCharSetProber(new Win1251Model());
         _probers[1] = new SingleByteCharSetProber(new Koi8rModel());
@@ -72,7 +72,7 @@ public sealed class SBCSGroupProber : CharsetProber
         Reset();
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         //apply filter to original buffer, and we got new buffer back
         //depend on what script it is, we will feed them the new buffer
@@ -115,7 +115,7 @@ public sealed class SBCSGroupProber : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         float bestConf = 0.0f;
         switch (_state)
@@ -144,7 +144,7 @@ public sealed class SBCSGroupProber : CharsetProber
         return bestConf;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         /*
         Fen: This local variable was shadowing the class-level one and stealing the increment intended for
@@ -161,7 +161,7 @@ public sealed class SBCSGroupProber : CharsetProber
         _state = ProbingState.Detecting;
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         //if we have no answer yet
         if (_bestGuess == -1)

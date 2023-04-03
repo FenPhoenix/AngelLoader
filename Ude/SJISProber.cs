@@ -44,14 +44,14 @@ namespace Ude.NetStandard;
 /// 2, kana character often exist in group
 /// 3, certain combination of kana is never used in japanese language
 /// </summary>
-public sealed class SJISProber : CharsetProber
+internal sealed class SJISProber : CharsetProber
 {
     private readonly CodingStateMachine _codingSM;
     private readonly SJISContextAnalyser _contextAnalyser;
     private readonly SJISDistributionAnalyser _distributionAnalyser;
     private readonly byte[] _lastChar = new byte[2];
 
-    public SJISProber()
+    internal SJISProber()
     {
         _codingSM = new CodingStateMachine(new SJISSMModel());
         _distributionAnalyser = new SJISDistributionAnalyser();
@@ -59,12 +59,12 @@ public sealed class SJISProber : CharsetProber
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.ShiftJIS;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -109,7 +109,7 @@ public sealed class SJISProber : CharsetProber
         return _state;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _state = ProbingState.Detecting;
@@ -117,7 +117,7 @@ public sealed class SJISProber : CharsetProber
         _distributionAnalyser.Reset();
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         float contxtCf = _contextAnalyser.GetConfidence();
         float distribCf = _distributionAnalyser.GetConfidence();

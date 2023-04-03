@@ -38,32 +38,32 @@
 
 namespace Ude.NetStandard;
 
-public sealed class UTF8Prober : CharsetProber
+internal sealed class UTF8Prober : CharsetProber
 {
     private const float ONE_CHAR_PROB = 0.50f;
     private readonly CodingStateMachine _codingSM;
     private int _numOfMBChar;
 
-    public UTF8Prober()
+    internal UTF8Prober()
     {
         _numOfMBChar = 0;
         _codingSM = new CodingStateMachine(new UTF8SMModel());
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.UTF8;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _numOfMBChar = 0;
         _state = ProbingState.Detecting;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -103,7 +103,7 @@ public sealed class UTF8Prober : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         float unlike = 0.99f;
         float confidence;

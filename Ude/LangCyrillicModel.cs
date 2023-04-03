@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public abstract class CyrillicModel : SequenceModel
+internal abstract class CyrillicModel : SequenceModel
 {
     // Model Table:
     // total sequences: 100%
@@ -183,7 +183,7 @@ public abstract class CyrillicModel : SequenceModel
     }
 }
 
-public sealed class Koi8rModel : CyrillicModel
+internal sealed class Koi8rModel : CyrillicModel
 {
     private static readonly byte[] KOI8R_CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -204,12 +204,12 @@ public sealed class Koi8rModel : CyrillicModel
         35, 43, 45, 32, 40, 52, 56, 33, 61, 62, 51, 57, 47, 63, 50, 70   //f0
     };
 
-    public Koi8rModel() : base(KOI8R_CHAR_TO_ORDER_MAP, Charset.KOI8_R)
+    internal Koi8rModel() : base(KOI8R_CHAR_TO_ORDER_MAP, Charset.KOI8_R)
     {
     }
 }
 
-public sealed class Win1251Model : CyrillicModel
+internal sealed class Win1251Model : CyrillicModel
 {
     private static readonly byte[] WIN1251_CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -230,12 +230,12 @@ public sealed class Win1251Model : CyrillicModel
         9,  7,  6, 14, 39, 26, 28, 22, 25, 29, 54, 18, 17, 30, 27, 16
     };
 
-    public Win1251Model() : base(WIN1251_CHAR_TO_ORDER_MAP, Charset.Windows1251)
+    internal Win1251Model() : base(WIN1251_CHAR_TO_ORDER_MAP, Charset.Windows1251)
     {
     }
 }
 
-public sealed class Latin5Model : CyrillicModel
+internal sealed class Latin5Model : CyrillicModel
 {
     private static readonly byte[] LATIN5_CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -256,12 +256,12 @@ public sealed class Latin5Model : CyrillicModel
         239, 68,240,241,242,243,244,245,246,247,248,249,250,251,252,255
     };
 
-    public Latin5Model() : base(LATIN5_CHAR_TO_ORDER_MAP, Charset.ISO_8859_5)
+    internal Latin5Model() : base(LATIN5_CHAR_TO_ORDER_MAP, Charset.ISO_8859_5)
     {
     }
 }
 
-public sealed class MacCyrillicModel : CyrillicModel
+internal sealed class MacCyrillicModel : CyrillicModel
 {
     private static readonly byte[] MACCYRILLIC_CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -282,13 +282,13 @@ public sealed class MacCyrillicModel : CyrillicModel
         9,  7,  6, 14, 39, 26, 28, 22, 25, 29, 54, 18, 17, 30, 27,255
     };
 
-    public MacCyrillicModel() : base(MACCYRILLIC_CHAR_TO_ORDER_MAP,
+    internal MacCyrillicModel() : base(MACCYRILLIC_CHAR_TO_ORDER_MAP,
         Charset.X_MAC_CYRILLIC)
     {
     }
 }
 
-public sealed class Ibm855Model : CyrillicModel
+internal sealed class Ibm855Model : CyrillicModel
 {
     private static readonly byte[] IBM855_BYTE_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -309,12 +309,12 @@ public sealed class Ibm855Model : CyrillicModel
         250, 18, 62, 20, 51, 25, 57, 30, 47, 29, 63, 22, 50,251,252,255
     };
 
-    public Ibm855Model() : base(IBM855_BYTE_TO_ORDER_MAP, Charset.IBM855)
+    internal Ibm855Model() : base(IBM855_BYTE_TO_ORDER_MAP, Charset.IBM855)
     {
     }
 }
 
-public sealed class Ibm866Model : CyrillicModel
+internal sealed class Ibm866Model : CyrillicModel
 {
     private static readonly byte[] IBM866_CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
@@ -335,7 +335,7 @@ public sealed class Ibm866Model : CyrillicModel
         239, 68,240,241,242,243,244,245,246,247,248,249,250,251,252,255
     };
 
-    public Ibm866Model() : base(IBM866_CHAR_TO_ORDER_MAP, Charset.IBM866)
+    internal Ibm866Model() : base(IBM866_CHAR_TO_ORDER_MAP, Charset.IBM866)
     {
     }
 }

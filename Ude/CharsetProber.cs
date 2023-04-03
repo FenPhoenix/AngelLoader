@@ -47,7 +47,7 @@ public enum ProbingState
     NotMe = 2      // negative answer
 }
 
-public abstract class CharsetProber
+internal abstract class CharsetProber
 {
     protected const float SHORTCUT_THRESHOLD = 0.95F;
 
@@ -68,18 +68,18 @@ public abstract class CharsetProber
     /// <returns>
     /// A <see cref="ProbingState"/>
     /// </returns>
-    public abstract ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream);
+    internal abstract ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream);
 
     /// <summary>
     /// Reset prober state
     /// </summary>
-    public abstract void Reset();
+    internal abstract void Reset();
 
-    public abstract Charset GetCharsetName();
+    internal abstract Charset GetCharsetName();
 
-    public abstract float GetConfidence();
+    internal abstract float GetConfidence();
 
-    public virtual ProbingState GetState()
+    internal virtual ProbingState GetState()
     {
         return _state;
     }

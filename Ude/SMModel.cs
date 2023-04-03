@@ -41,19 +41,19 @@ namespace Ude.NetStandard;
 /// <summary>
 /// State machine model
 /// </summary>
-public abstract class SMModel
+internal abstract class SMModel
 {
-    public const int START = 0;
-    public const int ERROR = 1;
-    public const int ITSME = 2;
+    internal const int START = 0;
+    internal const int ERROR = 1;
+    internal const int ITSME = 2;
 
     private readonly BitPackage _classTable;
-    public readonly BitPackage StateTable;
-    public readonly int[] CharLenTable;
+    internal readonly BitPackage StateTable;
+    internal readonly int[] CharLenTable;
 
-    public readonly Charset Name;
+    internal readonly Charset Name;
 
-    public readonly int ClassFactor;
+    internal readonly int ClassFactor;
 
     protected SMModel(BitPackage classTable, int classFactor,
         BitPackage stateTable, int[] charLenTable, Charset name)
@@ -65,5 +65,5 @@ public abstract class SMModel
         Name = name;
     }
 
-    public int GetClass(byte b) => _classTable.Unpack(b);
+    internal int GetClass(byte b) => _classTable.Unpack(b);
 }

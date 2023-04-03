@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public abstract class GreekModel : SequenceModel
+internal abstract class GreekModel : SequenceModel
 {
     // Model Table:
     // total sequences: 100%
@@ -183,7 +183,7 @@ public abstract class GreekModel : SequenceModel
     }
 }
 
-public sealed class Latin7Model : GreekModel
+internal sealed class Latin7Model : GreekModel
 {
     /****************************************************************
     255: Control characters that usually does not exist in any text
@@ -216,7 +216,7 @@ public sealed class Latin7Model : GreekModel
     }
 }
 
-public sealed class Win1253Model : GreekModel
+internal sealed class Win1253Model : GreekModel
 {
     private static readonly byte[] WIN1253__CHAR_TO_ORDER_MAP = {
         255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00

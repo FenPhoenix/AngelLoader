@@ -139,7 +139,7 @@ namespace Ude.NetStandard;
 /// This prober doesn't actually recognize a language or a charset.
 /// It is a helper prober for the use of the Hebrew model probers
 /// </summary>
-public sealed class HebrewProber : CharsetProber
+internal sealed class HebrewProber : CharsetProber
 {
     // windows-1255 / ISO-8859-8 code points of interest
     private const byte FINAL_KAF = 0xEA;
@@ -171,12 +171,12 @@ public sealed class HebrewProber : CharsetProber
     private byte _prev;
     private byte _beforePrev;
 
-    public HebrewProber()
+    internal HebrewProber()
     {
         Reset();
     }
 
-    public void SetModelProbers(CharsetProber logical, CharsetProber visual)
+    internal void SetModelProbers(CharsetProber logical, CharsetProber visual)
     {
         _logicalProber = logical;
         _visualProber = visual;
@@ -207,7 +207,7 @@ public sealed class HebrewProber : CharsetProber
          * The input buffer should not contain any white spaces that are not (' ')
          * or any low-ascii punctuation marks.
     */
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         // Both model probers say it's not them. No reason to continue.
         if (GetState() == ProbingState.NotMe)
@@ -257,7 +257,7 @@ public sealed class HebrewProber : CharsetProber
     }
 
     // Make the decision: is it Logical or Visual?
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         // If the final letter score distance is dominant enough, rely on it.
         int finalsub = _finalCharLogicalScore - _finalCharVisualScore;
@@ -293,7 +293,7 @@ public sealed class HebrewProber : CharsetProber
         return Charset.Windows1255;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _finalCharLogicalScore = 0;
         _finalCharVisualScore = 0;
@@ -301,7 +301,7 @@ public sealed class HebrewProber : CharsetProber
         _beforePrev = 0x20;
     }
 
-    public override ProbingState GetState()
+    internal override ProbingState GetState()
     {
         // Remain active as long as any of the model probers are active.
         if (_logicalProber.GetState() == ProbingState.NotMe &&
@@ -313,7 +313,7 @@ public sealed class HebrewProber : CharsetProber
         return ProbingState.Detecting;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         return 0.0f;
     }

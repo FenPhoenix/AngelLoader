@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public abstract class HebrewModel : SequenceModel
+internal abstract class HebrewModel : SequenceModel
 {
     //Model Table:
     //total sequences: 100%
@@ -183,7 +183,7 @@ public abstract class HebrewModel : SequenceModel
     }
 }
 
-public sealed class Win1255Model : HebrewModel
+internal sealed class Win1255Model : HebrewModel
 {
     /*
     255: Control characters that usually does not exist in any text

@@ -38,20 +38,20 @@
 
 namespace Ude.NetStandard;
 
-public sealed class Big5Prober : CharsetProber
+internal sealed class Big5Prober : CharsetProber
 {
     private readonly CodingStateMachine _codingSM;
     private readonly BIG5DistributionAnalyser _distributionAnalyser;
     private readonly byte[] _lastChar = new byte[2];
 
-    public Big5Prober()
+    internal Big5Prober()
     {
         _codingSM = new CodingStateMachine(new BIG5SMModel());
         _distributionAnalyser = new BIG5DistributionAnalyser();
         Reset();
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -95,19 +95,19 @@ public sealed class Big5Prober : CharsetProber
         return _state;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _codingSM.Reset();
         _state = ProbingState.Detecting;
         _distributionAnalyser.Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         return Charset.Big5;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         return _distributionAnalyser.GetConfidence();
     }

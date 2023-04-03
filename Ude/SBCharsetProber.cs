@@ -38,7 +38,7 @@
 
 namespace Ude.NetStandard;
 
-public sealed class SingleByteCharSetProber : CharsetProber
+internal sealed class SingleByteCharSetProber : CharsetProber
 {
     private const int SAMPLE_SIZE = 64;
     private const int SB_ENOUGH_REL_THRESHOLD = 1024;
@@ -66,12 +66,12 @@ public sealed class SingleByteCharSetProber : CharsetProber
     // Optional auxiliary prober for name decision. created and destroyed by the GroupProber
     private readonly CharsetProber? _nameProber;
 
-    public SingleByteCharSetProber(SequenceModel model)
+    internal SingleByteCharSetProber(SequenceModel model)
         : this(model, false, null)
     {
     }
 
-    public SingleByteCharSetProber(SequenceModel model, bool reversed,
+    internal SingleByteCharSetProber(SequenceModel model, bool reversed,
         CharsetProber? nameProber)
     {
         _model = model;
@@ -80,7 +80,7 @@ public sealed class SingleByteCharSetProber : CharsetProber
         Reset();
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         int max = offset + len;
 
@@ -131,7 +131,7 @@ public sealed class SingleByteCharSetProber : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         /*
         NEGATIVE_APPROACH
@@ -157,7 +157,7 @@ public sealed class SingleByteCharSetProber : CharsetProber
         return 0.01f;
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _state = ProbingState.Detecting;
         _lastOrder = 255;
@@ -171,5 +171,5 @@ public sealed class SingleByteCharSetProber : CharsetProber
         _freqChar = 0;
     }
 
-    public override Charset GetCharsetName() => _nameProber?.GetCharsetName() ?? _model.CharsetName;
+    internal override Charset GetCharsetName() => _nameProber?.GetCharsetName() ?? _model.CharsetName;
 }

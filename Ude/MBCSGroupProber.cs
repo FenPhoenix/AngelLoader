@@ -41,7 +41,7 @@ namespace Ude.NetStandard;
 /// <summary>
 /// Multi-byte charsets probers
 /// </summary>
-public sealed class MBCSGroupProber : CharsetProber
+internal sealed class MBCSGroupProber : CharsetProber
 {
     private const int PROBERS_NUM = 6;
     private readonly CharsetProber[] _probers = new CharsetProber[PROBERS_NUM];
@@ -49,7 +49,7 @@ public sealed class MBCSGroupProber : CharsetProber
     private int _bestGuess;
     private int _activeNum;
 
-    public MBCSGroupProber()
+    internal MBCSGroupProber()
     {
         _probers[0] = new UTF8Prober();
         _probers[1] = new SJISProber();
@@ -60,7 +60,7 @@ public sealed class MBCSGroupProber : CharsetProber
         Reset();
     }
 
-    public override Charset GetCharsetName()
+    internal override Charset GetCharsetName()
     {
         if (_bestGuess == -1)
         {
@@ -73,7 +73,7 @@ public sealed class MBCSGroupProber : CharsetProber
         return _probers[_bestGuess].GetCharsetName();
     }
 
-    public override void Reset()
+    internal override void Reset()
     {
         _activeNum = 0;
         for (int i = 0; i < _probers.Length; i++)
@@ -86,7 +86,7 @@ public sealed class MBCSGroupProber : CharsetProber
         _state = ProbingState.Detecting;
     }
 
-    public override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         // do filtering to reduce load to probers
         // @Ude: Byte array allocation
@@ -142,7 +142,7 @@ public sealed class MBCSGroupProber : CharsetProber
         return _state;
     }
 
-    public override float GetConfidence()
+    internal override float GetConfidence()
     {
         float bestConf = 0.0f;
 

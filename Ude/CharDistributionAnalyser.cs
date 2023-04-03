@@ -43,7 +43,7 @@ namespace Ude.NetStandard;
 /// Base class for the Character Distribution Method, used for
 /// the CJK encodings
 /// </summary>
-public abstract class CharDistributionAnalyser
+internal abstract class CharDistributionAnalyser
 {
     private const float SURE_YES = 0.99f;
     private const float SURE_NO = 0.01f;
@@ -84,7 +84,7 @@ public abstract class CharDistributionAnalyser
     /// <param name="buf">A <see cref="byte"/></param>
     /// <param name="offset">buf offset</param>
     /// <param name="charLen"></param>
-    public void HandleOneChar(byte[] buf, int offset, int charLen)
+    internal void HandleOneChar(byte[] buf, int offset, int charLen)
     {
         //we only care about 2-bytes character in our distribution analysis
         int order = charLen == 2 ? GetOrder(buf, offset) : -1;
@@ -101,7 +101,7 @@ public abstract class CharDistributionAnalyser
         }
     }
 
-    public void Reset()
+    internal void Reset()
     {
         _totalChars = 0;
         _freqChars = 0;
@@ -111,7 +111,7 @@ public abstract class CharDistributionAnalyser
     /// return confidence base on received data
     /// </summary>
     /// <returns></returns>
-    public float GetConfidence()
+    internal float GetConfidence()
     {
         //if we didn't receive any character in our consideration range, or the
         // number of frequent characters is below the minimum threshold, return
@@ -135,13 +135,13 @@ public abstract class CharDistributionAnalyser
 
     //It is not necessary to receive all data to draw conclusion. For charset detection,
     // certain amount of data is enough
-    public bool GotEnoughData()
+    internal bool GotEnoughData()
     {
         return _totalChars > ENOUGH_DATA_THRESHOLD;
     }
 }
 
-public sealed class GB18030DistributionAnalyser : CharDistributionAnalyser
+internal sealed class GB18030DistributionAnalyser : CharDistributionAnalyser
 {
     // GB2312 most frequently used character table
     // Char to FreqOrder table, from hz6763
@@ -591,7 +591,7 @@ public sealed class GB18030DistributionAnalyser : CharDistributionAnalyser
         *******************************************************************************/
     };
 
-    public GB18030DistributionAnalyser()
+    internal GB18030DistributionAnalyser()
     {
         _charToFreqOrder = GB2312_CHAR2FREQ_ORDER;
         _typicalDistributionRatio = GB2312_TYPICAL_DISTRIBUTION_RATIO;
@@ -617,7 +617,7 @@ public sealed class GB18030DistributionAnalyser : CharDistributionAnalyser
     }
 }
 
-public sealed class EUCKRDistributionAnalyser : CharDistributionAnalyser
+internal sealed class EUCKRDistributionAnalyser : CharDistributionAnalyser
 {
     // Sampling from about 20M text materials include literature and computer technology
 
@@ -1189,7 +1189,7 @@ public sealed class EUCKRDistributionAnalyser : CharDistributionAnalyser
         8720,8721,8722,8723,8724,8725,8726,8727,8728,8729,8730,8731,8732,8733,8734,8735,
         8736,8737,8738,8739,8740,8741 */ };
 
-    public EUCKRDistributionAnalyser()
+    internal EUCKRDistributionAnalyser()
     {
         _charToFreqOrder = EUCKR_CHAR2FREQ_ORDER;
         _typicalDistributionRatio = EUCKR_TYPICAL_DISTRIBUTION_RATIO;
@@ -1213,7 +1213,7 @@ public sealed class EUCKRDistributionAnalyser : CharDistributionAnalyser
     }
 }
 
-public sealed class BIG5DistributionAnalyser : CharDistributionAnalyser
+internal sealed class BIG5DistributionAnalyser : CharDistributionAnalyser
 {
     // Big5 frequency table
     // by Taiwan's Mandarin Promotion Council
@@ -2116,7 +2116,7 @@ public sealed class BIG5DistributionAnalyser : CharDistributionAnalyser
         ****************************************************************************************/
     };
 
-    public BIG5DistributionAnalyser()
+    internal BIG5DistributionAnalyser()
     {
         _charToFreqOrder = BIG5_CHAR2FREQ_ORDER;
         _typicalDistributionRatio = BIG5_TYPICAL_DISTRIBUTION_RATIO;
@@ -2147,7 +2147,7 @@ public sealed class BIG5DistributionAnalyser : CharDistributionAnalyser
     }
 }
 
-public class SJISDistributionAnalyser : CharDistributionAnalyser
+internal class SJISDistributionAnalyser : CharDistributionAnalyser
 {
     // Sampling from about 20M text materials include literature and computer technology
     // Japanese frequency table, applied to both S-JIS and EUC-JP
@@ -2694,7 +2694,7 @@ public class SJISDistributionAnalyser : CharDistributionAnalyser
         ****************************************************************************************/
     };
 
-    public SJISDistributionAnalyser()
+    internal SJISDistributionAnalyser()
     {
         _charToFreqOrder = SJIS_CHAR2FREQ_ORDER;
         _typicalDistributionRatio = SJIS_TYPICAL_DISTRIBUTION_RATIO;
@@ -2733,7 +2733,7 @@ public class SJISDistributionAnalyser : CharDistributionAnalyser
     }
 }
 
-public sealed class EUCJPDistributionAnalyser : SJISDistributionAnalyser
+internal sealed class EUCJPDistributionAnalyser : SJISDistributionAnalyser
 {
     /// <summary>
     /// first  byte range: 0xa0 -- 0xfe

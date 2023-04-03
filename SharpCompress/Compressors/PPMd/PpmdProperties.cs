@@ -4,16 +4,16 @@ using SharpCompress.Compressors.PPMd.I1;
 
 namespace SharpCompress.Compressors.PPMd;
 
-public sealed class PpmdProperties
+internal sealed class PpmdProperties
 {
     private int _allocatorSize;
     internal Allocator? _allocator;
 
-    public readonly int ModelOrder;
-    public readonly PpmdVersion Version = PpmdVersion.I1;
+    internal readonly int ModelOrder;
+    internal readonly PpmdVersion Version = PpmdVersion.I1;
     internal readonly ModelRestorationMethod RestorationMethod;
 
-    public PpmdProperties(byte[] properties)
+    internal PpmdProperties(byte[] properties)
         : this(properties.AsSpan()) { }
 
     private PpmdProperties(ReadOnlySpan<byte> properties)
@@ -33,7 +33,7 @@ public sealed class PpmdProperties
         }
     }
 
-    public int AllocatorSize
+    internal int AllocatorSize
     {
         get => _allocatorSize;
         private set

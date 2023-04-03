@@ -2,7 +2,7 @@
 
 namespace SharpCompress.Compressors.BZip2;
 
-public sealed class BZip2Stream : Stream
+internal sealed class BZip2Stream : Stream
 {
     private readonly Stream stream;
     private bool isDisposed;
@@ -11,7 +11,7 @@ public sealed class BZip2Stream : Stream
     /// Create a BZip2Stream
     /// </summary>
     /// <param name="stream">The stream to read from</param>
-    public BZip2Stream(Stream stream)
+    internal BZip2Stream(Stream stream)
     {
         this.stream = new CBZip2InputStream(stream);
     }
