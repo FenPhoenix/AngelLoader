@@ -8,18 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using AL_Common.FastZipReader;
 using AL_Common.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-namespace FMScanner.ScannerZipReader;
+namespace AL_Common.FastZipReader;
 
-internal sealed class ZipArchiveS : IDisposable
+public sealed class ZipArchiveFast : IDisposable
 {
     #region Enums
 
-    internal enum CompressionMethodValues : ushort
+    public enum CompressionMethodValues : ushort
     {
         Stored = 0,
         Deflate = 8,
@@ -33,8 +32,8 @@ internal sealed class ZipArchiveS : IDisposable
     // We don't want to bloat the archive entry class with crap that's only there for error checking purposes.
     // Since errors should be the rare case, we'll check for errors as we do the initial read, and just
     // put bad entries in here and check it when we go to open.
-    private Dictionary<ZipArchiveSEntry, string>? _unopenableArchives;
-    private Dictionary<ZipArchiveSEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveSEntry, string>();
+    private Dictionary<ZipArchiveFastEntry, string>? _unopenableArchives;
+    private Dictionary<ZipArchiveFastEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveFastEntry, string>();
 
     private long _centralDirectoryStart; //only valid after ReadCentralDirectory
     private bool _isDisposed;
@@ -42,11 +41,11 @@ internal sealed class ZipArchiveS : IDisposable
     private readonly Stream? _backingStream;
 
     private readonly Stream _archiveStream;
-    internal readonly long ArchiveStreamLength;
+    public readonly long ArchiveStreamLength;
 
     private uint _numberOfThisDisk;
 
-    private readonly ZipReusableBundleS _bundle;
+    private readonly ZipReusableBundle _bundle;
 
     private readonly bool _disposeBundle;
 
@@ -65,8 +64,8 @@ internal sealed class ZipArchiveS : IDisposable
     /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
     /// entries with unsupported compression methods are found.
     /// </param>
-    internal ZipArchiveS(Stream stream, bool allowUnsupportedEntries) :
-        this(stream, new ZipReusableBundleS(), disposeBundle: true, allowUnsupportedEntries)
+    public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) :
+        this(stream, new ZipReusableBundle(), disposeBundle: true, allowUnsupportedEntries)
     {
     }
 
@@ -85,13 +84,13 @@ internal sealed class ZipArchiveS : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     [PublicAPI]
-    internal ZipArchiveS(Stream stream, ZipReusableBundleS bundle, bool allowUnsupportedEntries) :
+    public ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool allowUnsupportedEntries) :
         this(stream, bundle, disposeBundle: false, allowUnsupportedEntries)
     {
     }
 
     [PublicAPI]
-    private ZipArchiveS(Stream stream, ZipReusableBundleS bundle, bool disposeBundle, bool allowUnsupportedEntries)
+    private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle, bool allowUnsupportedEntries)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -159,7 +158,7 @@ internal sealed class ZipArchiveS : IDisposable
     /// <exception cref="ObjectDisposedException">
     /// The ZipArchive that this entry belongs to has been disposed.
     /// </exception>
-    internal Stream OpenEntry(ZipArchiveSEntry entry)
+    public Stream OpenEntry(ZipArchiveFastEntry entry)
     {
         ThrowIfDisposed();
 
@@ -177,7 +176,7 @@ internal sealed class ZipArchiveS : IDisposable
     private static readonly byte[] _deflateStreamBuffer = new byte[8192];
 #endif
 
-    private static Stream GetDataDecompressor(ZipArchiveSEntry entry, SubReadStream compressedStreamToRead)
+    private static Stream GetDataDecompressor(ZipArchiveFastEntry entry, SubReadStream compressedStreamToRead)
     {
         Stream uncompressedStream;
         switch (entry.CompressionMethod)
@@ -223,7 +222,7 @@ internal sealed class ZipArchiveS : IDisposable
         return uncompressedStream;
     }
 
-    private bool IsOpenable(ZipArchiveSEntry entry, out string message)
+    private bool IsOpenable(ZipArchiveFastEntry entry, out string message)
     {
         message = "";
 
@@ -275,7 +274,7 @@ internal sealed class ZipArchiveS : IDisposable
     /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
     /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
     [PublicAPI]
-    internal ListFast<ZipArchiveSEntry> Entries
+    public ListFast<ZipArchiveFastEntry> Entries
     {
         get
         {
@@ -309,13 +308,13 @@ internal sealed class ZipArchiveS : IDisposable
                     //read the central directory
                     while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _bundle, out var currentHeader))
                     {
-                        ZipArchiveSEntry entry;
+                        ZipArchiveFastEntry entry;
                         if (_bundle.Entries.Count > numberOfEntries)
                         {
                             entry = _bundle.Entries[(int)numberOfEntries];
                             if (entry == null!)
                             {
-                                entry = new ZipArchiveSEntry(currentHeader);
+                                entry = new ZipArchiveFastEntry(currentHeader);
                                 _bundle.Entries[(int)numberOfEntries] = entry;
                             }
                             else
@@ -325,7 +324,7 @@ internal sealed class ZipArchiveS : IDisposable
                         }
                         else
                         {
-                            entry = new ZipArchiveSEntry(currentHeader);
+                            entry = new ZipArchiveFastEntry(currentHeader);
                             _bundle.Entries.Add(entry);
                         }
 

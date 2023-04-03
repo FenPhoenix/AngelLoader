@@ -19,29 +19,29 @@ back to seeks.
 // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
 // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
-internal readonly ref struct ZipGenericExtraField
+public readonly ref struct ZipGenericExtraField
 {
     internal readonly ushort Tag;
     // returns size of data, not of the entire block
-    internal readonly ushort Size;
+    internal readonly ushort DataSize;
     internal readonly byte[] Data = Array.Empty<byte>();
 
-    private ZipGenericExtraField(ushort tag, ushort size)
+    private ZipGenericExtraField(ushort tag, ushort dataSize)
     {
         Tag = tag;
-        Size = size;
+        DataSize = dataSize;
     }
 
-    private ZipGenericExtraField(ushort tag, ushort size, byte[] data)
+    private ZipGenericExtraField(ushort tag, ushort dataSize, byte[] data)
     {
         Tag = tag;
-        Size = size;
+        DataSize = dataSize;
         Data = data;
     }
 
     // shouldn't ever read the byte at position endExtraField
     // assumes we are positioned at the beginning of an extra field subfield
-    internal static bool TryReadBlock(
+    public static bool TryReadBlock(
         Stream stream,
         long endExtraField,
         ZipReusableBundle bundle,
@@ -55,24 +55,24 @@ internal readonly ref struct ZipGenericExtraField
         }
 
         ushort tag = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort size = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
+        ushort dataSize = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
 
         // not enough bytes to read the data
-        if (endExtraField - stream.Position < size)
+        if (endExtraField - stream.Position < dataSize)
         {
-            field = new ZipGenericExtraField(tag: tag, size: size);
+            field = new ZipGenericExtraField(tag: tag, dataSize: dataSize);
             return false;
         }
 
-        byte[] data = BinaryRead.ReadBytes(stream, size);
+        stream.ReadAll(bundle.DataBuffer, 0, dataSize);
 
-        field = new ZipGenericExtraField(tag: tag, size: size, data: data);
+        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: bundle.DataBuffer);
 
         return true;
     }
 }
 
-internal readonly ref struct Zip64ExtraField
+public readonly ref struct Zip64ExtraField
 {
     // Size is size of the record not including the tag or size fields
     // If the extra field is going in the local header, it cannot include only
@@ -80,10 +80,10 @@ internal readonly ref struct Zip64ExtraField
 
     private const ushort TagConstant = 1;
 
-    internal readonly long? UncompressedSize;
-    internal readonly long? CompressedSize;
-    internal readonly long? LocalHeaderOffset;
-    internal readonly int? StartDiskNumber;
+    public readonly long? UncompressedSize;
+    public readonly long? CompressedSize;
+    public readonly long? LocalHeaderOffset;
+    public readonly int? StartDiskNumber;
 
     private Zip64ExtraField(
         long? uncompressedSize,
@@ -111,7 +111,7 @@ internal readonly ref struct Zip64ExtraField
     //
     // If there are more than one Zip64 extra fields, we take the first one that has the expected size
     //
-    internal static Zip64ExtraField GetJustZip64Block(
+    public static Zip64ExtraField GetJustZip64Block(
         Stream extraFieldStream,
         bool readUncompressedSize,
         bool readCompressedSize,
@@ -154,17 +154,17 @@ internal readonly ref struct Zip64ExtraField
             return false;
         }
 
-        ushort size = extraField.Size;
+        ushort dataSize = extraField.DataSize;
 
-        ushort expectedSize = 0;
+        ushort expectedDataSize = 0;
 
-        if (readUncompressedSize) expectedSize += 8;
-        if (readCompressedSize) expectedSize += 8;
-        if (readLocalHeaderOffset) expectedSize += 8;
-        if (readStartDiskNumber) expectedSize += 4;
+        if (readUncompressedSize) expectedDataSize += 8;
+        if (readCompressedSize) expectedDataSize += 8;
+        if (readLocalHeaderOffset) expectedDataSize += 8;
+        if (readStartDiskNumber) expectedDataSize += 4;
 
         // if it is not the expected size, perhaps there is another extra field that matches
-        if (expectedSize != size)
+        if (expectedDataSize != dataSize)
         {
             zip64Block = new Zip64ExtraField();
             return false;
@@ -179,22 +179,22 @@ internal readonly ref struct Zip64ExtraField
         int arrayIndex = 0;
         if (readUncompressedSize)
         {
-            uncompressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            uncompressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readCompressedSize)
         {
-            compressedSize = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            compressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readLocalHeaderOffset)
         {
-            localHeaderOffset = BitConverter.ToInt64(extraField.Data, arrayIndex);
+            localHeaderOffset = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readStartDiskNumber)
         {
-            startDiskNumber = BitConverter.ToInt32(extraField.Data, arrayIndex);
+            startDiskNumber = ZipHelpers.ReadInt32(extraField.Data, dataSize, arrayIndex);
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
@@ -214,19 +214,19 @@ internal readonly ref struct Zip64ExtraField
     }
 }
 
-internal readonly ref struct Zip64EndOfCentralDirectoryLocator
+public readonly ref struct Zip64EndOfCentralDirectoryLocator
 {
-    internal const uint SignatureConstant = 0x07064B50;
-    internal const int SizeOfBlockWithoutSignature = 16;
+    public const uint SignatureConstant = 0x07064B50;
+    public const int SizeOfBlockWithoutSignature = 16;
 
-    internal readonly ulong OffsetOfZip64EOCD;
+    public readonly ulong OffsetOfZip64EOCD;
 
     private Zip64EndOfCentralDirectoryLocator(ulong offsetOfZip64EOCD)
     {
         OffsetOfZip64EOCD = offsetOfZip64EOCD;
     }
 
-    internal static bool TryReadBlock(
+    public static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
@@ -247,14 +247,14 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
     }
 }
 
-internal readonly ref struct Zip64EndOfCentralDirectoryRecord
+public readonly ref struct Zip64EndOfCentralDirectoryRecord
 {
     private const uint SignatureConstant = 0x06064B50;
 
-    internal readonly uint NumberOfThisDisk;
-    internal readonly ulong NumberOfEntriesOnThisDisk;
-    internal readonly ulong NumberOfEntriesTotal;
-    internal readonly ulong OffsetOfCentralDirectory;
+    public readonly uint NumberOfThisDisk;
+    public readonly ulong NumberOfEntriesOnThisDisk;
+    public readonly ulong NumberOfEntriesTotal;
+    public readonly ulong OffsetOfCentralDirectory;
 
     private Zip64EndOfCentralDirectoryRecord(
         uint numberOfThisDisk,
@@ -268,7 +268,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
         OffsetOfCentralDirectory = offsetOfCentralDirectory;
     }
 
-    internal static bool TryReadBlock(
+    public static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
@@ -299,12 +299,12 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 }
 
-internal readonly ref struct ZipLocalFileHeader
+public readonly ref struct ZipLocalFileHeader
 {
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, ZipReusableBundle bundle)
+    public static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -316,7 +316,7 @@ internal readonly ref struct ZipLocalFileHeader
         ushort filenameLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
         ushort extraFieldLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
 
-        if (stream.Length < stream.Position + filenameLength + extraFieldLength)
+        if (streamLength < stream.Position + filenameLength + extraFieldLength)
         {
             return false;
         }
@@ -327,18 +327,19 @@ internal readonly ref struct ZipLocalFileHeader
     }
 }
 
-internal readonly ref struct ZipCentralDirectoryFileHeader
+public readonly ref struct ZipCentralDirectoryFileHeader
 {
     private const uint SignatureConstant = 0x02014B50;
 
-    internal readonly ushort CompressionMethod;
-    internal readonly uint LastModified;
-    internal readonly long CompressedSize;
-    internal readonly long UncompressedSize;
-    internal readonly int DiskNumberStart;
-    internal readonly long RelativeOffsetOfLocalHeader;
+    public readonly ushort CompressionMethod;
+    public readonly uint LastModified;
+    public readonly long CompressedSize;
+    public readonly long UncompressedSize;
+    public readonly int DiskNumberStart;
+    public readonly long RelativeOffsetOfLocalHeader;
 
-    internal readonly byte[]? Filename;
+    public readonly byte[] Filename = Array.Empty<byte>();
+    public readonly ushort FilenameLength;
 
     private ZipCentralDirectoryFileHeader(
         ushort compressionMethod,
@@ -347,7 +348,8 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         long uncompressedSize,
         int diskNumberStart,
         long relativeOffsetOfLocalHeader,
-        byte[]? filename)
+        byte[] filename,
+        ushort filenameLength)
     {
         CompressionMethod = compressionMethod;
         LastModified = lastModified;
@@ -356,11 +358,12 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         DiskNumberStart = diskNumberStart;
         RelativeOffsetOfLocalHeader = relativeOffsetOfLocalHeader;
         Filename = filename;
+        FilenameLength = filenameLength;
     }
 
     // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
     // in either case, the zip64 extra field info will be incorporated into other fields
-    internal static bool TryReadBlock(
+    public static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out ZipCentralDirectoryFileHeader header)
@@ -388,7 +391,7 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
         BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
 
-        byte[] filename = BinaryRead.ReadBytes(stream, filenameLength);
+        stream.ReadAll(bundle.FilenameBuffer, 0, filenameLength);
 
         bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
         bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
@@ -425,23 +428,24 @@ internal readonly ref struct ZipCentralDirectoryFileHeader
             uncompressedSize: uncompressedSize,
             diskNumberStart: diskNumberStart,
             relativeOffsetOfLocalHeader: relativeOffsetOfLocalHeader,
-            filename: filename
+            filename: bundle.FilenameBuffer,
+            filenameLength: filenameLength
         );
 
         return true;
     }
 }
 
-internal readonly ref struct ZipEndOfCentralDirectoryBlock
+public readonly ref struct ZipEndOfCentralDirectoryBlock
 {
-    internal const uint SignatureConstant = 0x06054B50;
-    internal const int SizeOfBlockWithoutSignature = 18;
+    public const uint SignatureConstant = 0x06054B50;
+    public const int SizeOfBlockWithoutSignature = 18;
 
-    internal readonly ushort NumberOfThisDisk;
-    internal readonly ushort NumberOfTheDiskWithTheStartOfTheCentralDirectory;
-    internal readonly ushort NumberOfEntriesInTheCentralDirectoryOnThisDisk;
-    internal readonly ushort NumberOfEntriesInTheCentralDirectory;
-    internal readonly uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
+    public readonly ushort NumberOfThisDisk;
+    public readonly ushort NumberOfTheDiskWithTheStartOfTheCentralDirectory;
+    public readonly ushort NumberOfEntriesInTheCentralDirectoryOnThisDisk;
+    public readonly ushort NumberOfEntriesInTheCentralDirectory;
+    public readonly uint OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
 
     private ZipEndOfCentralDirectoryBlock(
         ushort numberOfThisDisk,
@@ -457,7 +461,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
         OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
     }
 
-    internal static bool TryReadBlock(
+    public static bool TryReadBlock(
         Stream stream,
         ZipReusableBundle bundle,
         out ZipEndOfCentralDirectoryBlock eocdBlock)

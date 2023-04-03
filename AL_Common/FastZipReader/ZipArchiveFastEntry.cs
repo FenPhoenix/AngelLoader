@@ -4,19 +4,18 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using AL_Common;
 using JetBrains.Annotations;
 
-namespace FMScanner.ScannerZipReader;
+namespace AL_Common.FastZipReader;
 
 [PublicAPI]
-internal sealed class ZipArchiveSEntry
+public sealed class ZipArchiveFastEntry
 {
     #region Fields
 
-    internal long OffsetOfLocalHeader;
-    internal ZipArchiveS.CompressionMethodValues CompressionMethod;
-    internal long? StoredOffsetOfCompressedData;
+    public long OffsetOfLocalHeader;
+    public ZipArchiveFast.CompressionMethodValues CompressionMethod;
+    public long? StoredOffsetOfCompressedData;
 
     #endregion
 
@@ -25,33 +24,33 @@ internal sealed class ZipArchiveSEntry
     /// <summary>
     /// The compressed size of the entry.
     /// </summary>
-    internal long CompressedLength;
+    public long CompressedLength;
 
     /// <summary>
     /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
-    internal uint LastWriteTime;
+    public uint LastWriteTime;
 
     /// <summary>
     /// The uncompressed size of the entry.
     /// </summary>
-    internal long Length;
+    public long Length;
 
     /// <summary>
     /// The relative path of the entry as stored in the Zip archive. Note that Zip archives allow any string
     /// to be the path of the entry, including invalid and absolute paths.
     /// </summary>
-    internal string FullName;
+    public string FullName;
 
     #endregion
 
-    internal ZipArchiveSEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
+    public ZipArchiveFastEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
 
     [MemberNotNull(nameof(FullName))]
-    internal void Set(ZipCentralDirectoryFileHeader cd)
+    public void Set(ZipCentralDirectoryFileHeader cd)
     {
-        CompressionMethod = (ZipArchiveS.CompressionMethodValues)cd.CompressionMethod;
+        CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;
 
         // Leave this as a uint and let the caller convert it if it wants (perf optimization)
         LastWriteTime = cd.LastModified;
