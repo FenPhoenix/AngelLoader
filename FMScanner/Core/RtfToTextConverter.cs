@@ -120,52 +120,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     #region Font to Unicode conversion tables
 
-    private readonly Dictionary<int, int> _charSetToCodePage = new()
-    {
-        { 0, _windows1252 },   // "ANSI" (1252)
-
-        // TODO: Code page 0 ("Default") is variable... should we force it to 1252?
-        // "The system default Windows ANSI code page" says the doc page.
-        // Terrible. Fortunately only two known FMs define it in a font entry, and neither one actually uses
-        // said font entry. Still, maybe this should be 1252 as well, since we're rolling dice anyway we may
-        // as well go with the statistically likeliest?
-        { 1, 0 },              // Default
-
-        { 2, 42 },             // Symbol
-        { 77, 10000 },         // Mac Roman
-        { 78, 10001 },         // Mac Shift Jis
-        { 79, 10003 },         // Mac Hangul
-        { 80, 10008 },         // Mac GB2312
-        { 81, 10002 },         // Mac Big5
-        //82                   // Mac Johab (old)
-        { 83, 10005 },         // Mac Hebrew
-        { 84, 10004 },         // Mac Arabic
-        { 85, 10006 },         // Mac Greek
-        { 86, 10081 },         // Mac Turkish
-        { 87, 10021 },         // Mac Thai
-        { 88, 10029 },         // Mac East Europe
-        { 89, 10007 },         // Mac Russian
-        { 128, _shiftJisWin }, // Shift JIS (Windows-31J) (932)
-        { 129, 949 },          // Hangul
-        { 130, 1361 },         // Johab
-        { 134, 936 },          // GB2312
-        { 136, 950 },          // Big5
-        { 161, 1253 },         // Greek
-        { 162, 1254 },         // Turkish
-        { 163, 1258 },         // Vietnamese
-        { 177, 1255 },         // Hebrew
-        { 178, 1256 },         // Arabic
-        //179                  // Arabic Traditional (old)
-        //180                  // Arabic user (old)
-        //181                  // Hebrew user (old)
-        { 186, 1257 },         // Baltic
-        { 204, 1251 },         // Russian
-        { 222, 874 },          // Thai
-        { 238, 1250 },         // Eastern European
-        { 254, 437 },          // PC 437
-        { 255, 850 }           // OEM
-    };
-
     /*
     Many RTF files put emoji-like glyphs into text not with a Unicode character, but by just putting in a
     regular-ass single-byte char and then setting the font to Wingdings or whatever. So the letter "J"
@@ -1210,41 +1164,11 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                     _unicodeBuffer.Add((char)param);
                 }
                 break;
-            case SpecialType.HeaderCodePage:
-                _header.CodePage = param >= 0 ? param : _windows1252;
-                break;
-            case SpecialType.FontTable:
-                _currentScope.InFontTable = true;
-                break;
-            case SpecialType.DefaultFont:
-                // Only set the first one... not likely to be any others anyway, but still
-                if (!_header.DefaultFontSet)
-                {
-                    _header.DefaultFontNum = param;
-                    _header.DefaultFontSet = true;
-                }
-                break;
-            case SpecialType.Charset:
-                // Reject negative codepage values as invalid and just use the header default in that case
-                // (which is guaranteed not to be negative)
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    _fontEntries.Top.CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
-                        ? codePage
-                        : _header.CodePage;
-                }
-                break;
-            case SpecialType.CodePage:
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
-                }
-                break;
             case SpecialType.ColorTable:
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
                 break;
             default:
-                return Error.InvalidSymbolTableEntry;
+                return HandleSpecialTypeFont(specialType, param);
         }
 
         return Error.OK;
