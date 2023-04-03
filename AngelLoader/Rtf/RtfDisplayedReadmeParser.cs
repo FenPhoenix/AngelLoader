@@ -239,6 +239,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         {
             if (_currentScope.InFontTable)
             {
+                // @RTF: We never set the font's codepage here, argh, so it's always null and we end up using the header default
                 _fontEntries.Add(val, new FontEntry());
                 return Error.OK;
             }
