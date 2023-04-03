@@ -107,7 +107,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="7z.Libs" Version="19.0.2" />
 		<PackageReference Include="EasyHook" Version="2.7.7097" />
 		<PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
 		<PackageReference Include="Nullable" Version="1.3.1">
@@ -157,11 +156,7 @@
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot;" WorkingDirectory="$(ProjectDir)" />
 	</Target>
-	<!--
-    "NG7zLibs_net_AfterBuild" is a 7z.libs target. We have to run after it if we want the 7z.dll file to exist so
-    we can copy it. Blah. Also, it underlines the string like it doesn't exist, but it does find it. Tested.
-  -->
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" DependsOnTargets="NG7zLibs_net_AfterBuild">
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot;" WorkingDirectory="$(ProjectDir)" />
 	</Target>
 
