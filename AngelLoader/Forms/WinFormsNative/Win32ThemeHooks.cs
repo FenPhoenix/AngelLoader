@@ -4,14 +4,14 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.ThemeRenderers;
 using EasyHook;
-using ScrollBarRenderer = AngelLoader.Forms.ThemeRenderers.ScrollBarRenderer;
 
 namespace AngelLoader.Forms.WinFormsNative;
 
 internal static class Win32ThemeHooks
 {
+    #region Hooks
+
     #region Private fields
 
     private const int COLOR_HIGHLIGHT = 13;
@@ -20,8 +20,6 @@ internal static class Win32ThemeHooks
     private const int COLOR_WINDOWTEXT = 8;
     private const int COLOR_3DFACE = 15;
     private const int COLOR_GRAYTEXT = 17;
-
-    private static readonly Dictionary<IntPtr, ThemeRenderer> _themeRenderers = new();
 
     #region GetSysColor
 
@@ -93,8 +91,6 @@ internal static class Win32ThemeHooks
     // color change
     private static Override SysColorOverride = Override.None;
 
-    #endregion
-
     private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
     private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
     private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
@@ -104,6 +100,8 @@ internal static class Win32ThemeHooks
     private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
     private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
     private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+
+    #endregion
 
     internal readonly ref struct OverrideSysColorScope
     {
@@ -117,12 +115,7 @@ internal static class Win32ThemeHooks
     {
         if (_hooksInstalled) return;
 
-        var sbr = new ScrollBarRenderer();
-        var ttr = new ToolTipRenderer();
-        var tvr = new TreeViewRenderer();
-        _themeRenderers[sbr.HTheme] = sbr;
-        _themeRenderers[ttr.HTheme] = ttr;
-        _themeRenderers[tvr.HTheme] = tvr;
+        ReloadHThemes();
 
         try
         {
@@ -189,28 +182,6 @@ internal static class Win32ThemeHooks
         return (hook, originalMethod);
     }
 
-    internal static void ReloadTheme()
-    {
-        if (!_hooksInstalled || !Native.IsThemeActive()) return;
-
-        // We have to re-add the HTheme keys because they may/will(?) have changed
-
-        var tempRenderers = new List<ThemeRenderer>(_themeRenderers.Count);
-
-        foreach (ThemeRenderer renderer in _themeRenderers.Values)
-        {
-            tempRenderers.Add(renderer);
-        }
-
-        _themeRenderers.Clear();
-
-        foreach (ThemeRenderer renderer in tempRenderers)
-        {
-            renderer.Reload();
-            _themeRenderers[renderer.HTheme] = renderer;
-        }
-    }
-
     /*
     Hooked themes leak into unthemed dialogs (open file, browse folder etc.), and we can't tell them not to,
     because we can only exclude by thread, and we already know how impossible/focus-fucked threaded dialogs
@@ -263,11 +234,31 @@ internal static class Win32ThemeHooks
         ref Native.RECT pClipRect)
     {
         const int success = 0;
+        bool succeeded = false;
 
-        return !_disableHookedTheming &&
-               _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
-               renderer.Enabled &&
-               renderer.TryDrawThemeBackground(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect)
+        if (!_disableHookedTheming)
+        {
+            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar])
+            {
+                if (ScrollBarEnabled())
+                {
+                    succeeded = ScrollBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
+                }
+            }
+            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip])
+            {
+                if (ToolTipEnabled())
+                {
+                    succeeded = ToolTip_TryDrawThemeBackground(hdc, iPartId, ref pRect);
+                }
+            }
+            else if (hTheme == _hThemes[(int)RenderedControl.TreeView])
+            {
+                succeeded = TreeView_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
+            }
+        }
+
+        return succeeded
             ? success
             : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
     }
@@ -280,11 +271,29 @@ internal static class Win32ThemeHooks
         out int pColor)
     {
         const int success = 0;
+        bool succeeded = false;
 
-        return !_disableHookedTheming &&
-               _themeRenderers.TryGetValue(hTheme, out ThemeRenderer renderer) &&
-               renderer.Enabled &&
-               renderer.TryGetThemeColor(hTheme, iPartId, iStateId, iPropId, out pColor)
+        pColor = 0;
+
+        if (!_disableHookedTheming)
+        {
+            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar])
+            {
+                if (ScrollBarEnabled())
+                {
+                    succeeded = ScrollBar_TryGetThemeColor(iPartId, iPropId, out pColor);
+                }
+            }
+            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip])
+            {
+                if (ToolTipEnabled())
+                {
+                    succeeded = ToolTip_TryGetThemeColor(iPropId, out pColor);
+                }
+            }
+        }
+
+        return succeeded
             ? success
             : GetThemeColor_Original!(hTheme, iPartId, iStateId, iPropId, out pColor);
     }
@@ -366,6 +375,310 @@ internal static class Win32ThemeHooks
             return GetSysColorBrush_Original!(nIndex);
         }
     }
+
+    #endregion
+
+    #endregion
+
+    #region Theme rendering
+
+    #region Arrays
+
+    private const int _renderedControlCount = 3;
+    private enum RenderedControl
+    {
+        ScrollBar,
+        ToolTip,
+        TreeView
+    }
+
+    private static readonly IntPtr[] _hThemes = new IntPtr[_renderedControlCount];
+
+    private static readonly string[] _clSids =
+    {
+        "Scrollbar",
+        "ToolTip",
+        "TreeView"
+    };
+
+    #endregion
+
+    #region Reloading
+
+    private static void ReloadHThemes()
+    {
+        for (int i = 0; i < _renderedControlCount; i++)
+        {
+            Native.CloseThemeData(_hThemes[i]);
+            using var c = new Control();
+            _hThemes[i] = Native.OpenThemeData(c.Handle, _clSids[i]);
+        }
+    }
+
+    internal static void ReloadTheme()
+    {
+        if (!_hooksInstalled || !Native.IsThemeActive()) return;
+
+        // We have to reload the HTheme keys because they may/will(?) have changed
+        ReloadHThemes();
+    }
+
+    #endregion
+
+    #region Control rendering
+
+    #region ScrollBar
+
+    private static bool ScrollBarEnabled() => Global.Config.DarkMode;
+
+    private static bool ScrollBar_TryDrawThemeBackground(
+        IntPtr hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        #region Background
+
+        Rectangle rect = pRect.ToRectangle();
+
+        Brush brush;
+        switch (iPartId)
+        {
+            case Native.SBP_ARROWBTN:
+                brush = DarkColors.DarkBackgroundBrush;
+                break;
+            case Native.SBP_GRIPPERHORZ:
+            case Native.SBP_GRIPPERVERT:
+                // The "gripper" is a subset of the thumb, except sometimes it extends outside of it and
+                // causes problems with our thumb width correction, so just don't draw it
+                return true;
+            case Native.SBP_THUMBBTNHORZ:
+            case Native.SBP_THUMBBTNVERT:
+
+                #region Correct the thumb width
+
+                // Match Windows behavior - the thumb is 1px in from each side
+                // The "gripper" rect gives us the right width, but the wrong length
+                switch (iPartId)
+                {
+                    case Native.SBP_THUMBBTNHORZ:
+                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
+                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
+                        rect = rect with { Y = rect.Y + 1, Height = rect.Height - 2 };
+                        break;
+                    case Native.SBP_THUMBBTNVERT:
+                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.X, rect.Bottom);
+                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right - 1, rect.Y, rect.Right - 1, rect.Bottom);
+                        rect = rect with { X = rect.X + 1, Width = rect.Width - 2 };
+                        break;
+                }
+
+                #endregion
+
+                brush = iStateId switch
+                {
+                    Native.SCRBS_NORMAL => DarkColors.GreySelectionBrush,
+                    Native.SCRBS_HOVER => DarkColors.Fen_ThumbScrollBarHoverBrush,
+                    Native.SCRBS_HOT => DarkColors.GreyHighlightBrush,
+                    Native.SCRBS_PRESSED => DarkColors.ActiveControlBrush,
+                    _ => DarkColors.GreySelectionBrush
+                };
+                break;
+            default:
+                brush = DarkColors.DarkBackgroundBrush;
+                break;
+        }
+
+        g.FillRectangle(brush, rect);
+
+        #endregion
+
+        #region Arrow
+
+        if (iPartId == Native.SBP_ARROWBTN)
+        {
+            Pen pen;
+            switch (iStateId)
+            {
+                case Native.ABS_UPPRESSED:
+                case Native.ABS_DOWNPRESSED:
+                case Native.ABS_LEFTPRESSED:
+                case Native.ABS_RIGHTPRESSED:
+                    pen = DarkColors.ActiveControlPen;
+                    break;
+                case Native.ABS_UPDISABLED:
+                case Native.ABS_DOWNDISABLED:
+                case Native.ABS_LEFTDISABLED:
+                case Native.ABS_RIGHTDISABLED:
+                    pen = DarkColors.GreySelectionPen;
+                    break;
+                case Native.ABS_UPHOT:
+                case Native.ABS_DOWNHOT:
+                case Native.ABS_LEFTHOT:
+                case Native.ABS_RIGHTHOT:
+                    pen = DarkColors.GreyHighlightPen;
+                    break;
+#if false
+                case Native.ABS_UPNORMAL:
+                case Native.ABS_DOWNNORMAL:
+                case Native.ABS_LEFTNORMAL:
+                case Native.ABS_RIGHTNORMAL:
+#endif
+                default:
+                    pen = DarkColors.GreySelectionPen;
+                    break;
+            }
+
+            Misc.Direction direction;
+            switch (iStateId)
+            {
+                case Native.ABS_LEFTNORMAL:
+                case Native.ABS_LEFTHOT:
+                case Native.ABS_LEFTPRESSED:
+                case Native.ABS_LEFTHOVER:
+                case Native.ABS_LEFTDISABLED:
+                    direction = Misc.Direction.Left;
+                    break;
+                case Native.ABS_RIGHTNORMAL:
+                case Native.ABS_RIGHTHOT:
+                case Native.ABS_RIGHTPRESSED:
+                case Native.ABS_RIGHTHOVER:
+                case Native.ABS_RIGHTDISABLED:
+                    direction = Misc.Direction.Right;
+                    break;
+                case Native.ABS_UPNORMAL:
+                case Native.ABS_UPHOT:
+                case Native.ABS_UPPRESSED:
+                case Native.ABS_UPHOVER:
+                case Native.ABS_UPDISABLED:
+                    direction = Misc.Direction.Up;
+                    break;
+#if false
+                case Native.ABS_DOWNNORMAL:
+                case Native.ABS_DOWNHOT:
+                case Native.ABS_DOWNPRESSED:
+                case Native.ABS_DOWNHOVER:
+                case Native.ABS_DOWNDISABLED:
+#endif
+                default:
+                    direction = Misc.Direction.Down;
+                    break;
+            }
+
+            Images.PaintArrow7x4(
+                g,
+                direction,
+                rect,
+                pen: pen
+            );
+        }
+
+        #endregion
+
+        return true;
+    }
+
+    private static bool ScrollBar_TryGetThemeColor(
+        int iPartId,
+        int iPropId,
+        out int pColor)
+    {
+        // This is for scrollbar vert/horz corners on Win10 (and maybe Win8? Haven't tested it).
+        // This is the ONLY way that works on those versions.
+        if (iPartId == Native.SBP_CORNER && iPropId == Native.TMT_FILLCOLOR)
+        {
+            pColor = ColorTranslator.ToWin32(DarkColors.DarkBackground);
+            return true;
+        }
+        else
+        {
+            pColor = 0;
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region ToolTip
+
+    private static bool ToolTipEnabled() => Global.Config.DarkMode && ControlUtils.ToolTipsReflectable;
+
+    private static bool ToolTip_TryDrawThemeBackground(
+        IntPtr hdc,
+        int iPartId,
+        ref Native.RECT pRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+        if (iPartId is Native.TTP_STANDARD or Native.TTP_STANDARDTITLE)
+        {
+            Rectangle rect = pRect.ToRectangle();
+
+            g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
+            g.DrawRectangle(
+                DarkColors.GreySelectionPen,
+                rect with
+                {
+                    Width = rect.Width - 1,
+                    Height = rect.Height - 1
+                });
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private static bool ToolTip_TryGetThemeColor(
+        int iPropId,
+        out int pColor)
+    {
+        if (iPropId == Native.TMT_TEXTCOLOR)
+        {
+            pColor = ColorTranslator.ToWin32(DarkColors.LightText);
+            return true;
+        }
+        else
+        {
+            pColor = 0;
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region TreeView
+
+    private static bool TreeView_TryDrawThemeBackground(
+        IntPtr hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect)
+    {
+        if (iPartId is not Native.TVP_GLYPH and not Native.TVP_HOTGLYPH) return false;
+
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        Rectangle rect = pRect.ToRectangle();
+
+        Misc.Direction direction = iStateId is Native.GLPS_CLOSED or Native.HGLPS_CLOSED
+            ? Misc.Direction.Right
+            : Misc.Direction.Down;
+
+        Images.PaintArrow7x4(
+            g,
+            direction,
+            rect,
+            pen: Global.Config.DarkMode ? DarkColors.LightTextPen : SystemPens.WindowText);
+
+        return true;
+    }
+
+    #endregion
+
+    #endregion
 
     #endregion
 }
