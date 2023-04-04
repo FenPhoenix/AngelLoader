@@ -13,14 +13,7 @@ internal static class Win32ThemeHooks
 {
     #region Hooks
 
-    #region Private fields
-
-    private const int COLOR_HIGHLIGHT = 13;
-    private const int COLOR_HIGHLIGHT_TEXT = 14;
-    private const int COLOR_WINDOW = 5;
-    private const int COLOR_WINDOWTEXT = 8;
-    private const int COLOR_3DFACE = 15;
-    private const int COLOR_GRAYTEXT = 17;
+    #region Hooks and delegates
 
     #region GetSysColor
 
@@ -77,40 +70,11 @@ internal static class Win32ThemeHooks
 
     #endregion
 
-    private static bool _hooksInstalled;
-
-    private static bool _disableHookedTheming;
-
-    internal enum Override
-    {
-        None,
-        Full,
-        RichText
-    }
-
-    // We set/unset this while painting specific controls, so other controls aren't affected by the global
-    // color change
-    private static Override SysColorOverride = Override.None;
-
-    private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
-    private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
-    private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
-    private static readonly IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
-    private static readonly IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
-    private static readonly IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
-    private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
-    private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
-    private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
-
     #endregion
 
-    internal readonly ref struct OverrideSysColorScope
-    {
-        public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
+    #region Hook installing
 
-        // ReSharper disable once MemberCanBeMadeStatic.Global
-        public void Dispose() => SysColorOverride = Override.None;
-    }
+    private static bool _hooksInstalled;
 
     internal static void InstallHooks()
     {
@@ -183,46 +147,7 @@ internal static class Win32ThemeHooks
         return (hook, originalMethod);
     }
 
-    /*
-    Hooked themes leak into unthemed dialogs (open file, browse folder etc.), and we can't tell them not to,
-    because we can only exclude by thread, and we already know how impossible/focus-fucked threaded dialogs
-    are, so we're not even going to go there. The best we can do is to turn off hooked theming _while_ a dialog
-    is up. Normally this looks fine, but if our app gets minimized (or Show-Desktop'd) and restored, then the
-    hooked themes will be disabled throughout the app (ie. we'll get unthemed scroll bars). This is a fairly
-    unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
-    least it's temporary.
-    */
-    internal readonly ref struct DialogScope
-    {
-        private readonly bool _active;
-
-        internal DialogScope(bool active = true)
-        {
-            _active = active;
-            if (_active)
-            {
-                _disableHookedTheming = true;
-                ControlUtils.RecreateAllToolTipHandles();
-            }
-        }
-
-        public void Dispose()
-        {
-            if (_active)
-            {
-                _disableHookedTheming = false;
-                // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
-                // dark-on-dark tooltips
-                ControlUtils.RecreateAllToolTipHandles();
-                List<IntPtr> handles = Native.GetProcessWindowHandles();
-                foreach (IntPtr handle in handles)
-                {
-                    Control? control = Control.FromHandle(handle);
-                    if (control is Form form) form.Refresh();
-                }
-            }
-        }
-    }
+    #endregion
 
     #region Hooked method overrides
 
@@ -378,6 +303,95 @@ internal static class Win32ThemeHooks
     }
 
     #endregion
+
+    #endregion
+
+    #region Theming
+
+    private static bool _disableHookedTheming;
+
+    /*
+    Hooked themes leak into unthemed dialogs (open file, browse folder etc.), and we can't tell them not to,
+    because we can only exclude by thread, and we already know how impossible/focus-fucked threaded dialogs
+    are, so we're not even going to go there. The best we can do is to turn off hooked theming _while_ a dialog
+    is up. Normally this looks fine, but if our app gets minimized (or Show-Desktop'd) and restored, then the
+    hooked themes will be disabled throughout the app (ie. we'll get unthemed scroll bars). This is a fairly
+    unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
+    least it's temporary.
+    */
+    internal readonly ref struct DialogScope
+    {
+        private readonly bool _active;
+
+        internal DialogScope(bool active = true)
+        {
+            _active = active;
+            if (_active)
+            {
+                _disableHookedTheming = true;
+                ControlUtils.RecreateAllToolTipHandles();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_active)
+            {
+                _disableHookedTheming = false;
+                // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
+                // dark-on-dark tooltips
+                ControlUtils.RecreateAllToolTipHandles();
+                List<IntPtr> handles = Native.GetProcessWindowHandles();
+                foreach (IntPtr handle in handles)
+                {
+                    Control? control = Control.FromHandle(handle);
+                    if (control is Form form) form.Refresh();
+                }
+            }
+        }
+    }
+
+    #region Colors and brushes
+
+    private const int COLOR_HIGHLIGHT = 13;
+    private const int COLOR_HIGHLIGHT_TEXT = 14;
+    private const int COLOR_WINDOW = 5;
+    private const int COLOR_WINDOWTEXT = 8;
+    private const int COLOR_3DFACE = 15;
+    private const int COLOR_GRAYTEXT = 17;
+
+    private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+    private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
+    private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
+    private static readonly IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
+    private static readonly IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
+    private static readonly IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
+    private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
+    private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
+    private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+
+    #endregion
+
+    #region System color overriding
+
+    internal enum Override
+    {
+        None,
+        Full,
+        RichText
+    }
+
+    // We set/unset this while painting specific controls, so other controls aren't affected by the global
+    // color change
+    private static Override SysColorOverride = Override.None;
+
+    internal readonly ref struct OverrideSysColorScope
+    {
+        public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
+
+        // ReSharper disable once MemberCanBeMadeStatic.Global
+        public void Dispose() => SysColorOverride = Override.None;
+    }
 
     #endregion
 
@@ -678,6 +692,8 @@ internal static class Win32ThemeHooks
 
         return true;
     }
+
+    #endregion
 
     #endregion
 
