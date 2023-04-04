@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -429,6 +430,7 @@ internal static class Win32ThemeHooks
 
     #region ScrollBar
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool ScrollBarEnabled() => Global.Config.DarkMode;
 
     private static bool ScrollBar_TryDrawThemeBackground(
@@ -603,6 +605,7 @@ internal static class Win32ThemeHooks
 
     #region ToolTip
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool ToolTipEnabled() => Global.Config.DarkMode && ControlUtils.ToolTipsReflectable;
 
     private static bool ToolTip_TryDrawThemeBackground(
