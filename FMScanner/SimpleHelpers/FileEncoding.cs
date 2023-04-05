@@ -37,6 +37,7 @@ using System.IO;
 using System.Text;
 using AL_Common;
 using Ude.NetStandard;
+using static AL_Common.Common;
 
 namespace FMScanner.SimpleHelpers;
 
@@ -59,7 +60,7 @@ public sealed class FileEncoding
     something, rather than 0.07 (latest as of 2021-04-10).
     */
 
-    private const int DEFAULT_BUFFER_SIZE = 128 * 1024;
+    private const int DEFAULT_BUFFER_SIZE = ByteSize.KB * 128;
 
     private bool _started;
     private bool _done;
@@ -70,11 +71,11 @@ public sealed class FileEncoding
     private readonly CharsetDetector _singleUde = new();
     private Charset _encodingCharset;
     // Stupid micro-optimization to reduce GC time
-    private readonly byte[] _buffer = new byte[16 * 1024];
+    private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
     private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
     private bool _canBeASCII = true;
     // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
-    private readonly MemoryStreamFast _memoryStream = new(Common.ByteSize.KB * 100);
+    private readonly MemoryStreamFast _memoryStream = new(ByteSize.KB * 100);
 
     private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
 
@@ -85,7 +86,7 @@ public sealed class FileEncoding
     /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
     public Encoding? DetectFileEncoding(string inputFilename)
     {
-        using var stream = Common.GetReadModeFileStreamWithCachedBuffer(inputFilename, _fileStreamBuffer);
+        using var stream = GetReadModeFileStreamWithCachedBuffer(inputFilename, _fileStreamBuffer);
         return DetectFileEncoding(stream);
     }
 
@@ -214,8 +215,8 @@ public sealed class FileEncoding
     /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
     private void Detect(Stream inputData)
     {
-        const int maxSize = 20 * 1024 * 1024;
-        const int bufferSize = 16 * 1024;
+        const int maxSize = ByteSize.MB * 20;
+        const int bufferSize = ByteSize.KB * 16;
 
         const int maxIterations = maxSize / bufferSize;
 
@@ -266,7 +267,7 @@ public sealed class FileEncoding
 
         // singular buffer detection
         _singleUde.Reset();
-        const int udeFeedSize = 4 * 1024;
+        const int udeFeedSize = ByteSize.KB * 4;
         int step = count - start < udeFeedSize ? count - start : udeFeedSize;
         for (int pos = start; pos < count; pos += step)
         {
