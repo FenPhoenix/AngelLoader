@@ -1,4 +1,28 @@
-﻿using System;
+﻿#region .NET 5+ explanation
+
+/*
+tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something else (MinHook.NET works).
+HOWEVER, the GetSysColor hook crashes with an ExecutionEngineException upon return, always. All other hooks
+work.
+
+-2022-11-09: I posted a bug report and they told me it's because GetSysColor() has the SuppressGCTransition
+ attribute on it in newer .NETs. Nothing that can be done.
+
+With Reloaded.Hooks, I think we can bring back the GetSysColorBrush() hook for 64-bit. I think, anyway. I don't
+remember for certain.
+
+GetSysColor is necessary to theme the DateTimePicker; the selection color for textboxes; and the default text
+color for the RichTextBox (though the latter CAN be worked around - clunkily - by making the default color explicit
+in the color table and then inserting \cf0 control words after every \pard, \sectd, and \plain (I think that's
+all of them...)).
+
+This file is left here as a basic example of how the .NET 5+ friendly way to hook would look like, if GetSysColor
+actually worked.
+*/
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
