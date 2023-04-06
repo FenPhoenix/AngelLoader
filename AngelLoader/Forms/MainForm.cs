@@ -4144,16 +4144,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowInstallUninstallButton(bool enabled, bool startup = false)
     {
-        try
-        {
-            InstallUninstallFMLLButton.SetVisible(enabled);
-        }
-        finally
-        {
-            // One time the stupid visuals didn't redraw but then they started working again even without this.
-            // Argh.
-            if (!startup) BottomLeftFLP.Refresh();
-        }
+        InstallUninstallFMLLButton.SetVisible(enabled);
     }
 
     #region Play without FM
@@ -4298,14 +4289,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowWebSearchButton(bool enabled, bool startup = false)
     {
-        try
-        {
-            Lazy_WebSearchButton.SetVisible(enabled);
-        }
-        finally
-        {
-            if (!startup) BottomLeftFLP.Refresh();
-        }
+        Lazy_WebSearchButton.SetVisible(enabled);
     }
 
     internal void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetMainSelectedFM().Title);
@@ -4316,14 +4300,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowExitButton(bool enabled, bool startup = false)
     {
-        try
-        {
-            ExitLLButton.SetVisible(enabled);
-        }
-        finally
-        {
-            if (!startup) BottomRightFLP.Refresh();
-        }
+        ExitLLButton.SetVisible(enabled);
     }
 
     #endregion
