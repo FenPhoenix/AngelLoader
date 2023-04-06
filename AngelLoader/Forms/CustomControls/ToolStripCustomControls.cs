@@ -95,15 +95,15 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         // last
         var rectLeft = new Rectangle(0, 0, firstItemX - firstItemMarginLeft, Height);
 
-        int lastItemX = 0;
-        int lastItemWidth = 0;
-        int lastItemMarginRight = 0;
-
         int lastItemIndex = -1;
         for (int i = 0; i < Items.Count; i++)
         {
             if (Items[i].Visible) lastItemIndex = i;
         }
+
+        int lastItemX = 0;
+        int lastItemWidth = 0;
+        int lastItemMarginRight = 0;
 
         if (lastItemIndex > -1)
         {
