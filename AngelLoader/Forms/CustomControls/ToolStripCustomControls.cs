@@ -76,14 +76,44 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
     {
         base.OnPaint(e);
 
+        // This whole checking for item count and last visible item and all is to fix the bug where sometimes
+        // the last item will be mostly painted over. Finally figured it out.
+
+        int firstItemX = 0;
+        int firstItemMarginLeft = 0;
+
+        if (Items.Count > 0)
+        {
+            firstItemX = Items[0].Bounds.X;
+            firstItemMarginLeft = Items[0].Margin.Left;
+        }
+
         // Hack in order to be able to have ManagerRenderMode, but also get rid of any garbage around the
         // edges that may be drawn. In particular, there's an ugly visual-styled vertical line at the right
         // side if you don't do this.
         // Take margin into account to allow drawing past the left side of the first item or the right of the
         // last
-        var rectLeft = new Rectangle(0, 0, Items[0].Bounds.X - Items[0].Margin.Left, Height);
-        ToolStripItem last = Items[Items.Count - 1];
-        int rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
+        var rectLeft = new Rectangle(0, 0, firstItemX - firstItemMarginLeft, Height);
+
+        int lastItemX = 0;
+        int lastItemWidth = 0;
+        int lastItemMarginRight = 0;
+
+        int lastItemIndex = -1;
+        for (int i = 0; i < Items.Count; i++)
+        {
+            if (Items[i].Visible) lastItemIndex = i;
+        }
+
+        if (lastItemIndex > -1)
+        {
+            ToolStripItem last = Items[lastItemIndex];
+            lastItemX = last.Bounds.X;
+            lastItemWidth = last.Bounds.Width;
+            lastItemMarginRight = last.Margin.Right;
+        }
+
+        int rect2Start = lastItemX + lastItemWidth + lastItemMarginRight;
         var rectRight = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
         var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
