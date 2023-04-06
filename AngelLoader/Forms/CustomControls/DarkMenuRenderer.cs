@@ -11,23 +11,14 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
     protected override void Initialize(ToolStrip toolStrip)
     {
-        base.Initialize(toolStrip);
-
         toolStrip.BackColor = DarkColors.Fen_ControlBackground;
         toolStrip.ForeColor = DarkColors.LightText;
     }
 
     protected override void InitializeItem(ToolStripItem item)
     {
-        base.InitializeItem(item);
-
         item.BackColor = DarkColors.Fen_ControlBackground;
         item.ForeColor = DarkColors.LightText;
-
-        if (item.GetType() == typeof(ToolStripSeparator))
-        {
-            item.Margin = new Padding(0, 0, 0, 1);
-        }
     }
 
     #endregion
