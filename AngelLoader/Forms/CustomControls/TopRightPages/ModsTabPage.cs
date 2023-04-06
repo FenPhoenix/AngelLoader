@@ -130,7 +130,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.DisabledMods = _page.MainModsControl.DisabledModsTextBox.Text;
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.DisabledMods);
         if (writeIni) Ini.WriteFullFMDataIni();
     }
 

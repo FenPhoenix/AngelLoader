@@ -266,10 +266,6 @@ public interface IView : ISettingsChangeableView
 
     void RefreshAllSelectedFMs_Full();
 
-#if false
-    void RefreshMainSelectedFMRow_Fast();
-#endif
-
     void RefreshAllSelectedFMs_UpdateInstallState();
 
     #endregion

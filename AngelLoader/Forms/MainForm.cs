@@ -2891,11 +2891,11 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void RefreshMainSelectedFMRow_Fast()
+    internal void RefreshSelectedRowCell(Column column)
     {
         if (FMsDGV.MainSelectedRow != null)
         {
-            FMsDGV.InvalidateRow(FMsDGV.MainSelectedRow.Index);
+            FMsDGV.InvalidateCell((int)column, FMsDGV.MainSelectedRow.Index);
         }
     }
 

@@ -76,9 +76,10 @@ public sealed class CommentTabPage : Lazy_TabsBase
         // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
         // 25,000+ character strings with nothing but slashes and linebreaks in them.
         fm.Comment = commentText.ToRNEscapes();
+        // @MEM/@PERF_TODO: Can we test if the FM comment already matches the first 100 chars and avoid an alloc?
         fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.Comment);
     }
 
     private void CommentTextBox_Leave(object sender, EventArgs e)

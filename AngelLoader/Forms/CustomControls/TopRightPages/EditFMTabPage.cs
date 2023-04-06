@@ -297,7 +297,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         if (_owner.EventsDisabled) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.Title = _page.EditFMTitleTextBox.Text;
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.Title);
     }
 
     private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
@@ -342,7 +342,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         if (_owner.EventsDisabled) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.Author = _page.EditFMAuthorTextBox.Text;
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.Author);
     }
 
     private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -365,7 +365,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             ? _page.EditFMReleaseDateDateTimePicker.Value
             : null;
 
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.ReleaseDate);
         Ini.WriteFullFMDataIni();
     }
 
@@ -374,7 +374,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         if (_owner.EventsDisabled) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.ReleaseDate.DateTime = _page.EditFMReleaseDateDateTimePicker.Value;
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.ReleaseDate);
         Ini.WriteFullFMDataIni();
     }
 
@@ -392,7 +392,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             ? _page.EditFMLastPlayedDateTimePicker.Value
             : null;
 
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.LastPlayed);
         Ini.WriteFullFMDataIni();
     }
 
@@ -401,7 +401,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         if (_owner.EventsDisabled) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.LastPlayed.DateTime = _page.EditFMLastPlayedDateTimePicker.Value;
-        _owner.RefreshMainSelectedFMRow_Fast();
+        _owner.RefreshSelectedRowCell(Column.LastPlayed);
         Ini.WriteFullFMDataIni();
     }
 
