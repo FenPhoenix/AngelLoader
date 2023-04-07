@@ -2,7 +2,6 @@ using System;
 
 namespace SharpCompress;
 
-[CLSCompliant(false)]
 internal static class Utility
 {
     /// <summary>
