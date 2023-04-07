@@ -662,8 +662,10 @@ public sealed partial class Scanner : IDisposable
                     cancellationToken.ThrowIfCancellationRequested();
 
                     sevenZipSize = (ulong)fs.Length;
-                    foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
+                    for (int i = 0; i < sevenZipArchive.Entries.Count; i++)
                     {
+                        SevenZipArchiveEntry entry = sevenZipArchive.Entries[i];
+
                         if (entry.IsAnti) continue;
 
                         cancellationToken.ThrowIfCancellationRequested();
@@ -1701,11 +1703,13 @@ public sealed partial class Scanner : IDisposable
 
         const int maxTopLines = 5;
 
+        var lines = new List<string>(maxTopLines);
+
         foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
 
-            var lines = new List<string>(maxTopLines);
+            lines.Clear();
 
             for (int i = 0; i < r.Lines.Count; i++)
             {
@@ -3325,11 +3329,13 @@ public sealed partial class Scanner : IDisposable
 
         const int maxTopLines = 5;
 
+        var lines = new List<string>(maxTopLines);
+
         foreach (ReadmeInternal r in readmes)
         {
             if (!r.Scan) continue;
 
-            var lines = new List<string>(maxTopLines);
+            lines.Clear();
 
             for (int i = 0; i < r.Lines.Count; i++)
             {
