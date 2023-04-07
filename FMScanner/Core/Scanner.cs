@@ -4347,7 +4347,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            using Stream stream = smallestGamFile != null ? _archive.OpenEntry(gamFileZipEntry) : _archive.OpenEntry(misFileZipEntry);
+            using Stream stream = _archive.OpenEntry(smallestGamFile != null ? gamFileZipEntry : misFileZipEntry);
             ret.Game = StreamContainsIdentString(
                 stream,
                 RopeyArrow,
@@ -4416,7 +4416,9 @@ public sealed partial class Scanner : IDisposable
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
         if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmIsZip ? _archive.OpenEntry(misFileZipEntry) : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            using Stream stream = _fmIsZip
+                ? _archive.OpenEntry(misFileZipEntry)
+                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
             if (StreamContainsIdentString(
                     stream,
                     MAPPARAM,
