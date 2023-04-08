@@ -194,6 +194,8 @@ public sealed class ScanOptions
 [PublicAPI]
 public sealed class ProgressReport
 {
+    public string? CachedString;
+
     public string FMName = "";
     public int FMNumber;
     public int FMsTotal;

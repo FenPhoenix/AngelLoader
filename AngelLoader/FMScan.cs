@@ -57,13 +57,17 @@ internal static class FMScan
                 scanMissionCount: true);
 
             void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
-                // @MEM: We could combine most of this string into one and cache it, only changing FMNumber
-                message1: scanMessage ?? LText.ProgressBox.ReportScanningFirst +
-                pr.FMNumber +
-                LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                pr.FMsTotal +
-                LText.ProgressBox.ReportScanningLast,
-                message2: pr.FMName.ExtIsArchive()
+                message1:
+                scanMessage ??
+                (LText.ProgressBox.ReportScanningFirst +
+                 pr.FMNumber +
+                 (pr.CachedString ??=
+                     (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                      pr.FMsTotal +
+                      LText.ProgressBox.ReportScanningLast))),
+                message2:
+                // @MEM: We could get really clever and not have to do this work if we cached stuff from earlier
+                pr.FMName.ExtIsArchive()
                     ? pr.FMName.GetFileNameFast()
                     : pr.FMName.GetDirNameFast(),
                 percent: pr.Percent
