@@ -142,6 +142,7 @@ internal static class FMTags
     }
 
     private const int _tagsToStringSBInitialCapacity = 100;
+    // @THREADING(_tagsToStringSB): Not thread-safe
     private static readonly StringBuilder _tagsToStringSB = new(_tagsToStringSBInitialCapacity);
     internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
     {

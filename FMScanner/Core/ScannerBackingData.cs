@@ -402,70 +402,70 @@ public sealed partial class Scanner
     };
 
     private readonly string[]
-        _monthNamesEnglish =
-        {
-            // These are matched by German "Januar" / "Februar"
-            //"January",
-            //"February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
+    _monthNamesEnglish =
+    {
+        // These are matched by German "Januar" / "Februar"
+        //"January",
+        //"February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
 
-            "Jan",
-            "Feb",
-            "Febr",
-            "Mar",
-            "Apr",
-            // "May" left out because it's already three letters and thus already exists in the full name set
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Sept",
-            "Oct",
-            "Nov",
-            "Dec",
+        "Jan",
+        "Feb",
+        "Febr",
+        "Mar",
+        "Apr",
+        // "May" left out because it's already three letters and thus already exists in the full name set
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec",
 
-            "Feburary",
-            "Martch",
-            "Jully",
+        "Feburary",
+        "Martch",
+        "Jully",
 
-            // French
-            "janvier",
-            "février",
-            "fevrier",
-            "mars",
-            "avril",
-            "mai",
-            "juin",
-            "juillet",
-            "juiller",
-            "août",
-            "aout",
-            "septembre",
-            "octobre",
-            "novembre",
-            "décembre",
-            "decembre",
+        // French
+        "janvier",
+        "février",
+        "fevrier",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "juiller",
+        "août",
+        "aout",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+        "decembre",
 
-            // German
-            "Januar",
-            "Februar",
-            "März",
-            "Marz",
-            "Juni",
-            "Juli",
-            "Oktober",
-            "Okt",
-            "Dezember"
-        };
+        // German
+        "Januar",
+        "Februar",
+        "März",
+        "Marz",
+        "Juni",
+        "Juli",
+        "Oktober",
+        "Okt",
+        "Dezember"
+    };
 
     #endregion
 

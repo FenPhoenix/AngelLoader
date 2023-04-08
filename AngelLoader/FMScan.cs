@@ -57,6 +57,7 @@ internal static class FMScan
                 scanMissionCount: true);
 
             void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
+                // @MEM: We could combine most of this string into one and cache it, only changing FMNumber
                 message1: scanMessage ?? LText.ProgressBox.ReportScanningFirst +
                 pr.FMNumber +
                 LText.ProgressBox.ReportScanningBetweenNumAndTotal +
@@ -208,6 +209,9 @@ internal static class FMScan
                 {
                     if (fmDataList != null)
                     {
+                        // @MEM(Scanner/unsupported compression errors):
+                        // We're looping through the whole thing always just to see if there are errors!
+                        // The scanner should just return a list and we can skip this if it's empty.
                         bool errors = false;
                         bool otherErrors = false;
                         var unsupportedCompressionErrors = new List<(FMScanner.FMToScan FM, FMScanner.ScannedFMDataAndError ScannedFMDataAndError)>();

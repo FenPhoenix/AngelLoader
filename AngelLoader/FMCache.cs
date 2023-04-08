@@ -28,20 +28,18 @@ internal static class FMCache
     private const string _t3ReadmeDir2 = "FanMissionExtras";
     private const string _t3ReadmeDir2S = _t3ReadmeDir2 + "/";
 
-    private static readonly string[]
-        _imageFileExtensions =
-        {
-            ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff"
-        };
+    private static readonly string[] _imageFileExtensions =
+    {
+        ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff"
+    };
 
     // Try to reject formats that don't make sense. Exclude instead of include for future-proofing.
-    private static readonly string[]
-        _htmlRefExcludes =
-        {
-            ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
-            ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
-            ".flv", ".log", ".str", ".nut", ".db", ".obj"
-        };
+    private static readonly string[] _htmlRefExcludes =
+    {
+        ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
+        ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
+        ".flv", ".log", ".str", ".nut", ".db", ".obj"
+    };
 
     #endregion
 
@@ -367,7 +365,7 @@ internal static class FMCache
             using (var fs = File_OpenReadFast(fmArchivePath))
             using (var extractor = new SevenZipArchive(fs))
             {
-                ICollection<SevenZipArchiveEntry> entries = extractor.Entries;
+                var entries = extractor.Entries;
                 extractorFilesCount = entries.Count;
                 foreach (SevenZipArchiveEntry entry in entries)
                 {
