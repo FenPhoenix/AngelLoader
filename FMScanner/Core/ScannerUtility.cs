@@ -447,7 +447,7 @@ internal static class Utility
     /// <returns></returns>
     internal static string RemoveSurroundingParentheses(this string value)
     {
-        if (value[0] != '(' || value[value.Length - 1] != ')') return value;
+        if (value.IsEmpty() || value[0] != '(' || value[value.Length - 1] != ')') return value;
 
         bool surroundedByParens = false;
         do
