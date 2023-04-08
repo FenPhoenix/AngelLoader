@@ -3279,6 +3279,8 @@ public sealed partial class Scanner : IDisposable
 
         string ret = value.TrimEnd();
 
+        if (ret.IsEmpty()) return ret;
+
         // Remove surrounding quotes
         if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim(CA_DoubleQuote);
         if ((ret[0] == LeftDoubleQuote || ret[0] == RightDoubleQuote) &&
