@@ -620,6 +620,13 @@ internal static class Import
                         {
                             fm.Title = lineFM.Substring(9);
                         }
+                        /*
+                        @vNext/BUG: This field can have a leading subfolder!!! like "import_test\1999-06-04_PoorLordBafford.zip"
+                        Argh! This completely wrecks everything! I think it searches subfolders always?
+                        I thought only NDL had that functionality... Yikes... and FMSel even distinguishes
+                        archives in different folders with a subdir prefix and a bracketed number after the
+                        install dir name and all.
+                        */
                         else if (lineFM.StartsWithFast_NoNullChecks("Archive="))
                         {
                             fm.Archive = lineFM.Substring(8);
