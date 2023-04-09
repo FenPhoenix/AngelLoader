@@ -1727,6 +1727,7 @@ public static class Images
 
     #region Arrows
 
+    // @PERF_TODO(Paint arrows): Maybe we should cache the drawn lines onto bitmaps?
     internal static void PaintArrow7x4(
         Graphics g,
         Direction direction,
