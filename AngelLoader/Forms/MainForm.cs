@@ -3455,71 +3455,44 @@ public sealed partial class MainForm : DarkFormBase,
                 // just convert a FanMission to a SelectedFM. These loops are super stupid and wasteful but
                 // I can't think how to not have them at the moment. Look into this at some point.
 
-                bool foundUnToppedTitle = false;
-                bool foundUnToppedAuthor = false;
-
-                if (filterMatches.TitleExactMatch != null)
+                for (int matchI = 0; matchI < 2; matchI++)
                 {
-                    int firstUnToppedTitleIndex = -1;
+                    FanMission? exactMatch = matchI == 0
+                        ? filterMatches.TitleExactMatch
+                        : filterMatches.AuthorExactMatch;
 
-                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    if (exactMatch != null)
                     {
-                        FanMission fm = FMsDGV.GetFMFromIndex(i);
-                        if (!Core.FMIsTopped(fm))
-                        {
-                            if (firstUnToppedTitleIndex == -1)
-                            {
-                                firstUnToppedTitleIndex = i;
-                            }
+                        bool foundUnToppedItem = false;
+                        int firstUnToppedIndex = -1;
 
-                            if (fm == filterMatches.TitleExactMatch)
+                        for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                        {
+                            FanMission fm = FMsDGV.GetFMFromIndex(i);
+                            if (!Core.FMIsTopped(fm))
                             {
-                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                                keepSel = KeepSel.True;
-                                foundUnToppedTitle = true;
-                                foundUnTopped = true;
-                                break;
+                                if (firstUnToppedIndex == -1)
+                                {
+                                    firstUnToppedIndex = i;
+                                }
+
+                                if (fm == exactMatch)
+                                {
+                                    selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                    keepSel = KeepSel.True;
+                                    foundUnToppedItem = true;
+                                    foundUnTopped = true;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (!foundUnToppedTitle && firstUnToppedTitleIndex > -1)
-                    {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedTitleIndex);
-                        keepSel = KeepSel.True;
-                        foundUnTopped = true;
-                    }
-                }
-                if (filterMatches.AuthorExactMatch != null)
-                {
-                    int firstUnToppedAuthorIndex = -1;
-
-                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                    {
-                        FanMission fm = FMsDGV.GetFMFromIndex(i);
-                        if (!Core.FMIsTopped(fm))
+                        if (!foundUnToppedItem && firstUnToppedIndex > -1)
                         {
-                            if (firstUnToppedAuthorIndex == -1)
-                            {
-                                firstUnToppedAuthorIndex = i;
-                            }
-
-                            if (fm == filterMatches.AuthorExactMatch)
-                            {
-                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                                keepSel = KeepSel.True;
-                                foundUnToppedAuthor = true;
-                                foundUnTopped = true;
-                                break;
-                            }
+                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedIndex);
+                            keepSel = KeepSel.True;
+                            foundUnTopped = true;
                         }
-                    }
-
-                    if (!foundUnToppedAuthor && firstUnToppedAuthorIndex > -1)
-                    {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedAuthorIndex);
-                        keepSel = KeepSel.True;
-                        foundUnTopped = true;
                     }
                 }
             }
