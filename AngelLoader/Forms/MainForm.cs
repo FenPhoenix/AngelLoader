@@ -3446,7 +3446,84 @@ public sealed partial class MainForm : DarkFormBase,
         {
             bool foundUnTopped = false;
 
-            void FallbackSearch()
+            if (Config.EnableFuzzySearch &&
+                (filterMatches.TitleExactMatch != null || filterMatches.AuthorExactMatch != null))
+            {
+                // @PERF_TODO(SortAndSetFilter()):
+                // We're looping through when we already have our FanMission object, but what we need is a
+                // SelectedFM object, but that requires getting the scroll position and such, so we can't
+                // just convert a FanMission to a SelectedFM. These loops are super stupid and wasteful but
+                // I can't think how to not have them at the moment. Look into this at some point.
+
+                bool foundUnToppedTitle = false;
+                bool foundUnToppedAuthor = false;
+
+                if (filterMatches.TitleExactMatch != null)
+                {
+                    int firstUnToppedTitleIndex = -1;
+
+                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    {
+                        FanMission fm = FMsDGV.GetFMFromIndex(i);
+                        if (!Core.FMIsTopped(fm))
+                        {
+                            if (firstUnToppedTitleIndex == -1)
+                            {
+                                firstUnToppedTitleIndex = i;
+                            }
+
+                            if (fm == filterMatches.TitleExactMatch)
+                            {
+                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                keepSel = KeepSel.True;
+                                foundUnToppedTitle = true;
+                                foundUnTopped = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!foundUnToppedTitle && firstUnToppedTitleIndex > -1)
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedTitleIndex);
+                        keepSel = KeepSel.True;
+                        foundUnTopped = true;
+                    }
+                }
+                if (filterMatches.AuthorExactMatch != null)
+                {
+                    int firstUnToppedAuthorIndex = -1;
+
+                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                    {
+                        FanMission fm = FMsDGV.GetFMFromIndex(i);
+                        if (!Core.FMIsTopped(fm))
+                        {
+                            if (firstUnToppedAuthorIndex == -1)
+                            {
+                                firstUnToppedAuthorIndex = i;
+                            }
+
+                            if (fm == filterMatches.AuthorExactMatch)
+                            {
+                                selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                                keepSel = KeepSel.True;
+                                foundUnToppedAuthor = true;
+                                foundUnTopped = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!foundUnToppedAuthor && firstUnToppedAuthorIndex > -1)
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedAuthorIndex);
+                        keepSel = KeepSel.True;
+                        foundUnTopped = true;
+                    }
+                }
+            }
+            else
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
@@ -3459,54 +3536,6 @@ public sealed partial class MainForm : DarkFormBase,
                         break;
                     }
                 }
-            }
-
-            if (Config.EnableFuzzySearch &&
-                (filterMatches.TitleExactMatch != null || filterMatches.AuthorExactMatch != null))
-            {
-                // @PERF_TODO(SortAndSetFilter()):
-                // We're looping through when we already have our FanMission object, but what we need is a
-                // SelectedFM object, but that requires getting the scroll position and such, so we can't
-                // just convert a FanMission to a SelectedFM. These loops are super stupid and wasteful but
-                // I can't think how to not have them at the moment. Look into this at some point.
-
-                if (filterMatches.TitleExactMatch != null)
-                {
-                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                    {
-                        FanMission fm = FMsDGV.GetFMFromIndex(i);
-                        if (!Core.FMIsTopped(fm) && fm == filterMatches.TitleExactMatch)
-                        {
-                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                            keepSel = KeepSel.True;
-                            foundUnTopped = true;
-                            break;
-                        }
-                    }
-                }
-                if (filterMatches.AuthorExactMatch != null)
-                {
-                    for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                    {
-                        FanMission fm = FMsDGV.GetFMFromIndex(i);
-                        if (!Core.FMIsTopped(fm) && fm == filterMatches.AuthorExactMatch)
-                        {
-                            selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                            keepSel = KeepSel.True;
-                            foundUnTopped = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!foundUnTopped)
-                {
-                    FallbackSearch();
-                }
-            }
-            else
-            {
-                FallbackSearch();
             }
 
             bool foundExactTitleMatch = false;
