@@ -861,12 +861,12 @@ public static class Common
     // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
     // you get with the built-in methods
 
-    // @MEM(File_ReadAllLines_List): Lang reading calls this for every lang, we could have an SRC version
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using var sr = new StreamReader(path, Encoding.UTF8);
-        while (sr.ReadLine() is { } str)
+        using var fs = File_OpenReadFast(path);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(fs, Encoding.UTF8, true, new StreamReaderCustom());
+        while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
         }

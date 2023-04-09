@@ -256,11 +256,11 @@ internal static partial class Ini
         fmsList.Clear();
 
         using var fs = File_OpenReadFast(fileName);
-        using var sr = new StreamReader(fs, Encoding.UTF8);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(fs, Encoding.UTF8, true, new StreamReaderCustom());
 
         bool fmsListIsEmpty = true;
 
-        while (sr.ReadLine() is { } line)
+        while (sr.Reader.ReadLine() is { } line)
         {
             string lineTS = line.TrimStart();
 
