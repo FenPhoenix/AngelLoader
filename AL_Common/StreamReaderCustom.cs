@@ -1,7 +1,9 @@
-﻿using System;
+﻿//#define ENABLE_UNUSED
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-#if false
+#if ENABLE_UNUSED
 using System.Runtime.InteropServices;
 #endif
 using System.Text;
@@ -72,7 +74,9 @@ public sealed class StreamReaderCustom
 
     private bool _checkPreamble;
 
+#if ENABLE_UNUSED
     private bool _isBlocked;
+#endif
 
     private const int _defaultBufferSize = 1024;
 
@@ -124,7 +128,9 @@ public sealed class StreamReaderCustom
         }
 
         _checkPreamble = _preamble.Length != 0;
+#if ENABLE_UNUSED
         _isBlocked = false;
+#endif
     }
 
     public void DeInit()
@@ -137,7 +143,7 @@ public sealed class StreamReaderCustom
         _charBuffer = Array.Empty<char>();
     }
 
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Gets the current character encoding that the current <see cref="T:AL_Common.StreamReaderCustom" /> object is using.</summary>
     /// /// <returns>The current character encoding used by the current reader. The value can be different after the first call to any <see cref="Read()" /> method of <see cref="T:AL_Common.StreamReaderCustom" />, since encoding autodetection is not done until the first call to a <see cref="Read()" /> method.</returns>
@@ -281,7 +287,9 @@ public sealed class StreamReaderCustom
     private void DetectEncoding()
     {
         if (_byteLen < 2)
+        {
             return;
+        }
         _detectEncoding = false;
         bool flag = false;
         if (_byteBuffer[0] == 254 && _byteBuffer[1] == byte.MaxValue)
@@ -318,9 +326,13 @@ public sealed class StreamReaderCustom
             flag = true;
         }
         else if (_byteLen == 2)
+        {
             _detectEncoding = true;
+        }
         if (!flag)
+        {
             return;
+        }
         _decoder = _encoding.GetDecoder();
         _maxCharsPerBuffer = _encoding.GetMaxCharCount(_byteBuffer.Length);
         _charBuffer = new char[_maxCharsPerBuffer];
@@ -383,7 +395,9 @@ public sealed class StreamReaderCustom
                 if (_byteLen == 0)
                     return _charLen;
             }
+#if ENABLE_UNUSED
             _isBlocked = _byteLen < _byteBuffer.Length;
+#endif
             if (!IsPreamble())
             {
                 if (_detectEncoding && _byteLen >= 2)
@@ -395,7 +409,7 @@ public sealed class StreamReaderCustom
         return _charLen;
     }
 
-#if false
+#if ENABLE_UNUSED
 
     private int ReadBuffer(
       char[] userBuffer,
@@ -498,10 +512,14 @@ public sealed class StreamReaderCustom
                             str = _readLineSB.ToString();
                         }
                         else
+                        {
                             str = new string(_charBuffer, _charPos, charPos - _charPos);
+                        }
                         _charPos = charPos + 1;
                         if (ch == '\r' && (_charPos < _charLen || ReadBuffer() > 0) && _charBuffer[_charPos] == '\n')
+                        {
                             ++_charPos;
+                        }
                         return str;
                     default:
                         ++charPos;
@@ -523,6 +541,6 @@ public sealed class StreamReaderCustom
 
     private static class __Error
     {
-        internal static void ReaderClosed() => throw new ObjectDisposedException(null, ("ObjectDisposed_ReaderClosed"));
+        internal static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
     }
 }
