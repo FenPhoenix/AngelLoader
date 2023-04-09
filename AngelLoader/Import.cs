@@ -645,7 +645,11 @@ internal static class Import
                         }
                         else if (lineFM.StartsWithFast_NoNullChecks("Notes="))
                         {
-                            fm.Comment = lineFM.Substring(6).Replace(@"\n", @"\r\n");
+                            fm.Comment = lineFM.Substring(6)
+                                .Replace(@"\n", @"\r\n")
+                                .Replace(@"\t", "\t")
+                                .Replace(@"\""", "\"")
+                                .Replace(@"\\", "\\");
                         }
                         else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                         {
