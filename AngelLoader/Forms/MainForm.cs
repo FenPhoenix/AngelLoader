@@ -3445,6 +3445,22 @@ public sealed partial class MainForm : DarkFormBase,
         if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
         {
             bool foundUnTopped = false;
+
+            void FallbackSearch()
+            {
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
+                {
+                    FanMission fm = FMsDGV.GetFMFromIndex(i);
+                    if (!Core.FMIsTopped(fm))
+                    {
+                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
+                        keepSel = KeepSel.True;
+                        foundUnTopped = true;
+                        break;
+                    }
+                }
+            }
+
             if (Config.EnableFuzzySearch &&
                 (filterMatches.TitleExactMatch != null || filterMatches.AuthorExactMatch != null))
             {
@@ -3482,20 +3498,15 @@ public sealed partial class MainForm : DarkFormBase,
                         }
                     }
                 }
+
+                if (!foundUnTopped)
+                {
+                    FallbackSearch();
+                }
             }
             else
             {
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    FanMission fm = FMsDGV.GetFMFromIndex(i);
-                    if (!Core.FMIsTopped(fm))
-                    {
-                        selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
-                        keepSel = KeepSel.True;
-                        foundUnTopped = true;
-                        break;
-                    }
-                }
+                FallbackSearch();
             }
 
             bool foundExactTitleMatch = false;
