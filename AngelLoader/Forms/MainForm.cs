@@ -3463,7 +3463,6 @@ public sealed partial class MainForm : DarkFormBase,
 
                     if (exactMatch != null)
                     {
-                        bool foundUnToppedItem = false;
                         int firstUnToppedIndex = -1;
 
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
@@ -3471,23 +3470,20 @@ public sealed partial class MainForm : DarkFormBase,
                             FanMission fm = FMsDGV.GetFMFromIndex(i);
                             if (!Core.FMIsTopped(fm))
                             {
-                                if (firstUnToppedIndex == -1)
-                                {
-                                    firstUnToppedIndex = i;
-                                }
+                                if (firstUnToppedIndex == -1) firstUnToppedIndex = i;
 
                                 if (fm == exactMatch)
                                 {
+                                    firstUnToppedIndex = -1;
                                     selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                                     keepSel = KeepSel.True;
-                                    foundUnToppedItem = true;
                                     foundUnTopped = true;
                                     break;
                                 }
                             }
                         }
 
-                        if (!foundUnToppedItem && firstUnToppedIndex > -1)
+                        if (firstUnToppedIndex > -1)
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(firstUnToppedIndex);
                             keepSel = KeepSel.True;
