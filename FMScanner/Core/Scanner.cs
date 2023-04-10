@@ -3653,22 +3653,35 @@ public sealed partial class Scanner : IDisposable
         // Some titles are clever and  A r e  W r i t t e n  L i k e  T h i s
         // But we want to leave titles that are supposed to be acronyms - ie, "U F O", "R G B"
         if (value.Contains(' ') &&
-            !TitleAnyConsecutiveLettersRegex.Match(value).Success &&
-            TitleContainsLowerCaseCharsRegex.Match(value).Success)
+            !TitleAnyConsecutiveLettersRegex.Match(value).Success)
         {
-            if (value.Contains("  "))
+            bool titleContainsLowerCaseAsciiChars = false;
+            for (int i = 0; i < value.Length; i++)
             {
-                string[] titleWords = value.Split(SA_DoubleSpaces, StringSplitOptions.None);
-                for (int i = 0; i < titleWords.Length; i++)
+                // TODO: Only ASCII letters, so it won't catch lowercase other stuff
+                if (value[i].IsAsciiLower())
                 {
-                    titleWords[i] = titleWords[i].Replace(" ", "");
+                    titleContainsLowerCaseAsciiChars = true;
+                    break;
                 }
-
-                value = string.Join(" ", titleWords);
             }
-            else
+
+            if (titleContainsLowerCaseAsciiChars)
             {
-                value = value.Replace(" ", "");
+                if (value.Contains("  "))
+                {
+                    string[] titleWords = value.Split(SA_DoubleSpaces, StringSplitOptions.None);
+                    for (int i = 0; i < titleWords.Length; i++)
+                    {
+                        titleWords[i] = titleWords[i].Replace(" ", "");
+                    }
+
+                    value = string.Join(" ", titleWords);
+                }
+                else
+                {
+                    value = value.Replace(" ", "");
+                }
             }
         }
 

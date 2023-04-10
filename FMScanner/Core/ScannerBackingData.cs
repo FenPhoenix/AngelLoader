@@ -588,10 +588,6 @@ public sealed partial class Scanner
     private readonly Regex TitleAnyConsecutiveLettersRegex =
         new Regex(@"\w\w", RegexOptions.Compiled);
 
-    // TODO: [a-z] is only ASCII letters, so it won't catch lowercase other stuff I guess
-    private readonly Regex TitleContainsLowerCaseCharsRegex =
-        new Regex("[a-z]", RegexOptions.Compiled);
-
     private readonly Regex AuthorEmailRegex =
         new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
 
