@@ -764,15 +764,15 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled);
 
     private readonly Regex JanuaryVariationsRegex =
-        new Regex("(janvier|Januar )",
+        new Regex("Jan(vier|uar )",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex FebruaryVariationsRegex =
-        new Regex("(Feburary|f(é|e)vrier|Februar )",
+        new Regex("F(eburar(y| )|(é|e)vrier)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex MarchVariationsRegex =
-        new Regex("(Martch|mars|M(ä|a)rz)",
+        new Regex("M(ar(tch|r(s|z))|ärz)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AprilVariationsRegex =
@@ -784,11 +784,11 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled);
 
     private readonly Regex JuneVariationsRegex =
-        new Regex("(juin|Juni)",
+        new Regex("Ju(in|ni)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex JulyVariationsRegex =
-        new Regex("(Jully|juille(t|r)|Juli)",
+        new Regex("Ju(l(ly|i))|ille(t|r)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AugustVariationsRegex =
@@ -800,7 +800,7 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled);
 
     private readonly Regex OctoberVariationsRegex =
-        new Regex("(octobre|Oktober)",
+        new Regex("O(ctobre|ktober)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex HalloweenRegex =
@@ -816,7 +816,7 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex DecemberVariationsRegex =
-        new Regex("(d(é|e)cembre|Dezember)",
+        new Regex("D((é|e)cembre|ezember)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     #endregion
