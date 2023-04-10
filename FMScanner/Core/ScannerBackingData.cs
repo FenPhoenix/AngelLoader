@@ -841,14 +841,11 @@ public sealed partial class Scanner
             if (x.IsEmpty()) return -1;
             if (y.IsEmpty()) return 1;
 
-            int xIndex1 = x.IndexOf('_');
-            int xIndex2 = x.IndexOf(':', xIndex1);
-
-            int yIndex1 = y.IndexOf('_');
-            int yIndex2 = y.IndexOf(':', yIndex1);
-
             // int32 max digits minus 1 (to avoid having to check for overflow)
             const int maxDigits = 9;
+
+            int xIndex1 = x.IndexOf('_');
+            int xIndex2 = x.IndexOf(':', xIndex1);
 
             int xNum = 0;
             int xEnd = Math.Min(xIndex2, xIndex1 + maxDigits);
@@ -865,6 +862,9 @@ public sealed partial class Scanner
                     return 0;
                 }
             }
+
+            int yIndex1 = y.IndexOf('_');
+            int yIndex2 = y.IndexOf(':', yIndex1);
 
             int yNum = 0;
             int yEnd = Math.Min(yIndex2, yIndex1 + maxDigits);
