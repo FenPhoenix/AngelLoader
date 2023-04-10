@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -111,7 +113,8 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using (var sr = new StreamReader(camModIni))
+        using (var fs = File_OpenReadFast(camModIni))
+        using (var sr = new StreamReaderCustom.SRC_Wrapper(fs, Encoding.UTF8, true, new StreamReaderCustom()))
         {
             /*
              Conforms to the way NewDark reads it:
@@ -122,7 +125,7 @@ internal static class GameConfigFiles
              - Comment lines start with ;
              - No section headers
             */
-            while (sr.ReadLine() is { } line)
+            while (sr.Reader.ReadLine() is { } line)
             {
                 if (line.IsEmpty()) continue;
 
