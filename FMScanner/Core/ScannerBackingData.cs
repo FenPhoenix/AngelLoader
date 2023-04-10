@@ -591,11 +591,6 @@ public sealed partial class Scanner
     private readonly Regex AuthorEmailRegex =
         new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
 
-    // This doesn't need to be a regex really, but it takes like 5.4 microseconds per FM, so, yeah
-    private readonly Regex NewGameStrTitleRegex =
-        new Regex(@"^skip_training\:\s*""(?<Title>.+)""",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
 #if FMScanner_FullCode
     // TODO: This one looks iffy though
     private readonly Regex VersionFirstNumberRegex =

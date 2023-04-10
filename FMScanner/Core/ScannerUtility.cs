@@ -485,6 +485,14 @@ internal static class Utility
 
     #endregion
 
+    internal static string ExtractFromQuotedSection(string line)
+    {
+        int i1 = line.IndexOf('"') + 1;
+        int i2 = line.IndexOf('\"', i1);
+
+        return i2 > i1 ? line.Substring(i1, i2 - i1) : "";
+    }
+
     #region GLML
 
     private enum GLMLTagType

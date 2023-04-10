@@ -3421,10 +3421,9 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < lines.Count; i++)
         {
             string lineT = lines[i].Trim();
-            Match match = NewGameStrTitleRegex.Match(lineT);
-            if (match.Success)
+            if (lineT.StartsWithI_Local("skip_training:"))
             {
-                string title = match.Groups["Title"].Value.Trim();
+                string title = Utility.ExtractFromQuotedSection(lineT);
                 if (title.IsEmpty()) continue;
 
                 // Do our best to ignore things that aren't titles
@@ -3461,12 +3460,6 @@ public sealed partial class Scanner : IDisposable
                 TitleFromN: "",
                 CampaignMissionNames: (List<string>?)null);
 
-        static string ExtractFromQuotedSection(string line)
-        {
-            int i;
-            return line.Substring(i = line.IndexOf('\"') + 1, line.IndexOf('\"', i) - i);
-        }
-
         static bool NameExistsInList(List<NameAndIndex> list, string value)
         {
             for (int i = 0; i < list.Count; i++)
@@ -3487,7 +3480,7 @@ public sealed partial class Scanner : IDisposable
                 int i;
                 titleNum = line.Substring(i = line.IndexOf('_') + 1, line.IndexOf(':') - i).Trim();
 
-                title = ExtractFromQuotedSection(line);
+                title = Utility.ExtractFromQuotedSection(line);
                 if (title.IsEmpty()) continue;
 
                 if (titleNum == "0") ret.TitleFrom0 = title;
