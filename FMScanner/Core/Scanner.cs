@@ -40,7 +40,6 @@ using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
 using static AL_Common.Logger;
-using static FMScanner.Utility;
 
 namespace FMScanner;
 
@@ -3606,7 +3605,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (tfLineDSpanLen >= lineSpanLen)
                 {
-                    StringCompareReturn strCmpResult = CompareToOrdinalIgnoreCase(tfLineDSpan.Slice(0, lineSpanLen), lineSpan);
+                    Utility.StringCompareReturn strCmpResult = Utility.CompareToOrdinalIgnoreCase(tfLineDSpan.Slice(0, lineSpanLen), lineSpan);
                     bool result;
                     if (strCmpResult.RequiresStringComparison)
                     {
