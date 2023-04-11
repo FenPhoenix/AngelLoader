@@ -219,6 +219,7 @@ public enum Game
     Unsupported
 }
 
+#if FMScanner_FullCode
 /// <summary>
 /// Whether the FM is a single mission or a campaign.
 /// </summary>
@@ -228,6 +229,7 @@ public enum FMType
     FanMission,
     Campaign
 }
+#endif
 
 [PublicAPI]
 public class FMToScan
@@ -267,12 +269,14 @@ public sealed class ScannedFMData
     private string _author = "";
     public string Author { get => _author; set => _author = value.Trim(); }
 
-    public FMType Type;
 #if FMScanner_FullCode
+    public FMType Type;
     public string[] IncludedMissions = Array.Empty<string>();
 #endif
     public Game Game;
+#if FMScanner_FullCode
     public string[] Languages = Array.Empty<string>();
+#endif
 #if FMScanner_FullCode
     public string Version = "";
     public bool? NewDarkRequired;

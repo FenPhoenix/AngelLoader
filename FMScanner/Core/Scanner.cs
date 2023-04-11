@@ -1080,7 +1080,11 @@ public sealed partial class Scanner : IDisposable
 
         bool fmIsT3 = fmData.Game == Game.Thief3;
 
-        fmData.Type = _usedMisFiles.Count > 1 ? FMType.Campaign : FMType.FanMission;
+        bool singleMission = _usedMisFiles.Count == 1;
+
+#if FMScanner_FullCode
+        fmData.Type = singleMission ? FMType.FanMission : FMType.Campaign;
+#endif
 
         fmData.MissionCount = _usedMisFiles.Count;
 
@@ -1391,7 +1395,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTags)
         {
-            if (fmData.Type == FMType.Campaign) SetMiscTag(fmData, "campaign");
+            if (!singleMission) SetMiscTag(fmData, "campaign");
 
             if (!fmData.Author.IsEmpty())
             {
@@ -4029,25 +4033,18 @@ public sealed partial class Scanner : IDisposable
         }
 
         // Sometimes extra languages are in zip files inside the FM archive
-        for (int i = 0; i < baseDirFiles.Count; i++)
+        for (int baseDirFileIndex = 0; baseDirFileIndex < baseDirFiles.Count; baseDirFileIndex++)
         {
-            string fn = baseDirFiles[i].Name;
+            string fn = baseDirFiles[baseDirFileIndex].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
             ReadOnlySpan<char> fnNoExt = fn.AsSpan(0, fn.LastIndexOf('.'));
 
-            // LINQ avoidance
-            for (int j = 0; j < SupportedLanguageCount; j++)
+            for (int langIndex = 0; langIndex < SupportedLanguageCount; langIndex++)
             {
-                string lang = SupportedLanguages[j];
-                if (fn.StartsWithI_Local(lang))
+                if (fn.StartsWithI_Local(SupportedLanguages[langIndex]))
                 {
-                    if (!LangStringsToEnums.TryGetValue(lang, out Language language))
-                    {
-                        continue;
-                    }
-
-                    langs |= language;
+                    langs |= LanguageIndexToLanguage((LanguageIndex)langIndex);
                 }
             }
 
