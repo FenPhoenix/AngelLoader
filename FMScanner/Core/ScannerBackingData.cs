@@ -772,7 +772,7 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex MarchVariationsRegex =
-        new Regex("M(ar(tch|r(s|z))|ärz)",
+        new Regex("M(ar(tch|s|z)|ärz)",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AprilVariationsRegex =
@@ -788,7 +788,7 @@ public sealed partial class Scanner
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex JulyVariationsRegex =
-        new Regex("Ju(l(ly|i))|ille(t|r)",
+        new Regex("Ju(l(ly|i)|ille(t|r))",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AugustVariationsRegex =
