@@ -289,6 +289,18 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool EqualsI_Local(this ReadOnlySpan<char> str1, string str2)
+    {
+        int str1Len = str1.Length;
+        int str2Len = str2.Length;
+
+        if (str1Len != str2Len) return false;
+
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1, str2.AsSpan());
+        return result.RequiresStringComparison ? str1.ToString().Equals(str2, OrdinalIgnoreCase) : result.Compare == 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool StartsWithI_Local(this string str1, string str2)
     {
         int str1Len = str1.Length;
@@ -301,15 +313,15 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EndsWithI_Local(this string str1, string str2)
+    internal static bool EndsWithI_Local(this ReadOnlySpan<char> str1, string str2)
     {
         int str1Len = str1.Length;
         int str2Len = str2.Length;
 
         if (str1Len < str2Len) return false;
 
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan().Slice(str1Len - str2Len), str2.AsSpan());
-        return result.RequiresStringComparison ? str1.EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.Slice(str1Len - str2Len), str2.AsSpan());
+        return result.RequiresStringComparison ? str1.ToString().EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
     }
 
     // Copied from .NET 7 and slightly modified

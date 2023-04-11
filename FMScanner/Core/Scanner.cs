@@ -2002,7 +2002,7 @@ public sealed partial class Scanner : IDisposable
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (fn.EndsWithI_Local(array[i]))
+                if (fn.AsSpan().EndsWithI_Local(array[i]))
                 {
                     return true;
                 }
@@ -3964,6 +3964,7 @@ public sealed partial class Scanner : IDisposable
     GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
         List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
     {
+        // @MEM: Recycle this
         var langs = new List<string>();
         bool englishIsUncertain = false;
 
@@ -4009,8 +4010,7 @@ public sealed partial class Scanner : IDisposable
             string fn = baseDirFiles[i].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
-            // @PERF_TODO: String allocation, but a large convenience
-            fn = fn.RemoveExtension();
+            ReadOnlySpan<char> fnNoExt = fn.AsSpan(0, fn.LastIndexOf('.'));
 
             // LINQ avoidance
             for (int j = 0; j < Languages.Length; j++)
@@ -4022,10 +4022,10 @@ public sealed partial class Scanner : IDisposable
             // "Italiano" will be caught by StartsWithI("italian")
 
             // Extra logic to account for whatever-style naming
-            if (fn.EqualsI_Local("rus") ||
-                fn.EndsWithI_Local("_ru") ||
-                fn.EndsWithI_Local("_rus") ||
-                RusRegex.Match(fn).Success ||
+            if (fnNoExt.EqualsI_Local("rus") ||
+                fnNoExt.EndsWithI_Local("_ru") ||
+                fnNoExt.EndsWithI_Local("_rus") ||
+                (fnNoExt.Length >= 4 && fnNoExt.EndsWithI_Local("RUS") && fnNoExt[fnNoExt.Length - 4].IsAsciiLower()) ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
                 langs.Add("russian");
@@ -4046,7 +4046,7 @@ public sealed partial class Scanner : IDisposable
             {
                 langs.Add("dutch");
             }
-            else if (fn.EqualsI_Local("huntext"))
+            else if (fnNoExt.EqualsI_Local("huntext"))
             {
                 langs.Add("hungarian");
             }
@@ -4054,6 +4054,13 @@ public sealed partial class Scanner : IDisposable
 
         if (langs.Count > 0)
         {
+            /*
+            @MEM(langs.Distinct().ToList()):
+            To remove this allocation, we don't even need a hash set, we could just mark off bools per-language
+            and add only if the bool is false or whatever
+            @MEM(Scanner GetLanguages()): In fact, we could actually just return language enum members.
+            We should get rid of the strings entirely.
+            */
             List<string> langsD = langs.Distinct().ToList();
             langsD.Sort();
             return (langsD, englishIsUncertain);
