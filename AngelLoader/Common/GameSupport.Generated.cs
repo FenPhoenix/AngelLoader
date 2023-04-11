@@ -1,6 +1,6 @@
 #define FenGen_GameSupportMainGenDest
 
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;

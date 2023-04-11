@@ -1,6 +1,6 @@
 #define FenGen_BuildDateDest
 
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 
 namespace AngelLoader.DataClasses;
 

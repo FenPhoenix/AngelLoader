@@ -152,7 +152,8 @@ internal static class LanguageSupport
         w.WL("/// <param name=\"language\"></param>");
         w.WL("public static " + Cache.LangsEnum.LanguageIndexName + " LanguageToLanguageIndex(" + Cache.LangsEnum.Name + " language)");
         w.WL("{");
-        w.WL("AssertR(language != " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangEnumNames[0] + ", nameof(language) + \" was out of range: \" + language);");
+        w.WL("// NOTE: Assert should go here, but we'd need to do a bunch of work to get it working with AL_Common so disable it for now");
+        w.WL("//AssertR(language != " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangEnumNames[0] + ", nameof(language) + \" was out of range: \" + language);");
         w.WL();
         w.WL("return language switch");
         w.WL("{");

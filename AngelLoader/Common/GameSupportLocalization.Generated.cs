@@ -1,6 +1,6 @@
 #define FenGen_LocalizedGameNameGetterDest
 
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.Global;
 
 namespace AngelLoader;

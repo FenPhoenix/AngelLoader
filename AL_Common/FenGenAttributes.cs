@@ -7,10 +7,10 @@ using JetBrains.Annotations;
 #pragma warning disable RCS1163 // Unused parameter.
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
 
-namespace AngelLoader;
+namespace AL_Common;
 
 [PublicAPI]
-internal static class FenGenAttributes
+public static class FenGenAttributes
 {
     /*
     IMPORTANT (Attributes):
@@ -34,7 +34,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenFMDataSourceClassAttribute : Attribute { }
+    public sealed class FenGenFMDataSourceClassAttribute : Attribute { }
 
     /// <summary>
     /// This attribute should be placed on the FMData ini read/write class. Only one instance of this
@@ -42,30 +42,30 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenFMDataDestClassAttribute : Attribute { }
+    public sealed class FenGenFMDataDestClassAttribute : Attribute { }
 
     /// <summary>
     /// The generator will ignore this field or property and will not generate any code from it.
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
-    internal sealed class FenGenIgnoreAttribute : Attribute { }
+    public sealed class FenGenIgnoreAttribute : Attribute { }
 
     /// <summary>
     /// The generator will create code to read this field, but not to write it.
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenDoNotWriteAttribute : Attribute { }
+    public sealed class FenGenDoNotWriteAttribute : Attribute { }
 
     /// <summary>
     /// If this field or property should have a different name in the ini file, you can specify that name here.
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenIniNameAttribute : Attribute
+    public sealed class FenGenIniNameAttribute : Attribute
     {
-        internal FenGenIniNameAttribute(string value) { }
+        public FenGenIniNameAttribute(string value) { }
     }
 
     /// <summary>
@@ -74,9 +74,9 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenNumericEmptyAttribute : Attribute
+    public sealed class FenGenNumericEmptyAttribute : Attribute
     {
-        internal FenGenNumericEmptyAttribute(long value) { }
+        public FenGenNumericEmptyAttribute(long value) { }
     }
 
     /// <summary>
@@ -88,9 +88,9 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenMaxDigitsAttribute : Attribute
+    public sealed class FenGenMaxDigitsAttribute : Attribute
     {
-        internal FenGenMaxDigitsAttribute(int value) { }
+        public FenGenMaxDigitsAttribute(int value) { }
     }
 
     /// <summary>
@@ -98,10 +98,10 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenListTypeAttribute : Attribute
+    public sealed class FenGenListTypeAttribute : Attribute
     {
         /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
-        internal FenGenListTypeAttribute(string value) { }
+        public FenGenListTypeAttribute(string value) { }
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenDoNotTrimValueAttribute : Attribute { }
+    public sealed class FenGenDoNotTrimValueAttribute : Attribute { }
 
     /// <summary>
     /// Hack: To be placed on DateTime fields that we don't have want to take the perf hit of doing anything<br/>
@@ -118,14 +118,14 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
+    public sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
     /// <summary>
     /// Hack: Special case to be placed on the readme encoding field only
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenReadmeEncodingAttribute : Attribute { }
+    public sealed class FenGenReadmeEncodingAttribute : Attribute { }
 
     /// <summary>
     /// Quick hack to tell FenGen not to substring the value from a key-value pair line, because it's going<br/>
@@ -133,7 +133,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenDoNotSubstringAttribute : Attribute { }
+    public sealed class FenGenDoNotSubstringAttribute : Attribute { }
 
     /// <summary>
     /// Hack: Tells FenGen to treat this Flags-enum field as if it's a single-value-at-a-time (non-flags)<br/>
@@ -141,7 +141,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    internal sealed class FenGenFlagsSingleAssignment : Attribute { }
+    public sealed class FenGenFlagsSingleAssignment : Attribute { }
 
     #endregion
 
@@ -153,7 +153,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenLocalizedGameNameGetterDestClassAttribute : Attribute { }
+    public sealed class FenGenLocalizedGameNameGetterDestClassAttribute : Attribute { }
 
     /// <summary>
     /// This attribute should be used on the localization class. Only one instance of this attribute should
@@ -161,7 +161,7 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
+    public sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
 
     /// <summary>
     /// Places a comment before the attached field or property.<br/>
@@ -170,10 +170,10 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenCommentAttribute : Attribute
+    public sealed class FenGenCommentAttribute : Attribute
     {
         /// <param name="comments">Each comment will be placed on a separate line.</param>
-        internal FenGenCommentAttribute(params string[] comments) { }
+        public FenGenCommentAttribute(params string[] comments) { }
     }
 
     /// <summary>
@@ -182,10 +182,10 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenBlankLineAttribute : Attribute
+    public sealed class FenGenBlankLineAttribute : Attribute
     {
-        internal FenGenBlankLineAttribute() { }
-        internal FenGenBlankLineAttribute(int numberOfBlankLines) { }
+        public FenGenBlankLineAttribute() { }
+        public FenGenBlankLineAttribute(int numberOfBlankLines) { }
     }
 
     /// <summary>
@@ -193,9 +193,9 @@ internal static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal sealed class FenGenGameSetAttribute : Attribute
+    public sealed class FenGenGameSetAttribute : Attribute
     {
-        internal FenGenGameSetAttribute(string getterName) { }
+        public FenGenGameSetAttribute(string getterName) { }
     }
 
     #endregion
@@ -204,20 +204,20 @@ internal static class FenGenAttributes
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenGameSupportMainGenDestClassAttribute : Attribute { }
+    public sealed class FenGenGameSupportMainGenDestClassAttribute : Attribute { }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Enum)]
-    internal sealed class FenGenGameEnumAttribute : Attribute
+    public sealed class FenGenGameEnumAttribute : Attribute
     {
-        internal FenGenGameEnumAttribute(string gameIndexEnumName) { }
+        public FenGenGameEnumAttribute(string gameIndexEnumName) { }
     }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
-    internal sealed class FenGenGameAttribute : Attribute
+    public sealed class FenGenGameAttribute : Attribute
     {
-        internal FenGenGameAttribute(string prefix, string steamId, string editorName) { }
+        public FenGenGameAttribute(string prefix, string steamId, string editorName) { }
     }
 
     #endregion
@@ -226,33 +226,33 @@ internal static class FenGenAttributes
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenLanguageSupportDestClassAttribute : Attribute { }
+    public sealed class FenGenLanguageSupportDestClassAttribute : Attribute { }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Enum)]
-    internal sealed class FenGenLanguageEnumAttribute : Attribute
+    public sealed class FenGenLanguageEnumAttribute : Attribute
     {
-        internal FenGenLanguageEnumAttribute(string languageIndexEnumName) { }
+        public FenGenLanguageEnumAttribute(string languageIndexEnumName) { }
     }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
-    internal sealed class FenGenLanguageAttribute : Attribute
+    public sealed class FenGenLanguageAttribute : Attribute
     {
-        internal FenGenLanguageAttribute(string langCodes, string translatedName) { }
+        public FenGenLanguageAttribute(string langCodes, string translatedName) { }
     }
 
     #endregion
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenBuildDateDestClassAttribute : Attribute { }
+    public sealed class FenGenBuildDateDestClassAttribute : Attribute { }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class FenGenCurrentYearDestClassAttribute : Attribute { }
+    public sealed class FenGenCurrentYearDestClassAttribute : Attribute { }
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
-    internal sealed class FenGenForceRemoveSizeAttribute : Attribute { }
+    public sealed class FenGenForceRemoveSizeAttribute : Attribute { }
 }

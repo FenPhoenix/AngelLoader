@@ -1,9 +1,9 @@
 ﻿#define FenGen_LanguageSupportSource
 
 using System;
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 
-namespace AngelLoader;
+namespace AL_Common;
 
 public static partial class LanguageSupport
 {
@@ -67,4 +67,6 @@ public static partial class LanguageSupport
             return false;
         }
     }
+
+    public static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) == flag;
 }

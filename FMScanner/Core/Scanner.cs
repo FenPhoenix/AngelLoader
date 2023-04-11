@@ -39,6 +39,7 @@ using JetBrains.Annotations;
 using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
+using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 
 namespace FMScanner;
@@ -264,10 +265,9 @@ public sealed partial class Scanner : IDisposable
 
         #region Array construction
 
-        int langsCount = Languages.Length;
-        Languages_FS_Lang_FS = new string[langsCount];
-        Languages_FS_Lang_Language_FS = new string[langsCount];
-        LanguagesC = new DictionaryI<string>(langsCount);
+        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
+        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
+        LanguagesC = new string[SupportedLanguageCount];
 
         #region FMFiles_TitlesStrLocations
 
@@ -277,26 +277,26 @@ public sealed partial class Scanner : IDisposable
         FMFiles_TitlesStrLocations[2] = "strings/titles.str";
         FMFiles_TitlesStrLocations[3] = "strings/title.str";
 
-        for (int i = 1; i < langsCount; i++)
+        for (int i = 1; i < SupportedLanguageCount; i++)
         {
-            string lang = Languages[i];
+            string lang = SupportedLanguages[i];
             FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (langsCount - 1)] = "strings/" + lang + "/title.str";
+            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
         }
 
         #endregion
 
         #region Languages
 
-        for (int i = 0; i < langsCount; i++)
+        for (int i = 0; i < SupportedLanguageCount; i++)
         {
-            string lang = Languages[i];
+            string lang = SupportedLanguages[i];
             Languages_FS_Lang_FS[i] = "/" + lang + "/";
             Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
 
             // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
             // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
-            LanguagesC.Add(lang, (char)(lang[0] - 32) + lang.Substring(1));
+            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
         }
 
         #endregion
@@ -1230,14 +1230,14 @@ public sealed partial class Scanner : IDisposable
         if (!fmIsT3)
         {
             // This is here because it needs to come after the readmes are cached
-        #region NewDark minimum required version
+            #region NewDark minimum required version
 
             if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
             {
                 fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
             }
 
-        #endregion
+            #endregion
         }
 #endif
 
@@ -1361,10 +1361,28 @@ public sealed partial class Scanner : IDisposable
                 _scanOptions.ScanTags)
             {
                 var getLangs = GetLanguages(_baseDirFiles, _booksDirFiles, _intrfaceDirFiles, _stringsDirFiles);
-                fmData.Languages = getLangs.Langs.ToArray();
-                if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
+                if (getLangs.Langs > Language.Default) SetLangTags(fmData, getLangs.Langs, getLangs.EnglishIsUncertain);
 #if FMScanner_FullCode
-                if (!_scanOptions.ScanLanguages) fmData.Languages = Array.Empty<string>();
+                if (!_scanOptions.ScanLanguages)
+                {
+                    fmData.Languages = Array.Empty<string>();
+                }
+                else
+                {
+                    var langsList = new List<string>(SupportedLanguageCount);
+
+                    for (int i = 0; i < SupportedLanguageCount; i++)
+                    {
+                        Language language = LanguageIndexToLanguage((LanguageIndex)i);
+                        if (getLangs.Langs.HasFlagFast(language))
+                        {
+                            langsList.Add(SupportedLanguages[i]);
+                        }
+                    }
+
+                    fmData.Languages = langsList.ToArray();
+                    Array.Sort(fmData.Languages);
+                }
 #endif
             }
 
@@ -1891,24 +1909,31 @@ public sealed partial class Scanner : IDisposable
 
     #region Set tags
 
-    private void SetLangTags(ScannedFMData fmData, bool englishIsUncertain)
+    private void SetLangTags(ScannedFMData fmData, Language langs, bool englishIsUncertain)
     {
-        if (fmData.Languages.Length == 0) return;
+        if (langs == Language.Default) return;
 
         if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
-        for (int i = 0; i < fmData.Languages.Length; i++)
+        for (int i = 0; i < SupportedLanguageCount; i++)
         {
-            string lang = fmData.Languages[i];
+            LanguageIndex languageIndex = (LanguageIndex)i;
+
+            if (!langs.HasFlagFast(LanguageIndexToLanguage(languageIndex)))
+            {
+                continue;
+            }
+
+            string lang = SupportedLanguages[i];
 
             // This all depends on langs being lowercase!
             Debug.Assert(lang == lang.ToLowerInvariant(),
                 "lang != lang.ToLowerInvariant() - lang is not lowercase");
 
-            if (englishIsUncertain && lang.EqualsI_Local("english")) continue;
+            if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
 
             if (fmData.TagsString.Contains(lang))
             {
-                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + LanguagesC[lang]);
+                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + LanguagesC[i]);
             }
 
             // PERF: 5ms over the whole 1098 set, whatever
@@ -1916,7 +1941,7 @@ public sealed partial class Scanner : IDisposable
             if (match.Success) continue;
 
             if (fmData.TagsString != "") fmData.TagsString += ", ";
-            fmData.TagsString += "language:" + LanguagesC[lang];
+            fmData.TagsString += "language:" + LanguagesC[i];
         }
     }
 
@@ -3960,12 +3985,11 @@ public sealed partial class Scanner : IDisposable
     }
 #endif
 
-    private (List<string> Langs, bool EnglishIsUncertain)
+    private (Language Langs, bool EnglishIsUncertain)
     GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
         List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
     {
-        // @MEM: Recycle this
-        var langs = new List<string>();
+        Language langs = Language.Default;
         bool englishIsUncertain = false;
 
         for (int dirIndex = 0; dirIndex < 3; dirIndex++)
@@ -3977,9 +4001,9 @@ public sealed partial class Scanner : IDisposable
                 _ => stringsDirFiles
             };
 
-            for (int langIndex = 0; langIndex < Languages.Length; langIndex++)
+            for (int langIndex = 0; langIndex < SupportedLanguageCount; langIndex++)
             {
-                string lang = Languages[langIndex];
+                Language language = LanguageIndexToLanguage((LanguageIndex)langIndex);
                 for (int dfIndex = 0; dfIndex < dirFiles.Count; dfIndex++)
                 {
                     NameAndIndex df = dirFiles[dfIndex];
@@ -3991,16 +4015,16 @@ public sealed partial class Scanner : IDisposable
                         (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
                          dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
                     {
-                        langs.Add(lang);
+                        langs |= language;
                         break;
                     }
                 }
             }
         }
 
-        if (!langs.ContainsI("english"))
+        if (!langs.HasFlagFast(Language.English))
         {
-            langs.Add("english");
+            langs |= Language.English;
             englishIsUncertain = true;
         }
 
@@ -4013,10 +4037,18 @@ public sealed partial class Scanner : IDisposable
             ReadOnlySpan<char> fnNoExt = fn.AsSpan(0, fn.LastIndexOf('.'));
 
             // LINQ avoidance
-            for (int j = 0; j < Languages.Length; j++)
+            for (int j = 0; j < SupportedLanguageCount; j++)
             {
-                string lang = Languages[j];
-                if (fn.StartsWithI_Local(lang)) langs.Add(lang);
+                string lang = SupportedLanguages[j];
+                if (fn.StartsWithI_Local(lang))
+                {
+                    if (!LangStringsToEnums.TryGetValue(lang, out Language language))
+                    {
+                        continue;
+                    }
+
+                    langs |= language;
+                }
             }
 
             // "Italiano" will be caught by StartsWithI("italian")
@@ -4028,47 +4060,33 @@ public sealed partial class Scanner : IDisposable
                 (fnNoExt.Length >= 4 && fnNoExt.EndsWithI_Local("RUS") && fnNoExt[fnNoExt.Length - 4].IsAsciiLower()) ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
-                langs.Add("russian");
+                langs |= Language.Russian;
             }
             else if (fn.ContainsI("Francais"))
             {
-                langs.Add("french");
+                langs |= Language.French;
             }
             else if (fn.ContainsI("Deutsch") || fn.ContainsI("Deutch"))
             {
-                langs.Add("german");
+                langs |= Language.German;
             }
             else if (fn.ContainsI("Espanol"))
             {
-                langs.Add("spanish");
+                langs |= Language.Spanish;
             }
             else if (fn.ContainsI("Nederlands"))
             {
-                langs.Add("dutch");
+                langs |= Language.Dutch;
             }
             else if (fnNoExt.EqualsI_Local("huntext"))
             {
-                langs.Add("hungarian");
+                langs |= Language.Hungarian;
             }
         }
 
-        if (langs.Count > 0)
-        {
-            /*
-            @MEM(langs.Distinct().ToList()):
-            To remove this allocation, we don't even need a hash set, we could just mark off bools per-language
-            and add only if the bool is false or whatever
-            @MEM(Scanner GetLanguages()): In fact, we could actually just return language enum members.
-            We should get rid of the strings entirely.
-            */
-            List<string> langsD = langs.Distinct().ToList();
-            langsD.Sort();
-            return (langsD, englishIsUncertain);
-        }
-        else
-        {
-            return (EnglishOnly, EnglishIsUncertain: true);
-        }
+        return langs > Language.Default
+            ? (Langs: langs, EnglishIsUncertain: englishIsUncertain)
+            : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
     private (bool? NewDarkRequired, Game Game)

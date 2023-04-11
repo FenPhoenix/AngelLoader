@@ -302,29 +302,9 @@ public sealed partial class Scanner
 
     #region Languages
 
-    // Perf micro-optimization: don't create a new list if we're only returning English
-    private readonly List<string> EnglishOnly = new() { "english" };
-
-    // Single source of truth for language names (but we use this to build more arrays based on it for perf)
-    private readonly string[]
-    Languages =
-    {
-        "english",
-        "czech",
-        "dutch",
-        "french",
-        "german",
-        "hungarian",
-        "italian",
-        "japanese",
-        "polish",
-        "russian",
-        "spanish"
-    };
-
     private readonly string[] Languages_FS_Lang_FS;
     private readonly string[] Languages_FS_Lang_Language_FS;
-    private readonly DictionaryI<string> LanguagesC;
+    private readonly string[] LanguagesC;
 
     #endregion
 

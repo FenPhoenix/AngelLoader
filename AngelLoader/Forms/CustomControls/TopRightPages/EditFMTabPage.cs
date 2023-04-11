@@ -8,7 +8,7 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.LanguageSupport;
+using static AL_Common.LanguageSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;

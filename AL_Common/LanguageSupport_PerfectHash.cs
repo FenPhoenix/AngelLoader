@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace AngelLoader;
+namespace AL_Common;
 
 // This is so we can do FAST allocation-free deserialization of the comma-separated languages string.
 // We simply ensure internal language names are always stored and written out in ascii lowercase, so this

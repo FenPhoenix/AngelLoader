@@ -1,7 +1,7 @@
 ﻿#define FenGen_LocalizationSource
 
 using System.Diagnostics.CodeAnalysis;
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 
 namespace AngelLoader.DataClasses;
 

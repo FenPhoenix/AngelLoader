@@ -2,7 +2,7 @@
 
 using System;
 using AngelLoader.DataClasses;
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.Global;
 using static AngelLoader.Utils;
 

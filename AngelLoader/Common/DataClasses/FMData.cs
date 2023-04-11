@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using static AL_Common.Common;
-using static AngelLoader.FenGenAttributes;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.GameSupport;
-using static AngelLoader.LanguageSupport;
+using static AL_Common.LanguageSupport;
 
 namespace AngelLoader.DataClasses;
 

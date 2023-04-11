@@ -5,10 +5,9 @@
 
 using System;
 using static AL_Common.Common;
-using static AngelLoader.FenGenAttributes;
-using static AngelLoader.Utils;
+using static AL_Common.FenGenAttributes;
 
-namespace AngelLoader;
+namespace AL_Common;
 
 [FenGenLanguageSupportDestClass]
 public static partial class LanguageSupport
@@ -118,7 +117,8 @@ public static partial class LanguageSupport
     /// <param name="language"></param>
     public static LanguageIndex LanguageToLanguageIndex(Language language)
     {
-        AssertR(language != Language.Default, nameof(language) + " was out of range: " + language);
+        // NOTE: Assert should go here, but we'd need to do a bunch of work to get it working with AL_Common so disable it for now
+        //AssertR(language != Language.Default, nameof(language) + " was out of range: " + language);
 
         return language switch
         {

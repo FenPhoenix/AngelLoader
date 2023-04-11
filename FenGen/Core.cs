@@ -109,7 +109,7 @@ internal static class Cache
     #endregion
 
     private static List<string>? _csFiles;
-    internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
+    internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALSolutionPath, "*.cs", SearchOption.AllDirectories).ToList();
 
     internal static readonly List<DesignerCSFile> DesignerCSFiles = new();
 

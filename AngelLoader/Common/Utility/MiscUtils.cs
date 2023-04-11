@@ -16,7 +16,7 @@ using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.LanguageSupport;
+using static AL_Common.LanguageSupport;
 using static AngelLoader.NativeCommon;
 
 namespace AngelLoader;
