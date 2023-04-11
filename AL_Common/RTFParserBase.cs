@@ -673,6 +673,12 @@ public abstract partial class RTFParserBase
             return true;
         }
 
+        /*
+        @MEM(Rtf FontEntry name char[9]):
+        We could use just one char buffer and fill it with the name, then when we're done we convert it to a
+        SymbolFont enum and set it on the top font entry. Maybe we could even detect as we fill it out if it
+        can't be a supported symbol font name and early-out with setting SymbolFont.None right there.
+        */
         public void AppendNameChar(char c)
         {
             if (!_nameDone && _nameCharPos < _nameMaxLength)
