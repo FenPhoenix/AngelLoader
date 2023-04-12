@@ -297,17 +297,14 @@ internal static class Paths
             {
                 try
                 {
-                    RegistryKey? regKey = Registry.CurrentUser
-                        .OpenSubKey("SOFTWARE")?
-                        .OpenSubKey("VoiceActorWare")?
-                        .OpenSubKey("Thief Buddy");
+                    object? tbInstallLocationKey = Registry.GetValue(
+                        keyName: @"HKEY_CURRENT_USER\SOFTWARE\VoiceActorWare\Thief Buddy",
+                        valueName: "InstallLocation",
+                        defaultValue: -1);
 
-                    if (regKey != null)
+                    if (tbInstallLocationKey is string installLocation)
                     {
-                        object? regVal = regKey.GetValue("InstallLocation", defaultValue: -1);
-                        return regVal is not (null or -1) && regVal is string installLocation
-                            ? Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe")
-                            : "";
+                        return Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe");
                     }
                 }
                 catch
