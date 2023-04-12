@@ -289,7 +289,7 @@ internal static class Paths
     #region Thief Buddy
 
     private static readonly object _thiefBuddyLock = new();
-    internal static string ThiefBuddyDefaultExePath
+    internal static string ThiefBuddyExePath
     {
         get
         {

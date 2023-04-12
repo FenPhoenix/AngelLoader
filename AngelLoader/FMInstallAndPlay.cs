@@ -660,7 +660,7 @@ internal static class FMInstallAndPlay
             return true;
         }
 
-        string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
+        string thiefBuddyExe = Paths.ThiefBuddyExePath;
 
         if (thiefBuddyExe.IsWhiteSpace() || !File.Exists(thiefBuddyExe))
         {

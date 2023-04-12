@@ -1708,7 +1708,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     /// </summary>
     private void _UpdateThiefBuddyExistence_CheckExistence()
     {
-        string thiefBuddyExe = Paths.ThiefBuddyDefaultExePath;
+        string thiefBuddyExe = Paths.ThiefBuddyExePath;
         _thiefBuddyConsideredToExist = !thiefBuddyExe.IsWhiteSpace() && File.Exists(thiefBuddyExe);
     }
 
