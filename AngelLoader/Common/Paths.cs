@@ -335,24 +335,12 @@ internal static class Paths
             // Tested on Win7 Ultimate 64 and Win10 Pro 64:
             // Admin and non-Admin accounts can both read this key
 
-            // @X64 (SneakyOptions.ini reg key)
-            // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
-            // to do so in the future.
-            object? regKey = Registry.GetValue(
-                keyName: !Environment.Is64BitProcess
-                    // If we're x86 Win/x86 app OR x64 Win/x86 app, then this is the right path. On x86 Win,
-                    // this is the actual registry path, and on x64 Win/x86 app, this will redirect to the
-                    // actual path (which is the same except "Wow6432Node\" is inserted after "Software\")
-                    ? @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows"
-                    // If we're x64 Win/x64 app, then \Software WON'T redirect to Software\Wow6432Node, so we
-                    // have to do it ourselves.
-                    : @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Ion Storm\Thief - Deadly Shadows",
-                valueName: "SaveGamePath",
-                defaultValue: -1);
+            using RegistryKey? hklm = (RegistryKey?)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            using RegistryKey? tdsKey = hklm?.OpenSubKey(@"Software\Ion Storm\Thief - Deadly Shadows");
 
             // Must check for null, because a null return means "path not found", while a default value return
             // means "key name not found". Jank.
-            if (regKey is not (null or -1) && regKey is string regKeyStr)
+            if (tdsKey?.GetValue("SaveGamePath", defaultValue: -1) is string regKeyStr)
             {
                 string soIni;
                 try
