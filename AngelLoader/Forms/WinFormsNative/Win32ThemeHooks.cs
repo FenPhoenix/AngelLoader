@@ -188,19 +188,13 @@ internal static class Win32ThemeHooks
 
         if (!_disableHookedTheming)
         {
-            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar])
+            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar] && ScrollBarEnabled())
             {
-                if (ScrollBarEnabled())
-                {
-                    succeeded = ScrollBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
-                }
+                succeeded = ScrollBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
             }
-            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip])
+            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip] && ToolTipEnabled())
             {
-                if (ToolTipEnabled())
-                {
-                    succeeded = ToolTip_TryDrawThemeBackground(hdc, iPartId, ref pRect);
-                }
+                succeeded = ToolTip_TryDrawThemeBackground(hdc, iPartId, ref pRect);
             }
             else if (hTheme == _hThemes[(int)RenderedControl.TreeView])
             {
@@ -227,19 +221,13 @@ internal static class Win32ThemeHooks
 
         if (!_disableHookedTheming)
         {
-            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar])
+            if (hTheme == _hThemes[(int)RenderedControl.ScrollBar] && ScrollBarEnabled())
             {
-                if (ScrollBarEnabled())
-                {
-                    succeeded = ScrollBar_TryGetThemeColor(iPartId, iPropId, out pColor);
-                }
+                succeeded = ScrollBar_TryGetThemeColor(iPartId, iPropId, out pColor);
             }
-            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip])
+            else if (hTheme == _hThemes[(int)RenderedControl.ToolTip] && ToolTipEnabled())
             {
-                if (ToolTipEnabled())
-                {
-                    succeeded = ToolTip_TryGetThemeColor(iPropId, out pColor);
-                }
+                succeeded = ToolTip_TryGetThemeColor(iPropId, out pColor);
             }
         }
 
@@ -250,9 +238,8 @@ internal static class Win32ThemeHooks
 
     private static int GetSysColor_Hooked(int nIndex)
     {
-        if (!_disableHookedTheming && Global.Config.DarkMode)
-        {
-            return SysColorOverride switch
+        return !_disableHookedTheming && Global.Config.DarkMode
+            ? SysColorOverride switch
             {
                 Override.Full => nIndex switch
                 {
@@ -280,19 +267,14 @@ internal static class Win32ThemeHooks
                 _ => nIndex == COLOR_3DFACE
                     ? ColorTranslator.ToWin32(DarkColors.DarkBackground)
                     : GetSysColor_Original!(nIndex)
-            };
-        }
-        else
-        {
-            return GetSysColor_Original!(nIndex);
-        }
+            }
+            : GetSysColor_Original!(nIndex);
     }
 
     private static IntPtr GetSysColorBrush_Hooked(int nIndex)
     {
-        if (!_disableHookedTheming && Global.Config.DarkMode)
-        {
-            return SysColorOverride switch
+        return !_disableHookedTheming && Global.Config.DarkMode
+            ? SysColorOverride switch
             {
                 Override.Full => nIndex switch
                 {
@@ -318,12 +300,8 @@ internal static class Win32ThemeHooks
                 _ => nIndex == COLOR_3DFACE
                     ? SysColorBrush_DarkBackground
                     : GetSysColorBrush_Original!(nIndex)
-            };
-        }
-        else
-        {
-            return GetSysColorBrush_Original!(nIndex);
-        }
+            }
+            : GetSysColorBrush_Original!(nIndex);
     }
 
     #endregion
