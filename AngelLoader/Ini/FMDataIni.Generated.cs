@@ -9,8 +9,8 @@ using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.FenGenAttributes;
-using static AngelLoader.GameSupport;
 using static AL_Common.LanguageSupport;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
