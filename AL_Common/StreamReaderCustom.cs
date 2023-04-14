@@ -24,6 +24,18 @@ public sealed class StreamReaderCustom
         public readonly StreamReaderCustom Reader;
 
         /// <summary>
+        /// UTF8 version to avoid the encoding allocation batch stuff when we just want the cached StringBuilder.
+        /// The stream will be disposed when this struct is disposed.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="sr"></param>
+        public SRC_Wrapper(Stream stream, StreamReaderCustom sr)
+        {
+            Reader = sr;
+            sr.Init(stream, Encoding.UTF8, true, encodingCruftEnabled: false);
+        }
+
+        /// <summary>
         /// The stream will be disposed when this struct is disposed.
         /// </summary>
         /// <param name="stream"></param>
@@ -33,7 +45,7 @@ public sealed class StreamReaderCustom
         public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks);
+            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true);
         }
 
         public void Dispose() => Reader.DeInit();
@@ -48,18 +60,11 @@ public sealed class StreamReaderCustom
     // Allocated stuff
     private Encoding _encoding = null!;
 
-    private readonly Dictionary<Encoding, Decoder> _decoders = new(_knownEncodingCount);
+    private Dictionary<Encoding, Decoder>? _decoders;
     private Decoder _decoder = null!;
 
     private int _maxCharsPerBuffer;
-    private readonly Dictionary<int, char[]> _charBuffers = new(10)
-    {
-        { 1024, new char[1024] },
-        { 1025, new char[1025] },
-        { 513, new char[513] },
-        { 514, new char[514] },
-        { 1027, new char[1027] }
-    };
+    private Dictionary<int, char[]>? _charBuffers;
     private char[] _charBuffer = Array.Empty<char>();
 
     private int _charPos;
@@ -69,7 +74,7 @@ public sealed class StreamReaderCustom
 
     private bool _detectEncoding;
 
-    private readonly Dictionary<Encoding, byte[]> _perEncodingPreambles = new(_knownEncodingCount);
+    private Dictionary<Encoding, byte[]>? _perEncodingPreambles;
     private byte[] _preamble = Array.Empty<byte>();
 
     private bool _checkPreamble;
@@ -80,34 +85,65 @@ public sealed class StreamReaderCustom
 
     private const int _defaultBufferSize = 1024;
 
-    public void Init(
+    private void Init(
       Stream stream,
       Encoding encoding,
-      bool detectEncodingFromByteOrderMarks)
+      bool detectEncodingFromByteOrderMarks,
+      bool encodingCruftEnabled)
     {
         _stream = stream;
 
         _encoding = encoding;
 
-        if (_decoders.TryGetValue(encoding, out Decoder decoder))
+        _maxCharsPerBuffer = encoding.GetMaxCharCount(_defaultBufferSize);
+
+        if (encodingCruftEnabled)
         {
-            _decoder = decoder;
+            _decoders ??= new(_knownEncodingCount);
+            if (_decoders.TryGetValue(encoding, out Decoder decoder))
+            {
+                _decoder = decoder;
+            }
+            else
+            {
+                _decoder = encoding.GetDecoder();
+                _decoders[encoding] = _decoder;
+            }
+
+            _charBuffers ??= new(10)
+            {
+                { 1024, new char[1024] },
+                { 1025, new char[1025] },
+                { 513, new char[513] },
+                { 514, new char[514] },
+                { 1027, new char[1027] }
+            };
+            if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
+            {
+                _charBuffer = maxCharsBuffer;
+            }
+            else
+            {
+                _charBuffer = new char[_maxCharsPerBuffer];
+                _charBuffers[_maxCharsPerBuffer] = _charBuffer;
+            }
+
+            _perEncodingPreambles ??= new(_knownEncodingCount);
+            if (_perEncodingPreambles.TryGetValue(encoding, out byte[] preamble))
+            {
+                _preamble = preamble;
+            }
+            else
+            {
+                _preamble = encoding.GetPreamble();
+                _perEncodingPreambles[encoding] = _preamble;
+            }
         }
         else
         {
             _decoder = encoding.GetDecoder();
-            _decoders[encoding] = _decoder;
-        }
-
-        _maxCharsPerBuffer = encoding.GetMaxCharCount(_defaultBufferSize);
-        if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
-        {
-            _charBuffer = maxCharsBuffer;
-        }
-        else
-        {
             _charBuffer = new char[_maxCharsPerBuffer];
-            _charBuffers[_maxCharsPerBuffer] = _charBuffer;
+            _preamble = encoding.GetPreamble();
         }
 
         _charPos = 0;
@@ -116,16 +152,6 @@ public sealed class StreamReaderCustom
         _byteLen = 0;
 
         _detectEncoding = detectEncodingFromByteOrderMarks;
-
-        if (_perEncodingPreambles.TryGetValue(encoding, out byte[] preamble))
-        {
-            _preamble = preamble;
-        }
-        else
-        {
-            _preamble = encoding.GetPreamble();
-            _perEncodingPreambles[encoding] = _preamble;
-        }
 
         _checkPreamble = _preamble.Length != 0;
 #if ENABLE_UNUSED

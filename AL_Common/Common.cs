@@ -864,7 +864,7 @@ public static class Common
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), Encoding.UTF8, true, new StreamReaderCustom());
+        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
