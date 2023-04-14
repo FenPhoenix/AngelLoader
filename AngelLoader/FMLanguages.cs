@@ -6,10 +6,10 @@ using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
+using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AL_Common.LanguageSupport;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -48,7 +48,11 @@ internal static class FMLanguages
         string sLanguage;
         bool bForceLanguage;
 
-        var (_, fmLanguage, _, _, _) = GameConfigFiles.GetInfoFromCamModIni(Config.GetGamePath(game), langOnly: true);
+        var (_, fmLanguage, _, _, _, _) =
+            GameConfigFiles.GetInfoFromCamModIni(
+                Config.GetGamePath(game),
+                langOnly: true,
+                returnAllLines: false);
 
         // bForceLanguage gets set to something specific in every possible case, effectively meaning the
         // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?

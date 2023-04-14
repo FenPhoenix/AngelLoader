@@ -24,10 +24,10 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
+using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AL_Common.LanguageSupport;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
@@ -236,8 +236,7 @@ internal static class Core
                 string gameExe = Config.GetGameExe(gameIndex);
                 if (!gameExe.IsEmpty() && File.Exists(gameExe))
                 {
-                    errors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                    GameConfigFiles.FixCharacterDetailLine(gameIndex);
+                    errors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: true, doCharacterDetailFix: true);
                 }
             }
 
@@ -665,7 +664,8 @@ internal static class Core
     /// </summary>
     /// <param name="gameIndex"></param>
     /// <param name="storeConfigInfo"></param>
-    private static Error SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
+    /// <param name="doCharacterDetailFix"></param>
+    private static Error SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo, bool doCharacterDetailFix = false)
     {
         Error error = Error.None;
         string gameExe = Config.GetGameExe(gameIndex);
@@ -689,13 +689,14 @@ internal static class Core
         if (GameIsDark(gameIndex))
         {
             var data = gameExeSpecified
-                ? GameConfigFiles.GetInfoFromCamModIni(gamePath)
+                ? GameConfigFiles.GetInfoFromCamModIni(gamePath, langOnly: false, returnAllLines: true)
                 : (
                     FMsPath: "",
                     FMLanguage: "",
                     FMLanguageForced: false,
                     FMSelectorLines: new List<string>(),
-                    AlwaysShowLoader: false
+                    AlwaysShowLoader: false,
+                    AllLines: null
                 );
 
             Config.SetFMInstallPath(gameIndex, data.FMsPath);
@@ -766,9 +767,9 @@ internal static class Core
                 }
             }
 
-            if (!gamePath.IsEmpty() && Directory.Exists(gamePath))
+            if (!gamePath.IsEmpty() && data.AllLines != null && Directory.Exists(gamePath))
             {
-                (bool success, mods) = GameConfigFiles.GetGameMods(gameIndex);
+                (bool success, mods) = GameConfigFiles.GetGameMods(data.AllLines);
                 if (success)
                 {
                     for (int i = 0; i < mods.Count; i++)
@@ -807,6 +808,11 @@ internal static class Core
                 {
                     configMods.Add(tempList[i]);
                 }
+            }
+
+            if (doCharacterDetailFix)
+            {
+                GameConfigFiles.FixCharacterDetailLine(gameIndex, data.AllLines);
             }
         }
         else

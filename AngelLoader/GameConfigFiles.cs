@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -67,8 +66,8 @@ internal static class GameConfigFiles
 
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
-                     List<string> FMSelectorLines, bool AlwaysShowLoader)
-    GetInfoFromCamModIni(string gamePath, bool langOnly = false)
+                     List<string> FMSelectorLines, bool AlwaysShowLoader, List<string>? AllLines)
+    GetInfoFromCamModIni(string gamePath, bool langOnly, bool returnAllLines)
     {
         string CreateAndReturnFMsPath()
         {
@@ -93,12 +92,14 @@ internal static class GameConfigFiles
         // @BetterErrors: Throw up dialog if not found, cause that means we're OldDark or broken.
         if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
         {
-            return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
+            return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false, null);
         }
 
         string path = "";
         string fm_language = "";
         bool fm_language_forced = false;
+
+        List<string>? retLines = returnAllLines ? new List<string>() : null;
 
         /*
         TODO: Convert this to ReadAllLines in advance style like everything else
@@ -126,6 +127,8 @@ internal static class GameConfigFiles
             */
             while (sr.Reader.ReadLine() is { } line)
             {
+                retLines?.Add(line);
+
                 if (line.IsEmpty()) continue;
 
                 line = line.TrimStart();
@@ -160,7 +163,7 @@ internal static class GameConfigFiles
 
         if (langOnly)
         {
-            return ("", fm_language, fm_language_forced, new List<string>(), false);
+            return ("", fm_language, fm_language_forced, new List<string>(), false, retLines);
         }
 
         if (PathIsRelative(path))
@@ -171,12 +174,12 @@ internal static class GameConfigFiles
             }
             catch
             {
-                return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
+                return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
             }
         }
 
         return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
-            fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
+            fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
     }
 
     // @CAN_RUN_BEFORE_VIEW_INIT
@@ -344,7 +347,7 @@ internal static class GameConfigFiles
     normal circumstances.
     @CAN_RUN_BEFORE_VIEW_INIT
     */
-    internal static void FixCharacterDetailLine(GameIndex gameIndex)
+    internal static void FixCharacterDetailLine(GameIndex gameIndex, List<string>? camModIniLines = null)
     {
         if (gameIndex is not GameIndex.Thief1 and not GameIndex.Thief2) return;
 
@@ -354,16 +357,26 @@ internal static class GameConfigFiles
 
         if (gamePath.IsEmpty()) return;
 
-        static void Run(string gamePath, string fileName, bool removeAll)
+        static void Run(string gamePath, string fileName, bool removeAll, List<string>? fileLines = null)
         {
             if (!TryCombineFilePathAndCheckExistence(gamePath, fileName, out string cfgFile))
             {
                 return;
             }
 
-            if (!TryReadAllLines(cfgFile, out var lines))
+            List<string>? lines;
+            if (fileLines == null)
             {
-                return;
+                if (!TryReadAllLines(cfgFile, out lines))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                // We're modifying the list, so deep copy it
+                lines = new List<string>(fileLines.Count);
+                lines.AddRange(fileLines);
             }
 
             bool atLeastOneCharacterDetailOneLineFound = false;
@@ -405,7 +418,7 @@ internal static class GameConfigFiles
 
         Run(gamePath, Paths.CamCfg, removeAll: false);
         Run(gamePath, Paths.CamExtCfg, removeAll: true);
-        Run(gamePath, Paths.CamModIni, removeAll: true);
+        Run(gamePath, Paths.CamModIni, removeAll: true, camModIniLines);
     }
 
     // @BetterErrors(SetCamCfgLanguage): Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
@@ -830,25 +843,9 @@ internal static class GameConfigFiles
     #endregion
 
     internal static (bool Success, List<Mod> Mods)
-    GetGameMods(GameIndex gameIndex)
+    GetGameMods(List<string> lines)
     {
         var list = new List<Mod>();
-
-        if (!GameSupportsMods(gameIndex)) return (false, list);
-
-        string gamePath = Config.GetGamePath(gameIndex);
-
-        if (gamePath.IsEmpty()) return (false, list);
-
-        if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
-        {
-            return (false, list);
-        }
-
-        if (!TryReadAllLines(camModIni, out var lines))
-        {
-            return (false, list);
-        }
 
         int modPathLastIndex = -1;
         int uberModPathLastIndex = -1;

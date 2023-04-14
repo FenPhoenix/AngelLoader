@@ -1,5 +1,3 @@
-using System;
-
 namespace SharpCompress;
 
 internal static class Utility
