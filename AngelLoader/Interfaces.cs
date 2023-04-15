@@ -202,11 +202,11 @@ public interface IView : ISettingsChangeableView
 
     void ShowFMsListZoomButtons(bool visible);
 
-    void ShowInstallUninstallButton(bool enabled, bool startup = false);
+    void ShowInstallUninstallButton(bool enabled);
 
-    void ShowWebSearchButton(bool enabled, bool startup = false);
+    void ShowWebSearchButton(bool enabled);
 
-    void ShowExitButton(bool enabled, bool startup = false);
+    void ShowExitButton(bool enabled);
 
     #endregion
 

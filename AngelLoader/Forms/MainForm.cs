@@ -1013,9 +1013,9 @@ public sealed partial class MainForm : DarkFormBase,
 
         SetPlayOriginalGameControlsState();
 
-        if (!Config.HideUninstallButton) ShowInstallUninstallButton(true, startup: true);
-        if (!Config.HideExitButton) ShowExitButton(true, startup: true);
-        if (!Config.HideWebSearchButton) ShowWebSearchButton(true, startup: true);
+        if (!Config.HideUninstallButton) ShowInstallUninstallButton(true);
+        if (!Config.HideExitButton) ShowExitButton(true);
+        if (!Config.HideWebSearchButton) ShowWebSearchButton(true);
 
         TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
         if (Config.TopRightPanelCollapsed)
@@ -4151,10 +4151,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Install/Play buttons
 
-    public void ShowInstallUninstallButton(bool enabled, bool startup = false)
-    {
-        InstallUninstallFMLLButton.SetVisible(enabled);
-    }
+    public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMLLButton.SetVisible(enabled);
 
     #region Play without FM
 
@@ -4296,10 +4293,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    public void ShowWebSearchButton(bool enabled, bool startup = false)
-    {
-        Lazy_WebSearchButton.SetVisible(enabled);
-    }
+    public void ShowWebSearchButton(bool enabled) => Lazy_WebSearchButton.SetVisible(enabled);
 
     internal void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetMainSelectedFM().Title);
 
@@ -4307,10 +4301,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Right side
 
-    public void ShowExitButton(bool enabled, bool startup = false)
-    {
-        ExitLLButton.SetVisible(enabled);
-    }
+    public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
 
     #endregion
 
