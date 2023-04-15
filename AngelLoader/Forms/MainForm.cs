@@ -1534,9 +1534,9 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if (FMsDGV.Focused)
             {
-                if (Core.SelectedFMIsPlayable(out FanMission? fm))
+                if (Core.SelectedFMIsPlayable(out FanMission? fm, out GameIndex gameIndex))
                 {
-                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, gameIndex, askConfIfRequired: true);
                 }
                 // Only suppress if FMsDGV focused otherwise it doesn't pass on to like textboxes or whatever
                 e.SuppressKeyPress = true;
@@ -2552,7 +2552,10 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender == PlayFMButton)
         {
-            await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetMainSelectedFM());
+            if (Core.SelectedFMIsPlayable(out FanMission? fm, out GameIndex gameIndex))
+            {
+                await FMInstallAndPlay.InstallIfNeededAndPlay(fm, gameIndex);
+            }
         }
         else if (sender.EqualsIfNotNull(MainLLMenu.ScanAllFMsMenuItem))
         {
@@ -3874,9 +3877,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
     {
-        if (e.RowIndex > -1 && Core.SelectedFMIsPlayable(out FanMission? fm))
+        if (e.RowIndex > -1 && Core.SelectedFMIsPlayable(out FanMission? fm, out GameIndex gameIndex))
         {
-            await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+            await FMInstallAndPlay.InstallIfNeededAndPlay(fm, gameIndex, askConfIfRequired: true);
         }
     }
 
