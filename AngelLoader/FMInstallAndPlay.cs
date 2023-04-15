@@ -699,7 +699,7 @@ internal static class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                Log("Couldn't run Thief Buddy", ex);
+                Log(ErrorText.ExTry + "run Thief Buddy", ex);
                 Core.Dialogs.ShowError(LText.ThiefBuddy.ErrorRunning);
             }
         }
@@ -1983,12 +1983,12 @@ internal static class FMInstallAndPlay
             }
             catch (Exception ex1)
             {
-                Log("Failed to delete FM path '" + path + "', attempting to remove readonly attributes and trying again...", ex1);
+                Log(ErrorText.FTDel + "FM path '" + path + "', attempting to remove readonly attributes and trying again...", ex1);
                 try
                 {
                     if (triedReadOnlyRemove)
                     {
-                        Log("Failed to delete FM path '" + path + "' twice, giving up...");
+                        Log(ErrorText.FTDel + "FM path '" + path + "' twice, giving up...");
                         return false;
                     }
 
@@ -2000,7 +2000,7 @@ internal static class FMInstallAndPlay
                 }
                 catch (Exception ex2)
                 {
-                    Log("Failed to remove readonly attributes, giving up...", ex2);
+                    Log(ErrorText.FT + "remove readonly attributes, giving up...", ex2);
                     return false;
                 }
             }

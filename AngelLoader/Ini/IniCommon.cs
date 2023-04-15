@@ -182,7 +182,7 @@ internal static partial class Ini
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "exiting " + nameof(_fmDataIniRWLock), ex);
+                Log(ErrorText.ExExit + nameof(_fmDataIniRWLock), ex);
             }
         }
     }
@@ -312,7 +312,7 @@ internal static partial class Ini
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "exiting " + nameof(_configIniRWLock), ex);
+                Log(ErrorText.ExExit + nameof(_configIniRWLock), ex);
             }
         }
     }

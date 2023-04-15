@@ -342,7 +342,7 @@ internal static class FindFMs
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.Ex + "getting directories in " + instPath, ex);
+                    Log(ErrorText.ExGet + "directories in " + instPath, ex);
                 }
             }
         }
@@ -384,7 +384,7 @@ internal static class FindFMs
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "getting files in " + archivePaths[ai], ex);
+                Log(ErrorText.ExGet + "files in " + archivePaths[ai], ex);
             }
         }
 

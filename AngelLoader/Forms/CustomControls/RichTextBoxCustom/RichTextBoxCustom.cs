@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -201,7 +202,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             A dialog here would be obnoxious; the readme would probably be visibly broken anyway and that
             should be indication enough that something failed.
             */
-            Log("Couldn't set encoding", ex);
+            Log(ErrorText.Un + "set encoding", ex);
             return retEncoding;
         }
         finally

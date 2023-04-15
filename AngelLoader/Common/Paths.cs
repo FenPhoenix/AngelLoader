@@ -336,28 +336,29 @@ internal static class Paths
             // Admin and non-Admin accounts can both read this key
 
             using RegistryKey? hklm = (RegistryKey?)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using RegistryKey? tdsKey = hklm?.OpenSubKey(@"Software\Ion Storm\Thief - Deadly Shadows");
+            using RegistryKey? tdsKey = hklm?.OpenSubKey(@"Software\Ion Storm\Thief - Deadly Shadows", writable: false);
 
             // Must check for null, because a null return means "path not found", while a default value return
             // means "key name not found". Jank.
             if (tdsKey?.GetValue("SaveGamePath", defaultValue: -1) is string regKeyStr)
             {
+                string soIniName = "SneakyOptions.ini";
                 string soIni;
                 try
                 {
-                    soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");
+                    soIni = Path.Combine(regKeyStr, "Options", soIniName);
                 }
                 catch (Exception ex)
                 {
-                    Log("Found the registry key but it appears to be an invalid path (Path.Combine() failed).\r\n" +
-                        "Registry key path was: " + regKeyStr, ex);
+                    Log(ErrorText.FoundRegKey + "it appears to be an invalid path (Path.Combine() failed).\r\n" +
+                        ErrorText.RegKeyPath + regKeyStr, ex);
                     return "";
                 }
 
                 if (!File.Exists(soIni))
                 {
-                    Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
-                        "Registry key path was: " + regKeyStr + "\r\n" +
+                    Log(ErrorText.FoundRegKey + "couldn't find " + soIniName + "\r\n" +
+                        ErrorText.RegKeyPath + regKeyStr + "\r\n" +
                         "Full path was: " + soIni);
                     return "";
                 }
@@ -372,11 +373,11 @@ internal static class Paths
         }
         catch (SecurityException ex)
         {
-            Log("The user does not have the permissions required to read from the registry key.", ex);
+            Log(ex.Message, ex);
         }
         catch (IOException ex)
         {
-            Log("The RegistryKey that contains the specified value has been marked for deletion.", ex);
+            Log(ex.Message, ex);
         }
         catch (Exception ex)
         {

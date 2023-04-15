@@ -320,7 +320,7 @@ internal static class FMAudio
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.Ex + "during file enumeration of " + fmSndPath, ex);
+                            Log(ErrorText.ExGet + "files in " + fmSndPath, ex);
                             return;
                         }
 

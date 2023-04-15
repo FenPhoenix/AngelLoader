@@ -88,7 +88,7 @@ internal sealed partial class RichTextBoxCustom
         }
         catch (Exception ex)
         {
-            Log("Couldn't set dark mode to " + _darkModeEnabled, ex);
+            Log(ErrorText.Un + "set dark mode to " + _darkModeEnabled, ex);
         }
         finally
         {
