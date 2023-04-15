@@ -3408,7 +3408,7 @@ public sealed partial class Scanner : IDisposable
                     if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                     {
                         ret ??= new List<string>();
-                        ret.Add(CleanupTitle(titleConcat));
+                        ret.Add(titleConcat);
                     }
 
                     break;
