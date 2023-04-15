@@ -749,17 +749,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     // Extra async/await avoidance
     private async void AsyncMenuItems_Click(object sender, EventArgs e)
     {
-        bool playMP = sender == PlayFMInMPMenuItem;
-        if (sender == PlayFMMenuItem || playMP)
+        if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
         {
-            if (Core.SelectedFMIsPlayable(out FanMission? fm, out GameIndex gameIndex))
-            {
-                // @GENGAMES(Multiplayer menu item click, explicit Thief 2 check here)
-                if (!(playMP && gameIndex != GameIndex.Thief2))
-                {
-                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm, gameIndex, playMP: playMP);
-                }
-            }
+            await FMInstallAndPlay.InstallIfNeededAndPlay(_owner.FMsDGV.GetMainSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
         }
         else if (sender == InstallUninstallMenuItem)
         {

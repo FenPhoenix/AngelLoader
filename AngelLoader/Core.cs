@@ -2488,20 +2488,24 @@ internal static class Core
 
     #endregion
 
-    internal static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm, out GameIndex gameIndex)
+    internal static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
     {
-        fm = View.GetMainSelectedFMOrNull();
-        if (fm != null &&
-            !View.MultipleFMsSelected() &&
-            fm.Game.ConvertsToKnownAndSupported(out gameIndex) &&
-            !fm.MarkedUnavailable)
+        if (!View.MultipleFMsSelected())
         {
-            return true;
+            fm = View.GetMainSelectedFMOrNull();
+            if (fm != null && GameIsKnownAndSupported(fm.Game) && !fm.MarkedUnavailable)
+            {
+                return true;
+            }
+            else
+            {
+                fm = null;
+                return false;
+            }
         }
         else
         {
             fm = null;
-            gameIndex = default;
             return false;
         }
     }

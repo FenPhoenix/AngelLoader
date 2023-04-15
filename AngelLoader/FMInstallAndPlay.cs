@@ -84,9 +84,21 @@ internal static class FMInstallAndPlay
         }
     }
 
-    internal static async Task InstallIfNeededAndPlay(FanMission fm, GameIndex gameIndex, bool askConfIfRequired = false, bool playMP = false)
+    internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
     {
-        AssertR(!(playMP && gameIndex != GameIndex.Thief2), "playMP for non-T2");
+        if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        {
+            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
+            return;
+        }
+
+        if (playMP && gameIndex != GameIndex.Thief2)
+        {
+            LogFMInfo(fm, "playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
+            Core.Dialogs.ShowError(ErrorText.MPForNonT2);
+            return;
+        }
 
         bool askingConfirmation = askConfIfRequired && Config.ConfirmPlayOnDCOrEnter;
         if (askingConfirmation)
