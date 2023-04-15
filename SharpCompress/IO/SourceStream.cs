@@ -70,11 +70,9 @@ internal sealed class SourceStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count) => throw new NotImplementedException();
 
-    public override void Close() => _stream.Dispose();
-
     protected override void Dispose(bool disposing)
     {
-        Close();
+        _stream.Dispose();
         base.Dispose(disposing);
     }
 }

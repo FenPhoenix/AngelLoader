@@ -580,7 +580,7 @@ internal sealed class ArchiveReader
                 dataStartPos += packSize;
             }
 
-            var outStream = DecoderStreamHelper.CreateDecoderStream(
+            using var outStream = DecoderStreamHelper.CreateDecoderStream(
                 _stream,
                 oldDataStartPos,
                 myPackSizes,
