@@ -151,12 +151,16 @@ internal static class Comparers
 
     #region Column comparers
 
-    // These are separated out for performance reasons, so we don't have to use LINQ OrderBy() etc.
-
-    internal sealed class FMTitleComparer : IDirectionalSortFMComparer
+    // Having every comparer inherit this (instead of having its own implemented property) reduces file size
+    internal class ColumnComparer
     {
         public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+    }
 
+    // These are separated out for performance reasons, so we don't have to use LINQ OrderBy() etc.
+
+    internal sealed class FMTitleComparer : ColumnComparer, IDirectionalSortFMComparer
+    {
         public int Compare(FanMission x, FanMission y)
         {
             int ret = TitleCompare(x, y);
@@ -165,10 +169,8 @@ internal static class Comparers
     }
 
 #if DateAccTest
-    internal sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
+    internal sealed class FMDateAccuracyComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -184,10 +186,8 @@ internal static class Comparers
     }
 #endif
 
-    internal sealed class FMGameComparer : IDirectionalSortFMComparer
+    internal sealed class FMGameComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -200,10 +200,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMInstalledComparer : IDirectionalSortFMComparer
+    internal sealed class FMInstalledComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -215,10 +213,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMMisCountComparer : IDirectionalSortFMComparer
+    internal sealed class FMMisCountComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -231,10 +227,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMArchiveComparer : IDirectionalSortFMComparer
+    internal sealed class FMArchiveComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -245,10 +239,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMAuthorComparer : IDirectionalSortFMComparer
+    internal sealed class FMAuthorComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -261,10 +253,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMSizeComparer : IDirectionalSortFMComparer
+    internal sealed class FMSizeComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -277,10 +267,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMRatingComparer : IDirectionalSortFMComparer
+    internal sealed class FMRatingComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -310,10 +298,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMFinishedComparer : IDirectionalSortFMComparer
+    internal sealed class FMFinishedComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -345,10 +331,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
+    internal sealed class FMReleaseDateComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             // Sort this one down to the day only, because the exact time may very well not be known, and
@@ -377,10 +361,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
+    internal sealed class FMLastPlayedComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -408,10 +390,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMDateAddedComparer : IDirectionalSortFMComparer
+    internal sealed class FMDateAddedComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -438,10 +418,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
+    internal sealed class FMDisabledModsComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -457,10 +435,8 @@ internal static class Comparers
         }
     }
 
-    internal sealed class FMCommentComparer : IDirectionalSortFMComparer
+    internal sealed class FMCommentComparer : ColumnComparer, IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
