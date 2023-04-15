@@ -649,7 +649,7 @@ internal static class FMBackupAndRestore
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.Ex + "in last write time compare (zip)", ex);
+                        LogFMInfo(fm, ErrorText.ExInLWT + "(zip)", ex);
                     }
                 }
             }
@@ -722,7 +722,7 @@ internal static class FMBackupAndRestore
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.Ex + "in last write time compare (7z)", ex);
+                        LogFMInfo(fm, ErrorText.ExInLWT + "(7z)", ex);
                     }
                 }
             }

@@ -499,7 +499,7 @@ internal static class ControlUtils
             // very, very weird happens. If we do get an exception here, then we'll have wrong-colored (and
             // possibly unreadable) text in tooltips until a restart.
             Logger.Log(
-                "Unable to recreate tooltip handles, meaning their text color has not changed with dark/light theme.",
+                ErrorText.Un + "recreate tooltip handles, meaning their text color has not changed with dark/light theme.",
                 ex);
         }
     }

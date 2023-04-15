@@ -119,7 +119,7 @@ internal static class FMLanguages
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "detect language folders in archive.", ex);
+                LogFMInfo(fm, ErrorText.ExDetLangIn + "archive.", ex);
                 langs = null;
                 return false;
             }
@@ -134,7 +134,7 @@ internal static class FMLanguages
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "detect language folders in installed dir.", ex);
+                LogFMInfo(fm, ErrorText.ExTry + ErrorText.ExDetLangIn + "installed dir.", ex);
                 langs = null;
                 return false;
             }
@@ -320,7 +320,7 @@ internal static class FMLanguages
         }
         catch (Exception ex)
         {
-            Log(nameof(GetFMSupportedLanguagesFromInstDir) + ": Unable to run the language selection; language may be wrong.", ex);
+            Log(nameof(GetFMSupportedLanguagesFromInstDir) + ": " + ErrorText.Un + "run the language selection; language may be wrong.", ex);
             return new List<string>();
         }
     }

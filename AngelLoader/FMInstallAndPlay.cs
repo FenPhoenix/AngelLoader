@@ -530,10 +530,10 @@ internal static class FMInstallAndPlay
         }
         catch (Exception ex)
         {
-            string msg = "Unable to start executable '" + exe + "'.";
+            string msg = ErrorText.Un + "start '" + exe + "'.";
             Log(msg + "\r\n" +
-                "workingPath: " + workingPath + "\r\n" +
-                "args: " + args, ex);
+                nameof(workingPath) + ": " + workingPath + "\r\n" +
+                nameof(args) + ": " + args, ex);
             Core.Dialogs.ShowError(msg);
 
             return false;
@@ -612,7 +612,7 @@ internal static class FMInstallAndPlay
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Unable to open DarkLoader.";
+                    string msg = ErrorText.Un + "open DarkLoader.";
                     Log(msg, ex);
                     Core.Dialogs.ShowError(msg);
                 }
@@ -1905,7 +1905,7 @@ internal static class FMInstallAndPlay
                 // Make option to open the folder in Explorer and delete it manually?
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
-                    LogFMInfo(fm, "Could not delete FM installed directory.");
+                    LogFMInfo(fm, ErrorText.Un + "delete FM installed directory.");
                     Core.Dialogs.ShowError(
                         LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
                         "FM: " + GetFMId(fm));

@@ -1431,7 +1431,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            LogFMInfo(fm, "FM install directory not found.");
+            LogFMInfo(fm, ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
             return false;
         }
@@ -1444,7 +1444,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, "Unable to add .dml to installed folder.", ex);
+            LogFMInfo(fm, ErrorText.Un + "add .dml to installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_UnableToAdd);
             return false;
         }
@@ -1458,7 +1458,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            LogFMInfo(fm, "FM install directory not found.");
+            LogFMInfo(fm, ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
             return false;
         }
@@ -1469,7 +1469,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, "Unable to remove .dml from installed folder.", ex);
+            LogFMInfo(fm, ErrorText.Un + "remove .dml from installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
             return false;
         }
@@ -1493,7 +1493,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.Ex + "getting DML files.", ex);
+            LogFMInfo(fm, ErrorText.ExGet + "DML files.", ex);
             return (false, new List<string>());
         }
     }
@@ -1903,7 +1903,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string fmDir))
         {
-            LogFMInfo(fm, "FM install directory not found.");
+            LogFMInfo(fm, ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
             return;
         }

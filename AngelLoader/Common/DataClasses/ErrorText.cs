@@ -30,6 +30,7 @@ internal static class ErrorText
     internal static readonly string ExExit = Ex + "exiting ";
     internal static readonly string ExGet = Ex + "getting ";
     private static readonly string Ret = "Returning ";
+    internal static readonly string ExDetLangIn = ExTry + "detect language folders in ";
     //internal static readonly string RetT = Ret + "'true'.";
     internal static readonly string RetF = Ret + "'false'.";
     internal static readonly string OldDarkDependentFeaturesWillFail =
@@ -39,5 +40,7 @@ internal static class ErrorText
     internal static readonly string LangDefault = "Language will be set to English and no other languages will be available.";
     internal static readonly string FoundRegKey = "Found the registry key but ";
     internal static readonly string RegKeyPath = "Registry key path was: ";
+    internal static readonly string FMInstDirNF = "FM install directory not found.";
+    internal static readonly string ExInLWT = Ex + "in last write time compare ";
 }
 #pragma warning restore RCS1187 // Use constant instead of field.

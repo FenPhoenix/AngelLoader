@@ -233,7 +233,7 @@ internal static class FMAudio
                     string message = "The following executables could not be found:\r\n\r\n" +
                                      (ffmpegNotFound ? Paths.FFmpegExe + "\r\n" : "") +
                                      (ffProbeNotFound ? Paths.FFprobeExe + "\r\n" : "") + "\r\n" +
-                                     "Unable to convert audio files.";
+                                     ErrorText.Un + "convert audio files.";
 
                     Log(message, stackTrace: true);
                     Core.Dialogs.ShowError(message);
