@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader;
@@ -152,6 +153,8 @@ public static class Misc
         new(new[] { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" });
 
     public static readonly Action NullAction = static () => { };
+
+    public static readonly Task VoidTask = Task.CompletedTask;
 
     internal static class Defaults
     {

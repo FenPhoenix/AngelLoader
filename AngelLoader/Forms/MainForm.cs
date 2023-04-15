@@ -1547,6 +1547,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (FMsDGV.Focused && FMsDGV.RowSelected())
             {
                 await FMDelete.HandleDelete();
+                SetAvailableFMCount();
             }
         }
         else if (e.KeyCode == Keys.Escape)

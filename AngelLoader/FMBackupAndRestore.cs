@@ -13,6 +13,7 @@ using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -227,7 +228,7 @@ internal static class FMBackupAndRestore
         return ret;
     }
 
-    internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths)
+    internal static Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths)
     {
         bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
@@ -236,10 +237,10 @@ internal static class FMBackupAndRestore
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-            return;
+            return VoidTask;
         }
 
-        await Task.Run(() =>
+        return Task.Run(() =>
         {
             if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
@@ -362,21 +363,21 @@ internal static class FMBackupAndRestore
         });
     }
 
-    internal static async Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct)
+    internal static Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct)
     {
         static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-            return;
+            return VoidTask;
         }
 
         bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
         bool fmIsT3 = fm.Game == Game.Thief3;
 
-        await Task.Run(() =>
+        return Task.Run(() =>
         {
             BackupFile backupFile = GetBackupFile(fm, archivePaths);
             if (!backupFile.Found) return;

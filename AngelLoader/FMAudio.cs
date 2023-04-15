@@ -148,13 +148,13 @@ internal static class FMAudio
         }
     }
 
-    internal static async Task ConvertToWAVs(FanMission fm, AudioConvert type, CancellationToken? ct = null)
+    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, CancellationToken? ct = null)
     {
-        if (!GameIsDark(fm.Game)) return;
+        if (!GameIsDark(fm.Game)) return VoidTask;
 
         static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
 
-        await Task.Run(async () =>
+        return Task.Run(async () =>
         {
             if (type == AudioConvert.WAVToWAV16)
             {

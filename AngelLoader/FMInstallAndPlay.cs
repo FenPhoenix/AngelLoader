@@ -1725,7 +1725,7 @@ internal static class FMInstallAndPlay
     #region Uninstall
 
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
-        Uninstall(FanMission[] fms, bool doEndTasks = true)
+    Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
         var fail = (false, false);
 

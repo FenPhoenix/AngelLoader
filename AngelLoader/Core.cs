@@ -2221,13 +2221,13 @@ internal static class Core
         return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
     }
 
-    internal static async Task PinOrUnpinFM(bool pin)
+    internal static Task PinOrUnpinFM(bool pin)
     {
         FanMission[] selFMs = View.GetSelectedFMs();
-        if (selFMs.Length == 0) return;
+        if (selFMs.Length == 0) return VoidTask;
 
         int rowCount = View.GetRowCount();
-        if (rowCount == 0) return;
+        if (rowCount == 0) return VoidTask;
 
         bool singleFMSelected = selFMs.Length == 1;
 
@@ -2244,7 +2244,7 @@ internal static class Core
             selFM = FindNearestUnselectedFM(View.GetMainSelectedRowIndex(), rowCount);
         }
 
-        await View.SortAndSetFilter(
+        return View.SortAndSetFilter(
             selectedFM: selFM,
             keepSelection: pin,
             keepMultiSelection: !singleFMSelected && pin);
