@@ -100,13 +100,20 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             RatingMenu.DarkModeEnabled = _darkModeEnabled;
             FinishedOnMenu.DarkModeEnabled = _darkModeEnabled;
 
-            DeleteFMMenuItem.Image = Images.Trash;
-            DeleteFromDBMenuItem.Image = Images.DeleteFromDB;
-            PinToTopMenuItem.Image = _sayPin ? Images.Pin : Images.Unpin;
-            ExplicitPinToTopMenuItem.Image = Images.Pin;
-            ExplicitUnpinFromTopMenuItem.Image = Images.Unpin;
-            OpenFMFolderMenuItem.Image = Images.Folder;
+            SetImages();
         }
+    }
+
+    private void SetImages()
+    {
+        if (!_constructed) return;
+
+        PinToTopMenuItem.Image = _sayPin ? Images.Pin : Images.Unpin;
+        ExplicitPinToTopMenuItem.Image = Images.Pin;
+        ExplicitUnpinFromTopMenuItem.Image = Images.Unpin;
+        DeleteFMMenuItem.Image = Images.Trash;
+        DeleteFromDBMenuItem.Image = Images.DeleteFromDB;
+        OpenFMFolderMenuItem.Image = Images.Folder;
     }
 
     internal FMsDGV_FM_LLMenu(MainForm owner) => _owner = owner;
@@ -221,15 +228,15 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
             PinToTopMenuItem = new ToolStripMenuItemCustom(),
-            ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Pin, Visible = false },
-            ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Image = Images.Unpin, Visible = false },
+            ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Visible = false },
+            ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Visible = false },
             new ToolStripSeparator(),
-            DeleteFMMenuItem = new ToolStripMenuItemCustom { Image = Images.Trash },
-            DeleteFromDBMenuItem = new ToolStripMenuItemCustom { Image = Images.DeleteFromDB },
+            DeleteFMMenuItem = new ToolStripMenuItemCustom(),
+            DeleteFromDBMenuItem = new ToolStripMenuItemCustom(),
             OpenInDromEdSep = new ToolStripSeparator(),
             OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
             OpenFMFolderSep = new ToolStripSeparator(),
-            OpenFMFolderMenuItem = new ToolStripMenuItemCustom { Image = Images.Folder },
+            OpenFMFolderMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
             ScanFMMenuItem = new ToolStripMenuItemCustom(),
             ConvertAudioMenuItem = new ToolStripMenuItemCustom(),
@@ -346,6 +353,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         _constructed = true;
 
         // These must come after the constructed bool gets set to true
+        SetImages();
         SetPinItemsMode(_multiplePinnedStates);
         UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
         SetRatingMenuItemChecked(_rating);
