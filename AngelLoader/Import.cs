@@ -225,11 +225,16 @@ internal static class Import
                             : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
 
                         await FMScan.ScanFMs(fmsToScan, scanOptions);
-                        // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
-                        // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
-                        // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
-                        //  tags wouldn't work because they're only in TagsString and blah blah blah.
-                        //  -But couldn't I just call the tag list updater?
+                        /*
+                        Doing a find after a scan. I forgot exactly why. Reasons I thought of:
+                        -I might be doing it to get rid of any duplicates or bad data that may have been imported?
+                        -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
+                        tags wouldn't work because they're only in TagsString and blah blah blah.
+                        -But couldn't I just call the tag list updater?
+                        -This also updates the FM stats on the UI, and anything else that FindFMs() might update.
+                         We could just do that explicitly here of course, but as long as we're calling this anyway
+                         we may as well let it do the work.
+                        */
                         FindFMs.Find();
                     }
                 }

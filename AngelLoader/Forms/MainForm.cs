@@ -5072,6 +5072,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private string _fmSelectedCountText = "";
     private string _fmCountText = "";
+    private string _fmsFinishedText = "";
 
     private void SetFMSelectedCountMessage(int count)
     {
@@ -5087,23 +5088,33 @@ public sealed partial class MainForm : DarkFormBase,
         RefreshFMStatsLabel();
     }
 
-    private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" + _fmCountText;
-
     public void SetAvailableFMCount()
     {
-        int count = 0;
+        int availableCount = 0;
+        int finishedCount = 0;
         for (int i = 0; i < FMsViewList.Count; i++)
         {
-            if (!FMsViewList[i].MarkedUnavailable) count++;
+            FanMission fm = FMsViewList[i];
+            if (!fm.MarkedUnavailable) availableCount++;
+            if (fm.FinishedOnUnknown || fm.FinishedOn > 0) finishedCount++;
         }
 
         _fmCountText =
-            (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
-            count.ToString(CultureInfo.CurrentCulture) +
-            (count == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsAvailable_Plural_AfterNumber);
+            (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
+            availableCount.ToString(CultureInfo.CurrentCulture) +
+            (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsAvailable_Plural_AfterNumber);
+
+        _fmsFinishedText =
+            (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_BeforeNumber : LText.FMSelectedStats.FMsFinished_Plural_BeforeNumber) +
+            finishedCount.ToString(CultureInfo.CurrentCulture) +
+            (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_AfterNumber : LText.FMSelectedStats.FMsFinished_Plural_AfterNumber);
 
         RefreshFMStatsLabel();
     }
+
+    private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" +
+                                                              _fmCountText + "\r\n" +
+                                                              _fmsFinishedText;
 
     #endregion
 

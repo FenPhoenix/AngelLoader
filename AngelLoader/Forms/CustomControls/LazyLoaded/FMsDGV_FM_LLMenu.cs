@@ -924,6 +924,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         _owner.RefreshFMsListRowsOnlyKeepSelection();
 
+        _owner.SetAvailableFMCount();
         Ini.WriteFullFMDataIni();
     }
 

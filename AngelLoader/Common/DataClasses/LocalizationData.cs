@@ -467,6 +467,11 @@ internal sealed class LText_Class
         internal readonly string FMsAvailable_Single_AfterNumber = " FM available";
         internal readonly string FMsAvailable_Plural_BeforeNumber = "";
         internal readonly string FMsAvailable_Plural_AfterNumber = " FMs available";
+        [FenGenBlankLine]
+        internal readonly string FMsFinished_Single_BeforeNumber = "";
+        internal readonly string FMsFinished_Single_AfterNumber = " FM finished";
+        internal readonly string FMsFinished_Plural_BeforeNumber = "";
+        internal readonly string FMsFinished_Plural_AfterNumber = " FMs finished";
     }
 
     internal sealed class StatisticsTab_Class
