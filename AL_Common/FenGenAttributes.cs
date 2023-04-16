@@ -113,7 +113,7 @@ public static class FenGenAttributes
     public sealed class FenGenDoNotTrimValueAttribute : Attribute { }
 
     /// <summary>
-    /// Hack: To be placed on DateTime fields that we don't have want to take the perf hit of doing anything<br/>
+    /// Hack: To be placed on DateTime fields that we don't want to take the perf hit of doing anything<br/>
     /// with until later.
     /// </summary>
     [Conditional("compile_FenGen_attributes")]

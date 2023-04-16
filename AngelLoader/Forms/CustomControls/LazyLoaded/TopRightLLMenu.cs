@@ -87,7 +87,7 @@ internal sealed class TopRightLLMenu : IDarkable
         
         I guess the framework doesn't let facts get in its way.
 
-        Anyway. If we do this it fixes it, pointless clunkily.
+        Anyway. If we do this it fixes it, pointlessly clunkily.
         */
         if (Config.DarkMode)
         {
