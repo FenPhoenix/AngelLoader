@@ -16,12 +16,12 @@ internal static class FastIO
         AllDirectories
     }
 
-    internal static bool FilesExistSearchTop(string path, params string[] searchPatterns)
+    internal static bool FilesExistSearchTop(string path, string[] searchPatterns)
     {
         return FirstFileExists(FastIOSearchOption.TopDirectoryOnly, path, searchPatterns);
     }
 
-    internal static bool FilesExistSearchAll(string path, params string[] searchPatterns)
+    internal static bool FilesExistSearchAll(string path, string[] searchPatterns)
     {
         return FirstFileExists(FastIOSearchOption.AllDirectories, path, searchPatterns);
     }
@@ -48,7 +48,7 @@ internal static class FastIO
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
+    private static bool FirstFileExists(FastIOSearchOption searchOption, string path, string[] searchPatterns)
     {
         path = NormalizeAndCheckPath(path, pathIsKnownValid: false);
 
