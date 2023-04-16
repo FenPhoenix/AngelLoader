@@ -124,6 +124,7 @@ internal sealed class CFolder
             }
         }
 
+        // @MEM(CFolder): We can cache this
         var mask = new uint[kMaskSize];
 
         {
