@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using AL_Common;
 using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.Compressors.LZMA.LZ;
@@ -28,7 +29,7 @@ internal sealed class OutWindow : IDisposable
         {
             if (_buffer != null)
             {
-                _context.ByteArrayPool.Return(_buffer, true);
+                _context.ByteArrayPool.Return(_buffer);
             }
             _buffer = _context.ByteArrayPool.Rent(windowSize);
         }
@@ -36,6 +37,10 @@ internal sealed class OutWindow : IDisposable
         {
             _buffer[windowSize - 1] = 0;
         }
+
+        // Need to always clear or we get wrong behavior/errors
+        _buffer.Clear();
+
         _windowSize = windowSize;
         _pos = 0;
         _streamPos = 0;
@@ -151,7 +156,7 @@ internal sealed class OutWindow : IDisposable
     {
         if (_buffer != null)
         {
-            _context.ByteArrayPool.Return(_buffer, true);
+            _context.ByteArrayPool.Return(_buffer);
         }
     }
 }

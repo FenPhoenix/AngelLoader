@@ -1588,19 +1588,21 @@ public static class Common
     // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
     // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
     // Or maybe I just don't know what I'm doing. Either way.
-    public static bool Contains(this byte[] input, byte[] pattern)
+    public static bool Contains(this byte[] input, byte[] pattern, int length = -1)
     {
+        if (length == -1) length = input.Length;
+
         byte firstByte = pattern[0];
-        int index = Array.IndexOf(input, firstByte);
+        int index = Array.IndexOf(input, firstByte, 0, length);
 
         while (index > -1)
         {
             for (int i = 0; i < pattern.Length; i++)
             {
-                if (index + i >= input.Length) return false;
+                if (index + i >= length) return false;
                 if (pattern[i] != input[index + i])
                 {
-                    if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return false;
+                    if ((index = Array.IndexOf(input, firstByte, index + i, length - (index + i))) == -1) return false;
                     break;
                 }
 

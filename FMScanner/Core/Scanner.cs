@@ -4405,7 +4405,7 @@ public sealed partial class Scanner : IDisposable
             {
                 int bytesRead = stream.ReadAll(_misChunkHeaderBuffer, 0, 12);
                 uint offset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
-                uint length = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
+                int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(OBJ_MAP)) continue;
 
@@ -4413,10 +4413,18 @@ public sealed partial class Scanner : IDisposable
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
                 stream.Position = offset + 24;
 
-                byte[] content = BinaryRead.ReadBytes(stream, (int)length);
-                ret.Game = content.Contains(RopeyArrow)
-                    ? Game.Thief2
-                    : Game.Thief1;
+                byte[] content = _sevenZipContext.ByteArrayPool.Rent(length);
+                try
+                {
+                    int objMapBytesRead = stream.ReadAll(content, 0, length);
+                    ret.Game = content.Contains(RopeyArrow, objMapBytesRead)
+                        ? Game.Thief2
+                        : Game.Thief1;
+                }
+                finally
+                {
+                    _sevenZipContext.ByteArrayPool.Return(content);
+                }
                 break;
             }
         }
