@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.BZip2;
 using SharpCompress.Compressors.Filters;
 using SharpCompress.Compressors.PPMd;
@@ -25,7 +26,8 @@ internal static class DecoderRegistry
         ulong id,
         Stream[] inStreams,
         byte[] info,
-        long limit
+        long limit,
+        SevenZipContext context
     )
     {
         switch (id)
@@ -40,7 +42,7 @@ internal static class DecoderRegistry
                 return new DeltaFilter(inStreams.Single(), info);
             case K_LZMA:
             case K_LZMA2:
-                return new LzmaStream(info, inStreams.Single(), -1, limit);
+                return new LzmaStream(info, inStreams.Single(), -1, limit, context);
             case K_AES_ID:
                 throw new Common.CryptographicException("7Zip archive is encrypted; this is not supported.");
             case K_BCJ:

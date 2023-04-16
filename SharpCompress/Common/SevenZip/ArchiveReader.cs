@@ -18,6 +18,10 @@ internal sealed class ArchiveReader
     private long _streamEnding;
     private byte[] _header;
 
+    private readonly SevenZipContext _context;
+
+    internal ArchiveReader(SevenZipContext context) => _context = context;
+
     internal void AddByteStream(byte[] buffer, int offset, int length)
     {
         _readerStack.Push(_currentReader);
@@ -584,7 +588,8 @@ internal sealed class ArchiveReader
                 _stream,
                 oldDataStartPos,
                 myPackSizes,
-                folder
+                folder,
+                _context
             );
 
             var unpackSize = checked((int)folder.GetUnpackSize());
@@ -600,7 +605,7 @@ internal sealed class ArchiveReader
             {
                 if (Crc.Finish(Crc.Update(Crc.INIT_CRC, data, 0, unpackSize))
                     != folder._unpackCrc
-                )
+                   )
                 {
                     throw new InvalidOperationException(
                         "Decoded stream does not match expected CRC."

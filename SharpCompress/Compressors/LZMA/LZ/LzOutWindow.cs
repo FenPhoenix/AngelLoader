@@ -2,10 +2,11 @@
 
 using System;
 using System.IO;
+using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.Compressors.LZMA.LZ;
 
-internal sealed class OutWindow
+internal sealed class OutWindow : IDisposable
 {
     private byte[] _buffer;
     private int _windowSize;
@@ -17,11 +18,19 @@ internal sealed class OutWindow
     internal long _total;
     private long _limit;
 
+    private readonly SevenZipContext _context;
+
+    public OutWindow(SevenZipContext context) => _context = context;
+
     public void Create(int windowSize)
     {
         if (_windowSize != windowSize)
         {
-            _buffer = new byte[windowSize];
+            if (_buffer != null)
+            {
+                _context.ByteArrayPool.Return(_buffer, true);
+            }
+            _buffer = _context.ByteArrayPool.Rent(windowSize);
         }
         else
         {
@@ -137,4 +146,12 @@ internal sealed class OutWindow
     }
 
     public int AvailableBytes => _pos - _streamPos;
+
+    public void Dispose()
+    {
+        if (_buffer != null)
+        {
+            _context.ByteArrayPool.Return(_buffer, true);
+        }
+    }
 }

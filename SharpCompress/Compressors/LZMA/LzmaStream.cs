@@ -3,6 +3,7 @@
 using System;
 using System.Buffers.Binary;
 using System.IO;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA.LZ;
 
 namespace SharpCompress.Compressors.LZMA;
@@ -17,7 +18,7 @@ internal sealed class LzmaStream : Stream
     private readonly long _outputSize;
 
     private readonly int _dictionarySize;
-    private readonly OutWindow _outWindow = new();
+    private readonly OutWindow _outWindow;
     private readonly RangeCoder.Decoder _rangeDecoder = new();
     private Decoder _decoder;
 
@@ -35,8 +36,10 @@ internal sealed class LzmaStream : Stream
 
     private bool _isDisposed;
 
-    internal LzmaStream(byte[] properties, Stream inputStream, long inputSize, long outputSize)
+    internal LzmaStream(byte[] properties, Stream inputStream, long inputSize, long outputSize, SevenZipContext context)
     {
+        _outWindow = new OutWindow(context);
+
         _inputStream = inputStream;
         _inputSize = inputSize;
         _outputSize = outputSize;
@@ -85,6 +88,7 @@ internal sealed class LzmaStream : Stream
         _isDisposed = true;
         if (disposing)
         {
+            _outWindow?.Dispose();
             _inputStream?.Dispose();
         }
         base.Dispose(disposing);

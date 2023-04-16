@@ -92,6 +92,8 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    private readonly SevenZipContext _sevenZipContext = new();
+
     private readonly string _sevenZipExePath;
 
     private readonly FileEncoding _fileEncoding = new();
@@ -656,7 +658,7 @@ public sealed partial class Scanner : IDisposable
                 stream.
                 */
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
-                using (var sevenZipArchive = new SevenZipArchive(fs))
+                using (var sevenZipArchive = new SevenZipArchive(fs, _sevenZipContext))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

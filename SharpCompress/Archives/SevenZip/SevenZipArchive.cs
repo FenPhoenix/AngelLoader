@@ -11,6 +11,8 @@ public sealed class SevenZipArchive : IDisposable
     private bool _disposed;
     private readonly SourceStream _srcStream;
 
+    private readonly SevenZipContext _context;
+
     // @SharpCompress: Reuse one list of entries like we do with zips
     private ReadOnlyCollection<SevenZipArchiveEntry>? _lazyEntries;
     public ReadOnlyCollection<SevenZipArchiveEntry> Entries
@@ -20,7 +22,7 @@ public sealed class SevenZipArchive : IDisposable
             if (_lazyEntries == null)
             {
                 _srcStream.Position = 0;
-                var reader = new ArchiveReader();
+                var reader = new ArchiveReader(_context);
                 reader.Open(_srcStream);
                 ArchiveDatabase database = reader.ReadDatabase();
 
@@ -31,7 +33,15 @@ public sealed class SevenZipArchive : IDisposable
         }
     }
 
-    public SevenZipArchive(Stream stream) => _srcStream = new SourceStream(stream);
+    public SevenZipArchive(Stream stream) : this(stream, new SevenZipContext())
+    {
+    }
+
+    public SevenZipArchive(Stream stream, SevenZipContext context)
+    {
+        _srcStream = new SourceStream(stream);
+        _context = context;
+    }
 
     public void Dispose()
     {

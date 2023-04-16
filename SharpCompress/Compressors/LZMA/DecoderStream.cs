@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Common.SevenZip;
 using SharpCompress.IO;
 
@@ -91,7 +92,8 @@ internal static class DecoderStreamHelper
         Stream[] packStreams,
         Stream[] outStreams,
         CFolder folderInfo,
-        int coderIndex
+        int coderIndex,
+        SevenZipContext context
     )
     {
         var coderInfo = folderInfo._coders[coderIndex];
@@ -133,7 +135,8 @@ internal static class DecoderStreamHelper
                     packStreams,
                     outStreams,
                     folderInfo,
-                    otherCoderIndex
+                    otherCoderIndex,
+                    context
                 );
 
                 //inStreamSizes[i] = folderInfo.UnpackSizes[pairedOutIndex];
@@ -166,7 +169,8 @@ internal static class DecoderStreamHelper
             coderInfo._methodId,
             inStreams,
             coderInfo._props,
-            unpackSize
+            unpackSize,
+            context
         );
     }
 
@@ -174,7 +178,8 @@ internal static class DecoderStreamHelper
         Stream inStream,
         long startPos,
         long[] packSizes,
-        CFolder folderInfo
+        CFolder folderInfo,
+        SevenZipContext context
     )
     {
         if (!folderInfo.CheckStructure())
@@ -199,7 +204,8 @@ internal static class DecoderStreamHelper
             inStreams,
             outStreams,
             folderInfo,
-            primaryCoderIndex
+            primaryCoderIndex,
+            context
         );
     }
 }
