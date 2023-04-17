@@ -505,6 +505,39 @@ internal static class Utility
         return i2 > i1 ? line.Substring(i1, i2 - i1) : "";
     }
 
+    internal static bool AnyConsecutiveWordChars(string value)
+    {
+        int consecutiveWordCharCount = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+            UnicodeCategory cat = char.GetUnicodeCategory(c);
+            // Matching the "\w\w" regex behavior exactly
+            if (cat
+                is UnicodeCategory.LowercaseLetter
+                or UnicodeCategory.UppercaseLetter
+                or UnicodeCategory.TitlecaseLetter
+                or UnicodeCategory.OtherLetter
+                or UnicodeCategory.ModifierLetter
+                or UnicodeCategory.NonSpacingMark
+                or UnicodeCategory.DecimalDigitNumber
+                or UnicodeCategory.ConnectorPunctuation)
+            {
+                consecutiveWordCharCount++;
+                if (consecutiveWordCharCount > 1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                consecutiveWordCharCount = 0;
+            }
+        }
+
+        return false;
+    }
+
     #region GLML
 
     private enum GLMLTagType

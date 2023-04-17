@@ -565,9 +565,6 @@ public sealed partial class Scanner
         new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
 #endif
 
-    private readonly Regex TitleAnyConsecutiveLettersRegex =
-        new Regex(@"\w\w", RegexOptions.Compiled);
-
     private readonly Regex AuthorEmailRegex =
         new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
 

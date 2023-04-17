@@ -3676,8 +3676,7 @@ public sealed partial class Scanner : IDisposable
 
         // Some titles are clever and  A r e  W r i t t e n  L i k e  T h i s
         // But we want to leave titles that are supposed to be acronyms - ie, "U F O", "R G B"
-        if (value.Contains(' ') &&
-            !TitleAnyConsecutiveLettersRegex.Match(value).Success)
+        if (value.Contains(' ') && !Utility.AnyConsecutiveWordChars(value))
         {
             bool titleContainsLowerCaseAsciiChars = false;
             for (int i = 0; i < value.Length; i++)
