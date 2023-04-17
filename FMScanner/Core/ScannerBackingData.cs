@@ -560,15 +560,13 @@ public sealed partial class Scanner
         new Regex(@"\d(?<Suffix>(st|nd|rd|th)).+",
             RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
 
-#if FMScanner_FullCode
-    private readonly Regex VersionExclude1Regex =
-        new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
-#endif
-
     private readonly Regex AuthorEmailRegex =
         new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
 
 #if FMScanner_FullCode
+    private readonly Regex VersionExclude1Regex =
+        new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
+
     // TODO: This one looks iffy though
     private readonly Regex VersionFirstNumberRegex =
         new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
