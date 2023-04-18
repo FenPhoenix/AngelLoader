@@ -268,7 +268,6 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
         if (disposing)
         {
-            components?.Dispose();
             _messageFont.Dispose();
             _collection?.Dispose();
             _logoBitmap.Dispose();
