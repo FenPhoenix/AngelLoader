@@ -268,7 +268,7 @@ internal static partial class Ini
                 if (lineTS.Length >= 4 && lineTS[1] == 'F' && lineTS[2] == 'M' && lineTS[3] == ']')
                 {
                     fmsList.Add(new FanMission());
-                    if (fmsListIsEmpty) fmsListIsEmpty = false;
+                    fmsListIsEmpty = false;
                 }
 
                 continue;
