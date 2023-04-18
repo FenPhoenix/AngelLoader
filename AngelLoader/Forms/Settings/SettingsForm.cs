@@ -1694,7 +1694,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         try
         {
-            await UpdateThiefBuddyExistence_Async();
+            await Task.Run(_UpdateThiefBuddyExistence_CheckExistence);
+            _UpdateThiefBuddyExistence_SetUIExistence();
         }
         catch
         {
@@ -1725,12 +1726,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void UpdateThiefBuddyExistence_Sync()
     {
         _UpdateThiefBuddyExistence_CheckExistence();
-        _UpdateThiefBuddyExistence_SetUIExistence();
-    }
-
-    private async Task UpdateThiefBuddyExistence_Async()
-    {
-        await Task.Run(_UpdateThiefBuddyExistence_CheckExistence);
         _UpdateThiefBuddyExistence_SetUIExistence();
     }
 
