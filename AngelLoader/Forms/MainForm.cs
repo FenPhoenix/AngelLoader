@@ -2939,12 +2939,6 @@ public sealed partial class MainForm : DarkFormBase,
             // tabs.
             if (!startup)
             {
-                // TODO(RefreshFMsList): We should put this in a try-finally
-                // But note a little harmless bug here: CellValueNeededDisabled does NOT get set back to
-                // false if we exit early because of no rows. That ends up working fine because CellValueNeeded
-                // won't be called if there are no rows anyway, and it gets set back to false whenever we do
-                // actually have more rows. So a try-finally would make it be set back to true always.
-                // Which would be "correct" but we'd just have to make sure it wouldn't break anything.
                 FMsDGV.SuspendDrawing();
                 // I think FMsDGV.SuspendDrawing() doesn't actually really work because it's a .NET control,
                 // not a direct wrapper around a Win32 one. So that's why we need this. It's possible we
@@ -2970,7 +2964,11 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (FMsDGV.RowCount == 0)
             {
-                if (!startup) FMsDGV.ResumeDrawing();
+                if (!startup)
+                {
+                    CellValueNeededDisabled = false;
+                    FMsDGV.ResumeDrawing();
+                }
                 ClearShownData();
                 return false;
             }
