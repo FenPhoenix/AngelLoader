@@ -415,6 +415,7 @@ public static class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
         (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
@@ -653,7 +654,7 @@ public static class Common
                     break;
                 }
             }
-            else if (hay[i] == needle[0] || hay[i].ToString().EqualsI(needle[0].ToString()))
+            else if (hay[i].EqualsIAscii(needle[0]) || hay[i].ToString().EqualsI(needle[0].ToString()))
             {
                 startIndex = i;
                 break;
@@ -686,7 +687,7 @@ public static class Common
                     {
                         ++needleUsed;
                         lastChar = needleChar;
-                    } while (needleUsed < needleLength - 1 && ((currentChar = needle[needleUsed]) == lastChar || char.IsWhiteSpace(currentChar)));
+                    } while (needleUsed < needleLength - 1 && ((currentChar = needle[needleUsed]).EqualsIAscii(lastChar) || char.IsWhiteSpace(currentChar)));
                 }
                 else if (!char.IsWhiteSpace(hayChar))
                 {
@@ -695,7 +696,7 @@ public static class Common
             }
             else
             {
-                if (hayChar == needleChar || hayChar.ToString().EqualsI(needleChar.ToString()))
+                if (hayChar.EqualsIAscii(needleChar) || hayChar.ToString().EqualsI(needleChar.ToString()))
                 {
                     skippedInARow = 0;
                     char lastChar;
@@ -703,7 +704,7 @@ public static class Common
                     {
                         ++needleUsed;
                         lastChar = needleChar;
-                    } while (needleUsed < needleLength - 1 && needle[needleUsed] == lastChar);
+                    } while (needleUsed < needleLength - 1 && needle[needleUsed].EqualsIAscii(lastChar));
                 }
                 else if (!char.IsWhiteSpace(hayChar))
                 {
