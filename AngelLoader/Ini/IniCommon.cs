@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -213,40 +214,39 @@ internal static partial class Ini
             return true;
         }
 
-        /*
-        Copy of internal "non-randomized-per-app-domain" string hash, but with cheap '='-is-end check
-        because who wants to try to figure out how to get it to check for length-based end, meh.
-        @X64: KeyComparer.GetHashCode()
-        Although we got this by copy-pasting from the F12 go-to-source ReSharper thing while in x86 config,
-        this logic is apparently actually the x64 version (the ReSharper "decompiled" source is the same on
-        x86 and x64 it appears... for some reason...). The version of this method from the 4.8 reference
-        source (and the 4.7.2 reference source for that matter) is completely different, with an ifdef for
-        32-bit and 64-bit sections, but similar logic for the 64-bit section. Unsettlingly, the 32-bit
-        section is completely different and even goes like "int num1 = (5381<<16) + 5381" instead of just
-        5381, making it seem like this method might somehow break or not work right on x86. But it does
-        work, so... maybe the differences are just for performance...
-        */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint RotateLeft(uint value, int offset) => (value << offset) | (value >> (32 - offset));
+
         public unsafe int GetHashCode(string obj)
         {
-            fixed (char* chPtr1 = obj)
+            // From .NET 7 (but tweaked to stop at '=') - no separate 32/64 paths, and doesn't stop at nulls
+            fixed (char* src = obj)
             {
-                int num1 = 5381;
-                int num2 = num1;
-                int num3;
-                for (char* chPtr2 = chPtr1; (num3 = (int)*chPtr2) != '=' && num3 != 0; chPtr2 += 2)
+                uint hash1 = (5381 << 16) + 5381;
+                uint hash2 = hash1;
+
+                uint* ptr = (uint*)src;
+
+                int length = obj.IndexOf('=');
+                length = length == -1 ? obj.Length : length + 1;
+                int originalLength = length;
+
+                while (length > 2 && *ptr < originalLength)
                 {
-                    num1 = (num1 << 5) + num1 ^ num3;
-                    int num4 = (int)chPtr2[1];
-                    if (num4 != 0 && num4 != '=')
-                    {
-                        num2 = (num2 << 5) + num2 ^ num4;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    length -= 4;
+                    // Where length is 4n-1 (e.g. 3,7,11,15,19) this additionally consumes the null terminator
+                    hash1 = (RotateLeft(hash1, 5) + hash1) ^ ptr[0];
+                    hash2 = (RotateLeft(hash2, 5) + hash2) ^ ptr[1];
+                    ptr += 2;
                 }
-                return num1 + (num2 * 1566083941);
+
+                if (length > 0)
+                {
+                    // Where length is 4n-3 (e.g. 1,5,9,13,17) this additionally consumes the null terminator
+                    hash2 = (RotateLeft(hash2, 5) + hash2) ^ ptr[0];
+                }
+
+                return (int)(hash1 + (hash2 * 1566083941));
             }
         }
     }
