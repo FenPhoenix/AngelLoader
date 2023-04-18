@@ -189,7 +189,7 @@ public static class FenGenAttributes
     }
 
     /// <summary>
-    /// Notates that the next n entries are per-game fields, where n is the number of entries in the <see cref="GameSupport.GameIndex"/> enum.
+    /// Notates that the next n entries are per-game fields, where n is the number of entries in the GameIndex enum.
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

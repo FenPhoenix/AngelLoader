@@ -289,7 +289,10 @@ public sealed class StreamReaderCustom
     public string ReadToEnd()
     {
         if (_stream == null!)
-            __Error.ReaderClosed();
+        {
+            ThrowHelper.ReaderClosed();
+        }
+
         _readToEndSB.EnsureCapacity(_charLen - _charPos);
         _readToEndSB.Clear();
         do
@@ -398,7 +401,9 @@ public sealed class StreamReaderCustom
         _charLen = 0;
         _charPos = 0;
         if (!_checkPreamble)
+        {
             _byteLen = 0;
+        }
         do
         {
             if (_checkPreamble)
@@ -419,7 +424,9 @@ public sealed class StreamReaderCustom
             {
                 _byteLen = _stream.Read(_byteBuffer, 0, _byteBuffer.Length);
                 if (_byteLen == 0)
+                {
                     return _charLen;
+                }
             }
 #if ENABLE_UNUSED
             _isBlocked = _byteLen < _byteBuffer.Length;
@@ -427,7 +434,9 @@ public sealed class StreamReaderCustom
             if (!IsPreamble())
             {
                 if (_detectEncoding && _byteLen >= 2)
+                {
                     DetectEncoding();
+                }
                 _charLen += _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, _charLen);
             }
         }
@@ -516,9 +525,13 @@ public sealed class StreamReaderCustom
     public string? ReadLine()
     {
         if (_stream == null!)
-            __Error.ReaderClosed();
+        {
+            ThrowHelper.ReaderClosed();
+        }
         if (_charPos == _charLen && ReadBuffer() == 0)
+        {
             return null;
+        }
         bool sbCreated = false;
         _readLineSB.Clear();
         do
@@ -563,10 +576,5 @@ public sealed class StreamReaderCustom
         }
         while (ReadBuffer() > 0);
         return _readLineSB.ToString();
-    }
-
-    private static class __Error
-    {
-        internal static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
     }
 }

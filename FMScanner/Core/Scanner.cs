@@ -1131,7 +1131,12 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanGameType)
             {
-                var (newDarkRequired, game) = GetGameTypeAndEngine(_baseDirFiles, _usedMisFiles);
+#if FMScanner_FullCode
+                var (newDarkRequired, game)
+#else
+                Game game
+#endif
+                    = GetGameTypeAndEngine(_baseDirFiles, _usedMisFiles);
 #if FMScanner_FullCode
                 if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
 #endif
@@ -1162,7 +1167,11 @@ public sealed partial class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
                     {
-                        var (title, author, version, releaseDate) = ReadFMInfoXml(f);
+                        var (title, author
+#if FMScanner_FullCode
+                            , version
+#endif
+                            , releaseDate) = ReadFMInfoXml(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(title);
                         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
                         {
@@ -1184,7 +1193,11 @@ public sealed partial class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMIni))
                     {
-                        var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
+                        var (title, author
+#if FMScanner_FullCode
+                            , description
+#endif
+                            , lastUpdateDate, tags) = ReadFMIni(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(title);
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
@@ -1267,7 +1280,12 @@ public sealed partial class Scanner : IDisposable
 #endif
                )
             {
-                var (titleFrom0, titleFromN, cNames) = GetMissionNames(_stringsDirFiles, _misFiles, _usedMisFiles);
+                var (titleFrom0, titleFromN
+#if FMScanner_FullCode
+                        , cNames
+#endif
+                        )
+                    = GetMissionNames(_stringsDirFiles, _misFiles, _usedMisFiles);
                 if (_scanOptions.ScanTitle)
                 {
                     SetOrAddTitle(titleFrom0);
@@ -2548,12 +2566,18 @@ public sealed partial class Scanner : IDisposable
 
     #region Read FM info files
 
-    private (string Title, string Author, string Version, DateTime? ReleaseDate)
+    private (string Title, string Author
+#if FMScanner_FullCode
+        , string Version
+#endif
+        , DateTime? ReleaseDate)
     ReadFMInfoXml(NameAndIndex file)
     {
         string title = "";
         string author = "";
+#if FMScanner_FullCode
         string version = "";
+#endif
         DateTime? releaseDate = null;
 
         var fmInfoXml = new XmlDocument();
@@ -2602,17 +2626,27 @@ public sealed partial class Scanner : IDisposable
         // These files also specify languages and whether the mission has custom stuff, but we're not going
         // to trust what we're told - we're going to detect that stuff by looking at what's actually there.
 
-        return (title, author, version, releaseDate);
+        return (title, author
+#if FMScanner_FullCode
+            , version
+#endif
+            , releaseDate);
     }
 
-    private (string Title, string Author, string Description, DateTime? LastUpdateDate, string Tags)
+    private (string Title, string Author
+#if FMScanner_FullCode
+        , string Description
+#endif
+        , DateTime? LastUpdateDate, string Tags)
     ReadFMIni(NameAndIndex file)
     {
         var ret = (
             Title: "",
-            Author: "",
-            Description: "",
-            LastUpdateDate: (DateTime?)null,
+            Author: ""
+#if FMScanner_FullCode
+            , Description: ""
+#endif
+            , LastUpdateDate: (DateTime?)null,
             Tags: ""
         );
 
@@ -2631,7 +2665,14 @@ public sealed partial class Scanner : IDisposable
             iniLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
         }
 
-        if (iniLines.Count == 0) return ("", "", "", null, "");
+        if (iniLines.Count == 0)
+        {
+            return ("", ""
+#if FMScanner_FullCode
+                , ""
+#endif
+                , null, "");
+        }
 
         (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = ("", "", "", "");
 
@@ -3480,16 +3521,30 @@ public sealed partial class Scanner : IDisposable
         return "";
     }
 
-    private (string TitleFrom0, string TitleFromN, List<string>? CampaignMissionNames)
+    private (string TitleFrom0, string TitleFromN
+#if FMScanner_FullCode
+        , List<string>? CampaignMissionNames
+#endif
+        )
     GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
     {
         List<string>? titlesStrLines = GetTitlesStrLines(stringsDirFiles);
-        if (titlesStrLines == null || titlesStrLines.Count == 0) return ("", "", null);
+        if (titlesStrLines == null || titlesStrLines.Count == 0)
+        {
+            return ("", ""
+#if FMScanner_FullCode
+                    , null
+#endif
+                );
+        }
 
         var ret =
             (TitleFrom0: "",
-                TitleFromN: "",
-                CampaignMissionNames: (List<string>?)null);
+                TitleFromN: ""
+#if FMScanner_FullCode
+                , CampaignMissionNames: (List<string>?)null
+#endif
+            );
 
         static bool NameExistsInList(List<NameAndIndex> list, string value)
         {
@@ -4087,10 +4142,18 @@ public sealed partial class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
+#if FMScanner_FullCode
     private (bool? NewDarkRequired, Game Game)
+#else
+    private Game
+#endif
     GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
     {
+#if FMScanner_FullCode
         var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
+#else
+        Game game = Game.Null;
+#endif
 
         // @MEM(GetGameTypeAndEngine OrderBy etc.):
         // 146 / 2,920
@@ -4212,7 +4275,9 @@ public sealed partial class Scanner : IDisposable
         through the stream sequentially until we hit each one.
         */
 
+#if FMScanner_FullCode
         bool foundAtNewDarkLocation = false;
+#endif
         bool foundAtOldDarkThief2Location = false;
 
         // We need to say "length - x" because for zips, the buffer will be full offset size rather than
@@ -4297,7 +4362,11 @@ public sealed partial class Scanner : IDisposable
                     fine currently.
                     SS2 .mis files don't have DARKMISS in them at all.
                     */
+#if FMScanner_FullCode
                     return (null, Game.SS2);
+#else
+                    return Game.SS2;
+#endif
                 }
                 else if ((_locations[i] == _oldDarkT2Loc ||
                           _locations[i] == _newDarkLoc1 ||
@@ -4308,8 +4377,10 @@ public sealed partial class Scanner : IDisposable
                     // they're interchangeable in meaning so we don't have to do anything
                     if (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2)
                     {
+#if FMScanner_FullCode
                         ret.NewDarkRequired = true;
                         foundAtNewDarkLocation = true;
+#endif
                         break;
                     }
                     else if (_locations[i] == _oldDarkT2Loc)
@@ -4320,7 +4391,9 @@ public sealed partial class Scanner : IDisposable
                 }
             }
 
+#if FMScanner_FullCode
             if (!foundAtNewDarkLocation) ret.NewDarkRequired = false;
+#endif
         }
         finally
         {
@@ -4331,15 +4404,21 @@ public sealed partial class Scanner : IDisposable
 
         if (foundAtOldDarkThief2Location)
         {
-            return (
 #if FMScanner_FullCode
-                _scanOptions.ScanNewDarkRequired ? (bool?)false :
-#endif
-                null,
+            return (
+                _scanOptions.ScanNewDarkRequired ? (bool?)false : null,
                 _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
+#else
+            return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
+#endif
         }
 
-        if (!_scanOptions.ScanGameType) return (ret.NewDarkRequired, Game.Null);
+#if FMScanner_FullCode
+        if (!_scanOptions.ScanGameType)
+        {
+            return (ret.NewDarkRequired, Game.Null);
+        }
+#endif
 
         #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
 
@@ -4381,13 +4460,18 @@ public sealed partial class Scanner : IDisposable
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
             using Stream stream = _archive.OpenEntry(smallestGamFile != null ? gamFileZipEntry : misFileZipEntry);
-            ret.Game = StreamContainsIdentString(
-                stream,
-                RopeyArrow,
-                GameTypeBuffer_ChunkPlusRopeyArrow,
-                _gameTypeBufferSize)
-                ? Game.Thief2
-                : Game.Thief1;
+#if FMScanner_FullCode
+            ret.Game
+#else
+            game
+#endif
+                = StreamContainsIdentString(
+                    stream,
+                    RopeyArrow,
+                    GameTypeBuffer_ChunkPlusRopeyArrow,
+                    _gameTypeBufferSize)
+                    ? Game.Thief2
+                    : Game.Thief1;
         }
         else
         {
@@ -4416,9 +4500,14 @@ public sealed partial class Scanner : IDisposable
                 try
                 {
                     int objMapBytesRead = stream.ReadAll(content, 0, length);
-                    ret.Game = content.Contains(RopeyArrow, objMapBytesRead)
-                        ? Game.Thief2
-                        : Game.Thief1;
+#if FMScanner_FullCode
+                    ret.Game
+#else
+                    game
+#endif
+                        = content.Contains(RopeyArrow, objMapBytesRead)
+                            ? Game.Thief2
+                            : Game.Thief1;
                 }
                 finally
                 {
@@ -4455,7 +4544,13 @@ public sealed partial class Scanner : IDisposable
         }
 
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
+        if (
+#if FMScanner_FullCode
+            ret.Game
+#else
+            game
+#endif
+            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
         {
             using Stream stream = _fmIsZip
                 ? _archive.OpenEntry(misFileZipEntry)
@@ -4466,13 +4561,22 @@ public sealed partial class Scanner : IDisposable
                     GameTypeBuffer_ChunkPlusMAPPARAM,
                     _gameTypeBufferSize))
             {
-                ret.Game = Game.SS2;
+#if FMScanner_FullCode
+                ret.Game
+#else
+                game
+#endif
+                    = Game.SS2;
             }
         }
 
         #endregion
 
+#if FMScanner_FullCode
         return ret;
+#else
+        return game;
+#endif
     }
 
 #if FMScanner_FullCode

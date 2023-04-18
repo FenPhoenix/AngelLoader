@@ -4370,15 +4370,10 @@ public sealed partial class MainForm : DarkFormBase,
         int selRowsCount = 0;
 
         bool multiSelected,
-            allAreInstalled,
             noneAreInstalled,
-            allAreDark,
             noneAreDark,
             allAreAvailable,
             noneAreAvailable,
-            allAreKnownAndSupported,
-            allSelectedAreSameInstalledState,
-            allAreSupportedAndAvailable,
             playShouldBeEnabled,
             installShouldBeEnabled;
 
@@ -4471,15 +4466,14 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            allAreInstalled = installedCount == selRowsCount;
+            bool allAreInstalled = installedCount == selRowsCount;
             noneAreInstalled = installedCount == 0;
-            allAreDark = gameIsDarkCount == selRowsCount;
             noneAreDark = gameIsDarkCount == 0;
-            allAreKnownAndSupported = knownAndSupportedCount == selRowsCount;
+            bool allAreKnownAndSupported = knownAndSupportedCount == selRowsCount;
             allAreAvailable = markedUnavailableCount == 0;
             noneAreAvailable = markedUnavailableCount == selRowsCount;
-            allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
-            allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+            bool allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
+            bool allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
 
             multiSelected = selRowsCount > 1;
             playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;

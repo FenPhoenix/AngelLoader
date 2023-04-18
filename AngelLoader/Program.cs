@@ -8,7 +8,7 @@ using static AL_Common.Logger;
 
 namespace AngelLoader;
 
-internal static class Program
+file static class Program
 {
     /// <summary>
     /// The main entry point for the application.

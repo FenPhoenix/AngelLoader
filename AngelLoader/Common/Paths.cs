@@ -73,7 +73,7 @@ internal static class Paths
         }
     }
 #else
-        internal static readonly string Startup = GetStartupPath();
+    internal static readonly string Startup = GetStartupPath();
 #endif
 
     #endregion
@@ -326,7 +326,9 @@ internal static class Paths
     internal const string CamCfg = "cam.cfg";
     internal const string CamExtCfg = "cam_ext.cfg";
     internal const string CamModIni = "cam_mod.ini";
+#if !ReleaseBeta && !ReleasePublic
     internal const string UserCfg = "user.cfg";
+#endif
 
     internal static string GetSneakyOptionsIni()
     {

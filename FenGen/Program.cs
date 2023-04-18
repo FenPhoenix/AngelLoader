@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace FenGen;
 
-internal static class Program
+file static class Program
 {
     /// <summary>
     /// The main entry point for the application.
@@ -15,9 +15,9 @@ internal static class Program
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new AppContext());
     }
-}
 
-internal sealed class AppContext : ApplicationContext
-{
-    public AppContext() => Core.Init();
+    private sealed class AppContext : ApplicationContext
+    {
+        public AppContext() => Core.Init();
+    }
 }
