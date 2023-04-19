@@ -6,6 +6,15 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.7.3:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.7.0_1.7.3.html)
+
+#### AngelLoader documentation.html changes:
+
+-No new text, but updated this image:  
+`main_window_full_960.png`  
+
 ### v1.7.2:
 
 No localizable text changes.
