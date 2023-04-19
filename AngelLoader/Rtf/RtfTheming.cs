@@ -625,9 +625,11 @@ internal static class RtfTheming
 
             // @RTF/@MEM: Still allocating an extra array for now, we can get rid of this later when we know we're accurate
             byte[] newBytes = new byte[retBytes.Length + extraAnsiCpgCombinedLength];
+            Span<byte> newBytesSpan = newBytes.AsSpan();
 
             int lastIndex = 0;
             int newBytePointer = 0;
+            ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
             for (int i = 0; i < langItems.Count; i++)
             {
                 RtfDisplayedReadmeParser.LangItem item = langItems[i];
@@ -635,18 +637,17 @@ internal static class RtfTheming
                 ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
                 ReadOnlySpan<byte> byteSpan = retBytes.AsSpan(lastIndex, item.Index - lastIndex);
-                byteSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+                byteSpan.CopyTo(newBytesSpan.Slice(newBytePointer));
                 lastIndex = item.Index;
 
                 newBytePointer += byteSpan.Length;
 
-                ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
-                ansiCpgSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+                ansiCpgSpan.CopyTo(newBytesSpan.Slice(newBytePointer));
 
                 newBytePointer += ansiCpgLength;
 
                 ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
-                codePageSpan.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+                codePageSpan.CopyTo(newBytesSpan.Slice(newBytePointer));
 
                 // +1 for adding a space after the digits
                 newBytePointer += item.DigitsCount + 1;
@@ -654,7 +655,7 @@ internal static class RtfTheming
 
             // One more to copy everything from the last index to the end
             ReadOnlySpan<byte> segmentLast = retBytes.AsSpan(lastIndex);
-            segmentLast.CopyTo(newBytes.AsSpan().Slice(newBytePointer));
+            segmentLast.CopyTo(newBytesSpan.Slice(newBytePointer));
 
             #endregion
 
