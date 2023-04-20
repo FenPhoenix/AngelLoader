@@ -534,21 +534,24 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
     internal void SetPinItemsMode(bool multiplePinnedStates)
     {
-        _multiplePinnedStates = multiplePinnedStates;
-
-        if (!_constructed) return;
-
-        if (multiplePinnedStates)
+        if (_constructed)
         {
-            PinToTopMenuItem.Visible = false;
-            ExplicitPinToTopMenuItem.Visible = true;
-            ExplicitUnpinFromTopMenuItem.Visible = true;
+            if (multiplePinnedStates)
+            {
+                PinToTopMenuItem.Visible = false;
+                ExplicitPinToTopMenuItem.Visible = true;
+                ExplicitUnpinFromTopMenuItem.Visible = true;
+            }
+            else
+            {
+                PinToTopMenuItem.Visible = true;
+                ExplicitPinToTopMenuItem.Visible = false;
+                ExplicitUnpinFromTopMenuItem.Visible = false;
+            }
         }
         else
         {
-            PinToTopMenuItem.Visible = true;
-            ExplicitPinToTopMenuItem.Visible = false;
-            ExplicitUnpinFromTopMenuItem.Visible = false;
+            _multiplePinnedStates = multiplePinnedStates;
         }
     }
 
