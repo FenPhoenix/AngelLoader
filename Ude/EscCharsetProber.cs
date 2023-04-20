@@ -92,7 +92,7 @@ internal sealed class EscCharsetProber : CharsetProber
                 else if (codingState == SMModel.ITSME)
                 {
                     _state = ProbingState.FoundIt;
-                    _detectedCharset = _codingSM[j].ModelName;
+                    _detectedCharset = _codingSM[j]._model.Name;
                     return _state;
                 }
             }

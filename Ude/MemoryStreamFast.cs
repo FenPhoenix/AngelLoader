@@ -145,8 +145,6 @@ public sealed class MemoryStreamFast
     /// <param name="buffer">The buffer to write data from.</param>
     /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin copying bytes to the current stream.</param>
     /// <param name="count">The maximum number of bytes to write.</param>
-    /// <exception cref="T:System.ArgumentNullException">
-    /// <paramref name="buffer" /> is <see langword="null" />.</exception>
     /// <exception cref="T:System.NotSupportedException">The stream does not support writing. For additional information see <see cref="P:System.IO.Stream.CanWrite" />.
     /// -or-
     /// The current position is closer than <paramref name="count" /> bytes to the end of the stream, and the capacity cannot be modified.</exception>
@@ -158,8 +156,6 @@ public sealed class MemoryStreamFast
     /// <exception cref="T:System.ObjectDisposedException">The current stream instance is closed.</exception>
     internal void Write(byte[] buffer, int offset, int count)
     {
-        if (buffer == null)
-            throw new ArgumentNullException(nameof(buffer), "ArgumentNull_Buffer");
         if (offset < 0)
             throw new ArgumentOutOfRangeException(nameof(offset), "ArgumentOutOfRange_NeedNonNegNum");
         if (count < 0)

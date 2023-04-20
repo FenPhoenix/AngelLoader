@@ -134,10 +134,6 @@ public sealed class CharsetDetector
 
     private enum InputState { PureASCII = 0, EscASCII = 1, HighByte = 2 }
 
-    private Charset _charset;
-
-    private float _confidence;
-
     private const float MINIMUM_THRESHOLD = 0.20f;
 
     private InputState _inputState;
@@ -173,8 +169,8 @@ public sealed class CharsetDetector
 
     public void Reset()
     {
-        _charset = Charset.Null;
-        _confidence = 0.0f;
+        Charset = Charset.Null;
+        Confidence = 0.0f;
 
         _done = false;
         _start = true;
@@ -189,14 +185,14 @@ public sealed class CharsetDetector
         }
     }
 
-    public Charset Charset => _charset;
+    public Charset Charset;
 
-    public float Confidence => _confidence;
+    public float Confidence;
 
     private void Report(Charset charset, float confidence)
     {
-        _charset = charset;
-        _confidence = confidence;
+        Charset = charset;
+        Confidence = confidence;
     }
 
     public void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
