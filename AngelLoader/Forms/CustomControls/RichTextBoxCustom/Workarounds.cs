@@ -338,6 +338,7 @@ internal sealed partial class RichTextBoxCustom
         // it wants to set right-arrow-pointer but is then told to set IBeam etc.
     }
 
+#if X64
     private static unsafe Native.ENLINK ConvertFromENLINK64(Native.ENLINK64 es64)
     {
         var enlink = new Native.ENLINK();
@@ -356,6 +357,7 @@ internal sealed partial class RichTextBoxCustom
         }
         return enlink;
     }
+#endif
 
     private void CheckAndHandleEnLinkMsg(ref Message m)
     {
@@ -372,9 +374,12 @@ internal sealed partial class RichTextBoxCustom
         "On 64-bit, we do some custom marshalling to get this to work. The richedit control
         unfortunately does not respect IA64 struct alignment conventions."
         */
-        Native.ENLINK enlink = Environment.Is64BitProcess
-            ? ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64)))
-            : (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
+        Native.ENLINK enlink =
+#if X64
+            ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64)));
+#else
+            (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
+#endif
 
         switch (enlink.msg)
         {

@@ -117,13 +117,12 @@ internal static class Win32ThemeHooks
             // Fails with 'STATUS_NOT_SUPPORTED: Hooking near conditional jumps is not supported. (Code: 487)'
             // on x64. Sigh... Fortunately, this thing seems to only be used for the Win7 non-Aero scroll bar
             // corners...? I don't see any difference with this disabled on Win10. So... not the worst thing...
-            if (!Environment.Is64BitProcess)
-            {
-                (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
-                    "user32.dll",
-                    "GetSysColorBrush",
-                    GetSysColorBrush_Hooked);
-            }
+#if !X64
+            (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
+                "user32.dll",
+                "GetSysColorBrush",
+                GetSysColorBrush_Hooked);
+#endif
 
             (_drawThemeBackgroundHook, DrawThemeBackground_Original) = InstallHook<DrawThemeBackgroundDelegate>(
                 "uxtheme.dll",

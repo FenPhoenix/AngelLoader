@@ -223,6 +223,7 @@ internal static class Native
         internal CHARRANGE? charrange = null;
     }
 
+#if X64
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
     public class ENLINK64
@@ -230,6 +231,7 @@ internal static class Native
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
         public byte[] contents = new byte[56];
     }
+#endif
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
@@ -310,31 +312,19 @@ internal static class Native
 
     internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
     {
-        return Environment.Is64BitProcess
-            ? GetWindowLongPtr64(hWnd, nIndex)
-            : GetWindowLong32(hWnd, nIndex);
+#if X64
+        return GetWindowLongPtr64(hWnd, nIndex);
+#else
+        return GetWindowLong32(hWnd, nIndex);
+#endif
     }
 
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
-    private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
-
+#if X64
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
-
-#if false
-    // This static method is required because legacy OSes do not support SetWindowLongPtr
-    internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, UIntPtr dwNewLong)
-    {
-        return Environment.Is64BitProcess
-            ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
-            : SetWindowLong32(hWnd, nIndex, dwNewLong);
-    }
-
-    [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
-    private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
-
-    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
-    private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, UIntPtr dwNewLong);
+#else
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
+    private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
 #endif
 
     [DllImport("user32.dll")]

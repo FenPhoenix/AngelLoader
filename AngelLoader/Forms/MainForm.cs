@@ -879,7 +879,9 @@ public sealed partial class MainForm : DarkFormBase,
 #else
         string title = "AngelLoader " + Application.ProductVersion;
 #endif
-        if (Environment.Is64BitProcess) title += " (64-bit)";
+#if X64
+        title += " (64-bit)";
+#endif
 
         Text = title;
 

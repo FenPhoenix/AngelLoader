@@ -17,11 +17,12 @@ public static partial class Utils
         return relativePath.IsEmpty() ? basePath : Path.GetFullPath(Path.Combine(basePath, relativePath));
     }
 
+#if !X64
     // @X64: We won't need this Program Files thing on x64
     internal static bool PathContainsUnsupportedProgramFilesFolder(string fullPath, out string programFilesPathName)
     {
         // If we're 32/32, then "Program Files" actually IS correct (it's the only one in that case)
-        if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
+        if (Environment.Is64BitOperatingSystem)
         {
             string? programFiles;
             try
@@ -58,6 +59,7 @@ public static partial class Utils
             return false;
         }
     }
+#endif
 
     #region Get file / dir names
 

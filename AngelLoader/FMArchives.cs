@@ -135,6 +135,7 @@ internal static class FMArchives
                         i--;
                         continue;
                     }
+#if !X64
                     else if (PathContainsUnsupportedProgramFilesFolder(di, out string progFilesPath))
                     {
                         string message = "This path contains '" + progFilesPath +
@@ -145,6 +146,7 @@ internal static class FMArchives
                         Core.Dialogs.ShowError_ViewOwned(message);
                         return false;
                     }
+#endif
 
                     if (!archivesLinesTruncated)
                     {

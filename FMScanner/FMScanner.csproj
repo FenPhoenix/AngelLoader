@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRTFTest|x64'">
-    <DefineConstants>TRACE;ReleaseRTFTest</DefineConstants>
+    <DefineConstants>TRACE;ReleaseRTFTest;X64</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
@@ -35,7 +35,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRTFTest|x64'">
-    <DefineConstants>TRACE;DEBUG;DebugRTFTest</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DebugRTFTest;X64</DefineConstants>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
@@ -48,7 +48,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;X64</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugFullTest|AnyCPU'">
@@ -62,7 +62,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugFullTest|x64'">
-    <DefineConstants>TRACE;DEBUG;FMScanner_FullCode</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FMScanner_FullCode;X64</DefineConstants>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
@@ -77,7 +77,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFullTest|x64'">
-    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
+    <DefineConstants>TRACE;FMScanner_FullCode;X64</DefineConstants>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
