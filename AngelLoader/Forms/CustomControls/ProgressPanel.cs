@@ -50,35 +50,32 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
             Cancel_Button.DarkModeEnabled = _darkModeEnabled;
 
-            Color back, fore;
+            (Color fore, Color back) =
+                _darkModeEnabled
+                    // Use a lighter background to make it easy to see we're supposed to be in front and modal
+                    ? (fore: DarkColors.LightText, back: DarkColors.LightBackground)
+                    : (fore: SystemColors.ControlText, back: SystemColors.Control);
 
-            if (_darkModeEnabled)
-            {
-                // Use a lighter background to make it easy to see we're supposed to be in front and modal
-                back = DarkColors.LightBackground;
-                fore = DarkColors.LightText;
-            }
-            else
-            {
-                back = SystemColors.Control;
-                fore = SystemColors.ControlText;
-            }
-
-            BackColor = back;
             ForeColor = fore;
+            BackColor = back;
 
             MainMessage1Label.ForeColor = fore;
             MainMessage1Label.BackColor = back;
-            MainMessage2Label.BackColor = back;
+
             MainMessage2Label.ForeColor = fore;
+            MainMessage2Label.BackColor = back;
+
             MainPercentLabel.ForeColor = fore;
             MainPercentLabel.BackColor = back;
+
             MainProgressBar.DarkModeEnabled = _darkModeEnabled;
 
-            SubMessageLabel.BackColor = back;
             SubMessageLabel.ForeColor = fore;
-            SubPercentLabel.BackColor = back;
+            SubMessageLabel.BackColor = back;
+
             SubPercentLabel.ForeColor = fore;
+            SubPercentLabel.BackColor = back;
+
             SubProgressBar.DarkModeEnabled = _darkModeEnabled;
         }
     }
