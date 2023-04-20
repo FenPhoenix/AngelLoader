@@ -198,10 +198,10 @@ internal readonly ref struct Zip64ExtraField
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
-        if (uncompressedSize is < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
-        if (compressedSize is < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
-        if (localHeaderOffset is < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
-        if (startDiskNumber is < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
+        if (uncompressedSize is < 0) ThrowHelper.InvalidData(SR.FieldTooBigUncompressedSize);
+        if (compressedSize is < 0) ThrowHelper.InvalidData(SR.FieldTooBigCompressedSize);
+        if (localHeaderOffset is < 0) ThrowHelper.InvalidData(SR.FieldTooBigLocalHeaderOffset);
+        if (startDiskNumber is < 0) ThrowHelper.InvalidData(SR.FieldTooBigStartDiskNumber);
 
         zip64Block = new Zip64ExtraField(
             uncompressedSize: uncompressedSize,

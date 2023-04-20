@@ -143,7 +143,7 @@ public static class FastIO_Native
 
             if (path.IsWhiteSpace() || pathContainsInvalidChars)
             {
-                throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
+                ThrowHelper.ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
             }
         }
 

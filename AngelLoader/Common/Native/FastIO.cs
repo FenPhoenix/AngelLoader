@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.FastIO_Native;
@@ -122,7 +123,7 @@ internal static class FastIO
     {
         if (searchPattern.IsEmpty())
         {
-            throw new ArgumentException(nameof(searchPattern) + " was null or empty", nameof(searchPattern));
+            ThrowHelper.ArgumentException(nameof(searchPattern) + " was null or empty", nameof(searchPattern));
         }
 
         path = NormalizeAndCheckPath(path, pathIsKnownValid);

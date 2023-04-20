@@ -40,7 +40,7 @@ internal sealed class SubReadStream : Stream
 
     private void ThrowIfCantRead()
     {
-        if (!CanRead) throw new NotSupportedException(SR.ReadingNotSupported);
+        if (!CanRead) ThrowHelper.NotSupported(SR.ReadingNotSupported);
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -75,7 +75,7 @@ internal sealed class SubReadStream : Stream
 
         if (origin != SeekOrigin.Current)
         {
-            throw new NotSupportedException(SR.SeekingNotSupported);
+            ThrowHelper.NotSupported(SR.SeekingNotSupported);
         }
 
         if (_superStream.Position != _positionInSuperStream)

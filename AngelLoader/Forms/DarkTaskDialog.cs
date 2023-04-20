@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
@@ -61,7 +62,7 @@ public partial class DarkTaskDialog : DarkFormBase
 
         if (!yesButtonVisible && !noButtonVisible && !cancelButtonVisible)
         {
-            throw new ArgumentException("At least one button must have text specified!");
+            ThrowHelper.ArgumentException("At least one button must have text specified!");
         }
 
         int imageMarginX = icon != MessageBoxIcon.None ? 49 : 7;
@@ -97,7 +98,7 @@ public partial class DarkTaskDialog : DarkFormBase
 
         CancelButton = cancelButtonVisible ? Cancel_Button : noButtonVisible ? NoButton : YesButton;
 
-        static void ThrowForDefaultButton(MBoxButton button) => throw new ArgumentException("Default button not visible: " + button);
+        static void ThrowForDefaultButton(MBoxButton button) => ThrowHelper.ArgumentException("Default button not visible: " + button);
 
         NoButton.DialogResult = DialogResult.No;
         YesButton.DialogResult = DialogResult.Yes;

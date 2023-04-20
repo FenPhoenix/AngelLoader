@@ -170,7 +170,7 @@ public static class BinaryRead
     {
         if (count < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
+            ThrowHelper.ArgumentOutOfRange(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
         }
         if (count == 0)
         {
@@ -206,7 +206,7 @@ public static class BinaryRead
     {
         if (numBytes > buffer.Length)
         {
-            throw new ArgumentOutOfRangeException(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
+            ThrowHelper.ArgumentOutOfRange(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
         }
 
         int offset = 0;

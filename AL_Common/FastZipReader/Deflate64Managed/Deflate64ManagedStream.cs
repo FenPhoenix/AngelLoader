@@ -33,7 +33,7 @@ public sealed class Deflate64ManagedStream : Stream
         }
         if (!stream.CanRead)
         {
-            throw new ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
+            ThrowHelper.ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
         }
 
         InitializeInflater(stream);
@@ -45,7 +45,10 @@ public sealed class Deflate64ManagedStream : Stream
     private void InitializeInflater(Stream stream)
     {
         Debug.Assert(stream != null);
-        if (!stream.CanRead) throw new ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
+        if (!stream.CanRead)
+        {
+            ThrowHelper.ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
+        }
 
         _inflater64 = new Inflater64Managed(reader: null);
 
@@ -71,7 +74,7 @@ public sealed class Deflate64ManagedStream : Stream
     public override void Flush()
     {
         ThrowIfDisposed();
-        throw new NotSupportedException(SR.WritingNotSupported);
+        ThrowHelper.NotSupported(SR.WritingNotSupported);
     }
 
     public override Task FlushAsync(CancellationToken cancellationToken)

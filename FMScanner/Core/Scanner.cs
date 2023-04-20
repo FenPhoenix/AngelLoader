@@ -420,14 +420,14 @@ public sealed partial class Scanner : IDisposable
         if (tempPath.IsEmpty())
         {
             Log("Argument is null or empty: " + nameof(tempPath));
-            throw new ArgumentException("Argument is null or empty.", nameof(tempPath));
+            ThrowHelper.ArgumentException("Argument is null or empty.", nameof(tempPath));
         }
 
         if (missions == null) throw new ArgumentNullException(nameof(missions));
         if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
         {
             Log("No mission(s) specified. tempPath: " + tempPath);
-            throw new ArgumentException("No mission(s) specified.", nameof(missions));
+            ThrowHelper.ArgumentException("No mission(s) specified.", nameof(missions));
         }
 
         // Deep-copy the scan options object because we might have to change its values in some cases, but we

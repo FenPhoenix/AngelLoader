@@ -366,12 +366,12 @@ public sealed class ZipArchiveFast : IDisposable
 
                     if (numberOfEntries != _expectedNumberOfEntries)
                     {
-                        throw new InvalidDataException(SR.NumEntriesWrong);
+                        ThrowHelper.InvalidData(SR.NumEntriesWrong);
                     }
                 }
                 catch (EndOfStreamException ex)
                 {
-                    throw new InvalidDataException(SR.CentralDirectoryInvalid + "\r\nInner exception:\r\n" + ex);
+                    ThrowHelper.InvalidData(SR.CentralDirectoryInvalid, ex);
                 }
 
                 _entriesInitialized = true;
@@ -395,7 +395,7 @@ public sealed class ZipArchiveFast : IDisposable
             _archiveStream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
             if (!ZipHelpers.SeekBackwardsToSignature(_archiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant, _bundle))
             {
-                throw new InvalidDataException(SR.EOCDNotFound);
+                ThrowHelper.InvalidData(SR.EOCDNotFound);
             }
 
             long eocdStart = _archiveStream.Position;
@@ -436,7 +436,7 @@ public sealed class ZipArchiveFast : IDisposable
 
                     if (locator.OffsetOfZip64EOCD > long.MaxValue)
                     {
-                        throw new InvalidDataException(SR.FieldTooBigOffsetToZip64EOCD);
+                        ThrowHelper.InvalidData(SR.FieldTooBigOffsetToZip64EOCD);
                     }
                     long zip64EOCDOffset = (long)locator.OffsetOfZip64EOCD;
 
@@ -445,18 +445,18 @@ public sealed class ZipArchiveFast : IDisposable
                     // read Zip64EOCD
                     if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(_archiveStream, _bundle, out Zip64EndOfCentralDirectoryRecord record))
                     {
-                        throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
+                        ThrowHelper.InvalidData(SR.Zip64EOCDNotWhereExpected);
                     }
 
                     _numberOfThisDisk = record.NumberOfThisDisk;
 
                     if (record.NumberOfEntriesTotal > long.MaxValue)
                     {
-                        throw new InvalidDataException(SR.FieldTooBigNumEntries);
+                        ThrowHelper.InvalidData(SR.FieldTooBigNumEntries);
                     }
                     if (record.OffsetOfCentralDirectory > long.MaxValue)
                     {
-                        throw new InvalidDataException(SR.FieldTooBigOffsetToCD);
+                        ThrowHelper.InvalidData(SR.FieldTooBigOffsetToCD);
                     }
                     if (record.NumberOfEntriesTotal != record.NumberOfEntriesOnThisDisk)
                     {
@@ -470,16 +470,16 @@ public sealed class ZipArchiveFast : IDisposable
 
             if (_centralDirectoryStart > ArchiveStreamLength)
             {
-                throw new InvalidDataException(SR.FieldTooBigOffsetToCD);
+                ThrowHelper.InvalidData(SR.FieldTooBigOffsetToCD);
             }
         }
         catch (EndOfStreamException ex)
         {
-            throw new InvalidDataException(SR.CDCorrupt, ex);
+            ThrowHelper.InvalidData(SR.CDCorrupt, ex);
         }
         catch (IOException ex)
         {
-            throw new InvalidDataException(SR.CDCorrupt, ex);
+            ThrowHelper.InvalidData(SR.CDCorrupt, ex);
         }
     }
 
