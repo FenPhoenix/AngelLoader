@@ -170,21 +170,21 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
     private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().NewMantle = _page.Patch_NewMantle_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }
 
     private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().PostProc = _page.Patch_PostProc_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }
 
     private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().NDSubs = _page.Patch_NDSubs_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }

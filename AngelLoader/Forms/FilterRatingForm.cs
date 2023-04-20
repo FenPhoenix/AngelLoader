@@ -10,11 +10,7 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
 {
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     internal int RatingFrom;
     internal int RatingTo;
@@ -82,7 +78,7 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
 
     private void ComboBoxes_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         if (ToComboBox.SelectedIndex < FromComboBox.SelectedIndex)
         {
             int fi = ToComboBox.SelectedIndex;

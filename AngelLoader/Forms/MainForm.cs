@@ -150,19 +150,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
+    public int EventsDisabled { get; set; }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int ZeroSelectCodeDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool ZeroSelectCodeDisabled => ZeroSelectCodeDisabledCount > 0;
+    public int ZeroSelectCodeDisabled { get; set; }
 
     // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
     // middle of the operation
@@ -211,13 +203,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void T1ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         GameConfigFiles.SetScreenShotMode(GameIndex.Thief1, T1ScreenShotModeCheckBox.Checked);
     }
 
     private void T2ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         GameConfigFiles.SetScreenShotMode(GameIndex.Thief2, T2ScreenShotModeCheckBox.Checked);
     }
 
@@ -2201,13 +2193,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void GamesTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         if (GamesTabControl.Visible) SaveCurrentTabSelectedFM(e.TabPage);
     }
 
     private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         if (GamesTabControl.SelectedTab == null)
         {
@@ -2633,7 +2625,7 @@ public sealed partial class MainForm : DarkFormBase,
                                    sender == FilterAuthorTextBox;
             bool senderIsGameButton = _filterByGameButtons.Contains(sender);
 
-            if ((senderIsTextBox || senderIsGameButton) && EventsDisabled)
+            if ((senderIsTextBox || senderIsGameButton) && EventsDisabled > 0)
             {
                 return;
             }
@@ -2728,7 +2720,7 @@ public sealed partial class MainForm : DarkFormBase,
     private void SetFilterBarScrollButtons()
     {
         // Don't run this a zillion gatrillion times during init
-        if (EventsDisabled || !Visible) return;
+        if (EventsDisabled > 0 || !Visible) return;
 
         void ShowLeft()
         {
@@ -3832,7 +3824,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (FMsDGV.SuppressSelectionEvent) return;
 
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
         // from being run during multi-select (scanning, caching, who knows what)
@@ -4021,7 +4013,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         FanMission fm = FMsDGV.GetMainSelectedFM();
         fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
@@ -4320,7 +4312,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         // Hack to stop this being run when we clear selection for the purpose of selecting just one immediately
         // after.
-        if (ZeroSelectCodeDisabled) return;
+        if (ZeroSelectCodeDisabled > 0) return;
 
         #region Menus
 

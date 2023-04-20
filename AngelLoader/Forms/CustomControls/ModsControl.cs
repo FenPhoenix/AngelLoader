@@ -15,11 +15,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 {
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     private Func<string>? _errorTextGetter;
     public void SetErrorTextGetter(Func<string> errorTextGetter) => _errorTextGetter = errorTextGetter;
@@ -192,13 +188,13 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
     private void ShowImportantCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         CheckList.ShowCautionSection(ShowImportantCheckBox.Checked);
     }
 
     private void DisabledModsTextBox_TextChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         DisabledModsTextBoxTextChanged?.Invoke(DisabledModsTextBox, e);
     }
 
@@ -217,7 +213,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
     private void CheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         UpdateDisabledMods();
     }
 }

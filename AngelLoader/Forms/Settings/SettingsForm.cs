@@ -81,11 +81,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     #endregion
 
@@ -1217,7 +1213,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         var s = (DarkRadioButtonCustom)sender;
         if (!s.Checked) return;
@@ -1439,7 +1435,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         string lang = LangComboBox.SelectedBackingItem();
         try
@@ -1485,7 +1481,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         VisualTheme theme = sender == AppearancePage.DarkThemeRadioButton
             ? VisualTheme.Dark
@@ -1558,7 +1554,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
         {
             AppearancePage.RatingUseStarsCheckBox.Enabled = false;
@@ -1568,7 +1564,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
         {
             AppearancePage.RatingUseStarsCheckBox.Enabled = true;
@@ -1578,7 +1574,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         SetRatingImage();
     }
 

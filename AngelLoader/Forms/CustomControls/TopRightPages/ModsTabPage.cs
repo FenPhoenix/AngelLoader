@@ -126,7 +126,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
     private void UpdateFMDisabledMods(bool writeIni)
     {
-        if (_owner.EventsDisabled || !_owner.FMsDGV.RowSelected()) return;
+        if (_owner.EventsDisabled > 0 || !_owner.FMsDGV.RowSelected()) return;
 
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.DisabledMods = _page.MainModsControl.DisabledModsTextBox.Text;

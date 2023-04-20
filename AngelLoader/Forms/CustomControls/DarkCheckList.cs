@@ -12,11 +12,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 {
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     #region Private fields
 
@@ -358,7 +354,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     private void OnItemsCheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
 
         var s = (DarkCheckBox)sender;
 

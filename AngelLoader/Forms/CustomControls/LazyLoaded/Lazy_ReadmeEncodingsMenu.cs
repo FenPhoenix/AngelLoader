@@ -14,11 +14,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     private bool _constructed;
 
@@ -73,7 +69,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 
     private void MenuItems_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         if (sender is not ToolStripMenuItemCustom { Checked: true } senderItem) return;
 
         using (new DisableEvents(this))

@@ -294,7 +294,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.Title = _page.EditFMTitleTextBox.Text;
         _owner.RefreshSelectedRowCell(Column.Title);
@@ -302,7 +302,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         Ini.WriteFullFMDataIni();
     }
 
@@ -339,7 +339,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.Author = _page.EditFMAuthorTextBox.Text;
         _owner.RefreshSelectedRowCell(Column.Author);
@@ -347,7 +347,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         Ini.WriteFullFMDataIni();
     }
 
@@ -357,7 +357,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         _page.EditFMReleaseDateDateTimePicker.Visible = _page.EditFMReleaseDateCheckBox.Checked;
 
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -371,7 +371,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.ReleaseDate.DateTime = _page.EditFMReleaseDateDateTimePicker.Value;
         _owner.RefreshSelectedRowCell(Column.ReleaseDate);
@@ -384,7 +384,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         _page.EditFMLastPlayedDateTimePicker.Visible = _page.EditFMLastPlayedCheckBox.Checked;
 
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -398,7 +398,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.LastPlayed.DateTime = _page.EditFMLastPlayedDateTimePicker.Value;
         _owner.RefreshSelectedRowCell(Column.LastPlayed);
@@ -437,7 +437,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
         if (fm == null) return;
 

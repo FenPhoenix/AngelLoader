@@ -9,7 +9,7 @@ namespace AngelLoader.Forms;
  Implement the interface on your form, and put guard clauses on all your event handlers that you want to
  be disableable:
 
- if (EventsDisabled) return;
+ if (EventsDisabled > 0) return;
 
  Then whenever you want to disable those event handlers, just make a using block:
 
@@ -25,8 +25,10 @@ namespace AngelLoader.Forms;
 
 public interface IEventDisabler
 {
-    bool EventsDisabled { get; }
-    int EventsDisabledCount { get; set; }
+    /// <summary>
+    /// True if greater than 0.
+    /// </summary>
+    int EventsDisabled { get; set; }
 }
 
 internal readonly ref struct DisableEvents
@@ -38,12 +40,12 @@ internal readonly ref struct DisableEvents
         _active = active;
         Obj = obj;
 
-        if (_active) Obj.EventsDisabledCount++;
+        if (_active) Obj.EventsDisabled++;
     }
 
     public void Dispose()
     {
-        if (_active) Obj.EventsDisabledCount = (Obj.EventsDisabledCount - 1).ClampToZero();
+        if (_active) Obj.EventsDisabled = (Obj.EventsDisabled - 1).ClampToZero();
     }
 }
 
@@ -53,8 +55,10 @@ internal readonly ref struct DisableEvents
 
 public interface IZeroSelectCodeDisabler
 {
-    bool ZeroSelectCodeDisabled { get; }
-    int ZeroSelectCodeDisabledCount { get; set; }
+    /// <summary>
+    /// True if greater than 0.
+    /// </summary>
+    int ZeroSelectCodeDisabled { get; set; }
 }
 
 internal readonly ref struct DisableZeroSelectCode
@@ -63,10 +67,10 @@ internal readonly ref struct DisableZeroSelectCode
     internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
     {
         Obj = obj;
-        Obj.ZeroSelectCodeDisabledCount++;
+        Obj.ZeroSelectCodeDisabled++;
     }
 
-    public void Dispose() => Obj.ZeroSelectCodeDisabledCount = (Obj.ZeroSelectCodeDisabledCount - 1).ClampToZero();
+    public void Dispose() => Obj.ZeroSelectCodeDisabled = (Obj.ZeroSelectCodeDisabled - 1).ClampToZero();
 }
 
 #endregion

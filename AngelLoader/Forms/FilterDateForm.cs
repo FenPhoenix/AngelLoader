@@ -12,11 +12,7 @@ public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabledCount { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool EventsDisabled => EventsDisabledCount > 0;
+    public int EventsDisabled { get; set; }
 
     internal DateTime? DateFrom;
     internal DateTime? DateTo;
@@ -89,7 +85,7 @@ public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
 
     private void CheckBoxes_CheckedChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled) return;
+        if (EventsDisabled > 0) return;
         var s = (CheckBox)sender;
         ShowDate(s == FromCheckBox ? DateType.From : DateType.To, s.Checked);
     }

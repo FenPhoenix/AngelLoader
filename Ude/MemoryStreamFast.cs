@@ -62,7 +62,9 @@ public sealed class MemoryStreamFast
     /// <see langword="set" /> is invoked on a stream whose capacity cannot be modified.</exception>
     public int Capacity
     {
+#if false
         get => _capacity - _origin;
+#endif
         set
         {
             if (value < Length)
@@ -96,6 +98,7 @@ public sealed class MemoryStreamFast
     internal long Position
     {
         get => _position - _origin;
+#if false
         set
         {
             if (value < 0L)
@@ -104,6 +107,7 @@ public sealed class MemoryStreamFast
                 throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_StreamLength");
             _position = _origin + (int)value;
         }
+#endif
     }
 
     /// <summary>Sets the length of the current stream to the specified value.</summary>

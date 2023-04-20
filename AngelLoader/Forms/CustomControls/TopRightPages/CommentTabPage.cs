@@ -64,7 +64,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
 
     private void CommentTextBox_TextChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         FanMission? fm = _owner.GetMainSelectedFMOrNull_Fast();
         if (fm == null) return;
 
@@ -84,7 +84,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
 
     private void CommentTextBox_Leave(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
         Ini.WriteFullFMDataIni();
     }
 

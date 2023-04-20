@@ -171,7 +171,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
     private void AddTagTextBox_TextChanged(object sender, EventArgs e)
     {
-        if (_owner.EventsDisabled) return;
+        if (_owner.EventsDisabled > 0) return;
 
         List<string> list = FMTags.GetMatchingTagsList(_page.AddTagTextBox.Text);
         if (list.Count == 0)
