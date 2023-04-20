@@ -35,7 +35,9 @@ public sealed class ZipArchiveFast : IDisposable
     private Dictionary<ZipArchiveFastEntry, string>? _unopenableArchives;
     private Dictionary<ZipArchiveFastEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveFastEntry, string>();
 
-    private long _centralDirectoryStart; //only valid after ReadCentralDirectory
+    // invalid until ReadCentralDirectory
+    private long _centralDirectoryStart;
+
     private bool _isDisposed;
     private long _expectedNumberOfEntries;
     private readonly Stream? _backingStream;
@@ -43,6 +45,7 @@ public sealed class ZipArchiveFast : IDisposable
     private readonly Stream _archiveStream;
     public readonly long ArchiveStreamLength;
 
+    // invalid until ReadCentralDirectory
     private uint _numberOfThisDisk;
 
     private readonly ZipReusableBundle _bundle;
@@ -129,10 +132,6 @@ public sealed class ZipArchiveFast : IDisposable
             ArchiveStreamLength = _archiveStream.Length;
 
             bundle.ArchiveSubReadStream.SetSuperStream(_archiveStream);
-
-            _centralDirectoryStart = 0; // invalid until ReadCentralDirectory
-            _isDisposed = false;
-            _numberOfThisDisk = 0; // invalid until ReadCentralDirectory
 
             ReadEndOfCentralDirectory();
         }
