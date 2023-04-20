@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using AL_Common;
 
 namespace Ude.NetStandard;
 
@@ -13,7 +13,13 @@ public sealed class MemoryStreamFast
 
     public MemoryStreamFast(int capacity)
     {
-        _buffer = capacity >= 0 ? new byte[capacity] : throw new ArgumentOutOfRangeException(nameof(capacity), "ArgumentOutOfRange_NegativeCapacity");
+        if (capacity < 0)
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(capacity), "NegativeCapacity");
+        }
+
+        _buffer = new byte[capacity];
+
         _capacity = capacity;
         _origin = 0;
     }
@@ -21,16 +27,26 @@ public sealed class MemoryStreamFast
     private bool EnsureCapacity(int value)
     {
         if (value < 0)
-            throw new IOException("IO.IO_StreamTooLong");
+        {
+            ThrowHelper.IOException("StreamTooLong");
+        }
         if (value <= _capacity)
+        {
             return false;
+        }
         int num = value;
         if (num < 256)
+        {
             num = 256;
+        }
         if (num < _capacity * 2)
+        {
             num = _capacity * 2;
+        }
         if ((uint)(_capacity * 2) > 2147483591U)
+        {
             num = value > 2147483591 ? value : 2147483591;
+        }
         Capacity = num;
         return true;
     }
@@ -68,14 +84,20 @@ public sealed class MemoryStreamFast
         set
         {
             if (value < Length)
-                throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_SmallCapacity");
+            {
+                ThrowHelper.ArgumentOutOfRange(nameof(value), "SmallCapacity");
+            }
             if (value == _capacity)
+            {
                 return;
+            }
             if (value > 0)
             {
                 byte[] dst = new byte[value];
                 if (_length > 0)
+                {
                     Buffer.BlockCopy(_buffer, 0, dst, 0, _length);
+                }
                 _buffer = dst;
             }
             else
@@ -119,16 +141,20 @@ public sealed class MemoryStreamFast
     /// <paramref name="value" /> is negative or is greater than the maximum length of the <see cref="T:System.IO.MemoryStreamFast" />, where the maximum length is(<see cref="F:System.Int32.MaxValue" /> - origin), and origin is the index into the underlying buffer at which the stream starts.</exception>
     internal void SetLength(long value)
     {
-        if (value < 0L || value > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_StreamLength");
-        if (value > int.MaxValue - _origin)
-            throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_StreamLength");
+        if (value < 0L || value > int.MaxValue || value > int.MaxValue - _origin)
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(value), "StreamLength");
+        }
         int num = _origin + (int)value;
         if (!EnsureCapacity(num) && num > _length)
+        {
             Array.Clear(_buffer, _length, num - _length);
+        }
         _length = num;
         if (_position <= num)
+        {
             return;
+        }
         _position = num;
     }
 
@@ -157,21 +183,33 @@ public sealed class MemoryStreamFast
     internal void Write(byte[] buffer, int offset, int count)
     {
         if (offset < 0)
-            throw new ArgumentOutOfRangeException(nameof(offset), "ArgumentOutOfRange_NeedNonNegNum");
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(offset), "NeedNonNegNum");
+        }
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count), "ArgumentOutOfRange_NeedNonNegNum");
+        {
+            ThrowHelper.ArgumentOutOfRange(nameof(count), "NeedNonNegNum");
+        }
         if (buffer.Length - offset < count)
-            throw new ArgumentException("Argument_InvalidOffLen");
+        {
+            ThrowHelper.ArgumentException("Argument_InvalidOffLen");
+        }
         int num1 = _position + count;
         if (num1 < 0)
-            throw new IOException("IO.IO_StreamTooLong");
+        {
+            ThrowHelper.IOException("StreamTooLong");
+        }
         if (num1 > _length)
         {
             bool flag = _position > _length;
             if (num1 > _capacity && EnsureCapacity(num1))
+            {
                 flag = false;
+            }
             if (flag)
+            {
                 Array.Clear(_buffer, _length, num1 - _length);
+            }
             _length = num1;
         }
         if (count <= 8 && buffer != _buffer)
@@ -200,9 +238,13 @@ public sealed class MemoryStreamFast
             int num = _position + 1;
             bool flag = _position > _length;
             if (num >= _capacity && EnsureCapacity(num))
+            {
                 flag = false;
+            }
             if (flag)
+            {
                 Array.Clear(_buffer, _length, _position - _length);
+            }
             _length = num;
         }
         _buffer[_position++] = value;
