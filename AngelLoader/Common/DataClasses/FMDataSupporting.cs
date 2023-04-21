@@ -84,6 +84,14 @@ public enum Difficulty : uint
     Extreme = 8
 }
 
+public enum DifficultyIndex : uint
+{
+    Normal,
+    Hard,
+    Expert,
+    Extreme
+}
+
 #if DateAccTest
 public enum DateAccuracy
 {

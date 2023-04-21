@@ -29,7 +29,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private bool _scanFMMenuItemEnabled;
     private bool _convertAudioSubMenuEnabled;
     private int _rating = -1;
-    private Difficulty _finishedItemsChecked = Difficulty.None;
+    private Difficulty _finishedExplicitItemsChecked = Difficulty.None;
     private bool _finishedOnUnknownChecked;
     private bool _webSearchMenuItemEnabled;
 
@@ -74,10 +74,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private ToolStripMenuItemCustom FinishedOnMenuItem = null!;
     private DarkContextMenu RatingMenu = null!;
     private DarkContextMenu FinishedOnMenu = null!;
-    private ToolStripMenuItemCustom FinishedOnNormalMenuItem = null!;
-    private ToolStripMenuItemCustom FinishedOnHardMenuItem = null!;
-    private ToolStripMenuItemCustom FinishedOnExpertMenuItem = null!;
-    private ToolStripMenuItemCustom FinishedOnExtremeMenuItem = null!;
+    private ToolStripMenuItemCustom[] FinishedOnExplicitMenuItems = null!;
     private ToolStripMenuItemCustom FinishedOnUnknownMenuItem = null!;
     private ToolStripMenuItemCustom WebSearchMenuItem = null!;
 
@@ -121,14 +118,14 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (_constructed)
         {
-            FinishedOnNormalMenuItem.Checked = false;
-            FinishedOnHardMenuItem.Checked = false;
-            FinishedOnExpertMenuItem.Checked = false;
-            FinishedOnExtremeMenuItem.Checked = false;
+            for (int i = 0; i < DiffCount; i++)
+            {
+                FinishedOnExplicitMenuItems[i].Checked = false;
+            }
         }
         else
         {
-            _finishedItemsChecked = Difficulty.None;
+            _finishedExplicitItemsChecked = Difficulty.None;
         }
     }
 
@@ -144,41 +141,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
 
         if (value) UncheckFinishedOnMenuItemsExceptUnknown();
-    }
-
-    private void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
-    {
-        if (value && !_constructed) _finishedOnUnknownChecked = false;
-
-        if (!_constructed)
-        {
-            if (value)
-            {
-                _finishedItemsChecked |= difficulty;
-            }
-            else
-            {
-                _finishedItemsChecked &= ~difficulty;
-            }
-        }
-        else
-        {
-            switch (difficulty)
-            {
-                case Difficulty.Normal:
-                    FinishedOnNormalMenuItem.Checked = value;
-                    break;
-                case Difficulty.Hard:
-                    FinishedOnHardMenuItem.Checked = value;
-                    break;
-                case Difficulty.Expert:
-                    FinishedOnExpertMenuItem.Checked = value;
-                    break;
-                case Difficulty.Extreme:
-                    FinishedOnExtremeMenuItem.Checked = value;
-                    break;
-            }
-        }
     }
 
     #endregion
@@ -241,14 +203,15 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         RatingMenuItem.DropDown = RatingMenu;
 
-        FinishedOnMenu.Items.AddRange(new ToolStripItem[]
+        FinishedOnExplicitMenuItems = new ToolStripMenuItemCustom[DiffCount];
+
+        for (int i = 0; i < DiffCount; i++)
         {
-            FinishedOnNormalMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-            FinishedOnHardMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-            FinishedOnExpertMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-            FinishedOnExtremeMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true },
-            FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true }
-        });
+            FinishedOnExplicitMenuItems[i] = new ToolStripMenuItemCustom { CheckOnClick = true };
+        }
+        FinishedOnMenu.Items.AddRange(FinishedOnExplicitMenuItems.Cast<ToolStripItem>().ToArray());
+        FinishedOnUnknownMenuItem = new ToolStripMenuItemCustom { CheckOnClick = true };
+        FinishedOnMenu.Items.Add(FinishedOnUnknownMenuItem);
 
         FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
         FinishedOnMenuItem.DropDown = FinishedOnMenu;
@@ -278,11 +241,10 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
         }
 
-        FinishedOnNormalMenuItem.Click += FinishedOnMenuItems_Click;
-        FinishedOnHardMenuItem.Click += FinishedOnMenuItems_Click;
-        FinishedOnExpertMenuItem.Click += FinishedOnMenuItems_Click;
-        FinishedOnExtremeMenuItem.Click += FinishedOnMenuItems_Click;
-        FinishedOnUnknownMenuItem.Click += FinishedOnMenuItems_Click;
+        for (int i = 0; i < FinishedOnMenu.Items.Count; i++)
+        {
+            FinishedOnExplicitMenuItems[i].Click += FinishedOnMenuItems_Click;
+        }
         FinishedOnUnknownMenuItem.CheckedChanged += FinishedOnUnknownMenuItem_CheckedChanged;
 
         WebSearchMenuItem.Click += WebSearchMenuItem_Click;
@@ -318,10 +280,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #region Set Finished On checked values
 
-        FinishedOnNormalMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Normal);
-        FinishedOnHardMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Hard);
-        FinishedOnExpertMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Expert);
-        FinishedOnExtremeMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Extreme);
+        int at = 1;
+        for (int i = 0; i < DiffCount; i++)
+        {
+            FinishedOnExplicitMenuItems[i].Checked = _finishedExplicitItemsChecked.HasFlagFast((Difficulty)at);
+            at <<= 1;
+        }
+
         FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
 
         #endregion
@@ -682,11 +647,34 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
         else
         {
-            // I don't have to disable events because I'm only wired up to Click, not Checked
-            SetFinishedOnMenuItemChecked(Difficulty.Normal, difficulty.HasFlagFast(Difficulty.Normal));
-            SetFinishedOnMenuItemChecked(Difficulty.Hard, difficulty.HasFlagFast(Difficulty.Hard));
-            SetFinishedOnMenuItemChecked(Difficulty.Expert, difficulty.HasFlagFast(Difficulty.Expert));
-            SetFinishedOnMenuItemChecked(Difficulty.Extreme, difficulty.HasFlagFast(Difficulty.Extreme));
+            int at = 1;
+            for (int i = 0; i < DiffCount; i++)
+            {
+                Difficulty loopDiff = (Difficulty)at;
+                bool value = difficulty.HasFlagFast(loopDiff);
+                if (value && !_constructed) _finishedOnUnknownChecked = false;
+
+                if (!_constructed)
+                {
+                    if (value)
+                    {
+                        _finishedExplicitItemsChecked |= loopDiff;
+                    }
+                    else
+                    {
+                        _finishedExplicitItemsChecked &= ~loopDiff;
+                    }
+                }
+                else
+                {
+                    // I don't have to disable events because I'm only wired up to Click, not Checked
+                    FinishedOnExplicitMenuItems[(int)Utils.DiffToDiffIndex(loopDiff)].Checked = value;
+                }
+
+
+                at <<= 1;
+            }
+
             SetFinishedOnUnknownMenuItemChecked(false);
         }
     }
@@ -698,10 +686,12 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (!_constructed) return;
 
-        FinishedOnNormalMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Normal);
-        FinishedOnHardMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Hard);
-        FinishedOnExpertMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Expert);
-        FinishedOnExtremeMenuItem.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme);
+        int at = 1;
+        for (int i = 0; i < DiffCount; i++)
+        {
+            FinishedOnExplicitMenuItems[i].Text = GetLocalizedDifficultyName(game, (Difficulty)at);
+            at <<= 1;
+        }
     }
 
     internal void ClearFinishedOnMenuItemChecks()

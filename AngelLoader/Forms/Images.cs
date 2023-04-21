@@ -469,37 +469,57 @@ public static class Images
 
     #region Finished states
 
-    private static readonly Brush _normalCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(3, 100, 1));
-    private static readonly Brush _normalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
-    private static Brush NormalCheckOutlineBrush => DarkModeEnabled ? _normalCheckOutlineBrushDark : _normalCheckOutlineBrush;
+    private readonly struct FinishedOnCheckBrush
+    {
+        private readonly Brush Outline;
+        private readonly Brush OutlineDark;
+        private readonly Brush Fill;
+        private readonly Brush FillDark;
+        private readonly int Width;
 
-    private static readonly Brush _normalCheckFillBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
-    private static readonly Brush _normalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
-    private static Brush NormalCheckFillBrush => DarkModeEnabled ? _normalCheckFillBrushDark : _normalCheckFillBrush;
+        internal FinishedOnCheckBrush(Color outline, Color outlineDark, Color fill, Color fillDark, int width)
+        {
+            Outline = new SolidBrush(outline);
+            OutlineDark = new SolidBrush(outlineDark);
+            Fill = new SolidBrush(fill);
+            FillDark = new SolidBrush(fillDark);
+            Width = width;
+        }
 
-    private static readonly Brush _hardCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(139, 111, 0));
-    private static readonly Brush _hardCheckOutlineBrush = new SolidBrush(Color.FromArgb(196, 157, 2));
-    private static Brush HardCheckOutlineBrush => DarkModeEnabled ? _hardCheckOutlineBrushDark : _hardCheckOutlineBrush;
+        internal (Brush Outline, Brush Fill, int Width) GetData(bool darkMode)
+        {
+            return darkMode ? (OutlineDark, FillDark, Width) : (Outline, Fill, Width);
+        }
+    }
 
-    private static readonly Brush _hardCheckFillBrushDark = new SolidBrush(Color.FromArgb(212, 187, 73));
-    private static readonly Brush _hardCheckFillBrush = new SolidBrush(Color.FromArgb(255, 210, 0));
-    private static Brush HardCheckFillBrush => DarkModeEnabled ? _hardCheckFillBrushDark : _hardCheckFillBrush;
+    // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old raster images
+    // used to have, so that the new vector ones are drop-in replacements.
+    private static readonly FinishedOnCheckBrush[] _finishedOnCheckBrushes =
+    {
+        new(outline: Color.FromArgb(3, 100, 1),
+            outlineDark: Color.FromArgb(3, 100, 1),
+            fill: Color.FromArgb(0, 170, 0),
+            fillDark: Color.FromArgb(68, 178, 68),
+            width: 34),
 
-    private static readonly Brush _expertCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(118, 14, 14));
-    private static readonly Brush _expertCheckOutlineBrush = new SolidBrush(Color.FromArgb(135, 2, 2));
-    private static Brush ExpertCheckOutlineBrush => DarkModeEnabled ? _expertCheckOutlineBrushDark : _expertCheckOutlineBrush;
+        new(outline: Color.FromArgb(196, 157, 2),
+            outlineDark: Color.FromArgb(139, 111, 0),
+            fill: Color.FromArgb(255, 210, 0),
+            fillDark: Color.FromArgb(212, 187, 73),
+            width: 35),
 
-    private static readonly Brush _expertCheckFillBrushDark = new SolidBrush(Color.FromArgb(209, 70, 70));
-    private static readonly Brush _expertCheckFillBrush = new SolidBrush(Color.FromArgb(216, 0, 0));
-    private static Brush ExpertCheckFillBrush => DarkModeEnabled ? _expertCheckFillBrushDark : _expertCheckFillBrush;
+        new(outline: Color.FromArgb(135, 2, 2),
+            outlineDark: Color.FromArgb(118, 14, 14),
+            fill: Color.FromArgb(216, 0, 0),
+            fillDark: Color.FromArgb(209, 70, 70),
+            width: 35),
 
-    private static readonly Brush _extremeCheckOutlineBrushDark = new SolidBrush(Color.FromArgb(28, 76, 153));
-    private static readonly Brush _extremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
-    private static Brush ExtremeCheckOutlineBrush => DarkModeEnabled ? _extremeCheckOutlineBrushDark : _extremeCheckOutlineBrush;
-
-    private static readonly Brush _extremeCheckFillBrushDark = new SolidBrush(Color.FromArgb(34, 148, 228));
-    private static readonly Brush _extremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
-    private static Brush ExtremeCheckFillBrush => DarkModeEnabled ? _extremeCheckFillBrushDark : _extremeCheckFillBrush;
+        new(outline: Color.FromArgb(19, 1, 100),
+            outlineDark: Color.FromArgb(28, 76, 153),
+            fill: Color.FromArgb(0, 53, 226),
+            fillDark: Color.FromArgb(34, 148, 228),
+            width: 34),
+    };
 
     private static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
     private static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
@@ -1022,21 +1042,9 @@ public static class Images
         FMsList_FinishedOnIcons.DisposeRange(1, FMsList_FinishedOnIcons.Length);
         FMsList_FinishedOnIcons[0] = Blank;
 
-        Bitmap? _finishedOnNormal_single = null;
-        Bitmap? _finishedOnHard_single = null;
-        Bitmap? _finishedOnExpert_single = null;
-        Bitmap? _finishedOnExtreme_single = null;
+        Bitmap?[] _finishedOnBitmaps = new Bitmap?[DiffCount];
         try
         {
-            #region Image getters
-
-            Bitmap GetFinishedOnNormal_Single() => _finishedOnNormal_single ??= CreateFinishedOnBitmap(Difficulty.Normal);
-            Bitmap GetFinishedOnHard_Single() => _finishedOnHard_single ??= CreateFinishedOnBitmap(Difficulty.Hard);
-            Bitmap GetFinishedOnExpert_Single() => _finishedOnExpert_single ??= CreateFinishedOnBitmap(Difficulty.Expert);
-            Bitmap GetFinishedOnExtreme_Single() => _finishedOnExtreme_single ??= CreateFinishedOnBitmap(Difficulty.Extreme);
-
-            #endregion
-
             var list = new List<Bitmap>(4);
 
             for (int ai = 1; ai < FMsList_FinishedOnIcons.Length; ai++)
@@ -1046,10 +1054,16 @@ public static class Images
 
                 list.Clear();
 
-                if (difficulty.HasFlagFast(Difficulty.Normal)) list.Add(GetFinishedOnNormal_Single());
-                if (difficulty.HasFlagFast(Difficulty.Hard)) list.Add(GetFinishedOnHard_Single());
-                if (difficulty.HasFlagFast(Difficulty.Expert)) list.Add(GetFinishedOnExpert_Single());
-                if (difficulty.HasFlagFast(Difficulty.Extreme)) list.Add(GetFinishedOnExtreme_Single());
+                int at = 1;
+                for (int dI = 0; dI < DiffCount; dI++)
+                {
+                    Difficulty loopDiff = (Difficulty)at;
+                    if (difficulty.HasFlagFast(loopDiff))
+                    {
+                        list.Add(_finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(loopDiff));
+                    }
+                    at <<= 1;
+                }
 
                 int totalWidth = 0;
                 // Some of these images are +-1px width from each other, but they all add up to the full 138px
@@ -1072,10 +1086,7 @@ public static class Images
         }
         finally
         {
-            _finishedOnNormal_single?.Dispose();
-            _finishedOnHard_single?.Dispose();
-            _finishedOnExpert_single?.Dispose();
-            _finishedOnExtreme_single?.Dispose();
+            _finishedOnBitmaps.DisposeAll();
         }
     }
 
@@ -1137,16 +1148,18 @@ public static class Images
         else
         {
             height = 32;
-            // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old
-            // raster images used to have, so that the new vector ones are drop-in replacements.
-            (width, outlineBrush, fillBrush) = difficulty switch
+
+            if (difficulty == Difficulty.None)
             {
-                Difficulty.Normal => (34, NormalCheckOutlineBrush, NormalCheckFillBrush),
-                Difficulty.Hard => (35, HardCheckOutlineBrush, HardCheckFillBrush),
-                Difficulty.Expert => (35, ExpertCheckOutlineBrush, ExpertCheckFillBrush),
-                Difficulty.Extreme => (34, ExtremeCheckOutlineBrush, ExtremeCheckFillBrush),
-                _ => (36, UnknownCheckOutlineBrush, UnknownCheckFillBrush)
-            };
+                width = 36;
+                outlineBrush = UnknownCheckOutlineBrush;
+                fillBrush = UnknownCheckFillBrush;
+            }
+            else
+            {
+                DifficultyIndex diffIndex = DiffToDiffIndex(difficulty);
+                (outlineBrush, fillBrush, width) = _finishedOnCheckBrushes[(int)diffIndex].GetData(DarkModeEnabled);
+            }
         }
 
         var bmp = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
