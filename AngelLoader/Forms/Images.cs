@@ -9,6 +9,7 @@ using AngelLoader.Properties;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
@@ -139,8 +140,6 @@ public static class DarkModeImageConversion
 
 public static class Images
 {
-    public static bool DarkModeEnabled;
-
     #region Path points and types
 
     #region Magnifying glass
@@ -473,9 +472,9 @@ public static class Images
             _colorDark = colorDark;
         }
 
-        internal SolidBrush GetBrush(bool darkMode)
+        internal SolidBrush GetBrush()
         {
-            return darkMode
+            return Config.DarkMode
                 ? BrushDark ??= new SolidBrush(_colorDark)
                 : Brush ??= new SolidBrush(_color);
         }
@@ -520,9 +519,9 @@ public static class Images
             _fillColorDark = fill;
         }
 
-        internal (SolidBrush Outline, SolidBrush Fill, int Width) GetData(bool darkMode)
+        internal (SolidBrush Outline, SolidBrush Fill, int Width) GetData()
         {
-            return darkMode
+            return Config.DarkMode
                 ? (_outlineDark ??= new SolidBrush(_outlineColorDark), _fillDark ??= new SolidBrush(_fillColorDark), Width: _width)
                 : (_outline ??= new SolidBrush(_outlineColor), _fill ??= new SolidBrush(_fillColor), Width: _width);
         }
@@ -645,7 +644,7 @@ public static class Images
     internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
     internal static Pen Sep1Pen =>
-        DarkModeEnabled
+        Config.DarkMode
             ? DarkColors.GreySelectionPen
             : Application.RenderWithVisualStyles
                 ? _sep1Pen
@@ -669,7 +668,7 @@ public static class Images
 
     private static readonly Pen _webSearchCirclePen = new Pen(_al_LightBlue, 2);
     private static readonly Pen _webSearchCirclePenDark = new Pen(_al_LightBlueDark, 2);
-    private static Pen WebSearchCirclePen => DarkModeEnabled ? _webSearchCirclePenDark : _webSearchCirclePen;
+    private static Pen WebSearchCirclePen => Config.DarkMode ? _webSearchCirclePenDark : _webSearchCirclePen;
 
     private static readonly Pen _webSearchCircleDisabledPen = new Pen(SystemColors.ControlDark, 2);
 
@@ -688,7 +687,7 @@ public static class Images
     private static readonly Pen _playArrowPen = new Pen(_playArrowColor, 2.5f);
     private static readonly Pen _playArrowPen_Dark = new Pen(_playArrowColor_Dark, 2.5f);
 
-    private static Pen PlayArrowPen => DarkModeEnabled ? _playArrowPen_Dark : _playArrowPen;
+    private static Pen PlayArrowPen => Config.DarkMode ? _playArrowPen_Dark : _playArrowPen;
     // Explicit pen for this because we need to set the width
     private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
 
@@ -701,12 +700,12 @@ public static class Images
 
     #endregion
 
-    private static Brush BlackForegroundBrush => DarkModeEnabled ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
-    private static Pen BlackForegroundPen => DarkModeEnabled ? DarkColors.Fen_DarkForegroundPen : Pens.Black;
+    private static Brush BlackForegroundBrush => Config.DarkMode ? DarkColors.Fen_DarkForegroundBrush : Brushes.Black;
+    private static Pen BlackForegroundPen => Config.DarkMode ? DarkColors.Fen_DarkForegroundPen : Pens.Black;
 
     #region Arrows
 
-    private static Pen ArrowButtonEnabledPen => DarkModeEnabled ? DarkColors.ArrowEnabledPen : SystemPens.ControlText;
+    private static Pen ArrowButtonEnabledPen => Config.DarkMode ? DarkColors.ArrowEnabledPen : SystemPens.ControlText;
 
     #endregion
 
@@ -822,7 +821,7 @@ public static class Images
     private static Bitmap? _t1_16;
     private static Bitmap? _t1_16_Dark;
     private static Bitmap Thief1_16() =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _t1_16_Dark ??= Resources.T1_16_Dark
             : _t1_16 ??= Resources.T1_16;
 
@@ -835,20 +834,20 @@ public static class Images
     private static Bitmap? _ss2_16;
     private static Bitmap? _ss2_16_Dark;
     private static Bitmap Shock2_16() =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _ss2_16_Dark ??= Resources.SS2_16_Dark
             : _ss2_16 ??= Resources.SS2_16;
 
     private static Bitmap? _t1_21;
     private static Bitmap? t1_21_Dark;
     private static Bitmap Thief1_21() =>
-        DarkModeEnabled
+        Config.DarkMode
             ? t1_21_Dark ??= Resources.T1_21_Dark
             : _t1_21 ??= Resources.T1_21;
 
     private static Bitmap? _t1_21_dark_DarkBG;
     private static Bitmap Thief1_21_DGV() =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _t1_21_dark_DarkBG ??= Resources.T1_21_Dark_DarkBG
             : _t1_21 ??= Resources.T1_21;
 
@@ -861,7 +860,7 @@ public static class Images
     private static Bitmap? _ss2_21;
     private static Bitmap? _ss2_21_Dark;
     private static Bitmap Shock2_21() =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _ss2_21_Dark ??= Resources.SS2_21_Dark
             : _ss2_21 ??= Resources.SS2_21;
 
@@ -873,29 +872,29 @@ public static class Images
 
     #region Filter bar
 
-    public static Bitmap FilterByReleaseDate => CreateCalendarImage(lastPlayed: false, darkMode: DarkModeEnabled);
-    public static Bitmap FilterByLastPlayed => CreateCalendarImage(lastPlayed: true, darkMode: DarkModeEnabled);
+    public static Bitmap FilterByReleaseDate => CreateCalendarImage(lastPlayed: false);
+    public static Bitmap FilterByLastPlayed => CreateCalendarImage(lastPlayed: true);
 
-    public static Bitmap FilterByTags => DarkModeEnabled ? Resources.Tags_Dark : Resources.Tags;
+    public static Bitmap FilterByTags => Config.DarkMode ? Resources.Tags_Dark : Resources.Tags;
 
     public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
     public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
 
     public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
-    public static Bitmap FilterShowRecentAtTop => DarkModeEnabled ? Resources.Recent_Dark : Resources.Recent;
+    public static Bitmap FilterShowRecentAtTop => Config.DarkMode ? Resources.Recent_Dark : Resources.Recent;
 
     #endregion
 
     #region Filter bar right side
 
     public static Bitmap RefreshFilters =>
-        DarkModeEnabled
+        Config.DarkMode
             ? DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
             : Resources.RefreshFilters;
 
     public static Bitmap ClearFilters =>
-        DarkModeEnabled
+        Config.DarkMode
             ? DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
             : Resources.ClearFilters;
 
@@ -906,7 +905,7 @@ public static class Images
     private static Image? _charEncLetter;
     private static Image? _charEncLetter_Dark;
     private static Image CharEncLetter =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc)
             : _charEncLetter ??= Resources.CharEnc;
 
@@ -915,7 +914,7 @@ public static class Images
     private static Image? _charEncLetter_Disabled;
     private static Image? _charEncLetter_Disabled_Dark;
     private static Image CharEncLetter_Disabled =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, true)
             : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharEnc);
 
@@ -967,23 +966,23 @@ public static class Images
     private static Bitmap? _ratingExample_NDL;
     private static Bitmap? _ratingExample_NDL_Dark;
     public static Bitmap RatingExample_NDL =>
-        DarkModeEnabled
-            ? _ratingExample_NDL_Dark ??= CreateRatingExample_Number(outOfFive: false, darkMode: true)
-            : _ratingExample_NDL ??= CreateRatingExample_Number(outOfFive: false, darkMode: false);
+        Config.DarkMode
+            ? _ratingExample_NDL_Dark ??= CreateRatingExample_Number(outOfFive: false)
+            : _ratingExample_NDL ??= CreateRatingExample_Number(outOfFive: false);
 
     private static Bitmap? _ratingExample_FMSel_Stars;
     private static Bitmap? _ratingExample_FMSel_Stars_Dark;
     public static Bitmap RatingExample_FMSel_Stars =>
-        DarkModeEnabled
-            ? _ratingExample_FMSel_Stars_Dark ??= CreateRatingExample_FMSel_Stars(darkMode: true)
-            : _ratingExample_FMSel_Stars ??= CreateRatingExample_FMSel_Stars(darkMode: false);
+        Config.DarkMode
+            ? _ratingExample_FMSel_Stars_Dark ??= CreateRatingExample_FMSel_Stars()
+            : _ratingExample_FMSel_Stars ??= CreateRatingExample_FMSel_Stars();
 
     private static Bitmap? _ratingExample_FMSel_Number;
     private static Bitmap? _ratingExample_FMSel_Number_Dark;
     public static Bitmap RatingExample_FMSel_Number =>
-        DarkModeEnabled
-            ? _ratingExample_FMSel_Number_Dark ??= CreateRatingExample_Number(outOfFive: true, darkMode: true)
-            : _ratingExample_FMSel_Number ??= CreateRatingExample_Number(outOfFive: true, darkMode: false);
+        Config.DarkMode
+            ? _ratingExample_FMSel_Number_Dark ??= CreateRatingExample_Number(outOfFive: true)
+            : _ratingExample_FMSel_Number ??= CreateRatingExample_Number(outOfFive: true);
 
     #endregion
 
@@ -992,14 +991,14 @@ public static class Images
     private static Bitmap? _greenCheckCircle;
     private static Bitmap? _greenCheckCircle_Dark;
     public static Bitmap GreenCheckCircle =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _greenCheckCircle_Dark ??= CreateGreenCheckCircleImage()
             : _greenCheckCircle ??= CreateGreenCheckCircleImage();
 
     private static Bitmap? _redQCircle;
     private static Bitmap? _redQCircle_Dark;
     public static Bitmap RedQCircle =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _redQCircle_Dark ??= Resources.RedQCircle_Dark
             : _redQCircle ??= Resources.RedQCircle;
 
@@ -1013,35 +1012,35 @@ public static class Images
     private static Bitmap? _pin;
     private static Bitmap? _pin_Dark;
     public static Bitmap Pin =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _pin_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Pin)
             : _pin ??= Resources.Pin;
 
     private static Bitmap? _unpin;
     private static Bitmap? _unpinDark;
     public static Bitmap Unpin =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _unpinDark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Unpin)
             : _unpin ??= Resources.Unpin;
 
     private static Bitmap? _trash;
     private static Bitmap? _trashDark;
     public static Bitmap Trash =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _trashDark ??= Resources.Trash_Dark
             : _trash ??= Resources.Trash;
 
     private static Bitmap? _deleteFromDB;
     private static Bitmap? _deleteFromDB_Dark;
     public static Bitmap DeleteFromDB =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _deleteFromDB_Dark ??= CreateDeleteFromDBImage()
             : _deleteFromDB ??= CreateDeleteFromDBImage();
 
     private static Bitmap? _folder;
     private static Bitmap? _folder_Dark;
     public static Bitmap Folder =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _folder_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Folder16)
             : _folder ??= Resources.Folder16;
 
@@ -1055,21 +1054,21 @@ public static class Images
     private static Bitmap? _mods_16;
     private static Bitmap? _mods_16_Dark;
     public static Bitmap Mods_16 =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _mods_16_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Mods)
             : _mods_16 ??= Resources.Mods;
 
     private static Bitmap? _redExclCircle;
     private static Bitmap? _redExclCircle_Dark;
     public static Bitmap RedExclCircle =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _redExclCircle_Dark ??= Resources.RedExclCircle_Dark
             : _redExclCircle ??= Resources.RedExclCircle;
 
     private static Bitmap? _refresh;
     private static Bitmap? _refresh_Dark;
     public static Bitmap Refresh =>
-        DarkModeEnabled
+        Config.DarkMode
             ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
             : _refresh ??= Resources.Refresh;
 
@@ -1195,7 +1194,7 @@ public static class Images
         SolidBrush outlineBrush, fillBrush;
         if (filterFinished || filterUnfinished)
         {
-            (outlineBrush, fillBrush, _) = _finishedOnFilterBrush.GetData(DarkModeEnabled);
+            (outlineBrush, fillBrush, _) = _finishedOnFilterBrush.GetData();
             width = 24;
             height = 24;
         }
@@ -1205,13 +1204,13 @@ public static class Images
 
             if (difficulty == Difficulty.None)
             {
-                (outlineBrush, fillBrush, _) = _unknownCheckBrush.GetData(DarkModeEnabled);
+                (outlineBrush, fillBrush, _) = _unknownCheckBrush.GetData();
                 width = 36;
             }
             else
             {
                 DifficultyIndex diffIndex = DiffToDiffIndex(difficulty);
-                (outlineBrush, fillBrush, width) = _finishedOnCheckBrushes[(int)diffIndex].GetData(DarkModeEnabled);
+                (outlineBrush, fillBrush, width) = _finishedOnCheckBrushes[(int)diffIndex].GetData();
             }
         }
 
@@ -1229,7 +1228,7 @@ public static class Images
             new RectangleF(0, 0, width, height));
 
         g.FillPath(
-            DarkModeEnabled && filterUnfinished ? _finishedOnFilterOutlineOnlyBrushDark : outlineBrush,
+            Config.DarkMode && filterUnfinished ? _finishedOnFilterOutlineOnlyBrushDark : outlineBrush,
             gp);
 
         if (!filterUnfinished)
@@ -1266,7 +1265,7 @@ public static class Images
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
-        FillCircle21(g, _greenCircleBrush.GetBrush(DarkModeEnabled));
+        FillCircle21(g, _greenCircleBrush.GetBrush());
 
         GraphicsPath gp = CircleCheckGPath;
 
@@ -1276,7 +1275,7 @@ public static class Images
             new RectangleF(1.7f, 1.7f, 16.5f, 16.5f));
 
         g.FillPath(
-            DarkModeEnabled ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White,
+            Config.DarkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White,
             gp
         );
 
@@ -1298,14 +1297,14 @@ public static class Images
             new RectangleF(0, 0, 14.75f, 14.75f));
 
         g.FillPath(
-            _deleteFromDBBrush.GetBrush(DarkModeEnabled),
+            _deleteFromDBBrush.GetBrush(),
             gp
         );
 
         return ret;
     }
 
-    private static Bitmap CreateCalendarImage(bool lastPlayed, bool darkMode)
+    private static Bitmap CreateCalendarImage(bool lastPlayed)
     {
         var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
         using var g = Graphics.FromImage(ret);
@@ -1313,18 +1312,18 @@ public static class Images
         g.SmoothingMode = SmoothingMode.None;
 
         (Brush bgBrush, Pen bgPen) =
-            darkMode
-                ? (_calendarBackgroundBrush.GetBrush(true), _calendarBackgroundPenDark)
-                : (_calendarBackgroundBrush.GetBrush(false), _calendarBackgroundPen);
+            Config.DarkMode
+                ? (_calendarBackgroundBrush.GetBrush(), _calendarBackgroundPenDark)
+                : (_calendarBackgroundBrush.GetBrush(), _calendarBackgroundPen);
 
         (Brush fgBrush, Pen fgPen) =
             lastPlayed
-                ? darkMode
-                    ? (_lastPlayedForegroundBrush.GetBrush(true), _lastPlayedForegroundPenDark)
-                    : (_lastPlayedForegroundBrush.GetBrush(false), _lastPlayedForegroundPen)
-                : darkMode
-                    ? (_releaseDateForegroundBrush.GetBrush(true), _releaseDateForegroundPenDark)
-                    : (_releaseDateForegroundBrush.GetBrush(false), _releaseDateForegroundPen);
+                ? Config.DarkMode
+                    ? (_lastPlayedForegroundBrush.GetBrush(), _lastPlayedForegroundPenDark)
+                    : (_lastPlayedForegroundBrush.GetBrush(), _lastPlayedForegroundPen)
+                : Config.DarkMode
+                    ? (_releaseDateForegroundBrush.GetBrush(), _releaseDateForegroundPenDark)
+                    : (_releaseDateForegroundBrush.GetBrush(), _releaseDateForegroundPen);
 
         // Top bar
         g.FillRectangle(fgBrush, 0, 2, 21, 4);
@@ -1368,23 +1367,23 @@ public static class Images
 
     #region Rating example
 
-    private static Bitmap CreateRatingExampleRectangle(bool darkMode)
+    private static Bitmap CreateRatingExampleRectangle()
     {
         var ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
         using var g = Graphics.FromImage(ret);
-        g.FillRectangle(darkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window, 1, 1, 77, 21);
+        g.FillRectangle(Config.DarkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window, 1, 1, 77, 21);
 
         var borderRect = new Rectangle(0, 0, 78, 22);
 
-        Pen pen = darkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
+        Pen pen = Config.DarkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
         g.DrawRectangle(pen, borderRect);
 
         return ret;
     }
 
-    private static Bitmap CreateRatingExample_Number(bool outOfFive, bool darkMode)
+    private static Bitmap CreateRatingExample_Number(bool outOfFive)
     {
-        Bitmap ret = CreateRatingExampleRectangle(darkMode);
+        Bitmap ret = CreateRatingExampleRectangle();
 
         using var g = Graphics.FromImage(ret);
 
@@ -1396,13 +1395,13 @@ public static class Images
             text: outOfFive ? "3.5" : "7",
             font: font,
             pt: new Point(1, 5),
-            foreColor: darkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText,
-            backColor: darkMode ? DarkColors.Fen_DarkBackground : SystemColors.Window);
+            foreColor: Config.DarkMode ? DarkColors.Fen_DarkForeground : SystemColors.ControlText,
+            backColor: Config.DarkMode ? DarkColors.Fen_DarkBackground : SystemColors.Window);
 
         return ret;
     }
 
-    private static Bitmap CreateRatingExample_FMSel_Stars(bool darkMode)
+    private static Bitmap CreateRatingExample_FMSel_Stars()
     {
         Bitmap ret;
         Bitmap? _starEmpty = null;
@@ -1416,7 +1415,7 @@ public static class Images
             Bitmap GetStarRightEmpty() => _starRightEmpty = CreateStarImage(StarRightEmptyGPath, px);
             Bitmap GetStarFull() => _starFull ??= CreateStarImage(StarFullGPath, px);
 
-            ret = CreateRatingExampleRectangle(darkMode);
+            ret = CreateRatingExampleRectangle();
 
             using var g = Graphics.FromImage(ret);
 
@@ -1450,8 +1449,8 @@ public static class Images
 
         FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
-        (SolidBrush starOutlineBrush, SolidBrush starFillBrush, _) = _starBrush.GetData(DarkModeEnabled);
-        Brush[] brushes = { starOutlineBrush, starFillBrush, _starEmptyBrush.GetBrush(DarkModeEnabled) };
+        (SolidBrush starOutlineBrush, SolidBrush starFillBrush, _) = _starBrush.GetData();
+        Brush[] brushes = { starOutlineBrush, starFillBrush, _starEmptyBrush.GetBrush() };
 
         int elemCount = 11;
 
@@ -1581,7 +1580,7 @@ public static class Images
     internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush.GetBrush(DarkModeEnabled) : SystemBrushes.ControlDark, _playArrowPoints);
+        e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush.GetBrush() : SystemBrushes.ControlDark, _playArrowPoints);
     }
 
     internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
@@ -1681,7 +1680,7 @@ public static class Images
 
     internal static void PaintReadmeEncodingButton(Button button, PaintEventArgs e)
     {
-        Pen pen = button.Enabled ? BlackForegroundPen : DarkModeEnabled ? DarkColors.GreySelectionPen : SystemPens.ControlDark;
+        Pen pen = button.Enabled ? BlackForegroundPen : Config.DarkMode ? DarkColors.GreySelectionPen : SystemPens.ControlDark;
 
         e.Graphics.DrawRectangle(pen, 0, 0, 20, 20);
         e.Graphics.DrawRectangle(pen, 1, 1, 18, 18);
@@ -1701,7 +1700,7 @@ public static class Images
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        Brush brush = button.Enabled ? _al_LightBlueBrush.GetBrush(DarkModeEnabled) : SystemBrushes.ControlDark;
+        Brush brush = button.Enabled ? _al_LightBlueBrush.GetBrush() : SystemBrushes.ControlDark;
 
         Rectangle cr = button.ClientRectangle;
 
@@ -1783,7 +1782,7 @@ public static class Images
     {
         int sep1x = x - line1DistanceBackFromLoc;
         e.Graphics.DrawLine(line1Pen, sep1x, line1Top, sep1x, line1Bottom);
-        if (!DarkModeEnabled)
+        if (!Config.DarkMode)
         {
             int sep2x = (x - line1DistanceBackFromLoc) + 1;
             e.Graphics.DrawLine(Sep2Pen, sep2x, line1Top + 1, sep2x, line1Bottom + 1);
