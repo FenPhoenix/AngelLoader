@@ -36,6 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+using System;
+
 namespace Ude.NetStandard;
 
 internal abstract class CyrillicModel : SequenceModel
@@ -220,7 +222,13 @@ internal abstract class CyrillicModel : SequenceModel
         199, 125, 246, 110, 233, 37, 184, 80, 190, 38, 121, 29, 96, 129, 166, 210, 128, 186, 135, 206, 199, 125,
         151, 13, 248, 118, 255, 15
     };
-    private static readonly byte[] RUSSIAN_LANG_MODEL = Utils.Decompress(RUSSIAN_LANG_MODEL_COMPRESSED, 4096);
+    private static readonly byte[] RUSSIAN_LANG_MODEL;
+
+    static CyrillicModel()
+    {
+        RUSSIAN_LANG_MODEL = Utils.Decompress(RUSSIAN_LANG_MODEL_COMPRESSED, 4096);
+        RUSSIAN_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+    }
 
     protected CyrillicModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, RUSSIAN_LANG_MODEL, 0.976601f, name)

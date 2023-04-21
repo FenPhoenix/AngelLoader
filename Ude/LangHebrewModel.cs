@@ -36,6 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+using System;
+
 namespace Ude.NetStandard;
 
 internal abstract class HebrewModel : SequenceModel
@@ -212,7 +214,13 @@ internal abstract class HebrewModel : SequenceModel
         222, 174, 42, 174, 167, 159, 95, 134, 245, 113, 89, 151, 245, 207, 64, 174, 156, 251, 253, 165, 224, 227,
         134, 149, 253, 233, 83, 131, 121, 223, 173, 191, 98, 190, 217, 95, 244, 23, 83, 187, 76, 114, 249, 7,
     };
-    private static readonly byte[] HEBREW_LANG_MODEL = Utils.Decompress(HEBREW_LANG_MODEL_COMPRESSED, 4096);
+    private static readonly byte[] HEBREW_LANG_MODEL;
+
+    static HebrewModel()
+    {
+        HEBREW_LANG_MODEL = Utils.Decompress(HEBREW_LANG_MODEL_COMPRESSED, 4096);
+        HEBREW_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+    }
 
     protected HebrewModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, HEBREW_LANG_MODEL, 0.984004f, name)

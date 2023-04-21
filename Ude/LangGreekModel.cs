@@ -36,6 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+using System;
+
 namespace Ude.NetStandard;
 
 internal abstract class GreekModel : SequenceModel
@@ -213,7 +215,13 @@ internal abstract class GreekModel : SequenceModel
         218, 251, 153, 223, 89, 228, 168, 25, 193, 221, 98, 119, 96, 222, 79, 222, 4, 222, 192, 110, 254, 118,
         224, 158, 32, 252, 88, 189, 255, 185, 254, 0
     };
-    private static readonly byte[] GREEK_LANG_MODEL = Utils.Decompress(GREEK_LANG_MODEL_COMPRESSED, 4096);
+    private static readonly byte[] GREEK_LANG_MODEL;
+
+    static GreekModel()
+    {
+        GREEK_LANG_MODEL = Utils.Decompress(GREEK_LANG_MODEL_COMPRESSED, 4096);
+        GREEK_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+    }
 
     protected GreekModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, GREEK_LANG_MODEL, 0.982851f, name)
