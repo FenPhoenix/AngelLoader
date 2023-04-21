@@ -458,13 +458,64 @@ public static class Images
 
     #region Colors / brushes / pens
 
+    private sealed class ThemedPen
+    {
+        private readonly Color _color;
+        private readonly Color _colorDark;
+
+        private readonly float _width;
+
+        private Pen? _pen;
+        private Pen? _penDark;
+        internal Pen Pen =>
+            Config.DarkMode
+                ? _penDark ??= new Pen(_colorDark, _width)
+                : _pen ??= new Pen(_color, _width);
+
+        internal ThemedPen(Color color, Color colorDark, float width = 1f)
+        {
+            _color = color;
+            _colorDark = colorDark;
+            _width = width;
+        }
+
+#if false
+        public ThemedPen(Color color, Pen penDark, float width = 1f)
+        {
+            _color = color;
+            _penDark = penDark;
+            _width = width;
+        }
+#endif
+
+        public ThemedPen(Pen pen, Color colorDark, float width = 1f)
+        {
+            _pen = pen;
+            _colorDark = colorDark;
+            _width = width;
+        }
+
+#if false
+        public ThemedPen(Pen pen, Pen penDark, float width = 1f)
+        {
+            _pen = pen;
+            _penDark = penDark;
+            _width = width;
+        }
+#endif
+    }
+
     private sealed class ThemedBrush
     {
         private readonly Color _color;
         private readonly Color _colorDark;
 
-        private SolidBrush? Brush;
-        private SolidBrush? BrushDark;
+        private Brush? _brush;
+        private Brush? _brushDark;
+        internal Brush Brush =>
+            Config.DarkMode
+                ? _brushDark ??= new SolidBrush(_colorDark)
+                : _brush ??= new SolidBrush(_color);
 
         internal ThemedBrush(Color color, Color colorDark)
         {
@@ -472,11 +523,24 @@ public static class Images
             _colorDark = colorDark;
         }
 
-        internal SolidBrush GetBrush()
+#if false
+        public ThemedBrush(Color color, Brush brushDark)
         {
-            return Config.DarkMode
-                ? BrushDark ??= new SolidBrush(_colorDark)
-                : Brush ??= new SolidBrush(_color);
+            _color = color;
+            _brushDark = brushDark;
+        }
+#endif
+
+        public ThemedBrush(Brush brush, Color colorDark)
+        {
+            _brush = brush;
+            _colorDark = colorDark;
+        }
+
+        public ThemedBrush(Brush brush, Brush brushDark)
+        {
+            _brush = brush;
+            _brushDark = brushDark;
         }
     }
 
@@ -585,11 +649,13 @@ public static class Images
     #region Calendars
 
     private static readonly ThemedBrush _calendarBackgroundBrush = new(
-        color: Color.White,
+        brush: Brushes.White,
         colorDark: Color.FromArgb(220, 220, 220));
 
-    private static readonly Pen _calendarBackgroundPenDark = new Pen(Color.FromArgb(220, 220, 220));
-    private static readonly Pen _calendarBackgroundPen = Pens.White;
+    private static readonly ThemedPen _calendarBackgroundPen = new(
+        pen: Pens.White,
+        colorDark: Color.FromArgb(220, 220, 220)
+    );
 
     #region Release date
 
@@ -601,8 +667,10 @@ public static class Images
         colorDark: _releaseDateForegroundDark
     );
 
-    private static readonly Pen _releaseDateForegroundPenDark = new Pen(_releaseDateForegroundDark);
-    private static readonly Pen _releaseDateForegroundPen = new Pen(_releaseDateForeground);
+    private static readonly ThemedPen _releaseDateForegroundPen = new(
+        color: _releaseDateForeground,
+        colorDark: _releaseDateForegroundDark
+    );
 
     #endregion
 
@@ -616,8 +684,10 @@ public static class Images
         colorDark: _lastPlayedForegroundDark
     );
 
-    private static readonly Pen _lastPlayedForegroundPenDark = new Pen(_lastPlayedForegroundDark);
-    private static readonly Pen _lastPlayedForegroundPen = new Pen(_lastPlayedForeground);
+    private static readonly ThemedPen _lastPlayedForegroundPen = new(
+        color: _lastPlayedForeground,
+        colorDark: _lastPlayedForegroundDark
+    );
 
     #endregion
 
@@ -633,14 +703,14 @@ public static class Images
     );
 
     private static readonly ThemedBrush _starEmptyBrush =
-        new(color: Color.White, colorDark: DarkColors.Fen_DarkBackground);
+        new(brush: Brushes.White, brushDark: DarkColors.Fen_DarkBackgroundBrush);
 
     #endregion
 
     #region Separators
 
     private static readonly Pen _sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
-    private static readonly Pen _sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
+    private static Pen? _sep1PenC;
     internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
     internal static Pen Sep1Pen =>
@@ -648,7 +718,7 @@ public static class Images
             ? DarkColors.GreySelectionPen
             : Application.RenderWithVisualStyles
                 ? _sep1Pen
-                : _sep1PenC;
+                : _sep1PenC ??= new Pen(Color.FromArgb(166, 166, 166));
 
     #endregion
 
@@ -666,9 +736,11 @@ public static class Images
 
     #region Web search
 
-    private static readonly Pen _webSearchCirclePen = new Pen(_al_LightBlue, 2);
-    private static readonly Pen _webSearchCirclePenDark = new Pen(_al_LightBlueDark, 2);
-    private static Pen WebSearchCirclePen => Config.DarkMode ? _webSearchCirclePenDark : _webSearchCirclePen;
+    private static readonly ThemedPen _webSearchCirclePen = new(
+        color: _al_LightBlue,
+        colorDark: _al_LightBlueDark,
+        width: 2
+    );
 
     private static readonly Pen _webSearchCircleDisabledPen = new Pen(SystemColors.ControlDark, 2);
 
@@ -684,10 +756,12 @@ public static class Images
         colorDark: _playArrowColor_Dark
     );
 
-    private static readonly Pen _playArrowPen = new Pen(_playArrowColor, 2.5f);
-    private static readonly Pen _playArrowPen_Dark = new Pen(_playArrowColor_Dark, 2.5f);
+    private static readonly ThemedPen _playArrowPen = new(
+        color: _playArrowColor,
+        colorDark: _playArrowColor_Dark,
+        width: 2.5f
+    );
 
-    private static Pen PlayArrowPen => Config.DarkMode ? _playArrowPen_Dark : _playArrowPen;
     // Explicit pen for this because we need to set the width
     private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
 
@@ -1265,7 +1339,7 @@ public static class Images
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
-        FillCircle21(g, _greenCircleBrush.GetBrush());
+        FillCircle21(g, _greenCircleBrush.Brush);
 
         GraphicsPath gp = CircleCheckGPath;
 
@@ -1297,7 +1371,7 @@ public static class Images
             new RectangleF(0, 0, 14.75f, 14.75f));
 
         g.FillPath(
-            _deleteFromDBBrush.GetBrush(),
+            _deleteFromDBBrush.Brush,
             gp
         );
 
@@ -1311,19 +1385,12 @@ public static class Images
 
         g.SmoothingMode = SmoothingMode.None;
 
-        (Brush bgBrush, Pen bgPen) =
-            Config.DarkMode
-                ? (_calendarBackgroundBrush.GetBrush(), _calendarBackgroundPenDark)
-                : (_calendarBackgroundBrush.GetBrush(), _calendarBackgroundPen);
+        (Brush bgBrush, Pen bgPen) = (_calendarBackgroundBrush.Brush, _calendarBackgroundPen.Pen);
 
         (Brush fgBrush, Pen fgPen) =
             lastPlayed
-                ? Config.DarkMode
-                    ? (_lastPlayedForegroundBrush.GetBrush(), _lastPlayedForegroundPenDark)
-                    : (_lastPlayedForegroundBrush.GetBrush(), _lastPlayedForegroundPen)
-                : Config.DarkMode
-                    ? (_releaseDateForegroundBrush.GetBrush(), _releaseDateForegroundPenDark)
-                    : (_releaseDateForegroundBrush.GetBrush(), _releaseDateForegroundPen);
+                ? (_lastPlayedForegroundBrush.Brush, _lastPlayedForegroundPen.Pen)
+                : (_releaseDateForegroundBrush.Brush, _releaseDateForegroundPen.Pen);
 
         // Top bar
         g.FillRectangle(fgBrush, 0, 2, 21, 4);
@@ -1450,7 +1517,7 @@ public static class Images
         FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
         (SolidBrush starOutlineBrush, SolidBrush starFillBrush, _) = _starBrush.GetData();
-        Brush[] brushes = { starOutlineBrush, starFillBrush, _starEmptyBrush.GetBrush() };
+        Brush[] brushes = { starOutlineBrush, starFillBrush, _starEmptyBrush.Brush };
 
         int elemCount = 11;
 
@@ -1580,13 +1647,13 @@ public static class Images
     internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush.GetBrush() : SystemBrushes.ControlDark, _playArrowPoints);
+        e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush.Brush : SystemBrushes.ControlDark, _playArrowPoints);
     }
 
     internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        e.Graphics.DrawPolygon(button.Enabled ? PlayArrowPen : PlayArrowDisabledPen, _playOriginalArrowPoints);
+        e.Graphics.DrawPolygon(button.Enabled ? _playArrowPen.Pen : PlayArrowDisabledPen, _playOriginalArrowPoints);
     }
 
     internal static void PaintBitmapButton(
@@ -1661,7 +1728,7 @@ public static class Images
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        Pen pen = button.Enabled ? WebSearchCirclePen : _webSearchCircleDisabledPen;
+        Pen pen = button.Enabled ? _webSearchCirclePen.Pen : _webSearchCircleDisabledPen;
 
         e.Graphics.DrawEllipse(pen, 10, 6, 23, 23);
         e.Graphics.DrawEllipse(pen, 17, 6, 9, 23);
@@ -1700,7 +1767,7 @@ public static class Images
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        Brush brush = button.Enabled ? _al_LightBlueBrush.GetBrush() : SystemBrushes.ControlDark;
+        Brush brush = button.Enabled ? _al_LightBlueBrush.Brush : SystemBrushes.ControlDark;
 
         Rectangle cr = button.ClientRectangle;
 
