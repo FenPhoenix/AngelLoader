@@ -243,7 +243,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         for (int i = 0; i < FinishedOnMenu.Items.Count; i++)
         {
-            FinishedOnExplicitMenuItems[i].Click += FinishedOnMenuItems_Click;
+            FinishedOnMenu.Items[i].Click += FinishedOnMenuItems_Click;
         }
         FinishedOnUnknownMenuItem.CheckedChanged += FinishedOnUnknownMenuItem_CheckedChanged;
 

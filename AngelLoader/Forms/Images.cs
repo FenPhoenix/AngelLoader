@@ -459,42 +459,88 @@ public static class Images
 
     #region Colors / brushes / pens
 
-    private static readonly Brush _greenCircleBrushDark = new SolidBrush(Color.FromArgb(68, 178, 68));
-    private static readonly Brush _greenCircleBrush = new SolidBrush(Color.FromArgb(65, 173, 73));
-    private static Brush GreenCircleBrush => DarkModeEnabled ? _greenCircleBrushDark : _greenCircleBrush;
-
-    private static readonly Brush _deleteFromDBBrushDark = new SolidBrush(Color.FromArgb(209, 70, 70));
-    private static readonly Brush _deleteFromDBBrush = new SolidBrush(Color.FromArgb(135, 0, 0));
-    private static Brush DeleteFromDBBrush => DarkModeEnabled ? _deleteFromDBBrushDark : _deleteFromDBBrush;
-
-    #region Finished states
-
-    private readonly struct FinishedOnCheckBrush
+    private sealed class ThemedBrush
     {
-        private readonly Brush Outline;
-        private readonly Brush OutlineDark;
-        private readonly Brush Fill;
-        private readonly Brush FillDark;
-        private readonly int Width;
+        private readonly Color _color;
+        private readonly Color _colorDark;
 
-        internal FinishedOnCheckBrush(Color outline, Color outlineDark, Color fill, Color fillDark, int width)
+        private SolidBrush? Brush;
+        private SolidBrush? BrushDark;
+
+        internal ThemedBrush(Color color, Color colorDark)
         {
-            Outline = new SolidBrush(outline);
-            OutlineDark = new SolidBrush(outlineDark);
-            Fill = new SolidBrush(fill);
-            FillDark = new SolidBrush(fillDark);
-            Width = width;
+            _color = color;
+            _colorDark = colorDark;
         }
 
-        internal (Brush Outline, Brush Fill, int Width) GetData(bool darkMode)
+        internal SolidBrush GetBrush(bool darkMode)
         {
-            return darkMode ? (OutlineDark, FillDark, Width) : (Outline, Fill, Width);
+            return darkMode
+                ? BrushDark ??= new SolidBrush(_colorDark)
+                : Brush ??= new SolidBrush(_color);
         }
     }
 
+    private sealed class FillAndOutlineBrushes
+    {
+        private readonly Color _outlineColor;
+        private readonly Color _outlineColorDark;
+        private readonly Color _fillColor;
+        private readonly Color _fillColorDark;
+
+        private SolidBrush? _outline;
+        private SolidBrush? _outlineDark;
+        private SolidBrush? _fill;
+        private SolidBrush? _fillDark;
+
+        private readonly int _width;
+
+        internal FillAndOutlineBrushes(Color outline, Color outlineDark, Color fill, Color fillDark, int width)
+        {
+            _outlineColor = outline;
+            _outlineColorDark = outlineDark;
+            _fillColor = fill;
+            _fillColorDark = fillDark;
+            _width = width;
+        }
+
+        internal FillAndOutlineBrushes(Color outline, Color outlineDark, Color fill, Color fillDark)
+        {
+            _outlineColor = outline;
+            _outlineColorDark = outlineDark;
+            _fillColor = fill;
+            _fillColorDark = fillDark;
+        }
+
+        internal FillAndOutlineBrushes(Color outline, Color fill)
+        {
+            _outlineColor = outline;
+            _outlineColorDark = outline;
+            _fillColor = fill;
+            _fillColorDark = fill;
+        }
+
+        internal (SolidBrush Outline, SolidBrush Fill, int Width) GetData(bool darkMode)
+        {
+            return darkMode
+                ? (_outlineDark ??= new SolidBrush(_outlineColorDark), _fillDark ??= new SolidBrush(_fillColorDark), Width: _width)
+                : (_outline ??= new SolidBrush(_outlineColor), _fill ??= new SolidBrush(_fillColor), Width: _width);
+        }
+    }
+
+    private static readonly ThemedBrush _greenCircleBrush = new(
+        color: Color.FromArgb(65, 173, 73),
+        colorDark: Color.FromArgb(68, 178, 68));
+
+    private static readonly ThemedBrush _deleteFromDBBrush = new(
+        color: Color.FromArgb(135, 0, 0),
+        colorDark: Color.FromArgb(209, 70, 70));
+
+    #region Finished states
+
     // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old raster images
     // used to have, so that the new vector ones are drop-in replacements.
-    private static readonly FinishedOnCheckBrush[] _finishedOnCheckBrushes =
+    private static readonly FillAndOutlineBrushes[] _finishedOnCheckBrushes =
     {
         new(outline: Color.FromArgb(3, 100, 1),
             outlineDark: Color.FromArgb(3, 100, 1),
@@ -521,24 +567,27 @@ public static class Images
             width: 34),
     };
 
-    private static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
-    private static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
+    private static readonly FillAndOutlineBrushes _unknownCheckBrush = new(
+        outline: Color.FromArgb(100, 100, 100),
+        fill: Color.FromArgb(170, 170, 170)
+    );
 
-    private static readonly Brush _finishedOnFilterOutlineBrushDark = new SolidBrush(Color.FromArgb(89, 159, 203));
-    private static readonly Brush _finishedOnFilterOutlineOnlyBrushDark = new SolidBrush(Color.FromArgb(132, 206, 252));
-    private static readonly Brush _finishedOnFilterOutlineBrush = new SolidBrush(Color.FromArgb(14, 101, 139));
-    private static Brush FinishedOnFilterOutlineBrush => DarkModeEnabled ? _finishedOnFilterOutlineBrushDark : _finishedOnFilterOutlineBrush;
+    private static readonly SolidBrush _finishedOnFilterOutlineOnlyBrushDark = new SolidBrush(Color.FromArgb(132, 206, 252));
 
-    private static readonly Brush _finishedOnFilterFillBrushDark = new SolidBrush(Color.FromArgb(89, 159, 203));
-    private static readonly Brush _finishedOnFilterFillBrush = new SolidBrush(Color.FromArgb(89, 159, 203));
-    private static Brush FinishedOnFilterFillBrush => DarkModeEnabled ? _finishedOnFilterFillBrushDark : _finishedOnFilterFillBrush;
+    private static readonly FillAndOutlineBrushes _finishedOnFilterBrush = new(
+        outline: Color.FromArgb(14, 101, 139),
+        outlineDark: Color.FromArgb(89, 159, 203),
+        fill: Color.FromArgb(89, 159, 203),
+        fillDark: Color.FromArgb(89, 159, 203)
+    );
 
     #endregion
 
     #region Calendars
 
-    private static readonly Brush _calendarBackgroundBrushDark = new SolidBrush(Color.FromArgb(220, 220, 220));
-    private static readonly Brush _calendarBackgroundBrush = Brushes.White;
+    private static readonly ThemedBrush _calendarBackgroundBrush = new(
+        color: Color.White,
+        colorDark: Color.FromArgb(220, 220, 220));
 
     private static readonly Pen _calendarBackgroundPenDark = new Pen(Color.FromArgb(220, 220, 220));
     private static readonly Pen _calendarBackgroundPen = Pens.White;
@@ -548,8 +597,10 @@ public static class Images
     private static readonly Color _releaseDateForegroundDark = Color.FromArgb(0, 150, 255);
     private static readonly Color _releaseDateForeground = Color.FromArgb(28, 132, 204);
 
-    private static readonly Brush _releaseDateForegroundBrushDark = new SolidBrush(_releaseDateForegroundDark);
-    private static readonly Brush _releaseDateForegroundBrush = new SolidBrush(_releaseDateForeground);
+    private static readonly ThemedBrush _releaseDateForegroundBrush = new(
+        color: _releaseDateForeground,
+        colorDark: _releaseDateForegroundDark
+    );
 
     private static readonly Pen _releaseDateForegroundPenDark = new Pen(_releaseDateForegroundDark);
     private static readonly Pen _releaseDateForegroundPen = new Pen(_releaseDateForeground);
@@ -561,8 +612,10 @@ public static class Images
     private static readonly Color _lastPlayedForegroundDark = Color.FromArgb(19, 172, 48);
     private static readonly Color _lastPlayedForeground = Color.FromArgb(0, 163, 0);
 
-    private static readonly Brush _lastPlayedForegroundBrushDark = new SolidBrush(_lastPlayedForegroundDark);
-    private static readonly Brush _lastPlayedForegroundBrush = new SolidBrush(_lastPlayedForeground);
+    private static readonly ThemedBrush _lastPlayedForegroundBrush = new(
+        color: _lastPlayedForeground,
+        colorDark: _lastPlayedForegroundDark
+    );
 
     private static readonly Pen _lastPlayedForegroundPenDark = new Pen(_lastPlayedForegroundDark);
     private static readonly Pen _lastPlayedForegroundPen = new Pen(_lastPlayedForeground);
@@ -573,17 +626,15 @@ public static class Images
 
     #region Stars
 
-    private static readonly Brush _starOutlineBrushDark = new SolidBrush(Color.FromArgb(200, 128, 26));
-    private static readonly Brush _starOutlineBrush = new SolidBrush(Color.FromArgb(192, 113, 0));
-    private static Brush StarOutlineBrush => DarkModeEnabled ? _starOutlineBrushDark : _starOutlineBrush;
+    private static readonly FillAndOutlineBrushes _starBrush = new(
+        outline: Color.FromArgb(192, 113, 0),
+        outlineDark: Color.FromArgb(200, 128, 26),
+        fill: Color.FromArgb(255, 180, 0),
+        fillDark: Color.FromArgb(228, 185, 82)
+    );
 
-    private static readonly Brush _starFillBrushDark = new SolidBrush(Color.FromArgb(228, 185, 82));
-    private static readonly Brush _starFillBrush = new SolidBrush(Color.FromArgb(255, 180, 0));
-    private static Brush StarFillBrush => DarkModeEnabled ? _starFillBrushDark : _starFillBrush;
-
-    private static readonly Brush _starEmptyBrushDark = new SolidBrush(DarkColors.Fen_DarkBackground);
-    private static readonly Brush _starEmptyBrush = Brushes.White;
-    private static Brush StarEmptyBrush => DarkModeEnabled ? _starEmptyBrushDark : _starEmptyBrush;
+    private static readonly ThemedBrush _starEmptyBrush =
+        new(color: Color.White, colorDark: DarkColors.Fen_DarkBackground);
 
     #endregion
 
@@ -607,9 +658,10 @@ public static class Images
     private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
     private static readonly Color _al_LightBlueDark = Color.FromArgb(54, 146, 204);
 
-    private static readonly SolidBrush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
-    private static readonly SolidBrush _al_LightBlueBrushDark = new SolidBrush(_al_LightBlueDark);
-    private static SolidBrush AL_LightBlueBrush => DarkModeEnabled ? _al_LightBlueBrushDark : _al_LightBlueBrush;
+    private static readonly ThemedBrush _al_LightBlueBrush = new(
+        color: _al_LightBlue,
+        colorDark: _al_LightBlueDark
+    );
 
     #endregion
 
@@ -627,12 +679,15 @@ public static class Images
 
     private static readonly Color _playArrowColor = Color.FromArgb(45, 154, 47);
     private static readonly Color _playArrowColor_Dark = Color.FromArgb(91, 176, 93);
-    private static readonly SolidBrush _playArrowBrush = new SolidBrush(_playArrowColor);
-    private static readonly SolidBrush _playArrowBrush_Dark = new SolidBrush(_playArrowColor_Dark);
+
+    private static readonly ThemedBrush _playArrowBrush = new(
+        color: _playArrowColor,
+        colorDark: _playArrowColor_Dark
+    );
+
     private static readonly Pen _playArrowPen = new Pen(_playArrowColor, 2.5f);
     private static readonly Pen _playArrowPen_Dark = new Pen(_playArrowColor_Dark, 2.5f);
 
-    private static SolidBrush PlayArrowBrush => DarkModeEnabled ? _playArrowBrush_Dark : _playArrowBrush;
     private static Pen PlayArrowPen => DarkModeEnabled ? _playArrowPen_Dark : _playArrowPen;
     // Explicit pen for this because we need to set the width
     private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
@@ -1137,13 +1192,12 @@ public static class Images
     private static Bitmap CreateFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
     {
         int width, height;
-        Brush outlineBrush, fillBrush;
+        SolidBrush outlineBrush, fillBrush;
         if (filterFinished || filterUnfinished)
         {
+            (outlineBrush, fillBrush, _) = _finishedOnFilterBrush.GetData(DarkModeEnabled);
             width = 24;
             height = 24;
-            outlineBrush = FinishedOnFilterOutlineBrush;
-            fillBrush = FinishedOnFilterFillBrush;
         }
         else
         {
@@ -1151,9 +1205,8 @@ public static class Images
 
             if (difficulty == Difficulty.None)
             {
+                (outlineBrush, fillBrush, _) = _unknownCheckBrush.GetData(DarkModeEnabled);
                 width = 36;
-                outlineBrush = UnknownCheckOutlineBrush;
-                fillBrush = UnknownCheckFillBrush;
             }
             else
             {
@@ -1213,7 +1266,7 @@ public static class Images
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
-        FillCircle21(g, GreenCircleBrush);
+        FillCircle21(g, _greenCircleBrush.GetBrush(DarkModeEnabled));
 
         GraphicsPath gp = CircleCheckGPath;
 
@@ -1245,7 +1298,7 @@ public static class Images
             new RectangleF(0, 0, 14.75f, 14.75f));
 
         g.FillPath(
-            DeleteFromDBBrush,
+            _deleteFromDBBrush.GetBrush(DarkModeEnabled),
             gp
         );
 
@@ -1261,17 +1314,17 @@ public static class Images
 
         (Brush bgBrush, Pen bgPen) =
             darkMode
-                ? (_calendarBackgroundBrushDark, _calendarBackgroundPenDark)
-                : (_calendarBackgroundBrush, _calendarBackgroundPen);
+                ? (_calendarBackgroundBrush.GetBrush(true), _calendarBackgroundPenDark)
+                : (_calendarBackgroundBrush.GetBrush(false), _calendarBackgroundPen);
 
         (Brush fgBrush, Pen fgPen) =
             lastPlayed
                 ? darkMode
-                    ? (_lastPlayedForegroundBrushDark, _lastPlayedForegroundPenDark)
-                    : (_lastPlayedForegroundBrush, _lastPlayedForegroundPen)
+                    ? (_lastPlayedForegroundBrush.GetBrush(true), _lastPlayedForegroundPenDark)
+                    : (_lastPlayedForegroundBrush.GetBrush(false), _lastPlayedForegroundPen)
                 : darkMode
-                    ? (_releaseDateForegroundBrushDark, _releaseDateForegroundPenDark)
-                    : (_releaseDateForegroundBrush, _releaseDateForegroundPen);
+                    ? (_releaseDateForegroundBrush.GetBrush(true), _releaseDateForegroundPenDark)
+                    : (_releaseDateForegroundBrush.GetBrush(false), _releaseDateForegroundPen);
 
         // Top bar
         g.FillRectangle(fgBrush, 0, 2, 21, 4);
@@ -1397,7 +1450,8 @@ public static class Images
 
         FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
-        Brush[] brushes = { StarOutlineBrush, StarFillBrush, StarEmptyBrush };
+        (SolidBrush starOutlineBrush, SolidBrush starFillBrush, _) = _starBrush.GetData(DarkModeEnabled);
+        Brush[] brushes = { starOutlineBrush, starFillBrush, _starEmptyBrush.GetBrush(DarkModeEnabled) };
 
         int elemCount = 11;
 
@@ -1527,7 +1581,7 @@ public static class Images
     internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        e.Graphics.FillPolygon(button.Enabled ? PlayArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
+        e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush.GetBrush(DarkModeEnabled) : SystemBrushes.ControlDark, _playArrowPoints);
     }
 
     internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
@@ -1647,7 +1701,7 @@ public static class Images
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        Brush brush = button.Enabled ? AL_LightBlueBrush : SystemBrushes.ControlDark;
+        Brush brush = button.Enabled ? _al_LightBlueBrush.GetBrush(DarkModeEnabled) : SystemBrushes.ControlDark;
 
         Rectangle cr = button.ClientRectangle;
 
