@@ -1224,19 +1224,11 @@ public static class Images
 
         bool[] bits = new bool[_numRatings];
 
-        Bitmap? _starEmpty = null;
-        Bitmap? _starRightEmpty = null;
-        Bitmap? _starFull = null;
+        Bitmap? starEmpty = null;
+        Bitmap? starRightEmpty = null;
+        Bitmap? starFull = null;
         try
         {
-            #region Image getters
-
-            Bitmap GetStarEmpty() => _starEmpty ??= CreateStarImage(StarEmptyGPath, 22);
-            Bitmap GetStarRightEmpty() => _starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, 22);
-            Bitmap GetStarFull() => _starFull ??= CreateStarImage(StarFullGPath, 22);
-
-            #endregion
-
             for (int bi = 0; bi < _numRatings; bi++)
             {
                 var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
@@ -1247,7 +1239,12 @@ public static class Images
 
                 for (int i = 0; i < bits.Length - 1; i += 2)
                 {
-                    g.DrawImage(bits[i] ? bits[i + 1] ? GetStarFull() : GetStarRightEmpty() : GetStarEmpty(), (i / 2) * 22, 5);
+                    g.DrawImage(bits[i]
+                            ? bits[i + 1]
+                                ? (starFull ??= CreateStarImage(StarFullGPath, 22))
+                                : (starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, 22))
+                            : (starEmpty ??= CreateStarImage(StarEmptyGPath, 22)),
+                        (i / 2) * 22, 5);
                 }
 
                 bits[bi] = true;
@@ -1256,9 +1253,9 @@ public static class Images
         }
         finally
         {
-            _starEmpty?.Dispose();
-            _starRightEmpty?.Dispose();
-            _starFull?.Dispose();
+            starEmpty?.Dispose();
+            starRightEmpty?.Dispose();
+            starFull?.Dispose();
         }
     }
 
@@ -1471,16 +1468,12 @@ public static class Images
     private static Bitmap CreateRatingExample_FMSel_Stars()
     {
         Bitmap ret;
-        Bitmap? _starEmpty = null;
-        Bitmap? _starRightEmpty = null;
-        Bitmap? _starFull = null;
+        Bitmap? starEmpty = null;
+        Bitmap? starRightEmpty = null;
+        Bitmap? starFull = null;
         try
         {
             const int px = 14;
-
-            Bitmap GetStarEmpty() => _starEmpty = CreateStarImage(StarEmptyGPath, px);
-            Bitmap GetStarRightEmpty() => _starRightEmpty = CreateStarImage(StarRightEmptyGPath, px);
-            Bitmap GetStarFull() => _starFull ??= CreateStarImage(StarFullGPath, px);
 
             ret = CreateRatingExampleRectangle();
 
@@ -1490,15 +1483,15 @@ public static class Images
 
             float x = 4;
             const float y = 3.5f;
-            for (int i = 0; i < 3; i++, x += px) g.DrawImage(GetStarFull(), x, y);
-            g.DrawImage(GetStarRightEmpty(), x, y);
-            g.DrawImage(GetStarEmpty(), x + px, y);
+            for (int i = 0; i < 3; i++, x += px) g.DrawImage(starFull ??= CreateStarImage(StarFullGPath, px), x, y);
+            g.DrawImage(starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, px), x, y);
+            g.DrawImage(starEmpty ??= CreateStarImage(StarEmptyGPath, px), x + px, y);
         }
         finally
         {
-            _starEmpty?.Dispose();
-            _starRightEmpty?.Dispose();
-            _starFull?.Dispose();
+            starEmpty?.Dispose();
+            starRightEmpty?.Dispose();
+            starFull?.Dispose();
         }
         return ret;
     }
