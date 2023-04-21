@@ -408,131 +408,131 @@ internal static partial class Ini
 
             if (fm.NoArchive)
             {
-                sb.AppendLine("NoArchive=True");
+                sb.Append("NoArchive").AppendLine("=True");
             }
             if (fm.MarkedScanned)
             {
-                sb.AppendLine("MarkedScanned=True");
+                sb.Append("MarkedScanned").AppendLine("=True");
             }
             if (fm.Pinned)
             {
-                sb.AppendLine("Pinned=True");
+                sb.Append("Pinned").AppendLine("=True");
             }
             if (!string.IsNullOrEmpty(fm.Archive))
             {
-                sb.Append("Archive=");
+                sb.Append("Archive").Append('=');
                 sb.AppendLine(fm.Archive);
             }
             if (!string.IsNullOrEmpty(fm.InstalledDir))
             {
-                sb.Append("InstalledDir=");
+                sb.Append("InstalledDir").Append('=');
                 sb.AppendLine(fm.InstalledDir);
             }
             if (!string.IsNullOrEmpty(fm.Title))
             {
-                sb.Append("Title=");
+                sb.Append("Title").Append('=');
                 sb.AppendLine(fm.Title);
             }
             foreach (string s in fm.AltTitles)
             {
-                sb.Append("AltTitles=");
+                sb.Append("AltTitles").Append('=');
                 sb.AppendLine(s);
             }
             if (!string.IsNullOrEmpty(fm.Author))
             {
-                sb.Append("Author=");
+                sb.Append("Author").Append('=');
                 sb.AppendLine(fm.Author);
             }
             switch (fm.Game)
             {
                 // Much faster to do this than Enum.ToString()
                 case Game.Thief1:
-                    sb.AppendLine("Game=Thief1");
+                    sb.Append("Game").Append('=').AppendLine("Thief1");
                     break;
                 case Game.Thief2:
-                    sb.AppendLine("Game=Thief2");
+                    sb.Append("Game").Append('=').AppendLine("Thief2");
                     break;
                 case Game.Thief3:
-                    sb.AppendLine("Game=Thief3");
+                    sb.Append("Game").Append('=').AppendLine("Thief3");
                     break;
                 case Game.SS2:
-                    sb.AppendLine("Game=SS2");
+                    sb.Append("Game").Append('=').AppendLine("SS2");
                     break;
                 case Game.Unsupported:
-                    sb.AppendLine("Game=Unsupported");
+                    sb.Append("Game").Append('=').AppendLine("Unsupported");
                     break;
                     // Don't handle Game.Null because we don't want to write out defaults
             }
             if (fm.Installed)
             {
-                sb.AppendLine("Installed=True");
+                sb.Append("Installed").AppendLine("=True");
             }
             if (fm.NoReadmes)
             {
-                sb.AppendLine("NoReadmes=True");
+                sb.Append("NoReadmes").AppendLine("=True");
             }
             if (fm.ForceReadmeReCache)
             {
-                sb.AppendLine("ForceReadmeReCache=True");
+                sb.Append("ForceReadmeReCache").AppendLine("=True");
             }
             if (!string.IsNullOrEmpty(fm.SelectedReadme))
             {
-                sb.Append("SelectedReadme=");
+                sb.Append("SelectedReadme").Append('=');
                 sb.AppendLine(fm.SelectedReadme);
             }
             foreach (var item in fm.ReadmeCodePages)
             {
-                sb.Append("ReadmeEncoding=");
+                sb.Append("ReadmeEncoding").Append('=');
                 sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());
             }
             if (fm.SizeBytes != 0)
             {
-                sb.Append("SizeBytes=");
+                sb.Append("SizeBytes").Append('=');
                 sb.AppendLine(fm.SizeBytes.ToString());
             }
             if (fm.Rating != -1)
             {
-                sb.Append("Rating=");
+                sb.Append("Rating").Append('=');
                 sb.AppendLine(fm.Rating.ToString());
             }
             if (!string.IsNullOrEmpty(fm.ReleaseDate.UnixDateString))
             {
-                sb.Append("ReleaseDate=");
+                sb.Append("ReleaseDate").Append('=');
                 sb.AppendLine(fm.ReleaseDate.UnixDateString);
             }
             if (!string.IsNullOrEmpty(fm.LastPlayed.UnixDateString))
             {
-                sb.Append("LastPlayed=");
+                sb.Append("LastPlayed").Append('=');
                 sb.AppendLine(fm.LastPlayed.UnixDateString);
             }
             if (fm.DateAdded != null)
             {
-                sb.Append("DateAdded=");
+                sb.Append("DateAdded").Append('=');
                 // Again, important to convert to local time here because we don't do it on startup.
                 sb.AppendLine(new DateTimeOffset(((DateTime)fm.DateAdded).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
             }
             if (fm.FinishedOn != 0)
             {
-                sb.Append("FinishedOn=");
+                sb.Append("FinishedOn").Append('=');
                 sb.AppendLine(fm.FinishedOn.ToString());
             }
             if (fm.FinishedOnUnknown)
             {
-                sb.AppendLine("FinishedOnUnknown=True");
+                sb.Append("FinishedOnUnknown").AppendLine("=True");
             }
             if (!string.IsNullOrEmpty(fm.Comment))
             {
-                sb.Append("Comment=");
+                sb.Append("Comment").Append('=');
                 sb.AppendLine(fm.Comment);
             }
             if (!string.IsNullOrEmpty(fm.DisabledMods))
             {
-                sb.Append("DisabledMods=");
+                sb.Append("DisabledMods").Append('=');
                 sb.AppendLine(fm.DisabledMods);
             }
             if (fm.DisableAllMods)
             {
-                sb.AppendLine("DisableAllMods=True");
+                sb.Append("DisableAllMods").AppendLine("=True");
             }
 #if write_old_resources_style
             if (fm.ResourcesScanned)
@@ -549,7 +549,7 @@ internal static partial class Ini
                 sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
             }
 #else
-            sb.Append("HasResources=");
+            sb.Append("HasResources").Append('=');
             if (fm.ResourcesScanned)
             {
                 CommaCombineHasXFields(fm, sb);
@@ -561,74 +561,74 @@ internal static partial class Ini
 #endif
             if (fm.LangsScanned)
             {
-                sb.AppendLine("LangsScanned=True");
+                sb.Append("LangsScanned").AppendLine("=True");
             }
             if (fm.Langs != 0)
             {
-                sb.Append("Langs=");
+                sb.Append("Langs").Append('=');
                 CommaCombineLanguageFlags(sb, fm.Langs);
             }
             switch (fm.SelectedLang)
             {
                 // Much faster to do this than Enum.ToString()
                 case Language.English:
-                    sb.AppendLine("SelectedLang=english");
+                    sb.Append("SelectedLang").Append('=').AppendLine("english");
                     break;
                 case Language.Czech:
-                    sb.AppendLine("SelectedLang=czech");
+                    sb.Append("SelectedLang").Append('=').AppendLine("czech");
                     break;
                 case Language.Dutch:
-                    sb.AppendLine("SelectedLang=dutch");
+                    sb.Append("SelectedLang").Append('=').AppendLine("dutch");
                     break;
                 case Language.French:
-                    sb.AppendLine("SelectedLang=french");
+                    sb.Append("SelectedLang").Append('=').AppendLine("french");
                     break;
                 case Language.German:
-                    sb.AppendLine("SelectedLang=german");
+                    sb.Append("SelectedLang").Append('=').AppendLine("german");
                     break;
                 case Language.Hungarian:
-                    sb.AppendLine("SelectedLang=hungarian");
+                    sb.Append("SelectedLang").Append('=').AppendLine("hungarian");
                     break;
                 case Language.Italian:
-                    sb.AppendLine("SelectedLang=italian");
+                    sb.Append("SelectedLang").Append('=').AppendLine("italian");
                     break;
                 case Language.Japanese:
-                    sb.AppendLine("SelectedLang=japanese");
+                    sb.Append("SelectedLang").Append('=').AppendLine("japanese");
                     break;
                 case Language.Polish:
-                    sb.AppendLine("SelectedLang=polish");
+                    sb.Append("SelectedLang").Append('=').AppendLine("polish");
                     break;
                 case Language.Russian:
-                    sb.AppendLine("SelectedLang=russian");
+                    sb.Append("SelectedLang").Append('=').AppendLine("russian");
                     break;
                 case Language.Spanish:
-                    sb.AppendLine("SelectedLang=spanish");
+                    sb.Append("SelectedLang").Append('=').AppendLine("spanish");
                     break;
                     // Don't handle Language.Default because we don't want to write out defaults
             }
             if (!string.IsNullOrEmpty(fm.TagsString))
             {
-                sb.Append("TagsString=");
+                sb.Append("TagsString").Append('=');
                 sb.AppendLine(fm.TagsString);
             }
             if (fm.NewMantle != null)
             {
-                sb.Append("NewMantle=");
+                sb.Append("NewMantle").Append('=');
                 sb.AppendLine(fm.NewMantle.ToString());
             }
             if (fm.PostProc != null)
             {
-                sb.Append("PostProc=");
+                sb.Append("PostProc").Append('=');
                 sb.AppendLine(fm.PostProc.ToString());
             }
             if (fm.NDSubs != null)
             {
-                sb.Append("NDSubs=");
+                sb.Append("NDSubs").Append('=');
                 sb.AppendLine(fm.NDSubs.ToString());
             }
             if (fm.MisCount != -1)
             {
-                sb.Append("MisCount=");
+                sb.Append("MisCount").Append('=');
                 sb.AppendLine(fm.MisCount.ToString());
             }
         }

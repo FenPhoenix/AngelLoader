@@ -563,7 +563,7 @@ internal static class FMData
             {
                 if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
                 writer.WL("case " + enumName + "." + enumNames[gi] + ":");
-                writer.WL("sb.AppendLine(\"" + fieldIniName + "=" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
+                writer.WL("sb.Append(\"" + fieldIniName + "\").Append('=').AppendLine(\"" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
                 writer.WL("break;");
             }
             string enumDotEnumTypeZero = enumName + "." + enumNames[0];
@@ -604,7 +604,7 @@ internal static class FMData
             void swlSBAppend(string objField, string value, string suffix = "")
             {
                 if (!suffix.IsEmpty()) suffix = "." + suffix;
-                w.WL("sb.Append(\"" + objField + "=\");");
+                w.WL("sb.Append(\"" + objField + "\").Append('=');");
                 if (fieldIniName == "DateAdded")
                 {
                     // Disgusting >:(
@@ -617,7 +617,7 @@ internal static class FMData
             {
                 w.WL("foreach (var item in " + objDotField + ")");
                 w.WL("{");
-                w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
                 w.WL("sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());");
                 w.WL("}");
             }
@@ -653,7 +653,7 @@ internal static class FMData
                 // For bools, there's only two possible values and if we're not writing it out if it's
                 // false, we know if we ARE writing it out then it can only be true, so just put a string
                 // literal in there and don't do ToString() (mem, perf)
-                w.WL("sb.AppendLine(\"" + fieldIniName + "=True\");");
+                w.WL("sb.Append(\"" + fieldIniName + "\").AppendLine(\"=True\");");
                 w.WL("}");
             }
             else if (field.Type == "bool?")
@@ -714,7 +714,7 @@ internal static class FMData
                 {
                     w.WL("if (" + objDotField + " != 0)");
                     w.WL("{");
-                    w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                    w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
                     w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
                     w.WL("}");
                 }
@@ -755,7 +755,7 @@ internal static class FMData
                 w.WL("sb.AppendLine(\"HasSubtitles=\" + FMHasResource(" + obj + ", CustomResources.Subtitles).ToString());");
                 w.WL("}");
                 w.WL("#else");
-                w.WL("sb.Append(\"" + fieldIniName + "=\");");
+                w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
                 w.WL("if (" + obj + ".ResourcesScanned)");
                 w.WL("{");
                 w.WL("CommaCombineHasXFields(" + obj + ", sb);");
