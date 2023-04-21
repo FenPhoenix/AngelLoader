@@ -486,19 +486,6 @@ public sealed partial class Scanner
         (byte)'w'
     };
 
-    // SS2-only detection string
-    private readonly byte[] MAPPARAM =
-    {
-        (byte)'M',
-        (byte)'A',
-        (byte)'P',
-        (byte)'P',
-        (byte)'A',
-        (byte)'R',
-        (byte)'A',
-        (byte)'M'
-    };
-
     private const int _gameTypeBufferSize = 81_920;
 
     private byte[]? _gameTypeBuffer_ChunkPlusRopeyArrow;

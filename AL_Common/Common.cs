@@ -128,6 +128,19 @@ public static class Common
         (byte)'1'
     };
 
+    // SS2-only detection string
+    public static readonly byte[] MAPPARAM =
+    {
+        (byte)'M',
+        (byte)'A',
+        (byte)'P',
+        (byte)'P',
+        (byte)'A',
+        (byte)'R',
+        (byte)'A',
+        (byte)'M'
+    };
+
     #region Preset char arrays
 
     // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time

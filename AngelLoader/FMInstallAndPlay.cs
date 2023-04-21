@@ -47,18 +47,6 @@ internal static class FMInstallAndPlay
         (byte)'S'
     };
 
-    private static readonly byte[] _MAPPARAM_Bytes =
-    {
-        (byte)'M',
-        (byte)'A',
-        (byte)'P',
-        (byte)'P',
-        (byte)'A',
-        (byte)'R',
-        (byte)'A',
-        (byte)'M'
-    };
-
     private static Encoding? _utf8NoBOM;
     private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
 
@@ -1037,11 +1025,11 @@ internal static class FMInstallAndPlay
 
                     long streamLength = fs.Length;
 
-                    if (streamLength > MAPPARAM_NewDarkLocation + _MAPPARAM_Bytes.Length)
+                    if (streamLength > MAPPARAM_NewDarkLocation + MAPPARAM.Length)
                     {
                         fs.Position = MAPPARAM_NewDarkLocation;
-                        byte[] buffer = BinaryRead.ReadBytes(fs, _MAPPARAM_Bytes.Length);
-                        if (buffer.SequenceEqual(_MAPPARAM_Bytes))
+                        byte[] buffer = BinaryRead.ReadBytes(fs, MAPPARAM.Length);
+                        if (buffer.SequenceEqual(MAPPARAM))
                         {
                             return false;
                         }
@@ -1050,11 +1038,11 @@ internal static class FMInstallAndPlay
                     // Robustness - don't assume there's a MAPPARAM at the OldDark location just because
                     // there wasn't one at the NewDark location.
                     if (!atLeastOneOldDarkMissionFound &&
-                        streamLength > MAPPARAM_OldDarkLocation + _MAPPARAM_Bytes.Length)
+                        streamLength > MAPPARAM_OldDarkLocation + MAPPARAM.Length)
                     {
                         fs.Position = MAPPARAM_OldDarkLocation;
-                        byte[] buffer = BinaryRead.ReadBytes(fs, _MAPPARAM_Bytes.Length);
-                        if (buffer.SequenceEqual(_MAPPARAM_Bytes))
+                        byte[] buffer = BinaryRead.ReadBytes(fs, MAPPARAM.Length);
+                        if (buffer.SequenceEqual(MAPPARAM))
                         {
                             atLeastOneOldDarkMissionFound = true;
                         }
