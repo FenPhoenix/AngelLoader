@@ -29,10 +29,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private bool _scanFMMenuItemEnabled;
     private bool _convertAudioSubMenuEnabled;
     private int _rating = -1;
-    private bool _finishedOnNormalChecked;
-    private bool _finishedOnHardChecked;
-    private bool _finishedOnExpertChecked;
-    private bool _finishedOnExtremeChecked;
+    private Difficulty _finishedItemsChecked = Difficulty.None;
     private bool _finishedOnUnknownChecked;
     private bool _webSearchMenuItemEnabled;
 
@@ -131,10 +128,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
         else
         {
-            _finishedOnNormalChecked = false;
-            _finishedOnHardChecked = false;
-            _finishedOnExpertChecked = false;
-            _finishedOnExtremeChecked = false;
+            _finishedItemsChecked = Difficulty.None;
         }
     }
 
@@ -156,48 +150,34 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (value && !_constructed) _finishedOnUnknownChecked = false;
 
-        switch (difficulty)
+        if (!_constructed)
         {
-            case Difficulty.Normal:
-                if (_constructed)
-                {
+            if (value)
+            {
+                _finishedItemsChecked |= difficulty;
+            }
+            else
+            {
+                _finishedItemsChecked &= ~difficulty;
+            }
+        }
+        else
+        {
+            switch (difficulty)
+            {
+                case Difficulty.Normal:
                     FinishedOnNormalMenuItem.Checked = value;
-                }
-                else
-                {
-                    _finishedOnNormalChecked = value;
-                }
-                break;
-            case Difficulty.Hard:
-                if (_constructed)
-                {
+                    break;
+                case Difficulty.Hard:
                     FinishedOnHardMenuItem.Checked = value;
-                }
-                else
-                {
-                    _finishedOnHardChecked = value;
-                }
-                break;
-            case Difficulty.Expert:
-                if (_constructed)
-                {
+                    break;
+                case Difficulty.Expert:
                     FinishedOnExpertMenuItem.Checked = value;
-                }
-                else
-                {
-                    _finishedOnExpertChecked = value;
-                }
-                break;
-            case Difficulty.Extreme:
-                if (_constructed)
-                {
+                    break;
+                case Difficulty.Extreme:
                     FinishedOnExtremeMenuItem.Checked = value;
-                }
-                else
-                {
-                    _finishedOnExtremeChecked = value;
-                }
-                break;
+                    break;
+            }
         }
     }
 
@@ -338,10 +318,10 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #region Set Finished On checked values
 
-        FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
-        FinishedOnHardMenuItem.Checked = _finishedOnHardChecked;
-        FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
-        FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
+        FinishedOnNormalMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Normal);
+        FinishedOnHardMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Hard);
+        FinishedOnExpertMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Expert);
+        FinishedOnExtremeMenuItem.Checked = _finishedItemsChecked.HasFlagFast(Difficulty.Extreme);
         FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
 
         #endregion
