@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -279,25 +278,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         {
             // IMPORTANT! Stop removing this thing, IT NEEDS TO BE SEPARATE BECAUSE IT'S GOT A DIFFERENT WIDTH!
             using var checkMarkPen = new Pen(fillBrush, 1.6f);
-            SmoothingMode oldSmoothingMode = g.SmoothingMode;
-
-            g.SmoothingMode = SmoothingMode.HighQuality;
-
-            // First half of checkmark
-            g.DrawLine(checkMarkPen,
-                outlineBoxRect.Left + 1.5f,
-                outlineBoxRect.Top + 6,
-                outlineBoxRect.Left + 4.5f,
-                outlineBoxRect.Top + 9);
-
-            // Second half of checkmark
-            g.DrawLine(checkMarkPen,
-                outlineBoxRect.Left + 4.5f,
-                outlineBoxRect.Top + 9,
-                outlineBoxRect.Left + 10.5f,
-                outlineBoxRect.Top + 3);
-
-            g.SmoothingMode = oldSmoothingMode;
+            ControlUtils.DrawCheckMark(g, checkMarkPen, outlineBoxRect);
         }
         else if (CheckState == CheckState.Indeterminate)
         {

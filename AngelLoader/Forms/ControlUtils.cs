@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -827,4 +828,28 @@ internal static class ControlUtils
     }
 
     #endregion
+
+    public static void DrawCheckMark(Graphics g, Pen pen, RectangleF rect)
+    {
+        SmoothingMode oldSmoothingMode = g.SmoothingMode;
+        g.SmoothingMode = SmoothingMode.HighQuality;
+
+        // First half of checkmark
+        g.DrawLine(
+            pen,
+            rect.Left + 1.5f,
+            rect.Top + 6,
+            rect.Left + 4.5f,
+            rect.Top + 9);
+
+        // Second half of checkmark
+        g.DrawLine(
+            pen,
+            rect.Left + 4.5f,
+            rect.Top + 9,
+            rect.Left + 10.5f,
+            rect.Top + 3);
+
+        g.SmoothingMode = oldSmoothingMode;
+    }
 }

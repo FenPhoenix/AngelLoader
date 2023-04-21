@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
@@ -183,28 +182,8 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         int checkPos = (Width / 2) + (_checkMessageWidth / 2);
 
         using var checkMarkPen = new Pen(_foreColorCached, 1.6f);
-
-        SmoothingMode oldSmoothingMode = _graphicsContext.G.SmoothingMode;
-
-        _graphicsContext.G.SmoothingMode = SmoothingMode.HighQuality;
-
         var outlineBoxRect = new Rectangle(checkPos, _messageRect.Y + 4, 12, 12);
-
-        // First half of checkmark
-        _graphicsContext.G.DrawLine(checkMarkPen,
-            outlineBoxRect.Left + 1.5f,
-            outlineBoxRect.Top + 6,
-            outlineBoxRect.Left + 4.5f,
-            outlineBoxRect.Top + 9);
-
-        // Second half of checkmark
-        _graphicsContext.G.DrawLine(checkMarkPen,
-            outlineBoxRect.Left + 4.5f,
-            outlineBoxRect.Top + 9,
-            outlineBoxRect.Left + 10.5f,
-            outlineBoxRect.Top + 3);
-
-        _graphicsContext.G.SmoothingMode = oldSmoothingMode;
+        ControlUtils.DrawCheckMark(_graphicsContext.G, checkMarkPen, outlineBoxRect);
     }
 
     private bool _lockPainting;
