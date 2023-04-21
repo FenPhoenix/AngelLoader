@@ -571,7 +571,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     break;
             }
 
-            UpdateThiefBuddyExistence_Sync();
+            CheckThiefBuddyExistence();
+            UpdateThiefBuddyExistenceOnUI();
 
             #endregion
         }
@@ -1690,8 +1691,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         try
         {
-            await Task.Run(_UpdateThiefBuddyExistence_CheckExistence);
-            _UpdateThiefBuddyExistence_SetUIExistence();
+            await Task.Run(CheckThiefBuddyExistence);
+            UpdateThiefBuddyExistenceOnUI();
         }
         catch
         {
@@ -1699,30 +1700,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-#pragma warning disable IDE1006
-    /// <summary>
-    /// Do not call directly.
-    /// </summary>
-    private void _UpdateThiefBuddyExistence_CheckExistence()
+    private void CheckThiefBuddyExistence()
     {
         string thiefBuddyExe = Paths.ThiefBuddyExePath;
         _thiefBuddyConsideredToExist = !thiefBuddyExe.IsWhiteSpace() && File.Exists(thiefBuddyExe);
     }
 
-    /// <summary>
-    /// Do not call directly.
-    /// </summary>
-    private void _UpdateThiefBuddyExistence_SetUIExistence()
+    private void UpdateThiefBuddyExistenceOnUI()
     {
         UpdateThiefBuddyStatusLabel();
         ThiefBuddyPage.RunTBPanel.Enabled = _thiefBuddyConsideredToExist;
-    }
-#pragma warning restore IDE1006
-
-    private void UpdateThiefBuddyExistence_Sync()
-    {
-        _UpdateThiefBuddyExistence_CheckExistence();
-        _UpdateThiefBuddyExistence_SetUIExistence();
     }
 
     private void UpdateThiefBuddyStatusLabel()
