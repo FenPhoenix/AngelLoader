@@ -3923,10 +3923,6 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     FMsDGV.Columns.RemoveAt((int)Column.Rating);
                     FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn);
-                    if (newRatingColumn.HeaderCell is DataGridViewColumnHeaderCellCustom cell)
-                    {
-                        cell.DarkModeEnabled = Config.DarkMode;
-                    }
                 }
                 finally
                 {

@@ -15,10 +15,6 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
     private static bool? _reflectionSupported;
     private static FieldInfo? _selectionModeField;
 
-    // Not strictly necessary: we work fine without it, but having it allows us to skip the reflection stuff
-    // in dark mode.
-    internal bool DarkModeEnabled;
-
     /// <inheritdoc cref="DataGridViewColumnHeaderCell.Paint"/>
     protected override void Paint(
         Graphics graphics,
@@ -68,8 +64,11 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
         *You can in fact set the accessibility level switches at runtime, but DataGridView caches the switch
         values internally, so setting the global ones does nothing in this case, it's just going to read
         from its own cache.
+
+        The dark mode check is not strictly necessary: we work fine without it, but having it allows us to skip
+        the reflection stuff in dark mode.
         */
-        if (rowIndex == -1 && !DarkModeEnabled && _reflectionSupported != false)
+        if (rowIndex == -1 && !Global.Config.DarkMode && _reflectionSupported != false)
         {
             // Do this here because DataGridView will still be null in the ctor. We only do it once app-wide
             // anyway (static) so it's fine.

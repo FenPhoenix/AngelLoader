@@ -65,16 +65,6 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            // Optimization for dark mode: We can avoid some reflection by having the custom header cells
-            // check their dark mode bools before painting.
-            foreach (DataGridViewColumn column in Columns)
-            {
-                if (column.HeaderCell is DataGridViewColumnHeaderCellCustom cellCustom)
-                {
-                    cellCustom.DarkModeEnabled = _darkModeEnabled;
-                }
-            }
-
             if (_darkModeEnabled)
             {
                 BackgroundColor = DarkColors.Fen_DarkBackground;
