@@ -155,7 +155,6 @@ sealed partial class PathsPage
         this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
         this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.TabIndex = 2;
         this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
         // 
@@ -293,7 +292,6 @@ sealed partial class PathsPage
         this.SteamExeBrowseButton.Location = new System.Drawing.Point(336, 39);
         this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.SteamExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SteamExeBrowseButton.TabIndex = 2;
         this.SteamExeBrowseButton.UseVisualStyleBackColor = true;
         // 
@@ -368,7 +366,6 @@ sealed partial class PathsPage
         this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
         this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SS2ExePathBrowseButton.TabIndex = 11;
         this.SS2ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
@@ -380,7 +377,6 @@ sealed partial class PathsPage
         this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(336, 119);
         this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief3ExePathBrowseButton.TabIndex = 8;
         this.Thief3ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
@@ -392,7 +388,6 @@ sealed partial class PathsPage
         this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(336, 79);
         this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief2ExePathBrowseButton.TabIndex = 5;
         this.Thief2ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
@@ -404,7 +399,6 @@ sealed partial class PathsPage
         this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(336, 39);
         this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief1ExePathBrowseButton.TabIndex = 2;
         this.Thief1ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 

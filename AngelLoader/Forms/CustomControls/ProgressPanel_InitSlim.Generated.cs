@@ -25,7 +25,6 @@ sealed partial class ProgressPanel
         this.Cancel_Button.Location = new System.Drawing.Point(168, 152);
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
         this.Cancel_Button.TabIndex = 7;
         this.Cancel_Button.UseVisualStyleBackColor = true;
         this.Cancel_Button.Click += new System.EventHandler(this.ProgressCancelButton_Click);

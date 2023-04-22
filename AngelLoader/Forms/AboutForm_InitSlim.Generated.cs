@@ -74,7 +74,6 @@ partial class AboutForm
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
         this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
-        this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
         this.OKButton.UseVisualStyleBackColor = true;
         // 

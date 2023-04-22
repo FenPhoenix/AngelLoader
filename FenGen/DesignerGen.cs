@@ -589,25 +589,26 @@ internal static class DesignerGen
                 destNode.IgnoreExceptForComments = true;
             }
             else if (destNode.PropName == "Size" &&
-                     // Keep size if a control has subcontrols, because they might depend on it for layout
-                     // (eg. if they're anchored right or bottom)
-                     !props.HasChildren &&
-                     (
-                         (controlAttributes.TryGetValue(destNode.ControlName, out attr) &&
-                          attr == GenAttributes.FenGenForceRemoveSizeAttribute) ||
-                         // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
-                         // unable to think how to explain well at the moment but you can figure it out, it's like
-                         // when we go to position it, it needs to know its size so it can properly position itself
-                         // relative to its anchor... you know.
-                         ((props.HasDefaultAnchor != false) &&
-                          (
-                              (props is { Size: { }, MinimumSize: { } } &&
-                               props.Size == props.MinimumSize) ||
-                              props is { Size: { }, AutoSize: true } ||
-                              props.AutoSize == true
-                          ))
-                     )
-                    )
+                     ((props is { Size: not null, MinimumSize: not null } &&
+                       props.Size == props.MinimumSize) ||
+
+                      // Keep size if a control has subcontrols, because they might depend on it for layout
+                      // (eg. if they're anchored right or bottom)
+                      (!props.HasChildren &&
+                       (
+                           (controlAttributes.TryGetValue(destNode.ControlName, out attr) &&
+                            attr == GenAttributes.FenGenForceRemoveSizeAttribute) ||
+                           // If anchor is anything other than top-left, we need to keep the size, for reasons I'm
+                           // unable to think how to explain well at the moment but you can figure it out, it's like
+                           // when we go to position it, it needs to know its size so it can properly position itself
+                           // relative to its anchor... you know.
+                           ((props.HasDefaultAnchor != false) &&
+                            (
+                                props is { Size: not null, AutoSize: true } ||
+                                props.AutoSize == true
+                            ))
+                       ))
+                     ))
             {
                 destNode.IgnoreExceptForComments = true;
             }
