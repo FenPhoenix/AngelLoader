@@ -93,7 +93,7 @@ public sealed class DarkContextMenu : ContextMenuStrip
 
             foreach (ToolStripItem item in menu.Items)
             {
-                if (item is ToolStripMenuItem { DropDown: { } } menuItem)
+                if (item is ToolStripMenuItem { DropDown: not null } menuItem)
                 {
                     SetMenuTheme(menuItem.DropDown);
                 }
