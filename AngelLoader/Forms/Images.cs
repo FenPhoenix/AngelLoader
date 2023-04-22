@@ -215,7 +215,7 @@ public static class Images
         MakeTypeArray((1, 7, 0, 129), (1, 7, 0, 129))
     };
 
-    private static readonly GraphicsPath?[] _zoomImageGPaths = new GraphicsPath[ZoomTypesCount];
+    private static readonly GraphicsPath?[] _zoomImageGPaths = new GraphicsPath[FormsData.ZoomTypesCount];
 
     #endregion
 
@@ -808,7 +808,7 @@ public static class Images
     internal static readonly Bitmap?[] FMsList_StarIcons = new Bitmap?[_numRatings];
     internal static readonly Bitmap?[] FMsList_FinishedOnIcons = new Bitmap?[16];
 
-    private static readonly Bitmap?[] _zoomImages = new Bitmap?[ZoomTypesCount];
+    private static readonly Bitmap?[] _zoomImages = new Bitmap?[FormsData.ZoomTypesCount];
 
     #endregion
 

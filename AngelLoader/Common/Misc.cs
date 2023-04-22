@@ -18,7 +18,6 @@ public static class Misc
 
     internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
     internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
-    public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
     internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
     internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
     internal static readonly int SettingsTabsCount = Enum.GetValues(typeof(SettingsTab)).Length;
@@ -63,9 +62,6 @@ public static class Misc
         No,
         Cancel
     }
-
-    // IMPORTANT: Don't change the order, they're used as indices!
-    public enum Zoom { In, Out, Reset }
 
     public enum ProgressSizeMode
     {
