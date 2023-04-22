@@ -29,7 +29,6 @@ public sealed partial class Lazy_StatsPage
         // 
         this.Stats_MisCountLabel.AutoSize = true;
         this.Stats_MisCountLabel.Location = new System.Drawing.Point(4, 8);
-        this.Stats_MisCountLabel.TabIndex = 14;
         // 
         // StatsScanCustomResourcesButton
         // 
@@ -142,7 +141,6 @@ public sealed partial class Lazy_StatsPage
         // 
         this.CustomResourcesLabel.AutoSize = true;
         this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 42);
-        this.CustomResourcesLabel.TabIndex = 15;
         // 
         // StatsHorizDiv
         // 
@@ -150,7 +148,6 @@ public sealed partial class Lazy_StatsPage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
         this.StatsHorizDiv.Size = new System.Drawing.Size(514, 16);
-        this.StatsHorizDiv.TabIndex = 18;
         // 
         // Lazy_StatsPage
         // 

@@ -84,7 +84,6 @@ partial class DarkTaskDialog
         // 
         this.MessageLabel.AutoSize = true;
         this.MessageLabel.Location = new System.Drawing.Point(52, 15);
-        this.MessageLabel.TabIndex = 0;
         // 
         // DarkTaskDialog
         // 

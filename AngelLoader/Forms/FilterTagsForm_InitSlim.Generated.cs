@@ -115,19 +115,16 @@ sealed partial class FilterTagsForm
         // 
         this.IncludeAllLabel.AutoSize = true;
         this.IncludeAllLabel.Location = new System.Drawing.Point(0, 8);
-        this.IncludeAllLabel.TabIndex = 0;
         // 
         // IncludeAnyLabel
         // 
         this.IncludeAnyLabel.AutoSize = true;
         this.IncludeAnyLabel.Location = new System.Drawing.Point(232, 8);
-        this.IncludeAnyLabel.TabIndex = 3;
         // 
         // ExcludeLabel
         // 
         this.ExcludeLabel.AutoSize = true;
         this.ExcludeLabel.Location = new System.Drawing.Point(464, 8);
-        this.ExcludeLabel.TabIndex = 6;
         // 
         // FilterLabelsPanel
         // 

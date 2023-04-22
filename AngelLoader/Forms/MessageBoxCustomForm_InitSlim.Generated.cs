@@ -31,7 +31,6 @@ partial class MessageBoxCustomForm
         // 
         this.MessageTopLabel.AutoSize = true;
         this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 21);
-        this.MessageTopLabel.TabIndex = 0;
         // 
         // IconPictureBox
         // 
@@ -100,7 +99,6 @@ partial class MessageBoxCustomForm
         // 
         this.MessageBottomLabel.AutoSize = true;
         this.MessageBottomLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 21);
-        this.MessageBottomLabel.TabIndex = 3;
         // 
         // OuterTLP
         // 

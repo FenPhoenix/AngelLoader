@@ -26,7 +26,6 @@ public sealed partial class Lazy_PatchPage
         // 
         this.Patch_PerFMValues_Label.AutoSize = true;
         this.Patch_PerFMValues_Label.Location = new System.Drawing.Point(6, 8);
-        this.Patch_PerFMValues_Label.TabIndex = 39;
         // 
         // Patch_NDSubs_CheckBox
         // 
@@ -84,7 +83,6 @@ public sealed partial class Lazy_PatchPage
         // 
         this.PatchDMLPatchesLabel.AutoSize = true;
         this.PatchDMLPatchesLabel.Location = new System.Drawing.Point(6, 8);
-        this.PatchDMLPatchesLabel.TabIndex = 40;
         // 
         // PatchDMLsListBox
         // 

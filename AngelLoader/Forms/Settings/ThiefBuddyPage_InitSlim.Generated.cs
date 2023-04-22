@@ -57,13 +57,11 @@ sealed partial class ThiefBuddyPage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.HorizDiv1.Location = new System.Drawing.Point(16, 40);
         this.HorizDiv1.Size = new System.Drawing.Size(392, 16);
-        this.HorizDiv1.TabIndex = 1;
         // 
         // TBInstallStatusLabel
         // 
         this.TBInstallStatusLabel.AutoSize = true;
         this.TBInstallStatusLabel.Location = new System.Drawing.Point(16, 24);
-        this.TBInstallStatusLabel.TabIndex = 0;
         // 
         // RunTBPanel
         // 
@@ -80,7 +78,6 @@ sealed partial class ThiefBuddyPage
         // RunThiefBuddyWhenPlayingFMsLabel
         // 
         this.RunThiefBuddyWhenPlayingFMsLabel.AutoSize = true;
-        this.RunThiefBuddyWhenPlayingFMsLabel.TabIndex = 0;
         // 
         // RunTBAlwaysRadioButton
         // 
@@ -133,7 +130,6 @@ sealed partial class ThiefBuddyPage
         this.WhatIsTBHelpLabel.Location = new System.Drawing.Point(27, 180);
         this.WhatIsTBHelpLabel.MinimumSize = new System.Drawing.Size(0, 13);
         this.WhatIsTBHelpLabel.Size = new System.Drawing.Size(389, 28);
-        this.WhatIsTBHelpLabel.TabIndex = 1;
         this.WhatIsTBHelpLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
         // ThiefBuddyPage

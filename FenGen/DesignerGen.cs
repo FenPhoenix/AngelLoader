@@ -618,6 +618,20 @@ internal static class DesignerGen
             {
                 destNode.IgnoreExceptForComments = true;
             }
+            else if (destNode.PropName == "TabIndex")
+            {
+                if (controlTypes.TryGetValue(destNode.ControlName, out string type) &&
+                    type
+                        is "DarkLabel"
+                        or "Label"
+                        or "DarkProgressBar"
+                        or "ProgressBar"
+                        or "DarkHorizontalDivider"
+                   )
+                {
+                    destNode.IgnoreExceptForComments = true;
+                }
+            }
         }
 
         #endregion

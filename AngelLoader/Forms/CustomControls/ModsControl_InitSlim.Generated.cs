@@ -25,7 +25,6 @@ sealed partial class ModsControl
         // 
         this.HeaderLabel.AutoSize = true;
         this.HeaderLabel.Location = new System.Drawing.Point(7, 8);
-        this.HeaderLabel.TabIndex = 10;
         // 
         // ResetFLP
         // 
@@ -80,7 +79,6 @@ sealed partial class ModsControl
         this.DisabledModsLabel.AutoSize = true;
         this.DisabledModsLabel.Location = new System.Drawing.Point(7, 240);
         this.DisabledModsLabel.Size = new System.Drawing.Size(79, 13);
-        this.DisabledModsLabel.TabIndex = 8;
         // 
         // CheckList
         // 

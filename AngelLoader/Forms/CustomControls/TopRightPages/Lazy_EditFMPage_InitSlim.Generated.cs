@@ -38,7 +38,6 @@ public sealed partial class Lazy_EditFMPage
         // 
         this.EditFMLanguageLabel.AutoSize = true;
         this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 185);
-        this.EditFMLanguageLabel.TabIndex = 50;
         // 
         // EditFMLanguageComboBox
         // 
@@ -149,13 +148,11 @@ public sealed partial class Lazy_EditFMPage
         // 
         this.EditFMAuthorLabel.AutoSize = true;
         this.EditFMAuthorLabel.Location = new System.Drawing.Point(8, 48);
-        this.EditFMAuthorLabel.TabIndex = 39;
         // 
         // EditFMTitleLabel
         // 
         this.EditFMTitleLabel.AutoSize = true;
         this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
-        this.EditFMTitleLabel.TabIndex = 35;
         // 
         // EditFMRatingButton
         // 

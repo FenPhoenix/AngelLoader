@@ -67,7 +67,6 @@ partial class SettingsForm
         this.ErrorLabel.AutoSize = true;
         this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
         this.ErrorLabel.Margin = new System.Windows.Forms.Padding(3, 12, 3, 0);
-        this.ErrorLabel.TabIndex = 4;
         this.ErrorLabel.Visible = false;
         // 
         // ErrorIconPictureBox

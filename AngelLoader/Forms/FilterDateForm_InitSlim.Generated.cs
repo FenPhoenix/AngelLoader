@@ -57,13 +57,11 @@ partial class FilterDateForm
         // 
         this.ToLabel.AutoSize = true;
         this.ToLabel.Location = new System.Drawing.Point(8, 48);
-        this.ToLabel.TabIndex = 5;
         // 
         // FromLabel
         // 
         this.FromLabel.AutoSize = true;
         this.FromLabel.Location = new System.Drawing.Point(8, 8);
-        this.FromLabel.TabIndex = 1;
         // 
         // FromDateTimePicker
         // 

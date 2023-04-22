@@ -68,7 +68,6 @@ partial class OriginalGameModsForm
         // 
         this.HorizontalDivider1.Location = new System.Drawing.Point(7, 44);
         this.HorizontalDivider1.Size = new System.Drawing.Size(517, 16);
-        this.HorizontalDivider1.TabIndex = 2;
         // 
         // OriginalGameModsForm
         // 

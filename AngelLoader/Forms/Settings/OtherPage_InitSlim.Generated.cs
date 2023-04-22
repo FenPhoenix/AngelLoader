@@ -117,7 +117,6 @@ sealed partial class OtherPage
         // 
         this.ConfirmBeforeInstallLabel.AutoSize = true;
         this.ConfirmBeforeInstallLabel.Location = new System.Drawing.Point(16, 24);
-        this.ConfirmBeforeInstallLabel.TabIndex = 0;
         // 
         // PlayFMOnDCOrEnterGroupBox
         // 
@@ -165,7 +164,6 @@ sealed partial class OtherPage
         // 
         this.WebSearchTitleExplanationLabel.AutoSize = true;
         this.WebSearchTitleExplanationLabel.Location = new System.Drawing.Point(16, 78);
-        this.WebSearchTitleExplanationLabel.TabIndex = 3;
         // 
         // WebSearchUrlTextBox
         // 
@@ -181,7 +179,6 @@ sealed partial class OtherPage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.WebSearchUrlLabel.Location = new System.Drawing.Point(16, 16);
         this.WebSearchUrlLabel.Size = new System.Drawing.Size(400, 32);
-        this.WebSearchUrlLabel.TabIndex = 0;
         this.WebSearchUrlLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
         // UninstallingFMsGroupBox
@@ -211,7 +208,6 @@ sealed partial class OtherPage
         // 
         this.WhatToBackUpLabel.AutoSize = true;
         this.WhatToBackUpLabel.Location = new System.Drawing.Point(16, 48);
-        this.WhatToBackUpLabel.TabIndex = 1;
         // 
         // BackupAlwaysAskCheckBox
         // 

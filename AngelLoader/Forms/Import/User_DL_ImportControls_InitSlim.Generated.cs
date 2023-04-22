@@ -26,7 +26,6 @@ sealed partial class User_DL_ImportControls
         // 
         this.ChooseDarkLoaderIniLabel.AutoSize = true;
         this.ChooseDarkLoaderIniLabel.Location = new System.Drawing.Point(8, 8);
-        this.ChooseDarkLoaderIniLabel.TabIndex = 0;
         // 
         // DarkLoaderIniTextBox
         // 

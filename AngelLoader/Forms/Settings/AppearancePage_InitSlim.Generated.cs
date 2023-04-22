@@ -157,7 +157,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.darkHorizontalDivider4.Location = new System.Drawing.Point(8, 584);
         this.darkHorizontalDivider4.Size = new System.Drawing.Size(464, 16);
-        this.darkHorizontalDivider4.TabIndex = 12;
         // 
         // darkHorizontalDivider3
         // 
@@ -165,7 +164,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.darkHorizontalDivider3.Location = new System.Drawing.Point(8, 408);
         this.darkHorizontalDivider3.Size = new System.Drawing.Size(464, 16);
-        this.darkHorizontalDivider3.TabIndex = 9;
         // 
         // darkHorizontalDivider2
         // 
@@ -173,7 +171,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.darkHorizontalDivider2.Location = new System.Drawing.Point(8, 264);
         this.darkHorizontalDivider2.Size = new System.Drawing.Size(464, 16);
-        this.darkHorizontalDivider2.TabIndex = 6;
         // 
         // darkHorizontalDivider1
         // 
@@ -181,7 +178,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.darkHorizontalDivider1.Location = new System.Drawing.Point(8, 136);
         this.darkHorizontalDivider1.Size = new System.Drawing.Size(464, 16);
-        this.darkHorizontalDivider1.TabIndex = 1;
         // 
         // DateFormatRBPanel
         // 
@@ -299,7 +295,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.RecentFMsLabel.Location = new System.Drawing.Point(16, 624);
         this.RecentFMsLabel.Size = new System.Drawing.Size(456, 32);
-        this.RecentFMsLabel.TabIndex = 14;
         this.RecentFMsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
         // PreviewDateFLP
@@ -316,7 +311,6 @@ sealed partial class AppearancePage
         // 
         this.PreviewDateLabel.AutoSize = true;
         this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
-        this.PreviewDateLabel.TabIndex = 0;
         // 
         // DateCustomFormatPanel
         // 
@@ -400,31 +394,26 @@ sealed partial class AppearancePage
         // 
         this.RecentFMsHeaderLabel.AutoSize = true;
         this.RecentFMsHeaderLabel.Location = new System.Drawing.Point(8, 608);
-        this.RecentFMsHeaderLabel.TabIndex = 13;
         // 
         // DateFormatLabel
         // 
         this.DateFormatLabel.AutoSize = true;
         this.DateFormatLabel.Location = new System.Drawing.Point(8, 432);
-        this.DateFormatLabel.TabIndex = 10;
         // 
         // RatingDisplayStyleLabel
         // 
         this.RatingDisplayStyleLabel.AutoSize = true;
         this.RatingDisplayStyleLabel.Location = new System.Drawing.Point(8, 288);
-        this.RatingDisplayStyleLabel.TabIndex = 7;
         // 
         // GameOrganizationLabel
         // 
         this.GameOrganizationLabel.AutoSize = true;
         this.GameOrganizationLabel.Location = new System.Drawing.Point(8, 24);
-        this.GameOrganizationLabel.TabIndex = 0;
         // 
         // SortingLabel
         // 
         this.SortingLabel.AutoSize = true;
         this.SortingLabel.Location = new System.Drawing.Point(8, 160);
-        this.SortingLabel.TabIndex = 2;
         // 
         // MoveArticlesToEndCheckBox
         // 

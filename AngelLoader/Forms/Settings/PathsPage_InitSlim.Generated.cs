@@ -130,14 +130,12 @@ sealed partial class PathsPage
         this.BackupPathHelpLabel.AutoSize = true;
         this.BackupPathHelpLabel.Location = new System.Drawing.Point(32, 56);
         this.BackupPathHelpLabel.MaximumSize = new System.Drawing.Size(380, 0);
-        this.BackupPathHelpLabel.TabIndex = 6;
         this.BackupPathHelpLabel.TextChanged += new System.EventHandler(this.BackupPathHelpLabel_TextChanged);
         // 
         // BackupPathLabel
         // 
         this.BackupPathLabel.AutoSize = true;
         this.BackupPathLabel.Location = new System.Drawing.Point(13, 8);
-        this.BackupPathLabel.TabIndex = 0;
         // 
         // BackupPathTextBox
         // 
@@ -274,7 +272,6 @@ sealed partial class PathsPage
         // 
         this.SteamExeLabel.AutoSize = true;
         this.SteamExeLabel.Location = new System.Drawing.Point(16, 24);
-        this.SteamExeLabel.TabIndex = 0;
         // 
         // SteamExeTextBox
         // 
@@ -331,32 +328,27 @@ sealed partial class PathsPage
         // GameRequirementsLabel
         // 
         this.GameRequirementsLabel.AutoSize = true;
-        this.GameRequirementsLabel.TabIndex = 0;
         this.GameRequirementsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
         // SS2ExePathLabel
         // 
         this.SS2ExePathLabel.AutoSize = true;
         this.SS2ExePathLabel.Location = new System.Drawing.Point(16, 144);
-        this.SS2ExePathLabel.TabIndex = 9;
         // 
         // Thief3ExePathLabel
         // 
         this.Thief3ExePathLabel.AutoSize = true;
         this.Thief3ExePathLabel.Location = new System.Drawing.Point(16, 104);
-        this.Thief3ExePathLabel.TabIndex = 6;
         // 
         // Thief2ExePathLabel
         // 
         this.Thief2ExePathLabel.AutoSize = true;
         this.Thief2ExePathLabel.Location = new System.Drawing.Point(16, 64);
-        this.Thief2ExePathLabel.TabIndex = 3;
         // 
         // Thief1ExePathLabel
         // 
         this.Thief1ExePathLabel.AutoSize = true;
         this.Thief1ExePathLabel.Location = new System.Drawing.Point(16, 24);
-        this.Thief1ExePathLabel.TabIndex = 0;
         // 
         // SS2ExePathBrowseButton
         // 

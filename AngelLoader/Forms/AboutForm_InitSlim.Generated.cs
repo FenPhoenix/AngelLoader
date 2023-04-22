@@ -45,7 +45,6 @@ partial class AboutForm
         this.VersionLabel.AutoSize = true;
         this.VersionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.VersionLabel.Location = new System.Drawing.Point(352, 26);
-        this.VersionLabel.TabIndex = 1;
         // 
         // GitHubLinkLabel
         // 
@@ -145,7 +144,6 @@ partial class AboutForm
         // 
         this.AngelLoaderUsesLabel.AutoSize = true;
         this.AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 364);
-        this.AngelLoaderUsesLabel.TabIndex = 5;
         // 
         // LogoTextPictureBox
         // 
@@ -170,7 +168,6 @@ partial class AboutForm
         this.BuildDateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.BuildDateLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
         this.BuildDateLabel.Location = new System.Drawing.Point(352, 50);
-        this.BuildDateLabel.TabIndex = 2;
         // 
         // DarkUILinkLabel
         // 

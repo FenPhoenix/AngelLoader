@@ -129,7 +129,6 @@ sealed partial class ScanAllFMsForm
         // 
         this.ScanAllFMsForLabel.AutoSize = true;
         this.ScanAllFMsForLabel.Location = new System.Drawing.Point(16, 16);
-        this.ScanAllFMsForLabel.TabIndex = 1;
         // 
         // BottomFLP
         // 

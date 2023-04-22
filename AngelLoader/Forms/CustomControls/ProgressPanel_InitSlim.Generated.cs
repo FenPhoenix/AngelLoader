@@ -33,47 +33,40 @@ sealed partial class ProgressPanel
         // 
         this.MainPercentLabel.Location = new System.Drawing.Point(4, 40);
         this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
-        this.MainPercentLabel.TabIndex = 2;
         this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // MainMessage1Label
         // 
         this.MainMessage1Label.Location = new System.Drawing.Point(4, 8);
         this.MainMessage1Label.Size = new System.Drawing.Size(416, 13);
-        this.MainMessage1Label.TabIndex = 0;
         this.MainMessage1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // MainMessage2Label
         // 
         this.MainMessage2Label.Location = new System.Drawing.Point(4, 24);
         this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
-        this.MainMessage2Label.TabIndex = 1;
         this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // MainProgressBar
         // 
         this.MainProgressBar.Location = new System.Drawing.Point(8, 56);
         this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
-        this.MainProgressBar.TabIndex = 3;
         // 
         // SubProgressBar
         // 
         this.SubProgressBar.Location = new System.Drawing.Point(8, 120);
         this.SubProgressBar.Size = new System.Drawing.Size(406, 16);
-        this.SubProgressBar.TabIndex = 6;
         // 
         // SubMessageLabel
         // 
         this.SubMessageLabel.Location = new System.Drawing.Point(4, 88);
         this.SubMessageLabel.Size = new System.Drawing.Size(416, 13);
-        this.SubMessageLabel.TabIndex = 4;
         this.SubMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // SubPercentLabel
         // 
         this.SubPercentLabel.Location = new System.Drawing.Point(4, 104);
         this.SubPercentLabel.Size = new System.Drawing.Size(416, 13);
-        this.SubPercentLabel.TabIndex = 5;
         this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // ProgressPanel
