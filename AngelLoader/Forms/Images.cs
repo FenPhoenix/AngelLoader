@@ -1170,7 +1170,7 @@ public static class Images
         FMsList_FinishedOnIcons.DisposeRange(1, FMsList_FinishedOnIcons.Length);
         FMsList_FinishedOnIcons[0] = Blank;
 
-        Bitmap?[] _finishedOnBitmaps = new Bitmap?[DiffCount];
+        Bitmap?[] _finishedOnBitmaps = new Bitmap?[DifficultyCount];
         try
         {
             var list = new List<Bitmap>(4);
@@ -1183,7 +1183,7 @@ public static class Images
                 list.Clear();
 
                 uint at = 1;
-                for (int dI = 0; dI < DiffCount; dI++, at <<= 1)
+                for (int dI = 0; dI < DifficultyCount; dI++, at <<= 1)
                 {
                     Difficulty loopDiff = (Difficulty)at;
                     if (difficulty.HasFlagFast(loopDiff))

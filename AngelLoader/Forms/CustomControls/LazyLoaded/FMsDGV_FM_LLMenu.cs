@@ -118,7 +118,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (_constructed)
         {
-            for (int i = 0; i < DiffCount; i++)
+            for (int i = 0; i < DifficultyCount; i++)
             {
                 FinishedOnExplicitMenuItems[i].Checked = false;
             }
@@ -203,9 +203,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         RatingMenuItem.DropDown = RatingMenu;
 
-        FinishedOnExplicitMenuItems = new ToolStripMenuItemCustom[DiffCount];
+        FinishedOnExplicitMenuItems = new ToolStripMenuItemCustom[DifficultyCount];
 
-        for (int i = 0; i < DiffCount; i++)
+        for (int i = 0; i < DifficultyCount; i++)
         {
             FinishedOnExplicitMenuItems[i] = new ToolStripMenuItemCustom { CheckOnClick = true };
         }
@@ -281,7 +281,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         #region Set Finished On checked values
 
         uint at = 1;
-        for (int i = 0; i < DiffCount; i++, at <<= 1)
+        for (int i = 0; i < DifficultyCount; i++, at <<= 1)
         {
             FinishedOnExplicitMenuItems[i].Checked = _finishedExplicitItemsChecked.HasFlagFast((Difficulty)at);
         }
@@ -647,7 +647,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else
         {
             uint at = 1;
-            for (int i = 0; i < DiffCount; i++, at <<= 1)
+            for (int i = 0; i < DifficultyCount; i++, at <<= 1)
             {
                 Difficulty loopDiff = (Difficulty)at;
                 bool value = difficulty.HasFlagFast(loopDiff);
@@ -683,7 +683,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         if (!_constructed) return;
 
         uint at = 1;
-        for (int i = 0; i < DiffCount; i++, at <<= 1)
+        for (int i = 0; i < DifficultyCount; i++, at <<= 1)
         {
             FinishedOnExplicitMenuItems[i].Text = GetLocalizedDifficultyName(game, (Difficulty)at);
         }
