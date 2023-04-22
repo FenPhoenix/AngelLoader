@@ -620,16 +620,27 @@ internal static class DesignerGen
             }
             else if (destNode.PropName == "TabIndex")
             {
-                if (controlTypes.TryGetValue(destNode.ControlName, out string type) &&
-                    type
-                        is "DarkLabel"
-                        or "Label"
-                        or "DarkProgressBar"
-                        or "ProgressBar"
-                        or "DarkHorizontalDivider"
-                   )
+                if (controlTypes.TryGetValue(destNode.ControlName, out string type))
                 {
-                    destNode.IgnoreExceptForComments = true;
+                    if (type.StartsWithO("Dark")) type = type.Substring(4);
+
+                    if (type
+                        is "Label"
+                        or "ProgressBar"
+                        or "HorizontalDivider")
+                    {
+                        destNode.IgnoreExceptForComments = true;
+                    }
+                    else if (!props.HasChildren &&
+                             (type
+                                 is "Control"
+                                 or "Panel"
+                                 or "FlowLayoutPanel")
+                             // @vNext: Cheap hack temporarily
+                             && destNode.ControlName != "PagePanel")
+                    {
+                        destNode.IgnoreExceptForComments = true;
+                    }
                 }
             }
         }

@@ -278,7 +278,6 @@ sealed partial class OtherPage
         // 
         this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
         this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-        this.DummyAutoScrollPanel.TabIndex = 12;
         // 
         // OtherPage
         // 

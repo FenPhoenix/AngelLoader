@@ -565,8 +565,6 @@ sealed partial class AppearancePage
         // 
         this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
         this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-        this.DummyAutoScrollPanel.TabIndex = 0;
-        this.DummyAutoScrollPanel.TabStop = false;
         // 
         // AppearancePage
         // 

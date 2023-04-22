@@ -85,7 +85,6 @@ public sealed partial class Lazy_TagsPage
         // TagsTabAutoScrollMarker
         // 
         this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
-        this.TagsTabAutoScrollMarker.TabIndex = 10;
         // 
         // Lazy_TagsPage
         // 
