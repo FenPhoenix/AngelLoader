@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 

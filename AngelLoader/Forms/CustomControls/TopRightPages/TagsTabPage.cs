@@ -7,7 +7,6 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 

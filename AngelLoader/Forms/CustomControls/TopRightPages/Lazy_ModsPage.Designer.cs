@@ -43,7 +43,7 @@ public sealed partial class Lazy_ModsPage
         this.MainModsControl.Name = "MainModsControl";
         this.MainModsControl.Size = new System.Drawing.Size(527, 284);
         this.MainModsControl.TabIndex = 7;
-        this.MainModsControl.Tag = AngelLoader.Misc.LoadType.Lazy;
+        this.MainModsControl.Tag = AngelLoader.Forms.LoadType.Lazy;
         // 
         // Lazy_ModsPage
         // 

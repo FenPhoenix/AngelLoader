@@ -329,7 +329,7 @@ sealed partial class MainForm
         // 
         // FilterBarScrollRightButton
         // 
-        this.FilterBarScrollRightButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
+        this.FilterBarScrollRightButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
         this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
         this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
@@ -345,7 +345,7 @@ sealed partial class MainForm
         // 
         // FilterBarScrollLeftButton
         // 
-        this.FilterBarScrollLeftButton.ArrowDirection = AngelLoader.Misc.Direction.Left;
+        this.FilterBarScrollLeftButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
         this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
         this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
@@ -601,7 +601,7 @@ sealed partial class MainForm
         // 
         // GameFilterControlsShowHideButton
         // 
-        this.GameFilterControlsShowHideButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
+        this.GameFilterControlsShowHideButton.ArrowDirection = AngelLoader.Forms.Direction.Down;
         this.GameFilterControlsShowHideButton.AutoSize = false;
         this.GameFilterControlsShowHideButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
         this.GameFilterControlsShowHideButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -795,7 +795,7 @@ sealed partial class MainForm
         // 
         // FilterControlsShowHideButton
         // 
-        this.FilterControlsShowHideButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
+        this.FilterControlsShowHideButton.ArrowDirection = AngelLoader.Forms.Direction.Down;
         this.FilterControlsShowHideButton.AutoSize = false;
         this.FilterControlsShowHideButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
         this.FilterControlsShowHideButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -903,7 +903,7 @@ sealed partial class MainForm
         // 
         this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
+        this.TopRightCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
         this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
         this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);

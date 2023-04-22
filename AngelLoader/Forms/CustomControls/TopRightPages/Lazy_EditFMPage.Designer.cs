@@ -118,7 +118,7 @@ public sealed partial class Lazy_EditFMPage
         // EditFMAltTitlesArrowButton
         // 
         this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
+        this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Forms.Direction.Down;
         this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(479, 23);
         this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
         this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);

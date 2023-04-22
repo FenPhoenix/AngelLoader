@@ -31,7 +31,7 @@ public sealed class DarkContextMenu : ContextMenuStrip
     public DarkContextMenu(IDarkContextMenuOwner owner) : base(owner.GetComponents())
     {
         _owner = owner;
-        Tag = Misc.LoadType.Lazy;
+        Tag = LoadType.Lazy;
     }
 
     protected override void OnOpening(CancelEventArgs e)

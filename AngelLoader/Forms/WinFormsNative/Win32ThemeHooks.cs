@@ -548,7 +548,7 @@ internal static class Win32ThemeHooks
                     break;
             }
 
-            Misc.Direction direction;
+            Direction direction;
             switch (iStateId)
             {
                 case Native.ABS_LEFTNORMAL:
@@ -556,21 +556,21 @@ internal static class Win32ThemeHooks
                 case Native.ABS_LEFTPRESSED:
                 case Native.ABS_LEFTHOVER:
                 case Native.ABS_LEFTDISABLED:
-                    direction = Misc.Direction.Left;
+                    direction = Direction.Left;
                     break;
                 case Native.ABS_RIGHTNORMAL:
                 case Native.ABS_RIGHTHOT:
                 case Native.ABS_RIGHTPRESSED:
                 case Native.ABS_RIGHTHOVER:
                 case Native.ABS_RIGHTDISABLED:
-                    direction = Misc.Direction.Right;
+                    direction = Direction.Right;
                     break;
                 case Native.ABS_UPNORMAL:
                 case Native.ABS_UPHOT:
                 case Native.ABS_UPPRESSED:
                 case Native.ABS_UPHOVER:
                 case Native.ABS_UPDISABLED:
-                    direction = Misc.Direction.Up;
+                    direction = Direction.Up;
                     break;
 #if false
                 case Native.ABS_DOWNNORMAL:
@@ -580,7 +580,7 @@ internal static class Win32ThemeHooks
                 case Native.ABS_DOWNDISABLED:
 #endif
                 default:
-                    direction = Misc.Direction.Down;
+                    direction = Direction.Down;
                     break;
             }
 
@@ -681,9 +681,9 @@ internal static class Win32ThemeHooks
 
         Rectangle rect = pRect.ToRectangle();
 
-        Misc.Direction direction = iStateId is Native.GLPS_CLOSED or Native.HGLPS_CLOSED
-            ? Misc.Direction.Right
-            : Misc.Direction.Down;
+        Direction direction = iStateId is Native.GLPS_CLOSED or Native.HGLPS_CLOSED
+            ? Direction.Right
+            : Direction.Down;
 
         Images.PaintArrow7x4(
             g,

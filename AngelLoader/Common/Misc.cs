@@ -86,8 +86,6 @@ public static class Misc
         NewDarkLoader
     }
 
-    public enum Direction { Left, Right, Up, Down }
-
     // Wri is a "secret" format - it's a first-class type internally, but we don't document our support for
     // it because it's really just a hack for Lucrative Opportunity and the format is not supported in full.
     // Any other .wri files besides the one from Lucrative Opportunity are likely to be displayed incorrectly.
@@ -100,11 +98,6 @@ public static class Misc
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 
     internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
-
-    /// <summary>
-    /// Set a control's tag to this to tell the darkable control dictionary filler to ignore it.
-    /// </summary>
-    public enum LoadType { Lazy }
 
     // Non-consts for file size; these aren't perf-critical at all
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]

@@ -302,7 +302,7 @@ public class DarkComboBox : ComboBox, IDarkable
 
         Images.PaintArrow9x5(
             g: g,
-            direction: Misc.Direction.Down,
+            direction: Direction.Down,
             area: arrowRect,
             pen: DarkColors.GreyHighlightPen
         );

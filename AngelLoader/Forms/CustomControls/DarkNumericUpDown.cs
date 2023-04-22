@@ -207,7 +207,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 
         Images.PaintArrow7x4(
             g: g,
-            direction: Misc.Direction.Up,
+            direction: Direction.Up,
             area: upArea,
             controlEnabled: Enabled,
             pen: upPen
@@ -224,7 +224,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 
         Images.PaintArrow7x4(
             g: g,
-            direction: Misc.Direction.Down,
+            direction: Direction.Down,
             area: downArea,
             controlEnabled: Enabled,
             pen: downPen

@@ -92,7 +92,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
 
         g.FillRectangle(buttonBrush, buttonRect);
 
-        Images.PaintArrow7x4(g, Misc.Direction.Down, buttonRect, Enabled);
+        Images.PaintArrow7x4(g, Direction.Down, buttonRect, Enabled);
     }
 
     private void PaintCustom()

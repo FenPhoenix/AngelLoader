@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 using static AL_Common.LanguageSupport;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 
