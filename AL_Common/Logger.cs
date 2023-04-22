@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
@@ -11,9 +11,10 @@ namespace AL_Common;
 
 public static class Logger
 {
-    private static readonly ReaderWriterLockSlim _lock = new();
+    private static readonly object _lock = new();
 
     private static string _logFile = "";
+    // ReSharper disable once InconsistentlySynchronizedField
     public static void SetLogFile(string logFile) => _logFile = logFile;
 
     #region Interop
@@ -49,22 +50,13 @@ public static class Logger
 
     private static void ClearLogFile()
     {
-        if (_logFile.IsEmpty()) return;
+        lock (_lock)
+        {
+            if (_logFile.IsEmpty()) return;
 
-        try
-        {
-            _lock.EnterWriteLock();
-            File.Delete(_logFile);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
-        finally
-        {
             try
             {
-                _lock.ExitWriteLock();
+                File.Delete(_logFile);
             }
             catch (Exception ex)
             {
@@ -77,6 +69,7 @@ public static class Logger
     /// A faster version without locking or unnecessary options for running on startup.
     /// </summary>
     /// <param name="message"></param>
+    [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
     public static void LogStartup(string message)
     {
         if (_logFile.IsEmpty()) return;
@@ -86,9 +79,9 @@ public static class Logger
             using var sw = new StreamWriter(_logFile);
             sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
         }
-        catch (Exception logEx)
+        catch (Exception ex)
         {
-            Debug.WriteLine(logEx);
+            Debug.WriteLine(ex);
         }
     }
 
@@ -99,49 +92,20 @@ public static class Logger
         bool stackTrace = false,
         [CallerMemberName] string callerMemberName = "")
     {
-        if (_logFile.IsEmpty()) return;
+        lock (_lock)
+        {
+            if (_logFile.IsEmpty()) return;
 
-        try
-        {
-            _lock.EnterReadLock();
-            if (File.Exists(_logFile) && new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
-        }
-        catch (Exception ex1)
-        {
-            Debug.WriteLine(ex1);
-        }
-        finally
-        {
             try
             {
-                _lock.ExitReadLock();
-            }
-            catch (Exception logEx)
-            {
-                Debug.WriteLine(logEx);
-            }
-        }
+                if (File.Exists(_logFile) && new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
 
-        try
-        {
-            _lock.EnterWriteLock();
+                using var sw = new StreamWriter(_logFile, append: true);
 
-            using var sw = new StreamWriter(_logFile, append: true);
-
-            sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + "\r\n" + message);
-            if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
-            if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
-            sw.WriteLine();
-        }
-        catch (Exception logEx)
-        {
-            Debug.WriteLine(logEx);
-        }
-        finally
-        {
-            try
-            {
-                _lock.ExitWriteLock();
+                sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + "\r\n" + message);
+                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
+                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
+                sw.WriteLine();
             }
             catch (Exception logEx)
             {

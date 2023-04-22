@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -59,8 +58,8 @@ internal static partial class Ini
         }
     }
 
-    private static readonly ReaderWriterLockSlim _fmDataIniRWLock = new();
-    private static readonly ReaderWriterLockSlim _configIniRWLock = new();
+    private static readonly object _writeFMDataIniLock = new();
+    private static readonly object _writeConfigIniLock = new();
 
     private static string GetBackupFileName()
     {
@@ -148,42 +147,33 @@ internal static partial class Ini
 
     internal static void WriteFullFMDataIni(bool makeBackup = false)
     {
-        try
-        {
-            _fmDataIniRWLock.EnterWriteLock();
-            if (makeBackup)
-            {
-                string file = GetBackupFileName();
-                try
-                {
-                    if (File.Exists(Paths.FMDataIni))
-                    {
-                        File.Copy(Paths.FMDataIni, file, overwrite: true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.ExCopy + "'" + Paths.FMDataIni + "' to '" + file + "'", ex);
-                }
-            }
-            WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-#if DateAccTest
-            WriteDateAccuracyFile();
-#endif
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExWrite + Paths.FMDataIni, ex);
-        }
-        finally
+        lock (_writeFMDataIniLock)
         {
             try
             {
-                _fmDataIniRWLock.ExitWriteLock();
+                if (makeBackup)
+                {
+                    string file = GetBackupFileName();
+                    try
+                    {
+                        if (File.Exists(Paths.FMDataIni))
+                        {
+                            File.Copy(Paths.FMDataIni, file, overwrite: true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ErrorText.ExCopy + "'" + Paths.FMDataIni + "' to '" + file + "'", ex);
+                    }
+                }
+                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+#if DateAccTest
+            WriteDateAccuracyFile();
+#endif
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExExit + nameof(_fmDataIniRWLock), ex);
+                Log(ErrorText.ExWrite + Paths.FMDataIni, ex);
             }
         }
     }
@@ -295,24 +285,15 @@ internal static partial class Ini
 
     internal static void WriteConfigIni()
     {
-        try
-        {
-            _configIniRWLock.EnterWriteLock();
-            WriteConfigIniInternal(Config, Paths.ConfigIni);
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExWrite + Paths.ConfigIni + ".", ex);
-        }
-        finally
+        lock (_writeConfigIniLock)
         {
             try
             {
-                _configIniRWLock.ExitWriteLock();
+                WriteConfigIniInternal(Config, Paths.ConfigIni);
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExExit + nameof(_configIniRWLock), ex);
+                Log(ErrorText.ExWrite + Paths.ConfigIni + ".", ex);
             }
         }
     }
