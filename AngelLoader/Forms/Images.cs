@@ -1182,15 +1182,14 @@ public static class Images
 
                 list.Clear();
 
-                int at = 1;
-                for (int dI = 0; dI < DiffCount; dI++)
+                uint at = 1;
+                for (int dI = 0; dI < DiffCount; dI++, at <<= 1)
                 {
                     Difficulty loopDiff = (Difficulty)at;
                     if (difficulty.HasFlagFast(loopDiff))
                     {
                         list.Add(_finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(loopDiff));
                     }
-                    at <<= 1;
                 }
 
                 int totalWidth = 0;

@@ -280,11 +280,10 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #region Set Finished On checked values
 
-        int at = 1;
-        for (int i = 0; i < DiffCount; i++)
+        uint at = 1;
+        for (int i = 0; i < DiffCount; i++, at <<= 1)
         {
             FinishedOnExplicitMenuItems[i].Checked = _finishedExplicitItemsChecked.HasFlagFast((Difficulty)at);
-            at <<= 1;
         }
 
         FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
@@ -647,8 +646,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
         else
         {
-            int at = 1;
-            for (int i = 0; i < DiffCount; i++)
+            uint at = 1;
+            for (int i = 0; i < DiffCount; i++, at <<= 1)
             {
                 Difficulty loopDiff = (Difficulty)at;
                 bool value = difficulty.HasFlagFast(loopDiff);
@@ -670,9 +669,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
                     // I don't have to disable events because I'm only wired up to Click, not Checked
                     FinishedOnExplicitMenuItems[(int)Utils.DiffToDiffIndex(loopDiff)].Checked = value;
                 }
-
-
-                at <<= 1;
             }
 
             SetFinishedOnUnknownMenuItemChecked(false);
@@ -686,11 +682,10 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (!_constructed) return;
 
-        int at = 1;
-        for (int i = 0; i < DiffCount; i++)
+        uint at = 1;
+        for (int i = 0; i < DiffCount; i++, at <<= 1)
         {
             FinishedOnExplicitMenuItems[i].Text = GetLocalizedDifficultyName(game, (Difficulty)at);
-            at <<= 1;
         }
     }
 
@@ -854,12 +849,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else
         {
             uint at = 1;
-            foreach (ToolStripMenuItemCustom item in FinishedOnMenu.Items)
+            for (int i = 0; i < FinishedOnExplicitMenuItems.Length; i++, at <<= 1)
             {
-                if (item == FinishedOnUnknownMenuItem) continue;
-
-                if (item.Checked) mainFM.FinishedOn |= at;
-                at <<= 1;
+                if (FinishedOnExplicitMenuItems[i].Checked) mainFM.FinishedOn |= at;
             }
             if (mainFM.FinishedOn > 0)
             {

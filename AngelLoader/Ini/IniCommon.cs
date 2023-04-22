@@ -568,8 +568,8 @@ internal static partial class Ini
                 }
                 else
                 {
-                    int at = 1;
-                    for (int crI = 1; crI < CustomResourcesCount; crI++)
+                    uint at = 1;
+                    for (int crI = 1; crI < CustomResourcesCount; crI++, at <<= 1)
                     {
                         CustomResources cr = (CustomResources)at;
                         if (fieldsString.SegmentEquals(curStart, i, CustomResourceNames[crI]))
@@ -577,7 +577,6 @@ internal static partial class Ini
                             SetFMResource(fm, cr, true);
                             break;
                         }
-                        at <<= 1;
                     }
                 }
 
@@ -595,8 +594,8 @@ internal static partial class Ini
         }
 
         bool notEmpty = false;
-        int at = 1;
-        for (int i = 1; i < CustomResourcesCount; i++)
+        uint at = 1;
+        for (int i = 1; i < CustomResourcesCount; i++, at <<= 1)
         {
             CustomResources cr = (CustomResources)at;
             if (FMHasResource(fm, cr))
@@ -605,7 +604,6 @@ internal static partial class Ini
                 sb.Append(CustomResourceNames[i]);
                 notEmpty = true;
             }
-            at <<= 1;
         }
 
         sb.AppendLine();
