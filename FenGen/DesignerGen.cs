@@ -627,7 +627,8 @@ internal static class DesignerGen
                     if (type
                         is "Label"
                         or "ProgressBar"
-                        or "HorizontalDivider")
+                        or "HorizontalDivider"
+                        or "PictureBox")
                     {
                         destNode.IgnoreExceptForComments = true;
                     }

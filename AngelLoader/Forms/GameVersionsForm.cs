@@ -75,7 +75,6 @@ public sealed class GameVersionsForm : DarkFormBase
 
             label.AutoSize = true;
             label.Location = new Point(11, lblY);
-            label.TabIndex = i + 1;
 
             textBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             textBox.Location = new Point(205, tbY);

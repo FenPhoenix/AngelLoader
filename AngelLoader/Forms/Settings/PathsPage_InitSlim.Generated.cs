@@ -122,7 +122,6 @@ sealed partial class PathsPage
         this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
         this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);
         this.BackupHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-        this.BackupHelpPictureBox.TabIndex = 7;
         this.BackupHelpPictureBox.TabStop = false;
         // 
         // BackupPathHelpLabel

@@ -119,7 +119,6 @@ sealed partial class ThiefBuddyPage
         this.TBHelpPictureBox.Location = new System.Drawing.Point(8, 186);
         this.TBHelpPictureBox.Size = new System.Drawing.Size(16, 16);
         this.TBHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-        this.TBHelpPictureBox.TabIndex = 9;
         this.TBHelpPictureBox.TabStop = false;
         // 
         // WhatIsTBHelpLabel

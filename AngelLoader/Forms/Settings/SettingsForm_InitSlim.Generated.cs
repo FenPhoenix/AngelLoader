@@ -73,7 +73,6 @@ partial class SettingsForm
         // 
         this.ErrorIconPictureBox.Margin = new System.Windows.Forms.Padding(0, 12, 0, 0);
         this.ErrorIconPictureBox.Size = new System.Drawing.Size(14, 14);
-        this.ErrorIconPictureBox.TabIndex = 5;
         this.ErrorIconPictureBox.TabStop = false;
         this.ErrorIconPictureBox.Visible = false;
         // 

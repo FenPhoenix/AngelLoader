@@ -704,13 +704,11 @@ public sealed partial class MainForm : DarkFormBase,
         DebugLabel.AutoSize = true;
         DebugLabel.Location = new Point(804, 8);
         DebugLabel.Size = new Size(71, 13);
-        DebugLabel.TabIndex = 29;
         DebugLabel.Text = "[DebugLabel]";
 
         DebugLabel2.AutoSize = true;
         DebugLabel2.Location = new Point(804, 24);
         DebugLabel2.Size = new Size(77, 13);
-        DebugLabel2.TabIndex = 32;
         DebugLabel2.Text = "[DebugLabel2]";
 
         #endregion

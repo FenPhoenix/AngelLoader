@@ -496,7 +496,6 @@ public sealed partial class MainForm
         // 
         FilterTitleLabel.AutoSize = true;
         FilterTitleLabel.Margin = new Padding(10, 6, 0, 0);
-        FilterTitleLabel.TabIndex = 5;
         // 
         // FilterTitleTextBox
         // 
@@ -508,7 +507,6 @@ public sealed partial class MainForm
         // 
         FilterAuthorLabel.AutoSize = true;
         FilterAuthorLabel.Margin = new Padding(9, 6, 0, 0);
-        FilterAuthorLabel.TabIndex = 7;
         // 
         // FilterAuthorTextBox
         // 
@@ -731,32 +729,26 @@ public sealed partial class MainForm
         // StatisticsTabPage
         // 
         StatisticsTabPage.BackColor = SystemColors.Control;
-        StatisticsTabPage.TabIndex = 0;
         // 
         // EditFMTabPage
         // 
         EditFMTabPage.BackColor = SystemColors.Control;
-        EditFMTabPage.TabIndex = 0;
         // 
         // CommentTabPage
         // 
         CommentTabPage.BackColor = SystemColors.Control;
-        CommentTabPage.TabIndex = 0;
         // 
         // TagsTabPage
         // 
         TagsTabPage.BackColor = SystemColors.Control;
-        TagsTabPage.TabIndex = 1;
         // 
         // PatchTabPage
         // 
         PatchTabPage.BackColor = SystemColors.Control;
-        PatchTabPage.TabIndex = 3;
         // 
         // ModsTabPage
         // 
         ModsTabPage.BackColor = SystemColors.Control;
-        ModsTabPage.TabIndex = 4;
         // 
         // ReadmeEncodingButton
         // 
