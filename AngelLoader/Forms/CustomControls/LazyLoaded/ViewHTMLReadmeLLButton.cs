@@ -55,9 +55,9 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
 
                 Anchor = AnchorStyles.None,
                 AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 // Button gets centered on localize so no location is specified here
                 Padding = new Padding(6, 0, 6, 0),
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 MinimumSize = new Size(0, 23),
                 TabIndex = 49,
                 Visible = false,

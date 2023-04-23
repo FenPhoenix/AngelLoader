@@ -59,9 +59,9 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
 
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Margin = new Padding(0),
             Padding = new Padding(6, 0, 6, 0),
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             MinimumSize = new Size(75, 23),
             TabIndex = 48,
 
