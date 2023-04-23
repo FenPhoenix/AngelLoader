@@ -64,70 +64,70 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSizeCheckBox.AutoSize = true;
         this.ImportSizeCheckBox.Checked = true;
         this.ImportSizeCheckBox.Location = new System.Drawing.Point(16, 552);
-        this.ImportSizeCheckBox.TabIndex = 9;
+        this.ImportSizeCheckBox.TabIndex = 11;
         // 
         // ImportFinishedOnCheckBox
         // 
         this.ImportFinishedOnCheckBox.AutoSize = true;
         this.ImportFinishedOnCheckBox.Checked = true;
         this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(16, 536);
-        this.ImportFinishedOnCheckBox.TabIndex = 8;
+        this.ImportFinishedOnCheckBox.TabIndex = 10;
         // 
         // ImportSelectedReadmeCheckBox
         // 
         this.ImportSelectedReadmeCheckBox.AutoSize = true;
         this.ImportSelectedReadmeCheckBox.Checked = true;
         this.ImportSelectedReadmeCheckBox.Location = new System.Drawing.Point(16, 520);
-        this.ImportSelectedReadmeCheckBox.TabIndex = 7;
+        this.ImportSelectedReadmeCheckBox.TabIndex = 9;
         // 
         // ImportTagsCheckBox
         // 
         this.ImportTagsCheckBox.AutoSize = true;
         this.ImportTagsCheckBox.Checked = true;
         this.ImportTagsCheckBox.Location = new System.Drawing.Point(16, 504);
-        this.ImportTagsCheckBox.TabIndex = 6;
+        this.ImportTagsCheckBox.TabIndex = 8;
         // 
         // ImportDisabledModsCheckBox
         // 
         this.ImportDisabledModsCheckBox.AutoSize = true;
         this.ImportDisabledModsCheckBox.Checked = true;
         this.ImportDisabledModsCheckBox.Location = new System.Drawing.Point(16, 488);
-        this.ImportDisabledModsCheckBox.TabIndex = 5;
+        this.ImportDisabledModsCheckBox.TabIndex = 7;
         // 
         // ImportRatingCheckBox
         // 
         this.ImportRatingCheckBox.AutoSize = true;
         this.ImportRatingCheckBox.Checked = true;
         this.ImportRatingCheckBox.Location = new System.Drawing.Point(16, 472);
-        this.ImportRatingCheckBox.TabIndex = 4;
+        this.ImportRatingCheckBox.TabIndex = 6;
         // 
         // ImportCommentCheckBox
         // 
         this.ImportCommentCheckBox.AutoSize = true;
         this.ImportCommentCheckBox.Checked = true;
         this.ImportCommentCheckBox.Location = new System.Drawing.Point(16, 456);
-        this.ImportCommentCheckBox.TabIndex = 3;
+        this.ImportCommentCheckBox.TabIndex = 5;
         // 
         // ImportLastPlayedCheckBox
         // 
         this.ImportLastPlayedCheckBox.AutoSize = true;
         this.ImportLastPlayedCheckBox.Checked = true;
         this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(16, 440);
-        this.ImportLastPlayedCheckBox.TabIndex = 2;
+        this.ImportLastPlayedCheckBox.TabIndex = 4;
         // 
         // ImportReleaseDateCheckBox
         // 
         this.ImportReleaseDateCheckBox.AutoSize = true;
         this.ImportReleaseDateCheckBox.Checked = true;
         this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(16, 424);
-        this.ImportReleaseDateCheckBox.TabIndex = 1;
+        this.ImportReleaseDateCheckBox.TabIndex = 3;
         // 
         // ImportTitleCheckBox
         // 
         this.ImportTitleCheckBox.AutoSize = true;
         this.ImportTitleCheckBox.Checked = true;
         this.ImportTitleCheckBox.Location = new System.Drawing.Point(16, 408);
-        this.ImportTitleCheckBox.TabIndex = 0;
+        this.ImportTitleCheckBox.TabIndex = 2;
         // 
         // ImportFromMultipleInisForm
         // 

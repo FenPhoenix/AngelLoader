@@ -102,7 +102,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSizeCheckBox.Location = new System.Drawing.Point(16, 552);
         this.ImportSizeCheckBox.Name = "ImportSizeCheckBox";
         this.ImportSizeCheckBox.Size = new System.Drawing.Size(46, 17);
-        this.ImportSizeCheckBox.TabIndex = 9;
+        this.ImportSizeCheckBox.TabIndex = 11;
         this.ImportSizeCheckBox.Text = "Size";
         // 
         // ImportFinishedOnCheckBox
@@ -113,7 +113,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(16, 536);
         this.ImportFinishedOnCheckBox.Name = "ImportFinishedOnCheckBox";
         this.ImportFinishedOnCheckBox.Size = new System.Drawing.Size(80, 17);
-        this.ImportFinishedOnCheckBox.TabIndex = 8;
+        this.ImportFinishedOnCheckBox.TabIndex = 10;
         this.ImportFinishedOnCheckBox.Text = "Finished on";
         // 
         // ImportSelectedReadmeCheckBox
@@ -124,7 +124,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSelectedReadmeCheckBox.Location = new System.Drawing.Point(16, 520);
         this.ImportSelectedReadmeCheckBox.Name = "ImportSelectedReadmeCheckBox";
         this.ImportSelectedReadmeCheckBox.Size = new System.Drawing.Size(106, 17);
-        this.ImportSelectedReadmeCheckBox.TabIndex = 7;
+        this.ImportSelectedReadmeCheckBox.TabIndex = 9;
         this.ImportSelectedReadmeCheckBox.Text = "Selected readme";
         // 
         // ImportTagsCheckBox
@@ -135,7 +135,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTagsCheckBox.Location = new System.Drawing.Point(16, 504);
         this.ImportTagsCheckBox.Name = "ImportTagsCheckBox";
         this.ImportTagsCheckBox.Size = new System.Drawing.Size(50, 17);
-        this.ImportTagsCheckBox.TabIndex = 6;
+        this.ImportTagsCheckBox.TabIndex = 8;
         this.ImportTagsCheckBox.Text = "Tags";
         // 
         // ImportDisabledModsCheckBox
@@ -146,7 +146,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportDisabledModsCheckBox.Location = new System.Drawing.Point(16, 488);
         this.ImportDisabledModsCheckBox.Name = "ImportDisabledModsCheckBox";
         this.ImportDisabledModsCheckBox.Size = new System.Drawing.Size(95, 17);
-        this.ImportDisabledModsCheckBox.TabIndex = 5;
+        this.ImportDisabledModsCheckBox.TabIndex = 7;
         this.ImportDisabledModsCheckBox.Text = "Disabled mods";
         // 
         // ImportRatingCheckBox
@@ -157,7 +157,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportRatingCheckBox.Location = new System.Drawing.Point(16, 472);
         this.ImportRatingCheckBox.Name = "ImportRatingCheckBox";
         this.ImportRatingCheckBox.Size = new System.Drawing.Size(57, 17);
-        this.ImportRatingCheckBox.TabIndex = 4;
+        this.ImportRatingCheckBox.TabIndex = 6;
         this.ImportRatingCheckBox.Text = "Rating";
         // 
         // ImportCommentCheckBox
@@ -168,7 +168,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportCommentCheckBox.Location = new System.Drawing.Point(16, 456);
         this.ImportCommentCheckBox.Name = "ImportCommentCheckBox";
         this.ImportCommentCheckBox.Size = new System.Drawing.Size(70, 17);
-        this.ImportCommentCheckBox.TabIndex = 3;
+        this.ImportCommentCheckBox.TabIndex = 5;
         this.ImportCommentCheckBox.Text = "Comment";
         // 
         // ImportLastPlayedCheckBox
@@ -179,7 +179,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(16, 440);
         this.ImportLastPlayedCheckBox.Name = "ImportLastPlayedCheckBox";
         this.ImportLastPlayedCheckBox.Size = new System.Drawing.Size(80, 17);
-        this.ImportLastPlayedCheckBox.TabIndex = 2;
+        this.ImportLastPlayedCheckBox.TabIndex = 4;
         this.ImportLastPlayedCheckBox.Text = "Last played";
         // 
         // ImportReleaseDateCheckBox
@@ -190,7 +190,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(16, 424);
         this.ImportReleaseDateCheckBox.Name = "ImportReleaseDateCheckBox";
         this.ImportReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
-        this.ImportReleaseDateCheckBox.TabIndex = 1;
+        this.ImportReleaseDateCheckBox.TabIndex = 3;
         this.ImportReleaseDateCheckBox.Text = "Release date";
         // 
         // ImportTitleCheckBox
@@ -201,7 +201,7 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTitleCheckBox.Location = new System.Drawing.Point(16, 408);
         this.ImportTitleCheckBox.Name = "ImportTitleCheckBox";
         this.ImportTitleCheckBox.Size = new System.Drawing.Size(46, 17);
-        this.ImportTitleCheckBox.TabIndex = 0;
+        this.ImportTitleCheckBox.TabIndex = 2;
         this.ImportTitleCheckBox.Text = "Title";
         // 
         // ImportFromMultipleInisForm
