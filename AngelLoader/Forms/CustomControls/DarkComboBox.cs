@@ -260,7 +260,7 @@ public class DarkComboBox : ComboBox, IDarkable
         _buffer ??= new Bitmap(ClientRectangle.Width, ClientRectangle.Height);
 
         using Graphics g = Graphics.FromImage(_buffer);
-        var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+        Rectangle rect = ClientRectangle;
 
         SolidBrush textColorBrush = Enabled ? DarkColors.LightTextBrush : DarkColors.DisabledTextBrush;
         Pen borderPen = DarkColors.GreySelectionPen;

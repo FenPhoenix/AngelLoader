@@ -77,7 +77,7 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
         }
 
         Graphics g = e.Graphics;
-        var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+        Rectangle rect = ClientRectangle;
         Size stringSize = TextRenderer.MeasureText(_rawText, Font);
 
         g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);

@@ -238,7 +238,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         }
 
         Graphics g = e.Graphics;
-        var rect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+        Rectangle rect = ClientRectangle;
 
         Color textColor = DarkColors.LightText;
         Pen borderPen = DarkColors.LightTextPen;

@@ -347,11 +347,11 @@ public class DarkButton : Button, IDarkable
 
         Graphics g = e.Graphics;
 
-        var rect = ButtonStyle == DarkButtonStyle.Normal
+        Rectangle rect = ButtonStyle == DarkButtonStyle.Normal
             // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
             // this matches us visually in size and position to classic mode
             ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
-            : new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+            : ClientRectangle;
 
         SolidBrush textColorBrush = DarkColors.LightTextBrush;
         Pen borderPen = DarkColors.GreySelectionPen;
