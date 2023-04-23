@@ -118,7 +118,6 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
                     Tag = LoadType.Lazy,
 
                     AutoSize = true,
-                    AutoSizeMode = AutoSizeMode.GrowOnly,
                     Margin = new Padding(6, 3, 0, 3),
                     Padding = new Padding(30, 0, 6, 0),
                     MinimumSize = new Size(0, 36),
