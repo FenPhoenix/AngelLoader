@@ -53,6 +53,8 @@ partial class OriginalGameModsForm
         // 
         // OKButton
         // 
+        this.OKButton.AutoSize = true;
+        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.OKButton.Location = new System.Drawing.Point(364, 0);
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
@@ -76,6 +78,8 @@ partial class OriginalGameModsForm
         // 
         // Cancel_Button
         // 
+        this.Cancel_Button.AutoSize = true;
+        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Location = new System.Drawing.Point(442, 0);
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(0);
@@ -116,6 +120,7 @@ partial class OriginalGameModsForm
         this.Text = "Manage mods for [Game]";
         this.Paint += new System.Windows.Forms.PaintEventHandler(this.OriginalGameModsForm_Paint);
         this.BottomFLP.ResumeLayout(false);
+        this.BottomFLP.PerformLayout();
         this.ResumeLayout(false);
         this.PerformLayout();
 

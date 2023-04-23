@@ -76,7 +76,7 @@ sealed partial class ImportFromMultipleInisForm
         // 
         // BottomFLP
         // 
-        this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
         this.BottomFLP.AutoSize = true;
         this.BottomFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.BottomFLP.Controls.Add(this.Cancel_Button);
