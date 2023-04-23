@@ -624,21 +624,18 @@ internal static class DesignerGen
                 {
                     if (type.StartsWithO("Dark")) type = type.Substring(4);
 
-                    if (type
-                        is "Label"
-                        or "ProgressBar"
-                        or "HorizontalDivider"
-                        or "PictureBox")
-                    {
-                        destNode.IgnoreExceptForComments = true;
-                    }
-                    else if (!props.HasChildren &&
-                             (type
-                                 is "Control"
-                                 or "Panel"
-                                 or "FlowLayoutPanel")
-                             // @vNext: Cheap hack temporarily
-                             && destNode.ControlName != "PagePanel")
+                    if (!props.HasChildren &&
+                        (type
+                            is "Label"
+                            or "ProgressBar"
+                            or "HorizontalDivider"
+                            or "PictureBox"
+                            or "Control"
+                            or "Panel"
+                            or "DrawnPanel"
+                            or "FlowLayoutPanel")
+                        // @vNext: Cheap hack temporarily
+                        && destNode.ControlName != "PagePanel")
                     {
                         destNode.IgnoreExceptForComments = true;
                     }

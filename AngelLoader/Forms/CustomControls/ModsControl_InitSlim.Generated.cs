@@ -96,7 +96,6 @@ sealed partial class ModsControl
         // 
         this.AutoScrollDummyPanel.Location = new System.Drawing.Point(7, 8);
         this.AutoScrollDummyPanel.Size = new System.Drawing.Size(280, 208);
-        this.AutoScrollDummyPanel.TabIndex = 11;
         // 
         // ModsControl
         // 
