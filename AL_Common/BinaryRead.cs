@@ -22,7 +22,7 @@ public static class BinaryRead
     public static bool ReadBoolean(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 1, buffer);
-        return buffer[0] > 0;
+        return buffer[0] != 0;
     }
 
 #endif
@@ -48,7 +48,7 @@ public static class BinaryRead
     public static sbyte ReadSByte(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 1, buffer);
-        return (sbyte)buffer[0];
+        return (sbyte)(buffer[0]);
     }
 
     /// <summary>Reads a 2-byte signed integer from the current stream and advances the current position of the stream by two bytes.</summary>
@@ -59,7 +59,7 @@ public static class BinaryRead
     public static short ReadInt16(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 2, buffer);
-        return (short)((int)buffer[0] | (int)buffer[1] << 8);
+        return (short)(buffer[0] | buffer[1] << 8);
     }
 
 #endif
@@ -72,7 +72,7 @@ public static class BinaryRead
     public static ushort ReadUInt16(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 2, buffer);
-        return (ushort)((uint)buffer[0] | (uint)buffer[1] << 8);
+        return (ushort)(buffer[0] | buffer[1] << 8);
     }
 
 #if false
@@ -85,7 +85,7 @@ public static class BinaryRead
     public static int ReadInt32(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 4, buffer);
-        return (int)buffer[0] | (int)buffer[1] << 8 | (int)buffer[2] << 16 | (int)buffer[3] << 24;
+        return (int)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
     }
 
 #endif
@@ -98,7 +98,7 @@ public static class BinaryRead
     public static uint ReadUInt32(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 4, buffer);
-        return (uint)((int)buffer[0] | (int)buffer[1] << 8 | (int)buffer[2] << 16 | (int)buffer[3] << 24);
+        return (uint)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
     }
 
 #if false
@@ -111,7 +111,11 @@ public static class BinaryRead
     public static long ReadInt64(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 8, buffer);
-        return (long)(uint)((int)buffer[4] | (int)buffer[5] << 8 | (int)buffer[6] << 16 | (int)buffer[7] << 24) << 32 | (long)(uint)((int)buffer[0] | (int)buffer[1] << 8 | (int)buffer[2] << 16 | (int)buffer[3] << 24);
+        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
+                         buffer[2] << 16 | buffer[3] << 24);
+        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
+                         buffer[6] << 16 | buffer[7] << 24);
+        return (long)((ulong)hi) << 32 | lo;
     }
 
 #endif
@@ -124,7 +128,11 @@ public static class BinaryRead
     public static ulong ReadUInt64(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 8, buffer);
-        return (ulong)(uint)((int)buffer[4] | (int)buffer[5] << 8 | (int)buffer[6] << 16 | (int)buffer[7] << 24) << 32 | (ulong)(uint)((int)buffer[0] | (int)buffer[1] << 8 | (int)buffer[2] << 16 | (int)buffer[3] << 24);
+        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
+                         buffer[2] << 16 | buffer[3] << 24);
+        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
+                         buffer[6] << 16 | buffer[7] << 24);
+        return ((ulong)hi) << 32 | lo;
     }
 
 #if false
@@ -149,8 +157,11 @@ public static class BinaryRead
     public static unsafe double ReadDouble(Stream stream, byte[] buffer)
     {
         FillBuffer(stream, 8, buffer);
-        uint lo = (uint)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
-        uint hi = (uint)(buffer[4] | buffer[5] << 8 | buffer[6] << 16 | buffer[7] << 24);
+        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
+                         buffer[2] << 16 | buffer[3] << 24);
+        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
+                         buffer[6] << 16 | buffer[7] << 24);
+
         ulong tmpBuffer = ((ulong)hi) << 32 | lo;
         return *((double*)&tmpBuffer);
     }
@@ -177,15 +188,16 @@ public static class BinaryRead
             return Array.Empty<byte>();
         }
 
-        byte[] numArray = new byte[count];
-        int length = 0;
+        byte[] result = new byte[count];
+
+        int numRead = 0;
         do
         {
-            int num = stream.Read(numArray, length, count);
-            if (num != 0)
+            int n = stream.Read(result, numRead, count);
+            if (n != 0)
             {
-                length += num;
-                count -= num;
+                numRead += n;
+                count -= n;
             }
             else
             {
@@ -193,13 +205,15 @@ public static class BinaryRead
             }
         }
         while (count > 0);
-        if (length != numArray.Length)
+
+        if (numRead != result.Length)
         {
-            byte[] dst = new byte[length];
-            Buffer.BlockCopy(numArray, 0, dst, 0, length);
-            numArray = dst;
+            byte[] copy = new byte[numRead];
+            Buffer.BlockCopy(result, 0, copy, 0, numRead);
+            result = copy;
         }
-        return numArray;
+
+        return result;
     }
 
     private static void FillBuffer(Stream stream, int numBytes, byte[] buffer)
@@ -209,23 +223,23 @@ public static class BinaryRead
             ThrowHelper.ArgumentOutOfRange(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
         }
 
-        int offset = 0;
+        int bytesRead = 0;
 
         if (numBytes == 1)
         {
             // Avoid calling Stream.ReadByte() because it allocates a 1-byte buffer every time (ridiculous)
-            int num = stream.Read(buffer, 0, 1);
-            if (num <= 0) ThrowHelper.EndOfFile();
+            int n = stream.Read(buffer, 0, 1);
+            if (n <= 0) ThrowHelper.EndOfFile();
         }
         else
         {
             do
             {
-                int num = stream.Read(buffer, offset, numBytes - offset);
-                if (num == 0) ThrowHelper.EndOfFile();
-                offset += num;
+                int n = stream.Read(buffer, bytesRead, numBytes - bytesRead);
+                if (n == 0) ThrowHelper.EndOfFile();
+                bytesRead += n;
             }
-            while (offset < numBytes);
+            while (bytesRead < numBytes);
         }
     }
 }
