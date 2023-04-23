@@ -41,6 +41,8 @@ sealed partial class ModsControl
         // 
         // DisableNonImportantButton
         // 
+        this.DisableNonImportantButton.AutoSize = true;
+        this.DisableNonImportantButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.DisableNonImportantButton.Margin = new System.Windows.Forms.Padding(0);
         this.DisableNonImportantButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.DisableNonImportantButton.TabIndex = 2;
@@ -48,6 +50,8 @@ sealed partial class ModsControl
         // 
         // EnableAllButton
         // 
+        this.EnableAllButton.AutoSize = true;
+        this.EnableAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.EnableAllButton.Margin = new System.Windows.Forms.Padding(0);
         this.EnableAllButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.EnableAllButton.TabIndex = 1;
