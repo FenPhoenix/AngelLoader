@@ -39,13 +39,11 @@ public sealed partial class AboutForm : DarkFormBase
     {
         if (theme == VisualTheme.Dark)
         {
-            SetThemeBase(theme, x => x == BuildDateLabel);
-            BuildDateLabel.ForeColor = DarkColors.Fen_DarkForeground;
+            SetThemeBase(theme);
             LogoTextPictureBox.Image = DarkModeImageConversion.CreateDarkModeVersion(Resources.About);
         }
         else
         {
-            BuildDateLabel.ForeColor = SystemColors.ControlDarkDark;
             LogoTextPictureBox.Image = Resources.About;
         }
     }

@@ -161,8 +161,6 @@ partial class AboutForm
         // BuildDateLabel
         // 
         this.BuildDateLabel.AutoSize = true;
-        this.BuildDateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.BuildDateLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
         this.BuildDateLabel.Location = new System.Drawing.Point(352, 50);
         // 
         // DarkUILinkLabel
