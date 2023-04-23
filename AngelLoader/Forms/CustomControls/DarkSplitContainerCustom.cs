@@ -47,10 +47,13 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     private Color? _origPanel2BackColor;
 
     private bool _resizing;
-    private bool Resizing
+    /// <summary>
+    /// True if the user is in the middle of dragging the splitter.
+    /// </summary>
+    internal bool Resizing
     {
         get => _resizing;
-        set
+        private set
         {
             IsSplitterFixed = value;
             _resizing = value;
@@ -262,7 +265,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
         }
         else
         {
-            if (Resizing) CancelResize();
+            CancelResize();
         }
 
         base.OnMouseDown(e);

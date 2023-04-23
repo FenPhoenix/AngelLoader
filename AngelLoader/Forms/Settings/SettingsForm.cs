@@ -906,7 +906,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (e.KeyCode == Keys.Escape)
         {
-            if (MainSplitContainer.IsSplitterFixed)
+            if (MainSplitContainer.Resizing)
             {
                 MainSplitContainer.CancelResize();
                 e.SuppressKeyPress = true;
