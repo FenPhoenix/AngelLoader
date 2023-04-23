@@ -37,7 +37,6 @@ partial class AboutForm
         this.LogoPictureBox.Location = new System.Drawing.Point(16, 16);
         this.LogoPictureBox.Size = new System.Drawing.Size(48, 48);
         this.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-        this.LogoPictureBox.TabStop = false;
         // 
         // VersionLabel
         // 
@@ -149,7 +148,6 @@ partial class AboutForm
         this.LogoTextPictureBox.InitialImage = null;
         this.LogoTextPictureBox.Location = new System.Drawing.Point(64, 16);
         this.LogoTextPictureBox.Size = new System.Drawing.Size(290, 50);
-        this.LogoTextPictureBox.TabStop = false;
         // 
         // OK_FLP
         // 

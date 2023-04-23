@@ -618,7 +618,7 @@ internal static class DesignerGen
             {
                 destNode.IgnoreExceptForComments = true;
             }
-            else if (destNode.PropName == "TabIndex")
+            else if (destNode.PropName is "TabIndex" or "TabStop")
             {
                 if (controlTypes.TryGetValue(destNode.ControlName, out string type))
                 {

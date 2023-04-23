@@ -387,7 +387,6 @@ sealed partial class AppearancePage
         this.RatingExamplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
         this.RatingExamplePictureBox.Location = new System.Drawing.Point(395, 380);
         this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
-        this.RatingExamplePictureBox.TabStop = false;
         // 
         // RecentFMsHeaderLabel
         // 

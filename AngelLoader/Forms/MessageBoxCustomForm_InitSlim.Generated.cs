@@ -38,7 +38,6 @@ partial class MessageBoxCustomForm
         this.IconPictureBox.Margin = new System.Windows.Forms.Padding(21, 21, 0, 3);
         this.IconPictureBox.Size = new System.Drawing.Size(32, 32);
         this.IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-        this.IconPictureBox.TabStop = false;
         // 
         // ContentTLP
         // 
