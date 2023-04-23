@@ -183,7 +183,6 @@ sealed partial class MainForm
         this.SettingsButton.Size = new System.Drawing.Size(100, 36);
         this.SettingsButton.TabIndex = 62;
         this.SettingsButton.Text = "Settings...";
-        this.SettingsButton.UseVisualStyleBackColor = true;
         this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
         this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
         // 
@@ -221,7 +220,6 @@ sealed partial class MainForm
         this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
         this.PlayFMButton.TabIndex = 56;
         this.PlayFMButton.Text = "Play FM";
-        this.PlayFMButton.UseVisualStyleBackColor = true;
         this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
         this.PlayFMButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
         // 
@@ -320,7 +318,6 @@ sealed partial class MainForm
         this.MainMenuButton.Name = "MainMenuButton";
         this.MainMenuButton.Size = new System.Drawing.Size(24, 24);
         this.MainMenuButton.TabIndex = 14;
-        this.MainMenuButton.UseVisualStyleBackColor = true;
         this.MainMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
         this.MainMenuButton.Click += new System.EventHandler(this.MainMenuButton_Click);
         this.MainMenuButton.Enter += new System.EventHandler(this.MainMenuButton_Enter);
@@ -333,7 +330,6 @@ sealed partial class MainForm
         this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
         this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
         this.FilterBarScrollRightButton.TabIndex = 10;
-        this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
         this.FilterBarScrollRightButton.Visible = false;
         this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
         this.FilterBarScrollRightButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
@@ -349,7 +345,6 @@ sealed partial class MainForm
         this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
         this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
         this.FilterBarScrollLeftButton.TabIndex = 2;
-        this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
         this.FilterBarScrollLeftButton.Visible = false;
         this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
         this.FilterBarScrollLeftButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
@@ -872,7 +867,6 @@ sealed partial class MainForm
         this.ResetLayoutButton.Size = new System.Drawing.Size(21, 21);
         this.ResetLayoutButton.TabIndex = 13;
         this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
-        this.ResetLayoutButton.UseVisualStyleBackColor = true;
         this.ResetLayoutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ResetLayoutButton_Paint);
         this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
         // 
@@ -893,7 +887,6 @@ sealed partial class MainForm
         this.TopRightMenuButton.Name = "TopRightMenuButton";
         this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
         this.TopRightMenuButton.TabIndex = 13;
-        this.TopRightMenuButton.UseVisualStyleBackColor = true;
         this.TopRightMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.TopRightMenuButton_Paint);
         this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
         // 
@@ -908,7 +901,6 @@ sealed partial class MainForm
         this.TopRightCollapseButton.Name = "TopRightCollapseButton";
         this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 289);
         this.TopRightCollapseButton.TabIndex = 14;
-        this.TopRightCollapseButton.UseVisualStyleBackColor = true;
         this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
         // 
         // TopRightTabControl
@@ -994,7 +986,6 @@ sealed partial class MainForm
         this.ReadmeEncodingButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeEncodingButton.TabIndex = 2;
         this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
-        this.ReadmeEncodingButton.UseVisualStyleBackColor = false;
         this.ReadmeEncodingButton.Visible = false;
         this.ReadmeEncodingButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeEncodingButton_Paint);
         this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
@@ -1011,7 +1002,6 @@ sealed partial class MainForm
         this.ReadmeFullScreenButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeFullScreenButton.TabIndex = 6;
         this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
-        this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
         this.ReadmeFullScreenButton.Visible = false;
         this.ReadmeFullScreenButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
         this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
@@ -1029,7 +1019,6 @@ sealed partial class MainForm
         this.ReadmeZoomInButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeZoomInButton.TabIndex = 3;
         this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
-        this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
         this.ReadmeZoomInButton.Visible = false;
         this.ReadmeZoomInButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
         this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
@@ -1047,7 +1036,6 @@ sealed partial class MainForm
         this.ReadmeZoomOutButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeZoomOutButton.TabIndex = 4;
         this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
-        this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
         this.ReadmeZoomOutButton.Visible = false;
         this.ReadmeZoomOutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
         this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
@@ -1065,7 +1053,6 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeResetZoomButton.TabIndex = 5;
         this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
-        this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
         this.ReadmeResetZoomButton.Visible = false;
         this.ReadmeResetZoomButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
         this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);

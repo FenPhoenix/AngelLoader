@@ -83,7 +83,6 @@ sealed partial class FilterTagsForm
         this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.AndButton.TabIndex = 0;
         this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.AndButton.UseVisualStyleBackColor = true;
         this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -95,7 +94,6 @@ sealed partial class FilterTagsForm
         this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.OrButton.TabIndex = 1;
         this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.OrButton.UseVisualStyleBackColor = true;
         this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -107,7 +105,6 @@ sealed partial class FilterTagsForm
         this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.NotButton.TabIndex = 2;
         this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.NotButton.UseVisualStyleBackColor = true;
         this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -146,7 +143,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
         this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllNotButton.TabIndex = 8;
-        this.RemoveAllNotButton.UseVisualStyleBackColor = true;
         this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -155,7 +151,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
         this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllOrButton.TabIndex = 5;
-        this.RemoveAllOrButton.UseVisualStyleBackColor = true;
         this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -164,7 +159,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
         this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllAndButton.TabIndex = 2;
-        this.RemoveAllAndButton.UseVisualStyleBackColor = true;
         this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -173,7 +167,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
         this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedNotButton.TabIndex = 7;
-        this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -182,7 +175,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
         this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedOrButton.TabIndex = 4;
-        this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -191,7 +183,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
         this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedAndButton.TabIndex = 1;
-        this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -204,7 +195,6 @@ sealed partial class FilterTagsForm
         this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.OKButton.TabIndex = 2;
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -213,7 +203,6 @@ sealed partial class FilterTagsForm
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 3, 7, 3);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.Cancel_Button.TabIndex = 3;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // ResetButton
         // 
@@ -221,7 +210,6 @@ sealed partial class FilterTagsForm
         this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
         this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.ResetButton.TabIndex = 0;
-        this.ResetButton.UseVisualStyleBackColor = true;
         this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
         // 
         // BottomFLP

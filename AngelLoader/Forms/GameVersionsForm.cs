@@ -12,12 +12,8 @@ public sealed class GameVersionsForm : DarkFormBase
 {
     private readonly DarkButton OKButton;
 
-    private readonly
-        (DarkLabel Label,
-        DarkTextBox TextBox)[]
-        GameVersionItems = new
-            (DarkLabel Label,
-            DarkTextBox TextBox)[SupportedGameCount];
+    private readonly (DarkLabel Label, DarkTextBox TextBox)[] GameVersionItems =
+        new (DarkLabel Label, DarkTextBox TextBox)[SupportedGameCount];
 
     public GameVersionsForm()
     {
@@ -38,7 +34,6 @@ public sealed class GameVersionsForm : DarkFormBase
         OKButton.Margin = new Padding(3, 8, 9, 3);
         OKButton.MinimumSize = new Size(75, 23);
         OKButton.TabIndex = 0;
-        OKButton.UseVisualStyleBackColor = true;
         // 
         // okFLP
         // 

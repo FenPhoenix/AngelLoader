@@ -44,7 +44,6 @@ sealed partial class ModsControl
         this.DisableNonImportantButton.Margin = new System.Windows.Forms.Padding(0);
         this.DisableNonImportantButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.DisableNonImportantButton.TabIndex = 2;
-        this.DisableNonImportantButton.UseVisualStyleBackColor = true;
         this.DisableNonImportantButton.Click += new System.EventHandler(this.DisableNonImportantButton_Click);
         // 
         // EnableAllButton
@@ -52,7 +51,6 @@ sealed partial class ModsControl
         this.EnableAllButton.Margin = new System.Windows.Forms.Padding(0);
         this.EnableAllButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.EnableAllButton.TabIndex = 1;
-        this.EnableAllButton.UseVisualStyleBackColor = true;
         this.EnableAllButton.Click += new System.EventHandler(this.EnableAllButton_Click);
         // 
         // ShowImportantCheckBox

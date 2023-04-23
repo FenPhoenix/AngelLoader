@@ -61,7 +61,6 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             MinimumSize = new Size(0, 36),
             Padding = new Padding(33, 0, 6, 0),
             TabIndex = 0,
-            UseVisualStyleBackColor = true,
 
             DarkModeEnabled = _darkModeEnabled
         };
@@ -90,7 +89,6 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
                 MinimumSize = new Size(36, 36),
                 Size = new Size(36, 36),
                 TabIndex = tabIndex,
-                UseVisualStyleBackColor = true,
 
                 DarkModeEnabled = _darkModeEnabled
             };
@@ -112,7 +110,6 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             Margin = new Padding(0),
             Size = new Size(16, 36),
             TabIndex = 3,
-            UseVisualStyleBackColor = true,
 
             DarkModeEnabled = _darkModeEnabled
         };

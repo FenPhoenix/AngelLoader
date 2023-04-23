@@ -65,7 +65,6 @@ partial class SettingsForm
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
-            this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKButton
             // 
@@ -80,7 +79,6 @@ partial class SettingsForm
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 1;
             this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
             // 
             // ErrorLabel
             // 

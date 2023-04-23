@@ -146,7 +146,6 @@ sealed partial class ScanAllFMsForm
         this.SelectAllButton.Size = new System.Drawing.Size(72, 23);
         this.SelectAllButton.TabIndex = 0;
         this.SelectAllButton.Text = "Select all";
-        this.SelectAllButton.UseVisualStyleBackColor = true;
         this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
         // 
         // SelectNoneButton
@@ -160,7 +159,6 @@ sealed partial class ScanAllFMsForm
         this.SelectNoneButton.Size = new System.Drawing.Size(86, 23);
         this.SelectNoneButton.TabIndex = 1;
         this.SelectNoneButton.Text = "Select none";
-        this.SelectNoneButton.UseVisualStyleBackColor = true;
         this.SelectNoneButton.Click += new System.EventHandler(this.SelectNoneButton_Click);
         // 
         // ScanButton
@@ -176,7 +174,6 @@ sealed partial class ScanAllFMsForm
         this.ScanButton.Size = new System.Drawing.Size(75, 23);
         this.ScanButton.TabIndex = 1;
         this.ScanButton.Text = "Scan";
-        this.ScanButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -191,7 +188,6 @@ sealed partial class ScanAllFMsForm
         this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 0;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // ScanAllFMsForLabel
         // 

@@ -49,7 +49,6 @@ internal sealed class ExitLLButton : IDarkable
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             MinimumSize = new Size(36, 36),
             TabIndex = 63,
-            UseVisualStyleBackColor = true,
 
             DarkModeEnabled = _darkModeEnabled
         };

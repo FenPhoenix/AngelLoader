@@ -32,7 +32,6 @@ sealed partial class ImportFromMultipleInisForm
         this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.OKButton.TabIndex = 1;
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -42,7 +41,6 @@ sealed partial class ImportFromMultipleInisForm
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.Cancel_Button.TabIndex = 0;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // BottomFLP
         // 

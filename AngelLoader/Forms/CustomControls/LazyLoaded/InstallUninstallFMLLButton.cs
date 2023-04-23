@@ -123,7 +123,6 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
                     Padding = new Padding(30, 0, 6, 0),
                     MinimumSize = new Size(0, 36),
                     TabIndex = 58,
-                    UseVisualStyleBackColor = true,
                     Enabled = _enabled,
 
                     DarkModeEnabled = _darkModeEnabled

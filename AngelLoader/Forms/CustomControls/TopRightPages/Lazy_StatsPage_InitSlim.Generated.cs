@@ -37,7 +37,6 @@ public sealed partial class Lazy_StatsPage
         this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
         this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
         this.StatsScanCustomResourcesButton.TabIndex = 17;
-        this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
         // 
         // StatsCheckBoxesPanel
         // 

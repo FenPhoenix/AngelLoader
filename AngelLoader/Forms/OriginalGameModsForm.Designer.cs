@@ -61,7 +61,6 @@ partial class OriginalGameModsForm
         this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
         this.OKButton.Text = "OK";
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // BottomFLP
         // 
@@ -85,7 +84,6 @@ partial class OriginalGameModsForm
         this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 1;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // NewMantleCheckBox
         // 

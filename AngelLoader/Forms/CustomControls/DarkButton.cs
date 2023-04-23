@@ -61,6 +61,14 @@ public class DarkButton : Button, IDarkable
         set => base.UseMnemonic = value;
     }
 
+    [PublicAPI]
+    [DefaultValue(true)]
+    public new bool UseVisualStyleBackColor
+    {
+        get => base.UseVisualStyleBackColor;
+        set => base.UseVisualStyleBackColor = value;
+    }
+
 #endif
 
     [PublicAPI]
@@ -177,6 +185,7 @@ public class DarkButton : Button, IDarkable
     {
         UseMnemonic = false;
         UseCompatibleTextRendering = false;
+        UseVisualStyleBackColor = true;
 
         SetStyle(ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.ResizeRedraw |

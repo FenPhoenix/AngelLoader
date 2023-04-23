@@ -79,7 +79,6 @@ sealed partial class User_DL_ImportControls
         this.DarkLoaderIniBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.DarkLoaderIniBrowseButton.TabIndex = 3;
         this.DarkLoaderIniBrowseButton.Text = "Browse...";
-        this.DarkLoaderIniBrowseButton.UseVisualStyleBackColor = true;
         this.DarkLoaderIniBrowseButton.Click += new System.EventHandler(this.DarkLoaderIniBrowseButton_Click);
         // 
         // User_DL_ImportControls

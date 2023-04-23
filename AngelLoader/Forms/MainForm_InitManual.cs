@@ -157,7 +157,6 @@ public sealed partial class MainForm
         SettingsButton.MinimumSize = new Size(0, 36);
         SettingsButton.Padding = new Padding(30, 0, 6, 0);
         SettingsButton.TabIndex = 62;
-        SettingsButton.UseVisualStyleBackColor = true;
         SettingsButton.PaintCustom += SettingsButton_Paint;
         SettingsButton.Click += Async_EventHandler_Main;
         // 
@@ -184,7 +183,6 @@ public sealed partial class MainForm
         PlayFMButton.MinimumSize = new Size(91, 36);
         PlayFMButton.Padding = new Padding(28, 0, 6, 0);
         PlayFMButton.TabIndex = 56;
-        PlayFMButton.UseVisualStyleBackColor = true;
         PlayFMButton.PaintCustom += PlayFMButton_Paint;
         PlayFMButton.Click += Async_EventHandler_Main;
         // 
@@ -272,7 +270,6 @@ public sealed partial class MainForm
         MainMenuButton.FlatStyle = FlatStyle.Flat;
         MainMenuButton.Size = new Size(24, 24);
         MainMenuButton.TabIndex = 14;
-        MainMenuButton.UseVisualStyleBackColor = true;
         MainMenuButton.PaintCustom += MainMenuButton_Paint;
         MainMenuButton.Click += MainMenuButton_Click;
         MainMenuButton.Enter += MainMenuButton_Enter;
@@ -283,7 +280,6 @@ public sealed partial class MainForm
         FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
         FilterBarScrollRightButton.Size = new Size(14, 24);
         FilterBarScrollRightButton.TabIndex = 10;
-        FilterBarScrollRightButton.UseVisualStyleBackColor = true;
         FilterBarScrollRightButton.Visible = false;
         FilterBarScrollRightButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
         FilterBarScrollRightButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
@@ -297,7 +293,6 @@ public sealed partial class MainForm
         FilterBarScrollLeftButton.ArrowDirection = Direction.Left;
         FilterBarScrollLeftButton.Size = new Size(14, 24);
         FilterBarScrollLeftButton.TabIndex = 2;
-        FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
         FilterBarScrollLeftButton.Visible = false;
         FilterBarScrollLeftButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
         FilterBarScrollLeftButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
@@ -676,7 +671,6 @@ public sealed partial class MainForm
         ResetLayoutButton.Location = new Point(1090, 2);
         ResetLayoutButton.Size = new Size(21, 21);
         ResetLayoutButton.TabIndex = 13;
-        ResetLayoutButton.UseVisualStyleBackColor = true;
         ResetLayoutButton.Click += ResetLayoutButton_Click;
         ResetLayoutButton.PaintCustom += ResetLayoutButton_Paint;
         // 
@@ -695,7 +689,6 @@ public sealed partial class MainForm
         TopRightMenuButton.Location = new Point(533, 0);
         TopRightMenuButton.Size = new Size(18, 20);
         TopRightMenuButton.TabIndex = 13;
-        TopRightMenuButton.UseVisualStyleBackColor = true;
         TopRightMenuButton.Click += TopRightMenuButton_Click;
         TopRightMenuButton.PaintCustom += TopRightMenuButton_Paint;
         // 
@@ -708,7 +701,6 @@ public sealed partial class MainForm
         TopRightCollapseButton.Location = new Point(533, 20);
         TopRightCollapseButton.Size = new Size(18, 289);
         TopRightCollapseButton.TabIndex = 14;
-        TopRightCollapseButton.UseVisualStyleBackColor = true;
         TopRightCollapseButton.Click += TopRightCollapseButton_Click;
         // 
         // TopRightTabControl
@@ -756,7 +748,6 @@ public sealed partial class MainForm
         ReadmeEncodingButton.Location = new Point(1502, 8);
         ReadmeEncodingButton.Size = new Size(21, 21);
         ReadmeEncodingButton.TabIndex = 2;
-        ReadmeEncodingButton.UseVisualStyleBackColor = false;
         ReadmeEncodingButton.Visible = false;
         ReadmeEncodingButton.PaintCustom += ReadmeEncodingButton_Paint;
         ReadmeEncodingButton.Click += ReadmeEncodingButton_Click;
@@ -770,7 +761,6 @@ public sealed partial class MainForm
         ReadmeFullScreenButton.Location = new Point(1616, 8);
         ReadmeFullScreenButton.Size = new Size(21, 21);
         ReadmeFullScreenButton.TabIndex = 6;
-        ReadmeFullScreenButton.UseVisualStyleBackColor = false;
         ReadmeFullScreenButton.Visible = false;
         ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
         ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
@@ -784,7 +774,6 @@ public sealed partial class MainForm
         ReadmeZoomInButton.Location = new Point(1534, 8);
         ReadmeZoomInButton.Size = new Size(21, 21);
         ReadmeZoomInButton.TabIndex = 3;
-        ReadmeZoomInButton.UseVisualStyleBackColor = false;
         ReadmeZoomInButton.Visible = false;
         ReadmeZoomInButton.PaintCustom += ZoomInButtons_Paint;
         ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
@@ -799,7 +788,6 @@ public sealed partial class MainForm
         ReadmeZoomOutButton.Location = new Point(1559, 8);
         ReadmeZoomOutButton.Size = new Size(21, 21);
         ReadmeZoomOutButton.TabIndex = 4;
-        ReadmeZoomOutButton.UseVisualStyleBackColor = false;
         ReadmeZoomOutButton.Visible = false;
         ReadmeZoomOutButton.PaintCustom += ZoomOutButtons_Paint;
         ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
@@ -813,7 +801,6 @@ public sealed partial class MainForm
         ReadmeResetZoomButton.Location = new Point(1584, 8);
         ReadmeResetZoomButton.Size = new Size(21, 21);
         ReadmeResetZoomButton.TabIndex = 5;
-        ReadmeResetZoomButton.UseVisualStyleBackColor = false;
         ReadmeResetZoomButton.Visible = false;
         ReadmeResetZoomButton.PaintCustom += ZoomResetButtons_Paint;
         ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;

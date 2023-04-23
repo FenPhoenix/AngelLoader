@@ -135,7 +135,6 @@ partial class MessageBoxCustomForm
         this.SelectAllButton.Size = new System.Drawing.Size(75, 23);
         this.SelectAllButton.TabIndex = 0;
         this.SelectAllButton.Text = "Select all";
-        this.SelectAllButton.UseVisualStyleBackColor = true;
         this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
         // 
         // MessageBottomLabel
@@ -191,7 +190,6 @@ partial class MessageBoxCustomForm
         this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 0;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // OKButton
         // 
@@ -206,7 +204,6 @@ partial class MessageBoxCustomForm
         this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 1;
         this.OKButton.Text = "OK";
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // MessageBoxCustomForm
         // 

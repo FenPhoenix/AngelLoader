@@ -90,7 +90,6 @@ partial class MessageBoxCustomForm
         this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
         this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.SelectAllButton.TabIndex = 0;
-        this.SelectAllButton.UseVisualStyleBackColor = true;
         this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
         // 
         // MessageBottomLabel
@@ -133,7 +132,6 @@ partial class MessageBoxCustomForm
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.Cancel_Button.TabIndex = 0;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // OKButton
         // 
@@ -144,7 +142,6 @@ partial class MessageBoxCustomForm
         this.OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
         this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.OKButton.TabIndex = 1;
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // MessageBoxCustomForm
         // 

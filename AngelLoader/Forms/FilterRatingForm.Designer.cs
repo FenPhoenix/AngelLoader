@@ -94,7 +94,6 @@ sealed partial class FilterRatingForm
         this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 1;
         this.OKButton.Text = "OK";
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -108,7 +107,6 @@ sealed partial class FilterRatingForm
         this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 0;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // ResetButton
         // 
@@ -120,7 +118,6 @@ sealed partial class FilterRatingForm
         this.ResetButton.Size = new System.Drawing.Size(156, 22);
         this.ResetButton.TabIndex = 5;
         this.ResetButton.Text = "Reset";
-        this.ResetButton.UseVisualStyleBackColor = true;
         this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
         // 
         // BottomFLP

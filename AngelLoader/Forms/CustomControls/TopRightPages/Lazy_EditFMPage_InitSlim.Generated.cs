@@ -32,7 +32,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 200);
         this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
         this.EditFMScanLanguagesButton.TabIndex = 52;
-        this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
         // 
         // EditFMLanguageLabel
         // 
@@ -54,14 +53,12 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
         this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
         this.EditFMScanForReadmesButton.TabIndex = 53;
-        this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
         // 
         // EditFMScanReleaseDateButton
         // 
         this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
         this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
         this.EditFMScanReleaseDateButton.TabIndex = 44;
-        this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
         // 
         // EditFMScanAuthorButton
         // 
@@ -69,7 +66,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMScanAuthorButton.Location = new System.Drawing.Point(495, 63);
         this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
         this.EditFMScanAuthorButton.TabIndex = 41;
-        this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
         // 
         // EditFMScanTitleButton
         // 
@@ -77,7 +73,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMScanTitleButton.Location = new System.Drawing.Point(495, 23);
         this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
         this.EditFMScanTitleButton.TabIndex = 38;
-        this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
         // 
         // EditFMAltTitlesArrowButton
         // 
@@ -86,7 +81,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(479, 23);
         this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
         this.EditFMAltTitlesArrowButton.TabIndex = 37;
-        this.EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
         // 
         // EditFMTitleTextBox
         // 
@@ -104,7 +98,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMFinishedOnButton.MinimumSize = new System.Drawing.Size(138, 23);
         this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.EditFMFinishedOnButton.TabIndex = 49;
-        this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
         // 
         // EditFMLastPlayedDateTimePicker
         // 
@@ -162,7 +155,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMRatingButton.MinimumSize = new System.Drawing.Size(138, 23);
         this.EditFMRatingButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.EditFMRatingButton.TabIndex = 49;
-        this.EditFMRatingButton.UseVisualStyleBackColor = true;
         // 
         // Lazy_EditFMPage
         // 

@@ -68,7 +68,6 @@ public sealed partial class Lazy_StatsPage
         this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(110, 23);
         this.StatsScanCustomResourcesButton.TabIndex = 17;
         this.StatsScanCustomResourcesButton.Text = "Rescan statistics";
-        this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
         // 
         // StatsCheckBoxesPanel
         // 

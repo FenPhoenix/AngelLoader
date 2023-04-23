@@ -31,7 +31,6 @@ public sealed class DarkRadioButtonCustom : DarkButton
         FlatAppearance.MouseDownBackColor = SystemColors.Window;
         FlatAppearance.MouseOverBackColor = SystemColors.Window;
         FlatStyle = FlatStyle.Flat;
-        UseVisualStyleBackColor = true;
     }
 
     private void SetCheckedVisualState()
@@ -60,14 +59,6 @@ public sealed class DarkRadioButtonCustom : DarkButton
     {
         get => base.FlatStyle;
         set => base.FlatStyle = value;
-    }
-
-    [Browsable(false)]
-    [DefaultValue(true)]
-    public new bool UseVisualStyleBackColor
-    {
-        get => base.UseVisualStyleBackColor;
-        set => base.UseVisualStyleBackColor = value;
     }
 
 #endif

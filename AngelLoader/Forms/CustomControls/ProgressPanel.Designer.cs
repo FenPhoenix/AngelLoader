@@ -52,7 +52,6 @@ sealed partial class ProgressPanel
         this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
         this.Cancel_Button.TabIndex = 7;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         this.Cancel_Button.Click += new System.EventHandler(this.ProgressCancelButton_Click);
         // 
         // MainPercentLabel

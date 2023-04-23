@@ -141,7 +141,6 @@ public sealed partial class Lazy_PatchPage
         this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
         this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
         this.PatchRemoveDMLButton.TabIndex = 42;
-        this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
         // 
         // PatchAddDMLButton
         // 
@@ -149,7 +148,6 @@ public sealed partial class Lazy_PatchPage
         this.PatchAddDMLButton.Name = "PatchAddDMLButton";
         this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
         this.PatchAddDMLButton.TabIndex = 43;
-        this.PatchAddDMLButton.UseVisualStyleBackColor = true;
         // 
         // PatchOpenFMFolderButton
         // 
@@ -161,7 +159,6 @@ public sealed partial class Lazy_PatchPage
         this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
         this.PatchOpenFMFolderButton.TabIndex = 44;
         this.PatchOpenFMFolderButton.Text = "Open FM folder";
-        this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
         // 
         // Lazy_PatchPage
         // 

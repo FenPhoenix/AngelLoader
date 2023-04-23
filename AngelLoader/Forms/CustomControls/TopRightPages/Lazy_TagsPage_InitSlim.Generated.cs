@@ -27,7 +27,6 @@ public sealed partial class Lazy_TagsPage
         this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.AddTagButton.Size = new System.Drawing.Size(66, 23);
         this.AddTagButton.TabIndex = 7;
-        this.AddTagButton.UseVisualStyleBackColor = true;
         // 
         // AddTagTextBox
         // 
@@ -59,7 +58,6 @@ public sealed partial class Lazy_TagsPage
         this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
         this.RemoveTagButton.TabIndex = 1;
-        this.RemoveTagButton.UseVisualStyleBackColor = true;
         // 
         // AddTagFromListButton
         // 
@@ -70,7 +68,6 @@ public sealed partial class Lazy_TagsPage
         this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
         this.AddTagFromListButton.TabIndex = 0;
-        this.AddTagFromListButton.UseVisualStyleBackColor = true;
         // 
         // TagsTreeView
         // 

@@ -90,7 +90,6 @@ sealed partial class ScanAllFMsForm
         this.SelectAllButton.MinimumSize = new System.Drawing.Size(0, 23);
         this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.SelectAllButton.TabIndex = 0;
-        this.SelectAllButton.UseVisualStyleBackColor = true;
         this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
         // 
         // SelectNoneButton
@@ -100,7 +99,6 @@ sealed partial class ScanAllFMsForm
         this.SelectNoneButton.MinimumSize = new System.Drawing.Size(0, 23);
         this.SelectNoneButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.SelectNoneButton.TabIndex = 1;
-        this.SelectNoneButton.UseVisualStyleBackColor = true;
         this.SelectNoneButton.Click += new System.EventHandler(this.SelectNoneButton_Click);
         // 
         // ScanButton
@@ -112,7 +110,6 @@ sealed partial class ScanAllFMsForm
         this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.ScanButton.TabIndex = 1;
-        this.ScanButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -123,7 +120,6 @@ sealed partial class ScanAllFMsForm
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.Cancel_Button.TabIndex = 0;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // ScanAllFMsForLabel
         // 

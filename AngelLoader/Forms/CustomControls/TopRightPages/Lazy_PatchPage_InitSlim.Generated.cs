@@ -96,14 +96,12 @@ public sealed partial class Lazy_PatchPage
         this.PatchRemoveDMLButton.Location = new System.Drawing.Point(256, 192);
         this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
         this.PatchRemoveDMLButton.TabIndex = 42;
-        this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
         // 
         // PatchAddDMLButton
         // 
         this.PatchAddDMLButton.Location = new System.Drawing.Point(280, 192);
         this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
         this.PatchAddDMLButton.TabIndex = 43;
-        this.PatchAddDMLButton.UseVisualStyleBackColor = true;
         // 
         // PatchOpenFMFolderButton
         // 
@@ -112,7 +110,6 @@ public sealed partial class Lazy_PatchPage
         this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(5, 224);
         this.PatchOpenFMFolderButton.MinimumSize = new System.Drawing.Size(162, 23);
         this.PatchOpenFMFolderButton.TabIndex = 44;
-        this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
         // 
         // Lazy_PatchPage
         // 

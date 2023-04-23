@@ -64,7 +64,6 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             MinimumSize = new Size(75, 23),
             TabIndex = 48,
-            UseVisualStyleBackColor = true,
 
             DarkModeEnabled = _darkModeEnabled
         };

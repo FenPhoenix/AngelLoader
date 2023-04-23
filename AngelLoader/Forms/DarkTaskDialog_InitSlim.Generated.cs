@@ -57,7 +57,6 @@ partial class DarkTaskDialog
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(76, 23);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
         this.Cancel_Button.TabIndex = 2;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // NoButton
         // 
@@ -67,7 +66,6 @@ partial class DarkTaskDialog
         this.NoButton.MinimumSize = new System.Drawing.Size(76, 23);
         this.NoButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
         this.NoButton.TabIndex = 1;
-        this.NoButton.UseVisualStyleBackColor = true;
         // 
         // YesButton
         // 
@@ -77,7 +75,6 @@ partial class DarkTaskDialog
         this.YesButton.MinimumSize = new System.Drawing.Size(76, 23);
         this.YesButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
         this.YesButton.TabIndex = 0;
-        this.YesButton.UseVisualStyleBackColor = true;
         // 
         // MessageLabel
         // 

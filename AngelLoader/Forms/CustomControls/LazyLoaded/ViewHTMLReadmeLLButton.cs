@@ -60,7 +60,6 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 MinimumSize = new Size(0, 23),
                 TabIndex = 49,
-                UseVisualStyleBackColor = true,
                 Visible = false,
 
                 DarkModeEnabled = _darkModeEnabled

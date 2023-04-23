@@ -53,7 +53,6 @@ public sealed partial class Lazy_TagsPage
         this.AddTagButton.Size = new System.Drawing.Size(66, 23);
         this.AddTagButton.TabIndex = 7;
         this.AddTagButton.Text = "Add tag";
-        this.AddTagButton.UseVisualStyleBackColor = true;
         // 
         // AddTagTextBox
         // 
@@ -91,7 +90,6 @@ public sealed partial class Lazy_TagsPage
         this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
         this.RemoveTagButton.TabIndex = 1;
         this.RemoveTagButton.Text = "Remove tag";
-        this.RemoveTagButton.UseVisualStyleBackColor = true;
         // 
         // AddTagFromListButton
         // 
@@ -106,7 +104,6 @@ public sealed partial class Lazy_TagsPage
         this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
         this.AddTagFromListButton.TabIndex = 0;
         this.AddTagFromListButton.Text = "Add from list...";
-        this.AddTagFromListButton.UseVisualStyleBackColor = true;
         // 
         // TagsTreeView
         // 

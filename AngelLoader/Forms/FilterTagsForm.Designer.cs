@@ -114,7 +114,6 @@ sealed partial class FilterTagsForm
         this.AndButton.TabIndex = 0;
         this.AndButton.Text = "All";
         this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.AndButton.UseVisualStyleBackColor = true;
         this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -129,7 +128,6 @@ sealed partial class FilterTagsForm
         this.OrButton.TabIndex = 1;
         this.OrButton.Text = "Any";
         this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.OrButton.UseVisualStyleBackColor = true;
         this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -144,7 +142,6 @@ sealed partial class FilterTagsForm
         this.NotButton.TabIndex = 2;
         this.NotButton.Text = "Exclude";
         this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.NotButton.UseVisualStyleBackColor = true;
         this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
         this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
@@ -197,7 +194,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllNotButton.Name = "RemoveAllNotButton";
         this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllNotButton.TabIndex = 8;
-        this.RemoveAllNotButton.UseVisualStyleBackColor = true;
         this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -207,7 +203,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllOrButton.Name = "RemoveAllOrButton";
         this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllOrButton.TabIndex = 5;
-        this.RemoveAllOrButton.UseVisualStyleBackColor = true;
         this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -217,7 +212,6 @@ sealed partial class FilterTagsForm
         this.RemoveAllAndButton.Name = "RemoveAllAndButton";
         this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllAndButton.TabIndex = 2;
-        this.RemoveAllAndButton.UseVisualStyleBackColor = true;
         this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
         this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
@@ -227,7 +221,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedNotButton.Name = "RemoveSelectedNotButton";
         this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedNotButton.TabIndex = 7;
-        this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -237,7 +230,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedOrButton.Name = "RemoveSelectedOrButton";
         this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedOrButton.TabIndex = 4;
-        this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -247,7 +239,6 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedAndButton.Name = "RemoveSelectedAndButton";
         this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedAndButton.TabIndex = 1;
-        this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
         this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
         this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
@@ -264,7 +255,6 @@ sealed partial class FilterTagsForm
         this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 2;
         this.OKButton.Text = "OK";
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 
@@ -277,7 +267,6 @@ sealed partial class FilterTagsForm
         this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 3;
         this.Cancel_Button.Text = "Cancel";
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // ResetButton
         // 
@@ -289,7 +278,6 @@ sealed partial class FilterTagsForm
         this.ResetButton.Size = new System.Drawing.Size(75, 23);
         this.ResetButton.TabIndex = 0;
         this.ResetButton.Text = "Reset";
-        this.ResetButton.UseVisualStyleBackColor = true;
         this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
         // 
         // BottomFLP

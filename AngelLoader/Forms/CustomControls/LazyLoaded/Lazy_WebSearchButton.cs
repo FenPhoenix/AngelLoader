@@ -53,7 +53,6 @@ internal sealed class Lazy_WebSearchButton : IDarkable
             MinimumSize = new Size(116, 36),
             Padding = new Padding(33, 0, 6, 0),
             TabIndex = 60,
-            UseVisualStyleBackColor = true,
             Enabled = _enabled,
 
             DarkModeEnabled = _darkModeEnabled

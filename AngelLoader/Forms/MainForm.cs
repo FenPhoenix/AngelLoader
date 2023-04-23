@@ -677,28 +677,24 @@ public sealed partial class MainForm : DarkFormBase,
         TestButton.Size = new Size(75, 22);
         TestButton.TabIndex = 999;
         TestButton.Text = "Test";
-        TestButton.UseVisualStyleBackColor = true;
         TestButton.Click += TestButton_Click;
 
         Test2Button.Location = new Point(650, 21);
         Test2Button.Size = new Size(75, 22);
         Test2Button.TabIndex = 999;
         Test2Button.Text = "Test2";
-        Test2Button.UseVisualStyleBackColor = true;
         Test2Button.Click += Test2Button_Click;
 
         Test3Button.Location = new Point(725, 0);
         Test3Button.Size = new Size(75, 22);
         Test3Button.TabIndex = 999;
         Test3Button.Text = "Test3";
-        Test3Button.UseVisualStyleBackColor = true;
         Test3Button.Click += Test3Button_Click;
 
         Test4Button.Location = new Point(725, 21);
         Test4Button.Size = new Size(75, 22);
         Test4Button.TabIndex = 999;
         Test4Button.Text = "Test4";
-        Test4Button.UseVisualStyleBackColor = true;
         Test4Button.Click += Test4Button_Click;
 
         DebugLabel.AutoSize = true;

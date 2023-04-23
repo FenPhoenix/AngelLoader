@@ -201,7 +201,6 @@ sealed partial class PathsPage
         this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.TabIndex = 2;
         this.BackupPathBrowseButton.Text = "Browse...";
-        this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
         // 
         // FMArchivePathsGroupBox
         // 
@@ -236,7 +235,6 @@ sealed partial class PathsPage
         this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
         this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
         this.AddFMArchivePathButton.TabIndex = 3;
-        this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
         this.AddFMArchivePathButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.AddFMArchivePathButton_Paint);
         // 
         // RemoveFMArchivePathButton
@@ -246,7 +244,6 @@ sealed partial class PathsPage
         this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
         this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveFMArchivePathButton.TabIndex = 2;
-        this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
         this.RemoveFMArchivePathButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveFMArchivePathButton_Paint);
         // 
         // FMArchivePathsListBox
@@ -377,7 +374,6 @@ sealed partial class PathsPage
         this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SteamExeBrowseButton.TabIndex = 2;
         this.SteamExeBrowseButton.Text = "Browse...";
-        this.SteamExeBrowseButton.UseVisualStyleBackColor = true;
         // 
         // PathsToGameExesGroupBox
         // 
@@ -474,7 +470,6 @@ sealed partial class PathsPage
         this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SS2ExePathBrowseButton.TabIndex = 11;
         this.SS2ExePathBrowseButton.Text = "Browse...";
-        this.SS2ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
         // Thief3ExePathBrowseButton
         // 
@@ -488,7 +483,6 @@ sealed partial class PathsPage
         this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief3ExePathBrowseButton.TabIndex = 8;
         this.Thief3ExePathBrowseButton.Text = "Browse...";
-        this.Thief3ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
         // Thief2ExePathBrowseButton
         // 
@@ -502,7 +496,6 @@ sealed partial class PathsPage
         this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief2ExePathBrowseButton.TabIndex = 5;
         this.Thief2ExePathBrowseButton.Text = "Browse...";
-        this.Thief2ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
         // Thief1ExePathBrowseButton
         // 
@@ -516,7 +509,6 @@ sealed partial class PathsPage
         this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief1ExePathBrowseButton.TabIndex = 2;
         this.Thief1ExePathBrowseButton.Text = "Browse...";
-        this.Thief1ExePathBrowseButton.UseVisualStyleBackColor = true;
         // 
         // SS2ExePathTextBox
         // 

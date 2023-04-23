@@ -32,7 +32,6 @@ partial class OriginalGameModsForm
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
         this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
-        this.OKButton.UseVisualStyleBackColor = true;
         // 
         // BottomFLP
         // 
@@ -51,7 +50,6 @@ partial class OriginalGameModsForm
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(0);
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 1;
-        this.Cancel_Button.UseVisualStyleBackColor = true;
         // 
         // NewMantleCheckBox
         // 

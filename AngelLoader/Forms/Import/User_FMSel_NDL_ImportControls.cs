@@ -73,7 +73,6 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             button.Location = new Point(448, 47);
             button.Padding = new Padding(6, 0, 6, 0);
             button.TabIndex = 1;
-            button.UseVisualStyleBackColor = true;
             button.Click += ThiefIniBrowseButtons_Click;
 
             groupBox.Controls.Add(checkBox);

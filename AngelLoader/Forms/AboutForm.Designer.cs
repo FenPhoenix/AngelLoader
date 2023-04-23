@@ -112,7 +112,6 @@ partial class AboutForm
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 0;
             this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
             // 
             // SevenZipLinkLabel
             // 
