@@ -185,7 +185,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
     private readonly TopRightLLMenu TopRightLLMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
-    private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
+    internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
 
@@ -4031,25 +4031,6 @@ public sealed partial class MainForm : DarkFormBase,
     {
         IntPtr hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
         if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
-    }
-
-    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-    private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText, fixUpEmailLinks: true);
-
-    private void ReadmeRichTextBox_MouseDown(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.Right)
-        {
-            ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
-        }
-    }
-
-    private void ReadmeRichTextBox_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (ControlUtils.IsMenuKey(e))
-        {
-            ReadmeRichTextBox.ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
-        }
     }
 
     private void ReadmeEncodingButton_Click(object sender, EventArgs e)

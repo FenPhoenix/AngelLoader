@@ -83,7 +83,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     // .wri file and have fallen back to treating it as unparsed plain text.
     private bool _currentReadmeSupportsEncodingChange;
 
-    private Form _owner = null!;
+    private MainForm _owner = null!;
 
     #endregion
 
@@ -224,7 +224,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #region Public methods
 
-    internal void SetOwner(Form owner) => _owner = owner;
+    internal void SetOwner(MainForm owner) => _owner = owner;
 
     #region Zoom stuff
 
@@ -445,6 +445,33 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     internal Encoding? ChangeEncoding(Encoding? encoding)
     {
         return _currentReadmeSupportsEncodingChange ? ChangeEncodingInternal(encoding) : null;
+    }
+
+    protected override void OnLinkClicked(LinkClickedEventArgs e)
+    {
+        base.OnLinkClicked(e);
+
+        Core.OpenLink(e.LinkText, fixUpEmailLinks: true);
+    }
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+
+        if (e.Button == MouseButtons.Right)
+        {
+            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+        }
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (ControlUtils.IsMenuKey(e))
+        {
+            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+        }
     }
 
     #endregion
