@@ -420,7 +420,7 @@ internal static class Core
         }
         if (LangTaskActive())
         {
-            static string GetTestLangPath()
+            static string GetTestLangPath(string fileName)
             {
                 try
                 {
@@ -430,7 +430,7 @@ internal static class Core
                         "AL_FEN_PERSONAL_DEV_3053BA21",
                         EnvironmentVariableTarget.Machine);
                     return val?.EqualsTrue() == true
-                        ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
+                        ? Path.Combine(@"C:\AngelLoader\Data\Languages\", fileName)
                         : "";
                 }
                 catch
@@ -440,15 +440,16 @@ internal static class Core
             }
 
             string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
-            string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
-                ? GetTestLangPath()
-                : "";
+            (string testLangIni, string testLangLongIni) = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
+                ? (GetTestLangPath("TestLang.ini"), GetTestLangPath("TestLangLong.ini"))
+                : ("", "");
 
             Language.Generate(
                 sourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
                 perGameLangGetterDestFile: taggedFilesDict[DefineHeaders.LocalizedGameNameGetterDest],
                 langIniFile: englishIni,
-                testLangIniFile: testLangIni);
+                testLangIniFile: testLangIni,
+                testLang2IniFile: testLangLongIni);
 
             LanguageSupport.Generate(destFile: taggedFilesDict[DefineHeaders.LanguageSupportDest]);
         }

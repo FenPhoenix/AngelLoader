@@ -31,7 +31,8 @@ internal static class Language
             string sourceFile,
             string perGameLangGetterDestFile,
             string langIniFile,
-            string testLangIniFile)
+            string testLangIniFile,
+            string testLang2IniFile)
     {
         var (sections, perGameSets) = ReadSource(sourceFile);
 
@@ -41,6 +42,7 @@ internal static class Language
         {
             Directory.CreateDirectory(Path.GetDirectoryName(testLangIniFile)!);
             WriteIniFile(testLangIniFile, sections, test: true);
+            WriteIniFile(testLang2IniFile, sections, test2: true);
         }
     }
 
@@ -246,7 +248,7 @@ internal static class Language
         File.WriteAllText(destFile, w.ToString());
     }
 
-    private static void WriteIniFile(string langIniFile, List<IniSection> sections, bool test = false)
+    private static void WriteIniFile(string langIniFile, List<IniSection> sections, bool test = false, bool test2 = false)
     {
         var sb = new StringBuilder();
         sb.AppendLine("; This is an AngelLoader language file.");
@@ -257,7 +259,8 @@ internal static class Language
 
         string[] linebreaks = { "\r\n", "\r", "\n" };
 
-        string testPrefix = test ? "█" : "";
+        string testPrefix = test || test2 ? "█" : "";
+        string testSuffix = test2 ? " sd fdsf sd fdsf dsf dsf dsf dsf sd" : "";
         for (int i = 0; i < sections.Count; i++)
         {
             IniSection section = sections[i];
@@ -282,7 +285,10 @@ internal static class Language
                 }
                 else if (!item.DoNotWrite)
                 {
-                    string val = test && item.Key == "TranslatedLanguageName" ? "TéstLang" : testPrefix + item.Value;
+                    string val =
+                        test && item.Key == "TranslatedLanguageName" ? "TéstLang" :
+                        test2 && item.Key == "TranslatedLanguageName" ? "TéstLangLong" :
+                        testPrefix + item.Value + testSuffix;
                     sb.Append(item.Key);
                     sb.Append('=');
                     sb.AppendLine(val);
