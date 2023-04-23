@@ -72,7 +72,9 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
                  ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.ResizeRedraw |
                  ControlStyles.UserPaint, true);
+
         UseMnemonic = false;
+        UseVisualStyleBackColor = true;
     }
 
     #endregion
