@@ -1450,7 +1450,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 string msg = ex is FileNotFoundException
                     ? "Language file not found."
-                    : "Unable to read language file.";
+                    : ErrorText.Un + "read language file.";
 
                 Core.Dialogs.ShowAlert(msg + " Falling back to English.", LText.AlertMessages.Alert);
 

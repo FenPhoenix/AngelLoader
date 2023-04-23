@@ -27,7 +27,7 @@ internal static class ErrorText
     internal static readonly string ExTry = Ex + "trying to ";
     internal static readonly string ExCreate = Ex + "creating ";
     internal static readonly string ExCopy = Ex + "copying ";
-    internal static readonly string ExExit = Ex + "exiting ";
+    //internal static readonly string ExExit = Ex + "exiting ";
     internal static readonly string ExGet = Ex + "getting ";
     private static readonly string Ret = "Returning ";
     internal static readonly string ExDetLangIn = ExTry + "detect language folders in ";
