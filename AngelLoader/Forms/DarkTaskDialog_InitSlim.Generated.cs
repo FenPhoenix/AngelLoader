@@ -22,6 +22,7 @@ partial class DarkTaskDialog
         // 
         this.IconPictureBox.Location = new System.Drawing.Point(10, 10);
         this.IconPictureBox.Size = new System.Drawing.Size(32, 32);
+        this.IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
         // 
         // BottomFLP
         // 

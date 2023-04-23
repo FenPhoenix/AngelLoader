@@ -47,6 +47,7 @@ partial class DarkTaskDialog
         this.IconPictureBox.Location = new System.Drawing.Point(10, 10);
         this.IconPictureBox.Name = "IconPictureBox";
         this.IconPictureBox.Size = new System.Drawing.Size(32, 32);
+        this.IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
         this.IconPictureBox.TabIndex = 0;
         this.IconPictureBox.TabStop = false;
         // 
