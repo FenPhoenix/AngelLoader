@@ -75,14 +75,12 @@ sealed partial class ThiefBuddyPage
         this.RunTBAlwaysRadioButton.AutoSize = true;
         this.RunTBAlwaysRadioButton.Location = new System.Drawing.Point(8, 24);
         this.RunTBAlwaysRadioButton.TabIndex = 1;
-        this.RunTBAlwaysRadioButton.UseVisualStyleBackColor = true;
         // 
         // RunTBNeverRadioButton
         // 
         this.RunTBNeverRadioButton.AutoSize = true;
         this.RunTBNeverRadioButton.Location = new System.Drawing.Point(8, 72);
         this.RunTBNeverRadioButton.TabIndex = 3;
-        this.RunTBNeverRadioButton.UseVisualStyleBackColor = true;
         // 
         // RunTBAskRadioButton
         // 
@@ -91,7 +89,6 @@ sealed partial class ThiefBuddyPage
         this.RunTBAskRadioButton.Location = new System.Drawing.Point(8, 48);
         this.RunTBAskRadioButton.TabIndex = 2;
         this.RunTBAskRadioButton.TabStop = true;
-        this.RunTBAskRadioButton.UseVisualStyleBackColor = true;
         // 
         // GetTBLinkLabel
         // 

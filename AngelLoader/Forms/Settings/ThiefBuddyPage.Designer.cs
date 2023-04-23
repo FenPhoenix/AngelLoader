@@ -116,7 +116,6 @@ sealed partial class ThiefBuddyPage
             this.RunTBAlwaysRadioButton.Size = new System.Drawing.Size(58, 17);
             this.RunTBAlwaysRadioButton.TabIndex = 1;
             this.RunTBAlwaysRadioButton.Text = "Always";
-            this.RunTBAlwaysRadioButton.UseVisualStyleBackColor = true;
             // 
             // RunTBNeverRadioButton
             // 
@@ -126,7 +125,6 @@ sealed partial class ThiefBuddyPage
             this.RunTBNeverRadioButton.Size = new System.Drawing.Size(54, 17);
             this.RunTBNeverRadioButton.TabIndex = 3;
             this.RunTBNeverRadioButton.Text = "Never";
-            this.RunTBNeverRadioButton.UseVisualStyleBackColor = true;
             // 
             // RunTBAskRadioButton
             // 
@@ -138,7 +136,6 @@ sealed partial class ThiefBuddyPage
             this.RunTBAskRadioButton.TabIndex = 2;
             this.RunTBAskRadioButton.TabStop = true;
             this.RunTBAskRadioButton.Text = "Ask every time";
-            this.RunTBAskRadioButton.UseVisualStyleBackColor = true;
             // 
             // GetTBLinkLabel
             // 

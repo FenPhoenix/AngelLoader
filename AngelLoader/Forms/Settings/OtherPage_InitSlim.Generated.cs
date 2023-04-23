@@ -94,7 +94,6 @@ sealed partial class OtherPage
         this.Install_ConfirmNeverRadioButton.AutoSize = true;
         this.Install_ConfirmNeverRadioButton.Location = new System.Drawing.Point(24, 96);
         this.Install_ConfirmNeverRadioButton.TabIndex = 3;
-        this.Install_ConfirmNeverRadioButton.UseVisualStyleBackColor = true;
         // 
         // Install_ConfirmMultipleOnlyRadioButton
         // 
@@ -103,14 +102,12 @@ sealed partial class OtherPage
         this.Install_ConfirmMultipleOnlyRadioButton.Location = new System.Drawing.Point(24, 72);
         this.Install_ConfirmMultipleOnlyRadioButton.TabIndex = 2;
         this.Install_ConfirmMultipleOnlyRadioButton.TabStop = true;
-        this.Install_ConfirmMultipleOnlyRadioButton.UseVisualStyleBackColor = true;
         // 
         // Install_ConfirmAlwaysRadioButton
         // 
         this.Install_ConfirmAlwaysRadioButton.AutoSize = true;
         this.Install_ConfirmAlwaysRadioButton.Location = new System.Drawing.Point(24, 48);
         this.Install_ConfirmAlwaysRadioButton.TabIndex = 1;
-        this.Install_ConfirmAlwaysRadioButton.UseVisualStyleBackColor = true;
         // 
         // ConfirmBeforeInstallLabel
         // 
@@ -219,14 +216,12 @@ sealed partial class OtherPage
         this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(24, 94);
         this.BackupAllChangedDataRadioButton.TabIndex = 3;
         this.BackupAllChangedDataRadioButton.TabStop = true;
-        this.BackupAllChangedDataRadioButton.UseVisualStyleBackColor = true;
         // 
         // BackupSavesAndScreensOnlyRadioButton
         // 
         this.BackupSavesAndScreensOnlyRadioButton.AutoSize = true;
         this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(24, 70);
         this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 2;
-        this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
         // 
         // FMSettingsGroupBox
         // 

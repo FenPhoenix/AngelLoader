@@ -15,8 +15,6 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
     private DarkControlState _controlState = DarkControlState.Normal;
 
-    private bool _origUseVisualStyleBackColor;
-
     private bool _spacePressed;
 
     private const int _radioButtonSize = 12;
@@ -86,6 +84,15 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool UseMnemonic { get => false; set => base.UseMnemonic = false; }
+
+    [PublicAPI]
+    [DefaultValue(true)]
+    public new bool UseVisualStyleBackColor
+    {
+        get => base.UseVisualStyleBackColor;
+        set => base.UseVisualStyleBackColor = value;
+    }
+
 #endif
 
     #endregion
@@ -101,15 +108,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            if (_darkModeEnabled)
-            {
-                _origUseVisualStyleBackColor = UseVisualStyleBackColor;
-                UseVisualStyleBackColor = false;
-            }
-            else
-            {
-                UseVisualStyleBackColor = _origUseVisualStyleBackColor;
-            }
+            UseVisualStyleBackColor = !_darkModeEnabled;
 
             Invalidate();
         }
@@ -126,6 +125,8 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
                  ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.ResizeRedraw |
                  ControlStyles.UserPaint, true);
+
+        UseVisualStyleBackColor = true;
     }
 
     #endregion

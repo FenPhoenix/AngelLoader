@@ -129,7 +129,6 @@ sealed partial class OtherPage
         this.Install_ConfirmNeverRadioButton.Size = new System.Drawing.Size(54, 17);
         this.Install_ConfirmNeverRadioButton.TabIndex = 3;
         this.Install_ConfirmNeverRadioButton.Text = "Never";
-        this.Install_ConfirmNeverRadioButton.UseVisualStyleBackColor = true;
         // 
         // Install_ConfirmMultipleOnlyRadioButton
         // 
@@ -141,7 +140,6 @@ sealed partial class OtherPage
         this.Install_ConfirmMultipleOnlyRadioButton.TabIndex = 2;
         this.Install_ConfirmMultipleOnlyRadioButton.TabStop = true;
         this.Install_ConfirmMultipleOnlyRadioButton.Text = "Only for multiple FMs";
-        this.Install_ConfirmMultipleOnlyRadioButton.UseVisualStyleBackColor = true;
         // 
         // Install_ConfirmAlwaysRadioButton
         // 
@@ -151,7 +149,6 @@ sealed partial class OtherPage
         this.Install_ConfirmAlwaysRadioButton.Size = new System.Drawing.Size(58, 17);
         this.Install_ConfirmAlwaysRadioButton.TabIndex = 1;
         this.Install_ConfirmAlwaysRadioButton.Text = "Always";
-        this.Install_ConfirmAlwaysRadioButton.UseVisualStyleBackColor = true;
         // 
         // ConfirmBeforeInstallLabel
         // 
@@ -298,7 +295,6 @@ sealed partial class OtherPage
         this.BackupAllChangedDataRadioButton.TabIndex = 3;
         this.BackupAllChangedDataRadioButton.TabStop = true;
         this.BackupAllChangedDataRadioButton.Text = "All changed files";
-        this.BackupAllChangedDataRadioButton.UseVisualStyleBackColor = true;
         // 
         // BackupSavesAndScreensOnlyRadioButton
         // 
@@ -308,7 +304,6 @@ sealed partial class OtherPage
         this.BackupSavesAndScreensOnlyRadioButton.Size = new System.Drawing.Size(158, 17);
         this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 2;
         this.BackupSavesAndScreensOnlyRadioButton.Text = "Saves and screenshots only";
-        this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
         // 
         // FMSettingsGroupBox
         // 

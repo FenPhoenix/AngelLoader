@@ -137,7 +137,6 @@ sealed partial class AppearancePage
         this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
         this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
         this.PlayWithoutFM_MultipleButtonsRadioButton.Text = "Multiple buttons";
-        this.PlayWithoutFM_MultipleButtonsRadioButton.UseVisualStyleBackColor = true;
         // 
         // PlayWithoutFM_SingleButtonRadioButton
         // 
@@ -148,7 +147,6 @@ sealed partial class AppearancePage
         this.PlayWithoutFM_SingleButtonRadioButton.TabIndex = 0;
         this.PlayWithoutFM_SingleButtonRadioButton.TabStop = true;
         this.PlayWithoutFM_SingleButtonRadioButton.Text = "Single button with menu";
-        this.PlayWithoutFM_SingleButtonRadioButton.UseVisualStyleBackColor = true;
         // 
         // FMsListGroupBox
         // 
@@ -199,7 +197,6 @@ sealed partial class AppearancePage
         this.DateCurrentCultureShortRadioButton.Size = new System.Drawing.Size(119, 17);
         this.DateCurrentCultureShortRadioButton.TabIndex = 0;
         this.DateCurrentCultureShortRadioButton.Text = "System locale, short";
-        this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
         // 
         // DateCurrentCultureLongRadioButton
         // 
@@ -209,7 +206,6 @@ sealed partial class AppearancePage
         this.DateCurrentCultureLongRadioButton.Size = new System.Drawing.Size(116, 17);
         this.DateCurrentCultureLongRadioButton.TabIndex = 1;
         this.DateCurrentCultureLongRadioButton.Text = "System locale, long";
-        this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
         // 
         // DateCustomRadioButton
         // 
@@ -219,7 +215,6 @@ sealed partial class AppearancePage
         this.DateCustomRadioButton.Size = new System.Drawing.Size(63, 17);
         this.DateCustomRadioButton.TabIndex = 2;
         this.DateCustomRadioButton.Text = "Custom:";
-        this.DateCustomRadioButton.UseVisualStyleBackColor = true;
         // 
         // RatingDisplayStyleRBPanel
         // 
@@ -240,7 +235,6 @@ sealed partial class AppearancePage
         this.RatingNDLDisplayStyleRadioButton.Size = new System.Drawing.Size(219, 17);
         this.RatingNDLDisplayStyleRadioButton.TabIndex = 0;
         this.RatingNDLDisplayStyleRadioButton.Text = "NewDarkLoader (0-10 in increments of 1)";
-        this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
         // 
         // RatingFMSelDisplayStyleRadioButton
         // 
@@ -252,7 +246,6 @@ sealed partial class AppearancePage
         this.RatingFMSelDisplayStyleRadioButton.TabIndex = 1;
         this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
         this.RatingFMSelDisplayStyleRadioButton.Text = "FMSel (0-5 in increments of 0.5)";
-        this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
         // 
         // GameOrganizationRBPanel
         // 
@@ -275,7 +268,6 @@ sealed partial class AppearancePage
         this.OrganizeGamesByTabRadioButton.Size = new System.Drawing.Size(456, 32);
         this.OrganizeGamesByTabRadioButton.TabIndex = 0;
         this.OrganizeGamesByTabRadioButton.Text = "Each game in its own tab";
-        this.OrganizeGamesByTabRadioButton.UseVisualStyleBackColor = true;
         // 
         // OrganizeGamesInOneListRadioButton
         // 
@@ -288,7 +280,6 @@ sealed partial class AppearancePage
         this.OrganizeGamesInOneListRadioButton.TabIndex = 2;
         this.OrganizeGamesInOneListRadioButton.TabStop = true;
         this.OrganizeGamesInOneListRadioButton.Text = "Everything in one list, and games are filters";
-        this.OrganizeGamesInOneListRadioButton.UseVisualStyleBackColor = true;
         // 
         // UseShortGameTabNamesCheckBox
         // 
@@ -622,7 +613,6 @@ sealed partial class AppearancePage
         this.DarkThemeRadioButton.Size = new System.Drawing.Size(48, 17);
         this.DarkThemeRadioButton.TabIndex = 1;
         this.DarkThemeRadioButton.Text = "Dark";
-        this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
         // 
         // ClassicThemeRadioButton
         // 
@@ -634,7 +624,6 @@ sealed partial class AppearancePage
         this.ClassicThemeRadioButton.TabIndex = 0;
         this.ClassicThemeRadioButton.TabStop = true;
         this.ClassicThemeRadioButton.Text = "Classic";
-        this.ClassicThemeRadioButton.UseVisualStyleBackColor = true;
         // 
         // LanguageGroupBox
         // 

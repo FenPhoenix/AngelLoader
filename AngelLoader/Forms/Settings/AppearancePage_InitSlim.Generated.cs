@@ -106,7 +106,6 @@ sealed partial class AppearancePage
         this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
         this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
         this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
-        this.PlayWithoutFM_MultipleButtonsRadioButton.UseVisualStyleBackColor = true;
         // 
         // PlayWithoutFM_SingleButtonRadioButton
         // 
@@ -114,7 +113,6 @@ sealed partial class AppearancePage
         this.PlayWithoutFM_SingleButtonRadioButton.Location = new System.Drawing.Point(16, 24);
         this.PlayWithoutFM_SingleButtonRadioButton.TabIndex = 0;
         this.PlayWithoutFM_SingleButtonRadioButton.TabStop = true;
-        this.PlayWithoutFM_SingleButtonRadioButton.UseVisualStyleBackColor = true;
         // 
         // FMsListGroupBox
         // 
@@ -159,21 +157,18 @@ sealed partial class AppearancePage
         this.DateCurrentCultureShortRadioButton.AutoSize = true;
         this.DateCurrentCultureShortRadioButton.Location = new System.Drawing.Point(0, 3);
         this.DateCurrentCultureShortRadioButton.TabIndex = 0;
-        this.DateCurrentCultureShortRadioButton.UseVisualStyleBackColor = true;
         // 
         // DateCurrentCultureLongRadioButton
         // 
         this.DateCurrentCultureLongRadioButton.AutoSize = true;
         this.DateCurrentCultureLongRadioButton.Location = new System.Drawing.Point(0, 27);
         this.DateCurrentCultureLongRadioButton.TabIndex = 1;
-        this.DateCurrentCultureLongRadioButton.UseVisualStyleBackColor = true;
         // 
         // DateCustomRadioButton
         // 
         this.DateCustomRadioButton.AutoSize = true;
         this.DateCustomRadioButton.Location = new System.Drawing.Point(0, 51);
         this.DateCustomRadioButton.TabIndex = 2;
-        this.DateCustomRadioButton.UseVisualStyleBackColor = true;
         // 
         // RatingDisplayStyleRBPanel
         // 
@@ -189,7 +184,6 @@ sealed partial class AppearancePage
         // 
         this.RatingNDLDisplayStyleRadioButton.AutoSize = true;
         this.RatingNDLDisplayStyleRadioButton.TabIndex = 0;
-        this.RatingNDLDisplayStyleRadioButton.UseVisualStyleBackColor = true;
         // 
         // RatingFMSelDisplayStyleRadioButton
         // 
@@ -198,7 +192,6 @@ sealed partial class AppearancePage
         this.RatingFMSelDisplayStyleRadioButton.Location = new System.Drawing.Point(0, 24);
         this.RatingFMSelDisplayStyleRadioButton.TabIndex = 1;
         this.RatingFMSelDisplayStyleRadioButton.TabStop = true;
-        this.RatingFMSelDisplayStyleRadioButton.UseVisualStyleBackColor = true;
         // 
         // GameOrganizationRBPanel
         // 
@@ -217,7 +210,6 @@ sealed partial class AppearancePage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.OrganizeGamesByTabRadioButton.Size = new System.Drawing.Size(456, 32);
         this.OrganizeGamesByTabRadioButton.TabIndex = 0;
-        this.OrganizeGamesByTabRadioButton.UseVisualStyleBackColor = true;
         // 
         // OrganizeGamesInOneListRadioButton
         // 
@@ -228,7 +220,6 @@ sealed partial class AppearancePage
         this.OrganizeGamesInOneListRadioButton.Size = new System.Drawing.Size(456, 32);
         this.OrganizeGamesInOneListRadioButton.TabIndex = 2;
         this.OrganizeGamesInOneListRadioButton.TabStop = true;
-        this.OrganizeGamesInOneListRadioButton.UseVisualStyleBackColor = true;
         // 
         // UseShortGameTabNamesCheckBox
         // 
@@ -485,7 +476,6 @@ sealed partial class AppearancePage
         this.DarkThemeRadioButton.AutoSize = true;
         this.DarkThemeRadioButton.Location = new System.Drawing.Point(16, 48);
         this.DarkThemeRadioButton.TabIndex = 1;
-        this.DarkThemeRadioButton.UseVisualStyleBackColor = true;
         // 
         // ClassicThemeRadioButton
         // 
@@ -494,7 +484,6 @@ sealed partial class AppearancePage
         this.ClassicThemeRadioButton.Location = new System.Drawing.Point(16, 24);
         this.ClassicThemeRadioButton.TabIndex = 0;
         this.ClassicThemeRadioButton.TabStop = true;
-        this.ClassicThemeRadioButton.UseVisualStyleBackColor = true;
         // 
         // LanguageGroupBox
         // 
