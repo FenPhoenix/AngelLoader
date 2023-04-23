@@ -110,10 +110,12 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     }
 
     [Browsable(true)]
+    [DefaultValue(Panel.Panel1)]
     [PublicAPI]
     public Panel FullScreenCollapsePanel { get; set; }
 
     [Browsable(true)]
+    [DefaultValue(false)]
     [PublicAPI]
     public bool RefreshSiblingFirst { get; set; }
 

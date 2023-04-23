@@ -209,7 +209,6 @@ public sealed partial class MainForm
         // 
         MainSplitContainer.BackColor = SystemColors.ActiveBorder;
         MainSplitContainer.Dock = DockStyle.Fill;
-        MainSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel1;
         MainSplitContainer.Orientation = Orientation.Horizontal;
         // 
         // MainSplitContainer.Panel1
@@ -262,7 +261,6 @@ public sealed partial class MainForm
         TopSplitContainer.Panel2.Controls.Add(TopRightMenuButton);
         TopSplitContainer.Panel2.Controls.Add(TopRightCollapseButton);
         TopSplitContainer.Panel2.Controls.Add(TopRightTabControl);
-        TopSplitContainer.RefreshSiblingFirst = false;
         TopSplitContainer.Size = new Size(1671, 309);
         TopSplitContainer.SplitterDistance = 1116;
         TopSplitContainer.TabIndex = 0;

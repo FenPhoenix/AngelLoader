@@ -251,7 +251,6 @@ sealed partial class MainForm
         // 
         this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
         this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.MainSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel1;
         this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
         this.MainSplitContainer.Name = "MainSplitContainer";
         this.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -308,7 +307,6 @@ sealed partial class MainForm
         this.TopSplitContainer.Panel2.Controls.Add(this.TopRightMenuButton);
         this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
         this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
-        this.TopSplitContainer.RefreshSiblingFirst = false;
         this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
         this.TopSplitContainer.SplitterDistance = 1116;
         this.TopSplitContainer.TabIndex = 0;
