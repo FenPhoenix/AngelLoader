@@ -12,10 +12,6 @@ sealed partial class AppearancePage
         this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.darkHorizontalDivider4 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
-        this.darkHorizontalDivider3 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
-        this.darkHorizontalDivider2 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
-        this.darkHorizontalDivider1 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
         this.DateFormatRBPanel = new System.Windows.Forms.Panel();
         this.DateCurrentCultureShortRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.DateCurrentCultureLongRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -124,10 +120,6 @@ sealed partial class AppearancePage
         // 
         this.FMsListGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider4);
-        this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider3);
-        this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider2);
-        this.FMsListGroupBox.Controls.Add(this.darkHorizontalDivider1);
         this.FMsListGroupBox.Controls.Add(this.DateFormatRBPanel);
         this.FMsListGroupBox.Controls.Add(this.RatingDisplayStyleRBPanel);
         this.FMsListGroupBox.Controls.Add(this.GameOrganizationRBPanel);
@@ -150,34 +142,6 @@ sealed partial class AppearancePage
         this.FMsListGroupBox.Size = new System.Drawing.Size(480, 688);
         this.FMsListGroupBox.TabIndex = 2;
         this.FMsListGroupBox.TabStop = false;
-        // 
-        // darkHorizontalDivider4
-        // 
-        this.darkHorizontalDivider4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.darkHorizontalDivider4.Location = new System.Drawing.Point(8, 584);
-        this.darkHorizontalDivider4.Size = new System.Drawing.Size(464, 16);
-        // 
-        // darkHorizontalDivider3
-        // 
-        this.darkHorizontalDivider3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.darkHorizontalDivider3.Location = new System.Drawing.Point(8, 408);
-        this.darkHorizontalDivider3.Size = new System.Drawing.Size(464, 16);
-        // 
-        // darkHorizontalDivider2
-        // 
-        this.darkHorizontalDivider2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.darkHorizontalDivider2.Location = new System.Drawing.Point(8, 264);
-        this.darkHorizontalDivider2.Size = new System.Drawing.Size(464, 16);
-        // 
-        // darkHorizontalDivider1
-        // 
-        this.darkHorizontalDivider1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.darkHorizontalDivider1.Location = new System.Drawing.Point(8, 136);
-        this.darkHorizontalDivider1.Size = new System.Drawing.Size(464, 16);
         // 
         // DateFormatRBPanel
         // 

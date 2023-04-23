@@ -66,6 +66,8 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
         }
     }
 
+    public event EventHandler<PaintEventArgs>? PaintCustom;
+
     protected override void OnPaint(PaintEventArgs e)
     {
         if (!_darkModeEnabled)
@@ -114,5 +116,7 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
 
         Color textColor = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
         TextRenderer.DrawText(g, base.Text, Font, textRect, textColor, textFormatFlags);
+
+        PaintCustom?.Invoke(this, e);
     }
 }

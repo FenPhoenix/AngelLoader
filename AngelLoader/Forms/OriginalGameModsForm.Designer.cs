@@ -37,7 +37,6 @@ partial class OriginalGameModsForm
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.HorizontalDivider1 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
@@ -101,13 +100,6 @@ partial class OriginalGameModsForm
         this.NewMantleCheckBox.ThreeState = true;
         this.NewMantleCheckBox.UseVisualStyleBackColor = true;
         // 
-        // HorizontalDivider1
-        // 
-        this.HorizontalDivider1.Location = new System.Drawing.Point(7, 44);
-        this.HorizontalDivider1.Name = "HorizontalDivider1";
-        this.HorizontalDivider1.Size = new System.Drawing.Size(517, 16);
-        this.HorizontalDivider1.TabIndex = 2;
-        // 
         // OriginalGameModsForm
         // 
         this.AcceptButton = this.OKButton;
@@ -115,7 +107,6 @@ partial class OriginalGameModsForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.CancelButton = this.Cancel_Button;
         this.ClientSize = new System.Drawing.Size(532, 500);
-        this.Controls.Add(this.HorizontalDivider1);
         this.Controls.Add(this.NewMantleCheckBox);
         this.Controls.Add(this.BottomFLP);
         this.Controls.Add(this.OrigGameModsControl);
@@ -126,6 +117,7 @@ partial class OriginalGameModsForm
         this.Name = "OriginalGameModsForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
         this.Text = "Manage mods for [Game]";
+        this.Paint += new System.Windows.Forms.PaintEventHandler(this.OriginalGameModsForm_Paint);
         this.BottomFLP.ResumeLayout(false);
         this.ResumeLayout(false);
         this.PerformLayout();
@@ -140,6 +132,5 @@ partial class OriginalGameModsForm
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     private CustomControls.DarkButton Cancel_Button;
     private CustomControls.DarkCheckBox NewMantleCheckBox;
-    private CustomControls.DarkHorizontalDivider HorizontalDivider1;
     private System.Windows.Forms.ToolTip MainToolTip;
 }

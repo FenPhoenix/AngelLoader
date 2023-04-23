@@ -9,7 +9,6 @@ sealed partial class ThiefBuddyPage
     {
         this.PagePanel = new System.Windows.Forms.Panel();
         this.ThiefBuddyOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.HorizDiv1 = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
         this.TBInstallStatusLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.RunTBPanel = new System.Windows.Forms.Panel();
         this.RunThiefBuddyWhenPlayingFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -42,7 +41,6 @@ sealed partial class ThiefBuddyPage
         // 
         this.ThiefBuddyOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyOptionsGroupBox.Controls.Add(this.HorizDiv1);
         this.ThiefBuddyOptionsGroupBox.Controls.Add(this.TBInstallStatusLabel);
         this.ThiefBuddyOptionsGroupBox.Controls.Add(this.RunTBPanel);
         this.ThiefBuddyOptionsGroupBox.Location = new System.Drawing.Point(8, 8);
@@ -50,13 +48,6 @@ sealed partial class ThiefBuddyPage
         this.ThiefBuddyOptionsGroupBox.Size = new System.Drawing.Size(424, 168);
         this.ThiefBuddyOptionsGroupBox.TabIndex = 0;
         this.ThiefBuddyOptionsGroupBox.TabStop = false;
-        // 
-        // HorizDiv1
-        // 
-        this.HorizDiv1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.HorizDiv1.Location = new System.Drawing.Point(16, 40);
-        this.HorizDiv1.Size = new System.Drawing.Size(392, 16);
         // 
         // TBInstallStatusLabel
         // 

@@ -13,6 +13,13 @@ public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPa
 #endif
 
         TBHelpPictureBox.Image = Images.HelpSmall;
+
+        ThiefBuddyOptionsGroupBox.PaintCustom += ThiefBuddyOptionsGroupBox_PaintCustom;
+    }
+
+    private void ThiefBuddyOptionsGroupBox_PaintCustom(object sender, PaintEventArgs e)
+    {
+        Images.DrawHorizDiv(e.Graphics, 16, 40, ThiefBuddyOptionsGroupBox.Width - 17);
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);

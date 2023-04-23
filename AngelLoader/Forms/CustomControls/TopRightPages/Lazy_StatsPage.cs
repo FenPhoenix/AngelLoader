@@ -12,4 +12,9 @@ public sealed partial class Lazy_StatsPage : UserControl
         InitSlim();
 #endif
     }
+
+    private void Lazy_StatsPage_Paint(object sender, PaintEventArgs e)
+    {
+        Images.DrawHorizDiv(e.Graphics, 6, 24, ClientSize.Width - 8);
+    }
 }

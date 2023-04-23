@@ -1995,6 +1995,22 @@ public static class Images
 
     #endregion
 
+    internal static void DrawHorizDiv(Graphics g, int left, int top, int width)
+    {
+        const int height = 16;
+
+        int y = top + (height / 2);
+        if (Config.DarkMode)
+        {
+            g.DrawLine(DarkColors.LighterBorderPen, left, y, width, y);
+        }
+        else
+        {
+            g.DrawLine(Sep1Pen, left, y, width - 1, y);
+            g.DrawLine(Sep2Pen, left + 1, y + 1, width, y + 1);
+        }
+    }
+
     #endregion
 
     #region Release date accuracy testing

@@ -21,7 +21,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_SubtitlesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.CR_ObjectsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.CustomResourcesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.StatsHorizDiv = new AngelLoader.Forms.CustomControls.DarkHorizontalDivider();
         this.StatsCheckBoxesPanel.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -142,13 +141,6 @@ public sealed partial class Lazy_StatsPage
         this.CustomResourcesLabel.AutoSize = true;
         this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 42);
         // 
-        // StatsHorizDiv
-        // 
-        this.StatsHorizDiv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.StatsHorizDiv.Location = new System.Drawing.Point(6, 24);
-        this.StatsHorizDiv.Size = new System.Drawing.Size(514, 16);
-        // 
         // Lazy_StatsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -158,8 +150,8 @@ public sealed partial class Lazy_StatsPage
         this.Controls.Add(this.StatsScanCustomResourcesButton);
         this.Controls.Add(this.StatsCheckBoxesPanel);
         this.Controls.Add(this.CustomResourcesLabel);
-        this.Controls.Add(this.StatsHorizDiv);
         this.Size = new System.Drawing.Size(527, 284);
+        this.Paint += new System.Windows.Forms.PaintEventHandler(this.Lazy_StatsPage_Paint);
         this.StatsCheckBoxesPanel.ResumeLayout(false);
         this.StatsCheckBoxesPanel.PerformLayout();
         this.ResumeLayout(false);
