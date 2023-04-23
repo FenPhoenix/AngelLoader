@@ -298,7 +298,6 @@ sealed partial class AppearancePage
         this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
         this.UseShortGameTabNamesCheckBox.TabIndex = 1;
         this.UseShortGameTabNamesCheckBox.Text = "Use short names on game tabs";
-        this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
         // 
         // RecentFMsNumericUpDown
         // 
@@ -430,7 +429,6 @@ sealed partial class AppearancePage
         this.RatingUseStarsCheckBox.Size = new System.Drawing.Size(70, 17);
         this.RatingUseStarsCheckBox.TabIndex = 9;
         this.RatingUseStarsCheckBox.Text = "Use stars";
-        this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
         // 
         // RatingExamplePictureBox
         // 
@@ -497,7 +495,6 @@ sealed partial class AppearancePage
         this.MoveArticlesToEndCheckBox.Size = new System.Drawing.Size(456, 32);
         this.MoveArticlesToEndCheckBox.TabIndex = 5;
         this.MoveArticlesToEndCheckBox.Text = "Move articles to the end of names when displaying them";
-        this.MoveArticlesToEndCheckBox.UseVisualStyleBackColor = true;
         // 
         // EnableIgnoreArticlesCheckBox
         // 
@@ -510,7 +507,6 @@ sealed partial class AppearancePage
         this.EnableIgnoreArticlesCheckBox.Size = new System.Drawing.Size(456, 32);
         this.EnableIgnoreArticlesCheckBox.TabIndex = 3;
         this.EnableIgnoreArticlesCheckBox.Text = "Ignore the following leading articles when sorting by title:";
-        this.EnableIgnoreArticlesCheckBox.UseVisualStyleBackColor = true;
         // 
         // ArticlesTextBox
         // 
@@ -545,7 +541,6 @@ sealed partial class AppearancePage
         this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(456, 32);
         this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
         this.ReadmeFixedWidthFontCheckBox.Text = "Use a fixed-width font when displaying plain text";
-        this.ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
         // 
         // ShowOrHideUIElementsGroupBox
         // 
@@ -572,7 +567,6 @@ sealed partial class AppearancePage
         this.HideWebSearchButtonCheckBox.Size = new System.Drawing.Size(456, 32);
         this.HideWebSearchButtonCheckBox.TabIndex = 2;
         this.HideWebSearchButtonCheckBox.Text = "Hide Web Search button";
-        this.HideWebSearchButtonCheckBox.UseVisualStyleBackColor = true;
         // 
         // HideExitButtonCheckBox
         // 
@@ -585,7 +579,6 @@ sealed partial class AppearancePage
         this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
         this.HideExitButtonCheckBox.TabIndex = 3;
         this.HideExitButtonCheckBox.Text = "Hide Exit button";
-        this.HideExitButtonCheckBox.UseVisualStyleBackColor = true;
         // 
         // HideFMListZoomButtonsCheckBox
         // 
@@ -596,7 +589,6 @@ sealed partial class AppearancePage
         this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
         this.HideFMListZoomButtonsCheckBox.TabIndex = 0;
         this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
-        this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
         // 
         // HideUninstallButtonCheckBox
         // 
@@ -607,7 +599,6 @@ sealed partial class AppearancePage
         this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
         this.HideUninstallButtonCheckBox.TabIndex = 1;
         this.HideUninstallButtonCheckBox.Text = "Hide Install/Uninstall button";
-        this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
         // 
         // VisualThemeGroupBox
         // 

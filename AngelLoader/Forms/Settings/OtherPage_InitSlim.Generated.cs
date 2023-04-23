@@ -74,7 +74,6 @@ sealed partial class OtherPage
         this.EnableFuzzySearchCheckBox.Location = new System.Drawing.Point(16, 16);
         this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
         this.EnableFuzzySearchCheckBox.TabIndex = 0;
-        this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
         // 
         // InstallingFMsGroupBox
         // 
@@ -135,7 +134,6 @@ sealed partial class OtherPage
         this.ConfirmPlayOnDCOrEnterCheckBox.Checked = true;
         this.ConfirmPlayOnDCOrEnterCheckBox.Location = new System.Drawing.Point(16, 24);
         this.ConfirmPlayOnDCOrEnterCheckBox.TabIndex = 0;
-        this.ConfirmPlayOnDCOrEnterCheckBox.UseVisualStyleBackColor = true;
         // 
         // WebSearchGroupBox
         // 
@@ -201,7 +199,6 @@ sealed partial class OtherPage
         this.ConfirmUninstallCheckBox.Checked = true;
         this.ConfirmUninstallCheckBox.Location = new System.Drawing.Point(16, 24);
         this.ConfirmUninstallCheckBox.TabIndex = 0;
-        this.ConfirmUninstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // WhatToBackUpLabel
         // 
@@ -214,7 +211,6 @@ sealed partial class OtherPage
         this.BackupAlwaysAskCheckBox.Checked = true;
         this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(24, 120);
         this.BackupAlwaysAskCheckBox.TabIndex = 4;
-        this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
         // 
         // BackupAllChangedDataRadioButton
         // 
@@ -252,7 +248,6 @@ sealed partial class OtherPage
         this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 80);
         this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
         this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
-        this.OldMantleForOldDarkFMsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ConvertOGGsToWAVsOnInstallCheckBox
         // 
@@ -261,7 +256,6 @@ sealed partial class OtherPage
         this.ConvertOGGsToWAVsOnInstallCheckBox.Location = new System.Drawing.Point(16, 44);
         this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
         this.ConvertOGGsToWAVsOnInstallCheckBox.TabIndex = 1;
-        this.ConvertOGGsToWAVsOnInstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // ConvertWAVsTo16BitOnInstallCheckBox
         // 
@@ -271,7 +265,6 @@ sealed partial class OtherPage
         this.ConvertWAVsTo16BitOnInstallCheckBox.Location = new System.Drawing.Point(16, 16);
         this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
         this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
-        this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // DummyAutoScrollPanel
         // 

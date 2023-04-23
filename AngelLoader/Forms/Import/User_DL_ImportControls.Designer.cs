@@ -47,7 +47,6 @@ sealed partial class User_DL_ImportControls
         this.AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
         this.AutodetectCheckBox.TabIndex = 1;
         this.AutodetectCheckBox.Text = "Autodetect";
-        this.AutodetectCheckBox.UseVisualStyleBackColor = true;
         this.AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBox_CheckedChanged);
         // 
         // ChooseDarkLoaderIniLabel

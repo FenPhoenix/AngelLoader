@@ -172,7 +172,6 @@ sealed partial class PathsPage
         this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 224);
         this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
         this.IncludeSubfoldersCheckBox.TabIndex = 1;
-        this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
         // 
         // AddFMArchivePathButton
         // 
@@ -229,7 +228,6 @@ sealed partial class PathsPage
         this.LaunchTheseGamesThroughSteamCheckBox.AutoSize = true;
         this.LaunchTheseGamesThroughSteamCheckBox.Checked = true;
         this.LaunchTheseGamesThroughSteamCheckBox.TabIndex = 0;
-        this.LaunchTheseGamesThroughSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief1UseSteamCheckBox
         // 
@@ -237,7 +235,6 @@ sealed partial class PathsPage
         this.Thief1UseSteamCheckBox.Checked = true;
         this.Thief1UseSteamCheckBox.Location = new System.Drawing.Point(8, 24);
         this.Thief1UseSteamCheckBox.TabIndex = 1;
-        this.Thief1UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // SS2UseSteamCheckBox
         // 
@@ -245,7 +242,6 @@ sealed partial class PathsPage
         this.SS2UseSteamCheckBox.Checked = true;
         this.SS2UseSteamCheckBox.Location = new System.Drawing.Point(8, 72);
         this.SS2UseSteamCheckBox.TabIndex = 4;
-        this.SS2UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief3UseSteamCheckBox
         // 
@@ -253,7 +249,6 @@ sealed partial class PathsPage
         this.Thief3UseSteamCheckBox.Checked = true;
         this.Thief3UseSteamCheckBox.Location = new System.Drawing.Point(8, 56);
         this.Thief3UseSteamCheckBox.TabIndex = 3;
-        this.Thief3UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief2UseSteamCheckBox
         // 
@@ -261,7 +256,6 @@ sealed partial class PathsPage
         this.Thief2UseSteamCheckBox.Checked = true;
         this.Thief2UseSteamCheckBox.Location = new System.Drawing.Point(8, 40);
         this.Thief2UseSteamCheckBox.TabIndex = 2;
-        this.Thief2UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // SteamExeLabel
         // 

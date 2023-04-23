@@ -47,7 +47,6 @@ partial class DarkTaskDialog
         this.VerificationCheckBox.Margin = new System.Windows.Forms.Padding(5, 13, 5, 3);
         this.VerificationCheckBox.Size = new System.Drawing.Size(57, 17);
         this.VerificationCheckBox.TabIndex = 3;
-        this.VerificationCheckBox.UseVisualStyleBackColor = true;
         // 
         // Cancel_Button
         // 

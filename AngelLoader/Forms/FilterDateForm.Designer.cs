@@ -130,7 +130,6 @@ partial class FilterDateForm
         this.FromCheckBox.Name = "FromCheckBox";
         this.FromCheckBox.Size = new System.Drawing.Size(15, 14);
         this.FromCheckBox.TabIndex = 2;
-        this.FromCheckBox.UseVisualStyleBackColor = true;
         this.FromCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
         // 
         // ToCheckBox
@@ -140,7 +139,6 @@ partial class FilterDateForm
         this.ToCheckBox.Name = "ToCheckBox";
         this.ToCheckBox.Size = new System.Drawing.Size(15, 14);
         this.ToCheckBox.TabIndex = 6;
-        this.ToCheckBox.UseVisualStyleBackColor = true;
         this.ToCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
         // 
         // NoMinLabel

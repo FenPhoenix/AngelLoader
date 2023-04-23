@@ -32,7 +32,6 @@ sealed partial class ScanAllFMsForm
         this.TitleCheckBox.Checked = true;
         this.TitleCheckBox.Location = new System.Drawing.Point(16, 40);
         this.TitleCheckBox.TabIndex = 2;
-        this.TitleCheckBox.UseVisualStyleBackColor = true;
         // 
         // AuthorCheckBox
         // 
@@ -40,7 +39,6 @@ sealed partial class ScanAllFMsForm
         this.AuthorCheckBox.Checked = true;
         this.AuthorCheckBox.Location = new System.Drawing.Point(16, 56);
         this.AuthorCheckBox.TabIndex = 3;
-        this.AuthorCheckBox.UseVisualStyleBackColor = true;
         // 
         // GameCheckBox
         // 
@@ -48,7 +46,6 @@ sealed partial class ScanAllFMsForm
         this.GameCheckBox.Checked = true;
         this.GameCheckBox.Location = new System.Drawing.Point(16, 72);
         this.GameCheckBox.TabIndex = 4;
-        this.GameCheckBox.UseVisualStyleBackColor = true;
         // 
         // CustomResourcesCheckBox
         // 
@@ -56,7 +53,6 @@ sealed partial class ScanAllFMsForm
         this.CustomResourcesCheckBox.Checked = true;
         this.CustomResourcesCheckBox.Location = new System.Drawing.Point(16, 88);
         this.CustomResourcesCheckBox.TabIndex = 5;
-        this.CustomResourcesCheckBox.UseVisualStyleBackColor = true;
         // 
         // SizeCheckBox
         // 
@@ -64,7 +60,6 @@ sealed partial class ScanAllFMsForm
         this.SizeCheckBox.Checked = true;
         this.SizeCheckBox.Location = new System.Drawing.Point(16, 104);
         this.SizeCheckBox.TabIndex = 6;
-        this.SizeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ReleaseDateCheckBox
         // 
@@ -72,7 +67,6 @@ sealed partial class ScanAllFMsForm
         this.ReleaseDateCheckBox.Checked = true;
         this.ReleaseDateCheckBox.Location = new System.Drawing.Point(16, 120);
         this.ReleaseDateCheckBox.TabIndex = 7;
-        this.ReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // TagsCheckBox
         // 
@@ -80,7 +74,6 @@ sealed partial class ScanAllFMsForm
         this.TagsCheckBox.Checked = true;
         this.TagsCheckBox.Location = new System.Drawing.Point(16, 136);
         this.TagsCheckBox.TabIndex = 8;
-        this.TagsCheckBox.UseVisualStyleBackColor = true;
         // 
         // SelectAllButton
         // 
@@ -150,7 +143,6 @@ sealed partial class ScanAllFMsForm
         this.MissionCountCheckBox.Checked = true;
         this.MissionCountCheckBox.Location = new System.Drawing.Point(16, 152);
         this.MissionCountCheckBox.TabIndex = 9;
-        this.MissionCountCheckBox.UseVisualStyleBackColor = true;
         // 
         // ScanAllFMsForm
         // 

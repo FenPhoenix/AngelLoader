@@ -39,6 +39,14 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         set => base.UseMnemonic = value;
     }
 
+    [PublicAPI]
+    [DefaultValue(true)]
+    public new bool UseVisualStyleBackColor
+    {
+        get => base.UseVisualStyleBackColor;
+        set => base.UseVisualStyleBackColor = value;
+    }
+
 #endif
 
     private bool _darkModeEnabled;

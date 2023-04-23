@@ -35,7 +35,6 @@ public sealed partial class Lazy_PatchPage
         this.Patch_NDSubs_CheckBox.Location = new System.Drawing.Point(8, 80);
         this.Patch_NDSubs_CheckBox.TabIndex = 42;
         this.Patch_NDSubs_CheckBox.ThreeState = true;
-        this.Patch_NDSubs_CheckBox.UseVisualStyleBackColor = true;
         // 
         // Patch_PostProc_CheckBox
         // 
@@ -45,7 +44,6 @@ public sealed partial class Lazy_PatchPage
         this.Patch_PostProc_CheckBox.Location = new System.Drawing.Point(8, 56);
         this.Patch_PostProc_CheckBox.TabIndex = 41;
         this.Patch_PostProc_CheckBox.ThreeState = true;
-        this.Patch_PostProc_CheckBox.UseVisualStyleBackColor = true;
         // 
         // Patch_NewMantle_CheckBox
         // 
@@ -55,7 +53,6 @@ public sealed partial class Lazy_PatchPage
         this.Patch_NewMantle_CheckBox.Location = new System.Drawing.Point(8, 32);
         this.Patch_NewMantle_CheckBox.TabIndex = 40;
         this.Patch_NewMantle_CheckBox.ThreeState = true;
-        this.Patch_NewMantle_CheckBox.UseVisualStyleBackColor = true;
         // 
         // PatchMainPanel
         // 

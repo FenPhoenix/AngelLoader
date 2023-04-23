@@ -96,7 +96,6 @@ partial class OriginalGameModsForm
         this.NewMantleCheckBox.TabIndex = 1;
         this.NewMantleCheckBox.Text = "New mantle";
         this.NewMantleCheckBox.ThreeState = true;
-        this.NewMantleCheckBox.UseVisualStyleBackColor = true;
         // 
         // OriginalGameModsForm
         // 

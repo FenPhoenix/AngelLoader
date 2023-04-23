@@ -60,7 +60,6 @@ sealed partial class ScanAllFMsForm
         this.TitleCheckBox.Size = new System.Drawing.Size(46, 17);
         this.TitleCheckBox.TabIndex = 2;
         this.TitleCheckBox.Text = "Title";
-        this.TitleCheckBox.UseVisualStyleBackColor = true;
         // 
         // AuthorCheckBox
         // 
@@ -72,7 +71,6 @@ sealed partial class ScanAllFMsForm
         this.AuthorCheckBox.Size = new System.Drawing.Size(57, 17);
         this.AuthorCheckBox.TabIndex = 3;
         this.AuthorCheckBox.Text = "Author";
-        this.AuthorCheckBox.UseVisualStyleBackColor = true;
         // 
         // GameCheckBox
         // 
@@ -84,7 +82,6 @@ sealed partial class ScanAllFMsForm
         this.GameCheckBox.Size = new System.Drawing.Size(54, 17);
         this.GameCheckBox.TabIndex = 4;
         this.GameCheckBox.Text = "Game";
-        this.GameCheckBox.UseVisualStyleBackColor = true;
         // 
         // CustomResourcesCheckBox
         // 
@@ -96,7 +93,6 @@ sealed partial class ScanAllFMsForm
         this.CustomResourcesCheckBox.Size = new System.Drawing.Size(110, 17);
         this.CustomResourcesCheckBox.TabIndex = 5;
         this.CustomResourcesCheckBox.Text = "Custom resources";
-        this.CustomResourcesCheckBox.UseVisualStyleBackColor = true;
         // 
         // SizeCheckBox
         // 
@@ -108,7 +104,6 @@ sealed partial class ScanAllFMsForm
         this.SizeCheckBox.Size = new System.Drawing.Size(46, 17);
         this.SizeCheckBox.TabIndex = 6;
         this.SizeCheckBox.Text = "Size";
-        this.SizeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ReleaseDateCheckBox
         // 
@@ -120,7 +115,6 @@ sealed partial class ScanAllFMsForm
         this.ReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
         this.ReleaseDateCheckBox.TabIndex = 7;
         this.ReleaseDateCheckBox.Text = "Release date";
-        this.ReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // TagsCheckBox
         // 
@@ -132,7 +126,6 @@ sealed partial class ScanAllFMsForm
         this.TagsCheckBox.Size = new System.Drawing.Size(50, 17);
         this.TagsCheckBox.TabIndex = 8;
         this.TagsCheckBox.Text = "Tags";
-        this.TagsCheckBox.UseVisualStyleBackColor = true;
         // 
         // SelectAllButton
         // 
@@ -228,7 +221,6 @@ sealed partial class ScanAllFMsForm
         this.MissionCountCheckBox.Size = new System.Drawing.Size(91, 17);
         this.MissionCountCheckBox.TabIndex = 9;
         this.MissionCountCheckBox.Text = "Mission count";
-        this.MissionCountCheckBox.UseVisualStyleBackColor = true;
         // 
         // ScanAllFMsForm
         // 

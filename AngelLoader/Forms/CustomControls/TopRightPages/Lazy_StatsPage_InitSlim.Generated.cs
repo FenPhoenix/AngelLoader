@@ -61,7 +61,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_MapCheckBox.AutoCheck = false;
         this.CR_MapCheckBox.AutoSize = true;
         this.CR_MapCheckBox.TabIndex = 2;
-        this.CR_MapCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_MoviesCheckBox
         // 
@@ -69,7 +68,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_MoviesCheckBox.AutoSize = true;
         this.CR_MoviesCheckBox.Location = new System.Drawing.Point(0, 64);
         this.CR_MoviesCheckBox.TabIndex = 6;
-        this.CR_MoviesCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_MotionsCheckBox
         // 
@@ -77,7 +75,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_MotionsCheckBox.AutoSize = true;
         this.CR_MotionsCheckBox.Location = new System.Drawing.Point(0, 112);
         this.CR_MotionsCheckBox.TabIndex = 9;
-        this.CR_MotionsCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_SoundsCheckBox
         // 
@@ -85,7 +82,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_SoundsCheckBox.AutoSize = true;
         this.CR_SoundsCheckBox.Location = new System.Drawing.Point(0, 48);
         this.CR_SoundsCheckBox.TabIndex = 5;
-        this.CR_SoundsCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_CreaturesCheckBox
         // 
@@ -93,7 +89,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_CreaturesCheckBox.AutoSize = true;
         this.CR_CreaturesCheckBox.Location = new System.Drawing.Point(0, 96);
         this.CR_CreaturesCheckBox.TabIndex = 8;
-        this.CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_TexturesCheckBox
         // 
@@ -101,7 +96,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_TexturesCheckBox.AutoSize = true;
         this.CR_TexturesCheckBox.Location = new System.Drawing.Point(0, 32);
         this.CR_TexturesCheckBox.TabIndex = 4;
-        this.CR_TexturesCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_AutomapCheckBox
         // 
@@ -109,7 +103,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_AutomapCheckBox.AutoSize = true;
         this.CR_AutomapCheckBox.Location = new System.Drawing.Point(0, 16);
         this.CR_AutomapCheckBox.TabIndex = 3;
-        this.CR_AutomapCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_ScriptsCheckBox
         // 
@@ -117,7 +110,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_ScriptsCheckBox.AutoSize = true;
         this.CR_ScriptsCheckBox.Location = new System.Drawing.Point(0, 128);
         this.CR_ScriptsCheckBox.TabIndex = 10;
-        this.CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_SubtitlesCheckBox
         // 
@@ -125,7 +117,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_SubtitlesCheckBox.AutoSize = true;
         this.CR_SubtitlesCheckBox.Location = new System.Drawing.Point(0, 144);
         this.CR_SubtitlesCheckBox.TabIndex = 11;
-        this.CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
         // 
         // CR_ObjectsCheckBox
         // 
@@ -133,7 +124,6 @@ public sealed partial class Lazy_StatsPage
         this.CR_ObjectsCheckBox.AutoSize = true;
         this.CR_ObjectsCheckBox.Location = new System.Drawing.Point(0, 80);
         this.CR_ObjectsCheckBox.TabIndex = 7;
-        this.CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
         // 
         // CustomResourcesLabel
         // 

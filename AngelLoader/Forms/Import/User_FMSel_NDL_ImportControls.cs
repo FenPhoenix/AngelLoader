@@ -58,7 +58,6 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             checkBox.Checked = true;
             checkBox.Location = new Point(16, 24);
             checkBox.TabIndex = 0;
-            checkBox.UseVisualStyleBackColor = true;
             checkBox.CheckedChanged += AutodetectCheckBoxes_CheckedChanged;
 
             textBox.Location = new Point(16, 48);

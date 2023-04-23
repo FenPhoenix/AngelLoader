@@ -59,7 +59,6 @@ partial class OriginalGameModsForm
         this.NewMantleCheckBox.Location = new System.Drawing.Point(8, 16);
         this.NewMantleCheckBox.TabIndex = 1;
         this.NewMantleCheckBox.ThreeState = true;
-        this.NewMantleCheckBox.UseVisualStyleBackColor = true;
         // 
         // OriginalGameModsForm
         // 

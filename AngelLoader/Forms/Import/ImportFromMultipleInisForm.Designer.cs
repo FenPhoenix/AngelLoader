@@ -104,7 +104,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSizeCheckBox.Size = new System.Drawing.Size(46, 17);
         this.ImportSizeCheckBox.TabIndex = 9;
         this.ImportSizeCheckBox.Text = "Size";
-        this.ImportSizeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportFinishedOnCheckBox
         // 
@@ -116,7 +115,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportFinishedOnCheckBox.Size = new System.Drawing.Size(80, 17);
         this.ImportFinishedOnCheckBox.TabIndex = 8;
         this.ImportFinishedOnCheckBox.Text = "Finished on";
-        this.ImportFinishedOnCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportSelectedReadmeCheckBox
         // 
@@ -128,7 +126,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSelectedReadmeCheckBox.Size = new System.Drawing.Size(106, 17);
         this.ImportSelectedReadmeCheckBox.TabIndex = 7;
         this.ImportSelectedReadmeCheckBox.Text = "Selected readme";
-        this.ImportSelectedReadmeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportTagsCheckBox
         // 
@@ -140,7 +137,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTagsCheckBox.Size = new System.Drawing.Size(50, 17);
         this.ImportTagsCheckBox.TabIndex = 6;
         this.ImportTagsCheckBox.Text = "Tags";
-        this.ImportTagsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportDisabledModsCheckBox
         // 
@@ -152,7 +148,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportDisabledModsCheckBox.Size = new System.Drawing.Size(95, 17);
         this.ImportDisabledModsCheckBox.TabIndex = 5;
         this.ImportDisabledModsCheckBox.Text = "Disabled mods";
-        this.ImportDisabledModsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportRatingCheckBox
         // 
@@ -164,7 +159,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportRatingCheckBox.Size = new System.Drawing.Size(57, 17);
         this.ImportRatingCheckBox.TabIndex = 4;
         this.ImportRatingCheckBox.Text = "Rating";
-        this.ImportRatingCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportCommentCheckBox
         // 
@@ -176,7 +170,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportCommentCheckBox.Size = new System.Drawing.Size(70, 17);
         this.ImportCommentCheckBox.TabIndex = 3;
         this.ImportCommentCheckBox.Text = "Comment";
-        this.ImportCommentCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportLastPlayedCheckBox
         // 
@@ -188,7 +181,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportLastPlayedCheckBox.Size = new System.Drawing.Size(80, 17);
         this.ImportLastPlayedCheckBox.TabIndex = 2;
         this.ImportLastPlayedCheckBox.Text = "Last played";
-        this.ImportLastPlayedCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportReleaseDateCheckBox
         // 
@@ -200,7 +192,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
         this.ImportReleaseDateCheckBox.TabIndex = 1;
         this.ImportReleaseDateCheckBox.Text = "Release date";
-        this.ImportReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportTitleCheckBox
         // 
@@ -212,7 +203,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTitleCheckBox.Size = new System.Drawing.Size(46, 17);
         this.ImportTitleCheckBox.TabIndex = 0;
         this.ImportTitleCheckBox.Text = "Title";
-        this.ImportTitleCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportFromMultipleInisForm
         // 

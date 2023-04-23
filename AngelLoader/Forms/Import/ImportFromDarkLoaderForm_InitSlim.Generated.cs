@@ -58,7 +58,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportFinishedOnCheckBox.Checked = true;
         this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(32, 200);
         this.ImportFinishedOnCheckBox.TabIndex = 8;
-        this.ImportFinishedOnCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportLastPlayedCheckBox
         // 
@@ -66,7 +65,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportLastPlayedCheckBox.Checked = true;
         this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(32, 184);
         this.ImportLastPlayedCheckBox.TabIndex = 7;
-        this.ImportLastPlayedCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportReleaseDateCheckBox
         // 
@@ -74,7 +72,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportReleaseDateCheckBox.Checked = true;
         this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(32, 168);
         this.ImportReleaseDateCheckBox.TabIndex = 6;
-        this.ImportReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportCommentCheckBox
         // 
@@ -82,7 +79,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportCommentCheckBox.Checked = true;
         this.ImportCommentCheckBox.Location = new System.Drawing.Point(32, 152);
         this.ImportCommentCheckBox.TabIndex = 5;
-        this.ImportCommentCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportSizeCheckBox
         // 
@@ -90,7 +86,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportSizeCheckBox.Checked = true;
         this.ImportSizeCheckBox.Location = new System.Drawing.Point(32, 136);
         this.ImportSizeCheckBox.TabIndex = 4;
-        this.ImportSizeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportTitleCheckBox
         // 
@@ -98,7 +93,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportTitleCheckBox.Checked = true;
         this.ImportTitleCheckBox.Location = new System.Drawing.Point(32, 120);
         this.ImportTitleCheckBox.TabIndex = 3;
-        this.ImportTitleCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportFMDataCheckBox
         // 
@@ -106,7 +100,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportFMDataCheckBox.Checked = true;
         this.ImportFMDataCheckBox.Location = new System.Drawing.Point(16, 96);
         this.ImportFMDataCheckBox.TabIndex = 2;
-        this.ImportFMDataCheckBox.UseVisualStyleBackColor = true;
         this.ImportFMDataCheckBox.CheckedChanged += new System.EventHandler(this.ImportFMDataCheckBox_CheckedChanged);
         // 
         // ImportSavesCheckBox
@@ -115,7 +108,6 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportSavesCheckBox.Checked = true;
         this.ImportSavesCheckBox.Location = new System.Drawing.Point(16, 224);
         this.ImportSavesCheckBox.TabIndex = 9;
-        this.ImportSavesCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportControls
         // 

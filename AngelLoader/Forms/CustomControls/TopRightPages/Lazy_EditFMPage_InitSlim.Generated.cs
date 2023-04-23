@@ -120,14 +120,12 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMLastPlayedCheckBox.AutoSize = true;
         this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
         this.EditFMLastPlayedCheckBox.TabIndex = 45;
-        this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
         // 
         // EditFMReleaseDateCheckBox
         // 
         this.EditFMReleaseDateCheckBox.AutoSize = true;
         this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
         this.EditFMReleaseDateCheckBox.TabIndex = 42;
-        this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // EditFMAuthorTextBox
         // 

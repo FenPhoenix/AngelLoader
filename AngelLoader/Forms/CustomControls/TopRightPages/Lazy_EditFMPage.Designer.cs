@@ -166,7 +166,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
         this.EditFMLastPlayedCheckBox.TabIndex = 45;
         this.EditFMLastPlayedCheckBox.Text = "Last played:";
-        this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
         // 
         // EditFMReleaseDateCheckBox
         // 
@@ -176,7 +175,6 @@ public sealed partial class Lazy_EditFMPage
         this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);
         this.EditFMReleaseDateCheckBox.TabIndex = 42;
         this.EditFMReleaseDateCheckBox.Text = "Release date:";
-        this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // EditFMAuthorTextBox
         // 

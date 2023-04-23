@@ -65,7 +65,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSizeCheckBox.Checked = true;
         this.ImportSizeCheckBox.Location = new System.Drawing.Point(16, 552);
         this.ImportSizeCheckBox.TabIndex = 9;
-        this.ImportSizeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportFinishedOnCheckBox
         // 
@@ -73,7 +72,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportFinishedOnCheckBox.Checked = true;
         this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(16, 536);
         this.ImportFinishedOnCheckBox.TabIndex = 8;
-        this.ImportFinishedOnCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportSelectedReadmeCheckBox
         // 
@@ -81,7 +79,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportSelectedReadmeCheckBox.Checked = true;
         this.ImportSelectedReadmeCheckBox.Location = new System.Drawing.Point(16, 520);
         this.ImportSelectedReadmeCheckBox.TabIndex = 7;
-        this.ImportSelectedReadmeCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportTagsCheckBox
         // 
@@ -89,7 +86,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTagsCheckBox.Checked = true;
         this.ImportTagsCheckBox.Location = new System.Drawing.Point(16, 504);
         this.ImportTagsCheckBox.TabIndex = 6;
-        this.ImportTagsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportDisabledModsCheckBox
         // 
@@ -97,7 +93,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportDisabledModsCheckBox.Checked = true;
         this.ImportDisabledModsCheckBox.Location = new System.Drawing.Point(16, 488);
         this.ImportDisabledModsCheckBox.TabIndex = 5;
-        this.ImportDisabledModsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportRatingCheckBox
         // 
@@ -105,7 +100,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportRatingCheckBox.Checked = true;
         this.ImportRatingCheckBox.Location = new System.Drawing.Point(16, 472);
         this.ImportRatingCheckBox.TabIndex = 4;
-        this.ImportRatingCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportCommentCheckBox
         // 
@@ -113,7 +107,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportCommentCheckBox.Checked = true;
         this.ImportCommentCheckBox.Location = new System.Drawing.Point(16, 456);
         this.ImportCommentCheckBox.TabIndex = 3;
-        this.ImportCommentCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportLastPlayedCheckBox
         // 
@@ -121,7 +114,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportLastPlayedCheckBox.Checked = true;
         this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(16, 440);
         this.ImportLastPlayedCheckBox.TabIndex = 2;
-        this.ImportLastPlayedCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportReleaseDateCheckBox
         // 
@@ -129,7 +121,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportReleaseDateCheckBox.Checked = true;
         this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(16, 424);
         this.ImportReleaseDateCheckBox.TabIndex = 1;
-        this.ImportReleaseDateCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportTitleCheckBox
         // 
@@ -137,7 +128,6 @@ sealed partial class ImportFromMultipleInisForm
         this.ImportTitleCheckBox.Checked = true;
         this.ImportTitleCheckBox.Location = new System.Drawing.Point(16, 408);
         this.ImportTitleCheckBox.TabIndex = 0;
-        this.ImportTitleCheckBox.UseVisualStyleBackColor = true;
         // 
         // ImportFromMultipleInisForm
         // 

@@ -57,7 +57,6 @@ sealed partial class ModsControl
         // 
         this.ShowImportantCheckBox.AutoSize = true;
         this.ShowImportantCheckBox.TabIndex = 0;
-        this.ShowImportantCheckBox.UseVisualStyleBackColor = true;
         this.ShowImportantCheckBox.CheckedChanged += new System.EventHandler(this.ShowImportantCheckBox_CheckedChanged);
         // 
         // DisabledModsTextBox

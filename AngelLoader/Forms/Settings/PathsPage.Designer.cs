@@ -226,7 +226,6 @@ sealed partial class PathsPage
         this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
         this.IncludeSubfoldersCheckBox.TabIndex = 1;
         this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
-        this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
         // 
         // AddFMArchivePathButton
         // 
@@ -294,7 +293,6 @@ sealed partial class PathsPage
         this.LaunchTheseGamesThroughSteamCheckBox.Size = new System.Drawing.Size(238, 17);
         this.LaunchTheseGamesThroughSteamCheckBox.TabIndex = 0;
         this.LaunchTheseGamesThroughSteamCheckBox.Text = "If Steam exists, use it to launch these games:";
-        this.LaunchTheseGamesThroughSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief1UseSteamCheckBox
         // 
@@ -306,7 +304,6 @@ sealed partial class PathsPage
         this.Thief1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
         this.Thief1UseSteamCheckBox.TabIndex = 1;
         this.Thief1UseSteamCheckBox.Text = "Thief 1";
-        this.Thief1UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // SS2UseSteamCheckBox
         // 
@@ -318,7 +315,6 @@ sealed partial class PathsPage
         this.SS2UseSteamCheckBox.Size = new System.Drawing.Size(103, 17);
         this.SS2UseSteamCheckBox.TabIndex = 4;
         this.SS2UseSteamCheckBox.Text = "System Shock 2";
-        this.SS2UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief3UseSteamCheckBox
         // 
@@ -330,7 +326,6 @@ sealed partial class PathsPage
         this.Thief3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
         this.Thief3UseSteamCheckBox.TabIndex = 3;
         this.Thief3UseSteamCheckBox.Text = "Thief 3";
-        this.Thief3UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // Thief2UseSteamCheckBox
         // 
@@ -342,7 +337,6 @@ sealed partial class PathsPage
         this.Thief2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
         this.Thief2UseSteamCheckBox.TabIndex = 2;
         this.Thief2UseSteamCheckBox.Text = "Thief 2";
-        this.Thief2UseSteamCheckBox.UseVisualStyleBackColor = true;
         // 
         // SteamExeLabel
         // 

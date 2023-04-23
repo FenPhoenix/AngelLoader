@@ -104,7 +104,6 @@ sealed partial class OtherPage
         this.EnableFuzzySearchCheckBox.Size = new System.Drawing.Size(400, 32);
         this.EnableFuzzySearchCheckBox.TabIndex = 0;
         this.EnableFuzzySearchCheckBox.Text = "Enable fuzzy search for title and author";
-        this.EnableFuzzySearchCheckBox.UseVisualStyleBackColor = true;
         // 
         // InstallingFMsGroupBox
         // 
@@ -186,7 +185,6 @@ sealed partial class OtherPage
         this.ConfirmPlayOnDCOrEnterCheckBox.Size = new System.Drawing.Size(119, 17);
         this.ConfirmPlayOnDCOrEnterCheckBox.TabIndex = 0;
         this.ConfirmPlayOnDCOrEnterCheckBox.Text = "Ask for confirmation";
-        this.ConfirmPlayOnDCOrEnterCheckBox.UseVisualStyleBackColor = true;
         // 
         // WebSearchGroupBox
         // 
@@ -269,7 +267,6 @@ sealed partial class OtherPage
         this.ConfirmUninstallCheckBox.Size = new System.Drawing.Size(149, 17);
         this.ConfirmUninstallCheckBox.TabIndex = 0;
         this.ConfirmUninstallCheckBox.Text = "Confirm before uninstalling";
-        this.ConfirmUninstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // WhatToBackUpLabel
         // 
@@ -290,7 +287,6 @@ sealed partial class OtherPage
         this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
         this.BackupAlwaysAskCheckBox.TabIndex = 4;
         this.BackupAlwaysAskCheckBox.Text = "Always ask";
-        this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
         // 
         // BackupAllChangedDataRadioButton
         // 
@@ -338,7 +334,6 @@ sealed partial class OtherPage
         this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
         this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
         this.OldMantleForOldDarkFMsCheckBox.Text = "Use old mantling for OldDark FMs";
-        this.OldMantleForOldDarkFMsCheckBox.UseVisualStyleBackColor = true;
         // 
         // ConvertOGGsToWAVsOnInstallCheckBox
         // 
@@ -349,7 +344,6 @@ sealed partial class OtherPage
         this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
         this.ConvertOGGsToWAVsOnInstallCheckBox.TabIndex = 1;
         this.ConvertOGGsToWAVsOnInstallCheckBox.Text = "Convert .oggs to .wavs on install";
-        this.ConvertOGGsToWAVsOnInstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // ConvertWAVsTo16BitOnInstallCheckBox
         // 
@@ -362,7 +356,6 @@ sealed partial class OtherPage
         this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
         this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
         this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
-        this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
         // 
         // DummyAutoScrollPanel
         // 

@@ -85,7 +85,6 @@ partial class FilterDateForm
         this.FromCheckBox.AutoSize = true;
         this.FromCheckBox.Location = new System.Drawing.Point(12, 27);
         this.FromCheckBox.TabIndex = 2;
-        this.FromCheckBox.UseVisualStyleBackColor = true;
         this.FromCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
         // 
         // ToCheckBox
@@ -93,7 +92,6 @@ partial class FilterDateForm
         this.ToCheckBox.AutoSize = true;
         this.ToCheckBox.Location = new System.Drawing.Point(12, 67);
         this.ToCheckBox.TabIndex = 6;
-        this.ToCheckBox.UseVisualStyleBackColor = true;
         this.ToCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
         // 
         // NoMinLabel
