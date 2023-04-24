@@ -113,14 +113,6 @@ public static class FenGenAttributes
     public sealed class FenGenDoNotTrimValueAttribute : Attribute { }
 
     /// <summary>
-    /// Hack: To be placed on DateTime fields that we don't want to take the perf hit of doing anything<br/>
-    /// with until later.
-    /// </summary>
-    [Conditional("compile_FenGen_attributes")]
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
-
-    /// <summary>
     /// Hack: Special case to be placed on the readme encoding field only
     /// </summary>
     [Conditional("compile_FenGen_attributes")]

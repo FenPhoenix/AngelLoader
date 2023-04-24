@@ -3745,8 +3745,7 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.DateAdded:
-                // IMPORTANT (Convert to local time): We don't do it earlier for startup perf reasons.
-                e.Value = fm.DateAdded != null ? FormatDate(((DateTime)fm.DateAdded).ToLocalTime()) : "";
+                e.Value = fm.DateAdded != null ? FormatDate(fm.DateAdded.Value) : "";
                 break;
 
             case Column.DisabledMods:

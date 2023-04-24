@@ -928,8 +928,8 @@ internal static class Core
                     // be displayed in order of date added.
                     !fm.Pinned &&
                     fm.DateAdded != null &&
-                    ((DateTime)fm.DateAdded).ToLocalTime().CompareTo(dtNow) <= 0 &&
-                    (dtNow - ((DateTime)fm.DateAdded).ToLocalTime()).TotalDays <= Config.DaysRecent)
+                    ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
+                    (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
                 {
                     tempFMs.Add(fm);
                 }

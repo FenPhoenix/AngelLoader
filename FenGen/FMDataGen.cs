@@ -459,9 +459,7 @@ internal static class FMData
             }
             else if (field.Type == "DateTime?")
             {
-                w.WL("// PERF: Don't convert to local here; do it at display-time");
-                w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + val + ", convertToLocal: " +
-                     (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
+                w.WL(objDotField + " = ConvertHexUnixDateToDateTime(" + val + ");");
             }
             else if (field.Type == "CustomResources")
             {
@@ -605,11 +603,6 @@ internal static class FMData
             {
                 if (!suffix.IsEmpty()) suffix = "." + suffix;
                 w.WL("sb.Append(\"" + objField + "\").Append('=');");
-                if (fieldIniName == "DateAdded")
-                {
-                    // Disgusting >:(
-                    w.WL("// Again, important to convert to local time here because we don't do it on startup.");
-                }
                 w.WL("sb.AppendLine(" + value + suffix + ");");
             }
 
@@ -758,7 +751,7 @@ internal static class FMData
                 w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
                 w.WL("if (" + obj + ".ResourcesScanned)");
                 w.WL("{");
-                w.WL("CommaCombineHasXFields(" + obj + ", sb);");
+                w.WL("CommaCombineHasXFields(" + objDotField + ", sb);");
                 w.WL("}");
                 w.WL("else");
                 w.WL("{");

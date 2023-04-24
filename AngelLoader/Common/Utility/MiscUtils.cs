@@ -68,15 +68,19 @@ public static partial class Utils
     /// </summary>
     /// <param name="fm"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string GetFMId(FanMission fm) => !fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
     {
         if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool FMNeedsScan(FanMission fm) => !fm.MarkedUnavailable && (fm.Game == Game.Null ||
         (fm.Game != Game.Unsupported && !fm.MarkedScanned));
 
@@ -106,12 +110,16 @@ public static partial class Utils
 
     #region Enum HasFlagFast
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) == flag;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) == flag;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) == flag;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
 
     /// <summary>
@@ -137,9 +145,8 @@ public static partial class Utils
     /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
     /// </summary>
     /// <param name="unixDate"></param>
-    /// <param name="convertToLocal"></param>
     /// <returns>A DateTime object, or null if the string couldn't be converted to a valid date for any reason.</returns>
-    internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate, bool convertToLocal = true)
+    internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate)
     {
         bool success = long.TryParse(
             unixDate,
@@ -151,8 +158,7 @@ public static partial class Utils
         {
             try
             {
-                DateTime dt = DateTimeOffset.FromUnixTimeSeconds(result).DateTime;
-                return convertToLocal ? dt.ToLocalTime() : dt;
+                return DateTimeOffset.FromUnixTimeSeconds(result).DateTime.ToLocalTime();
             }
             catch (ArgumentOutOfRangeException)
             {

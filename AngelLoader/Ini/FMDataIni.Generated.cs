@@ -171,8 +171,7 @@ internal static partial class Ini
     {
         val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        // PERF: Don't convert to local here; do it at display-time
-        fm.DateAdded = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
+        fm.DateAdded = ConvertHexUnixDateToDateTime(val);
     }
 
     private static void FMData_FinishedOn_Set(FanMission fm, string val, int eqIndex)
@@ -508,8 +507,7 @@ internal static partial class Ini
             if (fm.DateAdded != null)
             {
                 sb.Append("DateAdded").Append('=');
-                // Again, important to convert to local time here because we don't do it on startup.
-                sb.AppendLine(new DateTimeOffset(((DateTime)fm.DateAdded).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
+                sb.AppendLine(new DateTimeOffset((DateTime)fm.DateAdded).ToUnixTimeSeconds().ToString("X"));
             }
             if (fm.FinishedOn != 0)
             {
@@ -552,7 +550,7 @@ internal static partial class Ini
             sb.Append("HasResources").Append('=');
             if (fm.ResourcesScanned)
             {
-                CommaCombineHasXFields(fm, sb);
+                CommaCombineHasXFields(fm.Resources, sb);
             }
             else
             {
