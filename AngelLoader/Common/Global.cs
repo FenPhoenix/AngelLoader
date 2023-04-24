@@ -1,14 +1,11 @@
-﻿#define THREAD_TEST
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader;
 
-//[Conditional("THREAD_TEST")]
+[Conditional("Release_Testing")]
 [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property)]
 public sealed class ThreadUnsafeAttribute : Attribute { }
 
@@ -23,10 +20,17 @@ internal static class Global
 
     #region FM lists
 
+#if !Release_Testing
+    // Preset tags will be deep copied to this list later
+    internal static readonly FMCategoriesCollection GlobalTags = new(PresetTags.Count);
+
     // Init to 0 capacity so they don't allocate a 4-byte backing array or whatever, cause we're going to
     // reallocate them right away anyway.
+    internal static readonly List<FanMission> FMDataIniList = new(0);
+    internal static readonly List<FanMission> FMsViewList = new(0);
+#else
+    internal static bool ThreadLocked;
 
-#if THREAD_TEST
     private static readonly FMCategoriesCollection _globalTags = new(PresetTags.Count);
     private static readonly List<FanMission> _fmDataIniList = new(0);
     private static readonly List<FanMission> _fmsViewList = new(0);
@@ -35,7 +39,7 @@ internal static class Global
     {
         get
         {
-            CheckThread(nameof(GlobalTags));
+            if (ThreadLocked) CheckThread(nameof(GlobalTags));
             return _globalTags;
         }
     }
@@ -44,7 +48,7 @@ internal static class Global
     {
         get
         {
-            CheckThread(nameof(FMDataIniList));
+            if (ThreadLocked) CheckThread(nameof(FMDataIniList));
             return _fmDataIniList;
         }
     }
@@ -53,7 +57,7 @@ internal static class Global
     {
         get
         {
-            CheckThread(nameof(FMsViewList));
+            if (ThreadLocked) CheckThread(nameof(FMsViewList));
             return _fmsViewList;
         }
     }
@@ -66,11 +70,11 @@ internal static class Global
         {
             foreach (StackFrame frame in frames)
             {
-                MethodBase? method = frame.GetMethod();
+                System.Reflection.MethodBase? method = frame.GetMethod();
                 if (method == null) continue;
-                IEnumerable<CustomAttributeData>? attributes = method.CustomAttributes;
+                IEnumerable<System.Reflection.CustomAttributeData>? attributes = method.CustomAttributes;
                 if (attributes == null) continue;
-                foreach (CustomAttributeData attr in attributes)
+                foreach (System.Reflection.CustomAttributeData attr in attributes)
                 {
                     Utils.AssertR(attr.AttributeType != typeof(ThreadUnsafeAttribute), "Startup cross-thread access of " + fieldName);
                     return;
@@ -78,12 +82,6 @@ internal static class Global
             }
         }
     }
-#else
-    internal static readonly List<FanMission> FMDataIniList = new(0);
-    internal static readonly List<FanMission> FMsViewList = new(0);
-
-    // Preset tags will be deep copied to this list later
-    internal static readonly FMCategoriesCollection GlobalTags = new(PresetTags.Count);
 #endif
 
     #endregion

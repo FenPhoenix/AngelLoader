@@ -255,6 +255,13 @@ internal static class Core
             {
                 splashScreen.LockPainting(true);
 
+#if Release_Testing
+#pragma warning disable IDE0002
+                // ReSharper disable once ArrangeStaticMemberQualifier
+                Global.ThreadLocked = true;
+#pragma warning restore IDE0002
+#endif
+
                 Error[]? gameDataErrors = null;
                 Exception? ex = null;
                 // IMPORTANT: Begin no-splash-screen-call zone
@@ -277,6 +284,14 @@ internal static class Core
                 View.InitThreadable();
 
                 findFMsTask.Wait();
+
+#if Release_Testing
+#pragma warning disable IDE0002
+                // ReSharper disable once ArrangeStaticMemberQualifier
+                Global.ThreadLocked = false;
+#pragma warning restore IDE0002
+#endif
+
                 // IMPORTANT: End no-splash-screen-call zone
 
                 if (gameDataErrors != null)
