@@ -25,22 +25,25 @@ internal static class Paths
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern int GetModuleFileName(HandleRef hModule, StringBuilder buffer, int length);
-
     private static string GetStartupPath()
     {
-        var hModule = new HandleRef(null, IntPtr.Zero);
-        var buffer = new StringBuilder(260);
-        int num = 1;
-        int moduleFileName;
-        while ((moduleFileName = GetModuleFileName(hModule, buffer, buffer.Capacity)) == buffer.Capacity &&
-               Marshal.GetLastWin32Error() == 122 &&
-               buffer.Capacity < (int)short.MaxValue)
+        var nullHandleRef = new HandleRef(null, IntPtr.Zero);
+        const int MAX_PATH = 260;
+        const int MAX_UNICODESTRING_LEN = short.MaxValue;
+        const int ERROR_INSUFFICIENT_BUFFER = 122;
+
+        var buffer = new StringBuilder(MAX_PATH);
+        int noOfTimes = 1;
+        int length;
+        while (((length = GetModuleFileName(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&
+               Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER &&
+               buffer.Capacity < MAX_UNICODESTRING_LEN)
         {
-            num += 2;
-            int capacity = num * 260 < (int)short.MaxValue ? num * 260 : (int)short.MaxValue;
+            noOfTimes += 2;
+            int capacity = noOfTimes * MAX_PATH < MAX_UNICODESTRING_LEN ? noOfTimes * MAX_PATH : MAX_UNICODESTRING_LEN;
             buffer.EnsureCapacity(capacity);
         }
-        buffer.Length = moduleFileName;
+        buffer.Length = length;
         return Path.GetDirectoryName(buffer.ToString())!;
     }
 
