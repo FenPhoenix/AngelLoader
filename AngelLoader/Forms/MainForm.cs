@@ -547,8 +547,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Init / load / show
 
-    // InitializeComponent() (and stuff that doesn't do anything) only - for everything else use the init
-    // method(s) below
+    // @THREADING: On startup only, this is run in parallel with FindFMs.Find()
+    // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
     public MainForm()
     {
         // IMPORTANT! Init manual controls BEFORE component init!
@@ -850,15 +850,9 @@ public sealed partial class MainForm : DarkFormBase,
             CellValueNeededDisabled = false;
         }
 #endif
-    }
 
-    // In early development, I had some problems with putting init stuff in the constructor, where all manner
-    // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
-    // wrong or what, but I have this init method now that comfortably runs after the ctor. Shrug.
-    // @THREADING: On startup only, this is run in parallel with FindFMs.Find()
-    // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
-    public void InitThreadable()
-    {
+        #region Former InitThreadable()
+
 #if RELEASE_BETA
         const string betaVer = "4";
         string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
@@ -1030,6 +1024,8 @@ public sealed partial class MainForm : DarkFormBase,
 #if !ReleaseBeta && !ReleasePublic
         UpdateGameScreenShotModes();
 #endif
+
+        #endregion
     }
 
     // This one can't be multithreaded because it depends on the FMs list

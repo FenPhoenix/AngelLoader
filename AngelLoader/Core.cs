@@ -286,10 +286,9 @@ internal static class Core
                     }
                 });
 
-                // Construct and init the view both right here, because they're both heavy operations and
-                // we want them both to run in parallel with Find() to the greatest extent possible.
+                // Construct and init the view right here, because it's a heavy operation and we want it to run
+                // in parallel with Find() to the greatest extent possible.
                 View = ViewEnv.GetView();
-                View.InitThreadable();
 
                 findFMsTask.Wait();
 

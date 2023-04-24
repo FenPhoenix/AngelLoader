@@ -185,10 +185,6 @@ public interface IView : ISettingsChangeableView
     #region Init and show
 
     /// <summary>
-    /// This can be called while the FindFMs() thread is running; it doesn't interfere.
-    /// </summary>
-    void InitThreadable();
-    /// <summary>
     /// Call this only after the FindFMs() thread has finished.
     /// </summary>
     /// <returns></returns>
