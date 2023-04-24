@@ -6,7 +6,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<Platforms>x86;x64</Platforms>
 		<LangVersion>latest</LangVersion>
-		<Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts</Configurations>
+		<Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts;RT_HeavyTests</Configurations>
 		<StartupObject>AngelLoader.Program</StartupObject>
 		<ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -52,10 +52,22 @@
 		<OutputPath>bin\x86\Release\</OutputPath>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_HeavyTests|x86'">
+	  <Optimize>true</Optimize>
+	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests</DefineConstants>
+	  <OutputPath>bin\x86\Release\</OutputPath>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x64'">
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE;Release,Release_Testing;X64</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_HeavyTests|x64'">
+	  <Optimize>true</Optimize>
+	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests;X64</DefineConstants>
+	  <OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x86'">

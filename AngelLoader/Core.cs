@@ -42,13 +42,13 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
-#if Release_Testing
+#if RT_HeavyTests
     internal static System.Threading.Thread CoreThread = null!;
 #endif
 
     internal static async void Init(IViewEnvironment viewEnv)
     {
-#if Release_Testing
+#if RT_HeavyTests
         CoreThread = System.Threading.Thread.CurrentThread;
 #endif
 
@@ -263,7 +263,7 @@ internal static class Core
             {
                 splashScreen.LockPainting(true);
 
-#if Release_Testing
+#if RT_HeavyTests
 #pragma warning disable IDE0002
                 // ReSharper disable once ArrangeStaticMemberQualifier
                 Global.ThreadLocked = true;
@@ -293,7 +293,7 @@ internal static class Core
 
                 findFMsTask.Wait();
 
-#if Release_Testing
+#if RT_HeavyTests
 #pragma warning disable IDE0002
                 // ReSharper disable once ArrangeStaticMemberQualifier
                 Global.ThreadLocked = false;

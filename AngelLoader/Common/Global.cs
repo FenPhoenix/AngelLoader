@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader;
-
-[Conditional("Release_Testing")]
-[AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property)]
-public sealed class ThreadUnsafeAttribute : Attribute { }
 
 internal static class Global
 {
@@ -20,7 +14,7 @@ internal static class Global
 
     #region FM lists
 
-#if !Release_Testing
+#if !RT_HeavyTests
     // Preset tags will be deep copied to this list later
     internal static readonly FMCategoriesCollection GlobalTags = new(PresetTags.Count);
 
