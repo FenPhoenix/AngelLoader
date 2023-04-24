@@ -338,20 +338,18 @@ internal static class Native
 
     // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
+    internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)((high << 16) | (low & 0xffff));
 #if false
-    internal static int MAKELONG(int low, int high) => high << 16 | (low & (int)ushort.MaxValue);
+    internal static int MAKELONG(int low, int high) => (high << 16) | (low & 0xffff);
+    internal static int HIWORD(int n) => (n >> 16) & 0xffff;
+    internal static int HIWORD(IntPtr n) => HIWORD(unchecked((int)(long)n));
 #endif
-    internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)(high << 16 | (low & (int)ushort.MaxValue));
-    internal static int HIWORD(int n) => n >> 16 & (int)ushort.MaxValue;
-#if false
-    internal static int HIWORD(IntPtr n) => HIWORD((int)(long)n);
-#endif
-    internal static int LOWORD(int n) => n & (int)ushort.MaxValue;
-    internal static int LOWORD(IntPtr n) => LOWORD((int)(long)n);
-    internal static int SignedHIWORD(IntPtr n) => SignedHIWORD((int)(long)n);
-    internal static int SignedLOWORD(IntPtr n) => SignedLOWORD((int)(long)n);
-    internal static int SignedHIWORD(int n) => (int)(short)HIWORD(n);
-    internal static int SignedLOWORD(int n) => (int)(short)LOWORD(n);
+    internal static int LOWORD(int n) => n & 0xffff;
+    internal static int LOWORD(IntPtr n) => LOWORD(unchecked((int)(long)n));
+    internal static int SignedHIWORD(IntPtr n) => SignedHIWORD(unchecked((int)(long)n));
+    internal static int SignedLOWORD(IntPtr n) => SignedLOWORD(unchecked((int)(long)n));
+    internal static int SignedHIWORD(int n) => (int)(short)((n >> 16) & 0xffff);
+    internal static int SignedLOWORD(int n) => (int)(short)(n & 0xFFFF);
 #pragma warning restore IDE0004
     // ReSharper restore RedundantCast
 
