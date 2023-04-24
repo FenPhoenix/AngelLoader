@@ -20,7 +20,7 @@ public static class Misc
     internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
     internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
     internal static readonly int SettingsTabsCount = Enum.GetValues(typeof(SettingsTab)).Length;
-    internal static readonly int DifficultyCount = Enum.GetValues(typeof(DifficultyIndex)).Length;
+    internal static readonly int DifficultyCount = Enum.GetValues(typeof(Difficulty)).Length - 1;
 
     #endregion
 

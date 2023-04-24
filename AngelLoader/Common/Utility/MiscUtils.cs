@@ -122,23 +122,6 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
 
-    /// <summary>
-    /// Converts a Difficulty to a DifficultyIndex. *Narrowing conversion, so make sure the difficulty has been checked for convertibility first!
-    /// </summary>
-    /// <param name="diff"></param>
-    public static DifficultyIndex DiffToDiffIndex(Difficulty diff)
-    {
-        AssertR(diff != Difficulty.None, nameof(diff) + " was out of range: " + diff);
-
-        return diff switch
-        {
-            Difficulty.Normal => DifficultyIndex.Normal,
-            Difficulty.Hard => DifficultyIndex.Hard,
-            Difficulty.Expert => DifficultyIndex.Expert,
-            _ => DifficultyIndex.Extreme
-        };
-    }
-
     #endregion
 
     /// <summary>

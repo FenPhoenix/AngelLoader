@@ -951,8 +951,8 @@ public static class Images
 
     public static Bitmap FilterByTags => Config.DarkMode ? Resources.Tags_Dark : Resources.Tags;
 
-    public static Bitmap FilterByFinished => CreateFinishedOnBitmap(Difficulty.None, filterFinished: true);
-    public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
+    public static Bitmap FilterByFinished => CreateFinishedOnBitmap(0, FinishedOnType.Finished);
+    public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(0, FinishedOnType.Unfinished);
 
     public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
 
@@ -1077,7 +1077,7 @@ public static class Images
             : _redQCircle ??= Resources.RedQCircle;
 
     private static Bitmap? _finishedOnUnknown;
-    public static Bitmap FinishedOnUnknown => _finishedOnUnknown ??= CreateFinishedOnBitmap(Difficulty.None);
+    public static Bitmap FinishedOnUnknown => _finishedOnUnknown ??= CreateFinishedOnBitmap(0, FinishedOnType.Unknown);
 
     #endregion
 
@@ -1185,10 +1185,9 @@ public static class Images
                 uint at = 1;
                 for (int dI = 0; dI < DifficultyCount; dI++, at <<= 1)
                 {
-                    Difficulty loopDiff = (Difficulty)at;
-                    if (difficulty.HasFlagFast(loopDiff))
+                    if (difficulty.HasFlagFast((Difficulty)at))
                     {
-                        list.Add(_finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(loopDiff));
+                        list.Add(_finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(dI));
                     }
                 }
 
@@ -1258,11 +1257,19 @@ public static class Images
         }
     }
 
-    private static Bitmap CreateFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
+    private enum FinishedOnType
+    {
+        None,
+        Finished,
+        Unfinished,
+        Unknown
+    }
+
+    private static Bitmap CreateFinishedOnBitmap(int difficulty, FinishedOnType type = FinishedOnType.None)
     {
         int width, height;
         SolidBrush outlineBrush, fillBrush;
-        if (filterFinished || filterUnfinished)
+        if (type is FinishedOnType.Finished or FinishedOnType.Unfinished)
         {
             (outlineBrush, fillBrush, _) = _finishedOnFilterBrush.GetData();
             width = 24;
@@ -1272,15 +1279,14 @@ public static class Images
         {
             height = 32;
 
-            if (difficulty == Difficulty.None)
+            if (type == FinishedOnType.Unknown)
             {
                 (outlineBrush, fillBrush, _) = _unknownCheckBrush.GetData();
                 width = 36;
             }
             else
             {
-                DifficultyIndex diffIndex = DiffToDiffIndex(difficulty);
-                (outlineBrush, fillBrush, width) = _finishedOnCheckBrushes[(int)diffIndex].GetData();
+                (outlineBrush, fillBrush, width) = _finishedOnCheckBrushes[difficulty].GetData();
             }
         }
 
@@ -1298,10 +1304,10 @@ public static class Images
             new RectangleF(0, 0, width, height));
 
         g.FillPath(
-            Config.DarkMode && filterUnfinished ? _finishedOnFilterOutlineOnlyBrushDark : outlineBrush,
+            Config.DarkMode && type == FinishedOnType.Unfinished ? _finishedOnFilterOutlineOnlyBrushDark : outlineBrush,
             gp);
 
-        if (!filterUnfinished)
+        if (type != FinishedOnType.Unfinished)
         {
             const int pointsCount = 14;
             for (int i = 0, j = 7; j < pointsCount; i++, j++)

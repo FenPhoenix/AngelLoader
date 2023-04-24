@@ -667,7 +667,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
                 else
                 {
                     // I don't have to disable events because I'm only wired up to Click, not Checked
-                    FinishedOnExplicitMenuItems[(int)Utils.DiffToDiffIndex(loopDiff)].Checked = value;
+                    FinishedOnExplicitMenuItems[i].Checked = value;
                 }
             }
 

@@ -74,22 +74,14 @@ internal enum CustomResources
 }
 
 [Flags]
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public enum Difficulty : uint
 {
-    [UsedImplicitly]
     None = 0,
     Normal = 1,
     Hard = 2,
     Expert = 4,
     Extreme = 8
-}
-
-public enum DifficultyIndex : uint
-{
-    Normal,
-    Hard,
-    Expert,
-    Extreme
 }
 
 #if DateAccTest
