@@ -42,8 +42,16 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
+#if Release_Testing
+    internal static System.Threading.Thread CoreThread = null!;
+#endif
+
     internal static async void Init(IViewEnvironment viewEnv)
     {
+#if Release_Testing
+        CoreThread = System.Threading.Thread.CurrentThread;
+#endif
+
         ViewEnv = viewEnv;
         Dialogs = ViewEnv.GetDialogs();
 

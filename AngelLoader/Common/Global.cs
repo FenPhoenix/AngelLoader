@@ -64,23 +64,7 @@ internal static class Global
 
     private static void CheckThread(string fieldName)
     {
-        var f = new StackTrace();
-        StackFrame[]? frames = f.GetFrames();
-        if (frames != null)
-        {
-            foreach (StackFrame frame in frames)
-            {
-                System.Reflection.MethodBase? method = frame.GetMethod();
-                if (method == null) continue;
-                IEnumerable<System.Reflection.CustomAttributeData>? attributes = method.CustomAttributes;
-                if (attributes == null) continue;
-                foreach (System.Reflection.CustomAttributeData attr in attributes)
-                {
-                    Utils.AssertR(attr.AttributeType != typeof(ThreadUnsafeAttribute), "Startup cross-thread access of " + fieldName);
-                    return;
-                }
-            }
-        }
+        Utils.AssertR(Core.CoreThread != System.Threading.Thread.CurrentThread, "Startup cross-thread access of " + fieldName);
     }
 #endif
 
