@@ -549,6 +549,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // InitializeComponent() (and stuff that doesn't do anything) only - for everything else use the init
     // method(s) below
+    [ThreadUnsafe]
     public MainForm()
     {
         // IMPORTANT! Init manual controls BEFORE component init!
@@ -857,6 +858,7 @@ public sealed partial class MainForm : DarkFormBase,
     // wrong or what, but I have this init method now that comfortably runs after the ctor. Shrug.
     // @THREADING: On startup only, this is run in parallel with FindFMs.Find()
     // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
+    [ThreadUnsafe]
     public void InitThreadable()
     {
 #if RELEASE_BETA
