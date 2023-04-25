@@ -63,7 +63,6 @@ public sealed class FileEncoding
     private const int DEFAULT_BUFFER_SIZE = ByteSize.KB * 128;
 
     private bool _started;
-    private bool _done;
     private readonly int[] _encodingFrequency = new int[CharsetDetector.CharsetCount];
     // Stupid micro-optimization
     private bool _encodingFrequencyTouched;
@@ -100,7 +99,8 @@ public sealed class FileEncoding
         try
         {
             Detect(inputStream);
-            return Complete();
+            _encodingCharset = GetCurrentEncoding();
+            return _encodingCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(_encodingCharset));
         }
         catch
         {
@@ -162,7 +162,6 @@ public sealed class FileEncoding
     private void Reset()
     {
         _started = false;
-        _done = false;
         _encodingFrequency.Clear();
         _encodingFrequencyTouched = false;
         _ude.Reset();
@@ -192,9 +191,7 @@ public sealed class FileEncoding
             if (sz <= 0) break;
 
             Detect(_buffer, sz);
-            if (_done) break;
         }
-        Complete();
     }
 
     /// <summary>
@@ -205,15 +202,12 @@ public sealed class FileEncoding
     /// <returns>Detected encoding name</returns>
     private void Detect(byte[] inputData, int count)
     {
-        if (_done) return;
-
         if (!_started)
         {
             Reset();
             _started = true;
             if (!CheckForTextualData(inputData, count))
             {
-                _done = true;
                 return;
             }
         }
@@ -224,7 +218,6 @@ public sealed class FileEncoding
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
             IncrementFrequency(_ude.Charset);
-            _done = true;
             return;
         }
 
@@ -244,25 +237,6 @@ public sealed class FileEncoding
         }
         // vote for best encoding
         _encodingCharset = GetCurrentEncoding();
-    }
-
-    /// <summary>
-    /// Finalize detection phase and gets detected encoding name.
-    /// </summary>
-    /// <returns></returns>
-    private Encoding? Complete()
-    {
-        _done = true;
-        _ude.DataEnd();
-        if (_ude.IsDone() && _ude.Charset != Charset.Null)
-        {
-            _encodingCharset = _ude.Charset;
-        }
-        // vote for best encoding
-        _encodingCharset = GetCurrentEncoding();
-
-        // check result
-        return _encodingCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(_encodingCharset));
     }
 
     private void IncrementFrequency(Charset charset)
