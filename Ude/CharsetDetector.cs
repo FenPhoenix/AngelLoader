@@ -233,7 +233,13 @@ public sealed class CharsetDetector
         return Charset.Null;
     }
 
-    public void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    public void Run(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    {
+        Feed(buf, offset, len, memoryStream);
+        DataEnd();
+    }
+
+    private void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         if (_done)
         {
@@ -327,7 +333,7 @@ public sealed class CharsetDetector
     /// <summary>
     /// Notify detector that no further data is available.
     /// </summary>
-    public void DataEnd()
+    private void DataEnd()
     {
         if (!_gotData)
         {

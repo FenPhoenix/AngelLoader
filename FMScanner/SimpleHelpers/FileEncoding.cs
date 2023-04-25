@@ -213,8 +213,7 @@ public sealed class FileEncoding
         }
 
         // execute charset detector
-        _ude.Feed(inputData, 0, count, _memoryStream);
-        _ude.DataEnd();
+        _ude.Run(inputData, 0, count, _memoryStream);
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
             IncrementFrequency(_ude.Charset);
@@ -227,16 +226,13 @@ public sealed class FileEncoding
         int step = count < udeFeedSize ? count : udeFeedSize;
         for (int pos = 0; pos < count; pos += step)
         {
-            _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step, _memoryStream);
-            _singleUde.DataEnd();
+            _singleUde.Run(inputData, pos, pos + step > count ? count - pos : step, _memoryStream);
             // update encoding frequency
             if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)
             {
                 IncrementFrequency(_singleUde.Charset);
             }
         }
-        // vote for best encoding
-        _encodingCharset = GetCurrentEncoding();
     }
 
     private void IncrementFrequency(Charset charset)
