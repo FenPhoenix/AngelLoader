@@ -116,16 +116,15 @@ public sealed class FileEncoding
     /// Detects if contains textual data.
     /// </summary>
     /// <param name="rawData">The raw data.</param>
-    /// <param name="start">The start.</param>
     /// <param name="count">The count.</param>
-    private bool CheckForTextualData(byte[] rawData, int start, int count)
+    private bool CheckForTextualData(byte[] rawData, int count)
     {
-        if (rawData.Length < count || count < 4 || start + 1 >= count)
+        if (rawData.Length < count || count < 4)
         {
             return true;
         }
 
-        if (CheckForByteOrderMark(rawData, start))
+        if (CheckForByteOrderMark(rawData))
         {
             return true;
         }
@@ -136,7 +135,7 @@ public sealed class FileEncoding
         // considering only sequences of 2 0s: "\0\0" or control characters below 10
         int nullSequences = 0;
         int controlSequences = 0;
-        for (int i = start + 1; i < count; i++)
+        for (int i = 1; i < count; i++)
         {
             // Fix(Fen): Any bytes >127 mean we can't be ASCII, period. But somewhere along the line, we're
             // deciding we can detect "ASCII" anyway, even if we have bytes >127. So set a bool to force us
@@ -164,30 +163,29 @@ public sealed class FileEncoding
     /// Detects if data has bytes order mark to indicate its encoding for textual data.
     /// </summary>
     /// <param name="rawData">The raw data.</param>
-    /// <param name="start">The start.</param>
     /// <returns></returns>
-    private static bool CheckForByteOrderMark(byte[] rawData, int start = 0)
+    private static bool CheckForByteOrderMark(byte[] rawData)
     {
-        if (rawData.Length - start < 4) return false;
+        if (rawData.Length < 4) return false;
 
         // Detect encoding correctly (from Rick Strahl's blog)
         // http://www.west-wind.com/weblog/posts/2007/Nov/28/Detecting-Text-Encoding-for-StreamReader
-        if (rawData[start] == 0xef && rawData[start + 1] == 0xbb && rawData[start + 2] == 0xbf)
+        if (rawData[0] == 0xef && rawData[1] == 0xbb && rawData[2] == 0xbf)
         {
             // Encoding.UTF8;
             return true;
         }
-        else if (rawData[start] == 0xfe && rawData[start + 1] == 0xff)
+        else if (rawData[0] == 0xfe && rawData[1] == 0xff)
         {
             // Encoding.Unicode;
             return true;
         }
-        else if (rawData[start] == 0 && rawData[start + 1] == 0 && rawData[start + 2] == 0xfe && rawData[start + 3] == 0xff)
+        else if (rawData[0] == 0 && rawData[1] == 0 && rawData[2] == 0xfe && rawData[3] == 0xff)
         {
             // Encoding.UTF32;
             return true;
         }
-        else if (rawData[start] == 0x2b && rawData[start + 1] == 0x2f && rawData[start + 2] == 0x76)
+        else if (rawData[0] == 0x2b && rawData[1] == 0x2f && rawData[2] == 0x76)
         {
             // Encoding.UTF7;
             return true;
@@ -227,7 +225,7 @@ public sealed class FileEncoding
             int sz = inputData.ReadAll(_buffer, 0, _buffer.Length);
             if (sz <= 0) break;
 
-            Detect(_buffer, 0, sz);
+            Detect(_buffer, sz);
             if (_done) break;
         }
         Complete();
@@ -237,10 +235,9 @@ public sealed class FileEncoding
     /// Detects the encoding of textual data of the specified input data.
     /// </summary>
     /// <param name="inputData">The input data.</param>
-    /// <param name="start">The start.</param>
     /// <param name="count">The count.</param>
     /// <returns>Detected encoding name</returns>
-    private void Detect(byte[] inputData, int start, int count)
+    private void Detect(byte[] inputData, int count)
     {
         if (_done) return;
 
@@ -248,7 +245,7 @@ public sealed class FileEncoding
         {
             Reset();
             _started = true;
-            if (!CheckForTextualData(inputData, start, count))
+            if (!CheckForTextualData(inputData, count))
             {
                 _done = true;
                 return;
@@ -256,7 +253,7 @@ public sealed class FileEncoding
         }
 
         // execute charset detector
-        _ude.Feed(inputData, start, count, _memoryStream);
+        _ude.Feed(inputData, 0, count, _memoryStream);
         _ude.DataEnd();
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
@@ -268,8 +265,8 @@ public sealed class FileEncoding
         // singular buffer detection
         _singleUde.Reset();
         const int udeFeedSize = ByteSize.KB * 4;
-        int step = count - start < udeFeedSize ? count - start : udeFeedSize;
-        for (int pos = start; pos < count; pos += step)
+        int step = count < udeFeedSize ? count : udeFeedSize;
+        for (int pos = 0; pos < count; pos += step)
         {
             _singleUde.Feed(inputData, pos, pos + step > count ? count - pos : step, _memoryStream);
             _singleUde.DataEnd();
@@ -281,7 +278,6 @@ public sealed class FileEncoding
         }
         // vote for best encoding
         _encodingCharset = GetCurrentEncoding();
-        // update current encoding name
     }
 
     /// <summary>
