@@ -195,6 +195,44 @@ public sealed class CharsetDetector
         Confidence = confidence;
     }
 
+    public static Charset GetBOMCharset(byte[] buf, int len)
+    {
+        if (len > 3)
+        {
+            switch (buf[0])
+            {
+                case 0xEF:
+                    if (buf[1] == 0xBB && buf[2] == 0xBF)
+                    {
+                        return Charset.UTF8;
+                    }
+                    break;
+                case 0xFE:
+                    if (buf[1] == 0xFF)
+                    {
+                        return Charset.UTF16BE;
+                    }
+                    break;
+                case 0x00:
+                    if (buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF)
+                    {
+                        return Charset.UTF32BE;
+                    }
+                    break;
+                case 0xFF:
+                    if (buf[1] == 0xFE)
+                    {
+                        return buf[2] == 0x00 && buf[3] == 0x00
+                            ? Charset.UTF32LE
+                            : Charset.UTF16LE;
+                    }
+                    break;
+            }
+        }
+
+        return Charset.Null;
+    }
+
     public void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
     {
         if (_done)
@@ -211,38 +249,10 @@ public sealed class CharsetDetector
         if (_start)
         {
             _start = false;
-            if (len > 3)
-            {
-                switch (buf[0])
-                {
-                    case 0xEF:
-                        if (buf[1] == 0xBB && buf[2] == 0xBF)
-                        {
-                            _detectedCharset = Charset.UTF8;
-                        }
-                        break;
-                    case 0xFE:
-                        if (buf[1] == 0xFF)
-                        {
-                            _detectedCharset = Charset.UTF16BE;
-                        }
-                        break;
-                    case 0x00:
-                        if (buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF)
-                        {
-                            _detectedCharset = Charset.UTF32BE;
-                        }
-                        break;
-                    case 0xFF:
-                        if (buf[1] == 0xFE)
-                        {
-                            _detectedCharset = buf[2] == 0x00 && buf[3] == 0x00
-                                ? Charset.UTF32LE
-                                : Charset.UTF16LE;
-                        }
-                        break;
-                }  // switch
-            }
+
+            Charset bomCharset = GetBOMCharset(buf, len);
+            if (bomCharset != Charset.Null) _detectedCharset = bomCharset;
+
             if (_detectedCharset != Charset.Null)
             {
                 _done = true;

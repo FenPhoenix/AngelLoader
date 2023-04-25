@@ -124,7 +124,7 @@ public sealed class FileEncoding
             return true;
         }
 
-        if (CheckForByteOrderMark(rawData))
+        if (CharsetDetector.GetBOMCharset(rawData, rawData.Length) != Charset.Null)
         {
             return true;
         }
@@ -157,40 +157,6 @@ public sealed class FileEncoding
 
         // is text if there is no null byte sequences or less than 10% of the buffer has control characters
         return nullSequences == 0 && controlSequences <= rawData.Length / 10;
-    }
-
-    /// <summary>
-    /// Detects if data has bytes order mark to indicate its encoding for textual data.
-    /// </summary>
-    /// <param name="rawData">The raw data.</param>
-    /// <returns></returns>
-    private static bool CheckForByteOrderMark(byte[] rawData)
-    {
-        if (rawData.Length < 4) return false;
-
-        // Detect encoding correctly (from Rick Strahl's blog)
-        // http://www.west-wind.com/weblog/posts/2007/Nov/28/Detecting-Text-Encoding-for-StreamReader
-        if (rawData[0] == 0xef && rawData[1] == 0xbb && rawData[2] == 0xbf)
-        {
-            // Encoding.UTF8;
-            return true;
-        }
-        else if (rawData[0] == 0xfe && rawData[1] == 0xff)
-        {
-            // Encoding.Unicode;
-            return true;
-        }
-        else if (rawData[0] == 0 && rawData[1] == 0 && rawData[2] == 0xfe && rawData[3] == 0xff)
-        {
-            // Encoding.UTF32;
-            return true;
-        }
-        else if (rawData[0] == 0x2b && rawData[1] == 0x2f && rawData[2] == 0x76)
-        {
-            // Encoding.UTF7;
-            return true;
-        }
-        return false;
     }
 
     private void Reset()
