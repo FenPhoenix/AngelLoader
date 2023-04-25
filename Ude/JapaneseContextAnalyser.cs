@@ -194,9 +194,10 @@ internal abstract class JapaneseContextAnalyser
         for (int i = 0; i < CATEGORIES_NUM; i++)
         {
             _relSample[i] = 0;
-            _lastCharOrder = -1;
-            _done = false;
         }
+
+        _lastCharOrder = -1;
+        _done = false;
     }
 
     protected abstract int GetOrder(byte[] buf, int offset);
