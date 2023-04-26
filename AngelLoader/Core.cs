@@ -748,6 +748,16 @@ internal static class Core
 
             static bool ModExistsOnDisk(string gamePath, string modName)
             {
+                /*
+                @Mods: Notes for supporting directory-in-zip mods:
+                -The game only supports zip files for mods, not 7z, so no need to deal with that.
+                -The game supports zipped mods within zipped mods, so we'll have to be able to recursively open
+                 zip files within zip files... Maybe put a cap on it to prevent malicious zips. And/or put up a
+                 message box saying "Hey, you're doing something silly that will make startup slow".
+                -We should abstract the zip query so we can treat it just like an on-disk query.
+                -But we could cache the entries list(s) in case we need to query it/them more than once.
+                */
+
                 static string PathCombineRelativeSupport(string path1, string path2)
                 {
                     return PathIsRelative(path2) ? RelativeToAbsolute(path1, path2) : Path.Combine(path1, path2);
