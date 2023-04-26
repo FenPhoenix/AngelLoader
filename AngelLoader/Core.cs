@@ -748,11 +748,27 @@ internal static class Core
 
             static bool ModExistsOnDisk(string gamePath, string modName)
             {
-                if (TryCombineDirectoryPathAndCheckExistence(gamePath, modName, out _)) return true;
+                static string PathCombineRelativeSupport(string path1, string path2)
+                {
+                    return PathIsRelative(path2) ? RelativeToAbsolute(path1, path2) : Path.Combine(path1, path2);
+                }
+
+                try
+                {
+                    if (Directory.Exists(PathCombineRelativeSupport(gamePath, modName)))
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // ignore and continue on
+                }
+
                 string fullPath;
                 try
                 {
-                    fullPath = Path.Combine(gamePath, modName);
+                    fullPath = PathCombineRelativeSupport(gamePath, modName);
                 }
                 catch
                 {
