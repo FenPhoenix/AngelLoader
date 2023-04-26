@@ -341,21 +341,21 @@ internal sealed partial class RichTextBoxCustom
 #if X64
     private static unsafe Native.ENLINK ConvertFromENLINK64(Native.ENLINK64 es64)
     {
-        var enlink = new Native.ENLINK();
-        fixed (byte* ptr = &es64.contents[0])
+        Native.ENLINK es = new();
+        fixed (byte* es64p = &es64.contents[0])
         {
-            enlink.nmhdr = new Native.NMHDR();
-            enlink.charrange = new Native.CHARRANGE();
-            enlink.nmhdr.hwndFrom = Marshal.ReadIntPtr((IntPtr)(void*)ptr);
-            enlink.nmhdr.idFrom = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 8));
-            enlink.nmhdr.code = Marshal.ReadInt32((IntPtr)(void*)(ptr + 16));
-            enlink.msg = Marshal.ReadInt32((IntPtr)(void*)(ptr + 24));
-            enlink.wParam = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 28));
-            enlink.lParam = Marshal.ReadIntPtr((IntPtr)(void*)(ptr + 36));
-            enlink.charrange.cpMin = Marshal.ReadInt32((IntPtr)(void*)(ptr + 44));
-            enlink.charrange.cpMax = Marshal.ReadInt32((IntPtr)(void*)(ptr + 48));
+            es.nmhdr = new Native.NMHDR();
+            es.charrange = new Native.CHARRANGE();
+            es.nmhdr.hwndFrom = Marshal.ReadIntPtr((IntPtr)es64p);
+            es.nmhdr.idFrom = Marshal.ReadIntPtr((IntPtr)(es64p + 8));
+            es.nmhdr.code = Marshal.ReadInt32((IntPtr)(es64p + 16));
+            es.msg = Marshal.ReadInt32((IntPtr)(es64p + 24));
+            es.wParam = Marshal.ReadIntPtr((IntPtr)(es64p + 28));
+            es.lParam = Marshal.ReadIntPtr((IntPtr)(es64p + 36));
+            es.charrange.cpMin = Marshal.ReadInt32((IntPtr)(es64p + 44));
+            es.charrange.cpMax = Marshal.ReadInt32((IntPtr)(es64p + 48));
         }
-        return enlink;
+        return es;
     }
 #endif
 
@@ -369,7 +369,7 @@ internal sealed partial class RichTextBoxCustom
 
         /*
         @X64 (RichTextBox workarounds - link hand cursor handler)
-        The Framework code does this. Not commented there, but in .NET 6 it says:
+        The Framework code does this. It's commented:
 
         "On 64-bit, we do some custom marshalling to get this to work. The richedit control
         unfortunately does not respect IA64 struct alignment conventions."

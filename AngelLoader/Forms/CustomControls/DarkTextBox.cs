@@ -64,7 +64,7 @@ public class DarkTextBox : TextBox, IDarkable
                 (sbi_h.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) != Native.STATE_SYSTEM_INVISIBLE &&
                 (sbi_h.rgstate[0] & Native.STATE_SYSTEM_UNAVAILABLE) != Native.STATE_SYSTEM_UNAVAILABLE;
 
-            Native.SCROLLINFO? si_v = null, si_h = null;
+            Native.SCROLLINFO si_v = new(), si_h = new();
             if (vertScrollBarNeedsRepositioning) si_v = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
             if (horzScrollBarNeedsRepositioning) si_h = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_HORZ);
 
@@ -106,13 +106,13 @@ public class DarkTextBox : TextBox, IDarkable
                 if (!Multiline) RecreateHandle();
             }
 
-            if (vertScrollBarNeedsRepositioning && si_v != null)
+            if (vertScrollBarNeedsRepositioning)
             {
-                ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si_v, Native.SB_VERT);
+                ControlUtils.RepositionScroll(Handle, si_v, Native.SB_VERT);
             }
-            if (horzScrollBarNeedsRepositioning && si_h != null)
+            if (horzScrollBarNeedsRepositioning)
             {
-                ControlUtils.RepositionScroll(Handle, (Native.SCROLLINFO)si_h, Native.SB_HORZ);
+                ControlUtils.RepositionScroll(Handle, si_h, Native.SB_HORZ);
             }
         }
     }

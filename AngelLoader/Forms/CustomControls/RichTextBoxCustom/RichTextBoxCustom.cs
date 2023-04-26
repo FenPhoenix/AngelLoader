@@ -166,7 +166,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     {
         Encoding? retEncoding = null;
 
-        Native.SCROLLINFO? si = null;
+        Native.SCROLLINFO si = new();
         try
         {
             if (suspendResume)
@@ -213,7 +213,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                 // Copy only the nPos value, otherwise we get a glitched-length scrollbar if our encoding
                 // change changes the height of the text.
                 Native.SCROLLINFO newSi = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
-                newSi.nPos = ((Native.SCROLLINFO)si!).nPos;
+                newSi.nPos = si.nPos;
                 ControlUtils.RepositionScroll(Handle, newSi, Native.SB_VERT);
                 this.ResumeDrawing();
             }
