@@ -936,7 +936,7 @@ internal static class GameConfigFiles
             try
             {
                 string? cutPath = Path.GetDirectoryName(fullPath);
-                if (cutPath.IsEmpty() || cutPath.EqualsI(paths[paths.Count - 1]))
+                if (cutPath.IsEmpty() || cutPath.EqualsI(paths[0]))
                 {
                     break;
                 }
