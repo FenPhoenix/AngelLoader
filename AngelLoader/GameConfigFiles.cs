@@ -938,18 +938,6 @@ internal static class GameConfigFiles
             return PathIsRelative(path2) ? RelativeToAbsolute(path1, path2) : Path.Combine(path1, path2);
         }
 
-        try
-        {
-            if (Directory.Exists(PathCombineRelativeSupport(gamePath, modName)))
-            {
-                return true;
-            }
-        }
-        catch
-        {
-            // ignore and continue on
-        }
-
         string fullPath;
         try
         {
@@ -958,6 +946,11 @@ internal static class GameConfigFiles
         catch
         {
             return false;
+        }
+
+        if (Directory.Exists(fullPath))
+        {
+            return true;
         }
 
         string modContainingDir;
