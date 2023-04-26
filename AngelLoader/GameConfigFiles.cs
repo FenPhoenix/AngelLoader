@@ -921,6 +921,59 @@ internal static class GameConfigFiles
         return (true, list);
     }
 
+    private static bool ModDirExists(string fullPath)
+    {
+        if (Directory.Exists(fullPath)) return true;
+
+        var paths = new List<string>();
+
+        // Paranoid fallback exit condition
+        int dirSepCount = fullPath.Rel_CountDirSeps() + 5;
+        for (int i = 0; i < dirSepCount; i++)
+        {
+            paths.Insert(0, fullPath.TrimEnd(CA_BS_FS));
+
+            try
+            {
+                string? cutPath = Path.GetDirectoryName(fullPath);
+                if (cutPath.IsEmpty() || cutPath.EqualsI(paths[paths.Count - 1]))
+                {
+                    break;
+                }
+                fullPath = cutPath;
+            }
+            catch
+            {
+                break;
+            }
+        }
+
+        if (paths.Count > 0)
+        {
+            paths.RemoveAt(0);
+        }
+
+        if (paths.Count < 2) return false;
+
+        for (int i = 1; i < paths.Count; i++)
+        {
+            string p = paths[i];
+            /*
+            Confirmed, the the game only reads mods from .zip and .crf files (at least no other extensions I tried worked)
+
+            Also, don't read the zip file entries or anything, just assume it contains the path, as that's the
+            most probable case... (should we change this later?)
+            */
+            if (File.Exists(p + ".zip") ||
+                File.Exists(p + ".crf"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     internal static bool ModExistsOnDisk(string gamePath, string modName)
     {
         /*
@@ -948,7 +1001,7 @@ internal static class GameConfigFiles
             return false;
         }
 
-        if (Directory.Exists(fullPath))
+        if (ModDirExists(fullPath))
         {
             return true;
         }
