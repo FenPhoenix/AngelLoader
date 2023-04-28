@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
+using static AngelLoader.Misc;
 
 /*
  Notes:
@@ -342,94 +343,27 @@ public sealed partial class MainForm
         FMsDGV.KeyDown += FMsDGV_KeyDown;
         FMsDGV.MouseDown += FMsDGV_MouseDown;
         // 
-        // GameTypeColumn
-        // 
-        GameTypeColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-        GameTypeColumn.MinimumWidth = 25;
-        GameTypeColumn.ReadOnly = true;
-        GameTypeColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // InstalledColumn
-        // 
-        InstalledColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-        InstalledColumn.MinimumWidth = 25;
-        InstalledColumn.ReadOnly = true;
-        InstalledColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // MisCountColumn
-        // 
-        MisCountColumn.MinimumWidth = 25;
-        MisCountColumn.ReadOnly = true;
-        MisCountColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // TitleColumn
-        // 
-        TitleColumn.MinimumWidth = 25;
-        TitleColumn.ReadOnly = true;
-        TitleColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // ArchiveColumn
-        // 
-        ArchiveColumn.MinimumWidth = 25;
-        ArchiveColumn.ReadOnly = true;
-        ArchiveColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // AuthorColumn
-        // 
-        AuthorColumn.MinimumWidth = 25;
-        AuthorColumn.ReadOnly = true;
-        AuthorColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
         // SizeColumn
         // 
         SizeColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-        SizeColumn.MinimumWidth = 25;
-        SizeColumn.ReadOnly = true;
-        SizeColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // RatingTextColumn
-        // 
-        RatingTextColumn.MinimumWidth = 25;
-        RatingTextColumn.ReadOnly = true;
-        RatingTextColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
         // 
         // FinishedColumn
         // 
-        FinishedColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-        FinishedColumn.ReadOnly = true;
         FinishedColumn.Resizable = DataGridViewTriState.False;
-        FinishedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
         FinishedColumn.Width = 71;
-        // 
-        // ReleaseDateColumn
-        // 
-        ReleaseDateColumn.MinimumWidth = 25;
-        ReleaseDateColumn.ReadOnly = true;
-        ReleaseDateColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // LastPlayedColumn
-        // 
-        LastPlayedColumn.MinimumWidth = 25;
-        LastPlayedColumn.ReadOnly = true;
-        LastPlayedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        //
-        // DateAddedColumn
-        // 
-        DateAddedColumn.MinimumWidth = 25;
-        DateAddedColumn.ReadOnly = true;
-        DateAddedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // DisabledModsColumn
-        // 
-        DisabledModsColumn.MinimumWidth = 25;
-        DisabledModsColumn.ReadOnly = true;
-        DisabledModsColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
-        // 
-        // CommentColumn
-        // 
-        CommentColumn.MinimumWidth = 25;
-        CommentColumn.ReadOnly = true;
-        CommentColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
+
+        foreach (DataGridViewColumn col in FMsDGV.Columns)
+        {
+            if (col is DataGridViewImageColumn imgCol)
+            {
+                imgCol.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            }
+
+            col.MinimumWidth = Defaults.MinColumnWidth;
+            col.ReadOnly = true;
+            col.SortMode = DataGridViewColumnSortMode.Programmatic;
+        }
+
         // 
         // FilterBarFLP
         // 
@@ -452,7 +386,6 @@ public sealed partial class MainForm
         // FilterGameButtonsToolStrip
         // 
         FilterGameButtonsToolStrip.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-        FilterGameButtonsToolStrip.BackColor = SystemColors.Control;
         FilterGameButtonsToolStrip.CanOverflow = false;
         FilterGameButtonsToolStrip.Dock = DockStyle.None;
         FilterGameButtonsToolStrip.GripMargin = new Padding(0);
@@ -464,7 +397,6 @@ public sealed partial class MainForm
         // GameFilterControlsShowHideButtonToolStrip
         // 
         GameFilterControlsShowHideButtonToolStrip.AutoSize = false;
-        GameFilterControlsShowHideButtonToolStrip.BackColor = SystemColors.Control;
         GameFilterControlsShowHideButtonToolStrip.CanOverflow = false;
         GameFilterControlsShowHideButtonToolStrip.Dock = DockStyle.None;
         GameFilterControlsShowHideButtonToolStrip.GripMargin = new Padding(0);
@@ -508,7 +440,6 @@ public sealed partial class MainForm
         // FilterIconButtonsToolStrip
         // 
         FilterIconButtonsToolStrip.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-        FilterIconButtonsToolStrip.BackColor = SystemColors.Control;
         FilterIconButtonsToolStrip.CanOverflow = false;
         FilterIconButtonsToolStrip.Dock = DockStyle.None;
         FilterIconButtonsToolStrip.GripMargin = new Padding(0);
@@ -620,7 +551,6 @@ public sealed partial class MainForm
         // RefreshAreaToolStrip
         // 
         RefreshAreaToolStrip.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-        RefreshAreaToolStrip.BackColor = SystemColors.Control;
         RefreshAreaToolStrip.CanOverflow = false;
         RefreshAreaToolStrip.Dock = DockStyle.None;
         RefreshAreaToolStrip.GripMargin = new Padding(0);
@@ -714,30 +644,6 @@ public sealed partial class MainForm
         TopRightTabControl.Size = new Size(535, 310);
         TopRightTabControl.TabIndex = 15;
         // 
-        // StatisticsTabPage
-        // 
-        StatisticsTabPage.BackColor = SystemColors.Control;
-        // 
-        // EditFMTabPage
-        // 
-        EditFMTabPage.BackColor = SystemColors.Control;
-        // 
-        // CommentTabPage
-        // 
-        CommentTabPage.BackColor = SystemColors.Control;
-        // 
-        // TagsTabPage
-        // 
-        TagsTabPage.BackColor = SystemColors.Control;
-        // 
-        // PatchTabPage
-        // 
-        PatchTabPage.BackColor = SystemColors.Control;
-        // 
-        // ModsTabPage
-        // 
-        ModsTabPage.BackColor = SystemColors.Control;
-        // 
         // ReadmeEncodingButton
         // 
         ReadmeEncodingButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -780,7 +686,6 @@ public sealed partial class MainForm
         // ReadmeZoomOutButton
         // 
         ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeZoomOutButton.BackColor = SystemColors.Window;
         ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
         ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
         ReadmeZoomOutButton.Location = new Point(1559, 8);
