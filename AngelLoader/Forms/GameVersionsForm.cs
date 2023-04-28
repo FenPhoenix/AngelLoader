@@ -19,7 +19,7 @@ public sealed class GameVersionsForm : DarkFormBase
     {
         #region Init
 
-        OKButton = new DarkButton();
+        OKButton = new StandardButton();
         var okFLP = new FlowLayoutPanel();
         okFLP.SuspendLayout();
 
@@ -28,11 +28,8 @@ public sealed class GameVersionsForm : DarkFormBase
         // 
         // OKButton
         // 
-        OKButton.AutoSize = true;
-        OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         OKButton.DialogResult = DialogResult.Cancel;
         OKButton.Margin = new Padding(3, 8, 9, 3);
-        OKButton.MinimumSize = new Size(75, 23);
         OKButton.TabIndex = 0;
         // 
         // okFLP

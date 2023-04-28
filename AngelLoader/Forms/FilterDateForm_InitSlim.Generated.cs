@@ -7,8 +7,8 @@ partial class FilterDateForm
     /// </summary>
     private void InitSlim()
     {
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ToLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.FromLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -24,20 +24,12 @@ partial class FilterDateForm
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
-        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-        this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
-        this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.Cancel_Button.TabIndex = 0;
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
-        this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.OKButton.TabIndex = 1;
         // 
         // ResetButton

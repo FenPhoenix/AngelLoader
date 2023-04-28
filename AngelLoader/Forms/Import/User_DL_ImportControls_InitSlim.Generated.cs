@@ -10,7 +10,7 @@ sealed partial class User_DL_ImportControls
         this.AutodetectCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ChooseDarkLoaderIniLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.DarkLoaderIniTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.DarkLoaderIniBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.DarkLoaderIniBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.SuspendLayout();
         // 
         // AutodetectCheckBox
@@ -35,12 +35,8 @@ sealed partial class User_DL_ImportControls
         // 
         // DarkLoaderIniBrowseButton
         // 
-        this.DarkLoaderIniBrowseButton.AutoSize = true;
-        this.DarkLoaderIniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.DarkLoaderIniBrowseButton.Enabled = false;
         this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(448, 55);
-        this.DarkLoaderIniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
-        this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
         this.DarkLoaderIniBrowseButton.TabIndex = 3;
         this.DarkLoaderIniBrowseButton.Click += new System.EventHandler(this.DarkLoaderIniBrowseButton_Click);
         // 

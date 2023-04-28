@@ -11,7 +11,7 @@ partial class AboutForm
         this.VersionLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.GitHubLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.LicenseTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.SevenZipLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.SharpCompressLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.FFmpegLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
@@ -66,11 +66,8 @@ partial class AboutForm
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
         // 
         // SevenZipLinkLabel

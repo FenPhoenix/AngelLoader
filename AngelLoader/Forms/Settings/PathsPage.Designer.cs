@@ -55,7 +55,7 @@ sealed partial class PathsPage
         this.Thief2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.PathsToGameExesGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.GameRequirementsPanel = new System.Windows.Forms.Panel();
         this.GameRequirementsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -63,10 +63,10 @@ sealed partial class PathsPage
         this.Thief3ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.Thief2ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.Thief1ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.SS2ExePathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.Thief3ExePathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.Thief2ExePathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.Thief1ExePathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SS2ExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.Thief3ExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.Thief2ExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.Thief1ExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.SS2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Thief3ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
@@ -192,13 +192,8 @@ sealed partial class PathsPage
         // BackupPathBrowseButton
         // 
         this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.BackupPathBrowseButton.AutoSize = true;
-        this.BackupPathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
-        this.BackupPathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
-        this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.TabIndex = 2;
         this.BackupPathBrowseButton.Text = "Browse...";
         // 
@@ -359,13 +354,8 @@ sealed partial class PathsPage
         // SteamExeBrowseButton
         // 
         this.SteamExeBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.SteamExeBrowseButton.AutoSize = true;
-        this.SteamExeBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.SteamExeBrowseButton.Location = new System.Drawing.Point(336, 39);
-        this.SteamExeBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.SteamExeBrowseButton.Name = "SteamExeBrowseButton";
-        this.SteamExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SteamExeBrowseButton.TabIndex = 2;
         this.SteamExeBrowseButton.Text = "Browse...";
         // 
@@ -455,52 +445,32 @@ sealed partial class PathsPage
         // SS2ExePathBrowseButton
         // 
         this.SS2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.SS2ExePathBrowseButton.AutoSize = true;
-        this.SS2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
-        this.SS2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.SS2ExePathBrowseButton.Name = "SS2ExePathBrowseButton";
-        this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.SS2ExePathBrowseButton.TabIndex = 11;
         this.SS2ExePathBrowseButton.Text = "Browse...";
         // 
         // Thief3ExePathBrowseButton
         // 
         this.Thief3ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.Thief3ExePathBrowseButton.AutoSize = true;
-        this.Thief3ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(336, 119);
-        this.Thief3ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
-        this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief3ExePathBrowseButton.TabIndex = 8;
         this.Thief3ExePathBrowseButton.Text = "Browse...";
         // 
         // Thief2ExePathBrowseButton
         // 
         this.Thief2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.Thief2ExePathBrowseButton.AutoSize = true;
-        this.Thief2ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(336, 79);
-        this.Thief2ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
-        this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief2ExePathBrowseButton.TabIndex = 5;
         this.Thief2ExePathBrowseButton.Text = "Browse...";
         // 
         // Thief1ExePathBrowseButton
         // 
         this.Thief1ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.Thief1ExePathBrowseButton.AutoSize = true;
-        this.Thief1ExePathBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(336, 39);
-        this.Thief1ExePathBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.Thief1ExePathBrowseButton.Name = "Thief1ExePathBrowseButton";
-        this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.Thief1ExePathBrowseButton.TabIndex = 2;
         this.Thief1ExePathBrowseButton.Text = "Browse...";
         // 
@@ -589,9 +559,9 @@ sealed partial class PathsPage
     internal AngelLoader.Forms.CustomControls.DarkLabel Thief3ExePathLabel;
     internal AngelLoader.Forms.CustomControls.DarkLabel Thief2ExePathLabel;
     internal AngelLoader.Forms.CustomControls.DarkLabel Thief1ExePathLabel;
-    internal AngelLoader.Forms.CustomControls.DarkButton Thief3ExePathBrowseButton;
-    internal AngelLoader.Forms.CustomControls.DarkButton Thief2ExePathBrowseButton;
-    internal AngelLoader.Forms.CustomControls.DarkButton Thief1ExePathBrowseButton;
+    internal AngelLoader.Forms.CustomControls.StandardButton Thief3ExePathBrowseButton;
+    internal AngelLoader.Forms.CustomControls.StandardButton Thief2ExePathBrowseButton;
+    internal AngelLoader.Forms.CustomControls.StandardButton Thief1ExePathBrowseButton;
     internal AngelLoader.Forms.CustomControls.DarkTextBox Thief3ExePathTextBox;
     internal AngelLoader.Forms.CustomControls.DarkTextBox Thief2ExePathTextBox;
     internal AngelLoader.Forms.CustomControls.DarkTextBox Thief1ExePathTextBox;
@@ -604,7 +574,7 @@ sealed partial class PathsPage
     internal System.Windows.Forms.Control DummyAutoScrollPanel;
     internal AngelLoader.Forms.CustomControls.DarkLabel SteamExeLabel;
     internal AngelLoader.Forms.CustomControls.DarkTextBox SteamExeTextBox;
-    internal AngelLoader.Forms.CustomControls.DarkButton SteamExeBrowseButton;
+    internal AngelLoader.Forms.CustomControls.StandardButton SteamExeBrowseButton;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox SteamOptionsGroupBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox Thief3UseSteamCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox Thief2UseSteamCheckBox;
@@ -612,7 +582,7 @@ sealed partial class PathsPage
     internal System.Windows.Forms.Panel LaunchTheseGamesThroughSteamPanel;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox LaunchTheseGamesThroughSteamCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkLabel SS2ExePathLabel;
-    internal AngelLoader.Forms.CustomControls.DarkButton SS2ExePathBrowseButton;
+    internal AngelLoader.Forms.CustomControls.StandardButton SS2ExePathBrowseButton;
     internal AngelLoader.Forms.CustomControls.DarkTextBox SS2ExePathTextBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox SS2UseSteamCheckBox;
     internal System.Windows.Forms.Panel BackupPathPanel;

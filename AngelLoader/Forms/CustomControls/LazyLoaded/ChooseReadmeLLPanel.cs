@@ -53,16 +53,12 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
 
         Control container = _owner.MainSplitContainer.Panel2;
 
-        OKButton = new DarkButton
+        OKButton = new StandardButton
         {
             Tag = LoadType.Lazy,
 
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Margin = new Padding(0),
-            Padding = new Padding(6, 0, 6, 0),
-            MinimumSize = new Size(75, 23),
             TabIndex = 48,
 
             DarkModeEnabled = _darkModeEnabled

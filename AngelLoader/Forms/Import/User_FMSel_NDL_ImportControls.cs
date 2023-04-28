@@ -19,12 +19,12 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         (DarkGroupBox GroupBox,
         DarkCheckBox AutodetectCheckBox,
         DarkTextBox TextBox,
-        DarkButton BrowseButton)[]
+        StandardButton BrowseButton)[]
         GameIniItems = new
             (DarkGroupBox GroupBox,
             DarkCheckBox AutodetectCheckBox,
             DarkTextBox TextBox,
-            DarkButton BrowseButton)[SupportedGameCount];
+            StandardButton BrowseButton)[SupportedGameCount];
 
     private readonly DarkLabel ChooseIniFilesLabel;
 
@@ -49,7 +49,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         {
             var checkBox = new DarkCheckBox();
             var textBox = new DarkTextBox();
-            var button = new DarkButton();
+            var button = new StandardButton();
             var groupBox = new DarkGroupBox();
 
             groupBox.SuspendLayout();
@@ -65,12 +65,8 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             textBox.Size = new Size(432, 20);
             textBox.TabIndex = 1;
 
-            button.AutoSize = true;
-            button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            button.MinimumSize = new Size(75, 23);
             button.Enabled = false;
             button.Location = new Point(448, 47);
-            button.Padding = new Padding(6, 0, 6, 0);
             button.TabIndex = 1;
             button.Click += ThiefIniBrowseButtons_Click;
 

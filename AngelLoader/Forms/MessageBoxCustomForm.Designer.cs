@@ -37,12 +37,12 @@ partial class MessageBoxCustomForm
         this.MainFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
         this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.SelectAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.MessageBottomLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.OuterTLP = new System.Windows.Forms.TableLayoutPanel();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
         this.ContentTLP.SuspendLayout();
         this.MainFLP.SuspendLayout();
@@ -125,14 +125,9 @@ partial class MessageBoxCustomForm
         // 
         // SelectAllButton
         // 
-        this.SelectAllButton.AutoSize = true;
-        this.SelectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.SelectAllButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.SelectAllButton.Location = new System.Drawing.Point(418, 0);
         this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
         this.SelectAllButton.Name = "SelectAllButton";
-        this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.SelectAllButton.Size = new System.Drawing.Size(75, 23);
         this.SelectAllButton.TabIndex = 0;
         this.SelectAllButton.Text = "Select all";
         this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
@@ -179,29 +174,19 @@ partial class MessageBoxCustomForm
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
-        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Location = new System.Drawing.Point(480, 9);
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
         this.Cancel_Button.Name = "Cancel_Button";
-        this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 0;
         this.Cancel_Button.Text = "Cancel";
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.OKButton.Location = new System.Drawing.Point(395, 9);
         this.OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
         this.OKButton.Name = "OKButton";
-        this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 1;
         this.OKButton.Text = "OK";
         // 
@@ -247,7 +232,7 @@ partial class MessageBoxCustomForm
     private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
     private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
     private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
-    private AngelLoader.Forms.CustomControls.DarkButton SelectAllButton;
-    private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
-    private AngelLoader.Forms.CustomControls.DarkButton OKButton;
+    private AngelLoader.Forms.CustomControls.StandardButton SelectAllButton;
+    private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
+    private AngelLoader.Forms.CustomControls.StandardButton OKButton;
 }

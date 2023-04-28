@@ -49,9 +49,9 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedNotButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.RemoveSelectedOrButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.RemoveSelectedAndButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.ResetButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.MoveButtonsPanel = new System.Windows.Forms.Panel();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -244,38 +244,27 @@ sealed partial class FilterTagsForm
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.OKButton.Location = new System.Drawing.Point(877, 3);
         this.OKButton.Margin = new System.Windows.Forms.Padding(13, 3, 3, 3);
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.Name = "OKButton";
-        this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 2;
         this.OKButton.Text = "OK";
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Location = new System.Drawing.Point(958, 3);
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 3, 7, 3);
         this.Cancel_Button.Name = "Cancel_Button";
-        this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 3;
         this.Cancel_Button.Text = "Cancel";
         // 
         // ResetButton
         // 
-        this.ResetButton.AutoSize = true;
         this.ResetButton.Location = new System.Drawing.Point(789, 3);
         this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
         this.ResetButton.Name = "ResetButton";
-        this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.ResetButton.Size = new System.Drawing.Size(75, 23);
         this.ResetButton.TabIndex = 0;
         this.ResetButton.Text = "Reset";
         this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
@@ -360,15 +349,15 @@ sealed partial class FilterTagsForm
     private AngelLoader.Forms.CustomControls.DarkLabel IncludeAnyLabel;
     private AngelLoader.Forms.CustomControls.DarkLabel ExcludeLabel;
     private System.Windows.Forms.Panel FilterLabelsPanel;
-    private AngelLoader.Forms.CustomControls.DarkButton OKButton;
-    private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+    private AngelLoader.Forms.CustomControls.StandardButton OKButton;
+    private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedAndButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveAllAndButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveAllNotButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveAllOrButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedNotButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedOrButton;
-    private AngelLoader.Forms.CustomControls.DarkButton ResetButton;
+    private AngelLoader.Forms.CustomControls.StandardButton ResetButton;
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     private System.Windows.Forms.Panel MoveButtonsPanel;
     private System.Windows.Forms.ToolTip MainToolTip;

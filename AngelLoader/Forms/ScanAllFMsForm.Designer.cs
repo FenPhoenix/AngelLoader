@@ -40,8 +40,8 @@ sealed partial class ScanAllFMsForm
         this.TagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.SelectNoneButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.ScanButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.ScanButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ScanAllFMsForLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -156,29 +156,19 @@ sealed partial class ScanAllFMsForm
         // 
         // ScanButton
         // 
-        this.ScanButton.AutoSize = true;
-        this.ScanButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.ScanButton.Location = new System.Drawing.Point(251, 8);
         this.ScanButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-        this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.ScanButton.Name = "ScanButton";
-        this.ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.ScanButton.Size = new System.Drawing.Size(75, 23);
         this.ScanButton.TabIndex = 1;
         this.ScanButton.Text = "Scan";
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
-        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Location = new System.Drawing.Point(332, 8);
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
-        this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.Name = "Cancel_Button";
-        this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 0;
         this.Cancel_Button.Text = "Cancel";
         // 
@@ -268,8 +258,8 @@ sealed partial class ScanAllFMsForm
     private AngelLoader.Forms.CustomControls.DarkCheckBox TagsCheckBox;
     private AngelLoader.Forms.CustomControls.DarkButton SelectAllButton;
     private AngelLoader.Forms.CustomControls.DarkButton SelectNoneButton;
-    private AngelLoader.Forms.CustomControls.DarkButton ScanButton;
-    private AngelLoader.Forms.CustomControls.DarkButton Cancel_Button;
+    private AngelLoader.Forms.CustomControls.StandardButton ScanButton;
+    private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.DarkLabel ScanAllFMsForLabel;
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;

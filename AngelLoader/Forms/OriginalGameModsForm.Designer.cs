@@ -33,9 +33,9 @@ partial class OriginalGameModsForm
     {
         this.components = new System.ComponentModel.Container();
         this.OrigGameModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
         this.BottomFLP.SuspendLayout();
@@ -53,14 +53,10 @@ partial class OriginalGameModsForm
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.OKButton.Location = new System.Drawing.Point(364, 0);
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.Name = "OKButton";
-        this.OKButton.Size = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
         this.OKButton.Text = "OK";
         // 
@@ -78,14 +74,10 @@ partial class OriginalGameModsForm
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
-        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Location = new System.Drawing.Point(442, 0);
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(0);
-        this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.Name = "Cancel_Button";
-        this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 1;
         this.Cancel_Button.Text = "Cancel";
         // 
@@ -130,9 +122,9 @@ partial class OriginalGameModsForm
     #endregion
 
     private CustomControls.ModsControl OrigGameModsControl;
-    private CustomControls.DarkButton OKButton;
+    private CustomControls.StandardButton OKButton;
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private CustomControls.DarkButton Cancel_Button;
+    private CustomControls.StandardButton Cancel_Button;
     private CustomControls.DarkCheckBox NewMantleCheckBox;
     private System.Windows.Forms.ToolTip MainToolTip;
 }

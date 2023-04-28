@@ -9,9 +9,9 @@ partial class OriginalGameModsForm
     {
         this.components = new System.ComponentModel.Container();
         this.OrigGameModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
-        this.OKButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
         this.BottomFLP.SuspendLayout();
@@ -28,11 +28,8 @@ partial class OriginalGameModsForm
         // 
         // OKButton
         // 
-        this.OKButton.AutoSize = true;
-        this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
         this.OKButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-        this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
         this.OKButton.TabIndex = 0;
         // 
         // BottomFLP
@@ -48,11 +45,8 @@ partial class OriginalGameModsForm
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.AutoSize = true;
-        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         this.Cancel_Button.Margin = new System.Windows.Forms.Padding(0);
-        this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
         this.Cancel_Button.TabIndex = 1;
         // 
         // NewMantleCheckBox
