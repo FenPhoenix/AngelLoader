@@ -53,6 +53,7 @@ public sealed class StandardButton : DarkButton
         get => base.Padding;
         set => base.Padding = value;
     }
+#endif
 
     public StandardButton()
     {
@@ -61,6 +62,4 @@ public sealed class StandardButton : DarkButton
         MinimumSize = new Size(75, 23);
         Padding = new Padding(6, 0, 6, 0);
     }
-
-#endif
 }
