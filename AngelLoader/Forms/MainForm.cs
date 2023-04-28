@@ -666,44 +666,50 @@ public sealed partial class MainForm : DarkFormBase,
         DebugLabel = new DarkLabel();
         DebugLabel2 = new DarkLabel();
 
-        BottomPanel.Controls.Add(TestButton);
-        BottomPanel.Controls.Add(Test2Button);
-        BottomPanel.Controls.Add(Test3Button);
-        BottomPanel.Controls.Add(Test4Button);
-        BottomPanel.Controls.Add(DebugLabel);
-        BottomPanel.Controls.Add(DebugLabel2);
+        EverythingPanel.Controls.Add(TestButton);
+        EverythingPanel.Controls.Add(Test2Button);
+        EverythingPanel.Controls.Add(Test3Button);
+        EverythingPanel.Controls.Add(Test4Button);
+        EverythingPanel.Controls.Add(DebugLabel);
+        EverythingPanel.Controls.Add(DebugLabel2);
 
-        TestButton.Location = new Point(650, 0);
+        TestButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        TestButton.Location = new Point(650, 672);
         TestButton.Size = new Size(75, 22);
         TestButton.TabIndex = 999;
         TestButton.Text = "Test";
         TestButton.Click += TestButton_Click;
 
-        Test2Button.Location = new Point(650, 21);
+        Test2Button.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        Test2Button.Location = new Point(650, 672 + 21);
         Test2Button.Size = new Size(75, 22);
         Test2Button.TabIndex = 999;
         Test2Button.Text = "Test2";
         Test2Button.Click += Test2Button_Click;
 
-        Test3Button.Location = new Point(725, 0);
+        Test3Button.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        Test3Button.Location = new Point(725, 672 + 0);
         Test3Button.Size = new Size(75, 22);
         Test3Button.TabIndex = 999;
         Test3Button.Text = "Test3";
         Test3Button.Click += Test3Button_Click;
 
-        Test4Button.Location = new Point(725, 21);
+        Test4Button.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        Test4Button.Location = new Point(725, 672 + 21);
         Test4Button.Size = new Size(75, 22);
         Test4Button.TabIndex = 999;
         Test4Button.Text = "Test4";
         Test4Button.Click += Test4Button_Click;
 
+        DebugLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         DebugLabel.AutoSize = true;
-        DebugLabel.Location = new Point(804, 8);
+        DebugLabel.Location = new Point(804, 672 + 8);
         DebugLabel.Size = new Size(71, 13);
         DebugLabel.Text = "[DebugLabel]";
 
+        DebugLabel2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         DebugLabel2.AutoSize = true;
-        DebugLabel2.Location = new Point(804, 24);
+        DebugLabel2.Location = new Point(804, 672 + 24);
         DebugLabel2.Size = new Size(77, 13);
         DebugLabel2.Text = "[DebugLabel2]";
 
@@ -4145,7 +4151,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         try
         {
-            BottomPanel.SuspendDrawing();
+            EverythingPanel.SuspendDrawing();
 
             if (Config.PlayOriginalSeparateButtons)
             {
@@ -4160,7 +4166,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         finally
         {
-            BottomPanel.ResumeDrawing();
+            EverythingPanel.ResumeDrawing();
         }
     }
 

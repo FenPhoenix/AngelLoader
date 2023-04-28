@@ -48,7 +48,6 @@ sealed partial class MainForm
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
         this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-        this.BottomPanel = new System.Windows.Forms.Panel();
         this.BottomRightFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.FMCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -118,7 +117,6 @@ sealed partial class MainForm
         this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
         this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-        this.BottomPanel.SuspendLayout();
         this.BottomRightFLP.SuspendLayout();
         this.BottomLeftFLP.SuspendLayout();
         this.EverythingPanel.SuspendLayout();
@@ -147,25 +145,15 @@ sealed partial class MainForm
         this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
         this.GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
         // 
-        // BottomPanel
-        // 
-        this.BottomPanel.Controls.Add(this.BottomRightFLP);
-        this.BottomPanel.Controls.Add(this.BottomLeftFLP);
-        this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-        this.BottomPanel.Location = new System.Drawing.Point(0, 672);
-        this.BottomPanel.Name = "BottomPanel";
-        this.BottomPanel.Size = new System.Drawing.Size(1671, 44);
-        this.BottomPanel.TabIndex = 1;
-        // 
         // BottomRightFLP
         // 
-        this.BottomRightFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomRightFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
         this.BottomRightFLP.AutoSize = true;
         this.BottomRightFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.BottomRightFLP.Controls.Add(this.SettingsButton);
         this.BottomRightFLP.Controls.Add(this.FMCountLabel);
         this.BottomRightFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-        this.BottomRightFLP.Location = new System.Drawing.Point(1490, 0);
+        this.BottomRightFLP.Location = new System.Drawing.Point(1490, 672);
         this.BottomRightFLP.Name = "BottomRightFLP";
         this.BottomRightFLP.Size = new System.Drawing.Size(179, 42);
         this.BottomRightFLP.TabIndex = 37;
@@ -189,7 +177,7 @@ sealed partial class MainForm
         // FMCountLabel
         // 
         this.FMCountLabel.AutoSize = true;
-        this.FMCountLabel.Location = new System.Drawing.Point(3, 7);
+        this.FMCountLabel.Location = new System.Drawing.Point(3, 1);
         this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 1, 0, 0);
         this.FMCountLabel.Name = "FMCountLabel";
         this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
@@ -198,11 +186,12 @@ sealed partial class MainForm
         // 
         // BottomLeftFLP
         // 
+        this.BottomLeftFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
         this.BottomLeftFLP.AutoSize = true;
         this.BottomLeftFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.BottomLeftFLP.Controls.Add(this.PlayFMButton);
         this.BottomLeftFLP.Controls.Add(this.PlayOriginalFLP);
-        this.BottomLeftFLP.Location = new System.Drawing.Point(2, 0);
+        this.BottomLeftFLP.Location = new System.Drawing.Point(2, 672);
         this.BottomLeftFLP.Name = "BottomLeftFLP";
         this.BottomLeftFLP.Size = new System.Drawing.Size(100, 42);
         this.BottomLeftFLP.TabIndex = 36;
@@ -236,7 +225,8 @@ sealed partial class MainForm
         // 
         this.EverythingPanel.AllowDrop = true;
         this.EverythingPanel.Controls.Add(this.MainSplitContainer);
-        this.EverythingPanel.Controls.Add(this.BottomPanel);
+        this.EverythingPanel.Controls.Add(this.BottomRightFLP);
+        this.EverythingPanel.Controls.Add(this.BottomLeftFLP);
         this.EverythingPanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.EverythingPanel.Location = new System.Drawing.Point(0, 0);
         this.EverythingPanel.Name = "EverythingPanel";
@@ -247,8 +237,10 @@ sealed partial class MainForm
         // 
         // MainSplitContainer
         // 
+        this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-        this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
         this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
         this.MainSplitContainer.Name = "MainSplitContainer";
         this.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -1097,13 +1089,12 @@ sealed partial class MainForm
         this.Text = "AngelLoader";
         this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
         this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
-        this.BottomPanel.ResumeLayout(false);
-        this.BottomPanel.PerformLayout();
         this.BottomRightFLP.ResumeLayout(false);
         this.BottomRightFLP.PerformLayout();
         this.BottomLeftFLP.ResumeLayout(false);
         this.BottomLeftFLP.PerformLayout();
         this.EverythingPanel.ResumeLayout(false);
+        this.EverythingPanel.PerformLayout();
         this.MainSplitContainer.Panel1.ResumeLayout(false);
         this.MainSplitContainer.Panel2.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
@@ -1252,8 +1243,6 @@ sealed partial class MainForm
     #endregion
 
     #region Bottom
-
-    internal System.Windows.Forms.Panel BottomPanel;
 
     internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
     internal CustomControls.DarkButton PlayFMButton;

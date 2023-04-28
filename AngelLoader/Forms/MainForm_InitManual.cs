@@ -28,7 +28,6 @@ public sealed partial class MainForm
     {
         components = new Container();
         GameTabsImageList = new ImageList(components);
-        BottomPanel = new Panel();
         BottomRightFLP = new FlowLayoutPanel();
         FMCountLabel = new DarkLabel();
         SettingsButton = new DarkButton();
@@ -98,7 +97,6 @@ public sealed partial class MainForm
         ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
         ReadmeRichTextBox = new RichTextBoxCustom();
         MainToolTip = new ToolTip(components);
-        BottomPanel.SuspendLayout();
         BottomRightFLP.SuspendLayout();
         BottomLeftFLP.SuspendLayout();
         EverythingPanel.SuspendLayout();
@@ -128,25 +126,17 @@ public sealed partial class MainForm
         // 
         GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
         // 
-        // BottomPanel
-        // 
-        BottomPanel.Controls.Add(BottomRightFLP);
-        BottomPanel.Controls.Add(BottomLeftFLP);
-        BottomPanel.Dock = DockStyle.Bottom;
-        BottomPanel.Size = new Size(1671, 44);
-        BottomPanel.TabIndex = 1;
-        // 
         // BottomRightFLP
         // 
-        BottomRightFLP.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        BottomRightFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         BottomRightFLP.AutoSize = true;
         BottomRightFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         BottomRightFLP.Controls.Add(SettingsButton);
         BottomRightFLP.Controls.Add(FMCountLabel);
         BottomRightFLP.FlowDirection = FlowDirection.RightToLeft;
-        BottomRightFLP.Location = new Point(1490, 0);
-        // Needs width to be anchored correctly
-        BottomRightFLP.Width = 179;
+        BottomRightFLP.Location = new Point(1490, 672);
+        // Size is required for bottom-anchor
+        BottomRightFLP.Size = new Size(179, 42);
         BottomRightFLP.TabIndex = 37;
         BottomRightFLP.Paint += BottomRightFLP_Paint;
         // 
@@ -168,11 +158,14 @@ public sealed partial class MainForm
         // 
         // BottomLeftFLP
         // 
+        BottomLeftFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         BottomLeftFLP.AutoSize = true;
         BottomLeftFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         BottomLeftFLP.Controls.Add(PlayFMButton);
         BottomLeftFLP.Controls.Add(PlayOriginalFLP);
-        BottomLeftFLP.Location = new Point(2, 0);
+        BottomLeftFLP.Location = new Point(2, 672);
+        // Size is required for bottom-anchor
+        BottomLeftFLP.Size = new Size(100, 42);
         BottomLeftFLP.TabIndex = 36;
         BottomLeftFLP.Paint += BottomLeftFLP_Paint;
         // 
@@ -197,7 +190,8 @@ public sealed partial class MainForm
         // 
         EverythingPanel.AllowDrop = true;
         EverythingPanel.Controls.Add(MainSplitContainer);
-        EverythingPanel.Controls.Add(BottomPanel);
+        EverythingPanel.Controls.Add(BottomRightFLP);
+        EverythingPanel.Controls.Add(BottomLeftFLP);
         EverythingPanel.Dock = DockStyle.Fill;
         EverythingPanel.Size = new Size(1671, 716);
         EverythingPanel.TabIndex = 4;
@@ -206,8 +200,8 @@ public sealed partial class MainForm
         // 
         // MainSplitContainer
         // 
+        MainSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         MainSplitContainer.BackColor = SystemColors.ActiveBorder;
-        MainSplitContainer.Dock = DockStyle.Fill;
         MainSplitContainer.Orientation = Orientation.Horizontal;
         // 
         // MainSplitContainer.Panel1
@@ -742,13 +736,12 @@ public sealed partial class MainForm
         MinimumSize = new Size(894, 260);
         ShowInTaskbar = true;
         KeyDown += MainForm_KeyDown;
-        BottomPanel.ResumeLayout(false);
-        BottomPanel.PerformLayout();
         BottomRightFLP.ResumeLayout(false);
         BottomRightFLP.PerformLayout();
         BottomLeftFLP.ResumeLayout(false);
         BottomLeftFLP.PerformLayout();
         EverythingPanel.ResumeLayout(false);
+        EverythingPanel.PerformLayout();
         MainSplitContainer.Panel1.ResumeLayout(false);
         MainSplitContainer.Panel2.ResumeLayout(false);
         ((ISupportInitialize)MainSplitContainer).EndInit();
