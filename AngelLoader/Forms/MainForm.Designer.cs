@@ -425,7 +425,6 @@ sealed partial class MainForm
         this.GameTypeColumn.MinimumWidth = 25;
         this.GameTypeColumn.Name = "GameTypeColumn";
         this.GameTypeColumn.ReadOnly = true;
-        this.GameTypeColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
         this.GameTypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
         // 
         // InstalledColumn
@@ -435,7 +434,6 @@ sealed partial class MainForm
         this.InstalledColumn.MinimumWidth = 25;
         this.InstalledColumn.Name = "InstalledColumn";
         this.InstalledColumn.ReadOnly = true;
-        this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
         this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
         // 
         // MisCountColumn

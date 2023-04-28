@@ -347,7 +347,6 @@ public sealed partial class MainForm
         GameTypeColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
         GameTypeColumn.MinimumWidth = 25;
         GameTypeColumn.ReadOnly = true;
-        GameTypeColumn.Resizable = DataGridViewTriState.True;
         GameTypeColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
         // 
         // InstalledColumn
@@ -355,7 +354,6 @@ public sealed partial class MainForm
         InstalledColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
         InstalledColumn.MinimumWidth = 25;
         InstalledColumn.ReadOnly = true;
-        InstalledColumn.Resizable = DataGridViewTriState.True;
         InstalledColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
         // 
         // MisCountColumn
