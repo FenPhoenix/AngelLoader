@@ -77,7 +77,6 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             groupBox.Location = new Point(8, y);
             groupBox.Size = new Size(536, 80);
             groupBox.TabIndex = i + 1;
-            groupBox.TabStop = false;
 
             GameIniItems[i].GroupBox = groupBox;
             GameIniItems[i].AutodetectCheckBox = checkBox;

@@ -192,7 +192,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
             {
                 Location = new Point(16, 8),
                 Size = new Size(14, 14),
-                TabStop = false,
                 Visible = false
             };
             _errorLabel = new DarkLabel
