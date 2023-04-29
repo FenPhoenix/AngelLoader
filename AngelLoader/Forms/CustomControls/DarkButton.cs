@@ -62,7 +62,9 @@ public class DarkButton : Button, IDarkable
     }
 
     [PublicAPI]
+    [Browsable(false)]
     [DefaultValue(true)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool UseVisualStyleBackColor
     {
         get => base.UseVisualStyleBackColor;
