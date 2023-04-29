@@ -83,7 +83,7 @@ sealed partial class FilterTagsForm
         this.AndButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.AndButton.TabIndex = 0;
         this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.AndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+        this.AndButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ArrowButtons_Paint);
         this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
         // OrButton
@@ -94,7 +94,7 @@ sealed partial class FilterTagsForm
         this.OrButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.OrButton.TabIndex = 1;
         this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.OrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+        this.OrButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ArrowButtons_Paint);
         this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
         // NotButton
@@ -105,7 +105,7 @@ sealed partial class FilterTagsForm
         this.NotButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
         this.NotButton.TabIndex = 2;
         this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.NotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ArrowButtons_Paint);
+        this.NotButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ArrowButtons_Paint);
         this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
         // 
         // IncludeAllLabel
@@ -143,7 +143,7 @@ sealed partial class FilterTagsForm
         this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
         this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllNotButton.TabIndex = 8;
-        this.RemoveAllNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+        this.RemoveAllNotButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveAllButtons_Paint);
         this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
         // RemoveAllOrButton
@@ -151,7 +151,7 @@ sealed partial class FilterTagsForm
         this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
         this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllOrButton.TabIndex = 5;
-        this.RemoveAllOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+        this.RemoveAllOrButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveAllButtons_Paint);
         this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
         // RemoveAllAndButton
@@ -159,7 +159,7 @@ sealed partial class FilterTagsForm
         this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
         this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveAllAndButton.TabIndex = 2;
-        this.RemoveAllAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
+        this.RemoveAllAndButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveAllButtons_Paint);
         this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
         // 
         // RemoveSelectedNotButton
@@ -167,7 +167,7 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
         this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedNotButton.TabIndex = 7;
-        this.RemoveSelectedNotButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+        this.RemoveSelectedNotButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveButtons_Paint);
         this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
         // RemoveSelectedOrButton
@@ -175,7 +175,7 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
         this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedOrButton.TabIndex = 4;
-        this.RemoveSelectedOrButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+        this.RemoveSelectedOrButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveButtons_Paint);
         this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
         // RemoveSelectedAndButton
@@ -183,7 +183,7 @@ sealed partial class FilterTagsForm
         this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
         this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveSelectedAndButton.TabIndex = 1;
-        this.RemoveSelectedAndButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
+        this.RemoveSelectedAndButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveButtons_Paint);
         this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
         // 
         // OKButton

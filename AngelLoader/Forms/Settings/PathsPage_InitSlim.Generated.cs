@@ -175,7 +175,7 @@ sealed partial class PathsPage
         this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
         this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
         this.AddFMArchivePathButton.TabIndex = 3;
-        this.AddFMArchivePathButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.AddFMArchivePathButton_Paint);
+        this.AddFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.AddFMArchivePathButton_Paint);
         // 
         // RemoveFMArchivePathButton
         // 
@@ -183,7 +183,7 @@ sealed partial class PathsPage
         this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
         this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
         this.RemoveFMArchivePathButton.TabIndex = 2;
-        this.RemoveFMArchivePathButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.RemoveFMArchivePathButton_Paint);
+        this.RemoveFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveFMArchivePathButton_Paint);
         // 
         // FMArchivePathsListBox
         // 

@@ -152,7 +152,7 @@ sealed partial class OtherPage
         this.WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 47);
         this.WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
         this.WebSearchUrlResetButton.TabIndex = 2;
-        this.WebSearchUrlResetButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.WebSearchUrlResetButton_Paint);
+        this.WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
         // 
         // WebSearchTitleExplanationLabel
         // 

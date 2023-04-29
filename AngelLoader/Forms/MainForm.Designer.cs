@@ -171,7 +171,7 @@ sealed partial class MainForm
         this.SettingsButton.Size = new System.Drawing.Size(100, 36);
         this.SettingsButton.TabIndex = 62;
         this.SettingsButton.Text = "Settings...";
-        this.SettingsButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.SettingsButton_Paint);
+        this.SettingsButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.SettingsButton_Paint);
         this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
         // 
         // FMCountLabel
@@ -209,7 +209,7 @@ sealed partial class MainForm
         this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
         this.PlayFMButton.TabIndex = 56;
         this.PlayFMButton.Text = "Play FM";
-        this.PlayFMButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
+        this.PlayFMButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.PlayFMButton_Paint);
         this.PlayFMButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
         // 
         // PlayOriginalFLP
@@ -310,7 +310,7 @@ sealed partial class MainForm
         this.MainMenuButton.Name = "MainMenuButton";
         this.MainMenuButton.Size = new System.Drawing.Size(24, 24);
         this.MainMenuButton.TabIndex = 14;
-        this.MainMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.MainMenuButton_Paint);
+        this.MainMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.MainMenuButton_Paint);
         this.MainMenuButton.Click += new System.EventHandler(this.MainMenuButton_Click);
         this.MainMenuButton.Enter += new System.EventHandler(this.MainMenuButton_Enter);
         // 
@@ -857,7 +857,7 @@ sealed partial class MainForm
         this.ResetLayoutButton.Size = new System.Drawing.Size(21, 21);
         this.ResetLayoutButton.TabIndex = 13;
         this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
-        this.ResetLayoutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ResetLayoutButton_Paint);
+        this.ResetLayoutButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ResetLayoutButton_Paint);
         this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
         // 
         // GamesTabControl
@@ -877,7 +877,7 @@ sealed partial class MainForm
         this.TopRightMenuButton.Name = "TopRightMenuButton";
         this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
         this.TopRightMenuButton.TabIndex = 13;
-        this.TopRightMenuButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.TopRightMenuButton_Paint);
+        this.TopRightMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.TopRightMenuButton_Paint);
         this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
         // 
         // TopRightCollapseButton
@@ -977,7 +977,7 @@ sealed partial class MainForm
         this.ReadmeEncodingButton.TabIndex = 2;
         this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
         this.ReadmeEncodingButton.Visible = false;
-        this.ReadmeEncodingButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeEncodingButton_Paint);
+        this.ReadmeEncodingButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeEncodingButton_Paint);
         this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
         this.ReadmeEncodingButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
@@ -993,7 +993,7 @@ sealed partial class MainForm
         this.ReadmeFullScreenButton.TabIndex = 6;
         this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
         this.ReadmeFullScreenButton.Visible = false;
-        this.ReadmeFullScreenButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
+        this.ReadmeFullScreenButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeFullScreenButton_Paint);
         this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
         this.ReadmeFullScreenButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
@@ -1010,7 +1010,7 @@ sealed partial class MainForm
         this.ReadmeZoomInButton.TabIndex = 3;
         this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
         this.ReadmeZoomInButton.Visible = false;
-        this.ReadmeZoomInButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
+        this.ReadmeZoomInButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomInButtons_Paint);
         this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
         this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
@@ -1027,7 +1027,7 @@ sealed partial class MainForm
         this.ReadmeZoomOutButton.TabIndex = 4;
         this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
         this.ReadmeZoomOutButton.Visible = false;
-        this.ReadmeZoomOutButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
+        this.ReadmeZoomOutButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomOutButtons_Paint);
         this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
         this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
@@ -1044,7 +1044,7 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton.TabIndex = 5;
         this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
         this.ReadmeResetZoomButton.Visible = false;
-        this.ReadmeResetZoomButton.PaintCustom += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
+        this.ReadmeResetZoomButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomResetButtons_Paint);
         this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
         this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 

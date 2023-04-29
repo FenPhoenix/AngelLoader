@@ -217,7 +217,7 @@ public class DarkButton : Button, IDarkable
     #region Event Handler Region
 
     // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
-    public event PaintEventHandler? PaintCustom;
+    public event EventHandler<PaintEventArgs>? PaintCustom;
 
     protected override void OnMouseMove(MouseEventArgs e)
     {

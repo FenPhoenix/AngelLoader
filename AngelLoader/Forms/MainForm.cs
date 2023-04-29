@@ -5106,7 +5106,7 @@ public sealed partial class MainForm : DarkFormBase,
         MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
     }
 
-    private void TopRightTabBar_MouseClick(object _, MouseEventArgs e)
+    private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {
