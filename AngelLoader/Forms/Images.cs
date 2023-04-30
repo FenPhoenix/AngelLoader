@@ -232,8 +232,8 @@ public static class Images
     // Inner path starts at index 7
     private static readonly byte[] _finishedCheckTypes = MakeTypeArray((1, 5, 0, 129), (1, 5, 0, 129));
 
-    private static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
-    private static readonly byte[] FinishedCheckInnerTypes = new byte[7];
+    private static readonly PointF[] _finishedCheckInnerPoints = new PointF[7];
+    private static readonly byte[] _finishedCheckInnerTypes = new byte[7];
 
     private static GraphicsPath? _finishedCheckGPath;
     private static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
@@ -763,7 +763,7 @@ public static class Images
     );
 
     // Explicit pen for this because we need to set the width
-    private static readonly Pen PlayArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
+    private static readonly Pen _playArrowDisabledPen = new Pen(SystemColors.ControlDark, 2.5f);
 
     #endregion
 
@@ -861,7 +861,7 @@ public static class Images
         }
     }
 
-    private static readonly PerGameImage[] PerGameImageGetters = InitPerGameImageGetters();
+    private static readonly PerGameImage[] _perGameImageGetters = InitPerGameImageGetters();
 
     private static PerGameImage[] InitPerGameImageGetters()
     {
@@ -884,7 +884,7 @@ public static class Images
         return ret;
     }
 
-    public static PerGameImage GetPerGameImage(GameIndex gameIndex) => PerGameImageGetters[(int)gameIndex];
+    public static PerGameImage GetPerGameImage(GameIndex gameIndex) => _perGameImageGetters[(int)gameIndex];
 
     #endregion
 
@@ -913,10 +913,10 @@ public static class Images
             : _ss2_16 ??= Resources.SS2_16;
 
     private static Bitmap? _t1_21;
-    private static Bitmap? t1_21_Dark;
+    private static Bitmap? _t1_21_Dark;
     private static Bitmap Thief1_21() =>
         Config.DarkMode
-            ? t1_21_Dark ??= Resources.T1_21_Dark
+            ? _t1_21_Dark ??= Resources.T1_21_Dark
             : _t1_21 ??= Resources.T1_21;
 
     private static Bitmap? _t1_21_dark_DarkBG;
@@ -1170,7 +1170,7 @@ public static class Images
         FMsList_FinishedOnIcons.DisposeRange(1, FMsList_FinishedOnIcons.Length);
         FMsList_FinishedOnIcons[0] = Blank;
 
-        Bitmap?[] _finishedOnBitmaps = new Bitmap?[DifficultyCount];
+        Bitmap?[] finishedOnBitmaps = new Bitmap?[DifficultyCount];
         try
         {
             var list = new List<Bitmap>(4);
@@ -1187,7 +1187,7 @@ public static class Images
                 {
                     if (difficulty.HasFlagFast((Difficulty)at))
                     {
-                        list.Add(_finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(dI));
+                        list.Add(finishedOnBitmaps[dI] ??= CreateFinishedOnBitmap(dI));
                     }
                 }
 
@@ -1212,7 +1212,7 @@ public static class Images
         }
         finally
         {
-            _finishedOnBitmaps.DisposeAll();
+            finishedOnBitmaps.DisposeAll();
         }
     }
 
@@ -1312,13 +1312,13 @@ public static class Images
             const int pointsCount = 14;
             for (int i = 0, j = 7; j < pointsCount; i++, j++)
             {
-                FinishedCheckInnerPoints[i] = gp.PathPoints[j];
-                FinishedCheckInnerTypes[i] = gp.PathTypes[j];
+                _finishedCheckInnerPoints[i] = gp.PathPoints[j];
+                _finishedCheckInnerTypes[i] = gp.PathTypes[j];
             }
 
             using var innerGP = new GraphicsPath(
-                FinishedCheckInnerPoints,
-                FinishedCheckInnerTypes);
+                _finishedCheckInnerPoints,
+                _finishedCheckInnerTypes);
 
             g.FillPath(fillBrush, innerGP);
         }
@@ -1651,7 +1651,7 @@ public static class Images
     internal static void PaintPlayOriginalButton(Button button, PaintEventArgs e)
     {
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        e.Graphics.DrawPolygon(button.Enabled ? _playArrowPen.Pen : PlayArrowDisabledPen, _playOriginalArrowPoints);
+        e.Graphics.DrawPolygon(button.Enabled ? _playArrowPen.Pen : _playArrowDisabledPen, _playOriginalArrowPoints);
     }
 
     internal static void PaintBitmapButton(
