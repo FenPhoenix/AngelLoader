@@ -213,7 +213,7 @@ internal static class FastIO
                 (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT &&
                 findData.cFileName != "." && findData.cFileName != "..")
             {
-                if (AL_Common.LanguageSupport.LanguageIsSupported(findData.cFileName))
+                if (LanguageSupport.LanguageIsSupported(findData.cFileName))
                 {
                     // Add lang dir to found langs list, but not to search list - don't search within lang
                     // dirs (matching FMSel behavior)
