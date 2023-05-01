@@ -609,7 +609,7 @@ public sealed partial class Scanner : IDisposable
             ErrorInfo = errorInfo
         };
 
-        ulong? sevenZipSize = null;
+        ulong sevenZipSize = 0;
 
         #region Setup
 
@@ -1028,16 +1028,20 @@ public sealed partial class Scanner : IDisposable
 
         #region Size
 
-        // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
-        // some time later by using the FileInfo list as a cache.
         if (_scanOptions.ScanSize)
         {
             if (_fmIsZip)
             {
                 fmData.Size = (ulong)_archive.ArchiveStreamLength;
             }
+            else if (_fmIsSevenZip)
+            {
+                fmData.Size = sevenZipSize;
+            }
             else
             {
+                // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
+                // some time later by using the FileInfo list as a cache.
                 if (_fmDirFileInfos.Count == 0)
                 {
                     // PERF: AddRange() is a fat slug, do Add() in a loop instead
@@ -1046,19 +1050,10 @@ public sealed partial class Scanner : IDisposable
                     if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
                     for (int i = 0; i < fileInfos.Length; i++)
                     {
-                        _fmDirFileInfos.Add(new FileInfoCustom(fileInfos[i]));
+                        var fi = new FileInfoCustom(fileInfos[i]);
+                        _fmDirFileInfos.Add(fi);
+                        fmData.Size = (ulong)fi.Length;
                     }
-                }
-
-                if (_fmIsSevenZip)
-                {
-                    fmData.Size = sevenZipSize;
-                }
-                else
-                {
-                    long size = 0;
-                    foreach (FileInfoCustom fi in _fmDirFileInfos) size += fi.Length;
-                    fmData.Size = (ulong)size;
                 }
             }
         }
