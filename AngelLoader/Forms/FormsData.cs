@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace AngelLoader.Forms;
+﻿namespace AngelLoader.Forms;
 
 internal static class FormsData
 {
-    internal static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
+    internal const int ZoomTypesCount = 3;
 }
 
 /// <summary>
