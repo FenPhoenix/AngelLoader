@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using AL_Common;
 using static AL_Common.Common;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -16,7 +18,7 @@ internal sealed class ColumnData
     internal Column Id;
 
     private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnsCount - 1); }
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
 
     private int _width = Defaults.ColumnWidth;
     internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
@@ -25,6 +27,7 @@ internal sealed class ColumnData
 }
 
 // Public for interface use
+[FenGenEnumCount]
 public enum Column
 {
 #if DateAccTest
@@ -48,6 +51,7 @@ public enum Column
 
 #endregion
 
+[FenGenEnumCount]
 public enum HideableFilterControls
 {
     Title,
@@ -353,6 +357,7 @@ internal sealed class TagsFilter
 #endregion
 
 // IMPORTANT: SettingsTab enum used as indexes; don't reorder
+[FenGenEnumCount]
 internal enum SettingsTab
 {
     Paths,

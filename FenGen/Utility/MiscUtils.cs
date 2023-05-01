@@ -165,6 +165,56 @@ internal static partial class Misc
         return (attrMarkedItems[0], retAttr!);
     }
 
+    internal sealed class AttrMarkedItem
+    {
+        internal readonly MemberDeclarationSyntax Member;
+        internal readonly List<AttributeSyntax> Attributes = new();
+
+        internal AttrMarkedItem(MemberDeclarationSyntax member)
+        {
+            Member = member;
+        }
+    }
+
+    [PublicAPI]
+    internal static List<AttrMarkedItem>
+    GetAttrMarkedItems(SyntaxTree tree, SyntaxKind syntaxKind, params string[] attrNames)
+    {
+        var ret = new List<AttrMarkedItem>();
+
+        var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
+        foreach (SyntaxNode n in nodes)
+        {
+            if (!n.IsKind(syntaxKind)) continue;
+
+            var item = (MemberDeclarationSyntax)n;
+            if (item.AttributeLists.Count > 0)
+            {
+                foreach (var attrList in item.AttributeLists)
+                {
+                    if (attrList.Attributes.Count > 0)
+                    {
+                        var attrMarkedItem = new AttrMarkedItem(item);
+                        ret.Add(attrMarkedItem);
+
+                        foreach (var attr in attrList.Attributes)
+                        {
+                            foreach (string attrName in attrNames)
+                            {
+                                if (GetAttributeName(attr.Name.ToString(), attrName))
+                                {
+                                    attrMarkedItem.Attributes.Add(attr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
     /// <summary>
     /// Matches an attribute, ignoring the "Attribute" suffix if it exists in either string
     /// </summary>

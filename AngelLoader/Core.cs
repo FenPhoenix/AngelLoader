@@ -369,7 +369,7 @@ internal static class Core
         Config.SettingsWindowSize = outConfig.SettingsWindowSize;
         Config.SettingsWindowSplitterDistance = outConfig.SettingsWindowSplitterDistance;
 
-        for (int i = 0; i < SettingsTabsCount; i++)
+        for (int i = 0; i < SettingsTabCount; i++)
         {
             SettingsTab tab = (SettingsTab)i;
             Config.SetSettingsTabVScrollPos(tab, outConfig.GetSettingsTabVScrollPos(tab));
@@ -2375,7 +2375,7 @@ internal static class Core
 
         #region FMs list
 
-        Array.Copy(columns, Config.Columns, ColumnsCount);
+        Array.Copy(columns, Config.Columns, ColumnCount);
 
         Config.SortedColumn = sortedColumn;
         Config.SortDirection = sortDirection;

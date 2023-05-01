@@ -553,7 +553,7 @@ internal static partial class Ini
                     for (int crI = 1; crI < CustomResourcesCount; crI++, at <<= 1)
                     {
                         CustomResources cr = (CustomResources)at;
-                        if (fieldsString.SegmentEquals(curStart, i, CustomResourceNames[crI]))
+                        if (fieldsString.SegmentEquals(curStart, i, CustomResourcesNames[crI]))
                         {
                             SetFMResource(fm, cr, true);
                             break;
@@ -583,7 +583,7 @@ internal static partial class Ini
             if ((resources & (CustomResources)at) != 0)
             {
                 if (notEmpty) sb.Append(',');
-                sb.Append(CustomResourceNames[i]);
+                sb.Append(CustomResourcesNames[i]);
                 notEmpty = true;
             }
         }

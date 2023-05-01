@@ -53,7 +53,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private VisualTheme _selfTheme;
 
     private readonly (DarkRadioButtonCustom Button, ISettingsPage Page)[] PageControls;
-    private readonly int?[] _pageVScrollValues = new int?[SettingsTabsCount];
+    private readonly int?[] _pageVScrollValues = new int?[SettingsTabCount];
 
     private readonly DarkTextBox[] ExePathTextBoxes;
     private readonly Control[] ErrorableControls;
@@ -214,14 +214,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (ThiefBuddyRadioButton, ThiefBuddyPage)
         };
 
-        AssertR(PageControls.Length == SettingsTabsCount, "Page control count doesn't match " + nameof(SettingsTabsCount));
-        AssertR(HelpSections.SettingsPages.Length == SettingsTabsCount,
+        AssertR(PageControls.Length == SettingsTabCount, "Page control count doesn't match " + nameof(SettingsTabCount));
+        AssertR(HelpSections.SettingsPages.Length == SettingsTabCount,
             nameof(HelpSections) + "." + nameof(HelpSections.SettingsPages) + " doesn't match " +
-            nameof(SettingsTabsCount));
+            nameof(SettingsTabCount));
 
         // These are nullable because null values get put INTO them later. So not a mistake to fill them with
         // non-nullable ints right off the bat.
-        for (int i = 0; i < SettingsTabsCount; i++)
+        for (int i = 0; i < SettingsTabCount; i++)
         {
             SettingsTab tab = (SettingsTab)i;
             _pageVScrollValues[i] = config.GetSettingsTabVScrollPos(tab);
@@ -230,7 +230,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         #region Add pages
 
         // We set DockStyle here so that it isn't set when we use the designer!
-        for (int i = 0; i < SettingsTabsCount; i++)
+        for (int i = 0; i < SettingsTabCount; i++)
         {
             PageControls[i].Page.Dock = DockStyle.Fill;
         }
@@ -248,7 +248,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
         else
         {
-            for (int i = 0; i < SettingsTabsCount; i++)
+            for (int i = 0; i < SettingsTabCount; i++)
             {
                 PagePanel.Controls.Add((Control)PageControls[i].Page);
             }
@@ -267,7 +267,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
                 PathsRadioButton.Checked = true;
-                for (int i = 0; i < SettingsTabsCount; i++)
+                for (int i = 0; i < SettingsTabCount; i++)
                 {
                     DarkRadioButtonCustom button = PageControls[i].Button;
                     if (button != PathsRadioButton) button.Hide();
@@ -942,7 +942,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         // Special case: these are meta, so they should always be set even if the user clicked Cancel
         OutConfig.SettingsTab = SettingsTab.Paths;
-        for (int i = 0; i < SettingsTabsCount; i++)
+        for (int i = 0; i < SettingsTabCount; i++)
         {
             if (PageControls[i].Button.Checked)
             {
@@ -956,7 +956,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         // If some pages haven't had their vertical scroll value loaded, just take the value from the backing
         // store
-        for (int i = 0; i < SettingsTabsCount; i++)
+        for (int i = 0; i < SettingsTabCount; i++)
         {
             SettingsTab tab = (SettingsTab)i;
             OutConfig.SetSettingsTabVScrollPos(tab, _pageVScrollValues[i] ?? PageControls[i].Page.GetVScrollPos());
@@ -1901,7 +1901,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             components?.Dispose();
             // If we're on startup, only PathsPage will have been added, so others must be manually disposed.
             // Just dispose them all if they need it, to be thorough.
-            for (int i = 0; i < SettingsTabsCount; i++)
+            for (int i = 0; i < SettingsTabCount; i++)
             {
                 PageControls[i].Page.Dispose();
             }

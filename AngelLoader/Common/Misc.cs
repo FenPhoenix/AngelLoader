@@ -7,22 +7,11 @@ using AngelLoader.DataClasses;
 
 namespace AngelLoader;
 
-public static class Misc
+public static partial class Misc
 {
     //internal const int AppConfigVersion = 1;
     // Commented so that old versions of AngelLoader will ignore it
     //internal const string ConfigVersionHeader = ";@Version:";
-
-    #region Enum counts
-
-    internal static readonly int ColumnsCount = Enum.GetValues(typeof(Column)).Length;
-    internal static readonly int HideableFilterControlsCount = Enum.GetValues(typeof(HideableFilterControls)).Length;
-    internal static readonly string[] CustomResourceNames = Enum.GetNames(typeof(CustomResources));
-    internal static readonly int CustomResourcesCount = CustomResourceNames.Length;
-    internal static readonly int SettingsTabsCount = Enum.GetValues(typeof(SettingsTab)).Length;
-    internal static readonly int DifficultyCount = Enum.GetValues(typeof(Difficulty)).Length - 1;
-
-    #endregion
 
     #region Enums and enum-like
 
@@ -131,7 +120,7 @@ public static class Misc
 
     #endregion
 
-    public static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnsCount];
+    public static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnCount];
 
     static Misc()
     {

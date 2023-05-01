@@ -16,7 +16,7 @@ rem ---
 rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
 set "FenGen=%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
-set fenGenArgs=-fmd -lang_t -bd -des -game -cr
+set fenGenArgs=-fmd -lang_t -bd -des -game -cr -ed
 
 %FenGen% %fenGenArgs%
 rem ---

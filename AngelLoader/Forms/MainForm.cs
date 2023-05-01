@@ -3224,7 +3224,7 @@ public sealed partial class MainForm : DarkFormBase,
             bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
             // Must be done first, else we get wrong values
-            var widthMul = new List<double>(ColumnsCount);
+            var widthMul = new List<double>(ColumnCount);
             foreach (DataGridViewColumn c in FMsDGV.Columns)
             {
                 Size size = c.HeaderCell.Size;

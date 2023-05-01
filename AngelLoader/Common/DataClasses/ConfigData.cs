@@ -57,8 +57,8 @@ public sealed class ConfigData
         }
 
         // Must set the display indexes, otherwise we crash!
-        Columns = new ColumnData[ColumnsCount];
-        for (int i = 0; i < ColumnsCount; i++)
+        Columns = new ColumnData[ColumnCount];
+        for (int i = 0; i < ColumnCount; i++)
         {
             Columns[i] = new ColumnData { Id = (Column)i, DisplayIndex = i };
         }
@@ -344,7 +344,7 @@ public sealed class ConfigData
     internal Size SettingsWindowSize = Defaults.SettingsWindowSize;
     internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
 
-    private readonly int[] _settingsVScrollPositions = new int[SettingsTabsCount];
+    private readonly int[] _settingsVScrollPositions = new int[SettingsTabCount];
     internal void SetSettingsTabVScrollPos(SettingsTab tab, int value) => _settingsVScrollPositions[(int)tab] = value;
     internal int GetSettingsTabVScrollPos(SettingsTab tab) => _settingsVScrollPositions[(int)tab];
 

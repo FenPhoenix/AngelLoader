@@ -247,4 +247,24 @@ public static class FenGenAttributes
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class FenGenForceRemoveSizeAttribute : Attribute { }
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Enum)]
+    public sealed class FenGenEnumCountAttribute : Attribute
+    {
+        public FenGenEnumCountAttribute() { }
+        public FenGenEnumCountAttribute(int plusOrMinus) { }
+    }
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Enum)]
+    public sealed class FenGenEnumNamesAttribute : Attribute
+    {
+    }
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class FenGenEnumDataDestClassAttribute : Attribute
+    {
+    }
 }

@@ -13,7 +13,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
     #region Control backing fields
 
     private bool _constructed;
-    private readonly bool[] _columnCheckedStates = InitializedArray(ColumnsCount, true);
+    private readonly bool[] _columnCheckedStates = InitializedArray(ColumnCount, true);
 
     #endregion
 
@@ -136,7 +136,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 
         #region Fill ColumnHeaderCheckBoxMenuItems array
 
-        ColumnHeaderCheckBoxMenuItems = InitializedArray<ToolStripMenuItemCustom>(ColumnsCount);
+        ColumnHeaderCheckBoxMenuItems = InitializedArray<ToolStripMenuItemCustom>(ColumnCount);
 
         for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
         {

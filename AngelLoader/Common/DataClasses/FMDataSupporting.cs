@@ -1,5 +1,8 @@
-﻿using System;
+﻿#define FenGen_TypeSource
+
+using System;
 using JetBrains.Annotations;
+using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
 
 namespace AngelLoader.DataClasses;
@@ -58,6 +61,8 @@ internal sealed class ExpandableDate_FromTicks
 
 // IMPORTANT: Do not rename elements or compatibility will break!
 [Flags]
+[FenGenEnumNames]
+[FenGenEnumCount]
 internal enum CustomResources
 {
     None = 0,
@@ -75,6 +80,7 @@ internal enum CustomResources
 
 [Flags]
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+[FenGenEnumCount(-1)]
 public enum Difficulty : uint
 {
     None = 0,

@@ -113,6 +113,10 @@ internal static class Cache
 
     internal static readonly List<DesignerCSFile> DesignerCSFiles = new();
 
+    internal static readonly string CurrentYear = DateTime.Now.Year.ToString(CultureInfo.InvariantCulture);
+
+    internal static readonly List<string> TypeSourceFiles = new();
+
     internal static void Clear()
     {
         _gameSupportFile = "";
@@ -123,9 +127,9 @@ internal static class Cache
 
         _csFiles = null;
         DesignerCSFiles.Clear();
-    }
 
-    internal static readonly string CurrentYear = DateTime.Now.Year.ToString(CultureInfo.InvariantCulture);
+        TypeSourceFiles.Clear();
+    }
 }
 
 internal static class GenAttributes
@@ -186,6 +190,11 @@ internal static class GenAttributes
     internal const string FenGenForceRemoveSizeAttribute = nameof(FenGenForceRemoveSizeAttribute);
 
     internal const string FenGenCurrentYearDestClassAttribute = nameof(FenGenCurrentYearDestClassAttribute);
+
+    internal const string FenGenEnumCount = nameof(FenGenEnumCount);
+    internal const string FenGenEnumNames = nameof(FenGenEnumNames);
+
+    internal const string FenGenEnumDataDestClass = nameof(FenGenEnumDataDestClass);
 }
 
 internal static class Core
@@ -202,7 +211,8 @@ internal static class Core
         AddBuildDate,
         RemoveBuildDate,
         GenSlimDesignerFiles,
-        GenCopyright
+        GenCopyright,
+        GenEnumData
     }
 
     private static readonly Dictionary<string, GenType>
@@ -217,7 +227,8 @@ internal static class Core
         { "-bd", GenType.AddBuildDate },
         { "-bd_r", GenType.RemoveBuildDate },
         { "-des", GenType.GenSlimDesignerFiles },
-        { "-cr", GenType.GenCopyright }
+        { "-cr", GenType.GenCopyright },
+        { "-ed", GenType.GenEnumData }
     };
 
     // Only used for debug, so we can explicitly place test arguments into the set
@@ -247,6 +258,9 @@ internal static class Core
         internal const string GameSupportMainGenDest = "FenGen_GameSupportMainGenDest";
         internal const string LocalizedGameNameGetterDest = "FenGen_LocalizedGameNameGetterDest";
         internal const string CurrentYearDest = "FenGen_CurrentYearDest";
+
+        internal const string TypeSource = "FenGen_TypeSource";
+        internal const string EnumDataDest = "FenGen_EnumDataDest";
     }
 
     private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -308,7 +322,8 @@ internal static class Core
             GetArg(GenType.AddBuildDate),
             GetArg(GenType.GenSlimDesignerFiles),
             GetArg(GenType.GameSupport),
-            GetArg(GenType.GenCopyright)
+            GetArg(GenType.GenCopyright),
+            GetArg(GenType.GenEnumData)
         };
 #else
         string[] args = Environment.GetCommandLineArgs();
@@ -396,6 +411,10 @@ internal static class Core
         {
             defineHeaders.Add(DefineHeaders.CurrentYearDest);
         }
+        if (GenTaskActive(GenType.GenEnumData))
+        {
+            defineHeaders.Add(DefineHeaders.EnumDataDest);
+        }
 
         var taggedFilesDict = new Dictionary<string, string>();
         if (forceFindRequiredFiles || defineHeaders.Count > 0)
@@ -481,6 +500,10 @@ internal static class Core
         {
             CopyrightGen.Generate(taggedFilesDict[DefineHeaders.CurrentYearDest]);
         }
+        if (GenTaskActive(GenType.GenEnumData))
+        {
+            EnumDataGen.Generate(taggedFilesDict[DefineHeaders.EnumDataDest]);
+        }
     }
 
     [MustUseReturnValue]
@@ -522,7 +545,11 @@ internal static class Core
                         }
                         continue;
                     }
-
+                    if (tag == DefineHeaders.TypeSource)
+                    {
+                        Cache.TypeSourceFiles.Add(f);
+                        continue;
+                    }
                     for (int i = 0; i < defineHeaders.Count; i++)
                     {
                         if (tag == defineHeaders[i])

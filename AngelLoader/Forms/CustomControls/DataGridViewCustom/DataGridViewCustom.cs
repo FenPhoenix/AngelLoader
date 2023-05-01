@@ -250,7 +250,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     {
         // Since we're full-row select, one row will be ColumnsCount cells selected. Avoids having to make a
         // heavy SelectedRows call.
-        return GetCellCount(DataGridViewElementStates.Selected) / ColumnsCount;
+        return GetCellCount(DataGridViewElementStates.Selected) / ColumnCount;
     }
 
     internal bool MultipleFMsSelected() => GetRowSelectedCount() > 1;
