@@ -1927,7 +1927,11 @@ public sealed partial class MainForm : DarkFormBase,
             // Have to do this or else they don't show up if we start in dark mode, but they do if we switch
             // while running(?) meh, whatever.
             // UPDATE: Just always set these. Why not. We don't want any other problems with them in the future.
-            SetReadmeControlZPosition(true);
+            ChooseReadmeComboBox.BringToFront();
+            foreach (DarkButton button in _readmeControlButtons)
+            {
+                button.BringToFront();
+            }
         }
         finally
         {
@@ -4088,27 +4092,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void SetReadmeControlZPosition(bool front)
-    {
-        if (front)
-        {
-            ChooseReadmeComboBox.BringToFront();
-            foreach (DarkButton button in _readmeControlButtons)
-            {
-                button.BringToFront();
-            }
-        }
-        else
-        {
-            ChooseReadmeComboBox.SendToBack();
-            ChooseReadmeComboBox.DroppedDown = false;
-            foreach (DarkButton button in _readmeControlButtons)
-            {
-                button.SendToBack();
-            }
-        }
-    }
-
     internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetMainSelectedFM());
 
     public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
@@ -5110,9 +5093,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (e.Button == MouseButtons.Right)
         {
-            Point pt = TopRightTabControl.ClientCursorPos();
-            Rectangle rect = TopRightTabControl.GetTabBarRect();
-            if (rect.Contains(pt))
+            if (TopRightTabControl.GetTabBarRect().Contains(TopRightTabControl.ClientCursorPos()))
             {
                 TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
             }

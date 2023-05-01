@@ -31,20 +31,16 @@ internal sealed class TopRightLLMenu : IDarkable
                 var menuItems = new ToolStripItem[TopRightTabsData.Count];
                 for (int i = 0; i < menuItems.Length; i++)
                 {
-                    menuItems[i] = new ToolStripMenuItemCustom();
+                    var item = new ToolStripMenuItemCustom
+                    {
+                        CheckOnClick = true,
+                        Checked = _checkedStates[i]
+                    };
+                    item.Click += _owner.TopRightMenu_MenuItems_Click;
+                    menuItems[i] = item;
                 }
 
                 _menu.Items.AddRange(menuItems);
-
-                AssertR(_menu.Items.Count == TopRightTabsData.Count, "top-right tabs menu item count is different than enum length");
-
-                for (int i = 0; i < _menu.Items.Count; i++)
-                {
-                    var item = (ToolStripMenuItemCustom)_menu.Items[i];
-                    item.CheckOnClick = true;
-                    item.Checked = _checkedStates[i];
-                    item.Click += _owner.TopRightMenu_MenuItems_Click;
-                }
 
                 #endregion
 
