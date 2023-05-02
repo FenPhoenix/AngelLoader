@@ -51,21 +51,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         }
     }
 
-    [PublicAPI]
-    public sealed class DarkCheckListEventArgs : EventArgs
-    {
-        public readonly int Index;
-        public readonly bool Checked;
-        public readonly string Text;
-
-        public DarkCheckListEventArgs(int index, bool @checked, string text)
-        {
-            Index = index;
-            Checked = @checked;
-            Text = text;
-        }
-    }
-
     #endregion
 
     #region Public fields and properties
@@ -110,7 +95,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     [PublicAPI]
     [Browsable(true)]
     [EditorBrowsable(EditorBrowsableState.Always)]
-    public event EventHandler<DarkCheckListEventArgs>? ItemCheckedChanged;
+    public event EventHandler? ItemCheckedChanged;
 
     #endregion
 
@@ -361,7 +346,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
         CheckItems[checkBoxIndex].Checked = s.Checked;
 
-        ItemCheckedChanged?.Invoke(this, new DarkCheckListEventArgs(checkBoxIndex, s.Checked, s.Text));
+        ItemCheckedChanged?.Invoke(this, EventArgs.Empty);
     }
 
     protected override void OnEnabledChanged(EventArgs e)

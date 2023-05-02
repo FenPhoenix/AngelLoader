@@ -210,7 +210,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         Commit();
     }
 
-    private void CheckList_ItemCheckedChanged(object sender, DarkCheckList.DarkCheckListEventArgs e)
+    private void CheckList_ItemCheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         UpdateDisabledMods();
