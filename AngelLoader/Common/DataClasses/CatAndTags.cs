@@ -210,43 +210,43 @@ internal static class PresetTags
 
     // These are the FMSel preset tags. Conforming to standards here.
     private static readonly KeyValuePair<string, string[]>[]
-        _presetTags =
+    _presetTags =
+    {
+        new("author", Array.Empty<string>()),
+        new("contest", Array.Empty<string>()),
+        new("genre", new[]
         {
-            new("author", Array.Empty<string>()),
-            new("contest", Array.Empty<string>()),
-            new("genre", new[]
-            {
-                "action",
-                "crime",
-                "horror",
-                "mystery",
-                "puzzle"
-            }),
-            new("language", new[]
-            {
-                "English",
-                "Czech",
-                "Dutch",
-                "French",
-                "German",
-                "Hungarian",
-                "Italian",
-                "Japanese",
-                "Polish",
-                "Russian",
-                "Spanish"
-            }),
-            new("series", Array.Empty<string>()),
-            new(MiscCategory, new[]
-            {
-                "campaign",
-                "demo",
-                "long",
-                "other protagonist",
-                "short",
-                "unknown author"
-            })
-        };
+            "action",
+            "crime",
+            "horror",
+            "mystery",
+            "puzzle"
+        }),
+        new("language", new[]
+        {
+            "English",
+            "Czech",
+            "Dutch",
+            "French",
+            "German",
+            "Hungarian",
+            "Italian",
+            "Japanese",
+            "Polish",
+            "Russian",
+            "Spanish"
+        }),
+        new("series", Array.Empty<string>()),
+        new(MiscCategory, new[]
+        {
+            "campaign",
+            "demo",
+            "long",
+            "other protagonist",
+            "short",
+            "unknown author"
+        })
+    };
 
     #endregion
 

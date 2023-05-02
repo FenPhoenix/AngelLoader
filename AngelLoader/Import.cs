@@ -524,7 +524,7 @@ internal static class Import
     }
 
     private static bool
-        ImportDarkLoaderSaves(string[] lines)
+    ImportDarkLoaderSaves(string[] lines)
     {
         // We DON'T use game generalization here, because DarkLoader only supports T1/T2/SS2 and will never
         // change (it's not updated anymore). So it's okay that we code those games in manually here.

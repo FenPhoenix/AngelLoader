@@ -1,7 +1,11 @@
-﻿using System.ComponentModel;
+﻿#if DEBUG
+using System.ComponentModel;
+#endif
 using System.Drawing;
 using System.Windows.Forms;
+#if DEBUG
 using JetBrains.Annotations;
+#endif
 
 namespace AngelLoader.Forms.CustomControls;
 
