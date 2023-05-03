@@ -47,6 +47,7 @@ sealed partial class MainForm
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+        this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
         this.BottomRightFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.FMCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -134,6 +135,15 @@ sealed partial class MainForm
         this.RefreshAreaToolStrip.SuspendLayout();
         this.TopRightTabControl.SuspendLayout();
         this.SuspendLayout();
+        // 
+        // GameTabsImageList
+        // 
+        this.GameTabsImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
+        this.GameTabsImageList.TransparentColor = System.Drawing.Color.Transparent;
+        this.GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
+        this.GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
+        this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
+        this.GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
         // 
         // BottomRightFLP
         // 
@@ -852,6 +862,7 @@ sealed partial class MainForm
         // 
         // GamesTabControl
         // 
+        this.GamesTabControl.ImageList = this.GameTabsImageList;
         this.GamesTabControl.Location = new System.Drawing.Point(28, 5);
         this.GamesTabControl.Name = "GamesTabControl";
         this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
@@ -1142,6 +1153,7 @@ sealed partial class MainForm
 
     internal CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
     internal CustomControls.DarkTabControl GamesTabControl;
+    internal System.Windows.Forms.ImageList GameTabsImageList;
     internal CustomControls.ToolStripCustom GameFilterControlsShowHideButtonToolStrip;
     internal CustomControls.ToolStripArrowButton GameFilterControlsShowHideButton;
 
