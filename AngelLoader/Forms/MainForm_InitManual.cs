@@ -27,7 +27,6 @@ public sealed partial class MainForm
     private void InitComponentManual()
     {
         components = new Container();
-        GameTabsImageList = new ImageList(components);
         BottomRightFLP = new FlowLayoutPanel();
         FMCountLabel = new DarkLabel();
         SettingsButton = new DarkButton();
@@ -121,10 +120,6 @@ public sealed partial class MainForm
         PatchTabPage.SuspendLayout();
         ModsTabPage.SuspendLayout();
         SuspendLayout();
-        // 
-        // GameTabsImageList
-        // 
-        GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
         // 
         // BottomRightFLP
         // 
@@ -598,7 +593,6 @@ public sealed partial class MainForm
         // 
         // GamesTabControl
         // 
-        GamesTabControl.ImageList = GameTabsImageList;
         GamesTabControl.Location = new Point(28, 5);
         GamesTabControl.Size = new Size(1075, 24);
         GamesTabControl.TabIndex = 1;

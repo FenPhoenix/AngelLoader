@@ -2008,6 +2008,8 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else // ByTab
         {
+            GamesTabControl.ImageList ??= new ImageList(components) { ColorDepth = ColorDepth.Depth32Bit };
+
             if (!startup) SetGameTabImages();
 
             // In case they don't match
