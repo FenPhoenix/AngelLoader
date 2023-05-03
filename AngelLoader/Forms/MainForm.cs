@@ -899,8 +899,13 @@ public sealed partial class MainForm : DarkFormBase,
 
         for (int i = 0; i < TopRightTabsData.Count; i++)
         {
-            TopRightTabControl.ShowTab(_topRightTabs[i], Config.TopRightTabsData.Tabs[i].Visible);
-            TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
+            bool visible = Config.TopRightTabsData.Tabs[i].Visible;
+            // They're visible by default - shave off a bit of time
+            if (!visible)
+            {
+                TopRightTabControl.ShowTab(_topRightTabs[i], false);
+            }
+            TopRightLLMenu.SetItemChecked(i, visible);
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible

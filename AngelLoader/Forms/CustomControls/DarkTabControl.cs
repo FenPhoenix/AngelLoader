@@ -359,6 +359,10 @@ public sealed class DarkTabControl : TabControl, IDarkable
         ImageList.Images.AddRange(images);
     }
 
+    // @PERF_TODO(SetTabsFull/Show tab):
+    // We could combine these to only add the tabs to TabPages that are going to be visible, rather than adding
+    // them all and then potentially removing some again.
+
     /// <summary>
     /// Removes all tabs and adds a set of new ones.
     /// </summary>
