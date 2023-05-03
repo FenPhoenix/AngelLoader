@@ -351,7 +351,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     /// </summary>
     /// <param name="images"></param>
     [PublicAPI]
-    public void SetImages(params Image[] images)
+    public void SetImages(Image[] images)
     {
         if (ImageList == null) return;
 

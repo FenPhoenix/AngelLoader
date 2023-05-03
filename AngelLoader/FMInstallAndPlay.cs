@@ -58,7 +58,7 @@ internal static class FMInstallAndPlay
 
     #endregion
 
-    internal static async Task InstallOrUninstall(params FanMission[] fms)
+    internal static async Task InstallOrUninstall(FanMission[] fms)
     {
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
         if (fms[0].Installed)

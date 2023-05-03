@@ -1298,7 +1298,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle)
         {
-            SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, titles: null, SA_TitleDetect));
+            SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
 
             if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(_intrfaceDirFiles));
 
@@ -1337,7 +1337,7 @@ public sealed partial class Scanner : IDisposable
                     titles.AddRange(altTitles);
                 }
 
-                string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
+                string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, titles);
 
                 fmData.Author = CleanupValue(author).Trim();
             }
@@ -1558,14 +1558,14 @@ public sealed partial class Scanner : IDisposable
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_LatestUpdateDateDetect);
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, SA_LatestUpdateDateDetect);
             DateTime? dt = null;
             bool dtIsAmbiguous = false;
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (ds.IsEmpty() || dt == null)
             {
-                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, null, SA_ReleaseDateDetect);
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, SA_ReleaseDateDetect);
             }
 
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
@@ -3085,7 +3085,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private string GetValueFromReadme(SpecialLogic specialLogic, List<string>? titles = null, params string[] keys)
+    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null)
     {
         string ret = "";
 
