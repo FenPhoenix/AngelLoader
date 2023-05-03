@@ -967,16 +967,20 @@ public sealed partial class MainForm : DarkFormBase,
 
         for (int fiI = 0; fiI < HideableFilterControlsCount; fiI++)
         {
+            bool visible = Config.FilterControlVisibilities[fiI];
+            // They're visible by default - shave off a bit of time
+            if (visible) continue;
+
             Component[] filterItems = _hideableFilterControls[fiI];
             for (int i = 0; i < filterItems.Length; i++)
             {
                 switch (filterItems[i])
                 {
                     case Control control:
-                        control.Visible = Config.FilterControlVisibilities[fiI];
+                        control.Visible = visible;
                         break;
                     case ToolStripItem toolStripItem:
-                        toolStripItem.Visible = Config.FilterControlVisibilities[fiI];
+                        toolStripItem.Visible = visible;
                         break;
                 }
             }
