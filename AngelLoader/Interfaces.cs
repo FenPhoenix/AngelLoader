@@ -328,9 +328,7 @@ public interface IView : ISettingsChangeableView
 
     #region UI enabled
 
-    bool GetUIEnabled();
-
-    void SetUIEnabled(bool value);
+    bool UIEnabled { get; set; }
 
     #endregion
 
@@ -347,8 +345,6 @@ public interface IView : ISettingsChangeableView
     void UpdateAllFMUIDataExceptReadme(FanMission fm);
 
     void ActivateThisInstance();
-
-    bool AbleToAcceptDragDrop();
 
     void SetAvailableFMCount();
 }

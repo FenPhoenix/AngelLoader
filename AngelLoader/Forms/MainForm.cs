@@ -1291,7 +1291,7 @@ public sealed partial class MainForm : DarkFormBase,
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         if (e.Control && e.KeyCode == Keys.E)
         {
-            SetUIEnabled(!EverythingPanel.Enabled);
+            UIEnabled = !EverythingPanel.Enabled;
             return;
         }
         // For separating log spam
@@ -2545,7 +2545,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
-            await FMInstallAndPlay.InstallOrUninstall(GetSelectedFMs_InOrder());
+            await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFMs_InOrder());
         }
         else if (sender == PlayFMButton)
         {
@@ -3144,20 +3144,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
-    public FanMission? GetMainSelectedFMOrNull_Fast() => _displayedFM;
-
     /// <summary>
-    /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder"/>
+    /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder_List"/>
     /// if you need them in visual order.
     /// </summary>
     /// <returns></returns>
     public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
-
-    /// <summary>
-    /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
-    /// </summary>
-    /// <returns></returns>
-    public FanMission[] GetSelectedFMs_InOrder() => FMsDGV.GetSelectedFMs_InOrder();
 
     public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
 
@@ -4908,8 +4900,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Drag & drop
 
-    public bool AbleToAcceptDragDrop() => GetUIEnabled();
-
     private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
     {
         if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out _))
@@ -5047,21 +5037,23 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region UI enabled
 
-    public bool GetUIEnabled() => EverythingPanel.Enabled;
-
-    public void SetUIEnabled(bool enabled)
+    public bool UIEnabled
     {
-        bool doFocus = !EverythingPanel.Enabled && enabled;
+        get => EverythingPanel.Enabled;
+        set
+        {
+            bool doFocus = !EverythingPanel.Enabled && value;
 
-        EverythingPanel.Enabled = enabled;
+            EverythingPanel.Enabled = value;
 
-        if (!doFocus) return;
+            if (!doFocus) return;
 
-        // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
-        // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
-        // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
-        FMsDGV.Focus();
-        FMsDGV.SelectProperly();
+            // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
+            // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
+            // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
+            FMsDGV.Focus();
+            FMsDGV.SelectProperly();
+        }
     }
 
     #endregion

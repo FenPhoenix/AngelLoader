@@ -102,13 +102,13 @@ internal static class FMArchives
 
     internal static async Task Add(List<string> droppedItemsList)
     {
-        if (!Core.View.GetUIEnabled()) return;
+        if (!Core.View.UIEnabled) return;
 
         if (Config.FMArchivePaths.Count == 0) return;
 
         try
         {
-            Core.View.SetUIEnabled(false);
+            Core.View.UIEnabled = false;
 
             // Drag-and-drop operations block not only the app thread, but also the thread of the Explorer window
             // from which you dragged the files. Good lord. So shove the entire thing into another thread so our
@@ -233,7 +233,7 @@ internal static class FMArchives
         }
         finally
         {
-            Core.View.SetUIEnabled(true);
+            Core.View.UIEnabled = true;
         }
     }
 }

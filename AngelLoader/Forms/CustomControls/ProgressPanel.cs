@@ -188,7 +188,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         SetSizeMode(_defaultSizeMode);
 
         Enabled = false;
-        _owner.SetUIEnabled(true);
+        _owner.UIEnabled = true;
     }
 
     /// <summary>
@@ -265,7 +265,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         {
             if (visible == true)
             {
-                _owner.SetUIEnabled(false);
+                _owner.UIEnabled = false;
                 Enabled = true;
 
                 if (Cancel_Button.Text.IsEmpty())

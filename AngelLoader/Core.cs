@@ -2136,7 +2136,7 @@ internal static class Core
 
     internal static bool FilesDropped(object data, [NotNullWhen(true)] out string[]? droppedItems)
     {
-        if (View.AbleToAcceptDragDrop() &&
+        if (View.UIEnabled &&
             data is string[] droppedItems_Internal &&
             AtLeastOneDroppedFileValid(droppedItems_Internal))
         {

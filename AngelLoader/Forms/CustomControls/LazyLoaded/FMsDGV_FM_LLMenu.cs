@@ -729,7 +729,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
         else if (sender == InstallUninstallMenuItem)
         {
-            await FMInstallAndPlay.InstallOrUninstall(_owner.GetSelectedFMs_InOrder());
+            await FMInstallAndPlay.InstallOrUninstall(_owner.FMsDGV.GetSelectedFMs_InOrder());
         }
         else if (sender == DeleteFMMenuItem)
         {

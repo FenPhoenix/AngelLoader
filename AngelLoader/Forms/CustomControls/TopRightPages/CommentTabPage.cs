@@ -64,7 +64,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
     private void CommentTextBox_TextChanged(object sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
-        FanMission? fm = _owner.GetMainSelectedFMOrNull_Fast();
+        FanMission? fm = _owner._displayedFM;
         if (fm == null) return;
 
         string commentText = _page.CommentTextBox.Text;
