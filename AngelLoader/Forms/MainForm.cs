@@ -746,7 +746,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             var tab = new DarkTabPageCustom
             {
-                TabIndex = i,
+                GameIndex = (GameIndex)i,
                 ImageIndex = i
             };
             _gameTabs[i] = tab;
@@ -2166,35 +2166,18 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private (SelectedFM GameSelFM, Filter GameFilter, GameIndex GameIndex)
-    GetGameSelFMAndFilter(TabPage tabPage)
+    private (SelectedFM GameSelFM, Filter GameFilter)
+    GetGameSelFMAndFilter(GameIndex gameIndex)
     {
-        SelectedFM? gameSelFM = null;
-        Filter? gameFilter = null;
-        GameIndex? gameIndex = null;
-        for (int i = 0; i < SupportedGameCount; i++)
-        {
-            if (_gameTabs[i] == tabPage)
-            {
-                gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
-                gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
-                gameIndex = (GameIndex)i;
-                break;
-            }
-        }
+        SelectedFM gameSelFM = FMsDGV.GameTabsState.GetSelectedFM(gameIndex);
+        Filter gameFilter = FMsDGV.GameTabsState.GetFilter(gameIndex);
 
-        AssertR(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
-        AssertR(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
-        AssertR(gameIndex != null, "gameIndex is null: Selected tab is not being handled");
-
-        return (gameSelFM!, gameFilter!, (GameIndex)gameIndex!);
+        return (gameSelFM, gameFilter);
     }
 
-    private void SaveCurrentTabSelectedFM(TabPage? tabPage)
+    private void SaveCurrentTabSelectedFM(GameIndex gameIndex)
     {
-        if (tabPage == null) return;
-
-        var (gameSelFM, gameFilter, _) = GetGameSelFMAndFilter(tabPage);
+        var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(gameIndex);
         SelectedFM selFM = FMsDGV.GetMainSelectedFMPosInfo();
         selFM.DeepCopyTo(gameSelFM);
         FMsDGV.Filter.DeepCopyTo(gameFilter);
@@ -2203,22 +2186,27 @@ public sealed partial class MainForm : DarkFormBase,
     private void GamesTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
     {
         if (EventsDisabled > 0) return;
-        if (GamesTabControl.Visible) SaveCurrentTabSelectedFM(e.TabPage);
+        if (GamesTabControl.Visible && e.TabPage is DarkTabPageCustom darkTabPageCustom)
+        {
+            SaveCurrentTabSelectedFM(darkTabPageCustom.GameIndex);
+        }
     }
 
     private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
-        if (GamesTabControl.SelectedTab == null)
+        TabPage? selectedTab = GamesTabControl.SelectedTab;
+
+        if (selectedTab is not DarkTabPageCustom darkTabPageCustom)
         {
             Config.GameTab = GameIndex.Thief1;
             return;
         }
 
-        var (gameSelFM, gameFilter, gameIndex) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
+        var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(darkTabPageCustom.GameIndex);
 
-        Config.GameTab = gameIndex;
+        Config.GameTab = darkTabPageCustom.GameIndex;
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
@@ -4798,18 +4786,10 @@ public sealed partial class MainForm : DarkFormBase,
     private void UpdateConfig()
     {
         GameIndex gameTab = GameIndex.Thief1;
-        if (Config.GameOrganization == GameOrganization.ByTab)
+        if (Config.GameOrganization == GameOrganization.ByTab && GamesTabControl.SelectedTab is DarkTabPageCustom darkTabPageCustom)
         {
-            SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
-            var selGameTab = GamesTabControl.SelectedTab;
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                if (_gameTabs[i] == selGameTab)
-                {
-                    gameTab = (GameIndex)i;
-                    break;
-                }
-            }
+            gameTab = darkTabPageCustom.GameIndex;
+            SaveCurrentTabSelectedFM(gameTab);
         }
 
         SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();

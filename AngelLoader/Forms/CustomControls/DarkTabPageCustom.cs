@@ -32,4 +32,10 @@ public class DarkTabPageCustom : TabPage, IDarkable
             }
         }
     }
+
+    /// <summary>
+    /// If this component represents a game in some way, you can set its <see cref="GameSupport.GameIndex"/> here.
+    /// </summary>
+    [PublicAPI]
+    public GameSupport.GameIndex GameIndex = GameSupport.GameIndex.Thief1;
 }
