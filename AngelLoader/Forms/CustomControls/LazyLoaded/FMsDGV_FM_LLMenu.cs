@@ -70,7 +70,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private ToolStripMenuItemCustom ConvertWAVsTo16BitMenuItem = null!;
     private ToolStripMenuItemCustom ConvertOGGsToWAVsMenuItem = null!;
     private ToolStripMenuItemCustom RatingMenuItem = null!;
-    private ToolStripMenuItemCustom RatingMenuUnrated = null!;
     private ToolStripMenuItemCustom FinishedOnMenuItem = null!;
     private DarkContextMenu RatingMenu = null!;
     private DarkContextMenu FinishedOnMenu = null!;
@@ -195,10 +194,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
         });
 
-        RatingMenu.Items.Add(RatingMenuUnrated = new ToolStripMenuItemCustom { CheckOnClick = true });
-        for (int i = 0; i < 11; i++)
+        for (int i = -1; i < 11; i++)
         {
-            RatingMenu.Items.Add(new ToolStripMenuItemCustom { CheckOnClick = true });
+            RatingMenu.Items.Add(new ToolStripMenuItemWithBackingField<int>(i) { CheckOnClick = true });
         }
 
         RatingMenuItem.DropDown = RatingMenu;
@@ -355,7 +353,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         #region Rating submenu
 
         RatingMenuItem.Text = LText.FMsList.FMMenu_Rating;
-        RatingMenuUnrated.Text = LText.Global.Unrated;
+        RatingMenu.Items[0].Text = LText.Global.Unrated;
 
         #endregion
 
@@ -780,26 +778,18 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
     private void RatingMenuItems_Click(object sender, EventArgs e)
     {
-        for (int i = 0; i < RatingMenu.Items.Count; i++)
+        int rating = ((ToolStripMenuItemWithBackingField<int>)sender).Field;
+
+        FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
+        if (sFMs.Length > 0)
         {
-            if (RatingMenu.Items[i] == sender)
+            foreach (FanMission sFM in sFMs)
             {
-                int rating = i - 1;
-
-                FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
-                if (sFMs.Length > 0)
-                {
-                    foreach (FanMission sFM in sFMs)
-                    {
-                        sFM.Rating = rating;
-                    }
-                    _owner.RefreshFMsListRowsOnlyKeepSelection();
-                }
-                Ini.WriteFullFMDataIni();
-
-                break;
+                sFM.Rating = rating;
             }
+            _owner.RefreshFMsListRowsOnlyKeepSelection();
         }
+        Ini.WriteFullFMDataIni();
     }
 
     private void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
