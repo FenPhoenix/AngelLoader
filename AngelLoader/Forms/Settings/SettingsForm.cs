@@ -60,7 +60,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private readonly DarkLabel[] GameExeLabels;
     private readonly DarkTextBox[] GameExeTextBoxes;
-    private readonly DarkButton[] GameExeBrowseButtons;
+    private readonly StandardButton[] GameExeBrowseButtons;
     private readonly DarkCheckBox[] GameUseSteamCheckBoxes;
 
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long

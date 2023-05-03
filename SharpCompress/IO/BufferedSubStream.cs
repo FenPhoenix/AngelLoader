@@ -42,7 +42,7 @@ internal sealed class BufferedSubStream : Stream
     // FenPhoenix 2023: avoid a zillion byte[1] allocations
     public override int ReadByte()
     {
-        return Read(FEN_COMMON.Byte1, 0, 1) == 0 ? -1 : (int)FEN_COMMON.Byte1[0];
+        return Read(FEN_COMMON.Byte1, 0, 1) == 0 ? -1 : FEN_COMMON.Byte1[0];
     }
 
     public override int Read(byte[] buffer, int offset, int count)

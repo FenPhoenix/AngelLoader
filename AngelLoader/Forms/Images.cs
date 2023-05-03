@@ -627,7 +627,7 @@ public static class Images
             outlineDark: Color.FromArgb(28, 76, 153),
             fill: Color.FromArgb(0, 53, 226),
             fillDark: Color.FromArgb(34, 148, 228),
-            width: 34),
+            width: 34)
     };
 
     private static readonly FillAndOutlineBrushes _unknownCheckBrush = new(
@@ -711,7 +711,7 @@ public static class Images
 
     private static readonly Pen _sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
     private static Pen? _sep1PenC;
-    internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
+    private static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
     internal static Pen Sep1Pen =>
         Config.DarkMode
