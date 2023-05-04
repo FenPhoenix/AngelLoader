@@ -34,7 +34,7 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
         for (int i = 0; i < 3; i++)
         {
             Buttons[i].Image?.Dispose();
-            Buttons[i].Image = Images.GetZoomImage(Buttons[i].ContentRectangle, (Zoom)i, regenerate: true);
+            Buttons[i].Image = Images.GetZoomImage(Buttons[i].ContentRectangle, (Zoom)i);
         }
     }
 

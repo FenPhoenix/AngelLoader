@@ -808,8 +808,6 @@ public static class Images
     internal static readonly Bitmap?[] FMsList_StarIcons = new Bitmap?[_numRatings];
     internal static readonly Bitmap?[] FMsList_FinishedOnIcons = new Bitmap?[16];
 
-    private static readonly Bitmap?[] _zoomImages = new Bitmap?[FormsData.ZoomTypesCount];
-
     #endregion
 
     #region Image properties
@@ -1015,22 +1013,24 @@ public static class Images
 
     // We can't use the Paint event to paint the image on ToolStrip crap, as it's tool strip crap, you know.
     // It just bugs out in various different ways. So we just paint on an image and set their image to that.
-    public static Bitmap GetZoomImage(Rectangle rect, Zoom zoomType, bool regenerate = false)
+    public static Bitmap GetZoomImage(Rectangle rect, Zoom zoomType)
     {
-        int index = (int)zoomType;
-        if (regenerate || _zoomImages[index] == null)
-        {
-            _zoomImages[index]?.Dispose();
-            _zoomImages[index] = new Bitmap(rect.Width, rect.Height);
-            using var g = Graphics.FromImage(_zoomImages[index]!);
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            FitRectInBounds(
-                g,
-                GetZoomImageGraphicsPath(zoomType).GetBounds(),
-                new RectangleF(0, 0, rect.Width, rect.Height));
-            g.FillPath(BlackForegroundBrush, GetZoomImageGraphicsPath(zoomType));
-        }
-        return _zoomImages[index]!;
+        var ret = new Bitmap(rect.Width, rect.Height);
+
+        using var g = Graphics.FromImage(ret);
+
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+
+        var gp = GetZoomImageGraphicsPath(zoomType);
+
+        FitRectInBounds(
+            g,
+            gp.GetBounds(),
+            new RectangleF(0, 0, rect.Width, rect.Height));
+
+        g.FillPath(BlackForegroundBrush, gp);
+
+        return ret;
     }
 
     #endregion
