@@ -8,7 +8,7 @@ internal static class FormsData
 /// <summary>
 /// Set a control's tag to this to tell the darkable control dictionary filler to ignore it.
 /// </summary>
-public enum LoadType { Lazy }
+internal enum LoadType { Lazy }
 
 internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
 
