@@ -1146,13 +1146,19 @@ public sealed partial class MainForm : DarkFormBase,
         _nominalWindowLocation = loc;
     }
 
+    private bool _firstShowDone;
     public new void Show()
     {
-        if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+        if (!_firstShowDone)
         {
-            lazyTab.Construct();
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+            {
+                lazyTab.Construct();
+            }
+            TopRightTabControl.Selected += TopRightTabControl_Selected;
+
+            _firstShowDone = true;
         }
-        TopRightTabControl.Selected += TopRightTabControl_Selected;
 
         base.Show();
         _splashScreen?.Hide();
