@@ -632,8 +632,6 @@ internal static class ControlUtils
 
     #region Show menu
 
-    internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
     internal static void ShowMenu(
         ContextMenuStrip menu,
         Control control,

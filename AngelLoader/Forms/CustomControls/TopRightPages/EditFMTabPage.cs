@@ -323,7 +323,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         ControlUtils.ShowMenu(
             AltTitlesLLMenu.Menu,
             _page.EditFMAltTitlesArrowButton,
-            ControlUtils.MenuPos.BottomLeft);
+            MenuPos.BottomLeft);
     }
 
     private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
@@ -413,7 +413,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         ControlUtils.ShowMenu(
             _owner.FMsDGV_FM_LLMenu.GetRatingMenu(),
             _page.EditFMRatingButton,
-            ControlUtils.MenuPos.BottomRight,
+            MenuPos.BottomRight,
             unstickMenu: true);
     }
 
@@ -426,7 +426,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         ControlUtils.ShowMenu(
             _owner.FMsDGV_FM_LLMenu.GetFinishedOnMenu(),
             _page.EditFMFinishedOnButton,
-            ControlUtils.MenuPos.BottomRight,
+            MenuPos.BottomRight,
             unstickMenu: true);
     }
 

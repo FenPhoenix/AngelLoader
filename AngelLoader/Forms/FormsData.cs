@@ -10,6 +10,8 @@ internal static class FormsData
 /// </summary>
 public enum LoadType { Lazy }
 
+internal enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
 public enum Direction { Left, Right, Up, Down }
 
 // IMPORTANT: Don't change the order, they're used as indices!

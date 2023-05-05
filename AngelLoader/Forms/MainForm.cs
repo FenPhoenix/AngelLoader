@@ -1964,7 +1964,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void MainMenuButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, ControlUtils.MenuPos.BottomRight, xOffset: 0, yOffset: 2);
+        ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
     }
 
     private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
@@ -2047,7 +2047,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
             GameFilterControlsShowHideButtonToolStrip,
-            ControlUtils.MenuPos.RightDown,
+            MenuPos.RightDown,
             -GameFilterControlsShowHideButton.Width,
             GameFilterControlsShowHideButton.Height);
     }
@@ -2797,7 +2797,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         ControlUtils.ShowMenu(FilterControlsLLMenu.Menu,
             FilterIconButtonsToolStrip,
-            ControlUtils.MenuPos.RightDown,
+            MenuPos.RightDown,
             -FilterControlsShowHideButton.Width,
             FilterIconButtonsToolStrip.Height);
     }
@@ -3109,7 +3109,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopRightMenuButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, ControlUtils.MenuPos.BottomLeft);
+        ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
     internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
@@ -4035,7 +4035,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ReadmeEncodingButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, ControlUtils.MenuPos.LeftDown);
+        ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
     }
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
@@ -4187,7 +4187,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
-        ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, ControlUtils.MenuPos.TopRight);
+        ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
     }
 
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -4225,7 +4225,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
     {
         ControlUtils.ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu,
-            Lazy_PlayOriginalControls.T2MPMenuButton, ControlUtils.MenuPos.TopRight);
+            Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
     }
 
     internal void PlayT2MPMenuItem_Click(object sender, EventArgs e)

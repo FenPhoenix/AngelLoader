@@ -313,7 +313,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
         AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
 
-        ControlUtils.ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, ControlUtils.MenuPos.LeftDown);
+        ControlUtils.ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, MenuPos.LeftDown);
     }
 
     private void AddTagMenuItem_Click(object sender, EventArgs e)
