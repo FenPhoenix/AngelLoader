@@ -162,13 +162,15 @@ public sealed class DarkTabControl : TabControl, IDarkable
                 // Draw tab page border
                 g.DrawRectangle(DarkColors.LighterBackgroundPen, pageRect);
 
+                TabPage? selectedTab = SelectedTab;
+
                 // Paint tabs
                 for (int i = 0; i < TabPages.Count; i++)
                 {
                     TabPage tabPage = TabPages[i];
                     Rectangle tabRect = GetTabRect(i);
 
-                    bool focused = SelectedTab == tabPage;
+                    bool focused = selectedTab == tabPage;
 
                     if (focused)
                     {

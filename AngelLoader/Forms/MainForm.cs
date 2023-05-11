@@ -2202,9 +2202,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (EventsDisabled > 0) return;
 
-        TabPage? selectedTab = GamesTabControl.SelectedTab;
-
-        if (selectedTab is not DarkTabPageCustom darkTabPageCustom)
+        if (GamesTabControl.SelectedTab is not DarkTabPageCustom darkTabPageCustom)
         {
             Config.GameTab = GameIndex.Thief1;
             return;
@@ -2259,9 +2257,10 @@ public sealed partial class MainForm : DarkFormBase,
             bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
 
             int selectedTabOrderIndex = 0;
+            TabPage? selectedTab = GamesTabControl.SelectedTab;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (GamesTabControl.SelectedTab == _gameTabs[i])
+                if (selectedTab == _gameTabs[i])
                 {
                     selectedTabOrderIndex = i;
                     break;
