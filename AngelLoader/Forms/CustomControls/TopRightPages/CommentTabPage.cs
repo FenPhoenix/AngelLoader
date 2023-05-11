@@ -38,8 +38,6 @@ public sealed class CommentTabPage : Lazy_TabsBase
         _page.Show();
     }
 
-    public override void Localize() { }
-
     public override void UpdatePage()
     {
         if (!_constructed) return;
