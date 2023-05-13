@@ -297,36 +297,33 @@ public sealed class CharsetDetector
             }
         }
 
-        ProbingState st;
-
         switch (_inputState)
         {
             case InputState.EscASCII:
+            {
                 _escCharsetProber ??= new EscCharsetProber();
-                st = _escCharsetProber.HandleData(buf, offset, len, memoryStream);
-                if (st == ProbingState.FoundIt)
+                if (_escCharsetProber.HandleData(buf, offset, len, memoryStream) == ProbingState.FoundIt)
                 {
                     _done = true;
                     _detectedCharset = _escCharsetProber.GetCharsetName();
                 }
                 break;
+            }
             case InputState.HighByte:
+            {
                 for (int i = 0; i < PROBERS_NUM; i++)
                 {
                     CharsetProber? prober = _charsetProbers[i];
-                    if (prober != null)
+                    if (prober?.HandleData(buf, offset, len, memoryStream) == ProbingState.FoundIt)
                     {
-                        st = prober.HandleData(buf, offset, len, memoryStream);
-                        if (st == ProbingState.FoundIt)
-                        {
-                            _done = true;
-                            _detectedCharset = prober.GetCharsetName();
-                            return;
-                        }
+                        _done = true;
+                        _detectedCharset = prober.GetCharsetName();
+                        return;
                     }
                 }
                 break;
-                // default: pure ascii
+            }
+            // default: pure ascii
         }
     }
 
