@@ -143,7 +143,7 @@ public sealed class CharsetDetector
     private byte _lastChar;
     private const int PROBERS_NUM = 3;
     private readonly CharsetProber?[] _charsetProbers = new CharsetProber?[PROBERS_NUM];
-    private CharsetProber? _escCharsetProber;
+    private EscCharsetProber? _escCharsetProber;
     private Charset _detectedCharset;
 
     public CharsetDetector()
@@ -302,10 +302,10 @@ public sealed class CharsetDetector
             case InputState.EscASCII:
             {
                 _escCharsetProber ??= new EscCharsetProber();
-                if (_escCharsetProber.HandleData(buf, offset, len, memoryStream) == ProbingState.FoundIt)
+                if (_escCharsetProber.HandleData(buf, offset, len) == ProbingState.FoundIt)
                 {
                     _done = true;
-                    _detectedCharset = _escCharsetProber.GetCharsetName();
+                    _detectedCharset = _escCharsetProber.DetectedCharset;
                 }
                 break;
             }

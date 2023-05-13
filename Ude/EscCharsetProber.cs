@@ -37,12 +37,14 @@
 
 namespace Ude.NetStandard;
 
-internal sealed class EscCharsetProber : CharsetProber
+internal sealed class EscCharsetProber
 {
     private const int CHARSETS_NUM = 3;
-    private Charset _detectedCharset;
+    internal Charset DetectedCharset;
     private readonly CodingStateMachine[] _codingSM;
     private int _activeSM;
+
+    private ProbingState _state;
 
     internal EscCharsetProber()
     {
@@ -53,7 +55,7 @@ internal sealed class EscCharsetProber : CharsetProber
         Reset();
     }
 
-    internal override void Reset()
+    internal void Reset()
     {
         _state = ProbingState.Detecting;
         for (int i = 0; i < CHARSETS_NUM; i++)
@@ -62,10 +64,10 @@ internal sealed class EscCharsetProber : CharsetProber
         }
 
         _activeSM = CHARSETS_NUM;
-        _detectedCharset = Charset.Null;
+        DetectedCharset = Charset.Null;
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal ProbingState HandleData(byte[] buf, int offset, int len)
     {
         int max = offset + len;
 
@@ -92,21 +94,11 @@ internal sealed class EscCharsetProber : CharsetProber
                 else if (codingState == SMModel.ITSME)
                 {
                     _state = ProbingState.FoundIt;
-                    _detectedCharset = _codingSM[j]._model.Name;
+                    DetectedCharset = _codingSM[j]._model.Name;
                     return _state;
                 }
             }
         }
         return _state;
-    }
-
-    internal override Charset GetCharsetName()
-    {
-        return _detectedCharset;
-    }
-
-    internal override float GetConfidence()
-    {
-        return 0.99f;
     }
 }
