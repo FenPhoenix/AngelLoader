@@ -959,7 +959,7 @@ internal static class GameConfigFiles
         {
             string p = paths[i];
             /*
-            Confirmed, the the game only reads mods from .zip and .crf files (at least no other extensions I tried worked)
+            Confirmed, the game only reads mods from .zip and .crf files (at least no other extensions I tried worked)
 
             Also, don't read the zip file entries or anything, just assume it contains the path, as that's the
             most probable case... (should we change this later?)
