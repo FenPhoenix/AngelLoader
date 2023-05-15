@@ -48,12 +48,10 @@ internal abstract class SMModel
     internal const int ITSME = 2;
 
     internal readonly int[] ClassTable;
+    internal readonly int ClassFactor;
     internal readonly int[] StateTable;
     internal readonly int[] CharLenTable;
-
     internal readonly Charset Name;
-
-    internal readonly int ClassFactor;
 
     protected SMModel(
         int[] classTable,

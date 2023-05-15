@@ -45,33 +45,29 @@ namespace Ude.NetStandard;
 internal sealed class CodingStateMachine
 {
     private int _currentState;
-    internal readonly SMModel _model;
+    internal readonly SMModel Model;
+    internal int CurrentCharLen;
 
     internal CodingStateMachine(SMModel model)
     {
         _currentState = SMModel.START;
-        _model = model;
+        Model = model;
     }
 
     internal int NextState(byte b)
     {
         // for each byte we get its class, if it is first byte,
         // we also get byte length
-        int byteCls = Utils.UnpackBitPackage(_model.ClassTable, b);
+        int byteCls = Utils.UnpackBitPackage(Model.ClassTable, b);
         if (_currentState == SMModel.START)
         {
-            CurrentCharLen = _model.CharLenTable[byteCls];
+            CurrentCharLen = Model.CharLenTable[byteCls];
         }
 
         // from byte's class and stateTable, we get its next state
-        _currentState = Utils.UnpackBitPackage(_model.StateTable, (_currentState * _model.ClassFactor) + byteCls);
+        _currentState = Utils.UnpackBitPackage(Model.StateTable, (_currentState * Model.ClassFactor) + byteCls);
         return _currentState;
     }
 
-    internal void Reset()
-    {
-        _currentState = SMModel.START;
-    }
-
-    internal int CurrentCharLen;
+    internal void Reset() => _currentState = SMModel.START;
 }
