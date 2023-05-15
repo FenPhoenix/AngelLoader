@@ -47,16 +47,20 @@ internal abstract class SMModel
     internal const int ERROR = 1;
     internal const int ITSME = 2;
 
-    internal readonly BitPackage ClassTable;
-    internal readonly BitPackage StateTable;
+    internal readonly int[] ClassTable;
+    internal readonly int[] StateTable;
     internal readonly int[] CharLenTable;
 
     internal readonly Charset Name;
 
     internal readonly int ClassFactor;
 
-    protected SMModel(BitPackage classTable, int classFactor,
-        BitPackage stateTable, int[] charLenTable, Charset name)
+    protected SMModel(
+        int[] classTable,
+        int classFactor,
+        int[] stateTable,
+        int[] charLenTable,
+        Charset name)
     {
         ClassTable = classTable;
         ClassFactor = classFactor;

@@ -57,14 +57,14 @@ internal sealed class CodingStateMachine
     {
         // for each byte we get its class, if it is first byte,
         // we also get byte length
-        int byteCls = _model.ClassTable.Unpack(b);
+        int byteCls = Utils.UnpackBitPackage(_model.ClassTable, b);
         if (_currentState == SMModel.START)
         {
             CurrentCharLen = _model.CharLenTable[byteCls];
         }
 
         // from byte's class and stateTable, we get its next state
-        _currentState = _model.StateTable.Unpack((_currentState * _model.ClassFactor) + byteCls);
+        _currentState = Utils.UnpackBitPackage(_model.StateTable, (_currentState * _model.ClassFactor) + byteCls);
         return _currentState;
     }
 

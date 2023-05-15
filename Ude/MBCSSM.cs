@@ -110,9 +110,9 @@ internal sealed class UTF8SMModel : SMModel
         {0, 1, 0, 0, 0, 0, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6 };
 
     internal UTF8SMModel() : base(
-        new BitPackage(UTF8_cls),
+        UTF8_cls,
         16,
-        new BitPackage(UTF8_st),
+        UTF8_st,
         UTF8CharLenTable, Charset.UTF8)
     {
     }
@@ -174,9 +174,9 @@ internal sealed class GB18030SMModel : SMModel
     private static readonly int[] GB18030CharLenTable = { 0, 1, 1, 1, 1, 1, 2 };
 
     internal GB18030SMModel() : base(
-        new BitPackage(GB18030_cls),
+        GB18030_cls,
         7,
-        new BitPackage(GB18030_st),
+        GB18030_st,
         GB18030CharLenTable, Charset.GB_18030)
     {
     }
@@ -230,9 +230,9 @@ internal sealed class BIG5SMModel : SMModel
     private static readonly int[] BIG5CharLenTable = { 0, 1, 1, 2, 0 };
 
     internal BIG5SMModel() : base(
-        new BitPackage(BIG5_cls),
+        BIG5_cls,
         5,
-        new BitPackage(BIG5_st),
+        BIG5_st,
         BIG5CharLenTable, Charset.Big5)
     {
     }
@@ -288,9 +288,9 @@ internal sealed class EUCJPSMModel : SMModel
     private static readonly int[] EUCJPCharLenTable = { 2, 2, 2, 3, 1, 0 };
 
     internal EUCJPSMModel() : base(
-        new BitPackage(EUCJP_cls),
+        EUCJP_cls,
         6,
-        new BitPackage(EUCJP_st),
+        EUCJP_st,
         EUCJPCharLenTable, Charset.EUC_JP)
     {
     }
@@ -343,9 +343,9 @@ internal sealed class EUCKRSMModel : SMModel
     private static readonly int[] EUCKRCharLenTable = { 0, 1, 2, 0 };
 
     internal EUCKRSMModel() : base(
-        new BitPackage(EUCKR_cls),
+        EUCKR_cls,
         4,
-        new BitPackage(EUCKR_st),
+        EUCKR_st,
         EUCKRCharLenTable, Charset.EUC_KR)
     {
     }
@@ -399,9 +399,9 @@ internal sealed class SJISSMModel : SMModel
     private static readonly int[] SJISCharLenTable = { 0, 1, 1, 2, 0, 0 };
 
     internal SJISSMModel() : base(
-        new BitPackage(SJIS_cls),
+        SJIS_cls,
         6,
-        new BitPackage(SJIS_st),
+        SJIS_st,
         SJISCharLenTable, Charset.ShiftJIS)
     {
     }
