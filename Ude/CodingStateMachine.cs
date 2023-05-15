@@ -57,7 +57,7 @@ internal sealed class CodingStateMachine
     {
         // for each byte we get its class, if it is first byte,
         // we also get byte length
-        int byteCls = _model.GetClass(b);
+        int byteCls = _model.ClassTable.Unpack(b);
         if (_currentState == SMModel.START)
         {
             CurrentCharLen = _model.CharLenTable[byteCls];

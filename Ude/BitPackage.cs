@@ -38,39 +38,19 @@
 
 namespace Ude.NetStandard;
 
-internal sealed class BitPackage
+public sealed class BitPackage
 {
-    private const int INDEX_SHIFT_4BITS = 3;
-
-    private const int SHIFT_MASK_4BITS = 7;
-
-    private const int BIT_SHIFT_4BITS = 2;
-
-    private const int UNIT_MASK_4BITS = 0x0000000F;
-
     private readonly int[] _data;
 
     internal BitPackage(int[] data) => _data = data;
 
-    private static int Pack16bits(int a, int b)
-    {
-        return b << 16 | a;
-    }
-
-    private static int Pack8bits(int a, int b, int c, int d)
-    {
-        return Pack16bits(b << 8 | a, d << 8 | c);
-    }
-
-    internal static int Pack4bits(int a, int b, int c, int d,
-        int e, int f, int g, int h)
-    {
-        return Pack8bits(b << 4 | a, d << 4 | c,
-            f << 4 | e, h << 4 | g);
-    }
-
     internal int Unpack(int i)
     {
+        const int INDEX_SHIFT_4BITS = 3;
+        const int SHIFT_MASK_4BITS = 7;
+        const int BIT_SHIFT_4BITS = 2;
+        const int UNIT_MASK_4BITS = 0x0000000F;
+
         return _data[i >> INDEX_SHIFT_4BITS] >>
                 ((i & SHIFT_MASK_4BITS) << BIT_SHIFT_4BITS) & UNIT_MASK_4BITS;
     }

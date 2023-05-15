@@ -40,68 +40,70 @@ namespace Ude.NetStandard;
 
 internal sealed class UTF8SMModel : SMModel
 {
-    private static readonly int[] UTF8_cls = {
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,0,0),  // 08 - 0f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 10 - 17
-        BitPackage.Pack4bits(1,1,1,0,1,1,1,1),  // 18 - 1f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 20 - 27
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 28 - 2f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 30 - 37
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 38 - 3f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 40 - 47
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 48 - 4f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 50 - 57
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 58 - 5f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 60 - 67
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 68 - 6f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 70 - 77
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 78 - 7f
-        BitPackage.Pack4bits(2,2,2,2,3,3,3,3),  // 80 - 87
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 88 - 8f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 90 - 97
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 98 - 9f
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // a0 - a7
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // a8 - af
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // b0 - b7
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // b8 - bf
-        BitPackage.Pack4bits(0,0,6,6,6,6,6,6),  // c0 - c7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // c8 - cf
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // d0 - d7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // d8 - df
-        BitPackage.Pack4bits(7,8,8,8,8,8,8,8),  // e0 - e7
-        BitPackage.Pack4bits(8,8,8,8,8,9,8,8),  // e8 - ef
-        BitPackage.Pack4bits(10,11,11,11,11,11,11,11),  // f0 - f7
-        BitPackage.Pack4bits(12,13,13,13,14,15,0,0)   // f8 - ff
+    private static readonly int[] UTF8_cls =
+    {
+        286331153,
+        1118481,
+        286331153,
+        286327057,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        858989090,
+        1145324612,
+        1145324612,
+        1145324612,
+        1431655765,
+        1431655765,
+        1431655765,
+        1431655765,
+        1717986816,
+        1717986918,
+        1717986918,
+        1717986918,
+        -2004318073,
+        -2003269496,
+        -1145324614,
+        16702940
     };
 
-    private static readonly int[] UTF8_st = {
-        BitPackage.Pack4bits(ERROR,START,ERROR,ERROR,ERROR,ERROR,   12,   10),//00-07
-        BitPackage.Pack4bits(    9,   11,    8,    7,    6,    5,    4,    3),//08-0f
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//10-17
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//18-1f
-        BitPackage.Pack4bits(ITSME,ITSME,ITSME,ITSME,ITSME,ITSME,ITSME,ITSME),//20-27
-        BitPackage.Pack4bits(ITSME,ITSME,ITSME,ITSME,ITSME,ITSME,ITSME,ITSME),//28-2f
-        BitPackage.Pack4bits(ERROR,ERROR,    5,    5,    5,    5,ERROR,ERROR),//30-37
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//38-3f
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,    5,    5,    5,ERROR,ERROR),//40-47
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//48-4f
-        BitPackage.Pack4bits(ERROR,ERROR,    7,    7,    7,    7,ERROR,ERROR),//50-57
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//58-5f
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,    7,    7,ERROR,ERROR),//60-67
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//68-6f
-        BitPackage.Pack4bits(ERROR,ERROR,    9,    9,    9,    9,ERROR,ERROR),//70-77
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//78-7f
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,    9,ERROR,ERROR),//80-87
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//88-8f
-        BitPackage.Pack4bits(ERROR,ERROR,   12,   12,   12,   12,ERROR,ERROR),//90-97
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//98-9f
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,   12,ERROR,ERROR),//a0-a7
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//a8-af
-        BitPackage.Pack4bits(ERROR,ERROR,   12,   12,   12,ERROR,ERROR,ERROR),//b0-b7
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR),//b8-bf
-        BitPackage.Pack4bits(ERROR,ERROR,START,START,START,START,ERROR,ERROR),//c0-c7
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR) //c8-cf
+    private static readonly int[] UTF8_st =
+    {
+        -1408167679,
+        878082233,
+        286331153,
+        286331153,
+        572662306,
+        572662306,
+        290805009,
+        286331153,
+        290803985,
+        286331153,
+        293041937,
+        286331153,
+        293015825,
+        286331153,
+        295278865,
+        286331153,
+        294719761,
+        286331153,
+        298634257,
+        286331153,
+        297865489,
+        286331153,
+        287099921,
+        286331153,
+        285212689,
+        286331153
     };
 
     private static readonly int[] UTF8CharLenTable =
@@ -118,48 +120,50 @@ internal sealed class UTF8SMModel : SMModel
 
 internal sealed class GB18030SMModel : SMModel
 {
-    private static readonly int[] GB18030_cls = {
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,0,0),  // 08 - 0f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 10 - 17
-        BitPackage.Pack4bits(1,1,1,0,1,1,1,1),  // 18 - 1f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 20 - 27
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 28 - 2f
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // 30 - 37
-        BitPackage.Pack4bits(3,3,1,1,1,1,1,1),  // 38 - 3f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 40 - 47
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 48 - 4f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 50 - 57
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 58 - 5f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 60 - 67
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 68 - 6f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 70 - 77
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,4),  // 78 - 7f
-        BitPackage.Pack4bits(5,6,6,6,6,6,6,6),  // 80 - 87
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // 88 - 8f
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // 90 - 97
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // 98 - 9f
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // a0 - a7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // a8 - af
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // b0 - b7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // b8 - bf
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // c0 - c7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // c8 - cf
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // d0 - d7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // d8 - df
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // e0 - e7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // e8 - ef
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,6),  // f0 - f7
-        BitPackage.Pack4bits(6,6,6,6,6,6,6,0)   // f8 - ff
+    private static readonly int[] GB18030_cls =
+    {
+        286331153,
+        1118481,
+        286331153,
+        286327057,
+        286331153,
+        286331153,
+        858993459,
+        286331187,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        1109533218,
+        1717986917,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        1717986918,
+        107374182
     };
 
-    private static readonly int[] GB18030_st = {
-        BitPackage.Pack4bits(ERROR,START,START,START,START,START,    3,ERROR),//00-07
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ITSME,ITSME),//08-0f
-        BitPackage.Pack4bits(ITSME,ITSME,ITSME,ITSME,ITSME,ERROR,ERROR,START),//10-17
-        BitPackage.Pack4bits(    4,ERROR,START,START,ERROR,ERROR,ERROR,ERROR),//18-1f
-        BitPackage.Pack4bits(ERROR,ERROR,    5,ERROR,ERROR,ERROR,ITSME,ERROR),//20-27
-        BitPackage.Pack4bits(ERROR,ERROR,START,START,START,START,START,START) //28-2f
+    private static readonly int[] GB18030_st =
+    {
+        318767105,
+        571543825,
+        17965602,
+        286326804,
+        303109393,
+        17
     };
 
     // To be accurate, the length of class 6 can be either 2 or 4.
@@ -180,45 +184,47 @@ internal sealed class GB18030SMModel : SMModel
 
 internal sealed class BIG5SMModel : SMModel
 {
-    private static readonly int[] BIG5_cls = {
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,0,0),  // 08 - 0f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 10 - 17
-        BitPackage.Pack4bits(1,1,1,0,1,1,1,1),  // 18 - 1f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 20 - 27
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 28 - 2f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 30 - 37
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 38 - 3f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 40 - 47
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 48 - 4f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 50 - 57
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 58 - 5f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 60 - 67
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 68 - 6f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 70 - 77
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,1),  // 78 - 7f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 80 - 87
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 88 - 8f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 90 - 97
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 98 - 9f
-        BitPackage.Pack4bits(4,3,3,3,3,3,3,3),  // a0 - a7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // a8 - af
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // b0 - b7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // b8 - bf
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // c0 - c7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // c8 - cf
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // d0 - d7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // d8 - df
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // e0 - e7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // e8 - ef
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // f0 - f7
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,0)   // f8 - ff
+    private static readonly int[] BIG5_cls =
+    {
+        286331153,
+        1118481,
+        286331153,
+        286327057,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        304226850,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        858993460,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        53687091
     };
 
-    private static readonly int[] BIG5_st = {
-        BitPackage.Pack4bits(ERROR,START,START,    3,ERROR,ERROR,ERROR,ERROR),//00-07
-        BitPackage.Pack4bits(ERROR,ERROR,ITSME,ITSME,ITSME,ITSME,ITSME,ERROR),//08-0f
-        BitPackage.Pack4bits(ERROR,START,START,START,START,START,START,START) //10-17
+    private static readonly int[] BIG5_st =
+    {
+        286339073,
+        304226833,
+        1
     };
 
     private static readonly int[] BIG5CharLenTable = { 0, 1, 1, 2, 0 };
@@ -234,48 +240,49 @@ internal sealed class BIG5SMModel : SMModel
 
 internal sealed class EUCJPSMModel : SMModel
 {
-    private static readonly int[] EUCJP_cls = {
-        //BitPacket.Pack4bits(5,4,4,4,4,4,4,4),  // 00 - 07
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 00 - 07
-        BitPackage.Pack4bits(4,4,4,4,4,4,5,5),  // 08 - 0f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 10 - 17
-        BitPackage.Pack4bits(4,4,4,5,4,4,4,4),  // 18 - 1f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 20 - 27
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 28 - 2f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 30 - 37
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 38 - 3f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 40 - 47
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 48 - 4f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 50 - 57
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 58 - 5f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 60 - 67
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 68 - 6f
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 70 - 77
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // 78 - 7f
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // 80 - 87
-        BitPackage.Pack4bits(5,5,5,5,5,5,1,3),  // 88 - 8f
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // 90 - 97
-        BitPackage.Pack4bits(5,5,5,5,5,5,5,5),  // 98 - 9f
-        BitPackage.Pack4bits(5,2,2,2,2,2,2,2),  // a0 - a7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // a8 - af
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b0 - b7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b8 - bf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // c0 - c7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // c8 - cf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d0 - d7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d8 - df
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // e0 - e7
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // e8 - ef
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // f0 - f7
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,5)   // f8 - ff
+    private static readonly int[] EUCJP_cls =
+    {
+        1145324612,
+        1430537284,
+        1145324612,
+        1145328708,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1145324612,
+        1431655765,
+        827675989,
+        1431655765,
+        1431655765,
+        572662309,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        0,
+        0,
+        0,
+        1342177280
     };
 
-    private static readonly int[] EUCJP_st = {
-        BitPackage.Pack4bits(    3,    4,    3,    5,START,ERROR,ERROR,ERROR),//00-07
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ITSME,ITSME,ITSME,ITSME),//08-0f
-        BitPackage.Pack4bits(ITSME,ITSME,START,ERROR,START,ERROR,ERROR,ERROR),//10-17
-        BitPackage.Pack4bits(ERROR,ERROR,START,ERROR,ERROR,ERROR,    3,ERROR),//18-1f
-        BitPackage.Pack4bits(    3,ERROR,ERROR,ERROR,START,START,START,START) //20-27
+    private static readonly int[] EUCJP_st =
+    {
+        286282563,
+        572657937,
+        286265378,
+        319885329,
+        4371
     };
 
     private static readonly int[] EUCJPCharLenTable = { 2, 2, 2, 3, 1, 0 };
@@ -291,45 +298,46 @@ internal sealed class EUCJPSMModel : SMModel
 
 internal sealed class EUCKRSMModel : SMModel
 {
-    private static readonly int[] EUCKR_cls = {
-        //BitPacket.Pack4bits(0,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,0,0),  // 08 - 0f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 10 - 17
-        BitPackage.Pack4bits(1,1,1,0,1,1,1,1),  // 18 - 1f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 20 - 27
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 28 - 2f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 30 - 37
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 38 - 3f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 40 - 47
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 48 - 4f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 50 - 57
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 58 - 5f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 60 - 67
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 68 - 6f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 70 - 77
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 78 - 7f
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // 80 - 87
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // 88 - 8f
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // 90 - 97
-        BitPackage.Pack4bits(0,0,0,0,0,0,0,0),  // 98 - 9f
-        BitPackage.Pack4bits(0,2,2,2,2,2,2,2),  // a0 - a7
-        BitPackage.Pack4bits(2,2,2,2,2,3,3,3),  // a8 - af
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b0 - b7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b8 - bf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // c0 - c7
-        BitPackage.Pack4bits(2,3,2,2,2,2,2,2),  // c8 - cf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d0 - d7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d8 - df
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // e0 - e7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // e8 - ef
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // f0 - f7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,0)   // f8 - ff
+    private static readonly int[] EUCKR_cls =
+    {
+        286331153,
+        1118481,
+        286331153,
+        286327057,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        0,
+        0,
+        0,
+        0,
+        572662304,
+        858923554,
+        572662306,
+        572662306,
+        572662306,
+        572662322,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        35791394
     };
 
-    private static readonly int[] EUCKR_st = {
-        BitPackage.Pack4bits(ERROR,START,    3,ERROR,ERROR,ERROR,ERROR,ERROR),//00-07
-        BitPackage.Pack4bits(ITSME,ITSME,ITSME,ITSME,ERROR,ERROR,START,START) //08-0f
+    private static readonly int[] EUCKR_st =
+    {
+        286331649,
+        1122850
     };
 
     private static readonly int[] EUCKRCharLenTable = { 0, 1, 2, 0 };
@@ -345,48 +353,47 @@ internal sealed class EUCKRSMModel : SMModel
 
 internal sealed class SJISSMModel : SMModel
 {
-    private static readonly int[] SJIS_cls = {
-        //BitPacket.Pack4bits(0,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 00 - 07
-        BitPackage.Pack4bits(1,1,1,1,1,1,0,0),  // 08 - 0f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 10 - 17
-        BitPackage.Pack4bits(1,1,1,0,1,1,1,1),  // 18 - 1f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 20 - 27
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 28 - 2f
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 30 - 37
-        BitPackage.Pack4bits(1,1,1,1,1,1,1,1),  // 38 - 3f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 40 - 47
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 48 - 4f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 50 - 57
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 58 - 5f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 60 - 67
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 68 - 6f
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // 70 - 77
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,1),  // 78 - 7f
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // 80 - 87
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // 88 - 8f
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // 90 - 97
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // 98 - 9f
-        //0xa0 is illegal in sjis encoding, but some pages does
-        //contain such byte. We need to be more error forgiven.
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // a0 - a7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // a8 - af
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b0 - b7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // b8 - bf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // c0 - c7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // c8 - cf
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d0 - d7
-        BitPackage.Pack4bits(2,2,2,2,2,2,2,2),  // d8 - df
-        BitPackage.Pack4bits(3,3,3,3,3,3,3,3),  // e0 - e7
-        BitPackage.Pack4bits(3,3,3,3,3,4,4,4),  // e8 - ef
-        BitPackage.Pack4bits(4,4,4,4,4,4,4,4),  // f0 - f7
-        BitPackage.Pack4bits(4,4,4,4,4,0,0,0)   // f8 - ff
+    private static readonly int[] SJIS_cls =
+    {
+        286331153,
+        1118481,
+        286331153,
+        286327057,
+        286331153,
+        286331153,
+        286331153,
+        286331153,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        304226850,
+        858993459,
+        858993459,
+        858993459,
+        858993459,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        572662306,
+        858993459,
+        1145254707,
+        1145324612,
+        279620
     };
 
-    private static readonly int[] SJIS_st = {
-        BitPackage.Pack4bits(ERROR,START,START,    3,ERROR,ERROR,ERROR,ERROR),//00-07
-        BitPackage.Pack4bits(ERROR,ERROR,ERROR,ERROR,ITSME,ITSME,ITSME,ITSME),//08-0f
-        BitPackage.Pack4bits(ITSME,ITSME,ERROR,ERROR,START,START,START,START) //10-17
+    private static readonly int[] SJIS_st =
+    {
+        286339073,
+        572657937,
+        4386
     };
 
     private static readonly int[] SJISCharLenTable = { 0, 1, 1, 2, 0, 0 };

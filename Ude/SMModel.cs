@@ -47,7 +47,7 @@ internal abstract class SMModel
     internal const int ERROR = 1;
     internal const int ITSME = 2;
 
-    private readonly BitPackage _classTable;
+    internal readonly BitPackage ClassTable;
     internal readonly BitPackage StateTable;
     internal readonly int[] CharLenTable;
 
@@ -58,12 +58,10 @@ internal abstract class SMModel
     protected SMModel(BitPackage classTable, int classFactor,
         BitPackage stateTable, int[] charLenTable, Charset name)
     {
-        _classTable = classTable;
+        ClassTable = classTable;
         ClassFactor = classFactor;
         StateTable = stateTable;
         CharLenTable = charLenTable;
         Name = name;
     }
-
-    internal int GetClass(byte b) => _classTable.Unpack(b);
 }
