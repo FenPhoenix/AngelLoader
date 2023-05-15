@@ -89,15 +89,9 @@ internal sealed class HZSMModel : SMModel
     private static readonly int[] HZCharLenTable = { 0, 0, 0, 0, 0, 0 };
 
     internal HZSMModel() : base(
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, HZ_cls),
+        new BitPackage(HZ_cls),
         6,
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, HZ_st),
+        new BitPackage(HZ_st),
         HZCharLenTable, Charset.HZ_GB_2312)
     {
     }
@@ -155,15 +149,9 @@ internal sealed class ISO2022JPSMModel : SMModel
     private static readonly int[] ISO2022JPCharLenTable = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     internal ISO2022JPSMModel() : base(
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, ISO2022JP_cls),
+        new BitPackage(ISO2022JP_cls),
         10,
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, ISO2022JP_st),
+        new BitPackage(ISO2022JP_st),
         ISO2022JPCharLenTable, Charset.ISO_2022_JP)
     {
     }
@@ -217,15 +205,9 @@ internal sealed class ISO2022KRSMModel : SMModel
     private static readonly int[] ISO2022KRCharLenTable = { 0, 0, 0, 0, 0, 0 };
 
     internal ISO2022KRSMModel() : base(
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, ISO2022KR_cls),
+        new BitPackage(ISO2022KR_cls),
         6,
-        new BitPackage(BitPackage.INDEX_SHIFT_4BITS,
-            BitPackage.SHIFT_MASK_4BITS,
-            BitPackage.BIT_SHIFT_4BITS,
-            BitPackage.UNIT_MASK_4BITS, ISO2022KR_st),
+        new BitPackage(ISO2022KR_st),
         ISO2022KRCharLenTable, Charset.ISO_2022_KR)
     {
     }
