@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System;
+﻿using System;
 using SharpCompress.Compressors.LZMA.Utilities;
 
 namespace SharpCompress.Archives.SevenZip;
@@ -17,7 +15,7 @@ public sealed class SevenZipArchiveEntry
     /// </summary>
     public bool IsAnti;
 
-    public string FileName;
+    public string FileName = "";
 
     public long UncompressedSize;
 
