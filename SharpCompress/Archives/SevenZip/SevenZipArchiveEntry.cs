@@ -5,9 +5,7 @@ namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchiveEntry
 {
-    internal SevenZipArchiveEntry() => HasStream = true;
-
-    internal bool HasStream;
+    internal bool HasStream = true;
     internal long? MTime;
 
     /// <summary>
