@@ -1,3 +1,8 @@
+/*
+@SharpCompress: There's plenty of performance optimization we could still do here.
+Lots of byte[] allocations, stream recreations, etc. However, we're already pretty fast, so it's not urgent.
+*/
+
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -39,7 +44,7 @@ public sealed class SevenZipArchive : IDisposable
 
     public SevenZipArchive(Stream stream, SevenZipContext context)
     {
-        _srcStream = new SourceStream(stream);
+        _srcStream = new SourceStream(stream, context);
         _context = context;
     }
 

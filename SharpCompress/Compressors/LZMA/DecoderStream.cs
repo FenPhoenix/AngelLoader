@@ -190,7 +190,7 @@ internal static class DecoderStreamHelper
         var inStreams = new Stream[folderInfo._packStreams.Count];
         for (var j = 0; j < folderInfo._packStreams.Count; j++)
         {
-            inStreams[j] = new BufferedSubStream(inStream, startPos, packSizes[j]);
+            inStreams[j] = new BufferedSubStream(inStream, startPos, packSizes[j], context);
             startPos += packSizes[j];
         }
 

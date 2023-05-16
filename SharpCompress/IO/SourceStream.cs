@@ -1,14 +1,19 @@
 using System;
 using System.IO;
-using SharpCompress.Common;
+using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.IO;
 
 internal sealed class SourceStream : Stream
 {
     private readonly Stream _stream;
+    private readonly SevenZipContext _context;
 
-    internal SourceStream(Stream stream) => _stream = stream;
+    internal SourceStream(Stream stream, SevenZipContext context)
+    {
+        _stream = stream;
+        _context = context;
+    }
 
     public override bool CanRead => true;
 
@@ -59,10 +64,7 @@ internal sealed class SourceStream : Stream
     }
 
     // FenPhoenix 2023: avoid a zillion byte[1] allocations
-    public override int ReadByte()
-    {
-        return Read(FEN_COMMON.Byte1, 0, 1) == 0 ? -1 : FEN_COMMON.Byte1[0];
-    }
+    public override int ReadByte() => Read(_context.Byte1, 0, 1) == 0 ? -1 : _context.Byte1[0];
 
     public override long Seek(long offset, SeekOrigin origin) => _stream.Seek(offset, origin);
 

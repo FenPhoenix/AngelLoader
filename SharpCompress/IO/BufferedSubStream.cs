@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SharpCompress.Common;
+using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.IO;
 
@@ -9,18 +9,20 @@ internal sealed class BufferedSubStream : Stream
     private long _position;
     private int _cacheOffset;
     private int _cacheLength;
-    // @SharpCompress: Crappy static array for now, until we can figure out how to pass it in for the batch scan
-    private static readonly byte[] _cache = new byte[32 << 10];
 
     private long _bytesLeftToRead;
     private readonly Stream _stream;
 
-    public BufferedSubStream(Stream stream, long origin, long bytesToRead)
+    private readonly SevenZipContext _context;
+
+    public BufferedSubStream(Stream stream, long origin, long bytesToRead, SevenZipContext context)
     {
         _stream = stream;
 
         _position = origin;
         _bytesLeftToRead = bytesToRead;
+
+        _context = context;
     }
 
     public override bool CanRead => true;
@@ -40,10 +42,7 @@ internal sealed class BufferedSubStream : Stream
     }
 
     // FenPhoenix 2023: avoid a zillion byte[1] allocations
-    public override int ReadByte()
-    {
-        return Read(FEN_COMMON.Byte1, 0, 1) == 0 ? -1 : FEN_COMMON.Byte1[0];
-    }
+    public override int ReadByte() => Read(_context.Byte1, 0, 1) == 0 ? -1 : _context.Byte1[0];
 
     public override int Read(byte[] buffer, int offset, int count)
     {
@@ -58,7 +57,7 @@ internal sealed class BufferedSubStream : Stream
             {
                 _cacheOffset = 0;
                 _stream.Position = _position;
-                _cacheLength = _stream.Read(_cache, 0, _cache.Length);
+                _cacheLength = _stream.Read(_context.SubStreamBuffer, 0, SevenZipContext.SubStreamBufferLength);
                 _position += _cacheLength;
             }
 
@@ -67,7 +66,7 @@ internal sealed class BufferedSubStream : Stream
                 count = _cacheLength;
             }
 
-            Buffer.BlockCopy(_cache, _cacheOffset, buffer, offset, count);
+            Buffer.BlockCopy(_context.SubStreamBuffer, _cacheOffset, buffer, offset, count);
             _cacheOffset += count;
             _cacheLength -= count;
             _bytesLeftToRead -= count;
