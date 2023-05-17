@@ -551,6 +551,12 @@ public sealed partial class MainForm : DarkFormBase,
     // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
     public MainForm()
     {
+        /*
+        @Preload(MainForm images):
+        We can kick off the image loading task here: We know the theme, and we can just disable any setting of
+        images on startup until the very last thing, then wait for the task to finish and then set them.
+        */
+
         // IMPORTANT! Init manual controls BEFORE component init!
         // Otherwise, we might get event handlers firing (looking at you, SizeChanged) right after the resume
         // layout calls in the component init methods, and referencing the manual controls. Never happened to
