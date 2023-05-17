@@ -969,11 +969,9 @@ public static class Images
 
     #region Character encoding
 
-    // @Preload(Character encoding icons)
-
     private static Image? _charEncLetter;
     private static Image? _charEncLetter_Dark;
-    private static Image CharEncLetter =>
+    public static Image CharEncLetter =>
         Config.DarkMode
             ? _charEncLetter_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc)
             : _charEncLetter ??= Resources.CharEnc;
@@ -982,7 +980,7 @@ public static class Images
     // to go against the dark background of the readme
     private static Image? _charEncLetter_Disabled;
     private static Image? _charEncLetter_Disabled_Dark;
-    private static Image CharEncLetter_Disabled =>
+    public static Image CharEncLetter_Disabled =>
         Config.DarkMode
             ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, true)
             : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharEnc);
@@ -991,11 +989,9 @@ public static class Images
 
     #region Install / uninstall
 
-    // @Preload(Install_24): Preload this if button will be visible
     private static Image? _install_24;
     public static Image Install_24 => _install_24 ??= Resources.Install;
 
-    // @Preload(Uninstall_24): Preload this if button will be visible
     private static Image? _uninstall_24;
     public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall;
 
@@ -1061,7 +1057,6 @@ public static class Images
 
     #region FMs list only
 
-    // @Preload(GreenCheckCircle)
     private static Bitmap? _greenCheckCircle;
     private static Bitmap? _greenCheckCircle_Dark;
     public static Bitmap GreenCheckCircle =>
@@ -1069,7 +1064,6 @@ public static class Images
             ? _greenCheckCircle_Dark ??= CreateGreenCheckCircleImage()
             : _greenCheckCircle ??= CreateGreenCheckCircleImage();
 
-    // @Preload(RedQCircle)
     private static Bitmap? _redQCircle;
     private static Bitmap? _redQCircle_Dark;
     public static Bitmap RedQCircle =>

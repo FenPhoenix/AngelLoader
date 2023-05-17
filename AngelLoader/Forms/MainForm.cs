@@ -1891,6 +1891,18 @@ public sealed partial class MainForm : DarkFormBase,
         _ = Images.ClearFilters;
 
         _ = Images.Settings;
+
+        _ = Images.CharEncLetter;
+        _ = Images.CharEncLetter_Disabled;
+
+        _ = Images.GreenCheckCircle;
+        _ = Images.RedQCircle;
+
+        if (!Config.HideUninstallButton)
+        {
+            _ = Images.Install_24;
+            _ = Images.Uninstall_24;
+        }
     });
 
     public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false, createControlHandles: false, preloadImagesTask: null);
