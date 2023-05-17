@@ -234,6 +234,8 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             Program.PreloadState.FontCollection?.Dispose();
             _graphicsContext.Dispose();
             _fen_ControlBackgroundBrush.Dispose();
+
+            Program.PreloadState.SplashScreenPreloadTask.Dispose();
         }
         base.Dispose(disposing);
     }
