@@ -1415,7 +1415,7 @@ public sealed partial class MainForm : DarkFormBase,
                 e.SuppressKeyPress = true;
                 if (!e.Shift)
                 {
-                    using (new DisableEvents(this))
+                    using (new DisableEvents_Ref(this))
                     {
                         for (int i = 0; i < FMsDGV.RowCount; i++)
                         {
@@ -1433,7 +1433,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                     if (selectionSyncHack)
                     {
-                        using (new DisableEvents(this))
+                        using (new DisableEvents_Ref(this))
                         {
                             DoSelectionSyncHack(edgeRow.Index, suspendResume: fmsDifferent);
                         }
@@ -1442,7 +1442,7 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else
             {
-                using (new DisableEvents(this))
+                using (new DisableEvents_Ref(this))
                 {
                     if (e.Shift)
                     {
@@ -1498,7 +1498,7 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (FMsDGV.MainSelectedRow != firstRow)
                     {
-                        using (new DisableEvents(this, !e.Shift))
+                        using (!e.Shift ? new DisableEvents_Ref(this) : null)
                         {
                             SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
@@ -1521,7 +1521,7 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (FMsDGV.MainSelectedRow != lastRow)
                     {
-                        using (new DisableEvents(this, !e.Shift))
+                        using (!e.Shift ? new DisableEvents_Ref(this) : null)
                         {
                             SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
@@ -3840,7 +3840,7 @@ public sealed partial class MainForm : DarkFormBase,
             // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
             if (index > -1)
             {
-                using (new DisableEvents(this))
+                using (new DisableEvents_Ref(this))
                 {
                     FMsDGV.SelectSingle(index);
                     FMsDGV.SelectProperly();
