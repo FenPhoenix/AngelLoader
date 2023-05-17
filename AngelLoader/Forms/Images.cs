@@ -86,6 +86,8 @@ public static class DarkModeImageConversion
 
 public static class Images
 {
+    // @Preload(Images): We should time how long GraphicsPaths/Brushes/Pens init takes, and see if we want to preload those too
+
     #region Path points and types
 
     #region Magnifying glass
@@ -967,6 +969,8 @@ public static class Images
 
     #region Character encoding
 
+    // @Preload(Character encoding icons)
+
     private static Image? _charEncLetter;
     private static Image? _charEncLetter_Dark;
     private static Image CharEncLetter =>
@@ -987,9 +991,11 @@ public static class Images
 
     #region Install / uninstall
 
+    // @Preload(Install_24): Preload this if button will be visible
     private static Image? _install_24;
     public static Image Install_24 => _install_24 ??= Resources.Install;
 
+    // @Preload(Uninstall_24): Preload this if button will be visible
     private static Image? _uninstall_24;
     public static Image Uninstall_24 => _uninstall_24 ??= Resources.Uninstall;
 
@@ -1055,6 +1061,7 @@ public static class Images
 
     #region FMs list only
 
+    // @Preload(GreenCheckCircle)
     private static Bitmap? _greenCheckCircle;
     private static Bitmap? _greenCheckCircle_Dark;
     public static Bitmap GreenCheckCircle =>
@@ -1062,6 +1069,7 @@ public static class Images
             ? _greenCheckCircle_Dark ??= CreateGreenCheckCircleImage()
             : _greenCheckCircle ??= CreateGreenCheckCircleImage();
 
+    // @Preload(RedQCircle)
     private static Bitmap? _redQCircle;
     private static Bitmap? _redQCircle_Dark;
     public static Bitmap RedQCircle =>
