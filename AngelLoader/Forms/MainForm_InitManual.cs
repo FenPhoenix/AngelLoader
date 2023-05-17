@@ -509,7 +509,6 @@ public sealed partial class MainForm
         FilterShowUnsupportedButton.AutoSize = false;
         FilterShowUnsupportedButton.CheckOnClick = true;
         FilterShowUnsupportedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterShowUnsupportedButton.Image = Resources.ShowUnsupported;
         FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
         FilterShowUnsupportedButton.Size = new Size(25, 25);
         FilterShowUnsupportedButton.Click += Async_EventHandler_Main;
@@ -519,7 +518,6 @@ public sealed partial class MainForm
         FilterShowUnavailableButton.AutoSize = false;
         FilterShowUnavailableButton.CheckOnClick = true;
         FilterShowUnavailableButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterShowUnavailableButton.Image = Resources.ShowUnavailable;
         FilterShowUnavailableButton.Margin = new Padding(0);
         FilterShowUnavailableButton.Size = new Size(25, 25);
         FilterShowUnavailableButton.Click += Async_EventHandler_Main;

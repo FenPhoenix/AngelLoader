@@ -551,6 +551,8 @@ public sealed partial class MainForm : DarkFormBase,
     // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
     public MainForm()
     {
+        using Task preloadImageTask = GetPreloadImagesTask();
+
         /*
         @Preload(MainForm images):
         We can kick off the image loading task here: We know the theme, and we can just disable any setting of
@@ -1040,7 +1042,7 @@ public sealed partial class MainForm : DarkFormBase,
         ChangeGameOrganization(startup: true);
 
         // Do this here to prevent double-loading of RTF/GLML readmes
-        SetTheme(Config.VisualTheme, startup: true, createControlHandles: true);
+        SetTheme(Config.VisualTheme, startup: true, createControlHandles: true, preloadImageTask);
 
 #if !ReleaseBeta && !ReleasePublic
         UpdateGameScreenShotModes();
@@ -1870,9 +1872,30 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false, createControlHandles: false);
+    private static Task GetPreloadImagesTask() => Task.Run(() =>
+    {
+        Images.ReloadImageArrays(loadAllGameImages: true);
 
-    private void SetTheme(VisualTheme theme, bool startup, bool createControlHandles)
+        _ = Images.FilterByReleaseDate;
+        _ = Images.FilterByLastPlayed;
+        _ = Images.FilterByTags;
+        _ = Images.FilterByFinished;
+        _ = Images.FilterByUnfinished;
+        _ = Images.FilterByRating;
+        _ = Images.ShowUnsupported;
+        _ = Images.ShowUnavailable;
+        _ = Images.FilterShowRecentAtTop;
+
+        _ = Images.Refresh;
+        _ = Images.RefreshFilters;
+        _ = Images.ClearFilters;
+
+        _ = Images.Settings;
+    });
+
+    public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false, createControlHandles: false, preloadImagesTask: null);
+
+    private void SetTheme(VisualTheme theme, bool startup, bool createControlHandles, Task? preloadImagesTask)
     {
         bool darkMode = theme == VisualTheme.Dark;
 
@@ -1926,8 +1949,33 @@ public sealed partial class MainForm : DarkFormBase,
 
             SetReadmeButtonsBackColor(ReadmeRichTextBox.Visible, theme);
 
-            // Set these first so other controls get the right data when they reference them
-            Images.ReloadImageArrays();
+            try
+            {
+                FilterBarFLP.SuspendLayout();
+
+                preloadImagesTask?.Wait();
+
+                // Set these first so other controls get the right data when they reference them
+                if (!startup) Images.ReloadImageArrays();
+
+                FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
+                FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
+                FilterByTagsButton.Image = Images.FilterByTags;
+                FilterByFinishedButton.Image = Images.FilterByFinished;
+                FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
+                FilterByRatingButton.Image = Images.FilterByRating;
+                FilterShowUnsupportedButton.Image = Images.ShowUnsupported;
+                FilterShowUnavailableButton.Image = Images.ShowUnavailable;
+                FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
+
+                RefreshFromDiskButton.Image = Images.Refresh;
+                RefreshFiltersButton.Image = Images.RefreshFilters;
+                ClearFiltersButton.Image = Images.ClearFilters;
+            }
+            finally
+            {
+                FilterBarFLP.ResumeLayout();
+            }
 
             if (!startup) ControlUtils.RecreateAllToolTipHandles();
 
@@ -1938,27 +1986,6 @@ public sealed partial class MainForm : DarkFormBase,
                     _lazyLoadedControls[i].DarkModeEnabled = darkMode;
                 }
                 SetProgressBoxDarkModeEnabled(darkMode);
-            }
-
-            try
-            {
-                FilterBarFLP.SuspendLayout();
-
-                FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
-                FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
-                FilterByTagsButton.Image = Images.FilterByTags;
-                FilterByFinishedButton.Image = Images.FilterByFinished;
-                FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
-                FilterByRatingButton.Image = Images.FilterByRating;
-                FilterShowRecentAtTopButton.Image = Images.FilterShowRecentAtTop;
-
-                RefreshFromDiskButton.Image = Images.Refresh;
-                RefreshFiltersButton.Image = Images.RefreshFilters;
-                ClearFiltersButton.Image = Images.ClearFilters;
-            }
-            finally
-            {
-                FilterBarFLP.ResumeLayout();
             }
 
             if (Config.GameOrganization == GameOrganization.ByTab)

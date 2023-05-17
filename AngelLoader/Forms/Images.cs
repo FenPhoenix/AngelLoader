@@ -890,31 +890,78 @@ public static class Images
 
     #region Filter bar
 
-    public static Bitmap FilterByReleaseDate => CreateCalendarImage(lastPlayed: false);
-    public static Bitmap FilterByLastPlayed => CreateCalendarImage(lastPlayed: true);
+    private static Bitmap? _filterByReleaseDate;
+    private static Bitmap? _filterByReleaseDate_Dark;
+    public static Bitmap FilterByReleaseDate =>
+        Config.DarkMode
+            ? _filterByReleaseDate_Dark ??= CreateCalendarImage(lastPlayed: false)
+            : _filterByReleaseDate ??= CreateCalendarImage(lastPlayed: false);
 
-    public static Bitmap FilterByTags => Config.DarkMode ? Resources.Tags_Dark : Resources.Tags;
+    private static Bitmap? _filterByLastPlayed;
+    private static Bitmap? _filterByLastPlayed_Dark;
+    public static Bitmap FilterByLastPlayed =>
+        Config.DarkMode
+            ? _filterByLastPlayed_Dark ??= CreateCalendarImage(lastPlayed: true)
+            : _filterByLastPlayed ??= CreateCalendarImage(lastPlayed: true);
 
-    public static Bitmap FilterByFinished => CreateFinishedOnBitmap(0, FinishedOnType.Finished);
-    public static Bitmap FilterByUnfinished => CreateFinishedOnBitmap(0, FinishedOnType.Unfinished);
+    private static Bitmap? _filterByTags;
+    private static Bitmap? _filterByTags_Dark;
+    public static Bitmap FilterByTags =>
+        Config.DarkMode
+            ? _filterByTags_Dark ??= Resources.Tags_Dark
+            : _filterByTags ??= Resources.Tags;
 
-    public static Bitmap FilterByRating => CreateStarImage(StarFullGPath, 24);
+    private static Bitmap? _filterByFinished;
+    private static Bitmap? _filterByFinished_Dark;
+    public static Bitmap FilterByFinished =>
+        Config.DarkMode
+            ? _filterByFinished_Dark ??= CreateFinishedOnBitmap(0, FinishedOnType.Finished)
+            : _filterByFinished ??= CreateFinishedOnBitmap(0, FinishedOnType.Finished);
 
-    public static Bitmap FilterShowRecentAtTop => Config.DarkMode ? Resources.Recent_Dark : Resources.Recent;
+    private static Bitmap? _filterByUnfinished;
+    private static Bitmap? _filterByUnfinished_Dark;
+    public static Bitmap FilterByUnfinished =>
+        Config.DarkMode
+            ? _filterByUnfinished_Dark ??= CreateFinishedOnBitmap(0, FinishedOnType.Unfinished)
+            : _filterByUnfinished ??= CreateFinishedOnBitmap(0, FinishedOnType.Unfinished);
+
+    private static Bitmap? _filterByRating;
+    private static Bitmap? _filterByRating_Dark;
+    public static Bitmap FilterByRating =>
+        Config.DarkMode
+            ? _filterByRating_Dark ??= CreateStarImage(StarFullGPath, 24)
+            : _filterByRating ??= CreateStarImage(StarFullGPath, 24);
+
+    private static Bitmap? _showUnsupported;
+    public static Bitmap ShowUnsupported => _showUnsupported ??= Resources.ShowUnsupported;
+
+    private static Bitmap? _showUnavailable;
+    public static Bitmap ShowUnavailable => _showUnavailable ??= Resources.ShowUnavailable;
+
+    private static Bitmap? _filterShowRecentAtTop;
+    private static Bitmap? _filterShowRecentAtTop_Dark;
+    public static Bitmap FilterShowRecentAtTop =>
+        Config.DarkMode
+            ? _filterShowRecentAtTop_Dark ??= Resources.Recent_Dark
+            : _filterShowRecentAtTop ??= Resources.Recent;
 
     #endregion
 
     #region Filter bar right side
 
+    private static Bitmap? _refreshFilters;
+    private static Bitmap? _refreshFilters_Dark;
     public static Bitmap RefreshFilters =>
         Config.DarkMode
-            ? DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
-            : Resources.RefreshFilters;
+            ? _refreshFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.RefreshFilters)
+            : _refreshFilters ??= Resources.RefreshFilters;
 
+    private static Bitmap? _clearFilters;
+    private static Bitmap? _clearFilters_Dark;
     public static Bitmap ClearFilters =>
         Config.DarkMode
-            ? DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
-            : Resources.ClearFilters;
+            ? _clearFilters_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.ClearFilters)
+            : _clearFilters ??= Resources.ClearFilters;
 
     #endregion
 
@@ -1098,11 +1145,24 @@ public static class Images
 
     #region Methods
 
-    internal static void ReloadImageArrays()
+    internal static void ReloadImageArrays(bool loadAllGameImages = false)
     {
-        for (int i = 0; i < SupportedGameCount; i++)
+        if (loadAllGameImages)
         {
-            FMsList_GameIcons[i] = GetPerGameImage((GameIndex)i).Alternate.Large();
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                _ = GetPerGameImage((GameIndex)i).Primary.Large();
+                _ = GetPerGameImage((GameIndex)i).Primary.Small();
+                FMsList_GameIcons[i] = GetPerGameImage((GameIndex)i).Alternate.Large();
+                _ = GetPerGameImage((GameIndex)i).Alternate.Small();
+            }
+        }
+        else
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                FMsList_GameIcons[i] = GetPerGameImage((GameIndex)i).Alternate.Large();
+            }
         }
 
         LoadRatingImages();
