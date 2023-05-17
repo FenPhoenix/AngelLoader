@@ -31,110 +31,48 @@ public static class AL_Icon
 // Also performance hack for the splash screen as above.
 public static class DarkModeImageConversion
 {
-    private static readonly object _lock = new();
-
-    private static ColorMatrix MultiplyColorMatrix(float[][] matrix1, float[][] matrix2)
+    private static readonly ColorMatrix DarkColorMatrix = new(new[]
     {
-        const int length = 5;
-        float[][] newColorMatrix = new float[length][];
-        for (int index = 0; index < length; ++index)
-        {
-            newColorMatrix[index] = new float[length];
-        }
+        new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
+        new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
+        new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
+        new[] { 0, 0, 0, /* The value: */ 0.8425f, 0 },
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+    });
 
-        float[] numArray1 = new float[length];
-        for (int index1 = 0; index1 < length; ++index1)
-        {
-            for (int index2 = 0; index2 < length; ++index2)
-            {
-                numArray1[index2] = matrix1[index2][index1];
-            }
-
-            for (int index3 = 0; index3 < length; ++index3)
-            {
-                float[] numArray2 = matrix2[index3];
-                float num = 0.0f;
-                for (int index4 = 0; index4 < length; ++index4)
-                {
-                    num += numArray2[index4] * numArray1[index4];
-                }
-
-                newColorMatrix[index3][index1] = num;
-            }
-        }
-
-        return new ColorMatrix(newColorMatrix);
-    }
-
-    private static ColorMatrix? _darkModeMultiplyColorMatrix;
-    private static ColorMatrix DarkModeMultiplyColorMatrix =>
-        // ReSharper disable RedundantExplicitArraySize
-        _darkModeMultiplyColorMatrix ??= MultiplyColorMatrix(new float[5][]
-        {
-            #region Original ToolStripRenderer.CreateDisabledImage version for reference
-
-            //var disabledImageColorMatrix = MultiplyColorMatrix(new float[5][]
-            //{
-            //    new float[5] { 1f, 0.0f, 0.0f, 0.0f, 0.0f },
-            //    new float[5] { 0.0f, 1f, 0.0f, 0.0f, 0.0f },
-            //    new float[5] { 0.0f, 0.0f, 1f, 0.0f, 0.0f },
-            //    new float[5] { 0.0f, 0.0f, 0.0f, 0.7f, 0.0f },
-            //    new float[5]
-            //}, new float[5][]
-            //{
-            //    new float[5] { 0.2125f, 0.2125f, 0.2125f, 0.0f, 0.0f },
-            //    new float[5] { 0.2577f, 0.2577f, 0.2577f, 0.0f, 0.0f },
-            //    new float[5] { 0.0361f, 0.0361f, 0.0361f, 0.0f, 0.0f },
-            //    new float[5] { 0.0f, 0.0f, 0.0f, 1f, 0.0f },
-            //    new float[5] { 0.38f, 0.38f, 0.38f, 0.0f, 1f }
-            //});
-
-            #endregion
-
-            new float[5] { 1f, 0.0f, 0.0f, 0.0f, 0.0f },
-            new float[5] { 0.0f, 1f, 0.0f, 0.0f, 0.0f },
-            new float[5] { 0.0f, 0.0f, 1f, 0.0f, 0.0f },
-            new float[5] { 0.0f, 0.0f, 0.0f, 0.8425f, 0.0f },
-            new float[5]
-        }, new float[5][]
-        {
-            new float[5] { 0.2125f, 0.2125f, 0.2125f, 0.0f, 0.0f },
-            new float[5] { 0.2577f, 0.2577f, 0.2577f, 0.0f, 0.0f },
-            new float[5] { 0.0361f, 0.0361f, 0.0361f, 0.0f, 0.0f },
-            new float[5] { 0.0f, 0.0f, 0.0f, 1f, 0.0f },
-            new float[5] { 0.99f, 0.99f, 0.99f, 0.0f, 1f }
-        });
-    // ReSharper restore RedundantExplicitArraySize
+    private static readonly ColorMatrix DarkDisabledColorMatrix = new(new[]
+    {
+        new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
+        new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
+        new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
+        new[] { 0, 0, 0, /* The value: */ 0.273f, 0 },
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+    });
 
     public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
     {
-        lock (_lock)
-        {
-            using var imgAttrib = new ImageAttributes();
+        using ImageAttributes imgAttrib = new();
 
-            imgAttrib.ClearColorKey();
+        imgAttrib.ClearColorKey();
 
-            DarkModeMultiplyColorMatrix.Matrix33 = disabled ? 0.273f : 0.8425f;
+        imgAttrib.SetColorMatrix(disabled ? DarkDisabledColorMatrix : DarkColorMatrix);
 
-            imgAttrib.SetColorMatrix(DarkModeMultiplyColorMatrix);
+        Size size = normalImage.Size;
 
-            Size size = normalImage.Size;
+        Bitmap darkModeImage = new(size.Width, size.Height);
 
-            var darkModeImage = new Bitmap(size.Width, size.Height);
+        using Graphics graphics = Graphics.FromImage(darkModeImage);
+        graphics.DrawImage(
+            normalImage,
+            new Rectangle(0, 0, size.Width, size.Height),
+            0,
+            0,
+            size.Width,
+            size.Height,
+            GraphicsUnit.Pixel,
+            imgAttrib);
 
-            using Graphics graphics = Graphics.FromImage(darkModeImage);
-            graphics.DrawImage(
-                normalImage,
-                new Rectangle(0, 0, size.Width, size.Height),
-                0,
-                0,
-                size.Width,
-                size.Height,
-                GraphicsUnit.Pixel,
-                imgAttrib);
-
-            return darkModeImage;
-        }
+        return darkModeImage;
     }
 }
 
