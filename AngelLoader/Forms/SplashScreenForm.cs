@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Text;
-using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
-using AngelLoader.Properties;
 
 namespace AngelLoader.Forms;
 
@@ -47,10 +44,6 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
     private readonly Native.GraphicsContext_Ref _graphicsContext;
 
-    private readonly PrivateFontCollection? _collection;
-    private readonly Font _messageFont;
-    private readonly Bitmap _logoBitmap = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
-
     // Separate copy in here, so we don't cause an instantiation cascade for all the fields in DarkColors.
     // Special case to be AS FAST as possible.
     private readonly SolidBrush _fen_ControlBackgroundBrush = new SolidBrush(Color.FromArgb(48, 48, 48));
@@ -69,20 +62,6 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 #else
         InitSlim();
 #endif
-
-        // For some reason getting a built-in font is godawful slow (270+ ms), so we literally just fricking
-        // bundle Open Sans and use that. It takes like 6ms. Sheesh.
-        try
-        {
-            _collection = new PrivateFontCollection();
-            _collection.AddFontFile(Path.Combine(Paths.Startup, "OpenSans-Regular.ttf"));
-            _messageFont = new Font(_collection.Families[0], 12.0f, FontStyle.Regular);
-        }
-        catch
-        {
-            // Godawful slow as stated, but if we don't find our font, then we have to fall back to something.
-            _messageFont = new Font(FontFamily.GenericSansSerif, 12.0f, FontStyle.Regular);
-        }
 
         Text = "AngelLoader " + Application.ProductVersion;
 
@@ -109,6 +88,8 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             // Prevent double-calling of DrawMain()!
             _lockPainting = true;
 
+            Program.PreloadState.SplashScreenPreloadTask.Wait();
+
             base.Show();
 
             // Must draw these after Show(), or they don't show up.
@@ -123,12 +104,12 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
     private void DrawMain()
     {
-        _graphicsContext.G.DrawImage(_logoBitmap, 152, 48);
+        _graphicsContext.G.DrawImage(Preload.AngelLoaderIconBitmap, 152, 48);
 
         _graphicsContext.G.DrawImage(
             _theme == VisualTheme.Dark
-                ? DarkModeImageConversion.CreateDarkModeVersion(Resources.About)
-                : Resources.About,
+                ? Preload.AboutDark
+                : Preload.About,
             200, 48);
 
         using var pen = new Pen(
@@ -156,7 +137,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             TextFormatFlags.NoClipping |
             TextFormatFlags.WordBreak;
 
-        TextRenderer.DrawText(_graphicsContext.G, _message, _messageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+        TextRenderer.DrawText(_graphicsContext.G, _message, Program.PreloadState.MessageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
     }
 
     public void SetMessage(string message)
@@ -173,7 +154,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             TextFormatFlags.NoPrefix |
             TextFormatFlags.NoClipping;
 
-        _checkMessageWidth = TextRenderer.MeasureText(message, _messageFont, Size.Empty, _messageTextFormatFlags).Width;
+        _checkMessageWidth = TextRenderer.MeasureText(message, Program.PreloadState.MessageFont, Size.Empty, _messageTextFormatFlags).Width;
     }
 
     public void SetCheckAtStoredMessageWidth()
@@ -247,9 +228,10 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
         if (disposing)
         {
-            _messageFont.Dispose();
-            _collection?.Dispose();
-            _logoBitmap.Dispose();
+            Program.PreloadState.SplashScreenPreloadTask.Wait();
+
+            Program.PreloadState.MessageFont?.Dispose();
+            Program.PreloadState.FontCollection?.Dispose();
             _graphicsContext.Dispose();
             _fen_ControlBackgroundBrush.Dispose();
         }

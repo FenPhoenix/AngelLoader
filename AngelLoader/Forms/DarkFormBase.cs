@@ -34,7 +34,7 @@ public class DarkFormBase : Form
 
     public DarkFormBase()
     {
-        base.Icon = AL_Icon.AngelLoader;
+        base.Icon = Preload.AngelLoader;
         base.ShowInTaskbar = false;
 
         Win32ThemeHooks.InstallHooks();

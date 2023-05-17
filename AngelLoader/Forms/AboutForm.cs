@@ -20,7 +20,7 @@ public sealed partial class AboutForm : DarkFormBase
 
         // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't
         // add any extra size to our executable.
-        LogoPictureBox.Image = new Icon(AL_Icon.AngelLoader, 48, 48).ToBitmap();
+        LogoPictureBox.Image = Preload.AngelLoaderIconBitmap;
 
         VersionLabel.Text = Application.ProductVersion;
 

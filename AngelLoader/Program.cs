@@ -2,14 +2,54 @@
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 
 using System;
+using System.Drawing;
+using System.Drawing.Text;
+using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
 
 namespace AngelLoader;
 
-file static class Program
+public sealed class PreloadState
 {
+    public PrivateFontCollection? FontCollection;
+    public Font? MessageFont;
+
+    public readonly Task SplashScreenPreloadTask;
+
+    public PreloadState()
+    {
+        SplashScreenPreloadTask = Task.Run(() =>
+        {
+#if !WPF
+            _ = Forms.Preload.AngelLoaderIconBitmap;
+            _ = Forms.Preload.About;
+            _ = Forms.Preload.AboutDark;
+
+            // For some reason getting a built-in font is godawful slow (270+ ms), so we literally just fricking
+            // bundle Open Sans and use that. It takes like 6ms. Sheesh.
+            try
+            {
+                FontCollection = new PrivateFontCollection();
+                FontCollection.AddFontFile(Path.Combine(Paths.Startup, "OpenSans-Regular.ttf"));
+                MessageFont = new Font(FontCollection.Families[0], 12.0f, FontStyle.Regular);
+            }
+            catch
+            {
+                // Godawful slow as stated, but if we don't find our font, then we have to fall back to something.
+                MessageFont = new Font(FontFamily.GenericSansSerif, 12.0f, FontStyle.Regular);
+            }
+#endif
+        });
+    }
+}
+
+public static class Program
+{
+    public static PreloadState PreloadState = null!;
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -22,6 +62,9 @@ file static class Program
 #endif
 
 #if !WPF
+
+        PreloadState = new PreloadState();
+
         // Need to set these here, because the single-instance thing internally creates a window and message-
         // loop etc... that's also why we straight-up ditched our clever "init the ConfigurationManager in
         // the background" thing, because we're going to be creating a form as the very first thing we do now

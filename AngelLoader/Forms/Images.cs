@@ -22,10 +22,18 @@ namespace AngelLoader.Forms;
 
 // Performance hack for splash screen, so we don't cause a static ctor cascade, and we still only load the
 // icon once.
-public static class AL_Icon
+public static class Preload
 {
     private static Icon? _AngelLoader;
     public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
+
+    private static Bitmap? _alIconBmp;
+    public static Bitmap AngelLoaderIconBitmap => _alIconBmp ??= new Icon(AngelLoader, 48, 48).ToBitmap();
+
+    private static Bitmap? _about;
+    private static Bitmap? _about_Dark;
+    public static Bitmap About => _about ??= Resources.About;
+    public static Bitmap AboutDark => _about_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(About);
 }
 
 // Also performance hack for the splash screen as above.
