@@ -24,7 +24,7 @@ public sealed class PreloadState
         SplashScreenPreloadTask = Task.Run(() =>
         {
 #if !WPF
-            _ = Forms.Preload.AngelLoaderIconBitmap;
+            _ = Forms.Preload.AL_Icon_Bmp;
             _ = Forms.Preload.About;
             _ = Forms.Preload.AboutDark;
 

@@ -104,7 +104,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
     private void DrawMain()
     {
-        _graphicsContext.G.DrawImage(Preload.AngelLoaderIconBitmap, 152, 48);
+        _graphicsContext.G.DrawImage(Preload.AL_Icon_Bmp, 152, 48);
 
         _graphicsContext.G.DrawImage(
             _theme == VisualTheme.Dark

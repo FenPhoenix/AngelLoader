@@ -24,11 +24,11 @@ namespace AngelLoader.Forms;
 // icon once.
 public static class Preload
 {
-    private static Icon? _AngelLoader;
-    public static Icon AngelLoader => _AngelLoader ??= Resources.AngelLoader;
+    private static Icon? _alIcon;
+    public static Icon AL_Icon => _alIcon ??= Resources.AngelLoader;
 
     private static Bitmap? _alIconBmp;
-    public static Bitmap AngelLoaderIconBitmap => _alIconBmp ??= new Icon(AngelLoader, 48, 48).ToBitmap();
+    public static Bitmap AL_Icon_Bmp => _alIconBmp ??= new Icon(AL_Icon, 48, 48).ToBitmap();
 
     private static Bitmap? _about;
     private static Bitmap? _about_Dark;
