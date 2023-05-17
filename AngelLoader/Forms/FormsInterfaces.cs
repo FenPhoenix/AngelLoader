@@ -33,6 +33,11 @@ public interface IEventDisabler
 
 internal readonly ref struct DisableEvents
 {
+    /*
+    For some reason VS 17.6+ no longer allows "using ref struct" statements in async methods, even if there is
+    no actual async call IN the using block. So we can use these in a manual try-finally statement ourselves to
+    still avoid the allocation of a class-based version. Yeesh...
+    */
     public static void Open(IEventDisabler obj, bool active = true)
     {
         if (active) obj.EventsDisabled++;
