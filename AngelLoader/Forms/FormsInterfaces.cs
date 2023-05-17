@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using AL_Common;
 
 namespace AngelLoader.Forms;
@@ -34,6 +33,16 @@ public interface IEventDisabler
 
 internal readonly ref struct DisableEvents
 {
+    public static void Open(IEventDisabler obj, bool active = true)
+    {
+        if (active) obj.EventsDisabled++;
+    }
+
+    public static void Close(IEventDisabler obj, bool active = true)
+    {
+        if (active) obj.EventsDisabled = (obj.EventsDisabled - 1).ClampToZero();
+    }
+
     private readonly bool _active;
     private readonly IEventDisabler Obj;
     public DisableEvents(IEventDisabler obj, bool active = true)
@@ -48,18 +57,6 @@ internal readonly ref struct DisableEvents
     {
         if (_active) Obj.EventsDisabled = (Obj.EventsDisabled - 1).ClampToZero();
     }
-}
-
-internal sealed class DisableEvents_Ref : IDisposable
-{
-    private readonly IEventDisabler Obj;
-    internal DisableEvents_Ref(IEventDisabler obj)
-    {
-        Obj = obj;
-        Obj.EventsDisabled++;
-    }
-
-    public void Dispose() => Obj.EventsDisabled = (Obj.EventsDisabled - 1).ClampToZero();
 }
 
 #endregion

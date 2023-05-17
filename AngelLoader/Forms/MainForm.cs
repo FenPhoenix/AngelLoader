@@ -1415,14 +1415,19 @@ public sealed partial class MainForm : DarkFormBase,
                 e.SuppressKeyPress = true;
                 if (!e.Shift)
                 {
-                    using (new DisableEvents_Ref(this))
+                    try
                     {
+                        DisableEvents.Open(this);
                         for (int i = 0; i < FMsDGV.RowCount; i++)
                         {
                             DataGridViewRow row = FMsDGV.Rows[i];
                             if (row == edgeRow) continue;
                             FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
                         }
+                    }
+                    finally
+                    {
+                        DisableEvents.Close(this);
                     }
                     bool fmsDifferent = FMsDGV.GetMainSelectedFM() != _displayedFM;
                     if (fmsDifferent)
@@ -1433,17 +1438,23 @@ public sealed partial class MainForm : DarkFormBase,
 
                     if (selectionSyncHack)
                     {
-                        using (new DisableEvents_Ref(this))
+                        try
                         {
+                            DisableEvents.Open(this);
                             DoSelectionSyncHack(edgeRow.Index, suspendResume: fmsDifferent);
+                        }
+                        finally
+                        {
+                            DisableEvents.Close(this);
                         }
                     }
                 }
             }
             else
             {
-                using (new DisableEvents_Ref(this))
+                try
                 {
+                    DisableEvents.Open(this);
                     if (e.Shift)
                     {
                         int mainSelectedRowIndex = FMsDGV.MainSelectedRow!.Index;
@@ -1470,6 +1481,10 @@ public sealed partial class MainForm : DarkFormBase,
                     {
                         FMsDGV.ClearSelection();
                     }
+                }
+                finally
+                {
+                    DisableEvents.Close(this);
                 }
                 SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, selectionSyncHack: true);
                 // Have to do these manually because we're suppressing the normal chain of selection logic
@@ -1498,9 +1513,14 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (FMsDGV.MainSelectedRow != firstRow)
                     {
-                        using (!e.Shift ? new DisableEvents_Ref(this) : null)
+                        try
                         {
+                            DisableEvents.Open(this, !e.Shift);
                             SelectAndSuppress(0, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                        }
+                        finally
+                        {
+                            DisableEvents.Close(this, !e.Shift);
                         }
                     }
                     if (!e.Shift) await HandleHomeOrEnd(home: true, selectionSyncHack: true);
@@ -1521,9 +1541,14 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (FMsDGV.MainSelectedRow != lastRow)
                     {
-                        using (!e.Shift ? new DisableEvents_Ref(this) : null)
+                        try
                         {
+                            DisableEvents.Open(this, !e.Shift);
                             SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                        }
+                        finally
+                        {
+                            DisableEvents.Close(this, !e.Shift);
                         }
                     }
                     if (!e.Shift) await HandleHomeOrEnd(home: false, selectionSyncHack: true);
@@ -3840,10 +3865,15 @@ public sealed partial class MainForm : DarkFormBase,
             // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
             if (index > -1)
             {
-                using (new DisableEvents_Ref(this))
+                try
                 {
+                    DisableEvents.Open(this);
                     FMsDGV.SelectSingle(index);
                     FMsDGV.SelectProperly();
+                }
+                finally
+                {
+                    DisableEvents.Close(this);
                 }
             }
             else
