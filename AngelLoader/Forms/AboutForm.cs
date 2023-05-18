@@ -40,11 +40,11 @@ public sealed partial class AboutForm : DarkFormBase
         if (theme == VisualTheme.Dark)
         {
             SetThemeBase(theme);
-            LogoTextPictureBox.Image = DarkModeImageConversion.CreateDarkModeVersion(Resources.About);
+            LogoTextPictureBox.Image = Preload.AboutDark;
         }
         else
         {
-            LogoTextPictureBox.Image = Resources.About;
+            LogoTextPictureBox.Image = Preload.About;
         }
     }
 
