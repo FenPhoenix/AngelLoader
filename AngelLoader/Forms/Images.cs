@@ -37,7 +37,7 @@ public static class Preload
 }
 
 // Also performance hack for the splash screen as above.
-public static class DarkModeImageConversion
+file static class DarkModeImageConversion
 {
     private static readonly ColorMatrix DarkColorMatrix = new(new[]
     {
@@ -1247,9 +1247,9 @@ public static class Images
                 {
                     g.DrawImage(bits[i]
                             ? bits[i + 1]
-                                ? (starFull ??= CreateStarImage(StarFullGPath, 22))
-                                : (starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, 22))
-                            : (starEmpty ??= CreateStarImage(StarEmptyGPath, 22)),
+                                ? starFull ??= CreateStarImage(StarFullGPath, 22)
+                                : starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, 22)
+                            : starEmpty ??= CreateStarImage(StarEmptyGPath, 22),
                         (i / 2) * 22, 5);
                 }
 
