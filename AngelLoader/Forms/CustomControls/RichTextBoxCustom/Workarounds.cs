@@ -12,8 +12,11 @@ internal sealed partial class RichTextBoxCustom
 {
     private void InitWorkarounds()
     {
-        InitScrollInfo();
-        InitReaderMode();
+        // Make sure this is valid right from the start
+        _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
+        _scrollInfo.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
+
+        _autoScrollTimer.Tick += AutoScrollTimer_Tick;
     }
 
     private bool _fullDetectUrlsSet;
@@ -74,13 +77,6 @@ internal sealed partial class RichTextBoxCustom
 
     private Native.SCROLLINFO _scrollInfo;
     private int _wheelAccum;
-
-    private void InitScrollInfo()
-    {
-        // Make sure this is valid right from the start
-        _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
-        _scrollInfo.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
-    }
 
     private void ResetScrollInfo()
     {
@@ -187,11 +183,6 @@ internal sealed partial class RichTextBoxCustom
     private int _scrollIncrementY;
     private Rectangle _cursorScrollBounds = new Rectangle(0, 0, 26, 26);
     private bool _endOnMouseUp;
-
-    private void InitReaderMode()
-    {
-        _autoScrollTimer.Tick += AutoScrollTimer_Tick;
-    }
 
     private void InterceptMiddleMouseButton(ref Message m)
     {
