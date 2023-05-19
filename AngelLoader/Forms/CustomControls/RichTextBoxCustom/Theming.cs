@@ -36,16 +36,9 @@ internal sealed partial class RichTextBoxCustom
     {
         _currentReadmeType = readmeType;
 
-        if (readmeType is ReadmeType.PlainText or ReadmeType.Wri)
-        {
-            (BackColor, ForeColor) = _darkModeEnabled
-                ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
-                : (SystemColors.Window, SystemColors.WindowText);
-        }
-        else
-        {
-            (BackColor, ForeColor) = (SystemColors.Window, SystemColors.WindowText);
-        }
+        (BackColor, ForeColor) = (readmeType is ReadmeType.PlainText or ReadmeType.Wri) && _darkModeEnabled
+            ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
+            : (SystemColors.Window, SystemColors.WindowText);
     }
 
     private void RefreshDarkModeState(PreProcessedRTF? preProcessedRtf = null, bool skipSuspend = false)
