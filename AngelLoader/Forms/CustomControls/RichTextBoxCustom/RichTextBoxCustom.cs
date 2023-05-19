@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
-using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
@@ -65,7 +64,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             _contentIsPlainText = value;
             if (_contentIsPlainText)
             {
-                SetFontTypeInternal(Config.ReadmeUseFixedWidthFont, outsideCall: false);
+                SetFontType(Config.ReadmeUseFixedWidthFont, outsideCall: false);
             }
             else
             {
@@ -105,7 +104,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #region Private methods
 
-    private void SetFontTypeInternal(bool useFixed, bool outsideCall)
+    internal void SetFontType(bool useFixed, bool outsideCall)
     {
         if (!ContentIsPlainText) return;
 
@@ -162,8 +161,10 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         this.ResumeDrawing();
     }
 
-    private Encoding? ChangeEncodingInternal(Encoding? encoding, bool suspendResume = true)
+    internal Encoding? ChangeEncoding(Encoding? encoding, bool suspendResume = true)
     {
+        if (!_currentReadmeSupportsEncodingChange) return null;
+
         Encoding? retEncoding = null;
 
         Native.SCROLLINFO si = new();
@@ -234,49 +235,34 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         SetZoomFactorClamped(zoomFactor);
     }
 
-    internal void ZoomIn()
+    internal void Zoom(Zoom zoom)
     {
         try
         {
-            SetZoomFactorClamped(ZoomFactor + 0.1f);
+            if (zoom == Forms.Zoom.Reset)
+            {
+                this.SuspendDrawing();
+
+                // We have to set another value first, or it won't take.
+                ZoomFactor = 1.1f;
+                ZoomFactor = 1.0f;
+            }
+            else
+            {
+                SetZoomFactorClamped(ZoomFactor + (zoom == Forms.Zoom.In ? 0.1f : -0.1f));
+            }
         }
         catch (ArgumentException)
         {
             // leave it as is
-        }
-    }
-
-    internal void ZoomOut()
-    {
-        try
-        {
-            SetZoomFactorClamped(ZoomFactor - 0.1f);
-        }
-        catch (ArgumentException)
-        {
-            // leave it as is
-        }
-    }
-
-    internal void ResetZoomFactor()
-    {
-        try
-        {
-            this.SuspendDrawing();
-
-            // We have to set another value first, or it won't take.
-            ZoomFactor = 1.1f;
-            ZoomFactor = 1.0f;
         }
         finally
         {
-            this.ResumeDrawing();
+            if (zoom == Forms.Zoom.Reset) this.ResumeDrawing();
         }
     }
 
     #endregion
-
-    internal void SetFontType(bool useFixed) => SetFontTypeInternal(useFixed, outsideCall: true);
 
     #region Load content
 
@@ -319,7 +305,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     /// If the file is plain text format and no explicit encoding was passed in, the autodetected encoding
     /// of the file; otherwise, null.
     /// </returns>
-    internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding = null)
+    internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding)
     {
         if (fileType is not ReadmeType.RichText) SwitchOffPreloadState();
 
@@ -397,7 +383,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                         _currentReadmeSupportsEncodingChange = true;
                         _currentReadmeBytes = bytes ?? File.ReadAllBytes(path);
 
-                        retEncoding = ChangeEncodingInternal(encoding, suspendResume: false);
+                        retEncoding = ChangeEncoding(encoding, suspendResume: false);
                     }
 
                     if (fileType == ReadmeType.Wri)
@@ -440,12 +426,6 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     }
 
     #endregion
-
-    [PublicAPI]
-    internal Encoding? ChangeEncoding(Encoding? encoding)
-    {
-        return _currentReadmeSupportsEncodingChange ? ChangeEncodingInternal(encoding) : null;
-    }
 
     protected override void OnLinkClicked(LinkClickedEventArgs e)
     {

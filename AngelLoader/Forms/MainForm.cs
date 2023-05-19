@@ -1638,7 +1638,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                 {
-                    ReadmeRichTextBox.ZoomIn();
+                    ReadmeRichTextBox.Zoom(Zoom.In);
                 }
                 else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
                 {
@@ -1649,7 +1649,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                 {
-                    ReadmeRichTextBox.ZoomOut();
+                    ReadmeRichTextBox.Zoom(Zoom.Out);
                 }
                 else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
                 {
@@ -1660,7 +1660,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
                 {
-                    ReadmeRichTextBox.ResetZoomFactor();
+                    ReadmeRichTextBox.Zoom(Zoom.Reset);
                 }
                 else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
                 {
@@ -4114,11 +4114,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
 
-    private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
+    private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.In);
 
-    private void ReadmeZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
+    private void ReadmeZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.Out);
 
-    private void ReadmeResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ResetZoomFactor();
+    private void ReadmeResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.Reset);
 
     private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
     {
@@ -4163,7 +4163,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetMainSelectedFM());
 
-    public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
+    public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed, outsideCall: true);
 
     #endregion
 
