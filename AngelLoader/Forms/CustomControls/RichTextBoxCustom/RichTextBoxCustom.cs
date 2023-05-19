@@ -64,7 +64,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             _contentIsPlainText = value;
             if (_contentIsPlainText)
             {
-                SetFontType(Config.ReadmeUseFixedWidthFont, outsideCall: false);
+                Font = Config.ReadmeUseFixedWidthFont ? MonospaceFont : DefaultFont;
             }
             else
             {
@@ -104,38 +104,29 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #region Private methods
 
-    internal void SetFontType(bool useFixed, bool outsideCall)
+    internal void SetFontType(bool useFixed)
     {
         if (!ContentIsPlainText) return;
 
         try
         {
-            if (outsideCall)
-            {
-                SaveZoom();
-                this.SuspendDrawing();
-            }
+            SaveZoom();
+            this.SuspendDrawing();
 
             Font = useFixed ? MonospaceFont : DefaultFont;
 
-            if (outsideCall)
-            {
-                string savedText = Text;
+            string savedText = Text;
 
-                Clear();
-                ResetScrollInfo();
+            Clear();
+            ResetScrollInfo();
 
-                // We have to reload because links don't get recognized until we do
-                Text = savedText;
-            }
+            // We have to reload because links don't get recognized until we do
+            Text = savedText;
         }
         finally
         {
-            if (outsideCall)
-            {
-                RestoreZoom();
-                this.ResumeDrawing();
-            }
+            RestoreZoom();
+            this.ResumeDrawing();
         }
     }
 
@@ -378,20 +369,13 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                 case ReadmeType.Wri:
                     ContentIsPlainText = true;
 
-                    void LoadAsText(byte[]? bytes = null)
-                    {
-                        _currentReadmeSupportsEncodingChange = true;
-                        _currentReadmeBytes = bytes ?? File.ReadAllBytes(path);
-
-                        retEncoding = ChangeEncoding(encoding, suspendResume: false);
-                    }
+                    byte[] bytes = File.ReadAllBytes(path);
+                    bool loadAsText = false;
 
                     if (fileType == ReadmeType.Wri)
                     {
                         _currentReadmeSupportsEncodingChange = false;
                         _currentReadmeBytes = Array.Empty<byte>();
-
-                        byte[] bytes = File.ReadAllBytes(path);
 
                         (bool success, byte[] retBytes, string retText) = WriConversion.LoadWriFileAsPlainText(bytes);
 
@@ -402,13 +386,22 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                         }
                         else
                         {
-                            LoadAsText(bytes);
+                            loadAsText = true;
                         }
                     }
                     else
                     {
-                        LoadAsText();
+                        loadAsText = true;
                     }
+
+                    if (loadAsText)
+                    {
+                        _currentReadmeSupportsEncodingChange = true;
+                        _currentReadmeBytes = bytes;
+
+                        retEncoding = ChangeEncoding(encoding, suspendResume: false);
+                    }
+
                     break;
             }
         }

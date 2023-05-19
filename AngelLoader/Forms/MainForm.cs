@@ -4163,7 +4163,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetMainSelectedFM());
 
-    public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed, outsideCall: true);
+    public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
 
     #endregion
 
