@@ -276,14 +276,10 @@ public sealed class ScannedFMData
     public Game Game;
 #if FMScanner_FullCode
     public string[] Languages = Array.Empty<string>();
-#endif
-#if FMScanner_FullCode
     public string Version = "";
     public bool? NewDarkRequired;
     public string NewDarkMinRequiredVersion = "";
-#endif
 
-#if FMScanner_FullCode
     /// <summary>
     /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
     /// </summary>
