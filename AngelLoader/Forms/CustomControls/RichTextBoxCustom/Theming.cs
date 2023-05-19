@@ -69,17 +69,11 @@ internal sealed partial class RichTextBoxCustom
 
             if (_currentReadmeType == ReadmeType.RichText)
             {
-                if (preProcessedRtf != null)
-                {
-                    using var ms = new MemoryStream(preProcessedRtf.Bytes);
-                    LoadFile(ms, RichTextBoxStreamType.RichText);
-                }
-                else
-                {
-                    byte[] bytes = RtfTheming.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
-                    using var ms = new MemoryStream(bytes);
-                    LoadFile(ms, RichTextBoxStreamType.RichText);
-                }
+                byte[] bytes = preProcessedRtf != null
+                    ? preProcessedRtf.Bytes
+                    : RtfTheming.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
+                using var ms = new MemoryStream(bytes);
+                LoadFile(ms, RichTextBoxStreamType.RichText);
             }
             else if (_currentReadmeType == ReadmeType.GLML)
             {
