@@ -1739,24 +1739,17 @@ public sealed partial class Scanner : IDisposable
 
         const int maxTopLines = 5;
 
-        var lines = new List<string>(maxTopLines);
-
         foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
 
-            lines.Clear();
-
+            int topLineCount = 0;
             for (int i = 0; i < r.Lines.Count; i++)
             {
-                string line = r.Lines[i];
-                if (!line.IsWhiteSpace()) lines.Add(line);
-                if (lines.Count == maxTopLines) break;
-            }
+                string lineT = r.Lines[i].Trim();
 
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lineT = lines[i].Trim();
+                if (lineT.IsWhiteSpace()) continue;
+
                 foreach (string item in _monthNamesEnglish)
                 {
                     if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
@@ -1764,6 +1757,9 @@ public sealed partial class Scanner : IDisposable
                         return result;
                     }
                 }
+
+                topLineCount++;
+                if (topLineCount == maxTopLines) break;
             }
         }
 
