@@ -163,9 +163,12 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     internal void SoftClearList()
     {
+        CheckItems = Array.Empty<CheckItem>();
+
         foreach (DarkCheckBox cb in _checkBoxes)
         {
             cb.Hide();
+            cb.Tag = null;
         }
 
         _cautionLabel?.Hide();
@@ -300,17 +303,18 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     internal void ShowCautionSection(bool show)
     {
-        if (!_checkBoxes.Any(static x => x.Visible))
+        if (CheckItems.Length == 0)
         {
             _cautionLabel?.Hide();
-            return;
         }
-
-        foreach (Control c in Controls)
+        else
         {
-            if (c.Tag is ItemType.Caution)
+            foreach (Control c in Controls)
             {
-                c.Visible = show;
+                if (c.Tag is ItemType.Caution)
+                {
+                    c.Visible = show;
+                }
             }
         }
 
