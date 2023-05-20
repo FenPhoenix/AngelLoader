@@ -102,11 +102,19 @@ public sealed class ConfigData
 
     #region Mod dirs
 
+    // Hack that's only here for perf in the mods control, so it can check only a single bool to know if it needs
+    // to recreate its checkbox list. Complete leak of view implementation details into here, but meh...
+    internal bool ModsChanged;
+
     private readonly List<Mod>?[] _mods;
 
     internal List<Mod> GetMods(GameIndex gameIndex) => _mods[(int)gameIndex] ??= new List<Mod>();
 
-    internal void SetMods(GameIndex gameIndex, List<Mod> value) => _mods[(int)gameIndex] = value;
+    internal void SetMods(GameIndex gameIndex, List<Mod> value)
+    {
+        _mods[(int)gameIndex] = value;
+        ModsChanged = true;
+    }
 
     #endregion
 

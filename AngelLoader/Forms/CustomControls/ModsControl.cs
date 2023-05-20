@@ -93,9 +93,11 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
             DisabledModsTextBox.Text = disabledMods;
 
-            CheckList.ClearList();
-
-            if (!game.ConvertsToModSupporting(out GameIndex gameIndex)) return;
+            if (!game.ConvertsToModSupporting(out GameIndex gameIndex))
+            {
+                CheckList.SoftClearList();
+                return;
+            }
 
             List<Mod> mods = Config.GetMods(gameIndex);
 
@@ -114,7 +116,24 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
                     caution: mod.IsUber);
             }
 
-            CheckList.FillList(checkItems, LText.ModsTab.ImportantModsCaution);
+            int maxModCount = 0;
+
+            if (Config.ModsChanged)
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    int modsCount = Config.GetMods((GameIndex)i).Count;
+                    if (modsCount > maxModCount)
+                    {
+                        maxModCount = modsCount;
+                    }
+                }
+
+                CheckList.RecreateList(maxModCount);
+                Config.ModsChanged = false;
+            }
+
+            CheckList.SetList(checkItems, LText.ModsTab.ImportantModsCaution);
         }
         finally
         {

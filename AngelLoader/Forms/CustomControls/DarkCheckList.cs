@@ -22,6 +22,27 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     private DarkLabel? _errorLabel;
 
     private DarkLabel? _cautionLabel;
+    private DarkLabel CautionLabel
+    {
+        get
+        {
+            if (_cautionLabel == null)
+            {
+                _cautionLabel = new DarkLabel
+                {
+                    Tag = ItemType.Caution,
+                    AutoSize = true,
+                    ForeColor = Color.Maroon,
+                    DarkModeForeColor = DarkColors.Fen_CautionText,
+                };
+                Controls.Add(_cautionLabel);
+                _cautionLabel.DarkModeEnabled = _darkModeEnabled;
+            }
+
+            return _cautionLabel;
+        }
+    }
+
     private Rectangle _cautionRectangle = Rectangle.Empty;
 
     private bool _origValuesStored;
@@ -150,28 +171,33 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     internal static bool IsControlCaution(Control control) => control.Tag is ItemType.Caution;
 
-    /*
-    @MEM/@Mods(Mods panel checkbox list):
-    -Make a control to handle the recycling/dark mode syncing of these
-    -Now that we only change the mods list on game data set, we can just have one set of mods per supported
-     game, and only rebuild them on game change.
-    */
-    internal void ClearList()
+    internal void SoftClearList()
     {
-        Controls.DisposeAndClear();
-        _checkBoxes.DisposeAll();
-        _checkBoxes = Array.Empty<DarkCheckBox>();
-        CheckItems = Array.Empty<CheckItem>();
+        foreach (DarkCheckBox cb in _checkBoxes)
+        {
+            cb.Hide();
+        }
+
+        _cautionLabel?.Hide();
+        _cautionRectangle = Rectangle.Empty;
     }
 
     internal void SetErrorText(string text)
     {
         if (!text.IsEmpty())
         {
-            ClearList();
+            SoftClearList();
 
-            _errorPictureBox?.Dispose();
-            _errorLabel?.Dispose();
+            if (_errorPictureBox != null)
+            {
+                Controls.Remove(_errorPictureBox);
+                _errorPictureBox.Dispose();
+            }
+            if (_errorLabel != null)
+            {
+                Controls.Remove(_errorLabel);
+                _errorLabel.Dispose();
+            }
 
             _errorPictureBox = new PictureBox
             {
@@ -213,12 +239,9 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         }
     }
 
-    internal void FillList(CheckItem[] items, string cautionText)
+    internal void SetList(CheckItem[] items, string cautionText)
     {
         SetErrorText("");
-
-        ClearList();
-        _checkBoxes = new DarkCheckBox[items.Length];
 
         const int x = 18;
 
@@ -237,42 +260,45 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
                 firstCautionY = y;
             }
 
-            var cb = new DarkCheckBox
+            DarkCheckBox cb = _checkBoxes[i];
+            cb.Text = item.Text + (item.Caution ? " *" : "");
+            cb.Location = new Point(x, 4 + y);
+            using (new DisableEvents(this))
             {
-                AutoSize = true,
-                Text = item.Text + (item.Caution ? " *" : ""),
-                Location = new Point(x, 4 + y),
-                Checked = item.Checked
-            };
+                cb.Checked = item.Checked;
+            }
+
             if (item.Caution)
             {
                 cb.Tag = ItemType.Caution;
                 cb.Visible = _predicate?.Invoke() ?? true;
                 cb.SetFontStyle(FontStyle.Italic);
                 cb.BackColor = Color.MistyRose;
-            }
-            if (firstCautionDone)
-            {
                 cb.DarkModeBackColor = DarkColors.Fen_RedHighlight;
             }
-            Controls.Add(cb);
-            _checkBoxes[i] = cb;
-            cb.CheckedChanged += OnItemsCheckedChanged;
+            else
+            {
+                cb.Tag = null;
+                cb.Visible = true;
+                cb.SetFontStyle(FontStyle.Regular);
+                cb.BackColor = SystemColors.Window;
+                cb.DarkModeBackColor = null;
+            }
+        }
+
+        for (int i = items.Length; i < _checkBoxes.Length; i++)
+        {
+            DarkCheckBox cb = _checkBoxes[i];
+            cb.Visible = false;
+            cb.Tag = null;
         }
 
         if (firstCautionDone)
         {
-            _cautionLabel = new DarkLabel
-            {
-                Tag = ItemType.Caution,
-                Visible = _predicate?.Invoke() ?? true,
-                AutoSize = true,
-                ForeColor = Color.Maroon,
-                DarkModeForeColor = DarkColors.Fen_CautionText,
-                Location = new Point(4, 8 + y)
-            };
+            CautionLabel.Visible = _predicate?.Invoke() ?? true;
+            CautionLabel.Location = new Point(4, 8 + y);
+
             RefreshCautionLabelText(cautionText);
-            Controls.Add(_cautionLabel);
 
             _cautionRectangle = new Rectangle(
                 4,
@@ -287,8 +313,38 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         }
 
         CheckItems = items;
+    }
 
-        RefreshDarkMode();
+    internal void RecreateList(int maxCheckBoxCount)
+    {
+        try
+        {
+            SuspendLayout();
+
+            Controls.DisposeAndClear();
+            _checkBoxes.DisposeAll();
+            CheckItems = Array.Empty<CheckItem>();
+
+            _checkBoxes = new DarkCheckBox[maxCheckBoxCount];
+            for (int i = 0; i < _checkBoxes.Length; i++)
+            {
+                DarkCheckBox cb = new()
+                {
+                    AutoSize = true
+                };
+                _checkBoxes[i] = cb;
+                Controls.Add(cb);
+                cb.CheckedChanged += OnItemsCheckedChanged;
+            }
+
+            _cautionLabel = null;
+
+            RefreshDarkMode();
+        }
+        finally
+        {
+            ResumeLayout(true);
+        }
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -349,7 +405,8 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
         var s = (DarkCheckBox)sender;
 
-        int checkBoxIndex = Array.IndexOf(_checkBoxes, s);
+        int checkBoxIndex = Array.IndexOf(_checkBoxes, s, 0, CheckItems.Length);
+        if (checkBoxIndex == -1) return;
 
         CheckItems[checkBoxIndex].Checked = s.Checked;
 

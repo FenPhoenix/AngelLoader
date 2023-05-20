@@ -90,7 +90,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
                 _page.MainModsControl.Visible = false;
                 ModsTabNotSupportedMessageLabel.Visible = true;
 
-                _page.MainModsControl.CheckList.ClearList();
+                _page.MainModsControl.CheckList.SoftClearList();
             }
             else
             {
@@ -103,7 +103,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
         else
         {
             ModsTabNotSupportedMessageLabel.Visible = false;
-            _page.MainModsControl.CheckList.ClearList();
+            _page.MainModsControl.CheckList.SoftClearList();
             _page.MainModsControl.Enabled = false;
             _page.MainModsControl.Visible = true;
         }
