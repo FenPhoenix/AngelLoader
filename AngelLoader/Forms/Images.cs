@@ -86,8 +86,6 @@ file static class DarkModeImageConversion
 
 public static class Images
 {
-    // @Preload(Images): We should time how long GraphicsPaths/Brushes/Pens init takes, and see if we want to preload those too
-
     #region Path points and types
 
     #region Magnifying glass
