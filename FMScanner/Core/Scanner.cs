@@ -87,7 +87,8 @@ public sealed partial class Scanner : IDisposable
     #region Disposable
 
     private ZipArchiveFast _archive = null!;
-    private readonly ZipReusableBundle _zipBundle;
+    private ZipReusableBundle? _zipBundle;
+    private ZipReusableBundle ZipBundle => _zipBundle ??= new ZipReusableBundle();
     private readonly StreamReaderCustom _streamReaderCustom = new();
 
     #endregion
@@ -260,8 +261,6 @@ public sealed partial class Scanner : IDisposable
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
-
-        _zipBundle = new ZipReusableBundle();
 
         _sevenZipExePath = sevenZipExePath;
 
@@ -897,7 +896,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    _archive = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(fm.Path, _zipBundle.FileStreamBuffer), _zipBundle, allowUnsupportedEntries: false);
+                    _archive = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(fm.Path, ZipBundle.FileStreamBuffer), ZipBundle, allowUnsupportedEntries: false);
 
                     // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
                     // thrown while loading them. If this passes, we're definitely good.
@@ -4814,7 +4813,7 @@ public sealed partial class Scanner : IDisposable
     {
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _archive?.Dispose();
-        _zipBundle.Dispose();
+        _zipBundle?.Dispose();
         _streamReaderCustom.DeInit();
     }
 }
