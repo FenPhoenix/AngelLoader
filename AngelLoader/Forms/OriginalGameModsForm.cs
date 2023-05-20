@@ -17,8 +17,6 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
         InitSlim();
 #endif
 
-        OrigGameModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
-
         NewMantling = Config.GetNewMantling(gameIndex);
         DisabledMods = Config.GetDisabledMods(gameIndex);
 

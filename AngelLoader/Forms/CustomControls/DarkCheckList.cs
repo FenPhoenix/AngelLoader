@@ -18,9 +18,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     private Func<bool>? _predicate;
 
-    private PictureBox? _errorPictureBox;
-    private DarkLabel? _errorLabel;
-
     private DarkLabel? _cautionLabel;
     private DarkLabel CautionLabel
     {
@@ -75,9 +72,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     #endregion
 
     #region Public fields and properties
-
-    [PublicAPI]
-    public bool InErrorState { get; private set; }
 
     [PublicAPI]
     public CheckItem[] CheckItems = Array.Empty<CheckItem>();
@@ -158,11 +152,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
                 darkableControl.DarkModeEnabled = _darkModeEnabled;
             }
         }
-
-        if (_errorPictureBox != null)
-        {
-            _errorPictureBox.Image = Images.RedExclCircle;
-        }
     }
 
     #endregion
@@ -182,67 +171,8 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         _cautionRectangle = Rectangle.Empty;
     }
 
-    internal void SetErrorText(string text)
-    {
-        if (!text.IsEmpty())
-        {
-            SoftClearList();
-
-            if (_errorPictureBox != null)
-            {
-                Controls.Remove(_errorPictureBox);
-                _errorPictureBox.Dispose();
-            }
-            if (_errorLabel != null)
-            {
-                Controls.Remove(_errorLabel);
-                _errorLabel.Dispose();
-            }
-
-            _errorPictureBox = new PictureBox
-            {
-                Location = new Point(16, 8),
-                Size = new Size(14, 14),
-                Visible = false
-            };
-            _errorLabel = new DarkLabel
-            {
-                AutoSize = true,
-                Location = new Point(_errorPictureBox.Right + 4, 8),
-                Visible = false
-            };
-
-            _errorPictureBox.Click += static (_, _) => Core.OpenLogFile();
-            _errorLabel.Click += static (_, _) => Core.OpenLogFile();
-
-            _errorPictureBox.Image = Images.RedExclCircle;
-            _errorLabel.Text = text;
-
-            Controls.Add(_errorPictureBox);
-            Controls.Add(_errorLabel);
-
-            _errorPictureBox.Show();
-            _errorLabel.Show();
-
-            InErrorState = true;
-        }
-        else
-        {
-            _errorPictureBox?.Hide();
-            if (_errorLabel != null)
-            {
-                _errorLabel.Hide();
-                _errorLabel.Text = "";
-            }
-
-            InErrorState = false;
-        }
-    }
-
     internal void SetList(CheckItem[] items, string cautionText)
     {
-        SetErrorText("");
-
         const int x = 18;
 
         bool firstCautionDone = false;

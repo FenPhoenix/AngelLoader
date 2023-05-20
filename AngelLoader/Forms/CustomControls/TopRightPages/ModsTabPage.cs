@@ -34,8 +34,6 @@ public sealed class ModsTabPage : Lazy_TabsBase
         {
             Controls.Add(_page);
 
-            _page.MainModsControl.SetErrorTextGetter(static () => LText.Global.ErrorReadingMods);
-
             ModsTabNotSupportedMessageLabel = new DarkLabel
             {
                 AutoSize = false,

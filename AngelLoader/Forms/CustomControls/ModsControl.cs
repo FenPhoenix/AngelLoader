@@ -16,9 +16,6 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int EventsDisabled { get; set; }
 
-    private Func<string>? _errorTextGetter;
-    public void SetErrorTextGetter(Func<string> errorTextGetter) => _errorTextGetter = errorTextGetter;
-
 #if DEBUG
 
     [Browsable(false)]
@@ -48,10 +45,6 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         DisableNonImportantButton.Text = LText.ModsTab.DisableAll;
         MainToolTip.SetToolTip(DisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
         DisabledModsLabel.Text = LText.ModsTab.DisabledMods;
-        if (CheckList.InErrorState && _errorTextGetter != null)
-        {
-            CheckList.SetErrorText(_errorTextGetter.Invoke());
-        }
     }
 
     private void Commit()
