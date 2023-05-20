@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -299,6 +300,12 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     internal void ShowCautionSection(bool show)
     {
+        if (!_checkBoxes.Any(static x => x.Visible))
+        {
+            _cautionLabel?.Hide();
+            return;
+        }
+
         foreach (Control c in Controls)
         {
             if (c.Tag is ItemType.Caution)

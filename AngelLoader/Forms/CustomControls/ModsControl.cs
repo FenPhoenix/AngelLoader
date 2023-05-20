@@ -126,7 +126,14 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
                 Config.ModsChanged = false;
             }
 
-            CheckList.SetList(checkItems, LText.ModsTab.ImportantModsCaution);
+            if (checkItems.Length == 0)
+            {
+                CheckList.SoftClearList();
+            }
+            else
+            {
+                CheckList.SetList(checkItems, LText.ModsTab.ImportantModsCaution);
+            }
         }
         finally
         {
