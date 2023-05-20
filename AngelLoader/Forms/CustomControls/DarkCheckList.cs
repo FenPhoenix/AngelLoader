@@ -22,7 +22,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
     private DarkLabel? _errorLabel;
 
     private DarkLabel? _cautionLabel;
-    private DrawnPanel? _cautionPanel;
+    private Rectangle _cautionRectangle = Rectangle.Empty;
 
     private bool _origValuesStored;
     private Color? _origBackColor;
@@ -227,8 +227,6 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
         int y = 0;
         int firstCautionY = 0;
 
-        DarkLabel? cautionLabel = null;
-
         for (int i = 0; i < items.Length; i++, y += 20)
         {
             CheckItem item = items[i];
@@ -275,25 +273,32 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
             };
             RefreshCautionLabelText(cautionText);
             Controls.Add(_cautionLabel);
-            cautionLabel?.SendToBack();
 
-            _cautionPanel = new DrawnPanel
-            {
-                Tag = ItemType.Caution,
-                Visible = _predicate?.Invoke() ?? true,
-                Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
-                DrawnBackColor = Color.MistyRose,
-                DarkModeDrawnBackColor = DarkColors.Fen_RedHighlight,
-                Location = new Point(4, 4 + firstCautionY),
-                Size = new Size(ClientRectangle.Width - 8, (4 + y) - (4 + firstCautionY))
-            };
-            Controls.Add(_cautionPanel);
-            _cautionPanel.SendToBack();
+            _cautionRectangle = new Rectangle(
+                4,
+                4 + firstCautionY,
+                0, // Width will be set on draw for manual "anchoring"
+                (4 + y) - (4 + firstCautionY)
+            );
+        }
+        else
+        {
+            _cautionRectangle = Rectangle.Empty;
         }
 
         CheckItems = items;
 
         RefreshDarkMode();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        if (_cautionRectangle != Rectangle.Empty && (_predicate?.Invoke() ?? true))
+        {
+            _cautionRectangle.Width = ClientRectangle.Width - 8;
+            e.Graphics.FillRectangle(_darkModeEnabled ? DarkColors.Fen_RedHighlightBrush : Brushes.MistyRose, _cautionRectangle);
+        }
+        base.OnPaint(e);
     }
 
     internal void SetCautionVisiblePredicate(Func<bool> predicate) => _predicate = predicate;
@@ -315,6 +320,8 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
                 c.Visible = show;
             }
         }
+
+        Refresh();
     }
 
     internal void SetItemCheckedStates(bool[] checkedStates)
