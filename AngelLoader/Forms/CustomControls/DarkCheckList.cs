@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -31,7 +30,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
                     Tag = ItemType.Caution,
                     AutoSize = true,
                     ForeColor = Color.Maroon,
-                    DarkModeForeColor = DarkColors.Fen_CautionText,
+                    DarkModeForeColor = DarkColors.Fen_CautionText
                 };
                 Controls.Add(_cautionLabel);
                 _cautionLabel.DarkModeEnabled = _darkModeEnabled;
