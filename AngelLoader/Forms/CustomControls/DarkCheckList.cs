@@ -55,6 +55,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
 
     #region Public classes
 
+    // @Mods(Recycle CheckItems somehow, or get rid of the need for it?)
     [PublicAPI]
     public sealed class CheckItem
     {
