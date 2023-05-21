@@ -320,45 +320,45 @@ public sealed class StreamReaderCustom
             return;
         }
         _detectEncoding = false;
-        bool flag = false;
-        if (_byteBuffer[0] == 254 && _byteBuffer[1] == byte.MaxValue)
+        bool changedEncoding = false;
+        if (_byteBuffer[0] == 0xFE && _byteBuffer[1] == 0xFF)
         {
             _encoding = new UnicodeEncoding(true, true);
             CompressBuffer(2);
-            flag = true;
+            changedEncoding = true;
         }
-        else if (_byteBuffer[0] == byte.MaxValue && _byteBuffer[1] == 254)
+        else if (_byteBuffer[0] == 0xFF && _byteBuffer[1] == 0xFE)
         {
             if (_byteLen < 4 || _byteBuffer[2] != 0 || _byteBuffer[3] != 0)
             {
                 _encoding = new UnicodeEncoding(false, true);
                 CompressBuffer(2);
-                flag = true;
+                changedEncoding = true;
             }
             else
             {
                 _encoding = new UTF32Encoding(false, true);
                 CompressBuffer(4);
-                flag = true;
+                changedEncoding = true;
             }
         }
-        else if (_byteLen >= 3 && _byteBuffer[0] == 239 && _byteBuffer[1] == 187 && _byteBuffer[2] == 191)
+        else if (_byteLen >= 3 && _byteBuffer[0] == 0xEF && _byteBuffer[1] == 0xBB && _byteBuffer[2] == 0xBF)
         {
             _encoding = Encoding.UTF8;
             CompressBuffer(3);
-            flag = true;
+            changedEncoding = true;
         }
-        else if (_byteLen >= 4 && _byteBuffer[0] == 0 && _byteBuffer[1] == 0 && _byteBuffer[2] == 254 && _byteBuffer[3] == byte.MaxValue)
+        else if (_byteLen >= 4 && _byteBuffer[0] == 0 && _byteBuffer[1] == 0 && _byteBuffer[2] == 0xFE && _byteBuffer[3] == 0xFF)
         {
             _encoding = new UTF32Encoding(true, true);
             CompressBuffer(4);
-            flag = true;
+            changedEncoding = true;
         }
         else if (_byteLen == 2)
         {
             _detectEncoding = true;
         }
-        if (!flag)
+        if (!changedEncoding)
         {
             return;
         }

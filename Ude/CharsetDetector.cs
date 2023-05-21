@@ -197,40 +197,18 @@ public sealed class CharsetDetector
 
     public static Charset GetBOMCharset(byte[] buf, int len)
     {
-        if (len > 3)
-        {
-            switch (buf[0])
+        return len >= 2
+            ? buf[0] switch
             {
-                case 0xEF:
-                    if (buf[1] == 0xBB && buf[2] == 0xBF)
-                    {
-                        return Charset.UTF8;
-                    }
-                    break;
-                case 0xFE:
-                    if (buf[1] == 0xFF)
-                    {
-                        return Charset.UTF16BE;
-                    }
-                    break;
-                case 0x00:
-                    if (buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF)
-                    {
-                        return Charset.UTF32BE;
-                    }
-                    break;
-                case 0xFF:
-                    if (buf[1] == 0xFE)
-                    {
-                        return buf[2] == 0x00 && buf[3] == 0x00
-                            ? Charset.UTF32LE
-                            : Charset.UTF16LE;
-                    }
-                    break;
+                0xFE when buf[1] == 0xFF => Charset.UTF16BE,
+                0xFF when buf[1] == 0xFE => len < 4 || buf[2] != 0x00 || buf[3] != 0x00
+                    ? Charset.UTF16LE
+                    : Charset.UTF32LE,
+                0xEF when len >= 3 && buf[1] == 0xBB && buf[2] == 0xBF => Charset.UTF8,
+                0x00 when len >= 4 && buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF => Charset.UTF32BE,
+                _ => Charset.Null
             }
-        }
-
-        return Charset.Null;
+            : Charset.Null;
     }
 
     public void Run(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
