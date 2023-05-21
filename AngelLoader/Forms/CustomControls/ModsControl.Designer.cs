@@ -137,7 +137,6 @@ sealed partial class ModsControl
         this.CheckList.Name = "CheckList";
         this.CheckList.Size = new System.Drawing.Size(512, 184);
         this.CheckList.TabIndex = 6;
-        this.CheckList.ItemCheckedChanged += new System.EventHandler(this.CheckList_ItemCheckedChanged);
         // 
         // AutoScrollDummyPanel
         // 

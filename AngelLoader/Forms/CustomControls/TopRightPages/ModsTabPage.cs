@@ -66,7 +66,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
         if (!_constructed) return;
 
         _page.MainModsControl.Localize(LText.ModsTab.Header);
-        _page.MainModsControl.CheckList.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
+        _page.MainModsControl.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
 
         ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
     }
@@ -88,7 +88,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
                 _page.MainModsControl.Visible = false;
                 ModsTabNotSupportedMessageLabel.Visible = true;
 
-                _page.MainModsControl.CheckList.SoftClearList();
+                _page.MainModsControl.SoftClearList();
             }
             else
             {
@@ -101,7 +101,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
         else
         {
             ModsTabNotSupportedMessageLabel.Visible = false;
-            _page.MainModsControl.CheckList.SoftClearList();
+            _page.MainModsControl.SoftClearList();
             _page.MainModsControl.Enabled = false;
             _page.MainModsControl.Visible = true;
         }
