@@ -215,7 +215,7 @@ public sealed class DarkCheckList : Panel, IDarkable, IEventDisabler
                 cb.Tag = null;
                 cb.Visible = true;
                 cb.SetFontStyle(FontStyle.Regular);
-                cb.BackColor = SystemColors.Window;
+                cb.BackColor = Color.Transparent;
                 cb.DarkModeBackColor = null;
             }
         }
