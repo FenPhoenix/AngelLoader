@@ -199,7 +199,7 @@ public sealed class StreamReaderCustom
         get
         {
             if (_stream == null!)
-                __Error.ReaderClosed();
+                ThrowHelper.ReaderClosed();
             return _charPos >= _charLen && ReadBuffer() == 0;
         }
     }
@@ -211,7 +211,7 @@ public sealed class StreamReaderCustom
     public int Peek()
     {
         if (_stream == null!)
-            __Error.ReaderClosed();
+            ThrowHelper.ReaderClosed();
         return _charPos == _charLen && (_isBlocked || ReadBuffer() == 0) ? -1 : (int)_charBuffer[_charPos];
     }
 
@@ -221,7 +221,7 @@ public sealed class StreamReaderCustom
     public int Read()
     {
         if (_stream == null!)
-            __Error.ReaderClosed();
+            ThrowHelper.ReaderClosed();
         if (_charPos == _charLen && ReadBuffer() == 0)
             return -1;
         int num = (int)_charBuffer[_charPos];
@@ -250,7 +250,7 @@ public sealed class StreamReaderCustom
         if (buffer.Length - index < count)
             throw new ArgumentException(("Argument_InvalidOffLen"));
         if (_stream == null!)
-            __Error.ReaderClosed();
+            ThrowHelper.ReaderClosed();
         int num1 = 0;
         bool readToUserBuffer = false;
         while (count > 0)
@@ -371,18 +371,16 @@ public sealed class StreamReaderCustom
     {
         if (!_checkPreamble) return _checkPreamble;
 
-        int num1 = _byteLen >= _preamble.Length ? _preamble.Length - _bytePos : _byteLen - _bytePos;
-        int num2 = 0;
-        while (num2 < num1)
+        int len = _byteLen >= _preamble.Length ? _preamble.Length - _bytePos : _byteLen - _bytePos;
+
+        for (int i = 0; i < len; i++, _bytePos++)
         {
-            if ((int)_byteBuffer[_bytePos] != (int)_preamble[_bytePos])
+            if (_byteBuffer[_bytePos] != _preamble[_bytePos])
             {
                 _bytePos = 0;
                 _checkPreamble = false;
                 break;
             }
-            ++num2;
-            ++_bytePos;
         }
 
         if (_checkPreamble && _bytePos == _preamble.Length)
@@ -408,8 +406,8 @@ public sealed class StreamReaderCustom
         {
             if (_checkPreamble)
             {
-                int num = _stream.Read(_byteBuffer, _bytePos, _byteBuffer.Length - _bytePos);
-                if (num == 0)
+                int len = _stream.Read(_byteBuffer, _bytePos, _byteBuffer.Length - _bytePos);
+                if (len == 0)
                 {
                     if (_byteLen > 0)
                     {
@@ -418,7 +416,7 @@ public sealed class StreamReaderCustom
                     }
                     return _charLen;
                 }
-                _byteLen += num;
+                _byteLen += len;
             }
             else
             {
@@ -431,14 +429,13 @@ public sealed class StreamReaderCustom
 #if ENABLE_UNUSED
             _isBlocked = _byteLen < _byteBuffer.Length;
 #endif
-            if (!IsPreamble())
+            if (IsPreamble()) continue;
+
+            if (_detectEncoding && _byteLen >= 2)
             {
-                if (_detectEncoding && _byteLen >= 2)
-                {
-                    DetectEncoding();
-                }
-                _charLen += _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, _charLen);
+                DetectEncoding();
             }
+            _charLen += _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, _charLen);
         }
         while (_charLen == 0);
         return _charLen;
