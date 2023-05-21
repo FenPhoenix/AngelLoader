@@ -15,7 +15,7 @@ sealed partial class ModsControl
         this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.DisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.CheckList = new AngelLoader.Forms.CustomControls.DarkCheckList();
+        this.CheckList = new AngelLoader.Forms.CustomControls.ModsPanel();
         this.AutoScrollDummyPanel = new DrawnPanel();
         this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
         this.ResetFLP.SuspendLayout();

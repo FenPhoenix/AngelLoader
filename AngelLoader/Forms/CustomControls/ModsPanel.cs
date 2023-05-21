@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class DarkCheckList : Panel, IDarkable
+public sealed class ModsPanel : Panel, IDarkable
 {
 #if DEBUG
     [PublicAPI]
@@ -19,7 +19,7 @@ public sealed class DarkCheckList : Panel, IDarkable
     }
 #endif
 
-    public DarkCheckList() => BackColor = SystemColors.Window;
+    public ModsPanel() => BackColor = SystemColors.Window;
 
     #region Public fields and properties
 

@@ -175,7 +175,7 @@ sealed partial class ModsControl
     internal DarkCheckBox ShowImportantCheckBox;
     internal DarkTextBox DisabledModsTextBox;
     internal DarkLabel DisabledModsLabel;
-    internal DarkCheckList CheckList;
+    internal ModsPanel CheckList;
     internal DrawnPanel AutoScrollDummyPanel;
     internal System.Windows.Forms.ToolTip MainToolTip;
 }
