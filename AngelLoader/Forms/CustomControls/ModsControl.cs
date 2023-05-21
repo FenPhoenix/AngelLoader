@@ -94,7 +94,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
             List<Mod> mods = Config.GetMods(gameIndex);
 
-            HashSetI disabledModsList = disabledMods
+            HashSetI disabledModsHash = disabledMods
                 .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
                 .ToHashSetI();
 
@@ -104,7 +104,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             {
                 Mod mod = mods[i];
                 checkItems[i] = new DarkCheckList.CheckItem(
-                    @checked: !disabledModsList.Contains(mod.InternalName),
+                    @checked: !disabledModsHash.Contains(mod.InternalName),
                     text: mod.InternalName,
                     caution: mod.IsUber);
             }
