@@ -286,9 +286,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             {
                 for (int i = 0; i < checkedStates.Length; i++)
                 {
-                    bool checkedState = checkedStates[i];
-                    CheckItems[i].Checked = checkedState;
-                    _checkBoxes[i].Checked = checkedState;
+                    SetChecked(i, checkedStates[i]);
                 }
             }
         }
@@ -373,16 +371,19 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     [EditorBrowsable(EditorBrowsableState.Always)]
     public event EventHandler? DisabledModsUpdated;
 
+    private void SetChecked(int index, bool value)
+    {
+        _checkBoxes[index].Checked = value;
+        CheckItems[index].Checked = value;
+    }
+
     private void EnableAllButton_Click(object sender, EventArgs e)
     {
         using (new DisableEvents(this))
         {
-            foreach (Control control in CheckList.Controls)
+            for (int i = 0; i < CheckItems.Length; i++)
             {
-                if (control is CheckBox checkBox)
-                {
-                    checkBox.Checked = true;
-                }
+                SetChecked(i, true);
             }
         }
 
@@ -393,11 +394,12 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     {
         using (new DisableEvents(this))
         {
-            foreach (Control control in CheckList.Controls)
+            for (int i = 0; i < CheckItems.Length; i++)
             {
-                if (control is CheckBox { Tag: not ItemType.Caution } checkBox)
+                DarkCheckBox checkBox = _checkBoxes[i];
+                if (checkBox.Tag is not ItemType.Caution)
                 {
-                    checkBox.Checked = false;
+                    SetChecked(i, false);
                 }
             }
         }
