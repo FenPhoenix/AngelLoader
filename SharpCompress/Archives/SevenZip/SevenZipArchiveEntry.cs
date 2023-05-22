@@ -1,5 +1,4 @@
 ﻿using System;
-using SharpCompress.Compressors.LZMA.Utilities;
 
 namespace SharpCompress.Archives.SevenZip;
 
@@ -26,7 +25,7 @@ public sealed class SevenZipArchiveEntry
         {
             if (!_lastModifiedTimeSet)
             {
-                _lastModifiedTime = Utils.TranslateTime(MTime);
+                _lastModifiedTime = Utility.TranslateTime(MTime);
                 _lastModifiedTimeSet = true;
             }
 
