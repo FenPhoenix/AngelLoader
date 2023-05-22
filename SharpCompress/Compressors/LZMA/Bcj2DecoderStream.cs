@@ -19,7 +19,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
         {
             _mStream = stream;
             _range = 0xFFFFFFFF;
-            for (var i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 _code = (_code << 8) | ReadByte();
             }
@@ -27,7 +27,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
 
         public byte ReadByte()
         {
-            var bt = _mStream.ReadByte();
+            int bt = _mStream.ReadByte();
             if (bt < 0)
             {
                 throw new EndOfStreamException();
@@ -50,7 +50,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
 
         public uint Decode(RangeDecoder decoder)
         {
-            var newBound = (decoder._range >> K_NUM_BIT_MODEL_TOTAL_BITS) * _prob;
+            uint newBound = (decoder._range >> K_NUM_BIT_MODEL_TOTAL_BITS) * _prob;
             if (decoder._code < newBound)
             {
                 decoder._range = newBound;
@@ -102,7 +102,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
         _mRangeDecoder = new RangeDecoder(streams[3]);
 
         _mStatusDecoder = new StatusDecoder[256 + 2];
-        for (var i = 0; i < _mStatusDecoder.Length; i++)
+        for (int i = 0; i < _mStatusDecoder.Length; i++)
         {
             _mStatusDecoder[i] = new StatusDecoder();
         }
@@ -147,7 +147,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
             return 0;
         }
 
-        for (var i = 0; i < count; i++)
+        for (int i = 0; i < count; i++)
         {
             if (!_mIter.MoveNext())
             {
@@ -188,7 +188,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
             uint i;
             for (i = 0; i < kBurstSize; i++)
             {
-                var tmp = _mMainStream.ReadByte();
+                int tmp = _mMainStream.ReadByte();
                 if (tmp < 0)
                 {
                     yield break;
@@ -212,12 +212,12 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
 
             if (_mStatusDecoder[GetIndex(prevByte, b)].Decode(_mRangeDecoder) == 1)
             {
-                var s = (b == 0xE8) ? _mCallStream : _mJumpStream;
+                Stream s = (b == 0xE8) ? _mCallStream : _mJumpStream;
 
                 uint src = 0;
                 for (i = 0; i < 4; i++)
                 {
-                    var b0 = s.ReadByte();
+                    int b0 = s.ReadByte();
                     if (b0 < 0)
                     {
                         throw new EndOfStreamException();
@@ -227,7 +227,7 @@ internal sealed class Bcj2DecoderStream : DecoderStream2
                     src |= (uint)b0;
                 }
 
-                var dest = src - (uint)(_mWritten + 4);
+                uint dest = src - (uint)(_mWritten + 4);
                 _mWritten++;
                 yield return (byte)dest;
                 _mWritten++;

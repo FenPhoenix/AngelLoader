@@ -99,7 +99,7 @@ internal sealed class Allocator
     /// </summary>
     public void Initialize()
     {
-        for (var index = 0; index < INDEX_COUNT; index++)
+        for (int index = 0; index < INDEX_COUNT; index++)
         {
             _memoryNodes[index] = new MemoryNode(
                 (uint)(NODE_OFFSET + (index * MemoryNode.SIZE)),
@@ -113,7 +113,7 @@ internal sealed class Allocator
 
         _text = _heap;
 
-        var difference = UNIT_SIZE * (_allocatorSize / 8 / UNIT_SIZE * 7);
+        uint difference = UNIT_SIZE * (_allocatorSize / 8 / UNIT_SIZE * 7);
 
         _highUnit = _heap + _allocatorSize;
         _lowUnit = _highUnit - difference;
@@ -131,7 +131,7 @@ internal sealed class Allocator
     /// <param name="allocatorSize"></param>
     public void Start(int allocatorSize)
     {
-        var size = (uint)allocatorSize;
+        uint size = (uint)allocatorSize;
         if (_allocatorSize != size)
         {
             Stop();
@@ -164,7 +164,7 @@ internal sealed class Allocator
     /// <returns></returns>
     public uint GetMemoryUsed()
     {
-        var memoryUsed = _allocatorSize - (_highUnit - _lowUnit) - (_baseUnit - _text);
+        uint memoryUsed = _allocatorSize - (_highUnit - _lowUnit) - (_baseUnit - _text);
         for (uint index = 0; index < INDEX_COUNT; index++)
         {
             memoryUsed -= UNIT_SIZE * INDEX_TO_UNITS[index] * _memoryNodes[index].Stamp;
@@ -186,7 +186,7 @@ internal sealed class Allocator
             return _memoryNodes[index].Remove();
         }
 
-        var allocatedBlock = _lowUnit;
+        Pointer allocatedBlock = _lowUnit;
         _lowUnit += INDEX_TO_UNITS[index] * UNIT_SIZE;
         if (_lowUnit <= _highUnit)
         {
@@ -230,7 +230,7 @@ internal sealed class Allocator
             return oldPointer;
         }
 
-        var pointer = AllocateUnits(oldUnitCount + 1);
+        Pointer pointer = AllocateUnits(oldUnitCount + 1);
 
         if (pointer != Pointer.ZERO)
         {
@@ -327,7 +327,7 @@ internal sealed class Allocator
     public void ExpandText()
     {
         MemoryNode memoryNode;
-        var counts = new uint[INDEX_COUNT];
+        uint[] counts = new uint[INDEX_COUNT];
 
         while ((memoryNode = _baseUnit).Stamp == uint.MaxValue)
         {
@@ -368,7 +368,7 @@ internal sealed class Allocator
             }
         }
 
-        var oldIndex = index;
+        uint oldIndex = index;
         do
         {
             if (++oldIndex == INDEX_COUNT)
@@ -386,8 +386,8 @@ internal sealed class Allocator
 
     private void SplitBlock(Pointer pointer, uint oldIndex, uint newIndex)
     {
-        var unitCountDifference = (uint)(INDEX_TO_UNITS[oldIndex] - INDEX_TO_UNITS[newIndex]);
-        var newPointer = pointer + (INDEX_TO_UNITS[newIndex] * UNIT_SIZE);
+        uint unitCountDifference = (uint)(INDEX_TO_UNITS[oldIndex] - INDEX_TO_UNITS[newIndex]);
+        Pointer newPointer = pointer + (INDEX_TO_UNITS[newIndex] * UNIT_SIZE);
 
         uint index = UNITS_TO_INDEX[unitCountDifference - 1];
         if (INDEX_TO_UNITS[index] != unitCountDifference)
@@ -450,7 +450,7 @@ internal sealed class Allocator
         while (memoryNode.Available)
         {
             memoryNode0 = memoryNode.Remove();
-            var unitCount = memoryNode0.UnitCount;
+            uint unitCount = memoryNode0.UnitCount;
             if (unitCount != 0)
             {
                 for (; unitCount > 128; unitCount -= 128, memoryNode0 += 128)
@@ -461,7 +461,7 @@ internal sealed class Allocator
                 uint index = UNITS_TO_INDEX[unitCount - 1];
                 if (INDEX_TO_UNITS[index] != unitCount)
                 {
-                    var unitCountDifference = unitCount - INDEX_TO_UNITS[--index];
+                    uint unitCountDifference = unitCount - INDEX_TO_UNITS[--index];
                     _memoryNodes[unitCountDifference - 1].Insert(
                         memoryNode0 + (unitCount - unitCountDifference),
                         unitCountDifference

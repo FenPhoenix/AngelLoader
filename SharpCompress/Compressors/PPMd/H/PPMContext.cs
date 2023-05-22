@@ -129,7 +129,7 @@ internal sealed class PpmContext : Pointer
 
     internal int CreateChild(ModelPpm model, State pStats, StateRef firstState)
     {
-        var pc = GetTempPpmContext(model.SubAlloc.Heap);
+        PpmContext pc = GetTempPpmContext(model.SubAlloc.Heap);
         pc.Address = model.SubAlloc.AllocContext();
         if (pc != null)
         {
@@ -237,9 +237,9 @@ internal sealed class PpmContext : Pointer
 
     internal int GetArrayIndex(ModelPpm model, State rs)
     {
-        var tempSuffix = GetTempPpmContext(model.SubAlloc.Heap);
+        PpmContext tempSuffix = GetTempPpmContext(model.SubAlloc.Heap);
         tempSuffix.Address = GetSuffix();
-        var ret = 0;
+        int ret = 0;
         ret += model.PrevSuccess;
         ret += model.GetNs2BsIndx()[tempSuffix.NumStats - 1];
         ret += model.HiBitsFlag + (2 * model.GetHb2Flag()[rs.Symbol]);
@@ -252,12 +252,12 @@ internal sealed class PpmContext : Pointer
 
     internal void DecodeBinSymbol(ModelPpm model)
     {
-        var rs = _tempState1.Initialize(model.Heap);
+        State rs = _tempState1.Initialize(model.Heap);
         rs.Address = _oneState.Address; // State&
         model.HiBitsFlag = model.GetHb2Flag()[model.FoundState.Symbol];
-        var off1 = rs.Freq - 1;
-        var off2 = GetArrayIndex(model, rs);
-        var bs = model.BinSumm[off1][off2];
+        int off1 = rs.Freq - 1;
+        int off2 = GetArrayIndex(model, rs);
+        int bs = model.BinSumm[off1][off2];
         if (model.Coder.GetCurrentShiftCount(ModelPpm.TOT_BITS) < bs)
         {
             model.FoundState.Address = rs.Address;
@@ -304,8 +304,8 @@ internal sealed class PpmContext : Pointer
         model.FoundState.Address = p;
         model.FoundState.IncrementFreq(4);
         FreqData.IncrementSummFreq(4);
-        var p0 = _tempState3.Initialize(model.Heap);
-        var p1 = _tempState4.Initialize(model.Heap);
+        State p0 = _tempState3.Initialize(model.Heap);
+        State p1 = _tempState4.Initialize(model.Heap);
         p0.Address = p;
         p1.Address = p - State.SIZE;
         if (p0.Freq > p1.Freq)
@@ -337,14 +337,14 @@ internal sealed class PpmContext : Pointer
         long count;
         int hiCnt,
             i = NumStats - model.NumMasked;
-        var psee2C = MakeEscFreq2(model, i);
-        var coder = model.Coder;
+        See2Context psee2C = MakeEscFreq2(model, i);
+        RangeCoder coder = model.Coder;
 
         // STATE* ps[256], ** pps=ps, * p=U.Stats-1;
-        var p = _tempState1.Initialize(model.Heap);
-        var temp = _tempState2.Initialize(model.Heap);
+        State p = _tempState1.Initialize(model.Heap);
+        State temp = _tempState2.Initialize(model.Heap);
         p.Address = FreqData.GetStats() - State.SIZE;
-        var pps = 0;
+        int pps = 0;
         hiCnt = 0;
 
         do
@@ -395,7 +395,7 @@ internal sealed class PpmContext : Pointer
 
     internal void Update2(ModelPpm model, int p)
     {
-        var temp = _tempState5.Initialize(model.Heap);
+        State temp = _tempState5.Initialize(model.Heap);
         temp.Address = p;
         model.FoundState.Address = p;
         model.FoundState.IncrementFreq(4);
@@ -411,13 +411,13 @@ internal sealed class PpmContext : Pointer
     private See2Context MakeEscFreq2(ModelPpm model, int diff)
     {
         See2Context psee2C;
-        var numStats = NumStats;
+        int numStats = NumStats;
         if (numStats != 256)
         {
-            var suff = GetTempPpmContext(model.Heap);
+            PpmContext suff = GetTempPpmContext(model.Heap);
             suff.Address = GetSuffix();
-            var idx1 = model.GetNs2Indx()[diff - 1];
-            var idx2 = 0;
+            int idx1 = model.GetNs2Indx()[diff - 1];
+            int idx2 = 0;
             idx2 += ((diff < suff.NumStats - numStats) ? 1 : 0);
             idx2 += 2 * ((FreqData.SummFreq < 11 * numStats) ? 1 : 0);
             idx2 += 4 * ((model.NumMasked > diff) ? 1 : 0);
@@ -436,14 +436,14 @@ internal sealed class PpmContext : Pointer
     internal See2Context MakeEscFreq(ModelPpm model, int numMasked, out int escFreq)
     {
         See2Context psee2C;
-        var numStats = NumStats;
-        var nonMasked = numStats - numMasked;
+        int numStats = NumStats;
+        int nonMasked = numStats - numMasked;
         if (numStats != 256)
         {
-            var suff = GetTempPpmContext(model.Heap);
+            PpmContext suff = GetTempPpmContext(model.Heap);
             suff.Address = GetSuffix();
-            var idx1 = model.GetNs2Indx()[nonMasked - 1];
-            var idx2 = 0;
+            int idx1 = model.GetNs2Indx()[nonMasked - 1];
+            int idx2 = 0;
             idx2 += ((nonMasked < suff.NumStats - numStats) ? 1 : 0);
             idx2 += 2 * ((FreqData.SummFreq < 11 * numStats) ? 1 : 0);
             idx2 += 4 * ((numMasked > nonMasked) ? 1 : 0);
@@ -461,7 +461,7 @@ internal sealed class PpmContext : Pointer
 
     internal bool DecodeSymbol1(ModelPpm model)
     {
-        var coder = model.Coder;
+        RangeCoder coder = model.Coder;
         coder.SubRange.Scale = FreqData.SummFreq;
         var p = new State(model.Heap)
         {
@@ -494,7 +494,7 @@ internal sealed class PpmContext : Pointer
             return false;
         }
         model.PrevSuccess = 0;
-        var numStats = NumStats;
+        int numStats = NumStats;
         int i = numStats - 1;
         while ((hiCnt += p.IncrementAddress().Freq) <= count)
         {

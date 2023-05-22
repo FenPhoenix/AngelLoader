@@ -262,9 +262,9 @@ internal sealed partial class Model
 
     private void DecodeBinarySymbol(PpmContext context)
     {
-        var state = context.FirstState;
+        PpmState state = context.FirstState;
         int index1 = _probabilities[state.Frequency - 1];
-        var index2 =
+        int index2 =
             _numberStatisticsToBinarySummaryIndex[context.Suffix.NumberStatistics]
             + _previousSuccess
             + context.Flags
@@ -304,7 +304,7 @@ internal sealed partial class Model
         uint index;
         uint count;
         uint highCount = context.Statistics.Frequency;
-        var state = context.Statistics;
+        PpmState state = context.Statistics;
         _coder._scale = context.SummaryFrequency;
 
         count = _coder.RangeGetCurrentCount();
@@ -351,13 +351,13 @@ internal sealed partial class Model
 
     private void DecodeSymbol2(PpmContext context)
     {
-        var see2Context = MakeEscapeFrequency(context);
+        See2Context see2Context = MakeEscapeFrequency(context);
         uint currentSymbol;
         uint count;
         uint highCount = 0;
-        var index = (uint)(context.NumberStatistics - _numberMasked);
+        uint index = (uint)(context.NumberStatistics - _numberMasked);
         uint stateIndex = 0;
-        var state = context.Statistics - 1;
+        PpmState state = context.Statistics - 1;
 
         do
         {
@@ -443,8 +443,8 @@ internal sealed partial class Model
             // dimension of the see2Contexts array is always in the range 0 .. 31).
 
             numberStatistics = context.Suffix.NumberStatistics;
-            var index1 = _probabilities[context.NumberStatistics + 2] - 3;
-            var index2 =
+            int index1 = _probabilities[context.NumberStatistics + 2] - 3;
+            int index2 =
                 ((context.SummaryFrequency > 11 * (context.NumberStatistics + 1)) ? 1 : 0)
                 + ((2 * context.NumberStatistics < numberStatistics + _numberMasked) ? 2 : 0)
                 + context.Flags;
@@ -564,14 +564,14 @@ internal sealed partial class Model
     {
         int index = context.NumberStatistics;
         int escapeFrequency;
-        var scaleValue = (scale ? 1 : 0);
+        int scaleValue = (scale ? 1 : 0);
 
         context.Statistics = _allocator.ShrinkUnits(
             context.Statistics,
             oldUnitCount,
             (uint)((index + 2) >> 1)
         );
-        var statistics = context.Statistics;
+        PpmState statistics = context.Statistics;
         context.Flags = (byte)(
             (context.Flags & (0x10 + (scale ? 0x04 : 0x00)))
             + ((statistics.Symbol >= 0x40) ? 0x08 : 0x00)
@@ -623,7 +623,7 @@ internal sealed partial class Model
             return PpmContext.ZERO;
         }
 
-        var unitCount = (uint)((context.NumberStatistics + 2) >> 1);
+        uint unitCount = (uint)((context.NumberStatistics + 2) >> 1);
         context.Statistics = _allocator.MoveUnitsUp(context.Statistics, unitCount);
         index = context.NumberStatistics;
         for (state = context.Statistics + index; state >= context.Statistics; state--)
@@ -675,7 +675,7 @@ internal sealed partial class Model
     {
         if (context.NumberStatistics == 0)
         {
-            var state = context.FirstState;
+            PpmState state = context.FirstState;
             if ((Pointer)state.Successor >= _allocator._baseUnit && order < _modelOrder)
             {
                 state.Successor = RemoveBinaryContexts(order + 1, state.Successor);
@@ -696,7 +696,7 @@ internal sealed partial class Model
         }
 
         for (
-            var state = context.Statistics + context.NumberStatistics;
+            PpmState state = context.Statistics + context.NumberStatistics;
             state >= context.Statistics;
             state--
         )

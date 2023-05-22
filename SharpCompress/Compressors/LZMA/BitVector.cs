@@ -23,7 +23,7 @@ internal readonly ref struct BitVector
 
         if (initValue)
         {
-            for (var i = 0; i < _mBits.Length; i++)
+            for (int i = 0; i < _mBits.Length; i++)
             {
                 _mBits[i] = ~0u;
             }
@@ -62,8 +62,8 @@ internal readonly ref struct BitVector
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
-        var bits = _mBits[index >> 5];
-        var mask = 1u << (index & 31);
+        uint bits = _mBits[index >> 5];
+        uint mask = 1u << (index & 31);
         _mBits[index >> 5] |= mask;
         return (bits & mask) != 0;
     }

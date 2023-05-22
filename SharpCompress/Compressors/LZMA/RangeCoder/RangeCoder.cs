@@ -21,7 +21,7 @@ internal sealed class Decoder
 
         _code = 0;
         _range = 0xFFFFFFFF;
-        for (var i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             _code = (_code << 8) | (byte)_stream.ReadByte();
         }
@@ -53,10 +53,10 @@ internal sealed class Decoder
 
     public uint DecodeDirectBits(int numTotalBits)
     {
-        var range = _range;
-        var code = _code;
+        uint range = _range;
+        uint code = _code;
         uint result = 0;
-        for (var i = numTotalBits; i > 0; i--)
+        for (int i = numTotalBits; i > 0; i--)
         {
             range >>= 1;
             /*
@@ -67,7 +67,7 @@ internal sealed class Decoder
                 result |= 1;
             }
             */
-            var t = (code - range) >> 31;
+            uint t = (code - range) >> 31;
             code -= range & (t - 1);
             result = (result << 1) | (1 - t);
 
@@ -85,7 +85,7 @@ internal sealed class Decoder
 
     public uint DecodeBit(uint size0, int numTotalBits)
     {
-        var newBound = (_range >> numTotalBits) * size0;
+        uint newBound = (_range >> numTotalBits) * size0;
         uint symbol;
         if (_code < newBound)
         {

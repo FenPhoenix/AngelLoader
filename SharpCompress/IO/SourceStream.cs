@@ -38,8 +38,8 @@ internal sealed class SourceStream : Stream
             return 0;
         }
 
-        var total = count;
-        var r = -1;
+        int total = count;
+        int r = -1;
 
         while (count != 0 && r != 0)
         {

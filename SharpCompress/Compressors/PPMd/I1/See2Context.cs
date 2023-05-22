@@ -32,7 +32,7 @@ internal sealed class See2Context
 
     public uint Mean()
     {
-        var value = (uint)(_summary >> _shift);
+        uint value = (uint)(_summary >> _shift);
         _summary = (ushort)(_summary - value);
         return (uint)(value + ((value == 0) ? 1 : 0));
     }

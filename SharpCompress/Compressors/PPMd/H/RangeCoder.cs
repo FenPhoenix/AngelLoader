@@ -28,7 +28,7 @@ internal sealed class RangeCoder
 
         _low = _code = 0L;
         _range = 0xFFFFffffL;
-        for (var i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             _code = ((_code << 8) | Char) & UINT_MASK;
         }
@@ -80,7 +80,7 @@ internal sealed class RangeCoder
         //		}
 
         // Rewrote for clarity
-        var c2 = false;
+        bool c2 = false;
         while ((_low ^ (_low + _range)) < TOP || (c2 = _range < BOT))
         {
             if (c2)

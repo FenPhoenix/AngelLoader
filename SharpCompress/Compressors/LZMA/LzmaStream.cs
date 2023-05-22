@@ -109,7 +109,7 @@ internal sealed class LzmaStream : Stream
             return 0;
         }
 
-        var total = 0;
+        int total = 0;
         while (total < count)
         {
             if (_availableBytes == 0)
@@ -128,7 +128,7 @@ internal sealed class LzmaStream : Stream
                 }
             }
 
-            var toProcess = count - total;
+            int toProcess = count - total;
             if (toProcess > _availableBytes)
             {
                 toProcess = (int)_availableBytes;
@@ -144,7 +144,7 @@ internal sealed class LzmaStream : Stream
                 _availableBytes = _outWindow.AvailableBytes;
             }
 
-            var read = _outWindow.Read(buffer, offset, toProcess);
+            int read = _outWindow.Read(buffer, offset, toProcess);
             total += read;
             offset += read;
             _position += read;
@@ -185,7 +185,7 @@ internal sealed class LzmaStream : Stream
 
     private void DecodeChunkHeader()
     {
-        var control = _inputStream.ReadByte();
+        int control = _inputStream.ReadByte();
         _inputPosition++;
 
         if (control == 0x00)

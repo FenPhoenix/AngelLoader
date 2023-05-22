@@ -70,7 +70,7 @@ internal sealed class PpmdStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        var size = 0;
+        int size = 0;
         if (_properties.Version == PpmdVersion.I1)
         {
             size = _model.DecodeBlock(_stream, buffer, offset, count);

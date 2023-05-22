@@ -87,11 +87,11 @@ internal sealed class DataReader
             throw new EndOfStreamException();
         }
 
-        var firstByte = _buffer[Offset++];
+        byte firstByte = _buffer[Offset++];
         byte mask = 0x80;
         ulong value = 0;
 
-        for (var i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             if ((firstByte & mask) == 0)
             {
@@ -114,7 +114,7 @@ internal sealed class DataReader
 
     public int ReadNum()
     {
-        var value = ReadNumber();
+        ulong value = ReadNumber();
         if (value > int.MaxValue)
         {
             throw new NotSupportedException();
@@ -130,7 +130,7 @@ internal sealed class DataReader
             throw new EndOfStreamException();
         }
 
-        var res = Get32(_buffer, Offset);
+        uint res = Get32(_buffer, Offset);
         Offset += 4;
         return res;
     }
@@ -142,14 +142,14 @@ internal sealed class DataReader
             throw new EndOfStreamException();
         }
 
-        var res = Get64(_buffer, Offset);
+        ulong res = Get64(_buffer, Offset);
         Offset += 8;
         return res;
     }
 
     public string ReadString()
     {
-        var ending = Offset;
+        int ending = Offset;
 
         for (; ; )
         {
@@ -166,7 +166,7 @@ internal sealed class DataReader
             ending += 2;
         }
 
-        var str = Encoding.Unicode.GetString(_buffer, Offset, ending - Offset);
+        string str = Encoding.Unicode.GetString(_buffer, Offset, ending - Offset);
         Offset = ending + 2;
         return str;
     }

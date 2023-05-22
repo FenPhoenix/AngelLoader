@@ -299,7 +299,7 @@ internal sealed class CRC
 
     internal void UpdateCRC(int inCh)
     {
-        var temp = (globalCrc >> 24) ^ inCh;
+        int temp = (globalCrc >> 24) ^ inCh;
         if (temp < 0)
         {
             temp = 256 + temp;

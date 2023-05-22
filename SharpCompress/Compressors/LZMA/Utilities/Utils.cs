@@ -69,7 +69,7 @@ internal static class Utils
 
         while (length > 0)
         {
-            var fetched = stream.Read(buffer, offset, length);
+            int fetched = stream.Read(buffer, offset, length);
             if (fetched <= 0)
             {
                 throw new EndOfStreamException();

@@ -28,8 +28,8 @@ internal sealed class BCJFilter : Filter
 
     protected override int Transform(byte[] buffer, int offset, int count)
     {
-        var prevPos = offset - 1;
-        var end = offset + count - 5;
+        int prevPos = offset - 1;
+        int end = offset + count - 5;
         int i;
 
         for (i = offset; i <= end; ++i)
@@ -66,7 +66,7 @@ internal sealed class BCJFilter : Filter
 
             if (Test86MsByte(buffer[i + 4]))
             {
-                var src =
+                int src =
                     buffer[i + 1]
                     | (buffer[i + 2] << 8)
                     | (buffer[i + 3] << 16)
@@ -81,7 +81,7 @@ internal sealed class BCJFilter : Filter
                         break;
                     }
 
-                    var index = MASK_TO_BIT_NUMBER[_prevMask] * 8;
+                    int index = MASK_TO_BIT_NUMBER[_prevMask] * 8;
                     if (!Test86MsByte((byte)(dest >> (24 - index))))
                     {
                         break;

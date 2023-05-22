@@ -19,7 +19,7 @@ internal sealed class Decoder
 
         public void Create(uint numPosStates)
         {
-            for (var posState = _numPosStates; posState < numPosStates; posState++)
+            for (uint posState = _numPosStates; posState < numPosStates; posState++)
             {
                 _lowCoder[posState] = new BitTreeDecoder(Base.K_NUM_LOW_LEN_BITS);
                 _midCoder[posState] = new BitTreeDecoder(Base.K_NUM_MID_LEN_BITS);
@@ -45,7 +45,7 @@ internal sealed class Decoder
             {
                 return _lowCoder[posState].Decode(rangeDecoder);
             }
-            var symbol = Base.K_NUM_LOW_LEN_SYMBOLS;
+            uint symbol = Base.K_NUM_LOW_LEN_SYMBOLS;
             if (_choice2.Decode(rangeDecoder) == 0)
             {
                 symbol += _midCoder[posState].Decode(rangeDecoder);
@@ -69,7 +69,7 @@ internal sealed class Decoder
 
             public readonly void Init()
             {
-                for (var i = 0; i < 0x300; i++)
+                for (int i = 0; i < 0x300; i++)
                 {
                     _decoders[i].Init();
                 }
@@ -90,9 +90,9 @@ internal sealed class Decoder
                 uint symbol = 1;
                 do
                 {
-                    var matchBit = (uint)(matchByte >> 7) & 1;
+                    uint matchBit = (uint)(matchByte >> 7) & 1;
                     matchByte <<= 1;
-                    var bit = _decoders[((1 + matchBit) << 8) + symbol].Decode(rangeDecoder);
+                    uint bit = _decoders[((1 + matchBit) << 8) + symbol].Decode(rangeDecoder);
                     symbol = (symbol << 1) | bit;
                     if (matchBit != bit)
                     {
@@ -121,7 +121,7 @@ internal sealed class Decoder
             _numPosBits = numPosBits;
             _posMask = ((uint)1 << numPosBits) - 1;
             _numPrevBits = numPrevBits;
-            var numStates = (uint)1 << (_numPrevBits + _numPosBits);
+            uint numStates = (uint)1 << (_numPrevBits + _numPosBits);
             _coders = new Decoder2[numStates];
             for (uint i = 0; i < numStates; i++)
             {
@@ -131,7 +131,7 @@ internal sealed class Decoder
 
         public void Init()
         {
-            var numStates = (uint)1 << (_numPrevBits + _numPosBits);
+            uint numStates = (uint)1 << (_numPrevBits + _numPosBits);
             for (uint i = 0; i < numStates; i++)
             {
                 _coders[i].Init();
@@ -187,7 +187,7 @@ internal sealed class Decoder
 
     public Decoder()
     {
-        for (var i = 0; i < Base.K_NUM_LEN_TO_POS_STATES; i++)
+        for (int i = 0; i < Base.K_NUM_LEN_TO_POS_STATES; i++)
         {
             _posSlotDecoder[i] = new BitTreeDecoder(Base.K_NUM_POS_SLOT_BITS);
         }
@@ -212,7 +212,7 @@ internal sealed class Decoder
         {
             throw new InvalidParamException();
         }
-        var numPosStates = (uint)1 << pb;
+        uint numPosStates = (uint)1 << pb;
         _lenDecoder.Create(numPosStates);
         _repLenDecoder.Create(numPosStates);
         _posStateMask = numPosStates - 1;
@@ -225,7 +225,7 @@ internal sealed class Decoder
         {
             for (uint j = 0; j <= _posStateMask; j++)
             {
-                var index = (i << Base.K_NUM_POS_STATES_BITS_MAX) + j;
+                uint index = (i << Base.K_NUM_POS_STATES_BITS_MAX) + j;
                 _isMatchDecoders[index].Init();
                 _isRep0LongDecoders[index].Init();
             }
@@ -260,13 +260,13 @@ internal sealed class Decoder
 
     internal bool Code(int dictionarySize, OutWindow outWindow, RangeCoder.Decoder rangeDecoder)
     {
-        var dictionarySizeCheck = Math.Max(dictionarySize, 1);
+        int dictionarySizeCheck = Math.Max(dictionarySize, 1);
 
         outWindow.CopyPending();
 
         while (outWindow.HasSpace)
         {
-            var posState = (uint)outWindow._total & _posStateMask;
+            uint posState = (uint)outWindow._total & _posStateMask;
             if (
                 _isMatchDecoders[
                     (_state._index << Base.K_NUM_POS_STATES_BITS_MAX) + posState
@@ -274,7 +274,7 @@ internal sealed class Decoder
             )
             {
                 byte b;
-                var prevByte = outWindow.GetByte(0);
+                byte prevByte = outWindow.GetByte(0);
                 if (!_state.IsCharState())
                 {
                     b = _literalDecoder.DecodeWithMatchByte(
@@ -346,10 +346,10 @@ internal sealed class Decoder
                     _rep1 = _rep0;
                     len = Base.K_MATCH_MIN_LEN + _lenDecoder.Decode(rangeDecoder, posState);
                     _state.UpdateMatch();
-                    var posSlot = _posSlotDecoder[Base.GetLenToPosState(len)].Decode(rangeDecoder);
+                    uint posSlot = _posSlotDecoder[Base.GetLenToPosState(len)].Decode(rangeDecoder);
                     if (posSlot >= Base.K_START_POS_MODEL_INDEX)
                     {
-                        var numDirectBits = (int)((posSlot >> 1) - 1);
+                        int numDirectBits = (int)((posSlot >> 1) - 1);
                         _rep0 = ((2 | (posSlot & 1)) << numDirectBits);
                         if (posSlot < Base.K_END_POS_MODEL_INDEX)
                         {
@@ -394,10 +394,10 @@ internal sealed class Decoder
         {
             throw new InvalidParamException();
         }
-        var lc = properties[0] % 9;
-        var remainder = properties[0] / 9;
-        var lp = remainder % 5;
-        var pb = remainder / 5;
+        int lc = properties[0] % 9;
+        int remainder = properties[0] / 9;
+        int lp = remainder % 5;
+        int pb = remainder / 5;
         if (pb > Base.K_NUM_POS_STATES_BITS_MAX)
         {
             throw new InvalidParamException();

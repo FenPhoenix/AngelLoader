@@ -14,7 +14,7 @@ internal struct BitDecoder
 
     public uint Decode(Decoder rangeDecoder)
     {
-        var newBound = (rangeDecoder._range >> K_NUM_BIT_MODEL_TOTAL_BITS) * _prob;
+        uint newBound = (rangeDecoder._range >> K_NUM_BIT_MODEL_TOTAL_BITS) * _prob;
         if (rangeDecoder._code < newBound)
         {
             rangeDecoder._range = newBound;

@@ -11,8 +11,8 @@ internal static class Crc
 
         for (uint i = 0; i < 256; i++)
         {
-            var r = i;
-            for (var j = 0; j < 8; j++)
+            uint r = i;
+            for (int j = 0; j < 8; j++)
             {
                 r = (r >> 1) ^ (kCrcPoly & ~((r & 1) - 1));
             }
@@ -22,7 +22,7 @@ internal static class Crc
 
         for (uint i = 256; i < TABLE.Length; i++)
         {
-            var r = TABLE[i - 256];
+            uint r = TABLE[i - 256];
             TABLE[i] = TABLE[r & 0xFF] ^ (r >> 8);
         }
     }
@@ -47,7 +47,7 @@ internal static class Crc
 
     public static uint Update(uint crc, byte[] buffer, int offset, int length)
     {
-        for (var i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             crc = Update(crc, buffer[offset + i]);
         }

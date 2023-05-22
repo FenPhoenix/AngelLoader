@@ -20,7 +20,7 @@ internal sealed class PpmdProperties
     {
         if (properties.Length == 2)
         {
-            var props = BinaryPrimitives.ReadUInt16LittleEndian(properties);
+            ushort props = BinaryPrimitives.ReadUInt16LittleEndian(properties);
             AllocatorSize = (((props >> 4) & 0xff) + 1) << 20;
             ModelOrder = (props & 0x0f) + 1;
             RestorationMethod = (ModelRestorationMethod)(props >> 12);

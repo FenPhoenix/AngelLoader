@@ -53,8 +53,8 @@ internal sealed class OutWindow : IDisposable
 
     public void CopyBlock(int distance, int len)
     {
-        var size = len;
-        var pos = _pos - distance - 1;
+        int size = len;
+        int pos = _pos - distance - 1;
         if (pos < 0)
         {
             pos += _windowSize;
@@ -80,7 +80,7 @@ internal sealed class OutWindow : IDisposable
 
     public byte GetByte(int distance)
     {
-        var pos = _pos - distance - 1;
+        int pos = _pos - distance - 1;
         if (pos < 0)
         {
             pos += _windowSize;
@@ -90,10 +90,10 @@ internal sealed class OutWindow : IDisposable
 
     public int CopyStream(Stream stream, int len)
     {
-        var size = len;
+        int size = len;
         while (size > 0 && _pos < _windowSize && _total < _limit)
         {
-            var curSize = _windowSize - _pos;
+            int curSize = _windowSize - _pos;
             if (curSize > _limit - _total)
             {
                 curSize = (int)(_limit - _total);
@@ -102,7 +102,7 @@ internal sealed class OutWindow : IDisposable
             {
                 curSize = size;
             }
-            var numReadBytes = stream.Read(_buffer, _pos, curSize);
+            int numReadBytes = stream.Read(_buffer, _pos, curSize);
             if (numReadBytes == 0)
             {
                 throw new DataErrorException();
@@ -127,7 +127,7 @@ internal sealed class OutWindow : IDisposable
             return 0;
         }
 
-        var size = _pos - _streamPos;
+        int size = _pos - _streamPos;
         if (size > count)
         {
             size = count;

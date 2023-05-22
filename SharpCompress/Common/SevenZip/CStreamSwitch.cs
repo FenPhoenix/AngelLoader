@@ -29,10 +29,10 @@ internal ref struct CStreamSwitch
     {
         Dispose();
 
-        var external = archive.ReadByte();
+        byte external = archive.ReadByte();
         if (external != 0)
         {
-            var dataIndex = archive.ReadNum();
+            int dataIndex = archive.ReadNum();
             if (dataIndex < 0 || dataIndex >= dataVector.Count)
             {
                 throw new InvalidOperationException();

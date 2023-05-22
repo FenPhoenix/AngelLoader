@@ -50,11 +50,11 @@ internal abstract class Filter : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        var size = 0;
+        int size = 0;
 
         if (_transformed > 0)
         {
-            var copySize = _transformed;
+            int copySize = _transformed;
             if (copySize > count)
             {
                 copySize = count;
@@ -72,7 +72,7 @@ internal abstract class Filter : Stream
             return size;
         }
 
-        var inSize = _read;
+        int inSize = _read;
         if (inSize > count)
         {
             inSize = count;
@@ -82,7 +82,7 @@ internal abstract class Filter : Stream
         Buffer.BlockCopy(_tail, inSize, _tail, 0, _read);
         while (!_endReached && inSize < count)
         {
-            var baseRead = _baseStream.Read(buffer, offset + inSize, count - inSize);
+            int baseRead = _baseStream.Read(buffer, offset + inSize, count - inSize);
             inSize += baseRead;
             if (baseRead == 0)
             {
@@ -91,7 +91,7 @@ internal abstract class Filter : Stream
         }
         while (!_endReached && _read < _tail.Length)
         {
-            var baseRead = _baseStream.Read(_tail, _read, _tail.Length - _read);
+            int baseRead = _baseStream.Read(_tail, _read, _tail.Length - _read);
             _read += baseRead;
             if (baseRead == 0)
             {

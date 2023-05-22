@@ -36,9 +36,9 @@ internal static class DecoderStreamHelper
 {
     private static int FindCoderIndexForOutStreamIndex(CFolder folderInfo, int outStreamIndex)
     {
-        for (var coderIndex = 0; coderIndex < folderInfo._coders.Count; coderIndex++)
+        for (int coderIndex = 0; coderIndex < folderInfo._coders.Count; coderIndex++)
         {
-            var coderInfo = folderInfo._coders[coderIndex];
+            CCoderInfo coderInfo = folderInfo._coders[coderIndex];
             outStreamIndex -= coderInfo._numOutStreams;
             if (outStreamIndex < 0)
             {
@@ -54,7 +54,7 @@ internal static class DecoderStreamHelper
         out int primaryCoderIndex
     )
     {
-        var foundPrimaryOutStream = false;
+        bool foundPrimaryOutStream = false;
         primaryCoderIndex = -1;
 
         for (
@@ -64,7 +64,7 @@ internal static class DecoderStreamHelper
         )
         {
             for (
-                var coderOutStreamIndex = 0;
+                int coderOutStreamIndex = 0;
                 coderOutStreamIndex < folderInfo._coders[coderIndex]._numOutStreams;
                 coderOutStreamIndex++, outStreamIndex++
             )
@@ -96,32 +96,32 @@ internal static class DecoderStreamHelper
         SevenZipContext context
     )
     {
-        var coderInfo = folderInfo._coders[coderIndex];
+        CCoderInfo coderInfo = folderInfo._coders[coderIndex];
         if (coderInfo._numOutStreams != 1)
         {
             throw new NotSupportedException("Multiple output streams are not supported.");
         }
 
-        var inStreamId = 0;
-        for (var i = 0; i < coderIndex; i++)
+        int inStreamId = 0;
+        for (int i = 0; i < coderIndex; i++)
         {
             inStreamId += folderInfo._coders[i]._numInStreams;
         }
 
-        var outStreamId = 0;
-        for (var i = 0; i < coderIndex; i++)
+        int outStreamId = 0;
+        for (int i = 0; i < coderIndex; i++)
         {
             outStreamId += folderInfo._coders[i]._numOutStreams;
         }
 
-        var inStreams = new Stream[coderInfo._numInStreams];
+        Stream[] inStreams = new Stream[coderInfo._numInStreams];
 
-        for (var i = 0; i < inStreams.Length; i++, inStreamId++)
+        for (int i = 0; i < inStreams.Length; i++, inStreamId++)
         {
-            var bindPairIndex = folderInfo.FindBindPairForInStream(inStreamId);
+            int bindPairIndex = folderInfo.FindBindPairForInStream(inStreamId);
             if (bindPairIndex >= 0)
             {
-                var pairedOutIndex = folderInfo._bindPairs[bindPairIndex]._outIndex;
+                int pairedOutIndex = folderInfo._bindPairs[bindPairIndex]._outIndex;
 
                 if (outStreams[pairedOutIndex] != null)
                 {
@@ -130,7 +130,7 @@ internal static class DecoderStreamHelper
                     );
                 }
 
-                var otherCoderIndex = FindCoderIndexForOutStreamIndex(folderInfo, pairedOutIndex);
+                int otherCoderIndex = FindCoderIndexForOutStreamIndex(folderInfo, pairedOutIndex);
                 inStreams[i] = CreateDecoderStream(
                     packStreams,
                     outStreams,
@@ -152,7 +152,7 @@ internal static class DecoderStreamHelper
             }
             else
             {
-                var index = folderInfo.FindPackStreamArrayIndex(inStreamId);
+                int index = folderInfo.FindPackStreamArrayIndex(inStreamId);
                 if (index < 0)
                 {
                     throw new NotSupportedException("Could not find input stream binding.");
@@ -164,7 +164,7 @@ internal static class DecoderStreamHelper
             }
         }
 
-        var unpackSize = folderInfo._unpackSizes[outStreamId];
+        long unpackSize = folderInfo._unpackSizes[outStreamId];
         return DecoderRegistry.CreateDecoderStream(
             coderInfo._methodId,
             inStreams,
@@ -187,18 +187,18 @@ internal static class DecoderStreamHelper
             throw new NotSupportedException("Unsupported stream binding structure.");
         }
 
-        var inStreams = new Stream[folderInfo._packStreams.Count];
-        for (var j = 0; j < folderInfo._packStreams.Count; j++)
+        Stream[] inStreams = new Stream[folderInfo._packStreams.Count];
+        for (int j = 0; j < folderInfo._packStreams.Count; j++)
         {
             inStreams[j] = new BufferedSubStream(inStream, startPos, packSizes[j], context);
             startPos += packSizes[j];
         }
 
-        var outStreams = new Stream[folderInfo._unpackSizes.Count];
+        Stream[] outStreams = new Stream[folderInfo._unpackSizes.Count];
 
         FindPrimaryOutStreamIndex(
             folderInfo,
-            out var primaryCoderIndex
+            out int primaryCoderIndex
         );
         return CreateDecoderStream(
             inStreams,

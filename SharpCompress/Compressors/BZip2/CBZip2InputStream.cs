@@ -173,8 +173,8 @@ internal sealed class CBZip2InputStream : Stream
 
     private static int[][] InitIntArray(int n1, int n2)
     {
-        var a = new int[n1][];
-        for (var k = 0; k < n1; ++k)
+        int[][] a = new int[n1][];
+        for (int k = 0; k < n1; ++k)
         {
             a[k] = new int[n2];
         }
@@ -183,8 +183,8 @@ internal sealed class CBZip2InputStream : Stream
 
     private static char[][] InitCharArray(int n1, int n2)
     {
-        var a = new char[n1][];
-        for (var k = 0; k < n1; ++k)
+        char[][] a = new char[n1][];
+        for (int k = 0; k < n1; ++k)
         {
             a[k] = new char[n2];
         }
@@ -197,7 +197,7 @@ internal sealed class CBZip2InputStream : Stream
         {
             return -1;
         }
-        var retChar = _currentChar;
+        int retChar = _currentChar;
         switch (_currentState)
         {
             case START_BLOCK_STATE:
@@ -224,9 +224,9 @@ internal sealed class CBZip2InputStream : Stream
 
     private bool Initialize(bool isFirstStream)
     {
-        var magic0 = _bsStream.ReadByte();
-        var magic1 = _bsStream.ReadByte();
-        var magic2 = _bsStream.ReadByte();
+        int magic0 = _bsStream.ReadByte();
+        int magic1 = _bsStream.ReadByte();
+        int magic2 = _bsStream.ReadByte();
         if (magic0 == -1 && !isFirstStream)
         {
             return false;
@@ -235,7 +235,7 @@ internal sealed class CBZip2InputStream : Stream
         {
             throw new IOException("Not a BZIP2 marked stream");
         }
-        var magic3 = _bsStream.ReadByte();
+        int magic3 = _bsStream.ReadByte();
         if (magic3 < '1' || magic3 > '9')
         {
             BsFinishedWithStream();
@@ -401,7 +401,7 @@ internal sealed class CBZip2InputStream : Stream
 
     private int BsGetint()
     {
-        var u = 0;
+        int u = 0;
         u = (u << 8) | BsR(8);
         u = (u << 8) | BsR(8);
         u = (u << 8) | BsR(8);
@@ -475,7 +475,7 @@ internal sealed class CBZip2InputStream : Stream
 
     private void RecvDecodingTables()
     {
-        var len = InitCharArray(BZip2Constants.N_GROUPS, BZip2Constants.MAX_ALPHA_SIZE);
+        char[][] len = InitCharArray(BZip2Constants.N_GROUPS, BZip2Constants.MAX_ALPHA_SIZE);
         int i,
             j,
             t,
@@ -484,7 +484,7 @@ internal sealed class CBZip2InputStream : Stream
             alphaSize;
         int minLen,
             maxLen;
-        var inUse16 = new bool[16];
+        bool[] inUse16 = new bool[16];
 
         /* Receive the mapping table */
         for (i = 0; i < 16; i++)
@@ -536,7 +536,7 @@ internal sealed class CBZip2InputStream : Stream
 
         /* Undo the MTF values for the selectors. */
         {
-            var pos = new char[BZip2Constants.N_GROUPS];
+            char[] pos = new char[BZip2Constants.N_GROUPS];
             char tmp,
                 v;
             for (v = '\0'; v < nGroups; v++)
@@ -561,7 +561,7 @@ internal sealed class CBZip2InputStream : Stream
         /* Now the coding tables */
         for (t = 0; t < nGroups; t++)
         {
-            var curr = BsR(5);
+            int curr = BsR(5);
             for (i = 0; i < alphaSize; i++)
             {
                 while (BsR(1) == 1)
@@ -602,7 +602,7 @@ internal sealed class CBZip2InputStream : Stream
 
     private void GetAndMoveToFrontDecode()
     {
-        var yy = new char[256];
+        char[] yy = new char[256];
         int i,
             j,
             nextSym,
@@ -659,7 +659,7 @@ internal sealed class CBZip2InputStream : Stream
                         while (_bsLive < 1)
                         {
                             int zzi;
-                            var thech = '\0';
+                            char thech = '\0';
                             try
                             {
                                 thech = (char)_bsStream.ReadByte();
@@ -695,8 +695,8 @@ internal sealed class CBZip2InputStream : Stream
             if (nextSym == BZip2Constants.RUNA || nextSym == BZip2Constants.RUNB)
             {
                 char ch;
-                var s = -1;
-                var N = 1;
+                int s = -1;
+                int N = 1;
                 do
                 {
                     if (nextSym == BZip2Constants.RUNA)
@@ -730,7 +730,7 @@ internal sealed class CBZip2InputStream : Stream
                                     while (_bsLive < 1)
                                     {
                                         int zzi;
-                                        var thech = '\0';
+                                        char thech = '\0';
                                         try
                                         {
                                             thech = (char)_bsStream.ReadByte();
@@ -829,7 +829,7 @@ internal sealed class CBZip2InputStream : Stream
                                 while (_bsLive < 1)
                                 {
                                     int zzi;
-                                    var thech = '\0';
+                                    char thech = '\0';
                                     try
                                     {
                                         thech = (char)_bsStream.ReadByte();
@@ -1060,7 +1060,7 @@ internal sealed class CBZip2InputStream : Stream
             return;
         }
 
-        var n = BZip2Constants.baseBlockSize * newSize100k;
+        int n = BZip2Constants.baseBlockSize * newSize100k;
         _ll8 = new char[n];
         _tt = new int[n];
     }

@@ -25,13 +25,13 @@ internal sealed class ArchiveDatabase
 
     private void FillFolderStartFileIndex()
     {
-        var folderIndex = 0;
-        var indexInFolder = 0;
-        for (var i = 0; i < _files.Count; i++)
+        int folderIndex = 0;
+        int indexInFolder = 0;
+        for (int i = 0; i < _files.Count; i++)
         {
-            var file = _files[i];
+            SevenZipArchiveEntry file = _files[i];
 
-            var emptyStream = !file.HasStream;
+            bool emptyStream = !file.HasStream;
 
             if (emptyStream && indexInFolder == 0)
             {

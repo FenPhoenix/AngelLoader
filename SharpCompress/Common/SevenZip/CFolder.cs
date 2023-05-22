@@ -21,7 +21,7 @@ internal sealed class CFolder
             return 0;
         }
 
-        for (var i = _unpackSizes.Count - 1; i >= 0; i--)
+        for (int i = _unpackSizes.Count - 1; i >= 0; i--)
         {
             if (FindBindPairForOutStream(i) < 0)
             {
@@ -34,8 +34,8 @@ internal sealed class CFolder
 
     public int GetNumOutStreams()
     {
-        var count = 0;
-        for (var i = 0; i < _coders.Count; i++)
+        int count = 0;
+        for (int i = 0; i < _coders.Count; i++)
         {
             count += _coders[i]._numOutStreams;
         }
@@ -45,7 +45,7 @@ internal sealed class CFolder
 
     public int FindBindPairForInStream(int inStreamIndex)
     {
-        for (var i = 0; i < _bindPairs.Count; i++)
+        for (int i = 0; i < _bindPairs.Count; i++)
         {
             if (_bindPairs[i]._inIndex == inStreamIndex)
             {
@@ -58,7 +58,7 @@ internal sealed class CFolder
 
     public int FindBindPairForOutStream(int outStreamIndex)
     {
-        for (var i = 0; i < _bindPairs.Count; i++)
+        for (int i = 0; i < _bindPairs.Count; i++)
         {
             if (_bindPairs[i]._outIndex == outStreamIndex)
             {
@@ -71,7 +71,7 @@ internal sealed class CFolder
 
     public int FindPackStreamArrayIndex(int inStreamIndex)
     {
-        for (var i = 0; i < _packStreams.Count; i++)
+        for (int i = 0; i < _packStreams.Count; i++)
         {
             if (_packStreams[i] == inStreamIndex)
             {
@@ -96,7 +96,7 @@ internal sealed class CFolder
         {
             var v = new BitVector(_bindPairs.Count + _packStreams.Count);
 
-            for (var i = 0; i < _bindPairs.Count; i++)
+            for (int i = 0; i < _bindPairs.Count; i++)
             {
                 if (v.GetAndSet(_bindPairs[i]._inIndex))
                 {
@@ -104,7 +104,7 @@ internal sealed class CFolder
                 }
             }
 
-            for (var i = 0; i < _packStreams.Count; i++)
+            for (int i = 0; i < _packStreams.Count; i++)
             {
                 if (v.GetAndSet(_packStreams[i]))
                 {
@@ -115,7 +115,7 @@ internal sealed class CFolder
 
         {
             var v = new BitVector(_unpackSizes.Count);
-            for (var i = 0; i < _bindPairs.Count; i++)
+            for (int i = 0; i < _bindPairs.Count; i++)
             {
                 if (v.GetAndSet(_bindPairs[i]._outIndex))
                 {
@@ -125,34 +125,34 @@ internal sealed class CFolder
         }
 
         // @MEM(CFolder): We can cache this
-        var mask = new uint[kMaskSize];
+        uint[] mask = new uint[kMaskSize];
 
         {
             var inStreamToCoder = new List<int>();
             var outStreamToCoder = new List<int>();
-            for (var i = 0; i < _coders.Count; i++)
+            for (int i = 0; i < _coders.Count; i++)
             {
-                var coder = _coders[i];
-                for (var j = 0; j < coder._numInStreams; j++)
+                CCoderInfo coder = _coders[i];
+                for (int j = 0; j < coder._numInStreams; j++)
                 {
                     inStreamToCoder.Add(i);
                 }
-                for (var j = 0; j < coder._numOutStreams; j++)
+                for (int j = 0; j < coder._numOutStreams; j++)
                 {
                     outStreamToCoder.Add(i);
                 }
             }
 
-            for (var i = 0; i < _bindPairs.Count; i++)
+            for (int i = 0; i < _bindPairs.Count; i++)
             {
-                var bp = _bindPairs[i];
+                CBindPair bp = _bindPairs[i];
                 mask[inStreamToCoder[bp._inIndex]] |= (1u << outStreamToCoder[bp._outIndex]);
             }
         }
 
-        for (var i = 0; i < kMaskSize; i++)
+        for (int i = 0; i < kMaskSize; i++)
         {
-            for (var j = 0; j < kMaskSize; j++)
+            for (int j = 0; j < kMaskSize; j++)
             {
                 if (((1u << j) & mask[i]) != 0)
                 {
@@ -161,7 +161,7 @@ internal sealed class CFolder
             }
         }
 
-        for (var i = 0; i < kMaskSize; i++)
+        for (int i = 0; i < kMaskSize; i++)
         {
             if (((1u << i) & mask[i]) != 0)
             {

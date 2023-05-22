@@ -74,7 +74,7 @@ internal sealed class SubAllocator
 
     private void InsertNode(int p, int indx)
     {
-        var temp = _tempRarNode;
+        RarNode temp = _tempRarNode;
         temp.Address = p;
         temp.SetNext(_freeList[indx].GetNext());
         _freeList[indx].SetNext(temp);
@@ -84,8 +84,8 @@ internal sealed class SubAllocator
 
     private int RemoveNode(int indx)
     {
-        var retVal = _freeList[indx].GetNext();
-        var temp = _tempRarNode;
+        int retVal = _freeList[indx].GetNext();
+        RarNode temp = _tempRarNode;
         temp.Address = retVal;
         _freeList[indx].SetNext(temp.GetNext());
         return retVal;
@@ -101,7 +101,7 @@ internal sealed class SubAllocator
     {
         int i,
             uDiff = _indx2Units[oldIndx] - _indx2Units[newIndx];
-        var p = pv + U2B(_indx2Units[newIndx]);
+        int p = pv + U2B(_indx2Units[newIndx]);
         if (_indx2Units[i = _units2Indx[uDiff - 1]] != uDiff)
         {
             InsertNode(p, --i);
@@ -132,17 +132,17 @@ internal sealed class SubAllocator
 
     public bool StartSubAllocator(int saSize)
     {
-        var t = saSize;
+        int t = saSize;
         if (_subAllocatorSize == t)
         {
             return true;
         }
         StopSubAllocator();
-        var allocSize = (t / FIXED_UNIT_SIZE * UNIT_SIZE) + UNIT_SIZE;
+        int allocSize = (t / FIXED_UNIT_SIZE * UNIT_SIZE) + UNIT_SIZE;
 
         // adding space for freelist (needed for poiters)
         // 1+ for null pointer
-        var realAllocSize = 1 + allocSize + (4 * N_INDEXES);
+        int realAllocSize = 1 + allocSize + (4 * N_INDEXES);
 
         // adding space for an additional memblock
         _tempMemBlockPos = realAllocSize;
@@ -180,10 +180,10 @@ internal sealed class SubAllocator
 
     private void GlueFreeBlocks()
     {
-        var s0 = _tempRarMemBlock1;
+        RarMemBlock s0 = _tempRarMemBlock1;
         s0.Address = _tempMemBlockPos;
-        var p = _tempRarMemBlock2;
-        var p1 = _tempRarMemBlock3;
+        RarMemBlock p = _tempRarMemBlock2;
+        RarMemBlock p1 = _tempRarMemBlock3;
         int i,
             k,
             sz;
@@ -245,14 +245,14 @@ internal sealed class SubAllocator
                 return RemoveNode(indx);
             }
         }
-        var i = indx;
+        int i = indx;
         do
         {
             if (++i == N_INDEXES)
             {
                 _glueCount--;
                 i = U2B(_indx2Units[indx]);
-                var j = FIXED_UNIT_SIZE * _indx2Units[indx];
+                int j = FIXED_UNIT_SIZE * _indx2Units[indx];
                 if (FakeUnitsStart - PText > j)
                 {
                     FakeUnitsStart -= j;
@@ -262,19 +262,19 @@ internal sealed class SubAllocator
                 return 0;
             }
         } while (_freeList[i].GetNext() == 0);
-        var retVal = RemoveNode(i);
+        int retVal = RemoveNode(i);
         SplitBlock(retVal, i, indx);
         return retVal;
     }
 
     public int AllocUnits(int nu)
     {
-        var indx = _units2Indx[nu - 1];
+        int indx = _units2Indx[nu - 1];
         if (_freeList[indx].GetNext() != 0)
         {
             return RemoveNode(indx);
         }
-        var retVal = _loUnit;
+        int retVal = _loUnit;
         _loUnit += U2B(_indx2Units[indx]);
         if (_loUnit <= _hiUnit)
         {
@@ -299,13 +299,13 @@ internal sealed class SubAllocator
 
     public int ExpandUnits(int oldPtr, int oldNu)
     {
-        var i0 = _units2Indx[oldNu - 1];
-        var i1 = _units2Indx[oldNu - 1 + 1];
+        int i0 = _units2Indx[oldNu - 1];
+        int i1 = _units2Indx[oldNu - 1 + 1];
         if (i0 == i1)
         {
             return oldPtr;
         }
-        var ptr = AllocUnits(oldNu + 1);
+        int ptr = AllocUnits(oldNu + 1);
         if (ptr != 0)
         {
             // memcpy(ptr,OldPtr,U2B(OldNU));
@@ -319,15 +319,15 @@ internal sealed class SubAllocator
     {
         // System.out.println("SubAllocator.shrinkUnits(" + OldPtr + ", " +
         // OldNU + ", " + NewNU + ")");
-        var i0 = _units2Indx[oldNu - 1];
-        var i1 = _units2Indx[newNu - 1];
+        int i0 = _units2Indx[oldNu - 1];
+        int i1 = _units2Indx[newNu - 1];
         if (i0 == i1)
         {
             return oldPtr;
         }
         if (_freeList[i1].GetNext() != 0)
         {
-            var ptr = RemoveNode(i1);
+            int ptr = RemoveNode(i1);
 
             // memcpy(ptr,OldPtr,U2B(NewNU));
             // for (int i = 0; i < U2B(NewNU); i++) {
@@ -353,10 +353,10 @@ internal sealed class SubAllocator
 
         PText = _heapStart;
 
-        var size2 = FIXED_UNIT_SIZE * (_subAllocatorSize / 8 / FIXED_UNIT_SIZE * 7);
-        var realSize2 = size2 / FIXED_UNIT_SIZE * UNIT_SIZE;
-        var size1 = _subAllocatorSize - size2;
-        var realSize1 = (size1 / FIXED_UNIT_SIZE * UNIT_SIZE) + (size1 % FIXED_UNIT_SIZE);
+        int size2 = FIXED_UNIT_SIZE * (_subAllocatorSize / 8 / FIXED_UNIT_SIZE * 7);
+        int realSize2 = size2 / FIXED_UNIT_SIZE * UNIT_SIZE;
+        int size1 = _subAllocatorSize - size2;
+        int realSize1 = (size1 / FIXED_UNIT_SIZE * UNIT_SIZE) + (size1 % FIXED_UNIT_SIZE);
         _hiUnit = _heapStart + _subAllocatorSize;
         _loUnit = _unitsStart = _heapStart + realSize1;
         FakeUnitsStart = _heapStart + size1;
