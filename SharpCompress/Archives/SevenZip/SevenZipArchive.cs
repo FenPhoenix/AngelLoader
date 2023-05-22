@@ -7,14 +7,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using SharpCompress.Common.SevenZip;
-using SharpCompress.IO;
 
 namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchive : IDisposable
 {
     private bool _disposed;
-    private readonly SourceStream _srcStream;
+    private readonly Stream _srcStream;
 
     private readonly SevenZipContext _context;
 
@@ -44,7 +43,7 @@ public sealed class SevenZipArchive : IDisposable
 
     public SevenZipArchive(Stream stream, SevenZipContext context)
     {
-        _srcStream = new SourceStream(stream, context);
+        _srcStream = stream;
         _context = context;
     }
 

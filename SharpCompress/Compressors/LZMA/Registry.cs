@@ -52,7 +52,7 @@ internal static class DecoderRegistry
             case K_B_ZIP2:
                 return new BZip2Stream(inStreams.Single());
             case K_PPMD:
-                return new PpmdStream(new PpmdProperties(info), inStreams.Single());
+                return new PpmdStream(new PpmdProperties(info), inStreams.Single(), context);
             case K_DEFLATE:
                 return new DeflateStream(inStreams.Single(), CompressionMode.Decompress);
             default:

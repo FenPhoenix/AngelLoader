@@ -16,6 +16,7 @@ internal sealed class LzmaStream : Stream
     private readonly Stream _inputStream;
     private readonly long _inputSize;
     private readonly long _outputSize;
+    private readonly SevenZipContext _context;
 
     private readonly int _dictionarySize;
     private readonly OutWindow _outWindow;
@@ -43,6 +44,7 @@ internal sealed class LzmaStream : Stream
         _inputStream = inputStream;
         _inputSize = inputSize;
         _outputSize = outputSize;
+        _context = context;
         _isLzma2 = properties.Length < 5;
 
         if (!_isLzma2)
@@ -182,6 +184,9 @@ internal sealed class LzmaStream : Stream
 
         return total;
     }
+
+    // FenPhoenix 2023: avoid a zillion byte[1] allocations
+    public override int ReadByte() => Read(_context.Byte1, 0, 1) == 0 ? -1 : _context.Byte1[0];
 
     private void DecodeChunkHeader()
     {
