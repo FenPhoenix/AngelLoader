@@ -811,11 +811,10 @@ internal sealed class ArchiveReader
 
                     for (int i = 0; i < numFiles; i++)
                     {
-                        if (defined[i])
-                        {
-                            //action(i, checked((long)ReadUInt64()));
-                            db._files[i].MTime = ReadUInt64();
-                        }
+                        //action(i, checked((long)ReadUInt64()));
+                        // The date has a cap well under the ulong max value, so setting max value will cause it
+                        // to be interpreted as invalid and the entry's date will be set to null, as desired
+                        db._files[i].MTime = defined[i] ? ReadUInt64() : ulong.MaxValue;
                     }
                     //ReadDateTimeVector(
                     //    dataVector,
