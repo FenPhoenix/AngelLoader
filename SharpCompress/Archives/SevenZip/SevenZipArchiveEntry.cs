@@ -6,7 +6,7 @@ namespace SharpCompress.Archives.SevenZip;
 public sealed class SevenZipArchiveEntry
 {
     internal bool HasStream = true;
-    internal long? MTime;
+    internal ulong MTime;
 
     /// <summary>
     /// This is a 7Zip Anti item

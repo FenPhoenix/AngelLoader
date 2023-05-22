@@ -814,11 +814,7 @@ internal sealed class ArchiveReader
                         if (defined[i])
                         {
                             //action(i, checked((long)ReadUInt64()));
-                            db._files[i].MTime = checked((long)ReadUInt64());
-                        }
-                        else
-                        {
-                            db._files[i].MTime = null;
+                            db._files[i].MTime = ReadUInt64();
                         }
                     }
                     //ReadDateTimeVector(

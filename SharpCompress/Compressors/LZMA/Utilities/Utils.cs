@@ -39,13 +39,10 @@ internal enum BlockType : byte
 
 internal static class Utils
 {
-    internal static DateTime? TranslateTime(long? time)
+    internal static DateTime? TranslateTime(ulong time)
     {
-        if (time.HasValue && time.Value >= 0 && time.Value <= 2650467743999999999) //maximum Windows file time 31.12.9999
-        {
-            return DateTime.FromFileTimeUtc(time.Value).ToLocalTime();
-        }
-        return null;
+        //maximum Windows file time 31.12.9999
+        return time <= 2_650_467_743_999_999_999 ? DateTime.FromFileTimeUtc((long)time).ToLocalTime() : null;
     }
 
     internal static void ReadExact(this Stream stream, byte[] buffer, int offset, int length)
