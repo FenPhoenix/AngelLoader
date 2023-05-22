@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
 
@@ -623,7 +624,7 @@ internal sealed class ArchiveReader
 
             int unpackSize = checked((int)folder.GetUnpackSize());
             byte[] data = new byte[unpackSize];
-            outStream.ReadExact(data, 0, data.Length);
+            ReadExact(outStream, data);
             if (outStream.ReadByte() >= 0)
             {
                 throw new InvalidOperationException("Decoded stream is longer than expected.");
@@ -979,7 +980,7 @@ internal sealed class ArchiveReader
         _stream.Seek(nextHeaderOffset, SeekOrigin.Current);
 
         byte[] header = new byte[nextHeaderSize];
-        _stream.ReadExact(header, 0, header.Length);
+        ReadExact(_stream, header);
 
         if (Crc.Finish(Crc.Update(Crc.INIT_CRC, header, 0, header.Length)) != nextHeaderCrc)
         {
@@ -1026,6 +1027,30 @@ internal sealed class ArchiveReader
         }
         db.Fill();
         return db;
+    }
+
+    // @SharpCompress(ReadExact): Not 100% sure if stream can't be null, check into this
+    private static void ReadExact([CanBeNull] Stream stream, [NotNull] byte[] buffer)
+    {
+        if (stream is null)
+        {
+            throw new ArgumentNullException(nameof(stream));
+        }
+
+        int offset = 0;
+        int length = buffer.Length;
+
+        while (length > 0)
+        {
+            int fetched = stream.Read(buffer, offset, length);
+            if (fetched <= 0)
+            {
+                throw new EndOfStreamException();
+            }
+
+            offset += fetched;
+            length -= fetched;
+        }
     }
 
     #endregion

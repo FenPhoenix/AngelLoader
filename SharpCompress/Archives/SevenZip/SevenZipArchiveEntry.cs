@@ -25,7 +25,10 @@ public sealed class SevenZipArchiveEntry
         {
             if (!_lastModifiedTimeSet)
             {
-                _lastModifiedTime = Utility.TranslateTime(MTime);
+                //maximum Windows file time 31.12.9999
+                _lastModifiedTime = MTime <= 2_650_467_743_999_999_999
+                    ? DateTime.FromFileTimeUtc((long)MTime).ToLocalTime()
+                    : null;
                 _lastModifiedTimeSet = true;
             }
 

@@ -6,7 +6,7 @@ internal sealed class See2Context
     {
         get
         {
-            int retVal = Utility.URShift(_summ, _shift);
+            int retVal = _summ >>> _shift;
             _summ -= retVal;
             return retVal + ((retVal == 0) ? 1 : 0);
         }

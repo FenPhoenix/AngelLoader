@@ -167,13 +167,13 @@ internal sealed class PpmContext : Pointer
         FreqData.IncrementSummFreq(4);
         escFreq = FreqData.SummFreq - p.Freq;
         adder = (model.OrderFall != 0) ? 1 : 0;
-        p.Freq = Utility.URShift(p.Freq + adder, 1);
+        p.Freq = (p.Freq + adder) >>> 1;
         FreqData.SummFreq = p.Freq;
         do
         {
             p.IncrementAddress();
             escFreq -= p.Freq;
-            p.Freq = Utility.URShift(p.Freq + adder, 1);
+            p.Freq = (p.Freq + adder) >>> 1;
             FreqData.IncrementSummFreq(p.Freq);
             temp.Address = p.Address - State.SIZE;
             if (p.Freq > temp.Freq)
@@ -215,19 +215,19 @@ internal sealed class PpmContext : Pointer
                 do
                 {
                     // tmp.Freq-=(tmp.Freq >> 1)
-                    tmp.DecrementFreq(Utility.URShift(tmp.Freq, 1));
-                    escFreq = Utility.URShift(escFreq, 1);
+                    tmp.DecrementFreq(tmp.Freq >>> 1);
+                    escFreq >>>= 1;
                 } while (escFreq > 1);
-                model.SubAlloc.FreeUnits(FreqData.GetStats(), Utility.URShift(oldNs + 1, 1));
+                model.SubAlloc.FreeUnits(FreqData.GetStats(), (oldNs + 1) >>> 1);
                 _oneState.SetValues(tmp);
                 model.FoundState.Address = _oneState.Address;
                 return;
             }
         }
-        escFreq -= Utility.URShift(escFreq, 1);
+        escFreq -= (escFreq >>> 1);
         FreqData.IncrementSummFreq(escFreq);
-        int n0 = Utility.URShift(oldNs + 1, 1),
-            n1 = Utility.URShift(NumStats + 1, 1);
+        int n0 = (oldNs + 1) >>> 1,
+            n1 = (NumStats + 1) >>> 1;
         if (n0 != n1)
         {
             FreqData.SetStats(model.SubAlloc.ShrinkUnits(FreqData.GetStats(), n0, n1));
@@ -243,12 +243,12 @@ internal sealed class PpmContext : Pointer
         ret += model.PrevSuccess;
         ret += model.GetNs2BsIndx()[tempSuffix.NumStats - 1];
         ret += model.HiBitsFlag + (2 * model.GetHb2Flag()[rs.Symbol]);
-        ret += ((Utility.URShift(model.RunLength, 26)) & 0x20);
+        ret += (model.RunLength >>> 26) & 0x20;
         return ret;
     }
 
     internal static int GetMean(int summ, int shift, int round) =>
-        Utility.URShift(summ + (1 << (shift - round)), shift);
+        (summ + (1 << (shift - round))) >>> shift;
 
     internal void DecodeBinSymbol(ModelPpm model)
     {
