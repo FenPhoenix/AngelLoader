@@ -626,12 +626,6 @@ public sealed partial class MainForm
         // 
         TopRightTabControl.AllowReordering = true;
         TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        TopRightTabControl.Controls.Add(StatisticsTabPage);
-        TopRightTabControl.Controls.Add(EditFMTabPage);
-        TopRightTabControl.Controls.Add(CommentTabPage);
-        TopRightTabControl.Controls.Add(TagsTabPage);
-        TopRightTabControl.Controls.Add(PatchTabPage);
-        TopRightTabControl.Controls.Add(ModsTabPage);
         TopRightTabControl.Size = new Size(535, 310);
         TopRightTabControl.TabIndex = 15;
         // 

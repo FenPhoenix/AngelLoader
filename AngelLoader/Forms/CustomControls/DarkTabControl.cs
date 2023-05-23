@@ -31,8 +31,6 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     private readonly List<BackingTab> _backingTabList = new(0);
 
-    private Font? _originalFont;
-
     #endregion
 
     private bool _darkModeEnabled;
@@ -46,25 +44,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            SetStyle(
-                // Double-buffering prevents flickering when mouse is moved over in dark mode
-                ControlStyles.UserPaint,
-                _darkModeEnabled);
-
-            /*
-            @TabFont: This was probably from when we were having wrong-font issues in the tab control.
-            I'm guessing this must have fixed it or at least was an attempt to fix it(?), but removing it doesn't
-            seem to cause any problems now (on Windows 10 at least). But we had Win7 before when we had the
-            problem, so I'm not 100% sure. Leaving it in for now.
-            */
-            if (_darkModeEnabled)
-            {
-                _originalFont ??= (Font)Font.Clone();
-            }
-            else
-            {
-                if (_originalFont != null) Font = (Font)_originalFont.Clone();
-            }
+            SetStyle(ControlStyles.UserPaint, _darkModeEnabled);
 
             Refresh();
         }
@@ -89,6 +69,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
     }
 
+    // Double-buffering prevents flickering when mouse is moved over in dark mode
     public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
     #region Private methods
