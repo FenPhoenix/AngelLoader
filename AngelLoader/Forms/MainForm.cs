@@ -4277,11 +4277,12 @@ public sealed partial class MainForm : DarkFormBase,
         FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
     }
 
-    internal void PlayOriginalGameButton_MouseUp(object sender, MouseEventArgs e)
+    internal void PlayOriginalGameButtons_MouseUp(object sender, MouseEventArgs e)
     {
-        if (CursorOverControl((Control)sender) && e.Button == MouseButtons.Right)
+        DarkButton button = (DarkButton)sender;
+        if (CursorOverControl(button) && e.Button == MouseButtons.Right)
         {
-            ShowPerGameModsWindow(((DarkButton)sender).GameIndex);
+            ShowPerGameModsWindow(button.GameIndex);
         }
     }
 

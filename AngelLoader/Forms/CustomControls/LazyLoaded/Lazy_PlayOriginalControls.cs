@@ -97,7 +97,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
 
             gameButton.PaintCustom += _owner.PlayOriginalGamesButtons_Paint;
             gameButton.Click += _owner.PlayOriginalGameButtons_Click;
-            gameButton.MouseUp += _owner.PlayOriginalGameButton_MouseUp;
+            gameButton.MouseUp += _owner.PlayOriginalGameButtons_MouseUp;
 
             tabIndex += i == (int)GameIndex.Thief2 ? 2 : 1;
         }

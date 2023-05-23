@@ -1644,8 +1644,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void UpdateCustomExampleDate()
     {
-        bool success = FormatAndTestDate(out _, out string formattedExampleDate);
-        if (success)
+        if (FormatAndTestDate(out _, out string formattedExampleDate))
         {
             AppearancePage.PreviewDateLabel.Text = formattedExampleDate;
         }
