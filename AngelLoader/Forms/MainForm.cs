@@ -752,10 +752,13 @@ public sealed partial class MainForm : DarkFormBase,
                 ImageIndex = i
             };
             _gameTabs[i] = tab;
-            // Still add the tabs to the collection like before, even though we're going to clear and add
-            // again, because I remember we had some kind of issue with the fonts if we didn't do that.
-            // Quick testing doesn't show the issue now, but whatever, maybe it was only on Win 7?
-            // Let's just keep it like before for safety.
+            /*
+            @TabFont
+            Still add the tabs to the collection like before, even though we're going to clear and add
+            again, because I remember we had some kind of issue with the fonts if we didn't do that.
+            Quick testing doesn't show the issue now, but whatever, maybe it was only on Win 7?
+            Let's just keep it like before for safety.
+            */
             GamesTabControl.Controls.Add(tab);
 
             #endregion

@@ -51,6 +51,12 @@ public sealed class DarkTabControl : TabControl, IDarkable
                 ControlStyles.UserPaint,
                 _darkModeEnabled);
 
+            /*
+            @TabFont: This was probably from when we were having wrong-font issues in the tab control.
+            I'm guessing this must have fixed it or at least was an attempt to fix it(?), but removing it doesn't
+            seem to cause any problems now (on Windows 10 at least). But we had Win7 before when we had the
+            problem, so I'm not 100% sure. Leaving it in for now.
+            */
             if (_darkModeEnabled)
             {
                 _originalFont ??= (Font)Font.Clone();
