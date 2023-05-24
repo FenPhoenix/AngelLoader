@@ -205,22 +205,23 @@ internal static class ControlUtils
         var sii = new Native.SHSTOCKICONINFO();
         try
         {
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            Native.SHSTOCKICONID sysIcon =
-                icon is MessageBoxIcon.Error or
-                    MessageBoxIcon.Hand or
-                    MessageBoxIcon.Stop
-                    ? Native.SHSTOCKICONID.SIID_ERROR
-                    : icon == MessageBoxIcon.Question
-                        ? Native.SHSTOCKICONID.SIID_HELP
-                        : icon is MessageBoxIcon.Exclamation or
-                            MessageBoxIcon.Warning
-                            ? Native.SHSTOCKICONID.SIID_WARNING
-                            : icon is MessageBoxIcon.Asterisk or
-                                MessageBoxIcon.Information
-                                ? Native.SHSTOCKICONID.SIID_INFO
-                                : throw new ArgumentOutOfRangeException();
-            // ReSharper restore ConditionIsAlwaysTrueOrFalse
+            Native.SHSTOCKICONID sysIcon = icon switch
+            {
+                MessageBoxIcon.Error or
+                MessageBoxIcon.Hand or
+                MessageBoxIcon.Stop
+                    => Native.SHSTOCKICONID.SIID_ERROR,
+                MessageBoxIcon.Question
+                    => Native.SHSTOCKICONID.SIID_HELP,
+                MessageBoxIcon.Exclamation or
+                MessageBoxIcon.Warning
+                    => Native.SHSTOCKICONID.SIID_WARNING,
+                MessageBoxIcon.Asterisk or
+                MessageBoxIcon.Information
+                    => Native.SHSTOCKICONID.SIID_INFO,
+                _
+                    => throw new ArgumentOutOfRangeException()
+            };
 
             sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
 
@@ -233,24 +234,23 @@ internal static class ControlUtils
         {
             // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
             // above fails
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
             pictureBox.Image = icon switch
             {
                 MessageBoxIcon.Error or
-                    MessageBoxIcon.Hand or
-                    MessageBoxIcon.Stop
+                MessageBoxIcon.Hand or
+                MessageBoxIcon.Stop
                     => SystemIcons.Error.ToBitmap(),
                 MessageBoxIcon.Question
                     => SystemIcons.Question.ToBitmap(),
                 MessageBoxIcon.Exclamation or
-                    MessageBoxIcon.Warning
+                MessageBoxIcon.Warning
                     => SystemIcons.Warning.ToBitmap(),
                 MessageBoxIcon.Asterisk or
-                    MessageBoxIcon.Information
+                MessageBoxIcon.Information
                     => SystemIcons.Information.ToBitmap(),
-                _ => null
+                _
+                    => null
             };
-            // ReSharper restore ConditionIsAlwaysTrueOrFalse
         }
         finally
         {
