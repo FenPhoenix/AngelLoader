@@ -70,38 +70,21 @@ internal static partial class NonLocalizableText
 
     internal static readonly string AL_GitHub_Link = "https://github.com/FenPhoenix/AngelLoader";
 
-    internal static readonly string SevenZip_Link_Text = "7-Zip";
-    internal static readonly string SevenZip_Link = "https://www.7-zip.org/";
-
-    internal static readonly string SharpCompress_Link_Text = "SharpCompress";
-    internal static readonly string SharpCompress_Link = "https://github.com/adamhathcock/sharpcompress";
-
-    internal static readonly string FFmpeg_Link_Text = "ffmpeg";
-    internal static readonly string FFmpeg_Link = "https://ffmpeg.org/";
-
-    internal static readonly string FFmpegDotNet_Link_Text = "FFmpeg.NET";
-    internal static readonly string FFmpegDotNet_Link = "https://github.com/cmxl/FFmpeg.NET";
-
-    internal static readonly string SimpleHelpersDotNet_Link_Text = "SimpleHelpers.Net";
-    internal static readonly string SimpleHelpersDotNet_Link = "https://github.com/khalidsalomao/SimpleHelpers.Net/";
-
-    internal static readonly string UdeNetStandard_Link_Text = "Ude.NetStandard";
-    internal static readonly string UdeNetStandard_Link = "https://github.com/yinyue200/ude";
-
-    internal static readonly string OokiiDialogs_Link_Text = "Ookii Dialogs";
-    internal static readonly string OokiiDialogs_Link = "https://github.com/augustoproiete/ookii-dialogs-winforms";
-
-    internal static readonly string netCore3SysIOComp_Link_Text = ".NET Core 3 System.IO.Compression";
-    internal static readonly string NetCore3SysIOComp_Link = "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression";
-
-    internal static readonly string DarkUI_Link_Text = "DarkUI";
-    internal static readonly string DarkUI_Link = "https://github.com/RobinPerris/DarkUI";
-
-    internal static readonly string EasyHook_Link_Text = "EasyHook";
-    internal static readonly string EasyHook_Link = "https://github.com/EasyHook/EasyHook";
-
-    internal static readonly string OpenSans_Link_Text = "Open Sans";
-    internal static readonly string OpenSans_Link = "https://fonts.google.com/specimen/Open+Sans";
+    internal static readonly (string Text, string Link)[] Dependencies =
+    {
+        ("7-Zip", "https://www.7-zip.org/"),
+        ("SharpCompress", "https://github.com/adamhathcock/sharpcompress"),
+        ("ffmpeg", "https://ffmpeg.org/"),
+        ("FFmpeg.NET", "https://github.com/cmxl/FFmpeg.NET"),
+        ("SimpleHelpers.Net", "https://github.com/khalidsalomao/SimpleHelpers.Net/"),
+        ("Ude.NetStandard", "https://github.com/yinyue200/ude"),
+        ("Ookii Dialogs", "https://github.com/augustoproiete/ookii-dialogs-winforms"),
+        (".NET Core 3 System.IO.Compression", "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression"),
+        ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
+        ("EasyHook", "https://github.com/EasyHook/EasyHook"),
+        ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
+    };
+    internal static readonly int DependenciesCount = Dependencies.Length;
 
     private static string[]? _percentStrings;
     internal static string[] PercentStrings
