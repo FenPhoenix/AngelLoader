@@ -295,10 +295,11 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     }
 
     [PublicAPI]
-    public void Set(GameIndex gameIndex, string disabledMods) => Set(GameIndexToGame(gameIndex), disabledMods);
+    public void Set(GameIndex gameIndex, string disabledMods, bool forceRecreateList = false) =>
+        Set(GameIndexToGame(gameIndex), disabledMods, forceRecreateList);
 
     [PublicAPI]
-    public void Set(Game game, string disabledMods)
+    public void Set(Game game, string disabledMods, bool forceRecreateList = false)
     {
         try
         {
@@ -331,7 +332,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
             int maxModCount = 0;
 
-            if (Config.ModsChanged)
+            if (forceRecreateList || Config.ModsChanged)
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {

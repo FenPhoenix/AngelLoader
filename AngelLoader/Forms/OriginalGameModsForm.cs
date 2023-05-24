@@ -27,7 +27,7 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
 
         Localize(gameIndex);
 
-        OrigGameModsControl.Set(gameIndex, DisabledMods);
+        OrigGameModsControl.Set(gameIndex, DisabledMods, forceRecreateList: true);
     }
 
     private void Localize(GameIndex gameIndex)
