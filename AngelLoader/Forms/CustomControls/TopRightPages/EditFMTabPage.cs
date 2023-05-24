@@ -120,10 +120,10 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             _page.EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButton_Click;
 
             _page.EditFMTitleTextBox.TextChanged += EditFMTitleTextBox_TextChanged;
-            _page.EditFMTitleTextBox.Leave += EditFMTitleTextBox_Leave;
+            _page.EditFMTitleTextBox.Leave += _owner.TextBoxLeave_Save;
 
             _page.EditFMAuthorTextBox.TextChanged += EditFMAuthorTextBox_TextChanged;
-            _page.EditFMAuthorTextBox.Leave += EditFMAuthorTextBox_Leave;
+            _page.EditFMAuthorTextBox.Leave += _owner.TextBoxLeave_Save;
 
             _page.EditFMReleaseDateCheckBox.CheckedChanged += EditFMReleaseDateCheckBox_CheckedChanged;
             _page.EditFMLastPlayedCheckBox.CheckedChanged += EditFMLastPlayedCheckBox_CheckedChanged;
@@ -299,12 +299,6 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         _owner.RefreshSelectedRowCell(Column.Title);
     }
 
-    private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
-    {
-        if (_owner.EventsDisabled > 0) return;
-        Ini.WriteFullFMDataIni();
-    }
-
     private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
     {
         List<string> fmAltTitles = _owner.FMsDGV.GetMainSelectedFM().AltTitles;
@@ -342,12 +336,6 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
         fm.Author = _page.EditFMAuthorTextBox.Text;
         _owner.RefreshSelectedRowCell(Column.Author);
-    }
-
-    private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
-    {
-        if (_owner.EventsDisabled > 0) return;
-        Ini.WriteFullFMDataIni();
     }
 
     #endregion

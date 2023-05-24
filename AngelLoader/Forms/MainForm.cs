@@ -3200,6 +3200,12 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    internal void TextBoxLeave_Save(object sender, EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        Ini.WriteFullFMDataIni();
+    }
+
     #endregion
 
     #region FMs list

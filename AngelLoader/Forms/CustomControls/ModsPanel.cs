@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -65,4 +66,14 @@ public sealed class ModsPanel : Panel, IDarkable
     }
 
     #endregion
+
+    protected override void OnEnabledChanged(EventArgs e)
+    {
+        base.OnEnabledChanged(e);
+        BackColor = _darkModeEnabled
+            ? DarkColors.Fen_ControlBackground
+            : Enabled
+                ? SystemColors.Window
+                : SystemColors.Control;
+    }
 }

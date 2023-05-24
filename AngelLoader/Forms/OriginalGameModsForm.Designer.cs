@@ -110,7 +110,6 @@ partial class OriginalGameModsForm
         this.Name = "OriginalGameModsForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
         this.Text = "Manage mods for [Game]";
-        this.Paint += new System.Windows.Forms.PaintEventHandler(this.OriginalGameModsForm_Paint);
         this.BottomFLP.ResumeLayout(false);
         this.BottomFLP.PerformLayout();
         this.ResumeLayout(false);

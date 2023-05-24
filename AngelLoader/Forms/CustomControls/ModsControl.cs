@@ -35,7 +35,6 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 #endif
         Tag = LoadType.Lazy;
 
-        CheckList.EnabledChanged += CheckList_EnabledChanged;
         CheckList.Paint += CheckList_Paint;
     }
 
@@ -235,15 +234,6 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             _cautionRectangle.Width = CheckList.ClientRectangle.Width - 8;
             e.Graphics.FillRectangle(CheckList._darkModeEnabled ? DarkColors.Fen_RedHighlightBrush : Brushes.MistyRose, _cautionRectangle);
         }
-    }
-
-    private void CheckList_EnabledChanged(object sender, EventArgs e)
-    {
-        CheckList.BackColor = CheckList._darkModeEnabled
-            ? DarkColors.Fen_ControlBackground
-            : CheckList.Enabled
-                ? SystemColors.Window
-                : SystemColors.Control;
     }
 
     #endregion

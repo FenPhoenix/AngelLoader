@@ -25,7 +25,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
         {
             Controls.Add(_page);
 
-            _page.CommentTextBox.Leave += CommentTextBox_Leave;
+            _page.CommentTextBox.Leave += _owner.TextBoxLeave_Save;
             _page.CommentTextBox.TextChanged += CommentTextBox_TextChanged;
 
             _constructed = true;
@@ -77,12 +77,6 @@ public sealed class CommentTabPage : Lazy_TabsBase
         fm.CommentSingleLine = commentText.ToSingleLineComment(100);
 
         _owner.RefreshSelectedRowCell(Column.Comment);
-    }
-
-    private void CommentTextBox_Leave(object sender, EventArgs e)
-    {
-        if (_owner.EventsDisabled > 0) return;
-        Ini.WriteFullFMDataIni();
     }
 
     #endregion

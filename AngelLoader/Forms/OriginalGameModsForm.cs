@@ -57,8 +57,9 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
         base.OnFormClosing(e);
     }
 
-    private void OriginalGameModsForm_Paint(object sender, PaintEventArgs e)
+    protected override void OnPaint(PaintEventArgs e)
     {
+        base.OnPaint(e);
         Images.DrawHorizDiv(e.Graphics, 7, 44, ClientSize.Width - 9);
     }
 }
