@@ -226,21 +226,12 @@ public static class BinaryRead
 
         int bytesRead = 0;
 
-        if (numBytes == 1)
+        do
         {
-            // Avoid calling Stream.ReadByte() because it allocates a 1-byte buffer every time (ridiculous)
-            int n = stream.Read(buffer, 0, 1);
-            if (n <= 0) ThrowHelper.EndOfFile();
+            int n = stream.Read(buffer, bytesRead, numBytes - bytesRead);
+            if (n == 0) ThrowHelper.EndOfFile();
+            bytesRead += n;
         }
-        else
-        {
-            do
-            {
-                int n = stream.Read(buffer, bytesRead, numBytes - bytesRead);
-                if (n == 0) ThrowHelper.EndOfFile();
-                bytesRead += n;
-            }
-            while (bytesRead < numBytes);
-        }
+        while (bytesRead < numBytes);
     }
 }
