@@ -1015,7 +1015,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (Config.TopRightPanelCollapsed)
         {
             TopSplitContainer.SetFullScreen(true, suspendResume: false);
-            SetTopRightCollapsedState();
+            SetTopRightCollapsedState(true);
         }
 
         #endregion
@@ -1148,10 +1148,10 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_firstShowDone)
         {
-            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
-            {
-                lazyTab.Construct();
-            }
+            //if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+            //{
+            //    lazyTab.Construct();
+            //}
             TopRightTabControl.Selected += TopRightTabControl_Selected;
 
             _firstShowDone = true;
@@ -3141,30 +3141,29 @@ public sealed partial class MainForm : DarkFormBase,
     private void TopRightCollapseButton_Click(object sender, EventArgs e)
     {
         TopSplitContainer.ToggleFullScreen();
-        SetTopRightCollapsedState();
+        SetTopRightCollapsedState(TopSplitContainer.FullScreen);
     }
 
-    private void SetTopRightCollapsedState()
+    private void SetTopRightCollapsedState(bool collapsed)
     {
-        bool collapsed = TopSplitContainer.FullScreen;
-
         if (collapsed)
         {
+            TopRightCollapseButton.ArrowDirection = Direction.Left;
             TopRightTabControl.Enabled = false;
         }
         else
         {
+            TopRightCollapseButton.ArrowDirection = Direction.Right;
+
             if (!Lazy_TopRightBlocker.Visible)
             {
                 TopRightTabControl.Enabled = true;
             }
-        }
 
-        TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
-
-        if (!collapsed && TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
-        {
-            lazyTab.ConstructWithSuspendResume();
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            {
+                lazyTab.ConstructWithSuspendResume();
+            }
         }
     }
 
