@@ -1148,10 +1148,10 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_firstShowDone)
         {
-            //if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
-            //{
-            //    lazyTab.Construct();
-            //}
+            if (TopRightTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+            {
+                lazyTab.Construct();
+            }
             TopRightTabControl.Selected += TopRightTabControl_Selected;
 
             _firstShowDone = true;
