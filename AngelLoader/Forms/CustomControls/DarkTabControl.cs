@@ -352,6 +352,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     // We could combine these to only add the tabs to TabPages that are going to be visible, rather than adding
     // them all and then potentially removing some again.
 
+    private bool _doneTabFixHack;
     /// <summary>
     /// Removes all tabs and adds a set of new ones.
     /// </summary>
@@ -359,6 +360,19 @@ public sealed class DarkTabControl : TabControl, IDarkable
     [PublicAPI]
     public void SetTabsFull(TabPage[] tabPages)
     {
+        /*
+        Create handle before adding tabs to prevent the following:
+        -You start the app in dark mode and with the top-right area hidden
+        -You show the top-right area
+        -The tabs are all the same width, and if you switch to light mode, they have a crappy bold font instead
+         of the intended one
+        */
+        if (!_doneTabFixHack)
+        {
+            _ = Handle;
+            _doneTabFixHack = true;
+        }
+
         if (TabCount > 0) TabPages.Clear();
         _backingTabList.Clear();
 
