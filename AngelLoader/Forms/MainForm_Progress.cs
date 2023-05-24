@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
@@ -11,30 +12,18 @@ public sealed partial class MainForm
 
     private ProgressPanel? ProgressBox;
 
-    // Progress box not being null does not necessarily mean it's fully constructed.
-    private bool _progressBoxConstructed;
+    // Note! If we WEREN'T always invoking this, we would want to have a lock around it!
 
-    private bool _progressBoxDarkModeEnabled;
-    private void SetProgressBoxDarkModeEnabled(bool value)
-    {
-        if (_progressBoxDarkModeEnabled == value) return;
-        _progressBoxDarkModeEnabled = value;
-        if (!_progressBoxConstructed) return;
-
-        ProgressBox!.DarkModeEnabled = value;
-    }
-
+    [MemberNotNull(nameof(ProgressBox))]
     private void ConstructProgressBox()
     {
-        if (_progressBoxConstructed) return;
+        if (ProgressBox != null) return;
 
         ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
         Controls.Add(ProgressBox);
         ProgressBox.Anchor = AnchorStyles.None;
-        ProgressBox.DarkModeEnabled = _progressBoxDarkModeEnabled;
+        ProgressBox.DarkModeEnabled = Global.Config.DarkMode;
         ProgressBox.SetSizeToDefault();
-
-        _progressBoxConstructed = true;
     }
 
     // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
@@ -56,7 +45,7 @@ public sealed partial class MainForm
         Action? cancelAction = null) => Invoke(() =>
     {
         ConstructProgressBox();
-        ProgressBox!.SetState(
+        ProgressBox.SetState(
             visible: true,
             size: ProgressSizeMode.Single,
             mainMessage1: message1 ?? "",
@@ -117,7 +106,7 @@ public sealed partial class MainForm
         Action? cancelAction = null) => Invoke(() =>
     {
         ConstructProgressBox();
-        ProgressBox!.SetState(
+        ProgressBox.SetState(
             visible: visible,
             size: ProgressSizeMode.Single,
             mainMessage1: message1,
@@ -144,7 +133,7 @@ public sealed partial class MainForm
         Action? cancelAction = null) => Invoke(() =>
     {
         ConstructProgressBox();
-        ProgressBox!.SetState(
+        ProgressBox.SetState(
             visible: visible,
             size: ProgressSizeMode.Double,
             mainMessage1: mainMessage1,
@@ -161,7 +150,7 @@ public sealed partial class MainForm
     public void SetProgressPercent(int percent) => Invoke(() =>
     {
         ConstructProgressBox();
-        ProgressBox!.SetState(
+        ProgressBox.SetState(
             visible: null,
             size: null,
             mainMessage1: null,
@@ -190,7 +179,7 @@ public sealed partial class MainForm
         Invoke(() =>
         {
             ConstructProgressBox();
-            ProgressBox!.SetState(
+            ProgressBox.SetState(
                 visible: visible,
                 size: size,
                 mainMessage1: mainMessage1,
@@ -208,7 +197,7 @@ public sealed partial class MainForm
 
     public void HideProgressBox() => Invoke(() =>
     {
-        if (!_progressBoxConstructed) return;
-        ProgressBox!.HideThis();
+        if (ProgressBox == null) return;
+        ProgressBox.HideThis();
     });
 }
