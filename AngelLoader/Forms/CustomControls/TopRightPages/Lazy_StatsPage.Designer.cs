@@ -208,7 +208,6 @@ public sealed partial class Lazy_StatsPage
         this.Controls.Add(this.CustomResourcesLabel);
         this.Name = "Lazy_StatsPage";
         this.Size = new System.Drawing.Size(527, 284);
-        this.Paint += new System.Windows.Forms.PaintEventHandler(this.Lazy_StatsPage_Paint);
         this.StatsCheckBoxesPanel.ResumeLayout(false);
         this.StatsCheckBoxesPanel.PerformLayout();
         this.ResumeLayout(false);
