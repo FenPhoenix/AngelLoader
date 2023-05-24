@@ -25,34 +25,24 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Event sending
 
-    internal object? Sender_ScanForReadmes;
-    internal object? Sender_ScanTitle;
-    internal object? Sender_ScanAuthor;
-    internal object? Sender_ScanReleaseDate;
-
-    public event EventHandler? ScanForReadmesClick;
-    public event EventHandler? ScanTitleClick;
-    public event EventHandler? ScanAuthorClick;
-    public event EventHandler? ScanReleaseDateClick;
-
     private void ScanForReadmesButton_Clicked(object sender, EventArgs e)
     {
-        ScanForReadmesClick?.Invoke(Sender_ScanForReadmes, e);
+        _owner.Async_EventHandler_Main(ScanSender.Readmes, e);
     }
 
     private void ScanTitleButton_Clicked(object sender, EventArgs e)
     {
-        ScanTitleClick?.Invoke(Sender_ScanTitle, e);
+        _owner.Async_EventHandler_Main(ScanSender.Title, e);
     }
 
     private void ScanAuthorButton_Clicked(object sender, EventArgs e)
     {
-        ScanAuthorClick?.Invoke(Sender_ScanAuthor, e);
+        _owner.Async_EventHandler_Main(ScanSender.Author, e);
     }
 
     private void ScanReleaseDateButton_Clicked(object sender, EventArgs e)
     {
-        ScanReleaseDateClick?.Invoke(Sender_ScanReleaseDate, e);
+        _owner.Async_EventHandler_Main(ScanSender.ReleaseDate, e);
     }
 
     #endregion
@@ -101,21 +91,13 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         {
             Controls.Add(_page);
 
-            Sender_ScanForReadmes = new object();
             _page.EditFMScanForReadmesButton.Click += ScanForReadmesButton_Clicked;
-            ScanForReadmesClick += _owner.Async_EventHandler_Main;
 
-            Sender_ScanTitle = new object();
             _page.EditFMScanTitleButton.Click += ScanTitleButton_Clicked;
-            ScanTitleClick += _owner.Async_EventHandler_Main;
 
-            Sender_ScanAuthor = new object();
             _page.EditFMScanAuthorButton.Click += ScanAuthorButton_Clicked;
-            ScanAuthorClick += _owner.Async_EventHandler_Main;
 
-            Sender_ScanReleaseDate = new object();
             _page.EditFMScanReleaseDateButton.Click += ScanReleaseDateButton_Clicked;
-            ScanReleaseDateClick += _owner.Async_EventHandler_Main;
 
             _page.EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButton_Click;
 

@@ -2630,13 +2630,14 @@ public sealed partial class MainForm : DarkFormBase,
 
             await Import.ImportFrom(importType);
         }
-        else if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes) ||
-                 sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ||
-                 sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ||
-                 sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ||
-                 sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources))
+        else if (sender
+                 is Lazy_TabsBase.ScanSender.Readmes
+                 or Lazy_TabsBase.ScanSender.Title
+                 or Lazy_TabsBase.ScanSender.Author
+                 or Lazy_TabsBase.ScanSender.ReleaseDate
+                 or Lazy_TabsBase.ScanSender.CustomResources)
         {
-            if (sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanForReadmes))
+            if (sender is Lazy_TabsBase.ScanSender.Readmes)
             {
                 try
                 {
@@ -2662,12 +2663,14 @@ public sealed partial class MainForm : DarkFormBase,
                         Cursor = Cursors.WaitCursor;
                     }
 
-                    var scanOptions =
-                        sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanTitle) ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
-                        sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanAuthor) ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
-                        sender.EqualsIfNotNull(EditFMTabPage.Sender_ScanReleaseDate) ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
-                        //sender.EqualsIfNotNull(StatisticsTabPage.Sender_ScanCustomResources)
-                        FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true);
+                    var scanOptions = sender switch
+                    {
+                        Lazy_TabsBase.ScanSender.Title => FMScanner.ScanOptions.FalseDefault(scanTitle: true),
+                        Lazy_TabsBase.ScanSender.Author => FMScanner.ScanOptions.FalseDefault(scanAuthor: true),
+                        Lazy_TabsBase.ScanSender.ReleaseDate => FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true),
+                        //Lazy_TabsBase.ScanSender.CustomResources
+                        _ => FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true)
+                    };
 
                     if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
                     {

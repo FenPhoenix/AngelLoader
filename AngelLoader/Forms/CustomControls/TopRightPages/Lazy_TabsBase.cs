@@ -9,6 +9,18 @@ namespace AngelLoader.Forms.CustomControls;
 // @ViewBusinessLogic: Lots of it in the lazy-loaded top-right tabs now.
 public class Lazy_TabsBase : DarkTabPageCustom
 {
+    internal enum ScanSender
+    {
+        // Statistics
+        CustomResources,
+
+        // Edit
+        Readmes,
+        Title,
+        Author,
+        ReleaseDate
+    }
+
     private protected MainForm _owner = null!;
 
     private protected bool _constructed;

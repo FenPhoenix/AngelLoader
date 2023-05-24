@@ -13,13 +13,9 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
     #region Event sending
 
-    internal object? Sender_ScanCustomResources;
-
-    public event EventHandler? ScanCustomResourcesClick;
-
     private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
     {
-        ScanCustomResourcesClick?.Invoke(Sender_ScanCustomResources, e);
+        _owner.Async_EventHandler_Main(ScanSender.CustomResources, e);
     }
 
     #endregion
@@ -43,9 +39,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
             _page.StatsScanCustomResourcesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
-            Sender_ScanCustomResources = new object();
             _page.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
-            ScanCustomResourcesClick += _owner.Async_EventHandler_Main;
 
             _constructed = true;
 
