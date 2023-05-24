@@ -34,8 +34,8 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     public static byte ReadByte(Stream stream, byte[] buffer)
     {
-        int num = stream.Read(buffer, 0, 1);
-        if (num == 0) ThrowHelper.EndOfFile();
+        int bytesRead = stream.Read(buffer, 0, 1);
+        if (bytesRead == 0) ThrowHelper.EndOfFile();
         return buffer[0];
     }
 
