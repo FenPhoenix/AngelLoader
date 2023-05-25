@@ -91,79 +91,86 @@ internal static class Core
 
         using Task startupWorkTask = Task.Run(() =>
         {
-            #region Old FMScanner log file delete
-
-            // We use just the one file now
             try
             {
-                File.Delete(Paths.ScannerLogFile_Old);
-            }
-            catch
-            {
-                // ignore
-            }
+                #region Old FMScanner log file delete
 
-            #endregion
-
-            #region Read config ini
-
-            if (File.Exists(Paths.ConfigIni))
-            {
+                // We use just the one file now
                 try
                 {
-                    Ini.ReadConfigIni(Paths.ConfigIni, Config);
+                    File.Delete(Paths.ScannerLogFile_Old);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    string message = Paths.ConfigIni + " exists but there was an error while reading it.";
-                    Log(message, ex);
-                    openSettings = true;
-
-                    // We need to run this to have correct/valid config settings, if we didn't get to where it
-                    // runs in the config reader
-                    Ini.FinalizeConfig(Config);
-
-                    return;
-                }
-                finally
-                {
-                    configReadARE.Set();
+                    // ignore
                 }
 
-                // @BetterErrors(Set game data on startup)
-                // @THREADING(Config):
-                // Set game data here to ensure we're DONE filling out the config object before the form does
-                // anything (race condition possibility prevention)
-                for (int i = 0; i < SupportedGameCount; i++)
+                #endregion
+
+                #region Read config ini
+
+                if (File.Exists(Paths.ConfigIni))
                 {
-                    GameIndex gameIndex = (GameIndex)i;
-                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                    // set them if we don't have a game exe
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                    try
                     {
-                        (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        Log(message, ex);
+                        openSettings = true;
+
+                        // We need to run this to have correct/valid config settings, if we didn't get to where it
+                        // runs in the config reader
+                        Ini.FinalizeConfig(Config);
+
+                        return;
+                    }
+                    finally
+                    {
+                        configReadARE.Set();
+                    }
+
+                    // @BetterErrors(Set game data on startup)
+                    // @THREADING(Config):
+                    // Set game data here to ensure we're DONE filling out the config object before the form does
+                    // anything (race condition possibility prevention)
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        GameIndex gameIndex = (GameIndex)i;
+                        // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                        // set them if we don't have a game exe
+                        string gameExe = Config.GetGameExe(gameIndex);
+                        if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                        {
+                            (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                        }
                     }
                 }
+                else
+                {
+                    openSettings = true;
+                    // We're starting for the first time ever (assumed)
+                    cleanStart = true;
+
+                    // Ditto the above
+                    try
+                    {
+                        Ini.FinalizeConfig(Config);
+                    }
+                    finally
+                    {
+                        configReadARE.Set();
+                    }
+                }
+
+                #endregion
             }
-            else
+            finally
             {
-                openSettings = true;
-                // We're starting for the first time ever (assumed)
-                cleanStart = true;
-
-                // Ditto the above
-                try
-                {
-                    Ini.FinalizeConfig(Config);
-                }
-                finally
-                {
-                    configReadARE.Set();
-                }
+                configReadARE.Set();
             }
-
-            #endregion
         });
 
         // We can't show the splash screen until we know our theme, which we have to get from the config
