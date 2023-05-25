@@ -87,7 +87,7 @@ internal static class Core
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
-        var configReadARE = new AutoResetEvent(false);
+        using var configReadARE = new AutoResetEvent(false);
 
         using Task startupWorkTask = Task.Run(() =>
         {
