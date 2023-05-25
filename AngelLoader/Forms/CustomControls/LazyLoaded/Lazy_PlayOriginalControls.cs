@@ -146,7 +146,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
         }
     }
 
-    internal void SetMode(bool singleButton)
+    internal void SetMode(bool singleButton, bool startup)
     {
         if (singleButton)
         {
@@ -170,7 +170,8 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             {
                 GameButtons[i].Visible = !Config.GetGameExe((GameIndex)i).IsEmpty();
             }
-            T2MPMenuButton.Visible = Config.T2MPDetected;
+            // @THREADING: Crappy fix for T2MPDetected access during when it's being set (potentially)
+            if (!startup) T2MPMenuButton.Visible = Config.T2MPDetected;
 
             if (_constructedSingle)
             {

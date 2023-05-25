@@ -340,7 +340,7 @@ public interface IView : ISettingsChangeableView
 
     void SetPinnedMenuState(bool pinned);
 
-    void SetPlayOriginalGameControlsState();
+    void SetPlayOriginalGameControlsState(bool startup = false);
 
     void UpdateAllFMUIDataExceptReadme(FanMission fm);
 

@@ -1005,7 +1005,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         #endregion
 
-        SetPlayOriginalGameControlsState();
+        SetPlayOriginalGameControlsState(startup: true);
 
         if (!Config.HideUninstallButton) ShowInstallUninstallButton(true);
         if (!Config.HideExitButton) ShowExitButton(true);
@@ -1033,10 +1033,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Do this here to prevent double-loading of RTF/GLML readmes
         SetTheme(Config.VisualTheme, startup: true, createControlHandles: true, preloadImageTask);
 
-#if !ReleaseBeta && !ReleasePublic
-        UpdateGameScreenShotModes();
-#endif
-
         #endregion
     }
 
@@ -1048,8 +1044,22 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (Visible) return;
 
+#if !ReleaseBeta && !ReleasePublic
+        // This one accesses GamePath, which is being set in parallel
+        UpdateGameScreenShotModes();
+#endif
+
         // Set this explicitly AFTER the FMs list is populated
         SetAvailableFMCount();
+
+        // @THREADING: Crappy fix for T2MPDetected access during when it's being set (potentially)
+        if (Config.PlayOriginalSeparateButtons)
+        {
+            if (Lazy_PlayOriginalControls.T2MPMenuButton != null!)
+            {
+                Lazy_PlayOriginalControls.T2MPMenuButton.Visible = Config.T2MPDetected;
+            }
+        }
 
         // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
         // Find() to have been run first.
@@ -4176,7 +4186,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // @GENGAMES (Play original game controls): Begin
 
-    public void SetPlayOriginalGameControlsState()
+    public void SetPlayOriginalGameControlsState(bool startup = false)
     {
         static bool AnyControlVisible()
         {
@@ -4200,22 +4210,22 @@ public sealed partial class MainForm : DarkFormBase,
 
         try
         {
-            EverythingPanel.SuspendDrawing();
+            if (!startup) EverythingPanel.SuspendDrawing();
 
             if (Config.PlayOriginalSeparateButtons)
             {
-                Lazy_PlayOriginalControls.SetMode(singleButton: false);
+                Lazy_PlayOriginalControls.SetMode(singleButton: false, startup);
                 PlayOriginalFLP.Visible = AnyControlVisible();
             }
             else
             {
-                Lazy_PlayOriginalControls.SetMode(singleButton: true);
+                Lazy_PlayOriginalControls.SetMode(singleButton: true, startup);
                 PlayOriginalFLP.Show();
             }
         }
         finally
         {
-            EverythingPanel.ResumeDrawing();
+            if (!startup) EverythingPanel.ResumeDrawing();
         }
     }
 

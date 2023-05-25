@@ -278,6 +278,14 @@ internal static class Core
                 // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
+                    /*
+                    @THREADING(SetGameDataInitial()):
+                    This is terrifying that we do this in parallel to form load. We're setting a bunch of config
+                    values in here and we're accessing Config everywhere in the main form, sometimes in the
+                    threadable constructor. We do save like 15-20ms so we kinda don't want to give that up, but...
+                    Maybe we should just take the hit for safety...
+                    It's terrible to split Config value setting in two like this, 95% safe and 5% not...
+                    */
                     if (setGameData) gameDataErrors = SetGameDataInitial();
                     (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
                     if (ex == null)
