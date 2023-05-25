@@ -83,6 +83,9 @@ internal static class Core
         // Perf: The only thing the splash screen needs is the theme
         Config.VisualTheme = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
+        Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
+        List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
+
         using Task startupWorkTask = Task.Run(() =>
         {
             #region Old FMScanner log file delete
@@ -106,6 +109,22 @@ internal static class Core
                 try
                 {
                     Ini.ReadConfigIni(Paths.ConfigIni, Config);
+
+                    // @BetterErrors(Set game data on startup)
+                    // @THREADING(Config):
+                    // Set game data here to ensure we're DONE filling out the config object before the form does
+                    // anything (race condition possibility prevention)
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        GameIndex gameIndex = (GameIndex)i;
+                        // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                        // set them if we don't have a game exe
+                        string gameExe = Config.GetGameExe(gameIndex);
+                        if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                        {
+                            (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -232,26 +251,7 @@ internal static class Core
 
         splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
-        // @BetterErrors(Set game data on startup)
-        static Error[] SetGameDataInitial()
-        {
-            Error[] errors = InitializedArray(SupportedGameCount, Error.None);
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                // set them if we don't have a game exe
-                string gameExe = Config.GetGameExe(gameIndex);
-                if (!gameExe.IsEmpty() && File.Exists(gameExe))
-                {
-                    errors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: true, doCharacterDetailFix: true);
-                }
-            }
-
-            return errors;
-        }
-
-        Task DoParallelLoad(bool setGameData)
+        Task DoParallelLoad()
         {
             splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                     LText.SplashScreen.LoadingMainApp);
@@ -270,7 +270,6 @@ internal static class Core
 #pragma warning restore IDE0002
 #endif
 
-                Error[]? gameDataErrors = null;
                 Exception? ex = null;
                 // IMPORTANT: Begin no-splash-screen-call zone
                 // The FM finder will update the splash screen from another thread (accessing only the graphics
@@ -278,15 +277,14 @@ internal static class Core
                 // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
-                    /*
-                    @THREADING(SetGameDataInitial()):
-                    This is terrifying that we do this in parallel to form load. We're setting a bunch of config
-                    values in here and we're accessing Config everywhere in the main form, sometimes in the
-                    threadable constructor. We do save like 15-20ms so we kinda don't want to give that up, but...
-                    Maybe we should just take the hit for safety...
-                    It's terrible to split Config value setting in two like this, 95% safe and 5% not...
-                    */
-                    if (setGameData) gameDataErrors = SetGameDataInitial();
+                    for (int i = 0; i < SupportedGameCount; i++)
+                    {
+                        List<string>? camModIniLines = perGameCamModIniLines[i];
+                        if (camModIniLines != null)
+                        {
+                            GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
+                        }
+                    }
                     (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
                     if (ex == null)
                     {
@@ -309,12 +307,6 @@ internal static class Core
 
                 // IMPORTANT: End no-splash-screen-call zone
 
-                if (gameDataErrors != null)
-                {
-                    splashScreen.LockPainting(false);
-                    ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
-                }
-
                 if (ex != null)
                 {
                     splashScreen.Hide();
@@ -331,20 +323,19 @@ internal static class Core
             return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen);
         }
 
+        ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
+
         if (!openSettings)
         {
-            await DoParallelLoad(setGameData: true);
+            await DoParallelLoad();
         }
         else
         {
-            Error[] errors = SetGameDataInitial();
-            ThrowDialogIfSneakyOptionsIniNotFound(errors);
-
             splashScreen.Hide();
             if (await OpenSettings(startup: true, cleanStart: cleanStart))
             {
                 splashScreen.Show(Config.VisualTheme);
-                await DoParallelLoad(setGameData: false);
+                await DoParallelLoad();
             }
         }
     }
@@ -475,7 +466,7 @@ internal static class Core
             Config.SetGameExe(gameIndex, outConfig.GetGameExe(gameIndex));
 
             // Set it regardless of game existing, because we want to blank the data
-            setGameDataErrors[i] = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+            (setGameDataErrors[i], _) = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
 
             Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
         }
@@ -694,10 +685,11 @@ internal static class Core
     /// </summary>
     /// <param name="gameIndex"></param>
     /// <param name="storeConfigInfo"></param>
-    /// <param name="doCharacterDetailFix"></param>
-    private static Error SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo, bool doCharacterDetailFix = false)
+    private static (Error Error, List<string>? CamModIniLines)
+    SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
     {
         Error error = Error.None;
+        List<string>? camModIniLines = null;
         string gameExe = Config.GetGameExe(gameIndex);
         bool gameExeSpecified = !gameExe.IsWhiteSpace();
 
@@ -728,7 +720,7 @@ internal static class Core
                     AlwaysShowLoader: false,
                     AllLines: null
                 );
-
+            camModIniLines = data.AllLines;
             Config.SetFMInstallPath(gameIndex, data.FMsPath);
             Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !GetEditorExe_FromDisk(gameIndex).IsEmpty());
 
@@ -796,11 +788,6 @@ internal static class Core
                     configMods.Add(tempList[i]);
                 }
             }
-
-            if (doCharacterDetailFix)
-            {
-                GameConfigFiles.FixCharacterDetailLine(gameIndex, data.AllLines);
-            }
         }
         else
         {
@@ -842,7 +829,7 @@ internal static class Core
             // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
         }
 
-        return error;
+        return (error, camModIniLines);
     }
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)
