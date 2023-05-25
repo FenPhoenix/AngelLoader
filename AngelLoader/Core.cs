@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -86,6 +87,8 @@ internal static class Core
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
+        var configReadARE = new AutoResetEvent(false);
+
         using Task startupWorkTask = Task.Run(() =>
         {
             #region Old FMScanner log file delete
@@ -120,6 +123,26 @@ internal static class Core
                     // runs in the config reader
                     Ini.FinalizeConfig(Config);
                 }
+                finally
+                {
+                    configReadARE.Set();
+                }
+
+                // @BetterErrors(Set game data on startup)
+                // @THREADING(Config):
+                // Set game data here to ensure we're DONE filling out the config object before the form does
+                // anything (race condition possibility prevention)
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    // Existence checks on startup are merely a perf optimization: values start blank so just don't
+                    // set them if we don't have a game exe
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                    {
+                        (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                    }
+                }
             }
             else
             {
@@ -128,7 +151,14 @@ internal static class Core
                 cleanStart = true;
 
                 // Ditto the above
-                Ini.FinalizeConfig(Config);
+                try
+                {
+                    Ini.FinalizeConfig(Config);
+                }
+                finally
+                {
+                    configReadARE.Set();
+                }
             }
 
             #endregion
@@ -140,26 +170,7 @@ internal static class Core
 
         splashScreen.Show(Config.VisualTheme);
 
-        startupWorkTask.Wait();
-
-        using Task setGameDataTask = Task.Run(() =>
-        {
-            // @BetterErrors(Set game data on startup)
-            // @THREADING(Config):
-            // Set game data here to ensure we're DONE filling out the config object before the form does
-            // anything (race condition possibility prevention)
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                // set them if we don't have a game exe
-                string gameExe = Config.GetGameExe(gameIndex);
-                if (!gameExe.IsEmpty() && File.Exists(gameExe))
-                {
-                    (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                }
-            }
-        });
+        configReadARE.WaitOne();
 
         #region Read languages
 
@@ -254,7 +265,7 @@ internal static class Core
 
         splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);
 
-        setGameDataTask.Wait();
+        startupWorkTask.Wait();
 
         Task DoParallelLoad()
         {
