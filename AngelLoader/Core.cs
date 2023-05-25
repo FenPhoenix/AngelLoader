@@ -122,6 +122,8 @@ internal static class Core
                     // We need to run this to have correct/valid config settings, if we didn't get to where it
                     // runs in the config reader
                     Ini.FinalizeConfig(Config);
+
+                    return;
                 }
                 finally
                 {
