@@ -62,7 +62,6 @@ public static class Program
 #endif
 
 #if !WPF
-
         PreloadState = new PreloadState();
 
         // Need to set these here, because the single-instance thing internally creates a window and message-
@@ -84,12 +83,6 @@ public static class Program
     @PERF_TODO: SingleInstanceManager style takes ~30-35ms to get to the top of OnStartup().
     The old way was faster, but we can't pass args the old way. We don't currently pass args right now,
     but eh...
-
-    -The graphics (large image from icon and AngelLoader name image), loaded in the splash screen, combined
-     take ~10ms (and that's including the creation of the dark mode version of the AL name image). Meh.
-
-    -We could parallel-load the AngelLoader text image here, though we can't theme it because we won't know
-     the theme until we read the config file.
     */
     private sealed class SingleInstanceManager : WindowsFormsApplicationBase
     {
