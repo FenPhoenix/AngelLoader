@@ -43,6 +43,12 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
+    // We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
+    // so just put it here and never dispose... meh.
+    // I mean it might/probably is safe because we wait for the task before moving on? But who cares for now,
+    // this is guaranteed safe at least...
+    private static readonly AutoResetEvent _configReadARE = new(false);
+
 #if RT_HeavyTests
     internal static System.Threading.Thread CoreThread = null!;
 #endif
@@ -87,8 +93,6 @@ internal static class Core
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
-        using var configReadARE = new AutoResetEvent(false);
-
         using Task startupWorkTask = Task.Run(() =>
         {
             try
@@ -129,7 +133,7 @@ internal static class Core
                     }
                     finally
                     {
-                        configReadARE.Set();
+                        _configReadARE.Set();
                     }
 
                     // @BetterErrors(Set game data on startup)
@@ -161,7 +165,7 @@ internal static class Core
                     }
                     finally
                     {
-                        configReadARE.Set();
+                        _configReadARE.Set();
                     }
                 }
 
@@ -169,7 +173,7 @@ internal static class Core
             }
             finally
             {
-                configReadARE.Set();
+                _configReadARE.Set();
             }
         });
 
@@ -179,7 +183,7 @@ internal static class Core
 
         splashScreen.Show(Config.VisualTheme);
 
-        configReadARE.WaitOne();
+        _configReadARE.WaitOne();
 
         #region Read languages
 
