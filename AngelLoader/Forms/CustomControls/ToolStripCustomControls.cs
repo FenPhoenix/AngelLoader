@@ -63,14 +63,6 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         }
     }
 
-    /// <summary>
-    /// Fiddle this around to get the right-side garbage line to disappear again when Padding is set to something.
-    /// </summary>
-    [PublicAPI]
-    [Browsable(true)]
-    [DefaultValue(0)]
-    public int PaddingDrawNudge { get; set; }
-
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
@@ -113,7 +105,7 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         }
 
         int rect2Start = lastItemX + lastItemWidth + lastItemMarginRight;
-        var rectRight = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
+        var rectRight = new Rectangle(rect2Start, 0, (Width - rect2Start), Height);
         var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
         Brush brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;
