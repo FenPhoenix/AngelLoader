@@ -977,8 +977,8 @@ sealed partial class MainForm
         this.ReadmeEncodingButton.TabIndex = 2;
         this.MainToolTip.SetToolTip(this.ReadmeEncodingButton, "Character encoding");
         this.ReadmeEncodingButton.Visible = false;
-        this.ReadmeEncodingButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeEncodingButton_Paint);
-        this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeEncodingButton_Click);
+        this.ReadmeEncodingButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeButtons_Paint);
+        this.ReadmeEncodingButton.Click += new System.EventHandler(this.ReadmeButtons_Click);
         this.ReadmeEncodingButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
         // ReadmeFullScreenButton
@@ -993,8 +993,8 @@ sealed partial class MainForm
         this.ReadmeFullScreenButton.TabIndex = 6;
         this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
         this.ReadmeFullScreenButton.Visible = false;
-        this.ReadmeFullScreenButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeFullScreenButton_Paint);
-        this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
+        this.ReadmeFullScreenButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeButtons_Paint);
+        this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeButtons_Click);
         this.ReadmeFullScreenButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
         // ReadmeZoomInButton
@@ -1010,8 +1010,8 @@ sealed partial class MainForm
         this.ReadmeZoomInButton.TabIndex = 3;
         this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
         this.ReadmeZoomInButton.Visible = false;
-        this.ReadmeZoomInButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomInButtons_Paint);
-        this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
+        this.ReadmeZoomInButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeButtons_Paint);
+        this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeButtons_Click);
         this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
         // ReadmeZoomOutButton
@@ -1027,8 +1027,8 @@ sealed partial class MainForm
         this.ReadmeZoomOutButton.TabIndex = 4;
         this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
         this.ReadmeZoomOutButton.Visible = false;
-        this.ReadmeZoomOutButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomOutButtons_Paint);
-        this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
+        this.ReadmeZoomOutButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeButtons_Paint);
+        this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeButtons_Click);
         this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
         // ReadmeResetZoomButton
@@ -1044,8 +1044,8 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton.TabIndex = 5;
         this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
         this.ReadmeResetZoomButton.Visible = false;
-        this.ReadmeResetZoomButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ZoomResetButtons_Paint);
-        this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
+        this.ReadmeResetZoomButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.ReadmeButtons_Paint);
+        this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeButtons_Click);
         this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         // 
         // ChooseReadmeComboBox

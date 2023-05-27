@@ -4104,23 +4104,23 @@ public sealed partial class MainForm : DarkFormBase,
         if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
     }
 
-    private void ReadmeEncodingButton_Click(object sender, EventArgs e)
-    {
-        ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
-    }
-
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
 
-    private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.In);
-
-    private void ReadmeZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.Out);
-
-    private void ReadmeResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.Zoom(Zoom.Reset);
-
-    private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
+    private void ReadmeButtons_Click(object sender, EventArgs e)
     {
-        MainSplitContainer.ToggleFullScreen();
-        ShowReadmeControls(CursorOverReadmeArea());
+        if (sender == ReadmeFullScreenButton)
+        {
+            MainSplitContainer.ToggleFullScreen();
+            ShowReadmeControls(CursorOverReadmeArea());
+        }
+        else if (sender == ReadmeEncodingButton)
+        {
+            ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
+        }
+        else
+        {
+            ReadmeRichTextBox.Zoom(GetReadmeZoomButton((DarkButton)sender));
+        }
     }
 
     private void SetReadmeVisible(bool enabled)
@@ -4787,23 +4787,31 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
 
-    private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
-
-    private void ReadmeEncodingButton_Paint(object sender, PaintEventArgs e) => Images.PaintReadmeEncodingButton(ReadmeEncodingButton, e);
-
     private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
     internal void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
 
-    private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.In);
-
-    private void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Out);
-
-    private void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => Images.PaintZoomButtons((Button)sender, e, Zoom.Reset);
+    private void ReadmeButtons_Paint(object sender, PaintEventArgs e)
+    {
+        if (sender == ReadmeFullScreenButton)
+        {
+            Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
+        }
+        else if (sender == ReadmeEncodingButton)
+        {
+            Images.PaintReadmeEncodingButton(ReadmeEncodingButton, e);
+        }
+        else
+        {
+            Images.PaintZoomButtons((Button)sender, e, GetReadmeZoomButton((DarkButton)sender));
+        }
+    }
 
     #endregion
 
     #region Helpers & misc
+
+    private Zoom GetReadmeZoomButton(DarkButton button) => (Zoom)(Array.IndexOf(_readmeControlButtons, button) - 1);
 
     private static FormWindowState WindowStateToFormWindowState(WindowState windowState) => windowState switch
     {

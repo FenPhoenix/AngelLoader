@@ -267,33 +267,24 @@ public sealed partial class MainForm
         MainMenuButton.PaintCustom += MainMenuButton_Paint;
         MainMenuButton.Click += MainMenuButton_Click;
         MainMenuButton.Enter += MainMenuButton_Enter;
-        // 
-        // FilterBarScrollRightButton
-        // 
-        FilterBarScrollRightButton.ArrowDirection = Direction.Right;
-        FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
-        FilterBarScrollRightButton.Size = new Size(14, 24);
-        FilterBarScrollRightButton.TabIndex = 10;
-        FilterBarScrollRightButton.Visible = false;
-        FilterBarScrollRightButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
-        FilterBarScrollRightButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
-        FilterBarScrollRightButton.Click += FilterBarScrollButtons_Click;
-        FilterBarScrollRightButton.MouseDown += FilterBarScrollButtons_MouseDown;
-        FilterBarScrollRightButton.MouseUp += FilterBarScrollButtons_MouseUp;
-        // 
-        // FilterBarScrollLeftButton
-        // 
-        FilterBarScrollLeftButton.FlatStyle = FlatStyle.Flat;
-        FilterBarScrollLeftButton.ArrowDirection = Direction.Left;
-        FilterBarScrollLeftButton.Size = new Size(14, 24);
-        FilterBarScrollLeftButton.TabIndex = 2;
-        FilterBarScrollLeftButton.Visible = false;
-        FilterBarScrollLeftButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
-        FilterBarScrollLeftButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
-        FilterBarScrollLeftButton.Click += FilterBarScrollButtons_Click;
-        FilterBarScrollLeftButton.MouseDown += FilterBarScrollButtons_MouseDown;
-        FilterBarScrollLeftButton.MouseUp += FilterBarScrollButtons_MouseUp;
-        // 
+
+        void SetFilterBarScrollButton(DarkArrowButton button, int tabIndex)
+        {
+            button.ArrowDirection = Direction.Right;
+            button.FlatStyle = FlatStyle.Flat;
+            button.Size = new Size(14, 24);
+            button.TabIndex = tabIndex;
+            button.Visible = false;
+            button.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
+            button.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
+            button.Click += FilterBarScrollButtons_Click;
+            button.MouseDown += FilterBarScrollButtons_MouseDown;
+            button.MouseUp += FilterBarScrollButtons_MouseUp;
+        }
+
+        SetFilterBarScrollButton(FilterBarScrollRightButton, 10);
+        SetFilterBarScrollButton(FilterBarScrollLeftButton, 2);
+
         // FMsDGV
         // 
         FMsDGV.AllowUserToAddRows = false;
@@ -452,83 +443,28 @@ public sealed partial class MainForm
         FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
         FilterIconButtonsToolStrip.TabIndex = 3;
         FilterIconButtonsToolStrip.Paint += FilterIconButtonsToolStrip_Paint;
-        // 
-        // FilterByReleaseDateButton
-        // 
-        FilterByReleaseDateButton.AutoSize = false;
-        FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
-        FilterByReleaseDateButton.Size = new Size(25, 25);
-        FilterByReleaseDateButton.Click += FilterWindowOpenButtons_Click;
-        // 
-        // FilterByLastPlayedButton
-        // 
-        FilterByLastPlayedButton.AutoSize = false;
-        FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
-        FilterByLastPlayedButton.Size = new Size(25, 25);
-        FilterByLastPlayedButton.Click += FilterWindowOpenButtons_Click;
-        // 
-        // FilterByTagsButton
-        // 
-        FilterByTagsButton.AutoSize = false;
-        FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
-        FilterByTagsButton.Size = new Size(25, 25);
-        FilterByTagsButton.Click += FilterWindowOpenButtons_Click;
-        // 
-        // FilterByFinishedButton
-        // 
-        FilterByFinishedButton.AutoSize = false;
-        FilterByFinishedButton.CheckOnClick = true;
-        FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
-        FilterByFinishedButton.Size = new Size(25, 25);
-        FilterByFinishedButton.Click += Async_EventHandler_Main;
-        // 
-        // FilterByUnfinishedButton
-        // 
-        FilterByUnfinishedButton.AutoSize = false;
-        FilterByUnfinishedButton.CheckOnClick = true;
-        FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByUnfinishedButton.Margin = new Padding(0);
-        FilterByUnfinishedButton.Size = new Size(25, 25);
-        FilterByUnfinishedButton.Click += Async_EventHandler_Main;
-        // 
-        // FilterByRatingButton
-        // 
-        FilterByRatingButton.AutoSize = false;
-        FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
-        FilterByRatingButton.Size = new Size(25, 25);
-        FilterByRatingButton.Click += FilterWindowOpenButtons_Click;
-        // 
-        // FilterShowUnsupportedButton
-        // 
-        FilterShowUnsupportedButton.AutoSize = false;
-        FilterShowUnsupportedButton.CheckOnClick = true;
-        FilterShowUnsupportedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
-        FilterShowUnsupportedButton.Size = new Size(25, 25);
-        FilterShowUnsupportedButton.Click += Async_EventHandler_Main;
-        // 
-        // FilterShowUnavailableButton
-        // 
-        FilterShowUnavailableButton.AutoSize = false;
-        FilterShowUnavailableButton.CheckOnClick = true;
-        FilterShowUnavailableButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterShowUnavailableButton.Margin = new Padding(0);
-        FilterShowUnavailableButton.Size = new Size(25, 25);
-        FilterShowUnavailableButton.Click += Async_EventHandler_Main;
-        // 
-        // FilterShowRecentAtTopButton
-        // 
-        FilterShowRecentAtTopButton.AutoSize = false;
-        FilterShowRecentAtTopButton.CheckOnClick = true;
-        FilterShowRecentAtTopButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-        FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
-        FilterShowRecentAtTopButton.Size = new Size(25, 25);
-        FilterShowRecentAtTopButton.Click += Async_EventHandler_Main;
+
+        void SetFilterCheckButton(ToolStripButtonCustom button, Padding margin, bool direct = true)
+        {
+            button.AutoSize = false;
+            if (direct) button.CheckOnClick = true;
+            button.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            button.Margin = margin;
+            button.Size = new Size(25, 25);
+            button.Click += direct ? Async_EventHandler_Main : FilterWindowOpenButtons_Click;
+        }
+
+        SetFilterCheckButton(FilterByFinishedButton, new Padding(6, 0, 0, 0));
+        SetFilterCheckButton(FilterByUnfinishedButton, new Padding(0));
+        SetFilterCheckButton(FilterShowUnsupportedButton, new Padding(6, 0, 0, 0));
+        SetFilterCheckButton(FilterShowUnavailableButton, new Padding(0));
+        SetFilterCheckButton(FilterShowRecentAtTopButton, new Padding(6, 0, 2, 0));
+
+        SetFilterCheckButton(FilterByReleaseDateButton, new Padding(6, 0, 0, 0), direct: false);
+        SetFilterCheckButton(FilterByLastPlayedButton, new Padding(6, 0, 0, 0), direct: false);
+        SetFilterCheckButton(FilterByTagsButton, new Padding(6, 0, 0, 0), direct: false);
+        SetFilterCheckButton(FilterByRatingButton, new Padding(6, 0, 0, 0), direct: false);
+
         // 
         // FilterControlsShowHideButton
         // 
@@ -628,71 +564,27 @@ public sealed partial class MainForm
         TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         TopRightTabControl.Size = new Size(535, 310);
         TopRightTabControl.TabIndex = 15;
-        // 
-        // ReadmeEncodingButton
-        // 
-        ReadmeEncodingButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeEncodingButton.FlatAppearance.BorderSize = 0;
-        ReadmeEncodingButton.FlatStyle = FlatStyle.Flat;
-        ReadmeEncodingButton.Location = new Point(1502, 8);
-        ReadmeEncodingButton.Size = new Size(21, 21);
-        ReadmeEncodingButton.TabIndex = 2;
-        ReadmeEncodingButton.Visible = false;
-        ReadmeEncodingButton.PaintCustom += ReadmeEncodingButton_Paint;
-        ReadmeEncodingButton.Click += ReadmeEncodingButton_Click;
-        ReadmeEncodingButton.MouseLeave += ReadmeArea_MouseLeave;
-        // 
-        // ReadmeFullScreenButton
-        // 
-        ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
-        ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
-        ReadmeFullScreenButton.Location = new Point(1616, 8);
-        ReadmeFullScreenButton.Size = new Size(21, 21);
-        ReadmeFullScreenButton.TabIndex = 6;
-        ReadmeFullScreenButton.Visible = false;
-        ReadmeFullScreenButton.PaintCustom += ReadmeFullScreenButton_Paint;
-        ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
-        ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
-        // 
-        // ReadmeZoomInButton
-        // 
-        ReadmeZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
-        ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
-        ReadmeZoomInButton.Location = new Point(1534, 8);
-        ReadmeZoomInButton.Size = new Size(21, 21);
-        ReadmeZoomInButton.TabIndex = 3;
-        ReadmeZoomInButton.Visible = false;
-        ReadmeZoomInButton.PaintCustom += ZoomInButtons_Paint;
-        ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
-        ReadmeZoomInButton.MouseLeave += ReadmeArea_MouseLeave;
-        // 
-        // ReadmeZoomOutButton
-        // 
-        ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
-        ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
-        ReadmeZoomOutButton.Location = new Point(1559, 8);
-        ReadmeZoomOutButton.Size = new Size(21, 21);
-        ReadmeZoomOutButton.TabIndex = 4;
-        ReadmeZoomOutButton.Visible = false;
-        ReadmeZoomOutButton.PaintCustom += ZoomOutButtons_Paint;
-        ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
-        ReadmeZoomOutButton.MouseLeave += ReadmeArea_MouseLeave;
-        // 
-        // ReadmeResetZoomButton
-        // 
-        ReadmeResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
-        ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
-        ReadmeResetZoomButton.Location = new Point(1584, 8);
-        ReadmeResetZoomButton.Size = new Size(21, 21);
-        ReadmeResetZoomButton.TabIndex = 5;
-        ReadmeResetZoomButton.Visible = false;
-        ReadmeResetZoomButton.PaintCustom += ZoomResetButtons_Paint;
-        ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
-        ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
+
+        void SetReadmeButton(DarkButton button, int x, int tabIndex)
+        {
+            button.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatStyle = FlatStyle.Flat;
+            button.Location = new Point(x, 8);
+            button.Size = new Size(21, 21);
+            button.TabIndex = tabIndex;
+            button.Visible = false;
+            button.PaintCustom += ReadmeButtons_Paint;
+            button.Click += ReadmeButtons_Click;
+            button.MouseLeave += ReadmeArea_MouseLeave;
+        }
+
+        SetReadmeButton(ReadmeEncodingButton, 1502, 2);
+        SetReadmeButton(ReadmeZoomInButton, 1534, 3);
+        SetReadmeButton(ReadmeZoomOutButton, 1559, 4);
+        SetReadmeButton(ReadmeResetZoomButton, 1584, 5);
+        SetReadmeButton(ReadmeFullScreenButton, 1616, 6);
+
         // 
         // ChooseReadmeComboBox
         // 
