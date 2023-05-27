@@ -8,8 +8,6 @@ using static AngelLoader.Misc;
  Notes:
     -Some Anchor / Dock combos have been kept despite the docs saying they're mutually exclusive, because
      they currently work and I'm not 100% certain which one I should keep. Lowest priority.
-    -We need to always add the tab pages to the Controls collection on init, because otherwise in dark
-     mode the tabs have wrong sizes until you set it again after the UI is already shown(?!)
     -The filter bar gets its x-pos and width set in GameTypeChange() and its y-pos is always 0.
      Height is 100 so it goes behind the DataGridView and its actual scroll bars will be hidden but
      they'll still function, and you can use your mousewheel or the custom arrow buttons to scroll.
