@@ -491,9 +491,13 @@ internal static class Utility
 
     // Doesn't handle unicode left and right double quotes, but meh...
     internal static string RemoveUnpairedLeadingOrTrailingQuotes(this string value) =>
-        value.CountCharsUpToAmount('\"', 2) != 1 ? value :
-        value[0] == '\"' ? value.Substring(1) :
-        value[value.Length - 1] == '\"' ? value.Substring(0, value.Length - 1) : value;
+        value.CharAppearsExactlyOnce('\"')
+            ? value[0] == '\"'
+                ? value.Substring(1)
+                : value[value.Length - 1] == '\"'
+                    ? value.Substring(0, value.Length - 1)
+                    : value
+            : value;
 
     #endregion
 

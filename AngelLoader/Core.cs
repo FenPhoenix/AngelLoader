@@ -2063,7 +2063,7 @@ internal static class Core
         {
             // The RichTextBox may send a link that's supposed to be an email but without the "mailto:" prefix,
             // so use a crappy heuristic to add it if necessary.
-            if (fixUpEmailLinks && !link.StartsWithI("mailto:") && link.CountCharsUpToAmount('@', 2) == 1)
+            if (fixUpEmailLinks && !link.StartsWithI("mailto:") && link.CharAppearsExactlyOnce('@'))
             {
                 int atIndex = link.IndexOf('@');
                 if (link.IndexOf(':', 0, atIndex) == -1 &&

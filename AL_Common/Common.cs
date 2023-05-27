@@ -1266,10 +1266,10 @@ public static class Common
         return foundCount;
     }
 
-    public static bool CharCountIsAtLeast(this string value, char character, int count, int start = 0)
+    public static bool CharCountIsAtLeast(this string value, char character, int count)
     {
         int foundCount = 0;
-        for (int i = start; i < value.Length; i++)
+        for (int i = 0; i < value.Length; i++)
         {
             if (value[i] == character)
             {
@@ -1280,6 +1280,9 @@ public static class Common
 
         return false;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool CharAppearsExactlyOnce(this string value, char character) => value.CountCharsUpToAmount(character, 2) == 1;
 
     #endregion
 
