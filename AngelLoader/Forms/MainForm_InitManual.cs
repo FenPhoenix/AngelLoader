@@ -279,7 +279,7 @@ public sealed partial class MainForm
         FilterBarScrollRightButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
         FilterBarScrollRightButton.Click += FilterBarScrollButtons_Click;
         FilterBarScrollRightButton.MouseDown += FilterBarScrollButtons_MouseDown;
-        FilterBarScrollRightButton.MouseUp += FilterBarScrollLeftButton_MouseUp;
+        FilterBarScrollRightButton.MouseUp += FilterBarScrollButtons_MouseUp;
         // 
         // FilterBarScrollLeftButton
         // 
@@ -292,7 +292,7 @@ public sealed partial class MainForm
         FilterBarScrollLeftButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
         FilterBarScrollLeftButton.Click += FilterBarScrollButtons_Click;
         FilterBarScrollLeftButton.MouseDown += FilterBarScrollButtons_MouseDown;
-        FilterBarScrollLeftButton.MouseUp += FilterBarScrollLeftButton_MouseUp;
+        FilterBarScrollLeftButton.MouseUp += FilterBarScrollButtons_MouseUp;
         // 
         // FMsDGV
         // 

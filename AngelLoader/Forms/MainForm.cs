@@ -2758,7 +2758,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
 
-    private void FilterBarScrollLeftButton_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
+    private void FilterBarScrollButtons_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
 
     private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
     {
