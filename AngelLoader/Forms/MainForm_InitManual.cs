@@ -266,9 +266,9 @@ public sealed partial class MainForm
         MainMenuButton.Click += MainMenuButton_Click;
         MainMenuButton.Enter += MainMenuButton_Enter;
 
-        void SetFilterBarScrollButton(DarkArrowButton button, int tabIndex)
+        void SetFilterBarScrollButton(DarkArrowButton button, Direction direction, int tabIndex)
         {
-            button.ArrowDirection = Direction.Right;
+            button.ArrowDirection = direction;
             button.FlatStyle = FlatStyle.Flat;
             button.Size = new Size(14, 24);
             button.TabIndex = tabIndex;
@@ -280,8 +280,8 @@ public sealed partial class MainForm
             button.MouseUp += FilterBarScrollButtons_MouseUp;
         }
 
-        SetFilterBarScrollButton(FilterBarScrollRightButton, 10);
-        SetFilterBarScrollButton(FilterBarScrollLeftButton, 2);
+        SetFilterBarScrollButton(FilterBarScrollRightButton, Direction.Right, 10);
+        SetFilterBarScrollButton(FilterBarScrollLeftButton, Direction.Left, 2);
 
         // FMsDGV
         // 
