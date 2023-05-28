@@ -2175,8 +2175,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                GameIndex gameIndex = (GameIndex)i;
-                _filterByGameButtons[i].Image = Images.GetPerGameImage(gameIndex).Primary.Large();
+                _filterByGameButtons[i].Image = Images.GetPerGameImage((GameIndex)i).Primary.Large();
             }
         }
         finally
@@ -2190,8 +2189,7 @@ public sealed partial class MainForm : DarkFormBase,
         var gameTabImages = new Image[SupportedGameCount];
         for (int i = 0; i < SupportedGameCount; i++)
         {
-            GameIndex gameIndex = (GameIndex)i;
-            gameTabImages[i] = Images.GetPerGameImage(gameIndex).Primary.Small();
+            gameTabImages[i] = Images.GetPerGameImage((GameIndex)i).Primary.Small();
         }
 
         GamesTabControl.SetImages(gameTabImages);
