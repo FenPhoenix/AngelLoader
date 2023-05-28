@@ -551,7 +551,7 @@ public sealed partial class MainForm : DarkFormBase,
     // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
     public MainForm()
     {
-        using Task preloadImageTask = GetPreloadImagesTask();
+        using Task preloadImagesTask = GetPreloadImagesTask();
 
         // IMPORTANT! Init manual controls BEFORE component init!
         // Otherwise, we might get event handlers firing (looking at you, SizeChanged) right after the resume
@@ -1031,7 +1031,7 @@ public sealed partial class MainForm : DarkFormBase,
         ChangeGameOrganization(startup: true);
 
         // Do this here to prevent double-loading of RTF/GLML readmes
-        SetTheme(Config.VisualTheme, startup: true, createControlHandles: true, preloadImageTask);
+        SetTheme(Config.VisualTheme, startup: true, createControlHandles: true, preloadImagesTask);
 
 #if !ReleaseBeta && !ReleasePublic
         UpdateGameScreenShotModes();
@@ -2093,8 +2093,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             GameIndex gameIndex = (GameIndex)i;
             Game game = GameIndexToGame(gameIndex);
-            ToolStripButtonCustom button = _filterByGameButtons[i];
-            button.Checked = Config.Filter.Games.HasFlagFast(game);
+            _filterByGameButtons[i].Checked = Config.Filter.Games.HasFlagFast(game);
         }
 
         if (!startup) ChangeFilterControlsForGameType();
