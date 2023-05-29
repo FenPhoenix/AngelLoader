@@ -32,8 +32,6 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     #region Resettables
 
     private List<Color>? _colorTable;
-    private int _colorTableStartIndex;
-    private int _colorTableEndIndex;
     private bool _foundColorTable;
     private bool _getColorTable;
     private bool _getLangs;
@@ -58,7 +56,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     #region Public API
 
     [PublicAPI]
-    internal (bool Success, List<Color>? ColorTable, int ColorTableStartIndex, int ColorTableEndIndex, List<LangItem>? LangItems)
+    internal (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
     GetData(byte[] rtfBytes, bool getColorTable, bool getLangs)
     {
         try
@@ -72,23 +70,17 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
             if (!getLangs && !getColorTable)
             {
-                return (false, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
-                    ColorTableEndIndex: _colorTableEndIndex,
-                    LangItems: _langItems);
+                return (false, ColorTable: _colorTable, LangItems: _langItems);
             }
 
             Error error = ParseRtf();
             return error == Error.OK
-                ? (true, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
-                    ColorTableEndIndex: _colorTableEndIndex,
-                    LangItems: _langItems)
-                : (false, ColorTable: _colorTable, ColorTableStartIndex: _colorTableStartIndex,
-                    ColorTableEndIndex: _colorTableEndIndex,
-                    LangItems: _langItems);
+                ? (true, ColorTable: _colorTable, LangItems: _langItems)
+                : (false, ColorTable: _colorTable, LangItems: _langItems);
         }
         catch
         {
-            return (false, _colorTable, _colorTableStartIndex, _colorTableEndIndex, _langItems);
+            return (false, _colorTable, _langItems);
         }
         finally
         {
@@ -105,8 +97,6 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
         #region Fixed-size fields
 
-        _colorTableStartIndex = 0;
-        _colorTableEndIndex = 0;
         _foundColorTable = false;
         _getColorTable = false;
         _getLangs = false;
@@ -319,14 +309,10 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         Error ClearReturnFields(Error error)
         {
             _colorTable = null;
-            _colorTableStartIndex = 0;
-            _colorTableEndIndex = 0;
             return error;
         }
 
         ClearReturnFields(Error.OK);
-
-        _colorTableStartIndex = (int)CurrentPos;
 
         while (true)
         {
@@ -334,7 +320,6 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
             if (ch == '}')
             {
                 UnGetChar('}');
-                _colorTableEndIndex = (int)CurrentPos;
                 break;
             }
             _colorTableSB.Append(ch);

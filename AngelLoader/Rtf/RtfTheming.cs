@@ -440,7 +440,7 @@ internal static class RtfTheming
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, _, int _, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
+        (bool success, List<Color>? colorTable, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode && colorTableFound, getLangs: langWorkRequired);
 
 #if PROCESS_README_TIME_TEST
