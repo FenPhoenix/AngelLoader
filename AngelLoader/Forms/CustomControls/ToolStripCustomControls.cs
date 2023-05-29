@@ -105,7 +105,7 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         }
 
         int rect2Start = lastItemX + lastItemWidth + lastItemMarginRight;
-        var rectRight = new Rectangle(rect2Start, 0, (Width - rect2Start), Height);
+        var rectRight = new Rectangle(rect2Start, 0, Width - rect2Start, Height);
         var rectBottom = new Rectangle(0, Height - 1, Width, 1);
 
         Brush brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;

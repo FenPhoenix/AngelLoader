@@ -82,7 +82,7 @@ internal static partial class NonLocalizableText
         (".NET Core 3 System.IO.Compression", "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression"),
         ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
         ("EasyHook", "https://github.com/EasyHook/EasyHook"),
-        ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
+        ("Open Sans", "https://fonts.google.com/specimen/Open+Sans")
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 
