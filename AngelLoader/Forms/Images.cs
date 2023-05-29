@@ -28,6 +28,8 @@ public static class Preload
     public static Icon AL_Icon => _alIcon ??= Resources.AngelLoader;
 
     private static Bitmap? _alIconBmp;
+    // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't
+    // add any extra size to our executable.
     public static Bitmap AL_Icon_Bmp => _alIconBmp ??= new Icon(AL_Icon, 48, 48).ToBitmap();
 
     private static Bitmap? _about;

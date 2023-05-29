@@ -47,8 +47,6 @@ public sealed partial class AboutForm : DarkFormBase
         ResumeLayout(false);
         PerformLayout();
 
-        // Just grab the largest frame (sub-icon) from the AL icon resource we have already, that way we don't
-        // add any extra size to our executable.
         LogoPictureBox.Image = Preload.AL_Icon_Bmp;
 
         VersionLabel.Text = Application.ProductVersion;
