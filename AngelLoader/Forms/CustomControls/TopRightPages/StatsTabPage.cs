@@ -68,16 +68,17 @@ public sealed class StatsTabPage : Lazy_TabsBase
             selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
             LText.StatisticsTab.CustomResourcesNotScanned;
 
-        _page.CR_MapCheckBox.Text = LText.StatisticsTab.Map;
-        _page.CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
-        _page.CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
-        _page.CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
-        _page.CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
-        _page.CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
-        _page.CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
-        _page.CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
-        _page.CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
-        _page.CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
+        // IMPORTANT! Fragile numeric-indexed stuff, DO NOT change the order!
+        _page._checkBoxes[0].Text = LText.StatisticsTab.Map;
+        _page._checkBoxes[1].Text = LText.StatisticsTab.Automap;
+        _page._checkBoxes[2].Text = LText.StatisticsTab.Scripts;
+        _page._checkBoxes[3].Text = LText.StatisticsTab.Textures;
+        _page._checkBoxes[4].Text = LText.StatisticsTab.Sounds;
+        _page._checkBoxes[5].Text = LText.StatisticsTab.Objects;
+        _page._checkBoxes[6].Text = LText.StatisticsTab.Creatures;
+        _page._checkBoxes[7].Text = LText.StatisticsTab.Motions;
+        _page._checkBoxes[8].Text = LText.StatisticsTab.Movies;
+        _page._checkBoxes[9].Text = LText.StatisticsTab.Subtitles;
 
         _page.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
     }
@@ -109,16 +110,10 @@ public sealed class StatsTabPage : Lazy_TabsBase
             {
                 _page.CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
 
-                _page.CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
-                _page.CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
-                _page.CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
-                _page.CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
-                _page.CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
-                _page.CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
-                _page.CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
-                _page.CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
-                _page.CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
-                _page.CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
+                for (int i = 0, at = 1; i < Misc.CustomResourcesCount - 1; i++, at <<= 1)
+                {
+                    _page._checkBoxes[i].Checked = FMHasResource(fm, (CustomResources)at);
+                }
 
                 _page.StatsCheckBoxesPanel.Enabled = true;
             }
