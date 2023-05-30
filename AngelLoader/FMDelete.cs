@@ -369,6 +369,7 @@ internal static class FMDelete
         finally
         {
             Core.View.HideProgressBox();
+            _deleteCts.Dispose();
             if (refreshRequired || (deletedAtLeastOneFromDisk && !leaveAllInstalled))
             {
                 // Just always do this because trying to determine the right "lighter" thing to do is

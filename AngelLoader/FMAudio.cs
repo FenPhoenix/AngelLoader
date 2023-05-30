@@ -29,8 +29,8 @@ internal static class FMAudio
     // @THREADING(FindFMs buffer4): Not thread-safe
     private static readonly byte[] _buffer4 = new byte[4];
 
-    private static CancellationTokenSource _conversionCTS = new();
-    private static void CancelToken() => _conversionCTS.CancelIfNotDisposed();
+    private static CancellationTokenSource _conversionCts = new();
+    private static void CancelToken() => _conversionCts.CancelIfNotDisposed();
 
     #region Public methods
 
@@ -119,7 +119,7 @@ internal static class FMAudio
         {
             bool single = fms.Count == 1;
 
-            _conversionCTS = _conversionCTS.Recreate();
+            _conversionCts = _conversionCts.Recreate();
 
             Core.View.ShowProgressBox_Single(
                 message1: LText.ProgressBox.ConvertingAudioFiles,
@@ -139,12 +139,13 @@ internal static class FMAudio
 
                 await ConvertToWAVs(fm, convertType);
 
-                if (!single && _conversionCTS.IsCancellationRequested) return;
+                if (!single && _conversionCts.IsCancellationRequested) return;
             }
         }
         finally
         {
             Core.View.HideProgressBox();
+            _conversionCts.Dispose();
         }
     }
 

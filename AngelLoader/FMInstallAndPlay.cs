@@ -1557,6 +1557,8 @@ internal static class FMInstallAndPlay
         {
             Ini.WriteFullFMDataIni();
             Core.View.HideProgressBox();
+
+            _installCts.Dispose();
         }
 
         Core.View.RefreshAllSelectedFMs_UpdateInstallState();
@@ -1936,6 +1938,8 @@ internal static class FMInstallAndPlay
 
                 await DoUninstallEndTasks(atLeastOneFMMarkedUnavailable);
             }
+
+            _uninstallCts.Dispose();
         }
 
         return (true, atLeastOneFMMarkedUnavailable);
