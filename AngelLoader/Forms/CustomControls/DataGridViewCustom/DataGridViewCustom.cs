@@ -40,14 +40,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     #endregion
 
-    internal readonly SelectedFM CurrentSelFM = new();
-
-    // Only used if game tabs are enabled. It's used to save and restore per-tab selected FM, filters etc.
-    internal readonly GameTabsState GameTabsState = new();
-
     #region Filter
 
-    internal readonly Filter Filter = new();
     internal readonly List<int> FilterShownIndexList = new();
 
     #endregion

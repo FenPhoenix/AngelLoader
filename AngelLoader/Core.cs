@@ -1029,7 +1029,7 @@ internal static class Core
 
         (FanMission? titleExactMatch, FanMission? authorExactMatch) ret = (null, null);
 
-        Filter viewFilter = View.GetFilter();
+        Filter viewFilter = Config.Filter;
 
         #region Set filters that are stored in control state
 
@@ -2377,11 +2377,9 @@ internal static class Core
         Column sortedColumn,
         SortDirection sortDirection,
         float fmsListFontSizeInPoints,
-        Filter filter,
         bool[] gameFilterControlVisibilities,
         bool[] filterControlVisibilities,
         SelectedFM selectedFM,
-        GameTabsState gameTabsState,
         GameIndex gameTab,
         TopRightTabsData topRightTabsData,
         bool topRightPanelCollapsed,
@@ -2413,8 +2411,6 @@ internal static class Core
         Array.Copy(gameFilterControlVisibilities, Config.GameFilterControlVisibilities, SupportedGameCount);
         Array.Copy(filterControlVisibilities, Config.FilterControlVisibilities, HideableFilterControlsCount);
 
-        filter.DeepCopyTo(Config.Filter);
-
         #region Top-right panel
 
         Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
@@ -2443,7 +2439,6 @@ internal static class Core
 
             case GameOrganization.ByTab:
                 Config.SelFM.Clear();
-                gameTabsState.DeepCopyTo(Config.GameTabsState);
                 Config.GameTab = gameTab;
                 break;
         }

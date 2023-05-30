@@ -420,15 +420,6 @@ internal sealed class GameTabsState
 
     // TODO: Add sorted column / sort order as a per-tab thing
 
-    internal void DeepCopyTo(GameTabsState dest)
-    {
-        for (int i = 0; i < SupportedGameCount; i++)
-        {
-            _selectedFMs[i].DeepCopyTo(dest._selectedFMs[i]);
-            _filters[i].DeepCopyTo(dest._filters[i]);
-        }
-    }
-
     internal void ClearAllSelectedFMs()
     {
         for (int i = 0; i < SupportedGameCount; i++) _selectedFMs[i].Clear();

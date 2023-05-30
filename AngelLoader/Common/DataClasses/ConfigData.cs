@@ -231,6 +231,15 @@ public sealed class ConfigData
 
     #endregion
 
+    internal (SelectedFM GameSelFM, Filter GameFilter)
+    GetGameSelFMAndFilter(GameIndex gameIndex)
+    {
+        SelectedFM gameSelFM = GameTabsState.GetSelectedFM(gameIndex);
+        Filter gameFilter = GameTabsState.GetFilter(gameIndex);
+
+        return (gameSelFM, gameFilter);
+    }
+
     #region Selected FMs
 
     internal void ClearAllSelectedFMs()

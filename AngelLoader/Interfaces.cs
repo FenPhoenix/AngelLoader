@@ -212,8 +212,6 @@ public interface IView : ISettingsChangeableView
         bool keepSelection = false, bool gameTabSwitch = false,
         bool landImmediate = false, bool keepMultiSelection = false);
 
-    Filter GetFilter();
-
     string GetTitleFilter();
 
     string GetAuthorFilter();

@@ -992,8 +992,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         FilterBarFLP.HorizontalScroll.SmallChange = 20;
 
-        Config.Filter.DeepCopyTo(FMsDGV.Filter);
-        SetUIFilterValues(FMsDGV.Filter, startup: true);
+        SetUIFilterValues(Config.Filter, startup: true);
 
         #endregion
 
@@ -1088,7 +1087,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         Core.SetFilter();
-        if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, keepSelection: KeepSel.TrueNearest))
+        if (RefreshFMsList(Config.SelFM, startup: true, keepSelection: KeepSel.TrueNearest))
         {
             _displayedFM = await Core.DisplayFM();
         }
@@ -2068,8 +2067,6 @@ public sealed partial class MainForm : DarkFormBase,
         if (Config.GameOrganization == GameOrganization.OneList)
         {
             if (!startup) SetGameButtonImages();
-
-            Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
         }
         else // ByTab
         {
@@ -2078,10 +2075,7 @@ public sealed partial class MainForm : DarkFormBase,
             // In case they don't match
             Config.Filter.Games = GameIndexToGame(Config.GameTab);
 
-            Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
-
-            FMsDGV.GameTabsState.GetSelectedFM(Config.GameTab).DeepCopyTo(FMsDGV.CurrentSelFM);
-            FMsDGV.GameTabsState.GetFilter(Config.GameTab).DeepCopyTo(FMsDGV.Filter);
+            Config.GameTabsState.GetSelectedFM(Config.GameTab).DeepCopyTo(Config.SelFM);
 
             using (new DisableEvents(this))
             {
@@ -2228,21 +2222,12 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private (SelectedFM GameSelFM, Filter GameFilter)
-    GetGameSelFMAndFilter(GameIndex gameIndex)
-    {
-        SelectedFM gameSelFM = FMsDGV.GameTabsState.GetSelectedFM(gameIndex);
-        Filter gameFilter = FMsDGV.GameTabsState.GetFilter(gameIndex);
-
-        return (gameSelFM, gameFilter);
-    }
-
     private void SaveCurrentTabSelectedFM(GameIndex gameIndex)
     {
-        var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(gameIndex);
+        var (gameSelFM, gameFilter) = Config.GetGameSelFMAndFilter(gameIndex);
         SelectedFM selFM = FMsDGV.GetMainSelectedFMPosInfo();
         selFM.DeepCopyTo(gameSelFM);
-        FMsDGV.Filter.DeepCopyTo(gameFilter);
+        Config.Filter.DeepCopyTo(gameFilter);
     }
 
     private void GamesTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
@@ -2264,17 +2249,17 @@ public sealed partial class MainForm : DarkFormBase,
             return;
         }
 
-        var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(darkTabPageCustom.GameIndex);
+        var (gameSelFM, gameFilter) = Config.GetGameSelFMAndFilter(darkTabPageCustom.GameIndex);
 
         Config.GameTab = darkTabPageCustom.GameIndex;
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
-            _filterByGameButtons[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
+            _filterByGameButtons[i].Checked = i == (int)darkTabPageCustom.GameIndex;
         }
 
-        gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
-        gameFilter.DeepCopyTo(FMsDGV.Filter);
+        gameSelFM.DeepCopyTo(Config.SelFM);
+        gameFilter.DeepCopyTo(Config.Filter);
 
         SetUIFilterValues(gameFilter);
 
@@ -2283,7 +2268,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    public Filter GetFilter() => FMsDGV.Filter;
     public string GetTitleFilter() => FilterTitleTextBox.Text;
     public string GetAuthorFilter() => FilterAuthorTextBox.Text;
 
@@ -2415,7 +2399,7 @@ public sealed partial class MainForm : DarkFormBase,
                 Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.Rating);
 
                 // Here is the line where the internal filter is cleared. It does in fact happen!
-                FMsDGV.Filter.ClearAll(oneList);
+                Config.Filter.ClearAll(oneList);
             }
             finally
             {
@@ -2485,8 +2469,8 @@ public sealed partial class MainForm : DarkFormBase,
             var button = (ToolStripButtonCustom)sender;
 
             bool lastPlayed = button == FilterByLastPlayedButton;
-            DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
-            DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
+            DateTime? fromDate = lastPlayed ? Config.Filter.LastPlayedFrom : Config.Filter.ReleaseDateFrom;
+            DateTime? toDate = lastPlayed ? Config.Filter.LastPlayedTo : Config.Filter.ReleaseDateTo;
             string title = lastPlayed ? LText.DateFilterBox.LastPlayedTitleText : LText.DateFilterBox.ReleaseDateTitleText;
 
             using (var f = new FilterDateForm(title, fromDate, toDate))
@@ -2501,7 +2485,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                 if (f.ShowDialogDark(this) != DialogResult.OK) return;
 
-                FMsDGV.Filter.SetDateFromAndTo(lastPlayed, f.DateFrom, f.DateTo);
+                Config.Filter.SetDateFromAndTo(lastPlayed, f.DateFrom, f.DateTo);
 
                 button.Checked = f.DateFrom != null || f.DateTo != null;
             }
@@ -2510,16 +2494,16 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender == FilterByTagsButton)
         {
-            using var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags);
+            using var tf = new FilterTagsForm(GlobalTags, Config.Filter.Tags);
             if (tf.ShowDialogDark(this) != DialogResult.OK) return;
 
-            tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
-            FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
+            tf.TagsFilter.DeepCopyTo(Config.Filter.Tags);
+            FilterByTagsButton.Checked = !Config.Filter.Tags.IsEmpty();
         }
         else if (sender == FilterByRatingButton)
         {
             bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
-            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
+            using (var f = new FilterRatingForm(Config.Filter.RatingFrom, Config.Filter.RatingTo, outOfFive))
             {
                 f.Location = ControlUtils.ClampFormToScreenBounds(
                     parent: this,
@@ -2533,8 +2517,8 @@ public sealed partial class MainForm : DarkFormBase,
                         FilterByRatingButton.Height)));
 
                 if (f.ShowDialogDark(this) != DialogResult.OK) return;
-                FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
-                FilterByRatingButton.Checked = FMsDGV.Filter.RatingIsSet();
+                Config.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
+                FilterByRatingButton.Checked = Config.Filter.RatingIsSet();
             }
 
             UpdateRatingLabel();
@@ -2546,8 +2530,8 @@ public sealed partial class MainForm : DarkFormBase,
     private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
     {
         ToolStripButtonCustom button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
-        DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
-        DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
+        DateTime? fromDate = lastPlayed ? Config.Filter.LastPlayedFrom : Config.Filter.ReleaseDateFrom;
+        DateTime? toDate = lastPlayed ? Config.Filter.LastPlayedTo : Config.Filter.ReleaseDateTo;
 
         if (suspendResume) FilterBarFLP.SuspendDrawing();
         try
@@ -2904,7 +2888,7 @@ public sealed partial class MainForm : DarkFormBase,
                                     break;
                             }
 
-                            FMsDGV.Filter.ClearHideableFilter(filterControl);
+                            Config.Filter.ClearHideableFilter(filterControl);
 
                             bool keepSel = toolStripButton != FilterShowRecentAtTopButton ||
                                            !buttonWasChecked;
@@ -3042,7 +3026,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    SelectedFM selFM = selectedFM ?? FMsDGV.CurrentSelFM;
+                    SelectedFM selFM = selectedFM ?? Config.SelFM;
                     bool findNearest = keepSelection == KeepSel.TrueNearest && selectedFM != null;
                     row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, findNearest).ClampToZero();
                     try
@@ -4017,8 +4001,8 @@ public sealed partial class MainForm : DarkFormBase,
             if (FilterByRatingButton.Checked)
             {
                 bool ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
-                int rFrom = FMsDGV.Filter.RatingFrom;
-                int rTo = FMsDGV.Filter.RatingTo;
+                int rFrom = Config.Filter.RatingFrom;
+                int rTo = Config.Filter.RatingTo;
                 CultureInfo currentCulture = CultureInfo.CurrentCulture;
 
                 string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(currentCulture);
@@ -4908,11 +4892,9 @@ public sealed partial class MainForm : DarkFormBase,
             FMsDGV.CurrentSortedColumn,
             FMsDGV.CurrentSortDirection,
             FMsDGV.DefaultCellStyle.Font.SizeInPoints,
-            FMsDGV.Filter,
             GameFilterControlsLLMenu.GetCheckedStates(),
             FilterControlsLLMenu.GetCheckedStates(),
             selectedFM,
-            FMsDGV.GameTabsState,
             gameTab,
             topRightTabs,
             TopSplitContainer.FullScreen,
