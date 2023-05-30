@@ -1791,7 +1791,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region Top-right tabs area
 
-            SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
+            if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
 
             TopRightLLMenu.Localize();
 
