@@ -4577,6 +4577,8 @@ public sealed partial class MainForm : DarkFormBase,
     // The Patch tab needs to change on install state change and you keep forgetting. So like reminder.
     public void UpdateAllFMUIDataExceptReadme(FanMission fm)
     {
+        Core.JustInTimeProcessFM(fm);
+
         UpdateUIControlsForMultiSelectState(fm);
 
         // We should never get here when the view list count is 0, but hey
@@ -4585,8 +4587,6 @@ public sealed partial class MainForm : DarkFormBase,
         FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(fm.Rating);
 
         FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
-
-        Core.JustInTimeProcessFM(fm);
 
         UpdateTopRightTabs();
     }
