@@ -776,6 +776,8 @@ public sealed partial class MainForm : DarkFormBase,
 
         FilterGameButtonsToolStrip.Items.AddRange(_filterByGameButtons.Cast<ToolStripItem>().ToArray());
 
+        GamesTabControl.SetTabsFull(_gameTabs);
+
         // Do this only after adding so they don't fire from the adds
         GamesTabControl.SelectedIndexChanged += GamesTabControl_SelectedIndexChanged;
         GamesTabControl.Deselecting += GamesTabControl_Deselecting;
@@ -873,8 +875,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Set here in init method so as to avoid the changes being visible.
         // Set here specifically (before anything else) so that splitter positioning etc. works right.
         SetWindowStateAndSize();
-
-        GamesTabControl.SetTabsFull(_gameTabs);
 
         #region Top-right tabs
 
