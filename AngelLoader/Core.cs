@@ -863,31 +863,9 @@ internal static class Core
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)
     {
-        var comparer = column switch
-        {
-#if DateAccTest
-            Column.DateAccuracy => Comparers.FMDateAccuracy,
-#endif
-            Column.Game => Comparers.FMGame,
-            Column.Installed => Comparers.FMInstalled,
-            Column.MissionCount => Comparers.FMMisCount,
-            Column.Title => Comparers.FMTitle,
-            Column.Archive => Comparers.FMArchive,
-            Column.Author => Comparers.FMAuthor,
-            Column.Size => Comparers.FMSize,
-            Column.Rating => Comparers.FMRating,
-            Column.Finished => Comparers.FMFinished,
-            Column.ReleaseDate => Comparers.FMReleaseDate,
-            Column.LastPlayed => Comparers.FMLastPlayed,
-            Column.DateAdded => Comparers.FMDateAdded,
-            Column.DisabledMods => Comparers.FMDisabledMods,
-            Column.Comment => Comparers.FMComment,
-            _ => null
-        };
+        Comparers.IDirectionalSortFMComparer comparer = Comparers.ColumnComparers[(int)column];
 
-        AssertR(comparer != null, nameof(comparer) + "==null: column not being handled");
-
-        comparer!.SortDirection = sortDirection;
+        comparer.SortDirection = sortDirection;
 
         FMsViewList.Sort(comparer);
 
@@ -916,8 +894,8 @@ internal static class Core
                 }
             }
 
-            Comparers.FMDateAdded.SortDirection = SortDirection.Ascending;
-            tempFMs.Sort(Comparers.FMDateAdded);
+            Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
+            tempFMs.Sort(Comparers.ColumnComparers[(int)Column.DateAdded]);
 
             for (int i = 0; i < tempFMs.Count; i++)
             {

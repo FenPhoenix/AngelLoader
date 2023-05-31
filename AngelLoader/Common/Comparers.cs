@@ -19,52 +19,27 @@ internal static class Comparers
 
     #region FM column comparers
 
-    private static FMTitleComparer? _fmTitleComparer;
-    internal static IDirectionalSortFMComparer FMTitle => _fmTitleComparer ??= new FMTitleComparer();
-
+    // It takes like 0.2ms to construct these and mere bytes of memory per, so don't bother with the bloat of lazy loading
+    internal static readonly IDirectionalSortFMComparer[] ColumnComparers =
+    {
 #if DateAccTest
-    private static FMDateAccuracyComparer? _fmDateAccuracyComparer;
-    internal static IDirectionalSortFMComparer FMDateAccuracy => _fmDateAccuracyComparer ??= new FMDateAccuracyComparer();
+        new FMReleaseDateComparer(),
 #endif
-
-    private static FMGameComparer? _fmGameComparer;
-    internal static IDirectionalSortFMComparer FMGame => _fmGameComparer ??= new FMGameComparer();
-
-    private static FMInstalledComparer? _fmInstalledComparer;
-    internal static IDirectionalSortFMComparer FMInstalled => _fmInstalledComparer ??= new FMInstalledComparer();
-
-    private static FMMisCountComparer? _fmMisCountComparer;
-    internal static IDirectionalSortFMComparer FMMisCount => _fmMisCountComparer ??= new FMMisCountComparer();
-
-    private static FMArchiveComparer? _fmArchiveComparer;
-    internal static IDirectionalSortFMComparer FMArchive => _fmArchiveComparer ??= new FMArchiveComparer();
-
-    private static FMAuthorComparer? _fmAuthorComparer;
-    internal static IDirectionalSortFMComparer FMAuthor => _fmAuthorComparer ??= new FMAuthorComparer();
-
-    private static FMSizeComparer? _fmSizeComparer;
-    internal static IDirectionalSortFMComparer FMSize => _fmSizeComparer ??= new FMSizeComparer();
-
-    private static FMRatingComparer? _fmRatingComparer;
-    internal static IDirectionalSortFMComparer FMRating => _fmRatingComparer ??= new FMRatingComparer();
-
-    private static FMFinishedComparer? _fmFinishedComparer;
-    internal static IDirectionalSortFMComparer FMFinished => _fmFinishedComparer ??= new FMFinishedComparer();
-
-    private static FMReleaseDateComparer? _fmReleaseDateComparer;
-    internal static IDirectionalSortFMComparer FMReleaseDate => _fmReleaseDateComparer ??= new FMReleaseDateComparer();
-
-    private static FMLastPlayedComparer? _fmLastPlayedComparer;
-    internal static IDirectionalSortFMComparer FMLastPlayed => _fmLastPlayedComparer ??= new FMLastPlayedComparer();
-
-    private static FMDateAddedComparer? _fmDateAddedComparer;
-    internal static IDirectionalSortFMComparer FMDateAdded => _fmDateAddedComparer ??= new FMDateAddedComparer();
-
-    private static FMDisabledModsComparer? _fmDisabledModsComparer;
-    internal static IDirectionalSortFMComparer FMDisabledMods => _fmDisabledModsComparer ??= new FMDisabledModsComparer();
-
-    private static FMCommentComparer? _fmCommentComparer;
-    internal static IDirectionalSortFMComparer FMComment => _fmCommentComparer ??= new FMCommentComparer();
+        new FMGameComparer(),
+        new FMInstalledComparer(),
+        new FMMisCountComparer(),
+        new FMTitleComparer(),
+        new FMArchiveComparer(),
+        new FMAuthorComparer(),
+        new FMSizeComparer(),
+        new FMRatingComparer(),
+        new FMFinishedComparer(),
+        new FMReleaseDateComparer(),
+        new FMLastPlayedComparer(),
+        new FMDateAddedComparer(),
+        new FMDisabledModsComparer(),
+        new FMCommentComparer()
+    };
 
     #endregion
 
