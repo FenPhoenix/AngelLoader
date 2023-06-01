@@ -709,7 +709,7 @@ internal static class ControlUtils
             createHandlePredicate?.Invoke(control) != false &&
             !control.IsHandleCreated)
         {
-            IntPtr dummy = control.Handle;
+            _ = control.Handle;
         }
 
 #if !ReleasePublic && !NoAsserts
