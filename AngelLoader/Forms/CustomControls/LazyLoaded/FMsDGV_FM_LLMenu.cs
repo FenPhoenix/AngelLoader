@@ -297,7 +297,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         // These must come after the constructed bool gets set to true
         SetImages();
         SetPinItemsMode(_multiplePinnedStates);
-        UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
+        UpdateRatingList(Config.RatingDisplayStyle);
         SetRatingMenuItemChecked(_rating);
         Localize();
     }
@@ -376,13 +376,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         ScanFMMenuItem.Text = multiSelected ? LText.FMsList.FMMenu_ScanFMs : LText.FMsList.FMMenu_ScanFM;
     }
 
-    internal void UpdateRatingList(bool fmSelStyle)
+    internal void UpdateRatingList(RatingDisplayStyle style)
     {
         if (!_constructed) return;
 
         for (int i = 0; i <= 10; i++)
         {
-            string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
+            string num = (style == RatingDisplayStyle.FMSel ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
             RatingMenu.Items[i + 1].Text = num;
         }
     }

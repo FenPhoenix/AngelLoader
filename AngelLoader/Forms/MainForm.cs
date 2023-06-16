@@ -939,7 +939,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         FinishedColumn.Width = _finishedColumnWidth;
 
-        UpdateRatingListsAndColumn(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel, startup: true);
+        UpdateRatingListsAndColumn(Config.RatingDisplayStyle, startup: true);
 
         FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, Config.Columns);
 
@@ -3948,13 +3948,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup)
     {
-        UpdateRatingListsAndColumn(style == RatingDisplayStyle.FMSel, startup);
+        UpdateRatingListsAndColumn(style, startup);
         UpdateRatingLabel();
     }
 
-    private void UpdateRatingListsAndColumn(bool fmSelStyle, bool startup)
+    private void UpdateRatingListsAndColumn(RatingDisplayStyle style, bool startup)
     {
-        FMsDGV_FM_LLMenu.UpdateRatingList(fmSelStyle);
+        FMsDGV_FM_LLMenu.UpdateRatingList(style);
 
         #region Update rating column
 
