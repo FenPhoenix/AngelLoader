@@ -283,6 +283,7 @@ public sealed partial class MainForm
         SetFilterBarScrollButton(FilterBarScrollRightButton, Direction.Right, 10);
         SetFilterBarScrollButton(FilterBarScrollLeftButton, Direction.Left, 2);
 
+        // 
         // FMsDGV
         // 
         FMsDGV.AllowUserToAddRows = false;

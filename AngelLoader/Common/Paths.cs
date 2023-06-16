@@ -292,31 +292,33 @@ internal static class Paths
     #region Thief Buddy
 
     private static readonly object _thiefBuddyLock = new();
-    internal static string ThiefBuddyExePath
+    /// <summary>
+    /// Constructs and returns the Thief Buddy executable full path from the registry, or returns the empty string
+    /// if the Thief Buddy registry entry was not found.
+    /// </summary>
+    /// <returns></returns>
+    internal static string GetThiefBuddyExePath()
     {
-        get
+        lock (_thiefBuddyLock)
         {
-            lock (_thiefBuddyLock)
+            try
             {
-                try
-                {
-                    object? tbInstallLocationKey = Registry.GetValue(
-                        keyName: @"HKEY_CURRENT_USER\SOFTWARE\VoiceActorWare\Thief Buddy",
-                        valueName: "InstallLocation",
-                        defaultValue: -1);
+                object? tbInstallLocationKey = Registry.GetValue(
+                    keyName: @"HKEY_CURRENT_USER\SOFTWARE\VoiceActorWare\Thief Buddy",
+                    valueName: "InstallLocation",
+                    defaultValue: -1);
 
-                    if (tbInstallLocationKey is string installLocation)
-                    {
-                        return Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe");
-                    }
-                }
-                catch
+                if (tbInstallLocationKey is string installLocation)
                 {
-                    return "";
+                    return Path.Combine(installLocation, "Thief Buddy", "Thief Buddy.exe");
                 }
-
+            }
+            catch
+            {
                 return "";
             }
+
+            return "";
         }
     }
 
