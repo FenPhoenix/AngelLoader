@@ -2518,8 +2518,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender == FilterByRatingButton)
         {
-            bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
-            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
+            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, Config.RatingDisplayStyle))
             {
                 f.Location = ControlUtils.ClampFormToScreenBounds(
                     parent: this,
@@ -4016,13 +4015,11 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if (FilterByRatingButton.Checked)
             {
-                bool ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
                 int rFrom = FMsDGV.Filter.RatingFrom;
                 int rTo = FMsDGV.Filter.RatingTo;
-                CultureInfo currentCulture = CultureInfo.CurrentCulture;
 
-                string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(currentCulture);
-                string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(currentCulture);
+                string from = rFrom == -1 ? LText.Global.None : ControlUtils.GetRatingString(rFrom, Config.RatingDisplayStyle);
+                string to = rTo == -1 ? LText.Global.None : ControlUtils.GetRatingString(rTo, Config.RatingDisplayStyle);
 
                 Lazy_ToolStripLabels.Show(Lazy_FilterLabel.Rating, from + " - " + to);
             }

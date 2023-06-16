@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
@@ -15,7 +15,7 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
     internal int RatingFrom;
     internal int RatingTo;
 
-    public FilterRatingForm(int ratingFrom, int ratingTo, bool outOfFive)
+    public FilterRatingForm(int ratingFrom, int ratingTo, RatingDisplayStyle style)
     {
 #if DEBUG
         InitializeComponent();
@@ -38,7 +38,7 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
             ToComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++)
             {
-                string item = (outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
+                string item = ControlUtils.GetRatingString(i, style);
                 FromComboBox.Items.Add(item);
                 ToComboBox.Items.Add(item);
             }

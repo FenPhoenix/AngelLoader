@@ -850,4 +850,9 @@ internal static class ControlUtils
 
         g.SmoothingMode = oldSmoothingMode;
     }
+
+    public static string GetRatingString(int rating, RatingDisplayStyle style)
+    {
+        return (style == RatingDisplayStyle.FMSel ? rating / 2.0 : rating).ToString(CultureInfo.CurrentCulture);
+    }
 }

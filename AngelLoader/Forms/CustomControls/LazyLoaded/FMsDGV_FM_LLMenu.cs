@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -382,8 +381,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         for (int i = 0; i <= 10; i++)
         {
-            string num = (style == RatingDisplayStyle.FMSel ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-            RatingMenu.Items[i + 1].Text = num;
+            RatingMenu.Items[i + 1].Text = ControlUtils.GetRatingString(i, style);
         }
     }
 
