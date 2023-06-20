@@ -333,6 +333,7 @@ internal static class Paths
     internal const string CamModIni = "cam_mod.ini";
 #if !ReleaseBeta && !ReleasePublic
     internal const string UserCfg = "user.cfg";
+    internal const string UserBnd = "user.bnd";
 #endif
 
     internal static string GetSneakyOptionsIni()

@@ -213,18 +213,39 @@ public sealed partial class MainForm : DarkFormBase,
         GameConfigFiles.SetScreenShotMode(GameIndex.Thief2, T2ScreenShotModeCheckBox.Checked);
     }
 
-    public void UpdateGameScreenShotModes()
+    private void T1TitaniumModeCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        GameConfigFiles.SetTitaniumMode(GameIndex.Thief1, T1TitaniumModeCheckBox.Checked);
+    }
+
+    private void T2TitaniumModeCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        GameConfigFiles.SetTitaniumMode(GameIndex.Thief2, T2TitaniumModeCheckBox.Checked);
+    }
+
+    public void UpdateGameModes()
     {
         using (new DisableEvents(this))
         {
-            bool? t1 = GameConfigFiles.GetScreenShotMode(GameIndex.Thief1);
-            bool? t2 = GameConfigFiles.GetScreenShotMode(GameIndex.Thief2);
+            bool? t1SSM = GameConfigFiles.GetScreenShotMode(GameIndex.Thief1);
+            bool? t2SSM = GameConfigFiles.GetScreenShotMode(GameIndex.Thief2);
 
-            T1ScreenShotModeCheckBox.Visible = t1 != null;
-            T2ScreenShotModeCheckBox.Visible = t2 != null;
+            T1ScreenShotModeCheckBox.Visible = t1SSM != null;
+            T2ScreenShotModeCheckBox.Visible = t2SSM != null;
 
-            if (t1 != null) T1ScreenShotModeCheckBox.Checked = (bool)t1;
-            if (t2 != null) T2ScreenShotModeCheckBox.Checked = (bool)t2;
+            if (t1SSM != null) T1ScreenShotModeCheckBox.Checked = (bool)t1SSM;
+            if (t2SSM != null) T2ScreenShotModeCheckBox.Checked = (bool)t2SSM;
+
+            bool? t1TM = GameConfigFiles.GetTitaniumMode(GameIndex.Thief1);
+            bool? t2TM = GameConfigFiles.GetTitaniumMode(GameIndex.Thief2);
+
+            T1TitaniumModeCheckBox.Visible = t1TM != null;
+            T2TitaniumModeCheckBox.Visible = t2TM != null;
+
+            if (t1TM != null) T1TitaniumModeCheckBox.Checked = (bool)t1TM;
+            if (t2TM != null) T2TitaniumModeCheckBox.Checked = (bool)t2TM;
         }
     }
 #endif
@@ -727,13 +748,19 @@ public sealed partial class MainForm : DarkFormBase,
 
         T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
         T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
+        T1TitaniumModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 Ti" };
+        T2TitaniumModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 Ti" };
         // Add in reverse order because the flow layout panel is right-to-left I guess?
 #if !HIDE_PERSONAL_CONTROLS
         BottomRightFLP.Controls.Add(T2ScreenShotModeCheckBox);
         BottomRightFLP.Controls.Add(T1ScreenShotModeCheckBox);
+        BottomRightFLP.Controls.Add(T2TitaniumModeCheckBox);
+        BottomRightFLP.Controls.Add(T1TitaniumModeCheckBox);
 #endif
         T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
         T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
+        T1TitaniumModeCheckBox.CheckedChanged += T1TitaniumModeCheckBox_CheckedChanged;
+        T2TitaniumModeCheckBox.CheckedChanged += T2TitaniumModeCheckBox_CheckedChanged;
 #endif
 
         #endregion
@@ -1034,7 +1061,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetTheme(Config.VisualTheme, startup: true, createControlHandles: true, preloadImagesTask);
 
 #if !ReleaseBeta && !ReleasePublic
-        UpdateGameScreenShotModes();
+        UpdateGameModes();
 #endif
 
         #endregion

@@ -1177,6 +1177,63 @@ internal static class GameConfigFiles
         TryWriteAllLines(userCfgFile, lines);
     }
 
+    internal static bool? GetTitaniumMode(GameIndex gameIndex)
+    {
+        if (!GameIsDark(gameIndex)) return null;
+
+        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserBnd, out string userBndFile)) return null;
+
+        if (!TryReadAllLines(userBndFile, out var lines)) return null;
+
+        bool quickLoadEnabled = false;
+        bool quickSaveEnabled = false;
+        bool unstickPlayerEnabled = false;
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            string lineT = lines[i].Trim();
+            if (lineT.Length > 0 && lineT[0] != ';')
+            {
+                if (lineT.ContainsI(" quick_load"))
+                {
+                    quickLoadEnabled = true;
+                }
+                else if (lineT.ContainsI(" quick_save"))
+                {
+                    quickSaveEnabled = true;
+                }
+                else if (lineT.ContainsI(" unstick_player"))
+                {
+                    unstickPlayerEnabled = true;
+                }
+            }
+        }
+
+        return !quickLoadEnabled && !quickSaveEnabled && !unstickPlayerEnabled;
+    }
+
+    internal static void SetTitaniumMode(GameIndex gameIndex, bool enabled)
+    {
+        if (!GameIsDark(gameIndex)) return;
+
+        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserBnd, out string userBndFile)) return;
+
+        if (!TryReadAllLines(userBndFile, out var lines)) return;
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            string lineT = lines[i].Trim();
+            if (lineT.ContainsI(" quick_load") ||
+                lineT.ContainsI(" quick_save") ||
+                lineT.ContainsI(" unstick_player"))
+            {
+                lines[i] = (enabled ? ";" : "") + RemoveLeadingSemicolons(lineT);
+            }
+        }
+
+        TryWriteAllLines(userBndFile, lines);
+    }
+
     internal static void SetGlobalDarkGameValues(GameIndex gameIndex)
     {
         if (!GameIsDark(gameIndex)) return;

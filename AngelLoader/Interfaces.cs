@@ -58,7 +58,7 @@ public interface IDialogs
 public interface IView : ISettingsChangeableView
 {
 #if !ReleaseBeta && !ReleasePublic
-    void UpdateGameScreenShotModes();
+    void UpdateGameModes();
 #endif
 
     #region Debug

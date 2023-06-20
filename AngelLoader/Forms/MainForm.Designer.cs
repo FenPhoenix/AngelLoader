@@ -1134,6 +1134,8 @@ sealed partial class MainForm
     internal CustomControls.DarkCheckBox ForceWindowedCheckBox;
     internal CustomControls.DarkCheckBox T1ScreenShotModeCheckBox;
     internal CustomControls.DarkCheckBox T2ScreenShotModeCheckBox;
+    internal CustomControls.DarkCheckBox T1TitaniumModeCheckBox;
+    internal CustomControls.DarkCheckBox T2TitaniumModeCheckBox;
 #endif
 
     internal System.Windows.Forms.Panel EverythingPanel;

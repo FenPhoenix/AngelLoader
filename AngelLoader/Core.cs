@@ -669,7 +669,7 @@ internal static class Core
             {
                 SetPlayWithoutFMControlsState_Once();
 #if !ReleaseBeta && !ReleasePublic
-                View.UpdateGameScreenShotModes();
+                View.UpdateGameModes();
 #endif
             }
 
