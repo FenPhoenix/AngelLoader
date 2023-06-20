@@ -201,16 +201,28 @@ public sealed partial class MainForm : DarkFormBase,
 #if !ReleaseBeta && !ReleasePublic
     private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
 
-    private void ScreenShotModeCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    private void T1ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
-        GameConfigFiles.SetScreenShotMode(sender == T1ScreenShotModeCheckBox ? GameIndex.Thief1 : GameIndex.Thief2, T1ScreenShotModeCheckBox.Checked);
+        GameConfigFiles.SetScreenShotMode(GameIndex.Thief1, T1ScreenShotModeCheckBox.Checked);
     }
 
-    private void TitaniumModeCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    private void T2ScreenShotModeCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
-        GameConfigFiles.SetTitaniumMode(sender == T1TitaniumModeCheckBox ? GameIndex.Thief1 : GameIndex.Thief2, T1TitaniumModeCheckBox.Checked);
+        GameConfigFiles.SetScreenShotMode(GameIndex.Thief2, T2ScreenShotModeCheckBox.Checked);
+    }
+
+    private void T1TitaniumModeCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        GameConfigFiles.SetTitaniumMode(GameIndex.Thief1, T1TitaniumModeCheckBox.Checked);
+    }
+
+    private void T2TitaniumModeCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        GameConfigFiles.SetTitaniumMode(GameIndex.Thief2, T2TitaniumModeCheckBox.Checked);
     }
 
     public void UpdateGameModes()
@@ -745,10 +757,10 @@ public sealed partial class MainForm : DarkFormBase,
         BottomRightFLP.Controls.Add(T2TitaniumModeCheckBox);
         BottomRightFLP.Controls.Add(T1TitaniumModeCheckBox);
 #endif
-        T1ScreenShotModeCheckBox.CheckedChanged += ScreenShotModeCheckBoxes_CheckedChanged;
-        T2ScreenShotModeCheckBox.CheckedChanged += ScreenShotModeCheckBoxes_CheckedChanged;
-        T1TitaniumModeCheckBox.CheckedChanged += TitaniumModeCheckBoxes_CheckedChanged;
-        T2TitaniumModeCheckBox.CheckedChanged += TitaniumModeCheckBoxes_CheckedChanged;
+        T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
+        T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
+        T1TitaniumModeCheckBox.CheckedChanged += T1TitaniumModeCheckBox_CheckedChanged;
+        T2TitaniumModeCheckBox.CheckedChanged += T2TitaniumModeCheckBox_CheckedChanged;
 #endif
 
         #endregion
