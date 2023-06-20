@@ -741,26 +741,26 @@ public sealed partial class MainForm : DarkFormBase,
 
 #if !ReleaseBeta && !ReleasePublic
         ForceWindowedCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "Force windowed" };
-#if !HIDE_PERSONAL_CONTROLS
-        BottomRightFLP.Controls.Add(ForceWindowedCheckBox);
-#endif
         ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 
         T1ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 SSM" };
+        T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
         T2ScreenShotModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 SSM" };
+        T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
+
         T1TitaniumModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T1 Ti" };
+        T1TitaniumModeCheckBox.CheckedChanged += T1TitaniumModeCheckBox_CheckedChanged;
         T2TitaniumModeCheckBox = new DarkCheckBox { AutoSize = true, Dock = DockStyle.Fill, Text = "T2 Ti" };
-        // Add in reverse order because the flow layout panel is right-to-left I guess?
+        T2TitaniumModeCheckBox.CheckedChanged += T2TitaniumModeCheckBox_CheckedChanged;
+
 #if !HIDE_PERSONAL_CONTROLS
+        // Add in reverse order because the flow layout panel is right-to-left I guess?
+        BottomRightFLP.Controls.Add(ForceWindowedCheckBox);
         BottomRightFLP.Controls.Add(T2ScreenShotModeCheckBox);
         BottomRightFLP.Controls.Add(T1ScreenShotModeCheckBox);
         BottomRightFLP.Controls.Add(T2TitaniumModeCheckBox);
         BottomRightFLP.Controls.Add(T1TitaniumModeCheckBox);
 #endif
-        T1ScreenShotModeCheckBox.CheckedChanged += T1ScreenShotModeCheckBox_CheckedChanged;
-        T2ScreenShotModeCheckBox.CheckedChanged += T2ScreenShotModeCheckBox_CheckedChanged;
-        T1TitaniumModeCheckBox.CheckedChanged += T1TitaniumModeCheckBox_CheckedChanged;
-        T2TitaniumModeCheckBox.CheckedChanged += T2TitaniumModeCheckBox_CheckedChanged;
 #endif
 
         #endregion

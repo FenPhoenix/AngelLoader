@@ -111,12 +111,6 @@ public sealed partial class MainForm
         FilterIconButtonsToolStrip.SuspendLayout();
         RefreshAreaToolStrip.SuspendLayout();
         TopRightTabControl.SuspendLayout();
-        StatisticsTabPage.SuspendLayout();
-        EditFMTabPage.SuspendLayout();
-        CommentTabPage.SuspendLayout();
-        TagsTabPage.SuspendLayout();
-        PatchTabPage.SuspendLayout();
-        ModsTabPage.SuspendLayout();
         SuspendLayout();
         // 
         // GameTabsImageList
@@ -643,18 +637,6 @@ public sealed partial class MainForm
         RefreshAreaToolStrip.ResumeLayout(false);
         RefreshAreaToolStrip.PerformLayout();
         TopRightTabControl.ResumeLayout(false);
-        StatisticsTabPage.ResumeLayout(false);
-        StatisticsTabPage.PerformLayout();
-        EditFMTabPage.ResumeLayout(false);
-        EditFMTabPage.PerformLayout();
-        CommentTabPage.ResumeLayout(false);
-        CommentTabPage.PerformLayout();
-        TagsTabPage.ResumeLayout(false);
-        TagsTabPage.PerformLayout();
-        PatchTabPage.ResumeLayout(false);
-        PatchTabPage.PerformLayout();
-        ModsTabPage.ResumeLayout(false);
-        ModsTabPage.PerformLayout();
         ResumeLayout(false);
     }
 }
