@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using AL_Common;
@@ -1133,14 +1134,20 @@ internal static class GameConfigFiles
         }
     }
 
+    private static bool GetFileAndLines(GameIndex gameIndex, string file, out string filePath, [NotNullWhen(true)] out List<string>? lines)
+    {
+        filePath = "";
+        lines = null;
+
+        return GameIsDark(gameIndex) &&
+               TryGetGameDirFilePathIfExists(gameIndex, file, out filePath) &&
+               TryReadAllLines(filePath, out lines);
+    }
+
     private static readonly char[] _ca_Space_Tab_Semicolon = { ' ', '\t', ';' };
     internal static bool? GetScreenShotMode(GameIndex gameIndex)
     {
-        if (!GameIsDark(gameIndex)) return null;
-
-        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return null;
-
-        if (!TryReadAllLines(userCfgFile, out var lines)) return null;
+        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out _, out var lines)) return null;
 
         bool ret = false;
 
@@ -1161,11 +1168,7 @@ internal static class GameConfigFiles
 
     internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
     {
-        if (!GameIsDark(gameIndex)) return;
-
-        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserCfg, out string userCfgFile)) return;
-
-        if (!TryReadAllLines(userCfgFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out string userCfgFile, out var lines)) return;
 
         RemoveKeyLine(key_inv_status_height, lines);
 
@@ -1179,11 +1182,7 @@ internal static class GameConfigFiles
 
     internal static bool? GetTitaniumMode(GameIndex gameIndex)
     {
-        if (!GameIsDark(gameIndex)) return null;
-
-        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserBnd, out string userBndFile)) return null;
-
-        if (!TryReadAllLines(userBndFile, out var lines)) return null;
+        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out _, out var lines)) return null;
 
         bool quickLoadEnabled = false;
         bool quickSaveEnabled = false;
@@ -1214,11 +1213,7 @@ internal static class GameConfigFiles
 
     internal static void SetTitaniumMode(GameIndex gameIndex, bool enabled)
     {
-        if (!GameIsDark(gameIndex)) return;
-
-        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.UserBnd, out string userBndFile)) return;
-
-        if (!TryReadAllLines(userBndFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out string userBndFile, out var lines)) return;
 
         for (int i = 0; i < lines.Count; i++)
         {
@@ -1243,12 +1238,7 @@ internal static class GameConfigFiles
     private static void SetResolution(GameIndex gameIndex)
     {
         if (!Config.ForceGameResToMainMonitorRes) return;
-
-        if (!GameIsDark(gameIndex)) return;
-
-        if (!TryGetGameDirFilePathIfExists(gameIndex, Paths.CamCfg, out string camCfgFile)) return;
-
-        if (!TryReadAllLines(camCfgFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.CamCfg, out string camCfgFile, out var lines)) return;
 
         RemoveKeyLine(key_game_screen_size, lines);
 
