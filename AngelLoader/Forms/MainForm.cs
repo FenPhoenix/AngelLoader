@@ -3684,6 +3684,9 @@ public sealed partial class MainForm : DarkFormBase,
                 _displayedFM = await Core.DisplayFM();
             }
         }
+#if AVAILABLE_FMS_DYNAMIC
+        SetAvailableFMCount();
+#endif
     }
 
     #endregion
@@ -5106,12 +5109,34 @@ public sealed partial class MainForm : DarkFormBase,
     {
         int availableCount = 0;
         int finishedCount = 0;
+
+#if AVAILABLE_FMS_DYNAMIC
+        if (Config.ShowUnsupported)
+        {
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                if (!fm.MarkedUnavailable) availableCount++;
+                if (fm.FinishedOnUnknown || fm.FinishedOn > 0) finishedCount++;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                if (!fm.MarkedUnavailable && GameIsKnownAndSupported(fm.Game)) availableCount++;
+                if (fm.FinishedOnUnknown || fm.FinishedOn > 0) finishedCount++;
+            }
+        }
+#else
         for (int i = 0; i < FMsViewList.Count; i++)
         {
             FanMission fm = FMsViewList[i];
             if (!fm.MarkedUnavailable) availableCount++;
             if (fm.FinishedOnUnknown || fm.FinishedOn > 0) finishedCount++;
         }
+#endif
 
         _fmCountText =
             (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
