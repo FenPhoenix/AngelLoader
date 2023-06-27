@@ -32,7 +32,10 @@ Because we're trimming from the start of a relative path, so we won't trim any "
 internal static class FMBackupAndRestore
 {
     #region Private fields
-
+    // fmsel source code says:
+    // "not necessary, it's only an internal temp file for thief (it gets created each time a savegame is loaded
+    // or a mission is started)"
+    // Nobody knows what it does, hooray
     private const string _startMisSav = "startmis.sav";
 
     // Note: Either dirsep is okay because our comparisons are dirsep-agnostic in here
