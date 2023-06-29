@@ -773,7 +773,7 @@ public abstract partial class RTFParserBase
     {
         FieldInstruction,
         /// <summary>
-        /// This for \csN, \dsN, and \tsN.
+        /// This is for \csN, \dsN, and \tsN.
         /// <para/>
         /// These are weird hybrids that can either be written as destinations (eg. "\*\cs15") or not (eg. "\cs15").
         /// <para/>
