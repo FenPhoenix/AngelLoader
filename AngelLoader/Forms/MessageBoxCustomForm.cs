@@ -61,13 +61,14 @@ public sealed partial class MessageBoxCustomForm : DarkFormBase
         {
             ChoiceListBox.MultiSelect = multiSelectionAllowed;
 
-            ChoiceListBox.BeginUpdate();
-            // Set this first: the list is now populated
-            for (int i = 0; i < choiceStrings!.Count; i++)
+            using (new UpdateRegion(ChoiceListBox))
             {
-                ChoiceListBox.Items.Add(choiceStrings[i]);
+                // Set this first: the list is now populated
+                for (int i = 0; i < choiceStrings!.Count; i++)
+                {
+                    ChoiceListBox.Items.Add(choiceStrings[i]);
+                }
             }
-            ChoiceListBox.EndUpdate();
 
             if (!multiSelectionAllowed)
             {

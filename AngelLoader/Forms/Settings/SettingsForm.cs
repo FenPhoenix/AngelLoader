@@ -295,10 +295,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         var langsList = config.LanguageNames.ToList().OrderBy(static x => x.Key);
 
-        try
+        using (new UpdateRegion(LangComboBox))
         {
-            LangComboBox.BeginUpdate();
-
             LangComboBox.AddFullItem(engLang, engLang);
             foreach (var item in langsList)
             {
@@ -307,10 +305,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     LangComboBox.AddFullItem(item.Key, item.Value);
                 }
             }
-        }
-        finally
-        {
-            LangComboBox.EndUpdate();
         }
 
         LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language)
@@ -335,13 +329,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
-        PathsPage.FMArchivePathsListBox.BeginUpdate();
-        PathsPage.FMArchivePathsListBox.Items.Clear();
-        foreach (string path in config.FMArchivePaths)
+        using (new UpdateRegion(PathsPage.FMArchivePathsListBox))
         {
-            PathsPage.FMArchivePathsListBox.Items.Add(path);
+            PathsPage.FMArchivePathsListBox.Items.Clear();
+            foreach (string path in config.FMArchivePaths)
+            {
+                PathsPage.FMArchivePathsListBox.Items.Add(path);
+            }
         }
-        PathsPage.FMArchivePathsListBox.EndUpdate();
 
         PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
 
@@ -1408,15 +1403,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         d.MultiSelect = true;
         if (d.ShowDialogDark(this) == DialogResult.OK)
         {
-            PathsPage.FMArchivePathsListBox.BeginUpdate();
-
-            HashSetPathI hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
-
-            foreach (string dir in d.DirectoryNames)
+            using (new UpdateRegion(PathsPage.FMArchivePathsListBox))
             {
-                if (!hash.Contains(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
+                HashSetPathI hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
+
+                foreach (string dir in d.DirectoryNames)
+                {
+                    if (!hash.Contains(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
+                }
             }
-            PathsPage.FMArchivePathsListBox.EndUpdate();
         }
 
         CheckForErrors();

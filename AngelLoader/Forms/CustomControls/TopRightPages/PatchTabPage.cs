@@ -136,9 +136,8 @@ public sealed class PatchTabPage : Lazy_TabsBase
             if (GameIsDark(fm.Game) && fm.Installed)
             {
                 _page.PatchMainPanel.Show();
-                try
+                using (new UpdateRegion(_page.PatchDMLsListBox))
                 {
-                    _page.PatchDMLsListBox.BeginUpdate();
                     _page.PatchDMLsListBox.Items.Clear();
                     (bool success, List<string> dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
@@ -148,10 +147,6 @@ public sealed class PatchTabPage : Lazy_TabsBase
                             if (!f.IsEmpty()) _page.PatchDMLsListBox.Items.Add(f);
                         }
                     }
-                }
-                finally
-                {
-                    _page.PatchDMLsListBox.EndUpdate();
                 }
             }
         }
@@ -213,9 +208,8 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
         HashSetI itemsHashSet = _page.PatchDMLsListBox.ItemsAsStrings.ToHashSetI();
 
-        try
+        using (new UpdateRegion(_page.PatchDMLsListBox))
         {
-            _page.PatchDMLsListBox.BeginUpdate();
             foreach (string f in dmlFiles)
             {
                 if (f.IsEmpty()) continue;
@@ -229,10 +223,6 @@ public sealed class PatchTabPage : Lazy_TabsBase
                     _page.PatchDMLsListBox.Items.Add(dmlFileName);
                 }
             }
-        }
-        finally
-        {
-            _page.PatchDMLsListBox.EndUpdate();
         }
     }
 

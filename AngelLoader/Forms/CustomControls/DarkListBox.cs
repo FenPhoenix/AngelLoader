@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls;
 
 // BUG: DarkListBox: DPI (possible) can mess up auto-column-size
-public class DarkListBox : ListView, IDarkable
+public class DarkListBox : ListView, IDarkable, IUpdateRegion
 {
     private bool _ctrlDown;
     private bool _shiftDown;

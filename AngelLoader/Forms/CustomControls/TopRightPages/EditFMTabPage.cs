@@ -466,18 +466,12 @@ public sealed class EditFMTabPage : Lazy_TabsBase
                     }
                 }
 
-                try
+                using (new UpdateRegion(_page.EditFMLanguageComboBox))
                 {
-                    _page.EditFMLanguageComboBox.BeginUpdate();
-
                     foreach (var (internalName, translatedName) in langPairs)
                     {
                         _page.EditFMLanguageComboBox.AddFullItem(internalName, translatedName);
                     }
-                }
-                finally
-                {
-                    _page.EditFMLanguageComboBox.EndUpdate();
                 }
 
                 _page.EditFMLanguageComboBox.SelectedIndex = !fm.SelectedLang.ConvertsToKnown(out LanguageIndex langIndex)

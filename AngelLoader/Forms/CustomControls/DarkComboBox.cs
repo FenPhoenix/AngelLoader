@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public class DarkComboBox : ComboBox, IDarkable
+public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 {
     private const int _padding = 10;
 

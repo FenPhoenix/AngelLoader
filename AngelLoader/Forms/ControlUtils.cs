@@ -531,9 +531,8 @@ internal static class ControlUtils
         bool sort,
         bool selectFirst = false)
     {
-        try
+        using (new UpdateRegion(treeView))
         {
-            treeView.BeginUpdate();
             treeView.Nodes.Clear();
 
             if (sort) categories.SortAndMoveMiscToEnd();
@@ -550,10 +549,6 @@ internal static class ControlUtils
             {
                 treeView.SelectedNode = treeView.Nodes[0];
             }
-        }
-        finally
-        {
-            treeView.EndUpdate();
         }
     }
 

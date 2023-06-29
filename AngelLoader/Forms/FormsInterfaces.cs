@@ -3,6 +3,28 @@ using AL_Common;
 
 namespace AngelLoader.Forms;
 
+public interface IUpdateRegion
+{
+    void BeginUpdate();
+    void EndUpdate();
+}
+
+internal readonly ref struct UpdateRegion
+{
+    private readonly IUpdateRegion _obj;
+
+    public UpdateRegion(IUpdateRegion obj)
+    {
+        _obj = obj;
+        _obj.BeginUpdate();
+    }
+
+    public void Dispose()
+    {
+        _obj.EndUpdate();
+    }
+}
+
 #region DisableEvents
 
 /*
@@ -101,7 +123,7 @@ public interface IDarkContextMenuOwner
     IContainer GetComponents();
 }
 
-public interface IListControlWithBackingItems
+public interface IListControlWithBackingItems : IUpdateRegion
 {
     void AddFullItem(string backingItem, string item);
     void ClearFullItems();

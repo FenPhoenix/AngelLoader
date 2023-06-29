@@ -5,6 +5,7 @@ using System;
 #endif
 using AngelLoader.DataClasses;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 #if DRAW_BORDER
@@ -14,7 +15,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-internal sealed class DarkTreeView : TreeView, IDarkable
+internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
 {
     [DefaultValue(false)]
     public bool AlwaysDrawNodesFocused { get; set; }

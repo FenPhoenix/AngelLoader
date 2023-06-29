@@ -75,10 +75,11 @@ internal sealed class AddTagLLDropDown : IDarkable
     {
         Construct();
 
-        _listBox.BeginUpdate();
-        _listBox.Items.Clear();
-        foreach (string item in list) _listBox.Items.Add(item);
-        _listBox.EndUpdate();
+        using (new UpdateRegion(_listBox))
+        {
+            _listBox.Items.Clear();
+            foreach (string item in list) _listBox.Items.Add(item);
+        }
 
         Point p = _form.PointToClient_Fast(_realPage.AddTagTextBox.PointToScreen_Fast(new Point(0, 0)));
         _listBox.Location = p with { Y = p.Y + _realPage.AddTagTextBox.Height };

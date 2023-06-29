@@ -4675,9 +4675,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private static void FillReadmeListControl(IListControlWithBackingItems readmeListControl, List<string> readmes)
     {
-        try
+        using (new UpdateRegion(readmeListControl))
         {
-            readmeListControl.BeginUpdate();
             readmeListControl.ClearFullItems();
 
             foreach (string f in readmes)
@@ -4686,10 +4685,6 @@ public sealed partial class MainForm : DarkFormBase,
                 // I thought I accounted for this with backslashing the selected readme, but they all need to be.
                 readmeListControl.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
             }
-        }
-        finally
-        {
-            readmeListControl.EndUpdate();
         }
     }
 

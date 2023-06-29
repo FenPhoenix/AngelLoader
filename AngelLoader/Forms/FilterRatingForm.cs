@@ -29,11 +29,9 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
 
         ControlUtils.AutoSizeFilterWindow(this, OKButton, Cancel_Button);
 
-        try
+        using (new UpdateRegion(FromComboBox))
+        using (new UpdateRegion(ToComboBox))
         {
-            FromComboBox.BeginUpdate();
-            ToComboBox.BeginUpdate();
-
             FromComboBox.Items.Add(LText.Global.Unrated);
             ToComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++)
@@ -42,11 +40,6 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
                 FromComboBox.Items.Add(item);
                 ToComboBox.Items.Add(item);
             }
-        }
-        finally
-        {
-            ToComboBox.EndUpdate();
-            FromComboBox.EndUpdate();
         }
 
         using (new DisableEvents(this))
