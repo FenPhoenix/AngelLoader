@@ -137,7 +137,4 @@ public interface IListControlWithBackingItems : IUpdateRegion
 #endif
 
     #endregion
-
-    void BeginUpdate();
-    void EndUpdate();
 }
