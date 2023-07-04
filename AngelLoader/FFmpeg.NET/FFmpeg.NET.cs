@@ -90,15 +90,8 @@ internal static class Engine
     {
         var tcs = new TaskCompletionSource<int>();
 
-        void processOnExited(object sender, EventArgs e)
-        {
-            process.WaitForExit();
-            tcs.TrySetResult(process.ExitCode);
-            process.Exited -= processOnExited;
-        }
-
         process.EnableRaisingEvents = true;
-        process.Exited += processOnExited;
+        process.Exited += ProcessOnExited;
 
         bool started = process.Start();
         if (!started)
@@ -107,5 +100,12 @@ internal static class Engine
         }
 
         return tcs.Task;
+
+        void ProcessOnExited(object sender, EventArgs e)
+        {
+            process.WaitForExit();
+            tcs.TrySetResult(process.ExitCode);
+            process.Exited -= ProcessOnExited;
+        }
     }
 }

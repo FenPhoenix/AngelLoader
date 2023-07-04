@@ -5,7 +5,6 @@ using System;
 #endif
 using AngelLoader.DataClasses;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 #if DRAW_BORDER

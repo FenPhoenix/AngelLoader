@@ -136,8 +136,8 @@ public sealed class CharsetDetector
 
     private const float MINIMUM_THRESHOLD = 0.20f;
 
-    private InputState _inputState;
-    private bool _start;
+    private InputState _inputState = InputState.PureASCII;
+    private bool _start = true;
     private bool _gotData;
     private bool _done;
     private byte _lastChar;
@@ -145,13 +145,6 @@ public sealed class CharsetDetector
     private readonly CharsetProber?[] _charsetProbers = new CharsetProber?[PROBERS_NUM];
     private EscCharsetProber? _escCharsetProber;
     private Charset _detectedCharset;
-
-    public CharsetDetector()
-    {
-        _start = true;
-        _inputState = InputState.PureASCII;
-        _lastChar = 0x00;
-    }
 
 #if false
     public void Feed(Stream stream)

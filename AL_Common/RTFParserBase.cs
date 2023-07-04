@@ -601,17 +601,10 @@ public abstract partial class RTFParserBase
 
     protected sealed class UnGetStack
     {
-        private char[] _array;
-        private int _capacity;
-
         private const int _resetCapacity = 100;
 
-        public UnGetStack()
-        {
-            _array = new char[_resetCapacity];
-            _capacity = _resetCapacity;
-            Count = 0;
-        }
+        private char[] _array = new char[_resetCapacity];
+        private int _capacity = _resetCapacity;
 
         /// <summary>
         /// Do not set from outside. Properties are slow.
