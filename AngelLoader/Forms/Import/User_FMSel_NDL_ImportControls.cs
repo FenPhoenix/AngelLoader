@@ -130,10 +130,8 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 
     private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
     {
-        using var d = new OpenFileDialog
-        {
-            Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*"
-        };
+        using var d = new OpenFileDialog();
+        d.Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*";
         if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
         DarkTextBox tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;

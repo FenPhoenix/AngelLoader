@@ -73,7 +73,8 @@ internal static class Engine
             UseShellExecute = false
         };
 
-        using var ffmpegProcess = new Process { StartInfo = startInfo };
+        using var ffmpegProcess = new Process();
+        ffmpegProcess.StartInfo = startInfo;
         try
         {
             await WaitForExitAsync(ffmpegProcess);

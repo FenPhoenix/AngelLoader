@@ -199,7 +199,8 @@ internal static class FMAudio
                 {
                     int ret = 0;
 
-                    using var p = new Process { EnableRaisingEvents = true };
+                    using var p = new Process();
+                    p.EnableRaisingEvents = true;
                     p.StartInfo.FileName = Paths.FFprobeExe;
                     p.StartInfo.RedirectStandardOutput = true;
                     p.StartInfo.Arguments = "-show_format -show_streams -hide_banner \"" + file + "\"";

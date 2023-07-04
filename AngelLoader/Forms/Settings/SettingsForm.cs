@@ -1352,11 +1352,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private (DialogResult Result, string FileName)
     BrowseForExeFile(string initialPath)
     {
-        using var dialog = new OpenFileDialog
-        {
-            InitialDirectory = initialPath,
-            Filter = LText.BrowseDialogs.ExeFiles + "|*.exe"
-        };
+        using var dialog = new OpenFileDialog();
+        dialog.InitialDirectory = initialPath;
+        dialog.Filter = LText.BrowseDialogs.ExeFiles + "|*.exe";
         return (dialog.ShowDialogDark(this), dialog.FileName);
     }
 
