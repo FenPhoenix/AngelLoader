@@ -341,8 +341,8 @@ internal static class Utility
                    // function, and avoiding 99.9999% of ToString() allocations that would otherwise happen here.
                    *chPtr4 <= '\u007F')
             {
-                int num3 = (int)*chPtr3;
-                int num4 = (int)*chPtr4;
+                int num3 = *chPtr3;
+                int num4 = *chPtr4;
                 if (num3 == num4)
                 {
                     ++chPtr3;
@@ -352,11 +352,17 @@ internal static class Utility
                 else
                 {
                     if ((uint)(num3 - 97) <= 25U)
+                    {
                         num3 -= 32;
+                    }
                     if ((uint)(num4 - 97) <= 25U)
+                    {
                         num4 -= 32;
+                    }
                     if (num3 != num4)
+                    {
                         return new StringCompareReturn(compare: num3 - num4);
+                    }
                     ++chPtr3;
                     ++chPtr4;
                     --num1;

@@ -195,9 +195,10 @@ public static class ZipHelpers
         }
     }
 
+    // These come from BitConverter.ToInt32/64 methods
     internal static unsafe int ReadInt32(byte[] value, int valueLength, int startIndex)
     {
-        if ((long)(uint)startIndex >= (long)valueLength)
+        if (startIndex >= valueLength)
         {
             ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
         }
@@ -206,19 +207,19 @@ public static class ZipHelpers
             ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
         }
 
-        fixed (byte* numPtr = &value[startIndex])
+        fixed (byte* b = &value[startIndex])
         {
             return startIndex % 4 == 0
-                ? *(int*)numPtr
+                ? *(int*)b
                 : BitConverter.IsLittleEndian
-                    ? (int)*numPtr | (int)numPtr[1] << 8 | (int)numPtr[2] << 16 | (int)numPtr[3] << 24
-                    : (int)*numPtr << 24 | (int)numPtr[1] << 16 | (int)numPtr[2] << 8 | (int)numPtr[3];
+                    ? *b | (*(b + 1) << 8) | (*(b + 2) << 16) | (*(b + 3) << 24)
+                    : (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3);
         }
     }
 
     internal static unsafe long ReadInt64(byte[] value, int valueLength, int startIndex)
     {
-        if ((long)(uint)startIndex >= (long)valueLength)
+        if (startIndex >= valueLength)
         {
             ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
         }
@@ -227,21 +228,27 @@ public static class ZipHelpers
             ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
         }
 
-        fixed (byte* numPtr = &value[startIndex])
+        fixed (byte* b = &value[startIndex])
         {
-            if (startIndex % 8 == 0) return *(long*)numPtr;
-
-            if (BitConverter.IsLittleEndian)
+            if (startIndex % 8 == 0)
             {
-                return (long)(uint)((int)*numPtr | (int)numPtr[1] << 8 | (int)numPtr[2] << 16 |
-                                    (int)numPtr[3] << 24) | (long)((int)numPtr[4] | (int)numPtr[5] << 8 |
-                                                                   (int)numPtr[6] << 16 |
-                                                                   (int)numPtr[7] << 24) << 32;
+                return *(long*)b;
             }
-
-            int num = (int)*numPtr << 24 | (int)numPtr[1] << 16 | (int)numPtr[2] << 8 | (int)numPtr[3];
-            return (long)((uint)((int)numPtr[4] << 24 | (int)numPtr[5] << 16 | (int)numPtr[6] << 8) |
-                          (uint)numPtr[7]) | (long)num << 32;
+            else
+            {
+                if (BitConverter.IsLittleEndian)
+                {
+                    int i1 = *b | (*(b + 1) << 8) | (*(b + 2) << 16) | (*(b + 3) << 24);
+                    int i2 = *(b + 4) | (*(b + 5) << 8) | (*(b + 6) << 16) | (*(b + 7) << 24);
+                    return (uint)i1 | ((long)i2 << 32);
+                }
+                else
+                {
+                    int i1 = (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3);
+                    int i2 = (*(b + 4) << 24) | (*(b + 5) << 16) | (*(b + 6) << 8) | *(b + 7);
+                    return (uint)i2 | ((long)i1 << 32);
+                }
+            }
         }
     }
 }
