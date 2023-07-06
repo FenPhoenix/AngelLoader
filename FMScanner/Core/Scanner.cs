@@ -1130,7 +1130,7 @@ public sealed partial class Scanner : IDisposable
 #else
                 Game game
 #endif
-                    = GetGameTypeAndEngine(_baseDirFiles, _usedMisFiles);
+                    = GetGameTypeAndEngine();
 #if FMScanner_FullCode
                 if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
 #endif
@@ -1235,7 +1235,7 @@ public sealed partial class Scanner : IDisposable
 
         if (fmIsT3) foreach (NameAndIndex f in T3FMExtrasDirFiles) _readmeDirFiles.Add(f);
 
-        ReadAndCacheReadmeFiles(_readmeDirFiles);
+        ReadAndCacheReadmeFiles();
 
         #endregion
 
@@ -1258,7 +1258,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanReleaseDate && fmData.LastUpdateDate == null)
         {
-            fmData.LastUpdateDate = GetReleaseDate(_usedMisFiles);
+            fmData.LastUpdateDate = GetReleaseDate();
         }
 
         #endregion
@@ -1279,7 +1279,7 @@ public sealed partial class Scanner : IDisposable
                         , cNames
 #endif
                         )
-                    = GetMissionNames(_stringsDirFiles, _misFiles, _usedMisFiles);
+                    = GetMissionNames();
                 if (_scanOptions.ScanTitle)
                 {
                     SetOrAddTitle(titleFrom0);
@@ -1299,9 +1299,9 @@ public sealed partial class Scanner : IDisposable
         {
             SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
 
-            if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(_intrfaceDirFiles));
+            if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile());
 
-            List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
+            List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
             if (topOfReadmeTitles?.Count > 0)
             {
                 for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
@@ -1378,7 +1378,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                 _scanOptions.ScanTags)
             {
-                var getLangs = GetLanguages(_baseDirFiles, _booksDirFiles, _intrfaceDirFiles, _stringsDirFiles);
+                var getLangs = GetLanguages();
                 if (getLangs.Langs > Language.Default) SetLangTags(fmData, getLangs.Langs, getLangs.EnglishIsUncertain);
 #if FMScanner_FullCode
                 if (!_scanOptions.ScanLanguages)
@@ -1549,7 +1549,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private DateTime? GetReleaseDate(List<NameAndIndex> usedMisFiles)
+    private DateTime? GetReleaseDate()
     {
         ParsedDateTime GetReadmeParsedDateTime()
         {
@@ -1698,7 +1698,7 @@ public sealed partial class Scanner : IDisposable
                 }
             }
 
-            misFileDateTime = GetMisFileDate(this, usedMisFiles);
+            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
             if (misFileDateTime.Succeeded)
             {
                 DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
@@ -1725,7 +1725,7 @@ public sealed partial class Scanner : IDisposable
 
         return misFileDateTime.Succeeded
             ? misFileDateTime.Date.Value
-            : GetMisFileDate(this, usedMisFiles).Date;
+            : GetMisFileDate(this, _usedMisFiles).Date;
     }
 
     private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
@@ -2888,12 +2888,12 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private void ReadAndCacheReadmeFiles(List<NameAndIndex> readmeDirFiles)
+    private void ReadAndCacheReadmeFiles()
     {
         // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
         // Treat 'em like plaintext and see how it goes.
 
-        foreach (NameAndIndex readmeFile in readmeDirFiles)
+        foreach (NameAndIndex readmeFile in _readmeDirFiles)
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
@@ -3387,7 +3387,7 @@ public sealed partial class Scanner : IDisposable
     // Perception 2. :P
     // This is likely to be a bit loose with its accuracy, but since values caught here are almost certain to
     // end up as alternate titles, I can afford that.
-    private List<string>? GetTitlesFromTopOfReadmes(List<ReadmeInternal> readmes)
+    private List<string>? GetTitlesFromTopOfReadmes()
     {
         if (_readmeFiles.Count == 0) return null;
 
@@ -3397,7 +3397,7 @@ public sealed partial class Scanner : IDisposable
 
         var lines = new List<string>(maxTopLines);
 
-        foreach (ReadmeInternal r in readmes)
+        foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
 
@@ -3452,16 +3452,16 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private string GetTitleFromNewGameStrFile(List<NameAndIndex> intrfaceDirFiles)
+    private string GetTitleFromNewGameStrFile()
     {
-        if (intrfaceDirFiles.Count == 0) return "";
+        if (_intrfaceDirFiles.Count == 0) return "";
 
         NameAndIndex? newGameStrFile =
-            intrfaceDirFiles.Find(static x =>
+            _intrfaceDirFiles.Find(static x =>
                 x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-            ?? intrfaceDirFiles.Find(static x =>
+            ?? _intrfaceDirFiles.Find(static x =>
                 x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-            ?? intrfaceDirFiles.Find(static x =>
+            ?? _intrfaceDirFiles.Find(static x =>
                 x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
                 x.Name.PathEndsWithI(FMFiles.SNewGameStr));
 
@@ -3516,9 +3516,9 @@ public sealed partial class Scanner : IDisposable
         , List<string>? CampaignMissionNames
 #endif
         )
-    GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
+    GetMissionNames()
     {
-        List<string>? titlesStrLines = GetTitlesStrLines(stringsDirFiles);
+        List<string>? titlesStrLines = GetTitlesStrLines();
         if (titlesStrLines == null || titlesStrLines.Count == 0)
         {
             return ("", ""
@@ -3550,7 +3550,7 @@ public sealed partial class Scanner : IDisposable
         {
             string titleNum = "";
             string title = "";
-            for (int umfIndex = 0; umfIndex < usedMisFiles.Count; umfIndex++)
+            for (int umfIndex = 0; umfIndex < _usedMisFiles.Count; umfIndex++)
             {
                 string line = titlesStrLines[lineIndex];
                 int i;
@@ -3561,7 +3561,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (titleNum == "0") ret.TitleFrom0 = title;
 
-                string umf = usedMisFiles[umfIndex].Name;
+                string umf = _usedMisFiles[umfIndex].Name;
                 int umfDotIndex = umf.IndexOf('.');
 
                 if (umfDotIndex > 4 && umf.StartsWithI_Local("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
@@ -3577,8 +3577,8 @@ public sealed partial class Scanner : IDisposable
                 lineIndex == titlesStrLines.Count - 1 &&
                 !titleNum.IsEmpty() &&
                 !title.IsEmpty() &&
-                !NameExistsInList(usedMisFiles, missNumMis = "miss" + titleNum + ".mis") &&
-                NameExistsInList(misFiles, missNumMis))
+                !NameExistsInList(_usedMisFiles, missNumMis = "miss" + titleNum + ".mis") &&
+                NameExistsInList(_misFiles, missNumMis))
             {
                 ret.TitleFromN = title;
 #if FMScanner_FullCode
@@ -3607,7 +3607,7 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private List<string>? GetTitlesStrLines(List<NameAndIndex> stringsDirFiles)
+    private List<string>? GetTitlesStrLines()
     {
         List<string>? titlesStrLines = null;
 
@@ -3618,9 +3618,9 @@ public sealed partial class Scanner : IDisposable
             NameAndIndex? titlesFile = null;
             if (_fmIsZip)
             {
-                for (int i = 0; i < stringsDirFiles.Count; i++)
+                for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
-                    var item = stringsDirFiles[i];
+                    var item = _stringsDirFiles[i];
                     if (item.Name.PathEqualsI(titlesFileLocation))
                     {
                         titlesFile = item;
@@ -4036,8 +4036,7 @@ public sealed partial class Scanner : IDisposable
 #endif
 
     private (Language Langs, bool EnglishIsUncertain)
-    GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
-        List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
+    GetLanguages()
     {
         Language langs = Language.Default;
         bool englishIsUncertain = false;
@@ -4046,9 +4045,9 @@ public sealed partial class Scanner : IDisposable
         {
             List<NameAndIndex> dirFiles = dirIndex switch
             {
-                0 => booksDirFiles,
-                1 => intrfaceDirFiles,
-                _ => stringsDirFiles
+                0 => _booksDirFiles,
+                1 => _intrfaceDirFiles,
+                _ => _stringsDirFiles
             };
 
             for (int langIndex = 0; langIndex < SupportedLanguageCount; langIndex++)
@@ -4079,9 +4078,9 @@ public sealed partial class Scanner : IDisposable
         }
 
         // Sometimes extra languages are in zip files inside the FM archive
-        for (int baseDirFileIndex = 0; baseDirFileIndex < baseDirFiles.Count; baseDirFileIndex++)
+        for (int baseDirFileIndex = 0; baseDirFileIndex < _baseDirFiles.Count; baseDirFileIndex++)
         {
-            string fn = baseDirFiles[baseDirFileIndex].Name;
+            string fn = _baseDirFiles[baseDirFileIndex].Name;
             if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
             ReadOnlySpan<char> fnNoExt = fn.AsSpan(0, fn.LastIndexOf('.'));
@@ -4137,7 +4136,7 @@ public sealed partial class Scanner : IDisposable
 #else
     private Game
 #endif
-    GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
+    GetGameTypeAndEngine()
     {
 #if FMScanner_FullCode
         var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
@@ -4154,7 +4153,7 @@ public sealed partial class Scanner : IDisposable
         // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
         if (_fmIsZip)
         {
-            NameAndIndex[] gamFiles = baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
+            NameAndIndex[] gamFiles = _baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
 
             if (gamFiles.Length > 0)
             {
@@ -4190,18 +4189,18 @@ public sealed partial class Scanner : IDisposable
 
         #region Choose smallest .mis file
 
-        var misSizeList = new List<(NameAndIndex Mis, long Size)>(usedMisFiles.Count);
+        var misSizeList = new List<(NameAndIndex Mis, long Size)>(_usedMisFiles.Count);
         NameAndIndex smallestUsedMisFile;
 
-        if (usedMisFiles.Count == 1)
+        if (_usedMisFiles.Count == 1)
         {
-            smallestUsedMisFile = usedMisFiles[0];
+            smallestUsedMisFile = _usedMisFiles[0];
         }
         // We know usedMisFiles can never be empty at this point because we early-return way before this if
         // it is
         else // usedMisFiles.Count > 1
         {
-            foreach (NameAndIndex mis in usedMisFiles)
+            foreach (NameAndIndex mis in _usedMisFiles)
             {
                 long length;
                 if (_fmIsZip)
@@ -4540,7 +4539,7 @@ public sealed partial class Scanner : IDisposable
 #else
             game
 #endif
-            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
+            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, FMFiles_SS2MisFiles)))
         {
             using Stream stream = _fmIsZip
                 ? _archive.OpenEntry(misFileZipEntry)
