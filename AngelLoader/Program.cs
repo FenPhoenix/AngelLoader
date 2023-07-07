@@ -12,14 +12,14 @@ using static AL_Common.Logger;
 
 namespace AngelLoader;
 
-public sealed class PreloadState
+internal sealed class PreloadState
 {
-    public PrivateFontCollection? FontCollection;
-    public Font? MessageFont;
+    internal PrivateFontCollection? FontCollection;
+    internal Font? MessageFont;
 
-    public readonly Task SplashScreenPreloadTask;
+    internal readonly Task SplashScreenPreloadTask;
 
-    public PreloadState()
+    internal PreloadState()
     {
         SplashScreenPreloadTask = Task.Run(() =>
         {
@@ -46,9 +46,9 @@ public sealed class PreloadState
     }
 }
 
-public static class Program
+internal static class Program
 {
-    public static PreloadState PreloadState = null!;
+    internal static PreloadState PreloadState = null!;
 
     /// <summary>
     /// The main entry point for the application.

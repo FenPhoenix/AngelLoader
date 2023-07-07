@@ -225,7 +225,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        public ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        internal ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
@@ -233,7 +233,7 @@ public sealed partial class Scanner : IDisposable
             UseForDateDetect = useForDateDetect;
         }
 
-        public ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        internal ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             IsGlml = isGlml;
             _lastModifiedDate = lastModifiedDate;

@@ -120,7 +120,7 @@ public static partial class Misc
 
     #endregion
 
-    public static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnCount];
+    internal static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnCount];
 
     static Misc()
     {
@@ -130,9 +130,9 @@ public static partial class Misc
     internal static readonly ReadOnlyCollection<string> ValidDateFormats =
         new(new[] { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" });
 
-    public static readonly Action NullAction = static () => { };
+    internal static readonly Action NullAction = static () => { };
 
-    public static readonly Task VoidTask = Task.CompletedTask;
+    internal static readonly Task VoidTask = Task.CompletedTask;
 
     internal static class Defaults
     {

@@ -284,12 +284,10 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         DisabledModsUpdated?.Invoke(this, EventArgs.Empty);
     }
 
-    [PublicAPI]
-    public void Set(GameIndex gameIndex, string disabledMods, bool forceRecreateList = false) =>
+    internal void Set(GameIndex gameIndex, string disabledMods, bool forceRecreateList = false) =>
         Set(GameIndexToGame(gameIndex), disabledMods, forceRecreateList);
 
-    [PublicAPI]
-    public void Set(Game game, string disabledMods, bool forceRecreateList = false)
+    internal void Set(Game game, string disabledMods, bool forceRecreateList = false)
     {
         try
         {
