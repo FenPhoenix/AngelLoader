@@ -226,10 +226,7 @@ public static partial class Utils
         finally
         {
             // Are we serious? Do we have this nasty of a gotcha going on here?!
-            foreach (Process proc in processes)
-            {
-                proc.Dispose();
-            }
+            processes.DisposeAll();
         }
 
         return false;
