@@ -163,9 +163,9 @@ internal static class FMAudio
 
                 static int GetBitDepthFast(string file)
                 {
-                    // In case we read past the end of the file or can't open the file or whatever. We're trying to
-                    // be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch it in a
-                    // minute.
+                    // In case we read past the end of the file or can't open the file or whatever. We're trying
+                    // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
+                    // it in a minute.
                     try
                     {
                         using var fs = File_OpenReadFast(file);
@@ -193,8 +193,8 @@ internal static class FMAudio
                 }
 
                 // @PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
-                // I suspect it may be just the fact that it's a separate program that's constantly being started and
-                // stopped. If that's the case, MEH. :\
+                // I suspect it may be just the fact that it's a separate program that's constantly being started
+                // and stopped. If that's the case, MEH. :\
                 static int GetBitDepthSlow(string file)
                 {
                     int ret = 0;
