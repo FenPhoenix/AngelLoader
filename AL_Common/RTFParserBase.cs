@@ -621,6 +621,7 @@ public abstract partial class RTFParserBase
             Count = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public char Pop() => _array[--Count];
 
         public void Push(char item)
