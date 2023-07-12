@@ -883,6 +883,26 @@ internal static class GameConfigFiles
             }
         }
 
+        List<string> modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
+        List<string> uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
+        List<string> mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
+        List<string> mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
+
+        HashSetI modPathsHash = modPaths.ToHashSetI();
+        HashSetI uberModPathsHash = uberModPaths.ToHashSetI();
+
+        DeDupe(uberModPathsHash, mpUberModPaths);
+        DeDupe(uberModPathsHash, modPaths);
+        DeDupe(uberModPathsHash, mpModPaths);
+        DeDupe(modPathsHash, mpModPaths);
+
+        foreach (string modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
+        foreach (string modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
+        foreach (string modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
+        foreach (string modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
+
+        return (true, list);
+
         static List<string> GetModPaths(List<string> lines, int lastIndex, string pathKey)
         {
             return lastIndex > -1
@@ -904,26 +924,6 @@ internal static class GameConfigFiles
                 }
             }
         }
-
-        List<string> modPaths = GetModPaths(lines, modPathLastIndex, mod_path);
-        List<string> uberModPaths = GetModPaths(lines, uberModPathLastIndex, uber_mod_path);
-        List<string> mpModPaths = GetModPaths(lines, mpModPathLastIndex, mp_mod_path);
-        List<string> mpUberModPaths = GetModPaths(lines, mpUberModPathLastIndex, mp_u_mod_path);
-
-        HashSetI modPathsHash = modPaths.ToHashSetI();
-        HashSetI uberModPathsHash = uberModPaths.ToHashSetI();
-
-        DeDupe(uberModPathsHash, mpUberModPaths);
-        DeDupe(uberModPathsHash, modPaths);
-        DeDupe(uberModPathsHash, mpModPaths);
-        DeDupe(modPathsHash, mpModPaths);
-
-        foreach (string modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
-        foreach (string modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
-        foreach (string modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
-        foreach (string modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
-
-        return (true, list);
     }
 
     private static bool ModDirExists(string fullPath)
