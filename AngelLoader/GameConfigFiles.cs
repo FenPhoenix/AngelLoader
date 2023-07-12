@@ -621,6 +621,8 @@ internal static class GameConfigFiles
         {
             string lt = lines[i].TrimStart();
 
+            bool lineIsCommented = lt.Length > 0 && lt[0] == ';';
+
             lt = RemoveLeadingSemicolons(lt);
 
             // Steam robustness: get rid of any fan mission specifiers in here
@@ -628,7 +630,7 @@ internal static class GameConfigFiles
             if (lt.StartsWithIPlusWhiteSpace(key_fm) &&
                 lt.Substring(2).Trim().Length > 0)
             {
-                if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
+                if (!lineIsCommented) lines[i] = ";" + lines[i];
             }
 
             if (fmCommentLineIndex == -1 && lt.EqualsI(fmCommentLine)) fmCommentLineIndex = i;
@@ -637,17 +639,17 @@ internal static class GameConfigFiles
             {
                 if (!resetSelector)
                 {
-                    if (lines[i].TrimStart()[0] == ';') lines[i] = key_fm;
+                    if (lineIsCommented) lines[i] = key_fm;
                 }
                 else
                 {
                     if (prevAlwaysLoadSelector)
                     {
-                        if (lines[i].TrimStart()[0] == ';') lines[i] = key_fm;
+                        if (lineIsCommented) lines[i] = key_fm;
                     }
                     else
                     {
-                        if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + key_fm;
+                        if (!lineIsCommented) lines[i] = ";" + key_fm;
                     }
                 }
                 fmLineLastIndex = i;
@@ -673,7 +675,7 @@ internal static class GameConfigFiles
 
                 if (lt.EqualsI(key_fm_selector) || lt.StartsWithIPlusWhiteSpace(key_fm_selector))
                 {
-                    if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
+                    if (!lineIsCommented) lines[i] = ";" + lines[i];
                     lastSelKeyIndex = i;
                 }
             }
