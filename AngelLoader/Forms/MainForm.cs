@@ -1197,17 +1197,17 @@ public sealed partial class MainForm : DarkFormBase,
         Application.AddMessageFilter(this);
     }
 
+    // debug - end of startup - to make sure when we profile, we're measuring only startup time
+#if RT_StartupOnly
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
 
-        // debug - end of startup - to make sure when we profile, we're measuring only startup time
-#if RT_StartupOnly
         // Regular Environment.Exit() because we're testing speed
         Environment.Exit(1);
         return;
-#endif
     }
+#endif
 
     protected override void OnDeactivate(EventArgs e)
     {
