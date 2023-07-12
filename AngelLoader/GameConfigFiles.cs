@@ -358,6 +358,12 @@ internal static class GameConfigFiles
 
         if (gamePath.IsEmpty()) return;
 
+        Run(gamePath, Paths.CamCfg, removeAll: false);
+        Run(gamePath, Paths.CamExtCfg, removeAll: true);
+        Run(gamePath, Paths.CamModIni, removeAll: true, camModIniLines);
+
+        return;
+
         static void Run(string gamePath, string fileName, bool removeAll, List<string>? fileLines = null)
         {
             if (!TryCombineFilePathAndCheckExistence(gamePath, fileName, out string cfgFile))
@@ -416,10 +422,6 @@ internal static class GameConfigFiles
                 return; // Explicit for clarity of intent
             }
         }
-
-        Run(gamePath, Paths.CamCfg, removeAll: false);
-        Run(gamePath, Paths.CamExtCfg, removeAll: true);
-        Run(gamePath, Paths.CamModIni, removeAll: true, camModIniLines);
     }
 
     // @BetterErrors(SetCamCfgLanguage): Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
