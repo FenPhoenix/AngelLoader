@@ -27,7 +27,7 @@ public static class Common
     /// <summary>
     /// Stores a filename/index pair for quick lookups into a zip file.
     /// </summary>
-    public sealed class NameAndIndex
+    public readonly struct NameAndIndex
     {
         public readonly string Name;
         public readonly int Index;

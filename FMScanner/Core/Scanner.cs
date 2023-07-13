@@ -1039,6 +1039,7 @@ public sealed partial class Scanner : IDisposable
             }
             else
             {
+                ulong size = 0;
                 // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
                 // some time later by using the FileInfo list as a cache.
                 if (_fmDirFileInfos.Count == 0)
@@ -1051,8 +1052,9 @@ public sealed partial class Scanner : IDisposable
                     {
                         var fi = new FileInfoCustom(fileInfos[i]);
                         _fmDirFileInfos.Add(fi);
-                        fmData.Size = (ulong)fi.Length;
+                        size += (ulong)fi.Length;
                     }
+                    fmData.Size = size;
                 }
             }
         }
@@ -1247,7 +1249,7 @@ public sealed partial class Scanner : IDisposable
 
             if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
             {
-                fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion);
+                fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion, Array.Empty<string>());
             }
 
             #endregion
@@ -2446,7 +2448,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Cache list of used .mis files
 
-        NameAndIndex? missFlag = null;
+        int missFlagIndex = -1;
         if (_stringsDirFiles.Count > 0)
         {
             // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
@@ -2455,38 +2457,39 @@ public sealed partial class Scanner : IDisposable
                 NameAndIndex item = _stringsDirFiles[i];
                 if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
                 {
-                    missFlag = item;
+                    missFlagIndex = i;
                     break;
                 }
             }
-            if (missFlag == null)
+            if (missFlagIndex == -1)
             {
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
                     NameAndIndex item = _stringsDirFiles[i];
                     if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
                     {
-                        missFlag = item;
+                        missFlagIndex = i;
                         break;
                     }
                 }
             }
-            if (missFlag == null)
+            if (missFlagIndex == -1)
             {
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
                     NameAndIndex item = _stringsDirFiles[i];
                     if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
                     {
-                        missFlag = item;
+                        missFlagIndex = i;
                         break;
                     }
                 }
             }
         }
 
-        if (missFlag != null)
+        if (missFlagIndex > -1)
         {
+            NameAndIndex missFlag = _stringsDirFiles[missFlagIndex];
             List<string> mfLines;
 
             // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
@@ -3456,17 +3459,46 @@ public sealed partial class Scanner : IDisposable
     {
         if (_intrfaceDirFiles.Count == 0) return "";
 
-        NameAndIndex? newGameStrFile =
-            _intrfaceDirFiles.Find(static x =>
-                x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-            ?? _intrfaceDirFiles.Find(static x =>
-                x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-            ?? _intrfaceDirFiles.Find(static x =>
-                x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                x.Name.PathEndsWithI(FMFiles.SNewGameStr));
+        int newGameStrFileIndex = -1;
 
-        if (newGameStrFile == null) return "";
+        for (int i = 0; i < _intrfaceDirFiles.Count; i++)
+        {
+            NameAndIndex item = _intrfaceDirFiles[i];
+            if (item.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
+            {
+                newGameStrFileIndex = i;
+                break;
+            }
+        }
+        if (newGameStrFileIndex == -1)
+        {
+            for (int i = 0; i < _intrfaceDirFiles.Count; i++)
+            {
+                NameAndIndex item = _intrfaceDirFiles[i];
+                if (item.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
+                {
+                    newGameStrFileIndex = i;
+                    break;
+                }
+            }
+        }
+        if (newGameStrFileIndex == -1)
+        {
+            for (int i = 0; i < _intrfaceDirFiles.Count; i++)
+            {
+                NameAndIndex item = _intrfaceDirFiles[i];
+                if (item.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                    item.Name.PathEndsWithI(FMFiles.SNewGameStr))
+                {
+                    newGameStrFileIndex = i;
+                    break;
+                }
+            }
+        }
 
+        if (newGameStrFileIndex == -1) return "";
+
+        NameAndIndex newGameStrFile = _intrfaceDirFiles[newGameStrFileIndex];
         List<string> lines;
 
         if (_fmIsZip)
@@ -3615,35 +3647,30 @@ public sealed partial class Scanner : IDisposable
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
         {
-            NameAndIndex? titlesFile = null;
             if (_fmIsZip)
             {
+                int titlesFileIndex = -1;
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
                     var item = _stringsDirFiles[i];
                     if (item.Name.PathEqualsI(titlesFileLocation))
                     {
-                        titlesFile = item;
+                        titlesFileIndex = i;
                         break;
                     }
                 }
-            }
-            else
-            {
-                titlesFile = new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
-            }
 
-            if (titlesFile == null || (!_fmIsZip && !File.Exists(titlesFile.Name))) continue;
+                if (titlesFileIndex == -1) continue;
 
-            if (_fmIsZip)
-            {
-                ZipArchiveFastEntry e = _archive.Entries[titlesFile.Index];
+                ZipArchiveFastEntry e = _archive.Entries[_stringsDirFiles[titlesFileIndex].Index];
                 using var es = _archive.OpenEntry(e);
                 titlesStrLines = ReadAllLinesE(es, e.Length);
             }
             else
             {
-                titlesStrLines = ReadAllLinesE(titlesFile.Name);
+                string titlesFile = Path.Combine(_fmWorkingPath, titlesFileLocation);
+                if (!File.Exists(titlesFile)) continue;
+                titlesStrLines = ReadAllLinesE(titlesFile);
             }
 
             break;
@@ -3984,7 +4011,7 @@ public sealed partial class Scanner : IDisposable
 #if FMScanner_FullCode
     private string GetVersion()
     {
-        string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
+        string version = GetValueFromReadme(SpecialLogic.Version, SA_VersionDetect);
 
         if (version.IsEmpty()) return "";
 
@@ -4148,39 +4175,27 @@ public sealed partial class Scanner : IDisposable
         // 146 / 2,920
         #region Choose smallest .gam file
 
-        NameAndIndex? smallestGamFile = null;
-
-        // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
-        if (_fmIsZip)
+        static ZipArchiveFastEntry? GetSmallestGamEntry(ZipArchiveFast _archive, List<NameAndIndex> _baseDirFiles)
         {
             NameAndIndex[] gamFiles = _baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
 
-            if (gamFiles.Length > 0)
+            switch (gamFiles.Length)
             {
-                if (gamFiles.Length == 1)
-                {
-                    smallestGamFile = gamFiles[0];
-                }
-                else
+                case 0:
+                    return null;
+                case 1:
+                    return _archive.Entries[gamFiles[0].Index];
+                default:
                 {
                     var gamSizeList = new List<(NameAndIndex Gam, long Size)>(gamFiles.Length);
                     foreach (NameAndIndex gam in gamFiles)
                     {
-                        long length;
-                        if (_fmIsZip)
-                        {
-                            length = _archive.Entries[gam.Index].Length;
-                        }
-                        else
-                        {
-                            string? gamFullPath = null;
-                            FileInfoCustom? gamFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(gamFullPath ??= Path.Combine(_fmWorkingPath, gam.Name)));
-                            length = gamFI?.Length ?? new FileInfo(gamFullPath ?? Path.Combine(_fmWorkingPath, gam.Name)).Length;
-                        }
+                        long length = _archive.Entries[gam.Index].Length;
                         gamSizeList.Add((gam, length));
                     }
 
-                    smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
+                    NameAndIndex smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
+                    return _archive.Entries[smallestGamFile.Index];
                 }
             }
         }
@@ -4189,48 +4204,48 @@ public sealed partial class Scanner : IDisposable
 
         #region Choose smallest .mis file
 
-        var misSizeList = new List<(NameAndIndex Mis, long Size)>(_usedMisFiles.Count);
         NameAndIndex smallestUsedMisFile;
+        {
+            var misSizeList = new List<(NameAndIndex Mis, long Size)>(_usedMisFiles.Count);
 
-        if (_usedMisFiles.Count == 1)
-        {
-            smallestUsedMisFile = _usedMisFiles[0];
-        }
-        // We know usedMisFiles can never be empty at this point because we early-return way before this if
-        // it is
-        else // usedMisFiles.Count > 1
-        {
-            foreach (NameAndIndex mis in _usedMisFiles)
+            if (_usedMisFiles.Count == 1)
             {
-                long length;
-                if (_fmIsZip)
-                {
-                    length = _archive.Entries[mis.Index].Length;
-                }
-                else
-                {
-                    string? misFullPath = null;
-                    FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
-                    length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
-                }
-                misSizeList.Add((mis, length));
+                smallestUsedMisFile = _usedMisFiles[0];
             }
+            // We know usedMisFiles can never be empty at this point because we early-return way before this if
+            // it is
+            else // usedMisFiles.Count > 1
+            {
+                foreach (NameAndIndex mis in _usedMisFiles)
+                {
+                    long length;
+                    if (_fmIsZip)
+                    {
+                        length = _archive.Entries[mis.Index].Length;
+                    }
+                    else
+                    {
+                        string? misFullPath = null;
+                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
+                        length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
+                    }
+                    misSizeList.Add((mis, length));
+                }
 
-            smallestUsedMisFile = misSizeList.OrderBy(static x => x.Size).First().Mis;
+                smallestUsedMisFile = misSizeList.OrderBy(static x => x.Size).First().Mis;
+            }
         }
 
         #endregion
 
         #region Setup
 
-        ZipArchiveFastEntry gamFileZipEntry = null!;
         ZipArchiveFastEntry misFileZipEntry = null!;
 
         string misFileOnDisk = null!;
 
         if (_fmIsZip)
         {
-            if (smallestGamFile != null) gamFileZipEntry = _archive.Entries[smallestGamFile.Index];
             misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
         }
         else
@@ -4448,7 +4463,8 @@ public sealed partial class Scanner : IDisposable
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            using Stream stream = _archive.OpenEntry(smallestGamFile != null ? gamFileZipEntry : misFileZipEntry);
+            // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
+            using Stream stream = _archive.OpenEntry(GetSmallestGamEntry(_archive, _baseDirFiles) ?? misFileZipEntry);
 #if FMScanner_FullCode
             ret.Game
 #else
