@@ -113,7 +113,6 @@ public sealed partial class Scanner : IDisposable
 
     private string _fmWorkingPath = "";
 
-    // Guess I'll leave this one global for reasons
     private readonly List<ReadmeInternal> _readmeFiles = new();
 
     private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new();
