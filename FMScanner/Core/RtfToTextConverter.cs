@@ -1202,8 +1202,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         }
         else if (propertyTableIndex == Property.Lang)
         {
-            // 1024 = "undefined language", ignore it
-            if (val == 1024) return Error.OK;
+            if (val == _undefinedLanguage) return Error.OK;
         }
 
         _currentScope.Properties[(int)propertyTableIndex] = val;

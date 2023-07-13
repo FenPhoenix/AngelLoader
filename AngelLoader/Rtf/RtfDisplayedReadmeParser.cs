@@ -248,7 +248,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
             int currentCodePage = fontEntry?.CodePage ?? _header.CodePage;
 
-            if (currentLang > -1 && currentLang != 1024 && val != 1024)
+            if (currentLang > -1 && currentLang != _undefinedLanguage && val != _undefinedLanguage)
             {
                 if (val is > -1 and <= MaxLangNumIndex)
                 {
@@ -272,8 +272,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
                     }
                 }
 
-                // 1024 = "undefined language", ignore it
-                if (val == 1024) return Error.OK;
+                if (val == _undefinedLanguage) return Error.OK;
             }
         }
 

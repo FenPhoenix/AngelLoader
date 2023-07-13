@@ -62,6 +62,8 @@ public abstract partial class RTFParserBase
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
     private const int _paramMaxLen = 10;
 
+    protected const int _undefinedLanguage = 1024;
+
     #endregion
 
     #region Font to Unicode conversion tables
