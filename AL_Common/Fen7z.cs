@@ -190,7 +190,7 @@ public static class Fen7z
                             report.PercentOfBytes = bytesPercent;
                         }
 
-                        progress?.Report(report);
+                        progress.Report(report);
                     }
                 }
                 catch
