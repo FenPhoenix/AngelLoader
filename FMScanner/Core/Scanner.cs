@@ -249,8 +249,7 @@ public sealed partial class Scanner : IDisposable
         Author,
         ReleaseDate,
 #if FMScanner_FullCode
-        Version,
-        NewDarkMinimumVersion
+        Version
 #endif
     }
 
@@ -1248,7 +1247,7 @@ public sealed partial class Scanner : IDisposable
 
             if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
             {
-                fmData.NewDarkMinRequiredVersion = GetValueFromReadme(SpecialLogic.NewDarkMinimumVersion, Array.Empty<string>());
+                fmData.NewDarkMinRequiredVersion = GetNewDarkVersion();
             }
 
             #endregion
@@ -3090,61 +3089,51 @@ public sealed partial class Scanner : IDisposable
         {
             if (!file.Scan) continue;
 
-#if FMScanner_FullCode
-            if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
+            if (specialLogic == SpecialLogic.Author)
             {
-                string ndv = GetNewDarkVersionFromText(file.Text);
-                if (!ndv.IsEmpty()) return ndv;
+                /*
+                    Check this first so as to avoid:
+
+                    Briefing Movie
+                    Created by Yandros using VideoPad by NCH Software
+                */
+                ret = GetAuthorFromTopOfReadme(file.Lines, titles);
+                if (!ret.IsEmpty()) return ret;
             }
-            else
-#endif
+
+            ret = GetValueFromLines(specialLogic, keys, file.Lines);
+            if (ret.IsEmpty())
             {
                 if (specialLogic == SpecialLogic.Author)
                 {
-                    /*
-                        Check this first so as to avoid:
-
-                        Briefing Movie
-                        Created by Yandros using VideoPad by NCH Software
-                    */
-                    ret = GetAuthorFromTopOfReadme(file.Lines, titles);
+                    // @PERF_TODO: We can move things around for perf here.
+                    // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
+                    // a little bit faster on average. But that causes a handful of differences in the
+                    // output. Not enough to matter really, but the conceptual issue I have is that I
+                    // don't quite like looking for copyright-section authors first. It feels like we
+                    // should search other places first. I dunno.
+                    ret = GetAuthorFromText(file.Text);
                     if (!ret.IsEmpty()) return ret;
                 }
-
-                ret = GetValueFromLines(specialLogic, keys, file.Lines);
-                if (ret.IsEmpty())
+            }
+            else
+            {
+                if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    if (specialLogic == SpecialLogic.Author)
+                    Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
+                    if (newDarkMatch.Success)
                     {
-                        // @PERF_TODO: We can move things around for perf here.
-                        // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
-                        // a little bit faster on average. But that causes a handful of differences in the
-                        // output. Not enough to matter really, but the conceptual issue I have is that I
-                        // don't quite like looking for copyright-section authors first. It feels like we
-                        // should search other places first. I dunno.
-                        ret = GetAuthorFromText(file.Text);
-                        if (!ret.IsEmpty()) return ret;
-                    }
-                }
-                else
-                {
-                    if (specialLogic == SpecialLogic.ReleaseDate)
-                    {
-                        Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
-                        if (newDarkMatch.Success)
-                        {
-                            ret = ret.Substring(0, newDarkMatch.Index);
-                        }
-
-                        Match rtlNumberMatch = AnyDateNumberRTLRegex.Match(ret);
-                        if (rtlNumberMatch.Success)
-                        {
-                            ret = ret.Substring(0, rtlNumberMatch.Index + rtlNumberMatch.Length);
-                        }
+                        ret = ret.Substring(0, newDarkMatch.Index);
                     }
 
-                    return ret;
+                    Match rtlNumberMatch = AnyDateNumberRTLRegex.Match(ret);
+                    if (rtlNumberMatch.Success)
+                    {
+                        ret = ret.Substring(0, rtlNumberMatch.Index + rtlNumberMatch.Length);
+                    }
                 }
+
+                return ret;
             }
         }
 
@@ -4584,6 +4573,20 @@ public sealed partial class Scanner : IDisposable
     }
 
 #if FMScanner_FullCode
+
+    private string GetNewDarkVersion()
+    {
+        foreach (ReadmeInternal readme in _readmeFiles)
+        {
+            if (!readme.Scan) continue;
+
+            string ndv = GetNewDarkVersionFromText(readme.Text);
+            if (!ndv.IsEmpty()) return ndv;
+        }
+
+        return "";
+    }
+
     private string GetNewDarkVersionFromText(string text)
     {
         string version = "";
