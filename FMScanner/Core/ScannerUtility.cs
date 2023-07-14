@@ -368,9 +368,9 @@ internal static class Utility
                     --num1;
                 }
             }
-            if (num1 == 0)
-                return new StringCompareReturn(compare: strA.Length - strB.Length);
-            return new StringCompareReturn(requiresStringComparison: true);
+            return num1 == 0
+                ? new StringCompareReturn(compare: strA.Length - strB.Length)
+                : new StringCompareReturn(requiresStringComparison: true);
         }
     }
 
