@@ -1037,7 +1037,6 @@ public sealed partial class Scanner : IDisposable
             }
             else
             {
-                ulong size = 0;
                 // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
                 // some time later by using the FileInfo list as a cache.
                 if (_fmDirFileInfos.Count == 0)
@@ -1046,6 +1045,7 @@ public sealed partial class Scanner : IDisposable
                     FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
                     // Don't reduce capacity, as that causes a reallocation
                     if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
+                    ulong size = 0;
                     for (int i = 0; i < fileInfos.Length; i++)
                     {
                         var fi = new FileInfoCustom(fileInfos[i]);
