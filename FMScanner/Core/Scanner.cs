@@ -1520,9 +1520,10 @@ public sealed partial class Scanner : IDisposable
     private readonly ref struct ParsedDateTime
     {
         private readonly bool _isAmbiguous;
+        internal readonly DateTime? Date;
+
         [MemberNotNullWhen(true, nameof(Date))]
         internal bool IsAmbiguous => Date != null && _isAmbiguous;
-        internal readonly DateTime? Date;
 
         internal ParsedDateTime(DateTime? date, bool isAmbiguous)
         {
@@ -1534,9 +1535,11 @@ public sealed partial class Scanner : IDisposable
     private readonly ref struct MisFileDateTime
     {
         private readonly bool _succeeded;
+        internal readonly DateTime? Date;
+
         [MemberNotNullWhen(true, nameof(Date))]
         internal bool Succeeded => Date != null && _succeeded;
-        internal readonly DateTime? Date;
+
         internal MisFileDateTime(bool succeeded, DateTime? date)
         {
             _succeeded = succeeded;
@@ -1600,7 +1603,6 @@ public sealed partial class Scanner : IDisposable
 
         static MisFileDateTime GetMisFileDate(Scanner scanner, List<NameAndIndex> usedMisFiles)
         {
-            // Look for the first used .mis file's last modified date
             if (usedMisFiles.Count > 0)
             {
                 DateTime misFileDate;
@@ -1614,8 +1616,6 @@ public sealed partial class Scanner : IDisposable
                     if (scanner._fmDirFileInfos.Count > 0)
                     {
                         string fn = scanner._fmIsSevenZip ? usedMisFiles[0].Name : scanner._fmWorkingPath + usedMisFiles[0].Name;
-                        // This loop is guaranteed to find something, because we will have quit early if we had no
-                        // used .mis files.
                         FileInfoCustom? misFile = null;
                         for (int i = 0; i < scanner._fmDirFileInfos.Count; i++)
                         {
@@ -1708,7 +1708,6 @@ public sealed partial class Scanner : IDisposable
 
         if (parsedDateTime.Date != null) return parsedDateTime.Date;
 
-        // Look for the first readme file's last modified date
         for (int i = 0; i < _readmeFiles.Count; i++)
         {
             ReadmeInternal readme = _readmeFiles[i];
