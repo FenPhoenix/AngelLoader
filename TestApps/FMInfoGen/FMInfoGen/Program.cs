@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace FMInfoGen
-{
-    internal static class Program
-    {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AppContext());
-        }
-    }
+namespace FMInfoGen;
 
-    internal sealed class AppContext : ApplicationContext
+file static class Program
+{
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    private static void Main()
     {
-        internal AppContext() => Core.Init();
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        Application.Run(new AppContext());
     }
+}
+
+file sealed class AppContext : ApplicationContext
+{
+    internal AppContext() => Core.Init();
 }
