@@ -312,7 +312,7 @@ public sealed partial class Scanner : IDisposable
     Scan(string mission, string tempPath, bool forceFullIfNew)
     {
         return ScanMany(
-            new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew) },
             tempPath, _scanOptions, null, CancellationToken.None)[0];
     }
 
@@ -321,7 +321,7 @@ public sealed partial class Scanner : IDisposable
     Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
     {
         return ScanMany(
-            new List<FMToScan> { new() { Path = mission, ForceFullScan = forceFullIfNew } },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew) },
             tempPath, scanOptions, null, CancellationToken.None)[0];
     }
 

@@ -82,9 +82,9 @@ namespace FMInfoGen
         {
             var fmsList = (zips
                     ? Core.View.GetFMArchives()
-                        .Select(static f => new FMToScan { Path = Path.Combine(Config.FMsPath, f) })
+                        .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false))
                     : Directory.GetDirectories(Paths.CurrentExtractedDir, "*", SearchOption.TopDirectoryOnly)
-                        .Select(static f => new FMToScan { Path = f }))
+                        .Select(static f => new FMToScan(path: f, false)))
                 .ToList();
 
             string yamlPath = GetYamlPath(zips);
