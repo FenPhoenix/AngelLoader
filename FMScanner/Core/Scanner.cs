@@ -19,7 +19,6 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 */
 
 //#define ScanSynchronous
-//#define DEBUG_RANDOMIZE_DIR_SEPS
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -62,27 +61,6 @@ public sealed partial class Scanner : IDisposable
     #endregion
 
     #region Private fields
-
-#if DEBUG_RANDOMIZE_DIR_SEPS
-
-    // Testing robustness of directory separator-agnostic code
-
-    private readonly Random rnd = new Random();
-
-    private string Debug_RandomizeDirSeps(string value)
-    {
-        for (int ri = 0; ri < value.Length; ri++)
-        {
-            if (value[ri].IsDirSep())
-            {
-                value = value.Remove(ri, 1).Insert(ri, rnd.Next(0, 2) == 0 ? "\\" : "/");
-            }
-        }
-
-        return value;
-    }
-
-#endif
 
     #region Disposable
 
@@ -564,12 +542,6 @@ public sealed partial class Scanner : IDisposable
         // one on the string when we remove this from the start of it
 
         if (!_fmWorkingPath.EndsWithDirSep()) _fmWorkingPath += "\\";
-
-#if DEBUG_RANDOMIZE_DIR_SEPS
-
-        _fmWorkingPath = Debug_RandomizeDirSeps(_fmWorkingPath);
-
-#endif
 
         static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
         {
@@ -2065,12 +2037,6 @@ public sealed partial class Scanner : IDisposable
                     : _fmIsSevenZip
                         ? _fmDirFileInfos[i].FullName
                         : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
-
-#if DEBUG_RANDOMIZE_DIR_SEPS
-
-                fn = Debug_RandomizeDirSeps(fn);
-
-#endif
 
                 int index = _fmIsZip ? i : -1;
 
