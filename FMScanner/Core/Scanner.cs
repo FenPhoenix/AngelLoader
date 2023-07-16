@@ -448,7 +448,6 @@ public sealed partial class Scanner : IDisposable
 
             if (missions[i].Path.IsEmpty())
             {
-                missions[i].Path = "";
                 scannedFMDataList.Add(new ScannedFMDataAndError());
                 nullAlreadyAdded = true;
             }

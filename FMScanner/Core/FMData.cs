@@ -232,15 +232,29 @@ public enum FMType
 #endif
 
 [PublicAPI]
-public class FMToScan
+public sealed class FMToScan
 {
-    public string Path = "";
-    public bool ForceFullScan;
+    public readonly string Path;
+    public readonly bool ForceFullScan;
     /// <summary>
     /// Optional cache path to place extracted readme files for .7z archives, for performance.
     /// Ignored for all other FM package types.
     /// </summary>
-    public string CachePath = "";
+    public readonly string CachePath;
+
+    public FMToScan(string path, bool forceFullScan, string cachePath)
+    {
+        Path = path;
+        ForceFullScan = forceFullScan;
+        CachePath = cachePath;
+    }
+
+    public FMToScan(string path, bool forceFullScan)
+    {
+        Path = path;
+        ForceFullScan = forceFullScan;
+        CachePath = "";
+    }
 }
 
 // Fields with types that don't have a simple "unknown" state are nullable to represent "not scanned" or "unknown".

@@ -156,13 +156,13 @@ internal static class FMScan
                     {
                         fmsToScanFiltered.Add(fm);
                         fms.Add(new FMScanner.FMToScan
-                        {
-                            Path = fmArchivePath,
-                            ForceFullScan = scanFullIfNew && !fm.MarkedScanned,
-                            CachePath = fm.Archive.ExtIs7z()
+                        (
+                            path: fmArchivePath,
+                            forceFullScan: scanFullIfNew && !fm.MarkedScanned,
+                            cachePath: fm.Archive.ExtIs7z()
                                 ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
                                 : ""
-                        });
+                        ));
                     }
                     else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                     {
@@ -171,10 +171,10 @@ internal static class FMScan
                         {
                             fmsToScanFiltered.Add(fm);
                             fms.Add(new FMScanner.FMToScan
-                            {
-                                Path = Path.Combine(fmInstalledPath, fm.InstalledDir),
-                                ForceFullScan = scanFullIfNew && !fm.MarkedScanned
-                            });
+                            (
+                                path: Path.Combine(fmInstalledPath, fm.InstalledDir),
+                                forceFullScan: scanFullIfNew && !fm.MarkedScanned
+                            ));
                         }
                     }
 
