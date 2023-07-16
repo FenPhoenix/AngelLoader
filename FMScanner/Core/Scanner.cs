@@ -1,6 +1,5 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
-#define Enable7zReadmeCacheCode
 
 /*
 Null notes:
@@ -837,7 +836,6 @@ public sealed partial class Scanner : IDisposable
 
             #endregion
 
-#if Enable7zReadmeCacheCode
             if (!fm.CachePath.IsEmpty())
             {
                 try
@@ -850,7 +848,6 @@ public sealed partial class Scanner : IDisposable
                 }
                 cancellationToken.ThrowIfCancellationRequested();
             }
-#endif
         }
 
         #endregion
@@ -1421,7 +1418,6 @@ public sealed partial class Scanner : IDisposable
         return new ScannedFMDataAndError { ScannedFMData = fmData };
     }
 
-#if Enable7zReadmeCacheCode
     private void CopySevenZipReadmesToCacheDir(FMToScan fm)
     {
         string cachePath = fm.CachePath;
@@ -1485,7 +1481,6 @@ public sealed partial class Scanner : IDisposable
             }
         }
     }
-#endif
 
     #region Dates
 
