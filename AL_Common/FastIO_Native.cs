@@ -131,7 +131,6 @@ public static class FastIO_Native
         {
             bool pathContainsInvalidChars = false;
 
-            // Dumb loop to avoid LINQ.
             for (int i = 0; i < _invalidPathChars.Length; i++)
             {
                 if (path.Contains(_invalidPathChars[i]))

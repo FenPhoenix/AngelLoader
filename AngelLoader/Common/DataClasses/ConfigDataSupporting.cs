@@ -26,7 +26,6 @@ internal sealed class ColumnData
     internal bool Visible = true;
 }
 
-// Public for interface use
 [FenGenEnumCount]
 public enum Column
 {
@@ -68,7 +67,6 @@ public enum HideableFilterControls
 
 internal enum GameOrganization { ByTab, OneList }
 
-// Public for interface use
 public enum RatingDisplayStyle { NewDarkLoader, FMSel }
 
 internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
