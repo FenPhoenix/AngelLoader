@@ -80,8 +80,6 @@ public sealed partial class Scanner : IDisposable
 
     private ScanOptions _scanOptions = new();
 
-    // The custom RTF converter is designed to be instantiated once and run many times, recycling its own
-    // fields as much as possible for performance.
     private RtfToTextConverter? _rtfConverter;
     private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
 
@@ -185,7 +183,6 @@ public sealed partial class Scanner : IDisposable
         internal readonly List<string> Lines = new();
         internal string Text = "";
 
-        // For zips, we store this simple uint until we need it, only then do we expand it into a full DateTime
         private uint? _lastModifiedDateRaw;
         private DateTime? _lastModifiedDate;
         internal DateTime LastModifiedDate
@@ -270,8 +267,7 @@ public sealed partial class Scanner : IDisposable
             Languages_FS_Lang_FS[i] = "/" + lang + "/";
             Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
 
-            // Lowercase to first-char-uppercase dict: Cheesy hack because it wasn't designed this way.
-            // All lang first chars are lowercase ASCII letters, so just subtract 32 to uppercase them.
+            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
             LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
         }
 
@@ -304,8 +300,7 @@ public sealed partial class Scanner : IDisposable
 
 #endif
 
-    // Debug - scan on UI thread so breaks will actually break where they're supposed to
-    // (test frontend use only)
+    // Debug - scan on UI thread so breaks will actually break where they're supposed to (test frontend use only)
 #if DEBUG || ScanSynchronous
     [PublicAPI]
     public List<ScannedFMDataAndError>
@@ -462,7 +457,6 @@ public sealed partial class Scanner : IDisposable
 
             if (progress != null)
             {
-                // Recycle one object to minimize GC
                 progressReport.FMName = missions[i].Path;
                 progressReport.FMNumber = i + 1;
                 progressReport.FMsTotal = missions.Count;
@@ -500,8 +494,6 @@ public sealed partial class Scanner : IDisposable
                         scannedFMAndError.ScannedFMData = null;
                         scannedFMAndError.Exception = ex;
                         scannedFMAndError.ErrorInfo = missions[i].Path + ": Exception in FM scan";
-                        // Okay, we don't want to throw because that would stop the whole scan, but we want
-                        // to continue scanning any further FMs that may be in the list. So just log.
                     }
                     finally
                     {
@@ -939,7 +931,6 @@ public sealed partial class Scanner : IDisposable
                             "Returning 'Unknown' game type.", zipEx);
                         return UnknownZip(fm.Path, null, zipEx, "");
                     }
-                    // Invalid zip file, whatever, move on
                     else
                     {
                         Log(fm.Path + ": fm is zip, exception in " +
@@ -975,9 +966,6 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = _fmIsZip || _fmIsSevenZip
                 ? Path.GetFileName(fm.Path)
-                // @PERF_TODO: Use fast string-only name getter
-                // Case against: Being built-in, this way is safe and complete. ArchiveName is monumentally
-                // important, we don't want to mess around.
                 : FMWorkingPathDirName
         };
 
@@ -2502,7 +2490,6 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        // Fallback we hope never happens, but... sometimes it does
         if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles);
 
         #endregion
@@ -2714,7 +2701,6 @@ public sealed partial class Scanner : IDisposable
         {
             string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
-            // LINQ avoidance
             var authors = new List<string>();
             for (int i = 0; i < tagsArray.Length; i++)
             {
@@ -2912,8 +2898,8 @@ public sealed partial class Scanner : IDisposable
                 !readmeFile.Name.ContainsI("nvscript") &&
                 !readmeFile.Name.ContainsI("shtup");
 
-            // We still add the readme even if we're not going to store nor scan its contents, because we
-            // still may need to look at its last modified date.
+            // We still add the readme even if we're not going to store nor scan its contents, because we still
+            // may need to look at its last modified date.
             if (_fmIsZip)
             {
                 _readmeFiles.Add(new ReadmeInternal(
@@ -3064,9 +3050,7 @@ public sealed partial class Scanner : IDisposable
                     // @PERF_TODO: We can move things around for perf here.
                     // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
                     // a little bit faster on average. But that causes a handful of differences in the
-                    // output. Not enough to matter really, but the conceptual issue I have is that I
-                    // don't quite like looking for copyright-section authors first. It feels like we
-                    // should search other places first. I dunno.
+                    // output. Not enough to matter really, but meh...
                     ret = GetAuthorFromText(file.Text);
                     if (!ret.IsEmpty()) return ret;
                 }
@@ -3263,8 +3247,8 @@ public sealed partial class Scanner : IDisposable
                     string key = keys[i];
                     if (!lineStartTrimmed.StartsWithI_Local(key)) continue;
 
-                    // It's supposed to be finding a space after a key; this prevents it from finding the
-                    // first space in the key itself if there is one.
+                    // It's supposed to be finding a space after a key; this prevents it from finding the first
+                    // space in the key itself if there is one.
                     string lineAfterKey = lineStartTrimmed.Remove(0, key.Length);
 
                     if (!lineAfterKey.IsEmpty() &&
@@ -3288,7 +3272,6 @@ public sealed partial class Scanner : IDisposable
 
         if (ret.IsEmpty()) return ret;
 
-        // Remove surrounding quotes
         if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim(CA_DoubleQuote);
 
         if (ret.IsEmpty()) return ret;
@@ -3301,7 +3284,6 @@ public sealed partial class Scanner : IDisposable
 
         ret = ret.RemoveUnpairedLeadingOrTrailingQuotes();
 
-        // Remove duplicate spaces
         ret = MultipleWhiteSpaceRegex.Replace(ret, " ");
         ret = ret.Replace('\t', ' ');
 
@@ -3309,15 +3291,16 @@ public sealed partial class Scanner : IDisposable
 
         ret = ret.RemoveSurroundingParentheses();
 
+        // @PERF_TODO(Scanner/CleanupValue parentheses stuff):
+        // Open paren is searched for potentially 3 times. We could cut that down.
         bool containsOpenParen = ret.Contains('(');
         bool containsCloseParen = ret.Contains(')');
 
-        // Remove extraneous whitespace within parentheses
         if (containsOpenParen) ret = OpenParenSpacesRegex.Replace(ret, "(");
         if (containsCloseParen) ret = CloseParenSpacesRegex.Replace(ret, ")");
 
         // If there's stuff like "(this an incomplete sentence and" at the end, chop it right off
-        if (containsOpenParen && ret.CharAppearsExactlyOnce('(') && !containsCloseParen)
+        if (containsOpenParen && !containsCloseParen && ret.CharAppearsExactlyOnce('('))
         {
             ret = ret.Substring(0, ret.LastIndexOf('(')).TrimEnd();
         }
@@ -3382,8 +3365,8 @@ public sealed partial class Scanner : IDisposable
                         if (j > 0) titleConcat += " ";
                         titleConcat += lines[j];
                     }
-                    // Set a cutoff for the length so we don't end up with a huge string that's obviously
-                    // more than a title
+                    // Set a cutoff for the length so we don't end up with a huge string that's obviously more
+                    // than a title
                     if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                     {
                         ret ??= new List<string>();
@@ -3403,7 +3386,6 @@ public sealed partial class Scanner : IDisposable
         if (_intrfaceDirFiles.Count == 0) return "";
 
         int newGameStrFileIndex = -1;
-
         for (int i = 0; i < _intrfaceDirFiles.Count; i++)
         {
             NameAndIndex item = _intrfaceDirFiles[i];
@@ -3762,7 +3744,6 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 0; i < topLines.Count; i++)
         {
-            // Preemptive check
             if (i == 0 && titleStartsWithBy) continue;
 
             string lineT = topLines[i].Trim();
@@ -4157,7 +4138,7 @@ public sealed partial class Scanner : IDisposable
             }
             // We know usedMisFiles can never be empty at this point because we early-return way before this if
             // it is
-            else // usedMisFiles.Count > 1
+            else
             {
                 foreach (NameAndIndex mis in _usedMisFiles)
                 {
