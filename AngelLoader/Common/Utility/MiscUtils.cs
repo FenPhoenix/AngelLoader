@@ -210,7 +210,7 @@ public static partial class Utils
                           (AnyGameRunning(fn) ||
                            (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
                          (!checkAllGames &&
-                          (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe)))))
+                          !gameExe.IsEmpty() && fn.PathEqualsI(gameExe))))
                     {
                         return true;
                     }

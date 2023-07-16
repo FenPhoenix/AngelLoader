@@ -2127,7 +2127,6 @@ public sealed partial class MainForm : DarkFormBase,
             GameFilterControlsShowHideButton.Height);
     }
 
-    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
     internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
     {
         var s = (ToolStripMenuItemCustom)sender;
@@ -4275,7 +4274,6 @@ public sealed partial class MainForm : DarkFormBase,
         ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
     }
 
-    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
     internal void PlayOriginalGameMenuItems_Click(object sender, EventArgs e)
     {
         GameIndex gameIndex = ((ToolStripMenuItemCustom)sender).GameIndex;
