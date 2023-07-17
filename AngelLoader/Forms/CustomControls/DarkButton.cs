@@ -29,7 +29,7 @@ public class DarkButton : Button, IDarkable
 
     private bool _spacePressed;
 
-    private int _imagePadding = 5; // Consts.Padding / 2
+    private int _imagePadding = 5;
 
     private FlatStyle? _originalFlatStyle;
     private int? _originalBorderSize;

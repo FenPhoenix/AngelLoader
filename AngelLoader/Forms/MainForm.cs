@@ -254,11 +254,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test2Button_Click(object sender, EventArgs e)
     {
-        //return;
-
-        //Width = 1305;
-        //Height = 750;
-
         Width = 1458;
         Height = 872;
     }
@@ -564,11 +559,13 @@ public sealed partial class MainForm : DarkFormBase,
     {
         using Task preloadImagesTask = GetPreloadImagesTask();
 
-        // IMPORTANT! Init manual controls BEFORE component init!
-        // Otherwise, we might get event handlers firing (looking at you, SizeChanged) right after the resume
-        // layout calls in the component init methods, and referencing the manual controls. Never happened to
-        // me, but one other user had this happen. I don't know why it doesn't happen for me on Win10 _or_ 7,
-        // but whatever...
+        /*
+        IMPORTANT! Init manual controls BEFORE component init!
+        Otherwise, we might get event handlers firing (looking at you, SizeChanged) right after the resume
+        layout calls in the component init methods, and referencing the manual controls. Never happened to
+        me, but one other user had this happen. I don't know why it doesn't happen for me on Win10 _or_ 7,
+        but whatever...
+        */
         #region Manual control construct + init
 
         #region Lazy-loaded controls
@@ -601,13 +598,15 @@ public sealed partial class MainForm : DarkFormBase,
         // The other Rating column, there has to be two, one for text and one for images
         RatingImageColumn = new DataGridViewImageColumn
         {
-            // IMPORTANT: Set this explicitly, otherwise we can end up with the following situation:
-            // -We start up, rating column is set to text so this one hasn't been added yet, then we change
-            //  to image rating column. This gets added and has its header cell replaced with a custom one,
-            //  and does NOT have its text transferred over. It ends up with blank text.
-            //  Note! The text column avoids this issue solely because it gets added in the component init
-            //  method (therefore the OnColumnAdded() handler is run and it gets its header cell replaced
-            //  immediately). If we changed that, we would have to add this to the rating text column too!
+            /*
+            IMPORTANT: Set this explicitly, otherwise we can end up with the following situation:
+            -We start up, rating column is set to text so this one hasn't been added yet, then we change
+             to image rating column. This gets added and has its header cell replaced with a custom one,
+             and does NOT have its text transferred over. It ends up with blank text.
+             Note! The text column avoids this issue solely because it gets added in the component init
+             method (therefore the OnColumnAdded() handler is run and it gets its header cell replaced
+             immediately). If we changed that, we would have to add this to the rating text column too!
+            */
             HeaderCell = new DataGridViewColumnHeaderCellCustom(),
             ImageLayout = DataGridViewImageCellLayout.Zoom,
             ReadOnly = true,
@@ -4420,15 +4419,17 @@ public sealed partial class MainForm : DarkFormBase,
             bool atLeastOnePinned = false;
             bool atLeastOneUnpinned = false;
 
-            // We iterate the whole list looking for selected FMs, rather than get SelectedRows every time.
-            // Drag-selecting the whole ~1694 list, profiling shows that doing the full-iteration way is
-            // about 2x faster than getting SelectedRows every time. It's less efficient when we have a big
-            // list and small selection, but it's so fast that it doesn't really matter, and it doesn't cause
-            // literally over a million allocations either.
-            // But, do a special-case for when only one is selected, because then the selected rows collection
-            // will be only one long for a negligible allocation, and _way_ faster in the single-select case.
-            // Gets rid of lag from SortAndSetFilter() for example.
-            // We don't need the loop if it's just 1, but keep it in case we want to tune this number.
+            /*
+            We iterate the whole list looking for selected FMs, rather than get SelectedRows every time.
+            Drag-selecting the whole ~1694 list, profiling shows that doing the full-iteration way is
+            about 2x faster than getting SelectedRows every time. It's less efficient when we have a big
+            list and small selection, but it's so fast that it doesn't really matter, and it doesn't cause
+            literally over a million allocations either.
+            But, do a special-case for when only one is selected, because then the selected rows collection
+            will be only one long for a negligible allocation, and _way_ faster in the single-select case.
+            Gets rid of lag from SortAndSetFilter() for example.
+            We don't need the loop if it's just 1, but keep it in case we want to tune this number.
+            */
             if (FMsDGV.GetRowSelectedCount() == 1)
             {
                 var selRows = FMsDGV.SelectedRows;

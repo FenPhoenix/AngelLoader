@@ -92,14 +92,16 @@ public static class Images
 
     #region Magnifying glass
 
-    // These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
-    // on the GraphicsPath if I could figure out how to union them together (rather than one cutting a piece
-    // out of the other like it does currently) and that would save the most space. Wouldn't necessarily work
-    // for every possible image, but some of them at least would be amenable to that.
-    // Regardless, with this empty magnifying glass path, I can get 13 images worth of mileage out of it by
-    // itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
-    // for sure.
-    // (this array init code was generated)
+    /*
+    These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
+    on the GraphicsPath if I could figure out how to union them together (rather than one cutting a piece
+    out of the other like it does currently) and that would save the most space. Wouldn't necessarily work
+    for every possible image, but some of them at least would be amenable to that.
+    Regardless, with this empty magnifying glass path, I can get 13 images worth of mileage out of it by
+    itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
+    for sure.
+    (this array init code was generated)
+    */
     private static readonly float[] _magnifierEmptyPoints =
     {
         59.19173f, 0f, 26.60027f, -2.65E-06f, 0f, 26.60027f, 0f, 59.19173f, 0f, 91.7832f, 26.60027f,
@@ -740,15 +742,17 @@ public static class Images
     // Load this only once, as it's transparent and so doesn't have to change with the theme
     internal static readonly Bitmap Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
 
-    // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
-    // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
-    // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-    // 2021-12-22:
-    // On Win10, DataGridView scrolling performance is laggy af regardless.
-    // Also, we could just get these images in realtime using the per-game getters now, but I guess we put
-    // the actual bitmaps into an array (updating it only on theme change) and pull from there because it's
-    // the fastest thing to do? Like, getting them in realtime has a lot of checks. Probably doesn't matter.
-    // But anyway.
+    /*
+    We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
+    Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
+    cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
+    2021-12-22:
+    On Win10, DataGridView scrolling performance is laggy af regardless.
+    Also, we could just get these images in realtime using the per-game getters now, but I guess we put
+    the actual bitmaps into an array (updating it only on theme change) and pull from there because it's
+    the fastest thing to do? Like, getting them in realtime has a lot of checks. Probably doesn't matter.
+    But anyway.
+    */
     internal static readonly Image?[] FMsList_GameIcons = new Image?[SupportedGameCount];
 
     // 0-10, and we don't count -1 (no rating) because that's handled elsewhere

@@ -8,7 +8,6 @@ public sealed class DarkArrowButton : DarkButton
 {
     private Direction _arrowDirection;
 
-    // Public for the designer
     [Browsable(true)]
     [PublicAPI]
     public Direction ArrowDirection

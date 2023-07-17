@@ -162,7 +162,6 @@ internal static class ControlUtils
 
     internal static void RepositionScroll(IntPtr handle, Native.SCROLLINFO si, int direction)
     {
-        // Reposition scroll
         Native.SetScrollInfo(handle, direction, ref si, true);
 
         // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
@@ -715,12 +714,14 @@ internal static class ControlUtils
             nameof(FillControlColorList) + "(): stack overflow (" + nameof(stackCounter) + " == " + stackCounter + ", should be <= " + maxStackCount + ")");
 #endif
 
-        // Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
-        // implemented by actually adding and removing the tab pages from the control and keeping them in a
-        // backing list (that's the only way to do it). So we can run into problems where if a tab page is
-        // not part of the control (because it's hidden), it will not be hit by this method and therefore
-        // will never be themed correctly. So handle custom tab controls separately and go through their
-        // backing lists rather than their Controls collection.
+        /*
+        Our custom tab control is a special case in that we have the ability to show/hide tabs, which is
+        implemented by actually adding and removing the tab pages from the control and keeping them in a
+        backing list (that's the only way to do it). So we can run into problems where if a tab page is
+        not part of the control (because it's hidden), it will not be hit by this method and therefore
+        will never be themed correctly. So handle custom tab controls separately and go through their
+        backing lists rather than their Controls collection.
+        */
         if (control is DarkTabControl dtc)
         {
             Control[] backingPages = dtc.BackingTabPages;

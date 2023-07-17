@@ -965,14 +965,16 @@ internal static partial class Ini
 
         #region Backward compatibility
 
-        // I put the game type as the suffix rather than the prefix on these for some reason, and then put
-        // them in the next public release. So now I have to support reading them suffixed. But let's just
-        // write them out prefixed from now on to nip this inconsistency in the bud. That way we don't have
-        // to add suffix support to our prefix detector and slow it down with a weird edge case.
-        // Note that even if we add more games, we don't have to - and shouldn't - add them here.
-        // Because the old app versions that need these won't support the new games anyway, and the new app
-        // versions that support the new games will also have the new prefixed format in the config.
-        // Or else they'll be reading from an old config that won't have data for the new game(s) anyway.
+        /*
+        I put the game type as the suffix rather than the prefix on these for some reason, and then put
+        them in the next public release. So now I have to support reading them suffixed. But let's just
+        write them out prefixed from now on to nip this inconsistency in the bud. That way we don't have
+        to add suffix support to our prefix detector and slow it down with a weird edge case.
+        Note that even if we add more games, we don't have to - and shouldn't - add them here.
+        Because the old app versions that need these won't support the new games anyway, and the new app
+        versions that support the new games will also have the new prefixed format in the config.
+        Or else they'll be reading from an old config that won't have data for the new game(s) anyway.
+        */
 
         { "GameFilterVisibleT1", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
         { "GameFilterVisibleT2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
@@ -1075,7 +1077,6 @@ internal static partial class Ini
         FinalizeConfig(config);
     }
 
-    // This is faster with reflection removed.
     private static void WriteConfigIniInternal(ConfigData config, string fileName)
     {
         // 2020-06-03: My config file is ~4000 bytes (OneList, Thief2 filter only). 6000 gives reasonable

@@ -214,16 +214,18 @@ public sealed class DarkTabControl : TabControl, IDarkable
                         textHorzAlign |
                         TextFormatFlags.VerticalCenter |
                         TextFormatFlags.EndEllipsis |
-                        // @DarkModeNote(DarkTabControl/Mnemonic ampersands):
-                        // In classic mode, putting a single ampersand into a tab's text will still display
-                        // it as a single ampersand, but will mess up the length-and-x-position slightly.
-                        // Putting a double-ampersand in will also display as a single ampersand (indicating
-                        // that mnemonics are active), but the length/x-position is still the same. Removing
-                        // the ampersand (replacing it with a different char like '+') fixes the length/x-
-                        // positioning.
-                        // I mean whatevs I guess, but note it for the future... maybe we turn off NoPrefix
-                        // here and just override Text and escape all ampersands before we set it, just to be
-                        // correct.
+                        /*
+                        @DarkModeNote(DarkTabControl/Mnemonic ampersands):
+                        In classic mode, putting a single ampersand into a tab's text will still display
+                        it as a single ampersand, but will mess up the length-and-x-position slightly.
+                        Putting a double-ampersand in will also display as a single ampersand (indicating
+                        that mnemonics are active), but the length/x-position is still the same. Removing
+                        the ampersand (replacing it with a different char like '+') fixes the length/x-
+                        positioning.
+                        I mean whatevs I guess, but note it for the future... maybe we turn off NoPrefix
+                        here and just override Text and escape all ampersands before we set it, just to be
+                        correct.
+                        */
                         TextFormatFlags.NoPrefix |
                         TextFormatFlags.NoClipping;
 
