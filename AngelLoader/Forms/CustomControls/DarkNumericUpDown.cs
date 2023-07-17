@@ -30,17 +30,6 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            // Classic mode original values:
-
-            // This:
-            // ControlStyles.OptimizedDoubleBuffer == false
-            // ControlStyles.ResizeRedraw == true
-            // ControlStyles.UserPaint == true
-
-            // Controls[0]:
-            // ControlStyles.AllPaintingInWmPaint == true
-            // ControlStyles.DoubleBuffer == false
-
             if (_darkModeEnabled)
             {
                 SetStyle(ControlStyles.OptimizedDoubleBuffer |
@@ -93,7 +82,6 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
             }
             catch
             {
-                // Oh well...
                 _setStyleMethodReflectable = false;
             }
         }
