@@ -175,7 +175,6 @@ internal readonly ref struct Zip64ExtraField
         long? localHeaderOffset = null;
         int? startDiskNumber = null;
 
-        // No need for a MemoryStream, just read straight out of the array
         int arrayIndex = 0;
         if (readUncompressedSize)
         {

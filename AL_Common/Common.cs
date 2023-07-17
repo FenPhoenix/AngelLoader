@@ -128,7 +128,6 @@ public static class Common
         (byte)'1'
     };
 
-    // SS2-only detection string
     public static readonly byte[] MAPPARAM =
     {
         (byte)'M',
@@ -769,13 +768,15 @@ public static class Common
 
     #region Percent
 
-    //public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
     public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
     public static float GetValueFromPercent_Float(float percent, int total) => (percent / 100f) * total;
-    //public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
-    //public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
-    //public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
-    //public static double GetValueFromPercent_Double(double percent, int total) => (percent / 100d) * total;
+#if false
+    public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
+    public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
+    public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
+    public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
+    public static double GetValueFromPercent_Double(double percent, int total) => (percent / 100d) * total;
+#endif
 
     #endregion
 
@@ -873,7 +874,6 @@ public static class Common
 
     // Return the original lists to avoid the wasteful and useless allocation of the array conversion that
     // you get with the built-in methods
-
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
@@ -1030,7 +1030,6 @@ public static class Common
 
             if (fc > 127 || sc > 127)
             {
-                // Non-ASCII slow path
                 return first.Equals(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
             }
@@ -1058,7 +1057,6 @@ public static class Common
 
             if (fc > 127 || sc > 127)
             {
-                // Non-ASCII slow path
                 return first.StartsWith(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
             }
@@ -1086,7 +1084,6 @@ public static class Common
 
             if (fc > 127 || sc > 127)
             {
-                // Non-ASCII slow path
                 return first.EndsWith(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
             }
@@ -1431,7 +1428,6 @@ public static class Common
 
     #region Find / replace
 
-    // Array version
     public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
     {
         byte firstByte = pattern[0];
@@ -1455,7 +1451,6 @@ public static class Common
         return -1;
     }
 
-    // String version
     public static int FindIndexOfCharSequence(string input, string pattern, int start = 0)
     {
         char firstChar = pattern[0];
@@ -1480,7 +1475,6 @@ public static class Common
     }
 
 #if false
-    // List version
     public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
     {
         byte firstByte = pattern[0];
@@ -1539,7 +1533,6 @@ public static class Common
 
 #endif
 
-    // Array version
     public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
     {
         byte firstByte = pattern[0];
@@ -1570,7 +1563,6 @@ public static class Common
 
 #if false
 
-    // List version
     public static void ReplaceByteSequence(List<byte> input, byte[] pattern, byte[] replacePattern)
     {
         byte firstByte = pattern[0];

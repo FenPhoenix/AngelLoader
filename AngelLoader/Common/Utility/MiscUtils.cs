@@ -178,7 +178,6 @@ public static partial class Utils
 
         static string GetProcessPath(int procId, StringBuilder buffer)
         {
-            // Recycle the buffer - avoids GC house party
             buffer.Clear();
 
             using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);

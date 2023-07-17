@@ -7,8 +7,6 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.DataClasses;
 
-// Startup perf: we don't need to convert them on ini read, we can lazy-load their heavy DateTime? objects
-// later when we go to display them
 internal sealed class ExpandableDate
 {
     private bool _expanded;

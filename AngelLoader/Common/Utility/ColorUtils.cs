@@ -92,7 +92,6 @@ internal static class ColorUtils
         return Color.FromArgb(cr, cg, cb);
     }
 
-    // Converts Lab to LCh (lightness, chroma, hue)
     private static LCh OklabToLCh(Lab lab)
     {
         float C = (float)Math.Sqrt((lab.a * lab.a) + (lab.b * lab.b));
@@ -101,7 +100,6 @@ internal static class ColorUtils
         return new LCh(lab.L, C, h);
     }
 
-    // Converts LCh (lightness, chroma, hue) to Lab
     private static Lab LChToOklab(LCh lch)
     {
         float a = (float)(lch.C * Math.Cos(lch.h));

@@ -2,15 +2,6 @@
 //#define FMScanner_FullCode
 
 /*
-Null notes:
--Lists are nullable because we want to avoid allocating new Lists all over the place.
--Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
--Strings are non-nullable because assigning them the empty string "" is basically free.
--A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
- are non-nullable.
-*/
-
-/*
 @MEM(Scanner readme line splitting):
 We could just get the full text and then allocate an array of int pairs for start and length of each line,
 then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
@@ -596,7 +587,7 @@ public sealed partial class Scanner : IDisposable
             try
             {
                 // Stupid micro-optimization:
-                // Init them both just once, avoiding the constant null checks on the properties
+                // Init them both just once, avoiding repeated null checks on the properties
                 var fileNamesList = SevenZipExtractedFilesList;
                 var tempList = SevenZipExtractedFilesTempList;
 
@@ -674,7 +665,6 @@ public sealed partial class Scanner : IDisposable
                          The intrface miss** dir heuristic is not good after all, there's tons of FMs with valid
                          mis files that don't have a matching intrface subdir.
                         */
-                        // Only extract these if we need them!
                         else if ((_scanOptions.ScanGameType
 #if FMScanner_FullCode
                                   || _scanOptions.ScanNewDarkRequired
@@ -996,7 +986,6 @@ public sealed partial class Scanner : IDisposable
                 // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
                 // some time later by using the FileInfo list as a cache.
                 FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
-                // Don't reduce capacity, as that causes a reallocation
                 if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
                 ulong size = 0;
                 for (int i = 0; i < fileInfos.Length; i++)
@@ -1066,9 +1055,6 @@ public sealed partial class Scanner : IDisposable
 
         if (!fmIsT3)
         {
-            // We check game type as early as possible because we used to want to reject SS2 FMs early for
-            // speed. We support SS2 now, but this works fine and dandy where it is so not messing with it.
-
             #region NewDark/GameType checks
 
             if (
@@ -1295,7 +1281,6 @@ public sealed partial class Scanner : IDisposable
 
             if (!fmData.Author.IsEmpty())
             {
-                // Remove email addresses from the end of author names
                 Match match = AuthorEmailRegex.Match(fmData.Author);
                 if (match.Success)
                 {
@@ -1506,7 +1491,6 @@ public sealed partial class Scanner : IDisposable
     {
         ParsedDateTime GetReadmeParsedDateTime()
         {
-            // Look in the readme
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
@@ -1748,11 +1732,6 @@ public sealed partial class Scanner : IDisposable
 
         // Cute...
         dateString = Y2KRegex.Replace(dateString, "2000");
-
-        // We could also detect dates with appropriate culture and it would do most of this automatically (apart
-        // from the misspelling handling), but this is more than fast enough already - about the same speed as
-        // before, now that all regexes are cached and compiled.
-        // That's insanely nice given how much extra work we're now doing.
 
         dateString = JanuaryVariationsRegex.Replace(dateString, "Jan");
         dateString = FebruaryVariationsRegex.Replace(dateString, "Feb");
@@ -2613,7 +2592,6 @@ public sealed partial class Scanner : IDisposable
 
         bool inDescr = false;
 
-        // Quick n dirty, works fine and is fast
         foreach (string line in iniLines)
         {
             if (line.StartsWithI_Local("NiceName="))
@@ -2953,7 +2931,7 @@ public sealed partial class Scanner : IDisposable
                         ? readmeStream!
                         : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
 
-                    // stupid micro-optimization
+                    // Stupid micro-optimization
                     const int rtfHeaderBytesLength = 6;
 
                     if (readmeFileLen >= rtfHeaderBytesLength)

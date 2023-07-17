@@ -53,12 +53,14 @@ public static class HTML
         }
     }
 
-    // Deflated bytes for HTML entities. Inflates to ASCII chars. When inflated, the format is: "Key=value," etc.
-    // We store this compressed because no known GLML file actually even uses named entities (as of 2020-08-03
-    // and to the best of my knowledge), and we don't want to waste space on stuff we probably won't even need.
-    // Entities are copied direct from the HTML 5.2 spec.
-    // We don't support ones that map to multiple chars. We're already being ridiculous enough here.
-    // We gain about 10K in file size from having this. Not too terribly bad considering.
+    /*
+    Deflated bytes for HTML entities. Inflates to ASCII chars. When inflated, the format is: "Key=value," etc.
+    We store this compressed because no known GLML file actually even uses named entities (as of 2020-08-03
+    and to the best of my knowledge), and we don't want to waste space on stuff we probably won't even need.
+    Entities are copied direct from the HTML 5.2 spec.
+    We don't support ones that map to multiple chars. We're already being ridiculous enough here.
+    We gain about 10K in file size from having this. Not too terribly bad considering.
+    */
 
     private sealed class HTMLEntitiesDeflatedBytesClass
     {

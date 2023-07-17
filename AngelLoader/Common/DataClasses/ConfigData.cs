@@ -133,18 +133,20 @@ public sealed class ConfigData
     internal readonly List<string> FMArchivePaths = new();
     internal bool FMArchivePathsIncludeSubfolders;
 
-    // NOTE: Backup path is currently required. Notes on potentially making it optional:
-    // -We would need to add a guard check before attempting to either back up or restore an FM. We'd put up
-    //  a dialog telling the user they need to specify a backup path first, and let them click a button to go
-    //  to the Settings window backup path field.
-    // -DarkLoader import needs to know the backup path (when importing saves). We'd have to ask the user here
-    //  too.
-    // -Due to backup/restore FM being a dead-common operation and one of the main purposes of AngelLoader
-    //  even, allowing the backup path to be optional seems of questionable utility. However, we do allow
-    //  all other fields to be optional even though leaving them ALL blank is basically nonsensical, and
-    //  having backup path be the lone required field feels arbitrary. But then, allowing the user to not
-    //  worry about it but then slapping them with a "hey, go set this!" message as soon as they try to
-    //  install or uninstall something might be the more annoying thing.
+    /*
+    NOTE: Backup path is currently required. Notes on potentially making it optional:
+    -We would need to add a guard check before attempting to either back up or restore an FM. We'd put up
+     a dialog telling the user they need to specify a backup path first, and let them click a button to go
+     to the Settings window backup path field.
+    -DarkLoader import needs to know the backup path (when importing saves). We'd have to ask the user here
+     too.
+    -Due to backup/restore FM being a dead-common operation and one of the main purposes of AngelLoader
+     even, allowing the backup path to be optional seems of questionable utility. However, we do allow
+     all other fields to be optional even though leaving them ALL blank is basically nonsensical, and
+     having backup path be the lone required field feels arbitrary. But then, allowing the user to not
+     worry about it but then slapping them with a "hey, go set this!" message as soon as they try to
+     install or uninstall something might be the more annoying thing.
+    */
     private string _fmsBackupPath = "";
     internal string FMsBackupPath
     {

@@ -36,7 +36,6 @@ public sealed class FanMission
     // as being able to import from three other loaders, we need a simple way to say "scan on select or not".
     internal bool MarkedScanned;
 
-    // For drawing rows in "Recently-Added Yellow" color
     [FenGenIgnore]
     internal bool MarkedRecent;
 
@@ -88,12 +87,14 @@ public sealed class FanMission
     internal readonly ExpandableDate ReleaseDate = new();
     internal readonly ExpandableDate LastPlayed = new();
 
-    // We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
-    // it updates whenever the user so much as moves the file or folder. We store it here to keep it permanent
-    // even across moves, new PCs or Windows installs with file restores, etc.
-    // This is not an ExpandableDate, because the way we get the date value is not in unix hex string format,
-    // and it's expensive to convert it to such. With a regular nullable DateTime we're only paying like 3-5ms
-    // extra on startup (for 1574 FMs), so it's good enough for now.
+    /*
+    We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
+    it updates whenever the user so much as moves the file or folder. We store it here to keep it permanent
+    even across moves, new PCs or Windows installs with file restores, etc.
+    This is not an ExpandableDate, because the way we get the date value is not in unix hex string format,
+    and it's expensive to convert it to such. With a regular nullable DateTime we're only paying like 3-5ms
+    extra on startup (for 1574 FMs), so it's good enough for now.
+    */
     internal DateTime? DateAdded = null;
 
     [FenGenIgnore]

@@ -642,9 +642,6 @@ internal static partial class Ini
 
     private static void AddColumn(ConfigData config, string valTrimmed, Column columnType)
     {
-        // DisplayIndex,Width,Visible
-        // 0,100,True
-
         string value = valTrimmed.Trim(CA_Comma);
         string[] cProps;
         if (value.Contains(',') &&

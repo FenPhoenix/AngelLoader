@@ -406,10 +406,6 @@ internal static class Utility
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
-        // Note: ASCII chars are 0-127. Uppercase is 65-90; lowercase is 97-122.
-        // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
-        // subtracting 32.
-
         int valueLength = value.Length;
 
         for (int si = 0, vi = 0; si < valueLength; si++, vi++)
@@ -417,12 +413,6 @@ internal static class Utility
             char sc = str[si];
             char vc = value[vi];
 
-            // If we find a non-ASCII character, give up and run the slow check on the whole string. We do
-            // this because one .NET char doesn't necessarily equal one Unicode char. Multiple .NET chars
-            // might be needed. So we grit our teeth and take the perf hit of letting .NET handle it.
-            // This is tuned for ASCII being the more common case, so we can save an advance check for non-
-            // ASCII chars, at the expense of being slightly (probably insignificantly) slower if there are
-            // in fact non-ASCII chars in value.
             if (vc > 127)
             {
                 switch (caseComparison)

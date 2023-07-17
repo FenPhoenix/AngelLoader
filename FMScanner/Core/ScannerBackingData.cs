@@ -9,15 +9,6 @@ using static AL_Common.Common;
 
 namespace FMScanner;
 
-/*
- 2020-07-31: This stuff is now part of the non-static Scanner class so it can be garbage-collected, rather
- than being static and sticking around forever. This stuff will only be instantiated once per scan (whether
- for single or multiple FMs) so allocations and GC pressure aren't really a problem. The only time we would
- do a bunch of single-FM scans in a row would be if the user just went through the list scanning everything
- manually one after another, which would take forever and no one would do. Or if they cancelled the all-FMs
- scan and then ran down the list selecting every FM one after another, thus auto-scanning them. If they do
- that, then meh. It'll be slow anyway in that case.
-*/
 public sealed partial class Scanner
 {
     private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
@@ -97,8 +88,7 @@ public sealed partial class Scanner
         // System Shock 2 file
         internal const string ModIni = "mod.ini";
 
-        // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual
-        // missions
+        // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
         internal const string EntryGmp = "Entry.gmp";
     }
 
@@ -140,7 +130,6 @@ public sealed partial class Scanner
     #region Preallocated arrays
 
     // Perf, for passing to params[]-taking methods so we don't allocate all the time
-
     private readonly char[] CA_Period = { '.' };
     private readonly char[] CA_Asterisk = { '*' };
     private readonly char[] CA_Hyphen = { '-' };
@@ -227,7 +216,6 @@ public sealed partial class Scanner
 
         "Date of completion",
         "Date finished",
-        // "Released" before "Originally released" to give it higher priority
         "Released",
         "Originally released",
         "Date:",
@@ -282,13 +270,15 @@ public sealed partial class Scanner
 
     #region Extension and file pattern arrays
 
-    // Ordered by number of actual total occurrences across all FMs:
-    // gif: 153,294
-    // pcx: 74,786
-    // tga: 12,622
-    // dds: 11,647
-    // png: 11,290
-    // bmp: 657
+    /*
+    Ordered by number of actual total occurrences across all FMs (in 1098 set):
+    gif: 153,294
+    pcx: 74,786
+    tga: 12,622
+    dds: 11,647
+    png: 11,290
+    bmp: 657
+    */
     private readonly string[] ImageFileExtensions = { ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp" };
     private readonly string[] ImageFilePatterns = { "*.gif", "*.pcx", "*.tga", "*.dds", "*.png", "*.bmp" };
 
@@ -320,16 +310,18 @@ public sealed partial class Scanner
         "dd.MM.yyyy"
     };
 
-    // Fields we use in here:
-    // d - The day of the month, from 1 through 31.
-    // dd - The day of the month, from 01 through 31.
-    // M - The month, from 1 through 12.
-    // MM - The month, from 01 through 12.
-    // MMM - abbreviated name (ie. Sep)
-    // MMMM - full name (ie. September)
-    // y - The year, from 0 to 99.
-    // yy - The year, from 00 to 99.
-    // yyyy - The year as a four-digit number.
+    /*
+    Fields we use in here:
+    d - The day of the month, from 1 through 31.
+    dd - The day of the month, from 01 through 31.
+    M - The month, from 1 through 12.
+    MM - The month, from 01 through 12.
+    MMM - abbreviated name (ie. Sep)
+    MMMM - full name (ie. September)
+    y - The year, from 0 to 99.
+    yy - The year, from 00 to 99.
+    yyyy - The year as a four-digit number.
+    */
     private readonly (string Format, bool CanBeAmbiguous)[]
     _dateFormats =
     {
@@ -384,9 +376,7 @@ public sealed partial class Scanner
     private readonly string[]
     _monthNamesEnglish =
     {
-        // These are matched by German "Januar" / "Februar"
-        //"January",
-        //"February",
+        // January and February are matched by German "Januar" / "Februar"
         "March",
         "April",
         "May",
@@ -591,9 +581,6 @@ public sealed partial class Scanner
         new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
             IgnoreCaseInvariant | RegexOptions.Compiled |
             RegexOptions.ExplicitCapture)
-
-        // Original regex for reference - slow!
-        // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
     };
 #endif
 

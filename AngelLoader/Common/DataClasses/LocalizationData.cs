@@ -5,13 +5,15 @@ using static AL_Common.FenGenAttributes;
 
 namespace AngelLoader.DataClasses;
 
-// Articles can't really be localized because they need to apply to an FM's title and most are in English.
-// So I'm keeping the custom articles functionality just the way it is, that way another language's articles
-// can be added to the list.
+/*
+Articles can't really be localized because they need to apply to an FM's title and most are in English.
+So I'm keeping the custom articles functionality just the way it is, that way another language's articles
+can be added to the list.
 
-// @Localization: Missing localized bits:
-// -Hitches with localizability:
-//  -Tags form move buttons get cut off if they resize wider
+@Localization: Missing localized bits:
+-Hitches with localizability:
+ -Tags form move buttons get cut off if they resize wider
+*/
 
 [FenGenLocalizationSourceClass]
 [SuppressMessage("ReSharper", "ConvertToConstant.Global")]

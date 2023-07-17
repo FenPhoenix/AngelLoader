@@ -90,7 +90,6 @@ public enum VisualTheme { Classic, Dark }
 #region Top-right tabs
 
 // IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
-// For TopRightTab (selected tab) value
 internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
 
 internal sealed class TopRightTabData
@@ -132,11 +131,10 @@ internal sealed class TopRightTabsData
 
         #endregion
 
-        // Fallback if no tabs are visible
         if (NoneVisible()) SetAllVisible(true);
 
         // Fallback if selected tab is not marked as visible
-        if (!Tabs[(int)SelectedTab].Visible)
+        if (!GetTab(SelectedTab).Visible)
         {
             for (int i = 0; i < Count; i++)
             {
@@ -317,7 +315,6 @@ public sealed class Filter
         dest.Author = Author;
         dest.SetRatingFromAndTo(RatingFrom, RatingTo);
 
-        // DateTime is a struct (value type), so we can just assign and it copies. Phew.
         dest.SetDateFromAndTo(lastPlayed: false, ReleaseDateFrom, ReleaseDateTo);
         dest.SetDateFromAndTo(lastPlayed: true, LastPlayedFrom, LastPlayedTo);
 
@@ -364,15 +361,17 @@ internal enum SettingsTab
     ThiefBuddy
 }
 
-// TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
-// Naming this is brutally difficult. If we call it SelectedFM, it sounds like it's encapsulating an entire
-// FM object, and var names ("selectedFM" / "selFM") sound like they're of type FanMission. FMSelectionData
-// or FMSelectionInfo is likely to be shortened to fmSelData/fmSelInfo, and then it sounds like we're talking
-// about FMSel the application. Calling it FMInstNameAndScrollIndex is clear and descriptive but annoyingly
-// long and shortening it is impossible (fmINASI?!). Also, we have multiple of them (one per game tab and then
-// one global), so that would now be FMInstNameAndScrollIndexes which is an awkward half-plural.
-// SelectionMetadata? SelectedFMTag/Handle? Maybe we put an underscore like fm_SelData?
-// Maybe FMInstNameAndScrollIndex really is the least worst name here.
+/*
+TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
+Naming this is brutally difficult. If we call it SelectedFM, it sounds like it's encapsulating an entire
+FM object, and var names ("selectedFM" / "selFM") sound like they're of type FanMission. FMSelectionData
+or FMSelectionInfo is likely to be shortened to fmSelData/fmSelInfo, and then it sounds like we're talking
+about FMSel the application. Calling it FMInstNameAndScrollIndex is clear and descriptive but annoyingly
+long and shortening it is impossible (fmINASI?!). Also, we have multiple of them (one per game tab and then
+one global), so that would now be FMInstNameAndScrollIndexes which is an awkward half-plural.
+SelectionMetadata? SelectedFMTag/Handle? Maybe we put an underscore like fm_SelData?
+Maybe FMInstNameAndScrollIndex really is the least worst name here.
+*/
 public sealed class SelectedFM
 {
     internal void DeepCopyTo(SelectedFM dest)

@@ -955,7 +955,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         _fldinstSymbolNumber.ClearFast();
         _fldinstSymbolFontName.ClearFast();
 
-        // Fixed-size value types
         _lastUsedFontWithCodePage42 = -1;
 
         #endregion

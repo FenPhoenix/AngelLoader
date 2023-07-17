@@ -128,7 +128,6 @@ public abstract partial class RTFParserBase
                 _currentScope.InFontTable = true;
                 break;
             case SpecialType.DefaultFont:
-                // Only set the first one... not likely to be any others anyway, but still
                 if (!_header.DefaultFontSet)
                 {
                     _header.DefaultFontNum = param;
@@ -246,7 +245,6 @@ public abstract partial class RTFParserBase
         }
     }
 
-    // Class, but only instantiated once and then just reset, so it's fine
     protected sealed class Header
     {
         public int CodePage;
@@ -268,12 +266,6 @@ public abstract partial class RTFParserBase
         /* ANSI-C code produced by gperf version 3.1 */
         /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
         /* Computed positions: -k'1-3,$' */
-
-        // Then ported to C# semi-manually. Woe.
-
-        // Two ways we gain perf with this generated perfect hash thing over a standard Dictionary:
-        // First, it's just faster to begin with, and second, it lets us finally ditch the StringBuilders and
-        // ToString()s and just pass in simple char arrays. We are now unmeasurable. Hallelujah!
 
         //const int TOTAL_KEYWORDS = 75;
         private const int MIN_WORD_LENGTH = 1;
@@ -914,13 +906,14 @@ public abstract partial class RTFParserBase
 
     static RTFParserBase()
     {
-        // There's a ton more languages than this, but it's not clear what code page they all translate to.
-        // This should be enough to get on with for now though...
+        /*
+        There's a ton more languages than this, but it's not clear what code page they all translate to.
+        This should be enough to get on with for now though...
 
-        // Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
+        Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
 
-        // 2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
-
+        2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
+        */
 #if false
         // Arabic
         LangToCodePage[1065] = 1256;
@@ -996,20 +989,17 @@ public abstract partial class RTFParserBase
         // Specific capacity and won't grow; no need to deallocate
         _keyword.ClearFast();
 
-        // Fixed-size value types
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
 
-        // Types that contain only fixed-size value types
         _currentScope.Reset();
 
         #endregion
 
         _scopeStack.ClearFast();
 
-        // Types that contain only fixed-size value types
         _header.Reset();
 
         _fontEntries.Clear();
@@ -1139,7 +1129,6 @@ public abstract partial class RTFParserBase
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected Error PushScope()
     {
-        // Don't wait for out-of-memory; just put a sane cap on it.
         if (_scopeStack.Count >= _maxScopes) return Error.StackOverflow;
 
         _scopeStack.Push(_currentScope);

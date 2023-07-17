@@ -2,12 +2,14 @@
 
 namespace AL_Common;
 
-// This is so we can do FAST allocation-free deserialization of the comma-separated languages string.
-// We simply ensure internal language names are always stored and written out in ascii lowercase, so this
-// simple hash lookup can work without any string casing issues.
+/*
+This is so we can do FAST allocation-free deserialization of the comma-separated languages string.
+We simply ensure internal language names are always stored and written out in ascii lowercase, so this
+simple hash lookup can work without any string casing issues.
 
-// Unfortunately it's not so easy to regenerate it, you need to use gperf in a similar process as described
-// in the RTF symbol list generator file. Meh.
+Unfortunately it's not so easy to regenerate it, you need to use gperf in a similar process as described
+in the RTF symbol list generator file. Meh.
+*/
 
 public static partial class LanguageSupport
 {

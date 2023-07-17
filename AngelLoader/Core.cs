@@ -74,7 +74,6 @@ internal static class Core
         Dialogs = ViewEnv.GetDialogs();
 
         bool openSettings = false;
-        // This is if we have no config file; in that case we assume we're starting for the first time ever
         bool cleanStart = false;
 
         List<FanMission>? fmsViewListUnscanned = null;
@@ -166,7 +165,6 @@ internal static class Core
                 else
                 {
                     openSettings = true;
-                    // We're starting for the first time ever (assumed)
                     cleanStart = true;
 
                     // Ditto the above
@@ -235,7 +233,6 @@ internal static class Core
             }
             bool selFound = false;
 
-            // Do it ONCE here, not every loop!
             Config.LanguageNames.Clear();
 
             try
@@ -1004,11 +1001,6 @@ internal static class Core
         }
     }
 
-    // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
-    //       the majority had no tags for this test.
-    //       This was tested with the Release_Testing (optimized) profile.
-    //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
-    //       given this is a reasonably naive implementation with no real attempt to be clever.
     internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch)
     SetFilter()
     {
@@ -1040,13 +1032,6 @@ internal static class Core
         // These are checked in a loop, so cache them. Others are only checked once, so leave them be.
         bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
         string titleTrimmed = viewFilter.Title.Trim();
-
-        // Note: we used to have an early-out here if all filter options were off, but since the filter
-        // requires ShowUnsupported to be active to be considered "off", in practice, the early-out would
-        // almost never be run. For this reason, and also because it required a janky bool to tell the
-        // difference between "filtered index list is empty because all FMs are filtered or because none are",
-        // we just always indirect our indexes through the filtered list now even in the rare case where we
-        // don't need to.
 
         #region Title / initial
 
@@ -1713,7 +1698,7 @@ internal static class Core
                     fn.EqualsI("Info") || fn.EqualsI("InfoEn") || fn.EqualsI("InfoEng") ||
                     fn.EqualsI("Entry") || fn.EqualsI("EntryEn") || fn.EqualsI("EntryEng") ||
                     fn.EqualsI("English") ||
-                    // end original English-favoring section
+                    // End original English-favoring section
                     (langCodesExist &&
                      !ContainsUnsafeOrJunkPhrase(fn) &&
                      EndsWithLangCode(fn_orig, langCodes)) ||
@@ -2452,7 +2437,6 @@ internal static class Core
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static void DoShutdownTasks()
     {
-        // Currently just this, but we may want to add other things later
         GameConfigFiles.ResetGameConfigTempChanges();
     }
 

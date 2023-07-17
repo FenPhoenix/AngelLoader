@@ -41,21 +41,11 @@ public static partial class Utils
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
-        // Note: ASCII chars are 0-127. Uppercase is 65-90; lowercase is 97-122.
-        // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
-        // subtracting 32.
-
         int siStart = start ? 0 : str.Length - value.Length;
         int siEnd = start ? value.Length : str.Length;
 
         for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
         {
-            // If we find a non-ASCII character, give up and run the slow check on the whole string. We do
-            // this because one .NET char doesn't necessarily equal one Unicode char. Multiple .NET chars
-            // might be needed. So we grit our teeth and take the perf hit of letting .NET handle it.
-            // This is tuned for ASCII being the more common case, so we can save an advance check for non-
-            // ASCII chars, at the expense of being slightly (probably insignificantly) slower if there are
-            // in fact non-ASCII chars in value.
             if (value[vi] > 127)
             {
                 return start
@@ -179,7 +169,6 @@ public static partial class Utils
     /// <returns></returns>
     internal static string EscapeAllChars(this string value)
     {
-        // Don't remove this freaking null check, or Config reading might fail
         if (value.IsEmpty()) return "";
 
         string ret = "";

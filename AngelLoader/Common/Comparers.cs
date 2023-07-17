@@ -132,8 +132,6 @@ internal static class Comparers
         public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
     }
 
-    // These are separated out for performance reasons, so we don't have to use LINQ OrderBy() etc.
-
     internal sealed class FMTitleComparer : ColumnComparer, IDirectionalSortFMComparer
     {
         public int Compare(FanMission x, FanMission y)

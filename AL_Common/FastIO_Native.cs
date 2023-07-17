@@ -50,7 +50,6 @@ public static class FastIO_Native
     }
 #pragma warning restore IDE0004, IDE0003
 
-    // So we don't have to remember to call FindClose()
     [UsedImplicitly]
     public class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
@@ -61,24 +60,7 @@ public static class FastIO_Native
         private static extern bool FindClose(IntPtr hFindFile);
     }
 
-    /*
-    public enum FINDEX_INFO_LEVELS
-    {
-        //FindExInfoStandard = 0,
-        FindExInfoBasic = 1
-    }
-    */
-
     public const int FindExInfoBasic = 1;
-
-    /*
-    public enum FINDEX_SEARCH_OPS
-    {
-        FindExSearchNameMatch = 0,
-        //FindExSearchLimitToDirectories = 1,
-        //FindExSearchLimitToDevices = 2
-    }
-    */
 
     public const int FindExSearchNameMatch = 0;
 

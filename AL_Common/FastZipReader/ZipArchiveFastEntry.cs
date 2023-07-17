@@ -66,7 +66,5 @@ public sealed class ZipArchiveFastEntry
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
         // backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
         FullName = Encoding.UTF8.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
-        // Turns out we don't even need the Name property, as the only thing we used it for was checking
-        // the extension.
     }
 }

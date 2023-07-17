@@ -21,11 +21,6 @@ But we should decide what's a hard enough fail to warrant that. Failing to write
 a hard enough fail, since it's really just redundancy and the user probably won't understand what the file
 is and why it matters.
 */
-
-// I finally randomly just tried yet again to convert the horrific quadratic searches to dictionary lookups,
-// and it just worked this time. Behavior appears to be the same as before, no removing entries it shouldn't
-// or anything. I'm... kind of speechless.
-// But okay then! YES! We're ready to handle tens of thousands of FMs! Gorge yourselves!
 internal static class FindFMs
 {
     private sealed class LastResortLinkupBundle

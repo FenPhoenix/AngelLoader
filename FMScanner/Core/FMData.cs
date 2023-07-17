@@ -324,17 +324,19 @@ public sealed class ScannedFMData
         internal set
         {
             _hasAutomap = value;
-            // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2.
-            // More details:
-            // Map files are supposed to be named "pagexxx.pcx" ("page001.pcx" etc.).
-            // Some missions have a file in the intrface base dir called "map.pcx".
-            // From what I can tell, this looks like it's supposed to be the background (or "surrounding")
-            // image for the map screen. But GatB-T2 puts the actual map image itself in this file, and has
-            // no proper pagexxx.pcx file. But it does have an automap file (although it appears not to work
-            // in-game, go figure). I have no reasonable way to detect this situation; I just have to trust
-            // that files are what they're supposed to be. But since an automap requires a map, it makes
-            // sense to set HasMap to true if HasAutomap is true, and that just coincidentally makes GatB-T2
-            // map detection accurate. So result achieved and no harm done.
+            /*
+            Definitely a clever deduction, definitely not a sneaky hack for GatB-T2.
+            More details:
+            Map files are supposed to be named "pagexxx.pcx" ("page001.pcx" etc.).
+            Some missions have a file in the intrface base dir called "map.pcx".
+            From what I can tell, this looks like it's supposed to be the background (or "surrounding")
+            image for the map screen. But GatB-T2 puts the actual map image itself in this file, and has
+            no proper pagexxx.pcx file. But it does have an automap file (although it appears not to work
+            in-game, go figure). I have no reasonable way to detect this situation; I just have to trust
+            that files are what they're supposed to be. But since an automap requires a map, it makes
+            sense to set HasMap to true if HasAutomap is true, and that just coincidentally makes GatB-T2
+            map detection accurate. So result achieved and no harm done.
+            */
             if (value == true) HasMap = true;
         }
     }

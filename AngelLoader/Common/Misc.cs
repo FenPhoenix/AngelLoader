@@ -70,11 +70,13 @@ public static partial class Misc
         NewDarkLoader
     }
 
-    // Wri is a "secret" format - it's a first-class type internally, but we don't document our support for
-    // it because it's really just a hack for Lucrative Opportunity and the format is not supported in full.
-    // Any other .wri files besides the one from Lucrative Opportunity are likely to be displayed incorrectly.
-    // And we don't want to give anyone any ideas to use this format (not like any modern program I know of
-    // can even write the .wri format, but still).
+    /*
+    Wri is a "secret" format - it's a first-class type internally, but we don't document our support for
+    it because it's really just a hack for Lucrative Opportunity and the format is not supported in full.
+    Any other .wri files besides the one from Lucrative Opportunity are likely to be displayed incorrectly.
+    And we don't want to give anyone any ideas to use this format (not like any modern program I know of
+    can even write the .wri format, but still).
+    */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
     public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }

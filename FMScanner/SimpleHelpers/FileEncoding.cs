@@ -131,7 +131,7 @@ public sealed class FileEncoding
 
         // http://stackoverflow.com/questions/910873/how-can-i-determine-if-a-file-is-binary-or-text-in-c
         // http://www.gnu.org/software/diffutils/manual/html_node/Binary.html
-        // count the number od null bytes sequences
+        // count the number of null bytes sequences
         // considering only sequences of 2 0s: "\0\0" or control characters below 10
         int nullSequences = 0;
         int controlSequences = 0;
@@ -227,7 +227,6 @@ public sealed class FileEncoding
         for (int pos = 0; pos < count; pos += step)
         {
             _singleUde.Run(inputData, pos, pos + step > count ? count - pos : step, _memoryStream);
-            // update encoding frequency
             if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)
             {
                 IncrementFrequency(_singleUde.Charset);
@@ -276,11 +275,13 @@ public sealed class FileEncoding
 
         if (ret == Charset.ASCII)
         {
-            // Fen: Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
-            // <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is the
-            // "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252. Also,
-            // if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so why not
-            // just get rid of any reference to ancient stuff if we can.
+            /*
+            Fen: Somewhere along the line, someone is detecting "ASCII" without checking if all our bytes are
+            <=127, so if we've detected "ASCII" but we have byte >127 anywhere, just use what we feel is the
+            "most likely" codepage for 8-bit encodings, which we're just going to say is Windows-1252. Also,
+            if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so why not
+            just get rid of any reference to ancient stuff if we can.
+            */
             ret = !_canBeASCII ? Charset.Windows1252 : Charset.UTF8;
         }
 

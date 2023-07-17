@@ -57,12 +57,14 @@ internal static class Paths
             {
                 try
                 {
-                    // I like to dev with my normal copy of AngelLoader in C:\AngelLoader (because it has all
-                    // my data there), hence I want it running from there when I debug and run from the IDE.
-                    // But we don't want other people to have that hardcoded path in here, because if they
-                    // have a non-dev AL install in C:\AngelLoader then it will very probably get messed with
-                    // if they run or compile the code. So only do the hardcoded path if my personal environment
-                    // var is set. Obviously don't add this var yourself.
+                    /*
+                    I like to dev with my normal copy of AngelLoader in C:\AngelLoader (because it has all
+                    my data there), hence I want it running from there when I debug and run from the IDE.
+                    But we don't want other people to have that hardcoded path in here, because if they
+                    have a non-dev AL install in C:\AngelLoader then it will very probably get messed with
+                    if they run or compile the code. So only do the hardcoded path if my personal environment
+                    var is set. Obviously don't add this var yourself.
+                    */
                     string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
                     _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : GetStartupPath();
                 }
@@ -126,7 +128,6 @@ internal static class Paths
     {
         #region Safety check
 
-        // Make sure we never delete any paths that are not safely tucked in our temp folder
         string baseTemp = _baseTemp.TrimEnd(CA_BS_FS_Space);
 
         // @DIRSEP: getting rid of this concat is more trouble than it's worth
@@ -284,7 +285,6 @@ internal static class Paths
 
     #endregion
 
-    // Sneaky Upgrade file. We scan this for the SU version number.
     internal const string SneakyDll = "Sneaky.dll";
 
     internal const string MissFlagStr = "missflag.str";
@@ -346,8 +346,6 @@ internal static class Paths
             using RegistryKey? hklm = (RegistryKey?)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
             using RegistryKey? tdsKey = hklm?.OpenSubKey(@"Software\Ion Storm\Thief - Deadly Shadows", writable: false);
 
-            // Must check for null, because a null return means "path not found", while a default value return
-            // means "key name not found". Jank.
             if (tdsKey?.GetValue("SaveGamePath", defaultValue: -1) is string regKeyStr)
             {
                 string soIniName = "SneakyOptions.ini";

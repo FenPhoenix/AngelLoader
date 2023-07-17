@@ -155,11 +155,13 @@ public static class Fen7z
                     {
                         proc.CancelErrorRead();
                         proc.CancelOutputRead();
-                        // We should be sending Ctrl+C to it, but since that's apparently deep-level black
-                        // magic on Windows, we just kill it. We expect the caller to understand that the
-                        // extracted files will be in an indeterminate state, and to delete them or do whatever
-                        // it deems fit.
-                        // TODO: If we can find a reliable way to send Ctrl+C to a process, we should switch to that.
+                        /*
+                        We should be sending Ctrl+C to it, but since that's apparently deep-level black
+                        magic on Windows, we just kill it. We expect the caller to understand that the
+                        extracted files will be in an indeterminate state, and to delete them or do whatever
+                        it deems fit.
+                        TODO: If we can find a reliable way to send Ctrl+C to a process, we should switch to that.
+                        */
                         proc.Kill();
                     }
                     catch

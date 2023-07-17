@@ -208,9 +208,8 @@ internal static class PresetTags
 
     #region Preset tags array
 
-    // These are the FMSel preset tags. Conforming to standards here.
     private static readonly KeyValuePair<string, string[]>[]
-    _presetTags =
+    _fmSelPresetTags =
     {
         new("author", Array.Empty<string>()),
         new("contest", Array.Empty<string>()),
@@ -250,7 +249,7 @@ internal static class PresetTags
 
     #endregion
 
-    internal static readonly int Count = _presetTags.Length;
+    internal static readonly int Count = _fmSelPresetTags.Length;
 
     /// <summary>
     /// Deep-copies the set of preset tags to a <see cref="FMCategoriesCollection"/>.
@@ -262,7 +261,7 @@ internal static class PresetTags
 
         for (int i = 0; i < Count; i++)
         {
-            var pt = _presetTags[i];
+            var pt = _fmSelPresetTags[i];
             string category = pt.Key;
             var tags = new FMTagsCollection(pt.Value.Length);
             for (int j = 0; j < pt.Value.Length; j++)
