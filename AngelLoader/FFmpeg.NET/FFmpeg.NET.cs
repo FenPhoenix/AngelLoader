@@ -43,31 +43,21 @@ internal static class Engine
 {
     internal static async Task ConvertAsync(string input, string output, ConvertType convertType)
     {
-        void LogInfo(string topMsg, Exception ex)
-        {
-            Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
-                nameof(input) + ": " + input + "\r\n" +
-                nameof(output) + ": " + input + "\r\n" +
-                nameof(convertType) + ": " + convertType,
-                ex);
-        }
-
         if (!File.Exists(Paths.FFmpegExe))
         {
             var ex = new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
-            LogInfo("", ex);
+            LogInfo("", ex, input, output, convertType);
             throw ex;
         }
 
+        // -y overwrite output files
         string arguments = convertType == ConvertType.FormatConvert
-            ? " -i \"" + input + "\" \"" + output + "\" "
-            : " -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\" ";
+            ? "-y -i \"" + input + "\" \"" + output + "\""
+            : "-y -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\"";
 
         var startInfo = new ProcessStartInfo
         {
-            // -y overwrite output files
-            // @MEM: Put this -y up there at the start of both argument strings, and test
-            Arguments = "-y " + arguments,
+            Arguments = arguments,
             FileName = Paths.FFmpegExe,
             CreateNoWindow = true,
             UseShellExecute = false
@@ -81,9 +71,23 @@ internal static class Engine
         }
         catch (Exception ex)
         {
-            LogInfo(ErrorText.ExTry + "run or exit FFmpeg", ex);
+            LogInfo(ErrorText.ExTry + "run or exit FFmpeg", ex, input, output, convertType);
             throw;
         }
+        return;
+
+        #region Local functions
+
+        static void LogInfo(string topMsg, Exception ex, string input, string output, ConvertType convertType)
+        {
+            Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
+                nameof(input) + ": " + input + "\r\n" +
+                nameof(output) + ": " + output + "\r\n" +
+                nameof(convertType) + ": " + convertType,
+                ex);
+        }
+
+        #endregion
     }
 
     private static Task<int> WaitForExitAsync(Process process)
