@@ -108,41 +108,6 @@ internal static class FMLanguages
 
     internal static void FillFMSupportedLangs(FanMission fm)
     {
-        #region Local functions
-
-        static bool TrySetLangsFromArchive(FanMission fm, [NotNullWhen(true)] out List<string>? langs)
-        {
-            try
-            {
-                (_, langs) = GetFMSupportedLanguagesFromArchive(fm.Archive, earlyOutOnEnglish: false);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogFMInfo(fm, ErrorText.ExDetLangIn + "archive.", ex);
-                langs = null;
-                return false;
-            }
-        }
-
-        static bool TrySetLangsFromInstalledDir(FanMission fm, string fmInstPath, [NotNullWhen(true)] out List<string>? langs)
-        {
-            try
-            {
-                langs = GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish: false);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogFMInfo(fm, ErrorText.ExTry + ErrorText.ExDetLangIn + "installed dir.", ex);
-                langs = null;
-                return false;
-            }
-        }
-
-        #endregion
-
-        // We should already have checked before getting here, but just for safety...
         if (!GameIsDark(fm.Game)) return;
 
         List<string>? langs;
@@ -179,6 +144,42 @@ internal static class FMLanguages
         }
 
         fm.LangsScanned = true;
+
+        return;
+
+        #region Local functions
+
+        static bool TrySetLangsFromArchive(FanMission fm, [NotNullWhen(true)] out List<string>? langs)
+        {
+            try
+            {
+                (_, langs) = GetFMSupportedLanguagesFromArchive(fm.Archive, earlyOutOnEnglish: false);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogFMInfo(fm, ErrorText.ExDetLangIn + "archive.", ex);
+                langs = null;
+                return false;
+            }
+        }
+
+        static bool TrySetLangsFromInstalledDir(FanMission fm, string fmInstPath, [NotNullWhen(true)] out List<string>? langs)
+        {
+            try
+            {
+                langs = GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish: false);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogFMInfo(fm, ErrorText.ExTry + ErrorText.ExDetLangIn + "installed dir.", ex);
+                langs = null;
+                return false;
+            }
+        }
+
+        #endregion
     }
 
     private static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)
