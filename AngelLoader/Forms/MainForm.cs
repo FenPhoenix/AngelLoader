@@ -3793,16 +3793,13 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     e.Value = fm.Rating == -1 ? "" : fm.Rating.ToString();
                 }
+                else if (Config.RatingUseStars)
+                {
+                    e.Value = fm.Rating == -1 ? Images.Blank : Images.FMsList_StarIcons[fm.Rating];
+                }
                 else
                 {
-                    if (Config.RatingUseStars)
-                    {
-                        e.Value = fm.Rating == -1 ? Images.Blank : Images.FMsList_StarIcons[fm.Rating];
-                    }
-                    else
-                    {
-                        e.Value = fm.Rating == -1 ? "" : (fm.Rating / 2.0).ToString(CultureInfo.CurrentCulture);
-                    }
+                    e.Value = fm.Rating == -1 ? "" : (fm.Rating / 2.0).ToString(CultureInfo.CurrentCulture);
                 }
                 break;
 

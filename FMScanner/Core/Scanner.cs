@@ -4144,7 +4144,7 @@ public sealed partial class Scanner : IDisposable
 
         ZipArchiveFastEntry misFileZipEntry = null!;
 
-        string misFileOnDisk = null!;
+        string misFileOnDisk = "";
 
         if (_fmIsZip)
         {
