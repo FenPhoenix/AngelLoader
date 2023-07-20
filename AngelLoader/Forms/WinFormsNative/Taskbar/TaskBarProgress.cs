@@ -9,9 +9,11 @@ internal enum TaskbarStates
 {
     NoProgress = 0,
     Indeterminate = 1,
-    //Normal = 2,
-    //Error = 4,
-    //Paused = 8
+#if false
+    Normal = 2,
+    Error = 4,
+    Paused = 8
+#endif
 }
 
 internal static class TaskBarProgress

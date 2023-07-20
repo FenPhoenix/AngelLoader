@@ -54,10 +54,12 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
-    // We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
-    // so just put it here and never dispose... meh.
-    // I mean it might/probably is safe because we wait for the task before moving on? But who cares for now,
-    // this is guaranteed safe at least...
+    /*
+    We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
+    so just put it here and never dispose... meh.
+    I mean it might/probably is safe because we wait for the task before moving on? But who cares for now,
+    this is guaranteed safe at least...
+    */
     private static readonly AutoResetEvent _configReadARE = new(false);
 
 #if RT_HeavyTests
@@ -153,8 +155,8 @@ internal static class Core
                     for (int i = 0; i < SupportedGameCount; i++)
                     {
                         GameIndex gameIndex = (GameIndex)i;
-                        // Existence checks on startup are merely a perf optimization: values start blank so just don't
-                        // set them if we don't have a game exe
+                        // Existence checks on startup are merely a perf optimization: values start blank so just
+                        // don't set them if we don't have a game exe
                         string gameExe = Config.GetGameExe(gameIndex);
                         if (!gameExe.IsEmpty() && File.Exists(gameExe))
                         {

@@ -675,12 +675,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         Localize(suspendResume: false);
 
-        // This could maybe feel intrusive if we do it every time we open, so only do it on startup. It's
-        // much more important / useful to do it on startup, because we're likely only to open on startup
-        // if there's already an error. But, we also want to suppress errors if we're starting for the first
-        // time ever. In that case, invalid fields aren't conceptually "errors", but rather the user just
-        // hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
-        // prior to then.
+        /*
+        This could maybe feel intrusive if we do it every time we open, so only do it on startup. It's
+        much more important / useful to do it on startup, because we're likely only to open on startup
+        if there's already an error. But, we also want to suppress errors if we're starting for the first
+        time ever. In that case, invalid fields aren't conceptually "errors", but rather the user just
+        hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
+        prior to then.
+        */
         if (_startup && !_cleanStart) CheckForErrors();
 
         base.OnLoad(e);
@@ -1325,7 +1327,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 path = Path.GetDirectoryName(path) ?? "";
                 return Directory.Exists(path) ? path : "";
             }
-            // Fix: we weren't checking for invalid path names
             catch
             {
                 return "";
@@ -1514,8 +1515,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void FormatArticles()
     {
         string articles = AppearancePage.ArticlesTextBox.Text;
-
-        // Copied wholesale from Autovid, ridiculous looking, but works
 
         if (articles.IsWhiteSpace())
         {

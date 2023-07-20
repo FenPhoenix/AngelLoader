@@ -477,14 +477,13 @@ internal static class GameConfigFiles
 
         static string FindPreviousSelector(List<string> lines, string stubPath, string gamePath)
         {
-            // Handle relative paths
-            static string GetFullPath(string _gamePath, string path)
+            static string GetFullPath(string gamePath, string path)
             {
                 if (PathIsRelative(path))
                 {
                     try
                     {
-                        return RelativeToAbsolute(_gamePath, path);
+                        return RelativeToAbsolute(gamePath, path);
                     }
                     catch
                     {

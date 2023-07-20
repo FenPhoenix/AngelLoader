@@ -216,15 +216,12 @@ public static partial class Utils
                 }
                 catch (Exception ex)
                 {
-                    // Even if this were to be one of our games, if .NET won't let us find out then all we can do
-                    // is shrug and move on.
                     Log(ex: ex);
                 }
             }
         }
         finally
         {
-            // Are we serious? Do we have this nasty of a gotcha going on here?!
             processes.DisposeAll();
         }
 

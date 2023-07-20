@@ -20,14 +20,6 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            // Original:
-
-            // ControlStyles.OptimizedDoubleBuffer == false
-            // ControlStyles.ResizeRedraw == true
-            // ControlStyles.UserPaint == true
-            // ResizeRedraw == true
-            // DoubleBuffered == false
-
             if (_darkModeEnabled)
             {
                 SetStyle(ControlStyles.OptimizedDoubleBuffer |

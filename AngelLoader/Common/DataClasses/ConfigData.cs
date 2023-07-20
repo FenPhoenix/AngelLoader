@@ -209,7 +209,6 @@ public sealed class ConfigData
 
     #region Steam
 
-    // If a Steam exe is specified, that is
     internal bool LaunchGamesWithSteam = true;
 
     internal string SteamExe = "";

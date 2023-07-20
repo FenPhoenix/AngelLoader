@@ -46,8 +46,6 @@ internal sealed class DynamicItemsLLMenu : IDarkable
 
         _constructed = true;
 
-        // Just to keep things in a known state (clearing items also removes their event hookups, which is
-        // convenient)
         _menu.Closed += (_, _) => Menu.Items.Clear();
     }
 

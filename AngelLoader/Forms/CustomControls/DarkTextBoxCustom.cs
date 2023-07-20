@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-// Also lifted straight from Autovid but with a couple improvements
 public sealed class DarkTextBoxCustom : DarkTextBox
 {
     [PublicAPI]

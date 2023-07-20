@@ -387,8 +387,6 @@ internal static class Paths
         }
         catch (Exception ex)
         {
-            // Shouldn't happen, but it was because of the lack of this catch-all that an unlikely but serious
-            // bug used to be possible here.
             Log("Unexpected exception occurred.", ex);
         }
 

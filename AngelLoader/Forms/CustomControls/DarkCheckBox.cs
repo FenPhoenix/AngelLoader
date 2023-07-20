@@ -67,7 +67,6 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
     public DarkCheckBox()
     {
-        // Always true
         SetStyle(ControlStyles.SupportsTransparentBackColor |
                  ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.ResizeRedraw |

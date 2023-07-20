@@ -87,7 +87,6 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
     public DarkComboBox()
     {
-        // We only support DropDownList for dark mode
         base.DropDownStyle = ComboBoxStyle.DropDownList;
     }
 

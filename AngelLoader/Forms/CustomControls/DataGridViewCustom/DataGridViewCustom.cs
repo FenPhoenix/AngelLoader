@@ -42,7 +42,6 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     internal readonly SelectedFM CurrentSelFM = new();
 
-    // Only used if game tabs are enabled. It's used to save and restore per-tab selected FM, filters etc.
     internal readonly GameTabsState GameTabsState = new();
 
     #region Filter
@@ -174,7 +173,6 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     internal int GetIndexFromInstalledName(string installedName, bool findNearest)
     {
-        // Graceful default if a value is missing
         if (installedName.IsEmpty()) return 0;
 
         for (int i = 0; i < FilterShownIndexList.Count; i++)
@@ -182,7 +180,6 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
         }
 
-        // If a refresh has caused our selected FM to be filtered out, find the next closest one
         if (findNearest)
         {
             for (int i = 0; i < FMsViewList.Count; i++)

@@ -120,7 +120,6 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
     {
         UseMnemonic = false;
 
-        // Always true in both modes
         SetStyle(ControlStyles.SupportsTransparentBackColor |
                  ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.ResizeRedraw |

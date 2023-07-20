@@ -671,9 +671,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
-    // Thief 3 difficulties: Easy, Normal, Hard, Expert
-    // SS2 difficulties: Easy, Normal, Hard, Impossible
     internal void SetGameSpecificFinishedOnMenuItemsText(Game game)
     {
         if (!_constructed) return;

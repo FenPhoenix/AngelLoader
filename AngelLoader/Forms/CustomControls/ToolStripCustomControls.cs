@@ -221,7 +221,6 @@ public sealed class ToolStripArrowButton : ToolStripButton, IDarkable
 
     private Direction _arrowDirection;
 
-    // Public for the designer
     [Browsable(true)]
     [PublicAPI]
     public Direction ArrowDirection

@@ -85,9 +85,6 @@ public sealed partial class DataGridViewCustom
 
             #region Reflection error check and fallback
 
-            // If something has changed internally, fall back to the crappy resize-without-indication default.
-            // Always have a fallback in place when using reflection on someone else's classes.
-
             if (typeInternal == null)
             {
                 _columnResizeInProgress = false;
@@ -155,7 +152,6 @@ public sealed partial class DataGridViewCustom
     {
         if (e.Button == MouseButtons.Left && _columnResizeInProgress)
         {
-            // The move is complete
             _columnResizeInProgress = false;
             return false;
         }

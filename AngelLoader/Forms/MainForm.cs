@@ -31,12 +31,6 @@ visible selection change/flickering etc.
 It's conceptually much cleaner to use this method, but we would then have to hack around this infuriating unwanted
 behavior that comes part and parcel with what should be a simple #$@!ing property flip.
 Our current hack is nasty, but it does do what we want, is performant enough, and looks good to the user.
-
-@MEM(WindowText): We can use control.SetStyle(ControlStyles.CacheText, true) to slash StringBuilder allocations
-But this method is protected, so we either have to subclass every damn control and set it for each, or use
-reflection during the control dictionary filler loop.
-Despite greatly lowering StringBuilder allocations, this does not appear to improve performance to any noticeable
-degree.
 */
 
 //#define SAVE_NON_AERO_SNAPPED_BOUNDS
@@ -2403,6 +2397,8 @@ public sealed partial class MainForm : DarkFormBase,
             FilterBarFLP.SuspendDrawing();
             try
             {
+                #region UI
+
                 bool oneList = Config.GameOrganization == GameOrganization.OneList;
                 if (oneList)
                 {
@@ -2429,7 +2425,8 @@ public sealed partial class MainForm : DarkFormBase,
                 FilterByRatingButton.Checked = false;
                 Lazy_ToolStripLabels.Hide(Lazy_FilterLabel.Rating);
 
-                // Here is the line where the internal filter is cleared. It does in fact happen!
+                #endregion
+
                 FMsDGV.Filter.ClearAll(oneList);
             }
             finally
@@ -2473,7 +2470,6 @@ public sealed partial class MainForm : DarkFormBase,
     private void PositionFilterBarAfterTabs()
     {
         int filterBarAfterTabsX;
-        // This is not allowed to happen with the current system (we prevent the last tab from being closed)
         if (GamesTabControl.TabCount == 0)
         {
             filterBarAfterTabsX = TopBarXZero();
@@ -2784,14 +2780,16 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FilterBarFLP_Scroll(object sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
 
-    // @PERF_TODO: This is still called too many times on startup.
-    // Even though it has checks to prevent any real work from being done if not needed, I should still take
-    // a look at this and see if I can't make it be called only once max on startup.
-    // TODO: Something about the Construct() calls in this method causes the anchoring issue (when we lazy-load).
-    // If we just construct once at the top, it works fine. But we can't do that because then it would always
-    // load right away, defeating the purpose of lazy loading. Look into this. If we can solve it, that's a
-    // bit more time shaved off of startup.
-    // 2019-07-17: Lazy loading these is disabled for the moment.
+    /*
+    PERF_TODO: This is still called too many times on startup.
+    Even though it has checks to prevent any real work from being done if not needed, I should still take
+    a look at this and see if I can't make it be called only once max on startup.
+    TODO: Something about the Construct() calls in this method causes the anchoring issue (when we lazy-load).
+    If we just construct once at the top, it works fine. But we can't do that because then it would always
+    load right away, defeating the purpose of lazy loading. Look into this. If we can solve it, that's a
+    bit more time shaved off of startup.
+    2019-07-17: Lazy loading these is disabled for the moment.
+    */
     private void SetFilterBarScrollButtons()
     {
         // Don't run this a zillion gatrillion times during init
@@ -3079,8 +3077,6 @@ public sealed partial class MainForm : DarkFormBase,
                     }
                 }
 
-                // Events will be re-enabled at the end of the enclosing using block
-
                 bool selectDoneAtLeastOnce = false;
                 void DoSelect()
                 {
@@ -3281,7 +3277,6 @@ public sealed partial class MainForm : DarkFormBase,
 
             Font f = FMsDGV.DefaultCellStyle.Font;
 
-            // Set zoom level
             float fontSize =
                 (type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
                     type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
@@ -3289,14 +3284,10 @@ public sealed partial class MainForm : DarkFormBase,
                     type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
                     _fmsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
 
-            // Set new font size
             var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
-            // Set row height based on font plus some padding
             int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _fmsListDefaultRowHeight : newF.Height + 9;
 
-            // If we're on startup, then the widths will already have been restored (to zoomed size) from the
-            // config
             bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
             // Must be done first, else we get wrong values
@@ -3307,10 +3298,8 @@ public sealed partial class MainForm : DarkFormBase,
                 widthMul.Add((double)size.Width / size.Height);
             }
 
-            // Set font on cells
             FMsDGV.DefaultCellStyle.Font = newF;
 
-            // Set font on headers
             FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
 
             // Set height on all rows (but it won't take effect yet)
@@ -3324,6 +3313,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 selIndices[i] = selRows[i].Index;
             }
+
             using (new DisableEvents(this))
             {
                 // Force a regeneration of rows (height will take effect here)
@@ -3402,7 +3392,6 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            // Keep selected FM in the center of the list vertically where possible (UX nicety)
             if (selIndices.Length > 0 && selFM != null)
             {
                 if (mainRowIndex > -1) FMsDGV.MainSelectedRow = FMsDGV.Rows[mainRowIndex];
@@ -4060,8 +4049,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void ChooseReadmeButton_Click(object sender, EventArgs e)
     {
-        // This is only hooked up after construction, so no Construct() call needed
-
         int itemCount = ChooseReadmeLLPanel.ListBox.Items.Count;
         if (itemCount == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
         {
@@ -4383,16 +4370,17 @@ public sealed partial class MainForm : DarkFormBase,
         SetTopRightBlockerVisible();
     }
 
-    // @PERF_TODO(Context menu sel state update): Since this runs always on selection change...
-    // ... we might not need to call it on FM load.
-    // NOTE(Context menu sel state update):
-    // Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
-    // for preventing "multi-select starts from top row even though our selection is not actually at the top
-    // row"
-    // @FM_CFG: Make even the option overrides hidden for Thief 3, as we really don't support anything for that
-    // Put a label saying we don't support patch/customize stuff for Thief 3
-    // @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
-    // (blink tab somehow to let the user know if the tab is already shown)
+    /*
+    @PERF_TODO(Context menu sel state update): Since this runs always on selection change...
+    ... we might not need to call it on FM load.
+    NOTE(Context menu sel state update):
+    Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
+    for preventing "multi-select starts from top row even though our selection is not actually at the top row"
+    @FM_CFG: Make even the option overrides hidden for Thief 3, as we really don't support anything for that
+    Put a label saying we don't support patch/customize stuff for Thief 3
+    @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
+    (blink tab somehow to let the user know if the tab is already shown)
+    */
     internal void UpdateUIControlsForMultiSelectState(FanMission fm)
     {
         #region Get attributes that apply to all items
