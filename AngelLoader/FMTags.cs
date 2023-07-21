@@ -12,10 +12,10 @@ internal static class FMTags
 {
     #region Add tag
 
-    internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true)
+    internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true, StringBuilder? sb = null)
     {
         AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
-        UpdateFMTagsString(fm);
+        UpdateFMTagsString(fm, sb);
         if (rebuildGlobalTags) RebuildGlobalTags();
     }
 
@@ -141,15 +141,21 @@ internal static class FMTags
         return list;
     }
 
-    private const int _tagsToStringSBInitialCapacity = 100;
-    // @THREADING(_tagsToStringSB): Not thread-safe
-    private static readonly StringBuilder _tagsToStringSB = new(_tagsToStringSBInitialCapacity);
-    internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories)
+    public const int TagsToStringSBInitialCapacity = 100;
+    internal static string TagsToString(FMCategoriesCollection tagsList, bool writeEmptyCategories, StringBuilder? sb = null)
     {
-        if (_tagsToStringSB.Capacity > ByteSize.KB * 10)
+        if (sb == null)
         {
-            _tagsToStringSB.Clear();
-            _tagsToStringSB.Capacity = _tagsToStringSBInitialCapacity;
+            sb = new StringBuilder(TagsToStringSBInitialCapacity);
+        }
+        else
+        {
+            sb.Clear();
+        }
+
+        if (sb.Capacity > ByteSize.KB * 10)
+        {
+            sb.Capacity = TagsToStringSBInitialCapacity;
         }
 
         for (int i = 0; i < tagsList.Count; i++)
@@ -157,30 +163,26 @@ internal static class FMTags
             CatAndTagsList item = tagsList[i];
             if (item.Tags.Count == 0 && writeEmptyCategories)
             {
-                _tagsToStringSB.Append(item.Category).Append(':').Append(',');
+                sb.Append(item.Category).Append(':').Append(',');
             }
             else
             {
                 for (int j = 0; j < item.Tags.Count; j++)
                 {
                     string tag = item.Tags[j];
-                    _tagsToStringSB.Append(item.Category).Append(':').Append(tag).Append(',');
+                    sb.Append(item.Category).Append(':').Append(tag).Append(',');
                 }
             }
         }
 
         // Cheap and easy to understand
-        if (_tagsToStringSB.Length > 0 &&
-            _tagsToStringSB[_tagsToStringSB.Length - 1] == ',')
+        if (sb.Length > 0 &&
+            sb[sb.Length - 1] == ',')
         {
-            _tagsToStringSB.Remove(_tagsToStringSB.Length - 1, 1);
+            sb.Remove(sb.Length - 1, 1);
         }
 
-        string ret = _tagsToStringSB.ToString();
-
-        _tagsToStringSB.Clear();
-
-        return ret;
+        return sb.ToString();
     }
 
     // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
@@ -188,9 +190,9 @@ internal static class FMTags
     // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
     // be kept in sync with Tags. This should ONLY be called when a tag is added or removed. Keep it simple
     // so we can see and follow the logic.
-    private static void UpdateFMTagsString(FanMission fm)
+    private static void UpdateFMTagsString(FanMission fm, StringBuilder? sb = null)
     {
-        fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false);
+        fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false, sb);
     }
 
     internal static bool TryGetCatAndTag(string item, out string cat, out string tag)

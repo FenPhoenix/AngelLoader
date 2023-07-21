@@ -1220,6 +1220,8 @@ internal static partial class Ini
             sb.Append("FilterVisible").Append((HideableFilterControls)i).Append('=').AppendLine(config.FilterControlVisibilities[i].ToString());
         }
 
+        StringBuilder tagsToStringSB = new(FMTags.TagsToStringSBInitialCapacity);
+
         for (int i = 0; i < SupportedGameCount + 1; i++)
         {
             Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
@@ -1246,9 +1248,9 @@ internal static partial class Ini
             sb.Append(p).Append("FilterRatingFrom").Append('=').Append(filter.RatingFrom).AppendLine();
             sb.Append(p).Append("FilterRatingTo").Append('=').Append(filter.RatingTo).AppendLine();
 
-            sb.Append(p).Append("FilterTagsAnd").Append('=').AppendLine(TagsToString(filter.Tags.AndTags));
-            sb.Append(p).Append("FilterTagsOr").Append('=').AppendLine(TagsToString(filter.Tags.OrTags));
-            sb.Append(p).Append("FilterTagsNot").Append('=').AppendLine(TagsToString(filter.Tags.NotTags));
+            sb.Append(p).Append("FilterTagsAnd").Append('=').AppendLine(TagsToString(filter.Tags.AndTags, tagsToStringSB));
+            sb.Append(p).Append("FilterTagsOr").Append('=').AppendLine(TagsToString(filter.Tags.OrTags, tagsToStringSB));
+            sb.Append(p).Append("FilterTagsNot").Append('=').AppendLine(TagsToString(filter.Tags.NotTags, tagsToStringSB));
         }
 
         #endregion

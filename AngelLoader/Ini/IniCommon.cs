@@ -753,9 +753,9 @@ internal static partial class Ini
         ? ""
         : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-    private static string TagsToString(FMCategoriesCollection tagsList)
+    private static string TagsToString(FMCategoriesCollection tagsList, StringBuilder sb)
     {
-        return FMTags.TagsToString(tagsList, writeEmptyCategories: true);
+        return FMTags.TagsToString(tagsList, writeEmptyCategories: true, sb);
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -290,6 +291,8 @@ internal static class FMScan
 
                 #region Copy scanned data to FMs
 
+                StringBuilder tagsToStringSB = new(FMTags.TagsToStringSBInitialCapacity);
+
                 for (int i = 0; i < fmsToScanFiltered.Count; i++)
                 {
                     FMScanner.ScannedFMData? scannedFM = fmDataList[i].ScannedFMData;
@@ -388,7 +391,7 @@ internal static class FMScan
                         if (gameSup)
                         {
                             // Don't rebuild global tags for every FM; do it only once at the end
-                            FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false);
+                            FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false, tagsToStringSB);
                         }
                     }
 
