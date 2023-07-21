@@ -767,7 +767,7 @@ internal static class Import
                             if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
                             {
                                 string fn = Path.GetFileNameWithoutExtension(f);
-                                if (fn.ToInstDirNameNDL(instDirNameContext).EqualsI(instName) || fn.EqualsI(instName))
+                                if (fn.ToInstDirNameNDL(instDirNameContext, true).EqualsI(instName) || fn.EqualsI(instName))
                                 {
                                     fm.Archive = Path.GetFileName(f);
                                     break;

@@ -598,7 +598,7 @@ internal static class FindFMs
             else if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out fm) ||
                      fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, false), out fm) ||
                      fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, true), out fm) ||
-                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext), out fm))
+                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, true), out fm))
             {
                 fm.DateAdded ??= item.Value.DateTime;
 
