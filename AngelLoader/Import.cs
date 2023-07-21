@@ -174,6 +174,8 @@ internal static class Import
         // ReSharper disable once ConvertToConstant.Local
         string dlErrorMessage = "An error occurred with DarkLoader importing. See the log file for details. Aborting import operation.";
 
+        InstDirNameContext instDirNameContext = new();
+
         // For DarkLoader this will be only one file, so it works out.
         // This is so we can keep just the one await call.
         foreach (string iniFile in iniFiles)
@@ -197,9 +199,9 @@ internal static class Import
 
                 var (error, fmsToScan) = await Task.Run(() => importType switch
                 {
-                    ImportType.DarkLoader => ImportDarkLoaderInternal(iniFile, importFMData, importSaves, fields),
+                    ImportType.DarkLoader => ImportDarkLoaderInternal(iniFile, importFMData, importSaves, fields, instDirNameContext),
                     ImportType.FMSel => ImportFMSelInternal(iniFile, fields),
-                    _ => ImportNDLInternal(iniFile, fields)
+                    _ => ImportNDLInternal(iniFile, fields, instDirNameContext)
                 });
 
                 if (error != ImportError.None)
@@ -271,7 +273,7 @@ internal static class Import
     #region Private methods
 
     private static (ImportError Error, List<FanMission> FMs)
-    ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
+    ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
         #region Local functions
 
@@ -408,7 +410,7 @@ internal static class Import
                             var fm = new FanMission
                             {
                                 Archive = archive,
-                                InstalledDir = archive.ToInstDirNameFMSel(true),
+                                InstalledDir = archive.ToInstDirNameFMSel(instDirNameContext, true),
                                 SizeBytes = sizeBytes
                             };
 
@@ -695,12 +697,12 @@ internal static class Import
     }
 
     private static (ImportError Error, List<FanMission> FMs)
-    ImportNDLInternal(string iniFile, FieldsToImport fields)
+    ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
         string[] lines = File.ReadAllLines(iniFile);
         var fms = new List<FanMission>();
 
-        static ImportError DoImport(string[] lines, List<FanMission> fms)
+        static ImportError DoImport(string[] lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
             bool archiveDirRead = false;
             string archiveDir = "";
@@ -765,7 +767,7 @@ internal static class Import
                             if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
                             {
                                 string fn = Path.GetFileNameWithoutExtension(f);
-                                if (fn.ToInstDirNameNDL().EqualsI(instName) || fn.EqualsI(instName))
+                                if (fn.ToInstDirNameNDL(instDirNameContext).EqualsI(instName) || fn.EqualsI(instName))
                                 {
                                     fm.Archive = Path.GetFileName(f);
                                     break;
@@ -842,7 +844,7 @@ internal static class Import
             return ImportError.None;
         }
 
-        ImportError error = DoImport(lines, fms);
+        ImportError error = DoImport(lines, fms, instDirNameContext);
 
         if (error != ImportError.None) return (error, fms);
 

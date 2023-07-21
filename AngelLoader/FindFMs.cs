@@ -25,6 +25,8 @@ internal static class FindFMs
 {
     private sealed class LastResortLinkupBundle
     {
+        private readonly InstDirNameContext _instDirNameContext;
+
         private DictionaryI<string>? _archivesToInstDirNameFMSelTruncated;
         private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated;
         private DictionaryI<string>? _archivesToInstDirNameNDLTruncated;
@@ -33,6 +35,8 @@ internal static class FindFMs
         private DictionaryI<string>? _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList;
         private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
         private DictionaryI<string>? _installedDirs_FromFMDataIniList;
+
+        public LastResortLinkupBundle(InstDirNameContext instDirNameContext) => _instDirNameContext = instDirNameContext;
 
         internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<ExpandableDate_FromTicks> archives, bool truncate)
         {
@@ -44,7 +48,7 @@ internal static class FindFMs
                     foreach (var item in archives)
                     {
                         string value = item.Key;
-                        string key = value.ToInstDirNameFMSel(true);
+                        string key = value.ToInstDirNameFMSel(_instDirNameContext, true);
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated.ContainsKey(key))
                         {
                             _archivesToInstDirNameFMSelTruncated.Add(key, value);
@@ -61,7 +65,7 @@ internal static class FindFMs
                     foreach (var item in archives)
                     {
                         string value = item.Key;
-                        string key = value.ToInstDirNameFMSel(false);
+                        string key = value.ToInstDirNameFMSel(_instDirNameContext, false);
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated.ContainsKey(key))
                         {
                             _archivesToInstDirNameFMSelNotTruncated.Add(key, value);
@@ -80,7 +84,7 @@ internal static class FindFMs
                 foreach (var item in archives)
                 {
                     string value = item.Key;
-                    string key = value.ToInstDirNameNDL(truncate: true);
+                    string key = value.ToInstDirNameNDL(_instDirNameContext, truncate: true);
                     if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated.ContainsKey(key))
                     {
                         _archivesToInstDirNameNDLTruncated.Add(key, value);
@@ -119,7 +123,7 @@ internal static class FindFMs
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
                         string value = FMDataIniList[i].Archive;
-                        string key = value.ToInstDirNameFMSel(truncate: true);
+                        string key = value.ToInstDirNameFMSel(_instDirNameContext, truncate: true);
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated_FromFMDataIniList.ContainsKey(key))
                         {
                             _archivesToInstDirNameFMSelTruncated_FromFMDataIniList.Add(key, value);
@@ -136,7 +140,7 @@ internal static class FindFMs
                     for (int i = 0; i < FMDataIniList.Count; i++)
                     {
                         string value = FMDataIniList[i].Archive;
-                        string key = value.ToInstDirNameFMSel(truncate: false);
+                        string key = value.ToInstDirNameFMSel(_instDirNameContext, truncate: false);
                         if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.ContainsKey(key))
                         {
                             _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.Add(key, value);
@@ -155,7 +159,7 @@ internal static class FindFMs
                 for (int i = 0; i < FMDataIniList.Count; i++)
                 {
                     string value = FMDataIniList[i].Archive;
-                    string key = value.ToInstDirNameNDL(truncate: true);
+                    string key = value.ToInstDirNameNDL(_instDirNameContext, truncate: true);
                     if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated_FromFMDataIniList.ContainsKey(key))
                     {
                         _archivesToInstDirNameNDLTruncated_FromFMDataIniList.Add(key, value);
@@ -237,6 +241,8 @@ internal static class FindFMs
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static List<FanMission> FindInternal(bool startup)
     {
+        InstDirNameContext instDirNameContext = new();
+
         // @PERF_TODO(Find): Number of hashtable recreations
         // We recreate several hashtables anew after potentially modifying the FM data ini list, because the
         // modification may necessitate the hashtable to be rebuilt from the updated FM list.
@@ -385,7 +391,7 @@ internal static class FindFMs
 
         #endregion
 
-        MergeNewArchiveFMs(fmArchivesAndDatesDict);
+        MergeNewArchiveFMs(fmArchivesAndDatesDict, instDirNameContext);
 
         int fmDataIniListCount = FMDataIniList.Count;
         var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
@@ -409,7 +415,7 @@ internal static class FindFMs
             }
         }
 
-        SetArchiveNames(fmArchivesAndDatesDict);
+        SetArchiveNames(fmArchivesAndDatesDict, instDirNameContext);
 
         EnsureUniqueInstalledNames();
 
@@ -437,7 +443,7 @@ internal static class FindFMs
 
     #region Set names
 
-    private static void SetArchiveNames(DictionaryI<ExpandableDate_FromTicks> fmArchives)
+    private static void SetArchiveNames(DictionaryI<ExpandableDate_FromTicks> fmArchives, InstDirNameContext instDirNameContext)
     {
         DictionaryI<FanMission>? archivesDict = null;
         DictionaryI<FanMission> GetArchivesDict()
@@ -478,7 +484,7 @@ internal static class FindFMs
                 // Skip the expensive archive name search if we're marked as having no archive
                 if (!fm.NoArchive)
                 {
-                    lastResortLinkupBundle ??= new LastResortLinkupBundle();
+                    lastResortLinkupBundle ??= new LastResortLinkupBundle(instDirNameContext);
                     archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupBundle);
                 }
                 if (archiveName.IsEmpty()) continue;
@@ -548,7 +554,7 @@ internal static class FindFMs
 
     #region Merge
 
-    private static void MergeNewArchiveFMs(DictionaryI<ExpandableDate_FromTicks> fmArchives)
+    private static void MergeNewArchiveFMs(DictionaryI<ExpandableDate_FromTicks> fmArchives, InstDirNameContext instDirNameContext)
     {
         int fmDataIniListCount = FMDataIniList.Count;
         var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
@@ -586,20 +592,20 @@ internal static class FindFMs
                 if (fm.InstalledDir.IsEmpty())
                 {
                     bool truncate = fm.Game != Game.Thief3;
-                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
+                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(instDirNameContext, truncate);
                 }
             }
             else if (fmDataIniInstDirDict.TryGetValue(archive.RemoveExtension(), out fm) ||
-                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(false), out fm) ||
-                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(true), out fm) ||
-                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(), out fm))
+                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, false), out fm) ||
+                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, true), out fm) ||
+                     fmDataIniInstDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext), out fm))
             {
                 fm.DateAdded ??= item.Value.DateTime;
 
                 if (fm.InstalledDir.IsEmpty())
                 {
                     bool truncate = fm.Game != Game.Thief3;
-                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate);
+                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(instDirNameContext, truncate);
                 }
             }
             else
@@ -607,7 +613,7 @@ internal static class FindFMs
                 FMDataIniList.Add(new FanMission
                 {
                     Archive = archive,
-                    InstalledDir = archive.ToInstDirNameFMSel(true),
+                    InstalledDir = archive.ToInstDirNameFMSel(instDirNameContext, true),
                     NoArchive = false,
                     DateAdded = item.Value.DateTime
                 });

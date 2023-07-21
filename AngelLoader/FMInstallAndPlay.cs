@@ -1420,6 +1420,8 @@ internal static class FMInstallAndPlay
                 cancelMessage: LText.Global.Cancel
             );
 
+            BinaryBuffer buffer = new();
+
             for (int i = 0; i < fmDataList.Length; i++)
             {
                 FMData fmData = fmDataList[i];
@@ -1488,7 +1490,7 @@ internal static class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, _installCts.Token);
+                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, buffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1496,7 +1498,10 @@ internal static class FMInstallAndPlay
                             return false;
                         }
 
-                        if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, _installCts.Token);
+                        if (Config.ConvertOGGsToWAVsOnInstall)
+                        {
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, buffer, _installCts.Token);
+                        }
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1504,7 +1509,10 @@ internal static class FMInstallAndPlay
                             return false;
                         }
 
-                        if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, _installCts.Token);
+                        if (Config.ConvertWAVsTo16BitOnInstall)
+                        {
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, buffer, _installCts.Token);
+                        }
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1821,6 +1829,8 @@ internal static class FMInstallAndPlay
 
             bool skipUninstallWithNoArchiveWarning = false;
 
+            InstDirNameContext instDirNameContext = new();
+
             for (int i = 0; i < fmDataList.Length; i++)
             {
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
@@ -1915,7 +1925,7 @@ internal static class FMInstallAndPlay
                 */
                 if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
                 {
-                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
+                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(instDirNameContext, truncate: false);
                 }
 
                 if (!single)

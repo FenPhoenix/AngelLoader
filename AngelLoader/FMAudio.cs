@@ -25,8 +25,6 @@ internal static class FMAudio
     private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
     private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
     private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
-    // @THREADING(FindFMs binary buffer): Not thread-safe
-    private static readonly BinaryBuffer _binaryBuffer = new();
 
     private static CancellationTokenSource _conversionCts = new();
     private static void CancelToken() => _conversionCts.CancelIfNotDisposed();
@@ -127,6 +125,8 @@ internal static class FMAudio
                 cancelAction: single ? null : CancelToken
             );
 
+            BinaryBuffer buffer = new();
+
             for (int i = 0; i < fms.Count; i++)
             {
                 FanMission fm = fms[i];
@@ -136,7 +136,7 @@ internal static class FMAudio
                     percent: single ? null : GetPercentFromValue_Int(i + 1, fms.Count)
                 );
 
-                await ConvertToWAVs(fm, convertType);
+                await ConvertToWAVs(fm, convertType, buffer);
 
                 if (!single && _conversionCts.IsCancellationRequested) return;
             }
@@ -148,7 +148,7 @@ internal static class FMAudio
         }
     }
 
-    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, CancellationToken? ct = null)
+    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, CancellationToken? ct = null)
     {
         if (!GameIsDark(fm.Game)) return VoidTask;
 
@@ -160,7 +160,7 @@ internal static class FMAudio
             {
                 #region Local functions
 
-                static int GetBitDepthFast(string file)
+                static int GetBitDepthFast(string file, BinaryBuffer buffer)
                 {
                     // In case we read past the end of the file or can't open the file or whatever. We're trying
                     // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
@@ -169,20 +169,20 @@ internal static class FMAudio
                     {
                         using var fs = File_OpenReadFast(file);
 
-                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
-                        if (!_binaryBuffer.Buffer.StartsWith(_riff)) return -1;
+                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                        if (!buffer.Buffer.StartsWith(_riff)) return -1;
 
                         fs.Seek(4, SeekOrigin.Current);
 
-                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
-                        if (!_binaryBuffer.Buffer.StartsWith(_wave)) return 0;
+                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                        if (!buffer.Buffer.StartsWith(_wave)) return 0;
 
-                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
-                        if (!_binaryBuffer.Buffer.StartsWith(_fmt)) return 0;
+                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                        if (!buffer.Buffer.StartsWith(_fmt)) return 0;
 
                         fs.Seek(18, SeekOrigin.Current);
 
-                        ushort bits = BinaryRead.ReadUInt16(fs, _binaryBuffer);
+                        ushort bits = BinaryRead.ReadUInt16(fs, buffer);
                         return bits;
                     }
                     catch
@@ -269,7 +269,7 @@ internal static class FMAudio
 
                             if (Canceled(ct)) return;
 
-                            int bits = GetBitDepthFast(f);
+                            int bits = GetBitDepthFast(f, buffer);
 
                             if (Canceled(ct)) return;
 
