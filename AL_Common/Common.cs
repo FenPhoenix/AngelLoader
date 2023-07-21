@@ -1378,6 +1378,17 @@ public static class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Clear<T>(this T[] array) => Array.Clear(array, 0, array.Length);
 
+    public static bool StartsWith(this byte[] first, byte[] second)
+    {
+        if (first.Length < second.Length) return false;
+
+        for (int i = 0; i < second.Length; i++)
+        {
+            if (first[i] != second[i]) return false;
+        }
+        return true;
+    }
+
     #region Clear and add
 
     public static void ClearAndAdd<T>(this List<T> list, T item)

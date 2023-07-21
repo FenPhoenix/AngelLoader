@@ -1,8 +1,16 @@
-﻿using System;
+﻿//#define ENABLE_UNUSED
+
+using System;
 using System.IO;
 using AL_Common.FastZipReader;
 
 namespace AL_Common;
+
+public readonly struct BinaryBuffer
+{
+    public readonly byte[] Buffer;
+    public BinaryBuffer() => Buffer = new byte[8];
+}
 
 /// <summary>
 /// Static methods as a replacement for BinaryReader, where you pass in your own buffer so it doesn't have to
@@ -11,7 +19,7 @@ namespace AL_Common;
 /// </summary>
 public static class BinaryRead
 {
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Reads a <see langword="Boolean" /> value from the current stream and advances the current position of the stream by one byte.</summary>
     /// <returns>
@@ -19,10 +27,10 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static bool ReadBoolean(Stream stream, byte[] buffer)
+    public static bool ReadBoolean(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 1, buffer);
-        return buffer[0] != 0;
+        return buffer.Buffer[0] != 0;
     }
 
 #endif
@@ -32,24 +40,24 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static byte ReadByte(Stream stream, byte[] buffer)
+    public static byte ReadByte(Stream stream, BinaryBuffer buffer)
     {
-        int bytesRead = stream.Read(buffer, 0, 1);
+        int bytesRead = stream.Read(buffer.Buffer, 0, 1);
         if (bytesRead == 0) ThrowHelper.EndOfFile();
-        return buffer[0];
+        return buffer.Buffer[0];
     }
 
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Reads a signed byte from this stream and advances the current position of the stream by one byte.</summary>
     /// <returns>A signed byte read from the current stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static sbyte ReadSByte(Stream stream, byte[] buffer)
+    public static sbyte ReadSByte(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 1, buffer);
-        return (sbyte)(buffer[0]);
+        return (sbyte)(buffer.Buffer[0]);
     }
 
     /// <summary>Reads a 2-byte signed integer from the current stream and advances the current position of the stream by two bytes.</summary>
@@ -57,10 +65,10 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static short ReadInt16(Stream stream, byte[] buffer)
+    public static short ReadInt16(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 2, buffer);
-        return (short)(buffer[0] | buffer[1] << 8);
+        return (short)(buffer.Buffer[0] | buffer.Buffer[1] << 8);
     }
 
 #endif
@@ -70,23 +78,23 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static ushort ReadUInt16(Stream stream, byte[] buffer)
+    public static ushort ReadUInt16(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 2, buffer);
-        return (ushort)(buffer[0] | buffer[1] << 8);
+        return (ushort)(buffer.Buffer[0] | buffer.Buffer[1] << 8);
     }
 
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Reads a 4-byte signed integer from the current stream and advances the current position of the stream by four bytes.</summary>
     /// <returns>A 4-byte signed integer read from the current stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static int ReadInt32(Stream stream, byte[] buffer)
+    public static int ReadInt32(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 4, buffer);
-        return (int)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
+        return (int)(buffer.Buffer[0] | buffer.Buffer[1] << 8 | buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
     }
 
 #endif
@@ -96,26 +104,26 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static uint ReadUInt32(Stream stream, byte[] buffer)
+    public static uint ReadUInt32(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 4, buffer);
-        return (uint)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
+        return (uint)(buffer.Buffer[0] | buffer.Buffer[1] << 8 | buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
     }
 
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Reads an 8-byte signed integer from the current stream and advances the current position of the stream by eight bytes.</summary>
     /// <returns>An 8-byte signed integer read from the current stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static long ReadInt64(Stream stream, byte[] buffer)
+    public static long ReadInt64(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 8, buffer);
-        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
-                         buffer[2] << 16 | buffer[3] << 24);
-        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
-                         buffer[6] << 16 | buffer[7] << 24);
+        uint lo = (uint)(buffer.Buffer[0] | buffer.Buffer[1] << 8 |
+                         buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
+        uint hi = (uint)(buffer.Buffer[4] | buffer.Buffer[5] << 8 |
+                         buffer.Buffer[6] << 16 | buffer.Buffer[7] << 24);
         return (long)((ulong)hi) << 32 | lo;
     }
 
@@ -126,27 +134,27 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    public static ulong ReadUInt64(Stream stream, byte[] buffer)
+    public static ulong ReadUInt64(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 8, buffer);
-        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
-                         buffer[2] << 16 | buffer[3] << 24);
-        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
-                         buffer[6] << 16 | buffer[7] << 24);
+        uint lo = (uint)(buffer.Buffer[0] | buffer.Buffer[1] << 8 |
+                         buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
+        uint hi = (uint)(buffer.Buffer[4] | buffer.Buffer[5] << 8 |
+                         buffer.Buffer[6] << 16 | buffer.Buffer[7] << 24);
         return ((ulong)hi) << 32 | lo;
     }
 
-#if false
+#if ENABLE_UNUSED
 
     /// <summary>Reads a 4-byte floating point value from the current stream and advances the current position of the stream by four bytes.</summary>
     /// <returns>A 4-byte floating point value read from the current stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static unsafe float ReadSingle(Stream stream, byte[] buffer)
+    public static unsafe float ReadSingle(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 4, buffer);
-        uint tmpBuffer = (uint)(buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24);
+        uint tmpBuffer = (uint)(buffer.Buffer[0] | buffer.Buffer[1] << 8 | buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
         return *((float*)&tmpBuffer);
     }
 
@@ -155,13 +163,13 @@ public static class BinaryRead
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
-    public static unsafe double ReadDouble(Stream stream, byte[] buffer)
+    public static unsafe double ReadDouble(Stream stream, BinaryBuffer buffer)
     {
         FillBuffer(stream, 8, buffer);
-        uint lo = (uint)(buffer[0] | buffer[1] << 8 |
-                         buffer[2] << 16 | buffer[3] << 24);
-        uint hi = (uint)(buffer[4] | buffer[5] << 8 |
-                         buffer[6] << 16 | buffer[7] << 24);
+        uint lo = (uint)(buffer.Buffer[0] | buffer.Buffer[1] << 8 |
+                         buffer.Buffer[2] << 16 | buffer.Buffer[3] << 24);
+        uint hi = (uint)(buffer.Buffer[4] | buffer.Buffer[5] << 8 |
+                         buffer.Buffer[6] << 16 | buffer.Buffer[7] << 24);
 
         ulong tmpBuffer = ((ulong)hi) << 32 | lo;
         return *((double*)&tmpBuffer);
@@ -217,18 +225,12 @@ public static class BinaryRead
         return result;
     }
 
-    private static void FillBuffer(Stream stream, int numBytes, byte[] buffer)
+    private static void FillBuffer(Stream stream, int numBytes, BinaryBuffer buffer)
     {
-        if (numBytes > buffer.Length)
-        {
-            ThrowHelper.ArgumentOutOfRange(nameof(numBytes), SR.ArgumentOutOfRange_BinaryReaderFillBuffer);
-        }
-
         int bytesRead = 0;
-
         do
         {
-            int n = stream.Read(buffer, bytesRead, numBytes - bytesRead);
+            int n = stream.Read(buffer.Buffer, bytesRead, numBytes - bytesRead);
             if (n == 0) ThrowHelper.EndOfFile();
             bytesRead += n;
         }

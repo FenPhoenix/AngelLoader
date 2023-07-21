@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using AL_Common;
 using static AL_Common.Common;
 
 namespace FMScanner;
@@ -15,7 +16,7 @@ public sealed partial class Scanner
 
     private readonly byte[] _misChunkHeaderBuffer = new byte[12];
 
-    private readonly byte[] _binaryReadBuffer = new byte[8];
+    private readonly BinaryBuffer _binaryReadBuffer = new();
 
     private const char LeftDoubleQuote = '\u201C';
     private const char RightDoubleQuote = '\u201D';

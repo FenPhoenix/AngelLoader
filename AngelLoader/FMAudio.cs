@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -26,8 +25,8 @@ internal static class FMAudio
     private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
     private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
     private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
-    // @THREADING(FindFMs buffer4): Not thread-safe
-    private static readonly byte[] _buffer4 = new byte[4];
+    // @THREADING(FindFMs binary buffer): Not thread-safe
+    private static readonly BinaryBuffer _binaryBuffer = new();
 
     private static CancellationTokenSource _conversionCts = new();
     private static void CancelToken() => _conversionCts.CancelIfNotDisposed();
@@ -170,20 +169,20 @@ internal static class FMAudio
                     {
                         using var fs = File_OpenReadFast(file);
 
-                        _ = fs.ReadAll(_buffer4.Cleared(), 0, 4);
-                        if (!_buffer4.SequenceEqual(_riff)) return -1;
+                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
+                        if (!_binaryBuffer.Buffer.StartsWith(_riff)) return -1;
 
                         fs.Seek(4, SeekOrigin.Current);
 
-                        _ = fs.ReadAll(_buffer4.Cleared(), 0, 4);
-                        if (!_buffer4.SequenceEqual(_wave)) return 0;
+                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
+                        if (!_binaryBuffer.Buffer.StartsWith(_wave)) return 0;
 
-                        _ = fs.ReadAll(_buffer4.Cleared(), 0, 4);
-                        if (!_buffer4.SequenceEqual(_fmt)) return 0;
+                        _ = fs.ReadAll(_binaryBuffer.Buffer.Cleared(), 0, 4);
+                        if (!_binaryBuffer.Buffer.StartsWith(_fmt)) return 0;
 
                         fs.Seek(18, SeekOrigin.Current);
 
-                        ushort bits = BinaryRead.ReadUInt16(fs, _buffer4);
+                        ushort bits = BinaryRead.ReadUInt16(fs, _binaryBuffer);
                         return bits;
                     }
                     catch

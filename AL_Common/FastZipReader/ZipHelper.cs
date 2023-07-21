@@ -45,7 +45,7 @@ public sealed class ZipReusableBundle : IDisposable
     internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
     internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
 
-    internal readonly byte[] BinaryReadBuffer = new byte[16];
+    internal readonly BinaryBuffer BinaryReadBuffer = new();
 
     public void Dispose() => ArchiveSubReadStream.Dispose();
 }
