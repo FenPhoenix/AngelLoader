@@ -63,6 +63,7 @@ public sealed partial class Scanner : IDisposable
 
     private readonly SevenZipContext _sevenZipContext = new();
 
+    private readonly string _sevenZipWorkingPath;
     private readonly string _sevenZipExePath;
 
     private readonly FileEncoding _fileEncoding = new();
@@ -218,13 +219,21 @@ public sealed partial class Scanner : IDisposable
 #endif
     }
 
+#if FMScanner_FullCode
     [PublicAPI]
-    public Scanner(string sevenZipExePath)
+    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath)
+    {
+    }
+#endif
+
+    [PublicAPI]
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
+        _sevenZipWorkingPath = sevenZipWorkingPath;
         _sevenZipExePath = sevenZipExePath;
 
         #region Array construction
@@ -778,7 +787,7 @@ public sealed partial class Scanner : IDisposable
                 string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
 
                 Fen7z.Result result = Fen7z.Extract(
-                    sevenZipWorkingPath: Path.GetDirectoryName(_sevenZipExePath)!,
+                    sevenZipWorkingPath: _sevenZipWorkingPath,
                     sevenZipPathAndExe: _sevenZipExePath,
                     archivePath: fm.Path,
                     outputPath: _fmWorkingPath,
