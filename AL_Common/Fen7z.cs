@@ -13,9 +13,6 @@ public static class Fen7z
     [PublicAPI]
     public sealed class ProgressReport
     {
-        public string EntryFileName = "";
-        public int EntryNumber;
-        public int TotalEntriesCount;
         public int PercentOfBytes;
         public int PercentOfEntries;
         public bool Canceling;
