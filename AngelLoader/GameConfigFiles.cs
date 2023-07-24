@@ -391,10 +391,10 @@ internal static class GameConfigFiles
 
             for (int i = 0; i < lines.Count; i++)
             {
-                string lt = lines[i].Trim();
-                if (lt.StartsWithI(key_character_detail))
+                string lineTS = lines[i].TrimStart();
+                if (lineTS.StartsWithI(key_character_detail))
                 {
-                    string val = lt.Substring(key_character_detail.Length).Trim();
+                    string val = lineTS.Substring(key_character_detail.Length).Trim();
                     if (removeAll || val == "0")
                     {
                         lines.RemoveAt(i);
