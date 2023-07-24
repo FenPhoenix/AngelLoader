@@ -90,9 +90,9 @@ public static class Fen7z
         string sevenZipPathAndExe,
         string archivePath,
         string outputPath,
-        int entriesCount,
-        string listFile,
-        List<string>? fileNamesList,
+        int entriesCount = 0,
+        string listFile = "",
+        List<string>? fileNamesList = null,
         CancellationToken? cancellationToken = null,
         IProgress<ProgressReport>? progress = null)
     {
@@ -180,7 +180,8 @@ public static class Fen7z
                     if (pi > -1)
                     {
                         int di;
-                        if (int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
+                        if (entriesCount > 0 &&
+                            int.TryParse((di = lineT.IndexOf('-', pi + 1)) > -1
                                 ? lineT.Substring(pi + 1, di)
                                 : lineT.Substring(pi + 1), out int entriesDone))
                         {

@@ -782,8 +782,6 @@ public sealed partial class Scanner : IDisposable
                     sevenZipPathAndExe: _sevenZipExePath,
                     archivePath: fm.Path,
                     outputPath: _fmWorkingPath,
-                    // We're not reporting progress, so this param is unused
-                    entriesCount: 0,
                     listFile: listFile,
                     fileNamesList: fileNamesList,
                     cancellationToken: cancellationToken);

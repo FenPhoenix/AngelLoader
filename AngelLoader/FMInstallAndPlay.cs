@@ -1685,10 +1685,8 @@ internal static class FMInstallAndPlay
                 fmArchivePath,
                 fmInstalledPath,
                 entriesCount,
-                listFile: "",
-                new List<string>(),
-                _installCts.Token,
-                progress
+                cancellationToken: _installCts.Token,
+                progress: progress
             );
 
             if (result.ErrorOccurred)
