@@ -273,7 +273,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         _unicodeUnknown_Char,
         _unicodeUnknown_Char,
 
-        0x20AC, // Euro sign, but undefined in Win10 Symbol font at least
+        // Euro sign, but undefined in Win10 Symbol font at least
+        0x20AC,
 
         0x03D2,
         0x2032,
@@ -1482,7 +1483,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         #endregion
 
-        PutChars(_unicodeBuffer.ItemsArray, _unicodeBuffer.Count);
+        PutChars(_unicodeBuffer, _unicodeBuffer.Count);
 
         _unicodeBuffer.ClearFast();
     }
@@ -1512,7 +1513,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         int codePoint;
 
-        // Eat the space
         if (!GetNextChar(out char ch)) return Error.EndOfFile;
 
         #region Check for SYMBOL instruction
@@ -1824,20 +1824,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             {
                 _plainText.Add(ch);
             }
-        }
-        return Error.OK;
-    }
-
-    private Error PutChars(char[] ch, int count)
-    {
-        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
-        // need to duplicate any of the bare-char symbol font stuff here.
-
-        if (!(count == 1 && ch[0] == '\0') &&
-            _currentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_currentScope.InFontTable)
-        {
-            _plainText.AddRange(ch, count);
         }
         return Error.OK;
     }

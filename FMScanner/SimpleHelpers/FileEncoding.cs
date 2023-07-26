@@ -43,23 +43,6 @@ namespace FMScanner.SimpleHelpers;
 
 public sealed class FileEncoding
 {
-    /*
-    We used to fail detecting Cyrillic on several readmes, but it turns out it was a simple shadowed-variable bug
-    in Ude.NetStandard. After fixing it, Cyrillic detection seems to be working well.
-
-    Links of interest:
-    
-    uchardet:
-    https://www.freedesktop.org/wiki/Software/uchardet/
-    Claims to be based on the old Mozilla UDE, but updated to be more accurate and support more encodings.
-    -Maybe we can wrap this one or port it.
-
-    UTF.Unknown:
-    https://github.com/CharsetDetector/UTF-unknown
-    Claims to be "based on UDE and uchardet", but based on the release dates it has to be uchardet 0.06 or
-    something, rather than 0.07 (latest as of 2021-04-10).
-    */
-
     private const int DEFAULT_BUFFER_SIZE = ByteSize.KB * 128;
 
     private bool _started;

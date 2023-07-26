@@ -1874,7 +1874,6 @@ public sealed partial class Scanner : IDisposable
 
             string lang = SupportedLanguages[i];
 
-            // This all depends on langs being lowercase!
             Debug.Assert(lang == lang.ToLowerInvariant(),
                 "lang != lang.ToLowerInvariant() - lang is not lowercase");
 
@@ -2657,7 +2656,6 @@ public sealed partial class Scanner : IDisposable
                 .Replace(@"\n", "\r\n")
                 .Replace(@"\""", "\"");
 
-            // Remove surrounding quotes
             if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
                 CountChars(fmIni.Descr, '\"') == 2)
             {
@@ -3106,12 +3104,14 @@ public sealed partial class Scanner : IDisposable
                 if (!ret.IsEmpty()) return ret;
             }
 
-            // @PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
-            // This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
-            // don't even know why I thought I needed that but it turns out I could just make it static like
-            // the rest, so I did. Re-evaluate this and maybe put it higher?
-            // Anything that can go before the full-text search probably should, because that's clearly the
-            // slowest by far.
+            /*
+            @PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
+            This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
+            don't even know why I thought I needed that but it turns out I could just make it static like
+            the rest, so I did. Re-evaluate this and maybe put it higher?
+            Anything that can go before the full-text search probably should, because that's clearly the
+            slowest by far.
+            */
             ret = GetAuthorFromTitleByAuthorLine(titles);
         }
 
@@ -3276,8 +3276,6 @@ public sealed partial class Scanner : IDisposable
 
         ret = ret.RemoveSurroundingParentheses();
 
-        // @PERF_TODO(Scanner/CleanupValue parentheses stuff):
-        // Open paren is searched for potentially 3 times. We could cut that down.
         bool containsOpenParen = ret.Contains('(');
         bool containsCloseParen = ret.Contains(')');
 
@@ -4193,8 +4191,8 @@ public sealed partial class Scanner : IDisposable
 #endif
         bool foundAtOldDarkThief2Location = false;
 
-        // We need to say "length - x" because for zips, the buffer will be full offset size rather than
-        // locationBytesToRead size
+        // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
+        // string size
         static bool EndsWithSKYOBJVAR(byte[] buffer)
         {
             int len = buffer.Length;
@@ -4435,14 +4433,16 @@ public sealed partial class Scanner : IDisposable
 
         #region SS2 slow-detect fallback
 
-        // Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
-        // NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
-        // it earlier during ReadAndCacheFMData() and again here). For T2, we have a fallback scan if we don't
-        // find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
-        // really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has MAPPARAM
-        // in a different place, at least we're like 98% certain to still detect it correctly here. Then people
-        // can still at least have an accurate detection while I work on a new version that takes the new
-        // MAPPARAM location into account.
+        /*
+        Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
+        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
+        it earlier during ReadAndCacheFMData() and again here). For T2, we have a fallback scan if we don't
+        find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
+        really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has MAPPARAM
+        in a different place, at least we're like 98% certain to still detect it correctly here. Then people
+        can still at least have an accurate detection while I work on a new version that takes the new
+        MAPPARAM location into account.
+        */
 
         static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, HashSetI ss2MisFiles)
         {
