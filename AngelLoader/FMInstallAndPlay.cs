@@ -1013,6 +1013,8 @@ internal static class FMInstallAndPlay
 
             const int DARKMISS_NewDarkLocation = 612;
 
+            byte[] buffer = new byte[Math.Max(MAPPARAM.Length, _DARKMISS_Bytes.Length)];
+
             if (fm.Game == Game.SS2)
             {
                 bool atLeastOneOldDarkMissionFound = false;
@@ -1028,8 +1030,8 @@ internal static class FMInstallAndPlay
                     if (streamLength > MAPPARAM_NewDarkLocation + MAPPARAM.Length)
                     {
                         fs.Position = MAPPARAM_NewDarkLocation;
-                        byte[] buffer = BinaryRead.ReadBytes(fs, MAPPARAM.Length);
-                        if (buffer.SequenceEqual(MAPPARAM))
+                        int bytesRead = fs.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
+                        if (bytesRead == MAPPARAM.Length && buffer.StartsWith(MAPPARAM))
                         {
                             return false;
                         }
@@ -1041,8 +1043,8 @@ internal static class FMInstallAndPlay
                         streamLength > MAPPARAM_OldDarkLocation + MAPPARAM.Length)
                     {
                         fs.Position = MAPPARAM_OldDarkLocation;
-                        byte[] buffer = BinaryRead.ReadBytes(fs, MAPPARAM.Length);
-                        if (buffer.SequenceEqual(MAPPARAM))
+                        int bytesRead = fs.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
+                        if (bytesRead == MAPPARAM.Length && buffer.StartsWith(MAPPARAM))
                         {
                             atLeastOneOldDarkMissionFound = true;
                         }
@@ -1061,9 +1063,9 @@ internal static class FMInstallAndPlay
                 }
 
                 fs.Position = DARKMISS_NewDarkLocation;
-                byte[] buffer = BinaryRead.ReadBytes(fs, _DARKMISS_Bytes.Length);
+                int bytesRead = fs.ReadAll(buffer.Cleared(), 0, _DARKMISS_Bytes.Length);
 
-                return !buffer.SequenceEqual(_DARKMISS_Bytes);
+                return !(bytesRead == _DARKMISS_Bytes.Length && buffer.StartsWith(_DARKMISS_Bytes));
             }
         }
         catch (Exception ex)

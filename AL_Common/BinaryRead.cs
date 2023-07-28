@@ -1,8 +1,12 @@
 ﻿//#define ENABLE_UNUSED
 
+#if ENABLE_UNUSED
 using System;
+#endif
 using System.IO;
+#if ENABLE_UNUSED
 using AL_Common.FastZipReader;
+#endif
 
 namespace AL_Common;
 
@@ -175,8 +179,6 @@ public static class BinaryRead
         return *((double*)&tmpBuffer);
     }
 
-#endif
-
     /// <summary>Reads the specified number of bytes from the current stream into a byte array and advances the current position by that number of bytes.</summary>
     /// <param name="stream"></param>
     /// <param name="count">The number of bytes to read. This value must be 0 or a non-negative number or an exception will occur.</param>
@@ -224,6 +226,8 @@ public static class BinaryRead
 
         return result;
     }
+
+#endif
 
     private static void FillBuffer(Stream stream, int numBytes, BinaryBuffer buffer)
     {
