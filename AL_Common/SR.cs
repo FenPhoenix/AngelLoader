@@ -1,10 +1,12 @@
+//#define ENABLE_UNUSED
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace AL_Common.FastZipReader;
+namespace AL_Common;
 
 // We don't want these as constants because we don't want them duplicated everywhere bloating things up.
 // We don't care about the infinitesimal perf increase of constants either, because these are error messages
@@ -45,6 +47,7 @@ public static class SR
     public static readonly string WritingNotSupported = "This stream from ZipArchiveEntry does not support writing.";
     public static readonly string Zip64EOCDNotWhereExpected = "Zip 64 End of Central Directory Record not where indicated.";
     public static readonly string EOF_ReadBeyondEOF = "Unable to read beyond the end of the stream.";
+#if ENABLE_UNUSED
     public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
-    public static readonly string ArgumentOutOfRange_BinaryReaderFillBuffer = "The number of bytes requested does not fit into BinaryReader's public buffer.";
+#endif
 }

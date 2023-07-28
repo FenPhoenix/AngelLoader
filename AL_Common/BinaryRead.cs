@@ -1,13 +1,6 @@
 ﻿//#define ENABLE_UNUSED
 
-#if ENABLE_UNUSED
-using System;
-#endif
 using System.IO;
-#if ENABLE_UNUSED
-using AL_Common.FastZipReader;
-#endif
-
 namespace AL_Common;
 
 public readonly struct BinaryBuffer
@@ -196,7 +189,7 @@ public static class BinaryRead
         }
         if (count == 0)
         {
-            return Array.Empty<byte>();
+            return System.Array.Empty<byte>();
         }
 
         byte[] result = new byte[count];
@@ -220,7 +213,7 @@ public static class BinaryRead
         if (numRead != result.Length)
         {
             byte[] copy = new byte[numRead];
-            Buffer.BlockCopy(result, 0, copy, 0, numRead);
+            System.Buffer.BlockCopy(result, 0, copy, 0, numRead);
             result = copy;
         }
 
