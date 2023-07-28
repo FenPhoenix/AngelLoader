@@ -580,7 +580,7 @@ internal static class FMInstallAndPlay
 
         if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
         {
-            string dlExe = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
+            string dlExe = AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
 
             (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                 message: GetLocalizedGameNameColon(gameIndex) + "\r\n" +

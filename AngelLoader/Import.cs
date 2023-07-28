@@ -32,59 +32,6 @@ internal static class Import
 
     #region Public methods
 
-    internal static string AutodetectDarkLoaderFile(string fileName)
-    {
-        // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
-        string[] dlLocations =
-        {
-            "DarkLoader",
-            @"Games\DarkLoader"
-        };
-
-        DriveInfo[] drives;
-        try
-        {
-            drives = DriveInfo.GetDrives();
-        }
-        catch (Exception ex)
-        {
-            Log(ex: ex);
-            return "";
-        }
-
-        try
-        {
-            string dlIni;
-            foreach (DriveInfo drive in drives)
-            {
-                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
-
-                foreach (string loc in dlLocations)
-                {
-                    if (TryCombineFilePathAndCheckExistence(drive.Name, loc, fileName, out dlIni))
-                    {
-                        return dlIni;
-                    }
-                }
-            }
-
-            if (TryCombineFilePathAndCheckExistence(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                    "DarkLoader",
-                    fileName,
-                    out dlIni))
-            {
-                return dlIni;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "in DarkLoader multi-drive search", ex);
-        }
-
-        return "";
-    }
-
     internal static async Task ImportFrom(ImportType importType)
     {
         bool importFMData = false;

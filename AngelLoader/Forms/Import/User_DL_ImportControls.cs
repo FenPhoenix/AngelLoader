@@ -13,7 +13,7 @@ public sealed partial class User_DL_ImportControls : UserControl
 #else
         InitSlim();
 #endif
-        DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
+        DarkLoaderIniTextBox.Text = Utils.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
     }
 
     internal string DarkLoaderIniText => DarkLoaderIniTextBox.Text;
@@ -32,7 +32,7 @@ public sealed partial class User_DL_ImportControls : UserControl
         DarkLoaderIniTextBox.ReadOnly = AutodetectCheckBox.Checked;
         DarkLoaderIniBrowseButton.Enabled = !AutodetectCheckBox.Checked;
 
-        if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = Import.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
+        if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = Utils.AutodetectDarkLoaderFile(Paths.DarkLoaderIni);
     }
 
     internal void Localize()
