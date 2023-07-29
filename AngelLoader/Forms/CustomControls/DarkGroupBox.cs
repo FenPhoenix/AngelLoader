@@ -65,6 +65,7 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
         if (!_darkModeEnabled)
         {
             base.OnPaint(e);
+            PaintCustom?.Invoke(this, e);
             return;
         }
 
