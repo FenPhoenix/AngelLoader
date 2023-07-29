@@ -15,9 +15,6 @@ GetSysColor is necessary to theme the DateTimePicker; the selection color for te
 color for the RichTextBox (though the latter CAN be worked around - clunkily - by making the default color explicit
 in the color table and then inserting \cf0 control words after every \pard, \sectd, and \plain (I think that's
 all of them...)).
-
-This file is left here as a basic example of how the .NET 5+ friendly way to hook would look like, if GetSysColor
-actually worked.
 */
 
 #endregion
