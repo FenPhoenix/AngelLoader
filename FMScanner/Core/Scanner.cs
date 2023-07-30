@@ -1426,13 +1426,15 @@ public sealed partial class Scanner : IDisposable
 
             if (Directory.Exists(readmePathFull))
             {
-                Directory.CreateDirectory(Path.Combine(cachePath, readmeDir));
+                string cachePathReadmeDir = Path.Combine(cachePath, readmeDir);
+
+                Directory.CreateDirectory(cachePathReadmeDir);
 
                 foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
                 {
                     if (f.IsValidReadme())
                     {
-                        readmes.Add((f, Path.Combine(cachePath, readmeDir, Path.GetFileName(f))));
+                        readmes.Add((f, Path.Combine(cachePathReadmeDir, Path.GetFileName(f))));
                     }
                 }
             }
@@ -2200,7 +2202,7 @@ public sealed partial class Scanner : IDisposable
                 fmd.Game = Game.Thief3;
             }
 
-            foreach (string f in EnumFiles(SearchOption.TopDirectoryOnly))
+            foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
             {
                 _baseDirFiles.Add(new NameAndIndex(Path.GetFileName(f)));
             }
@@ -4618,15 +4620,11 @@ public sealed partial class Scanner : IDisposable
 
     #region Generic dir/file functions
 
-    private string[]
-    EnumFiles(SearchOption searchOption) => EnumFiles("", searchOption, checkDirExists: false);
-
-    private string[]
-    EnumFiles(string path, SearchOption searchOption, bool checkDirExists = true)
+    private string[] EnumFiles(string path, SearchOption searchOption)
     {
         string fullDir = Path.Combine(_fmWorkingPath, path);
 
-        return !checkDirExists || Directory.Exists(fullDir)
+        return Directory.Exists(fullDir)
             ? Directory.GetFiles(fullDir, "*", searchOption)
             : Array.Empty<string>();
     }
