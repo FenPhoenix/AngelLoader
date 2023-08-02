@@ -303,13 +303,16 @@ internal static class GameConfigFiles
                     // Only try to un-stomp the configs for the game if the game was actually specified
                     !gameExe.IsWhiteSpace())
                 {
-                    // For Dark, we need to know if the game exe itself actually exists.
-                    if (GameIsDark(gameIndex) && File.Exists(gameExe))
+                    if (GameIsDark(gameIndex))
                     {
-                        string gamePath = Config.GetGamePath(gameIndex);
-                        SetCamCfgLanguage(gamePath, "");
-                        SetDarkFMSelector(gameIndex, gamePath, resetSelector: true);
-                        FixCharacterDetailLine(gameIndex);
+                        // For Dark, we need to know if the game exe itself actually exists.
+                        if (File.Exists(gameExe))
+                        {
+                            string gamePath = Config.GetGamePath(gameIndex);
+                            SetCamCfgLanguage(gamePath, "");
+                            SetDarkFMSelector(gameIndex, gamePath, resetSelector: true);
+                            FixCharacterDetailLine(gameIndex);
+                        }
                     }
                     else
                     {
