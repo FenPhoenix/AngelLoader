@@ -71,18 +71,18 @@ internal readonly ref struct DisableEvents
     }
 
     private readonly bool _active;
-    private readonly IEventDisabler Obj;
+    private readonly IEventDisabler _obj;
     public DisableEvents(IEventDisabler obj, bool active = true)
     {
         _active = active;
-        Obj = obj;
+        _obj = obj;
 
-        if (_active) Obj.EventsDisabled++;
+        if (_active) _obj.EventsDisabled++;
     }
 
     public void Dispose()
     {
-        if (_active) Obj.EventsDisabled = (Obj.EventsDisabled - 1).ClampToZero();
+        if (_active) _obj.EventsDisabled = (_obj.EventsDisabled - 1).ClampToZero();
     }
 }
 
@@ -100,14 +100,14 @@ public interface IZeroSelectCodeDisabler
 
 internal readonly ref struct DisableZeroSelectCode
 {
-    private readonly IZeroSelectCodeDisabler Obj;
+    private readonly IZeroSelectCodeDisabler _obj;
     internal DisableZeroSelectCode(IZeroSelectCodeDisabler obj)
     {
-        Obj = obj;
-        Obj.ZeroSelectCodeDisabled++;
+        _obj = obj;
+        _obj.ZeroSelectCodeDisabled++;
     }
 
-    public void Dispose() => Obj.ZeroSelectCodeDisabled = (Obj.ZeroSelectCodeDisabled - 1).ClampToZero();
+    public void Dispose() => _obj.ZeroSelectCodeDisabled = (_obj.ZeroSelectCodeDisabled - 1).ClampToZero();
 }
 
 #endregion
