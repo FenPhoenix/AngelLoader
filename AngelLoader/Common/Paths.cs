@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -337,6 +338,79 @@ internal static class Paths
 #endif
 
     internal static string GetSneakyOptionsIni()
+    {
+        if (TryGetSneakyOptionsIniFromGameDir(out string soIni))
+        {
+            return soIni;
+        }
+        else
+        {
+            return GetSneakyOptionsIniFromRegistry();
+        }
+    }
+
+    private static bool TryGetSneakyOptionsIniFromGameDir(out string soIni)
+    {
+        try
+        {
+            soIni = "";
+
+            string gamePath = Global.Config.GetGamePath(GameSupport.GameIndex.Thief3);
+            if (gamePath.IsWhiteSpace()) return false;
+
+            // @SU11: We need to make sure we end up in [game root]\System directory, even if our exe is not in there
+            Utils.AssertR(new DirectoryInfo(gamePath).Name.EqualsI("System"), "T3 exe dir not System");
+
+            string sneakyIni = Path.Combine(gamePath, "Sneaky.ini");
+
+            if (!File.Exists(sneakyIni)) return false;
+
+            if (!Utils.TryReadAllLines(sneakyIni, out List<string>? lines))
+            {
+                return false;
+            }
+
+            bool ignoreSaveGameKey = false;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lineT = lines[i].Trim();
+                if (lineT.EqualsI("[Install]"))
+                {
+                    while (i < lines.Count - 1)
+                    {
+                        string lt = lines[i + 1].Trim();
+                        if (!lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSaveGamePath="))
+                        {
+                            ignoreSaveGameKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                            break;
+                        }
+                        i++;
+                    }
+                    break;
+                }
+            }
+
+            if (!ignoreSaveGameKey) return false;
+
+            // @SU11: We need to make sure we're actually in the game root, not just a blind one-directory-up
+            string? gameRootPath = Path.GetDirectoryName(gamePath);
+            if (gameRootPath.IsWhiteSpace()) return false;
+
+            string finalSoIni = Path.Combine(gameRootPath, "Options", "SneakyOptions.ini");
+            if (!File.Exists(finalSoIni)) return false;
+
+            soIni = finalSoIni;
+            return true;
+        }
+        catch
+        {
+            soIni = "";
+            return false;
+        }
+    }
+
+    private static string GetSneakyOptionsIniFromRegistry()
     {
         try
         {
