@@ -353,6 +353,12 @@ internal static class Paths
     {
         try
         {
+            /*
+            @SU11: Detect version for this? (minimum publicly available version that supports this is 1.1.10.519 (beta))
+            Minimum non-beta version is 1.1.11
+            We should detect the version here and quit early if we're below the minimum supported version.
+            */
+
             soIni = "";
 
             string gamePath = Global.Config.GetGamePath(GameSupport.GameIndex.Thief3);
