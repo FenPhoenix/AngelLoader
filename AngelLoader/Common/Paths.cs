@@ -337,6 +337,8 @@ internal static class Paths
     internal const string UserBnd = "user.bnd";
 #endif
 
+    private const string _sneakyOptionsIni = "SneakyOptions.ini";
+
     internal static string GetSneakyOptionsIni()
     {
         if (TryGetSneakyOptionsIniFromGameDir(out string soIni))
@@ -403,7 +405,7 @@ internal static class Paths
             string? gameRootPath = Path.GetDirectoryName(gamePath);
             if (gameRootPath.IsWhiteSpace()) return false;
 
-            string finalSoIni = Path.Combine(gameRootPath, "Options", "SneakyOptions.ini");
+            string finalSoIni = Path.Combine(gameRootPath, "Options", _sneakyOptionsIni);
             if (!File.Exists(finalSoIni)) return false;
 
             soIni = finalSoIni;
@@ -428,11 +430,10 @@ internal static class Paths
 
             if (tdsKey?.GetValue("SaveGamePath", defaultValue: -1) is string regKeyStr)
             {
-                string soIniName = "SneakyOptions.ini";
                 string soIni;
                 try
                 {
-                    soIni = Path.Combine(regKeyStr, "Options", soIniName);
+                    soIni = Path.Combine(regKeyStr, "Options", _sneakyOptionsIni);
                 }
                 catch (Exception ex)
                 {
@@ -443,7 +444,7 @@ internal static class Paths
 
                 if (!File.Exists(soIni))
                 {
-                    Log(ErrorText.FoundRegKey + "couldn't find " + soIniName + "\r\n" +
+                    Log(ErrorText.FoundRegKey + "couldn't find " + _sneakyOptionsIni + "\r\n" +
                         ErrorText.RegKeyPath + regKeyStr + "\r\n" +
                         "Full path was: " + soIni);
                     return "";
