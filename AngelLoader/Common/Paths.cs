@@ -395,9 +395,13 @@ internal static class Paths
                     while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (!lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSaveGamePath="))
+                        if (lt.StartsWithI("IgnoreSaveGamePath="))
                         {
                             ignoreSaveGameKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                            break;
+                        }
+                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
                             break;
                         }
                         i++;
