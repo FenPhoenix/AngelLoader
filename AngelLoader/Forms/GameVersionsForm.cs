@@ -98,7 +98,7 @@ public sealed class GameVersionsForm : DarkFormBase
 
             if (!Config.GetGameExe(gameIndex).IsEmpty())
             {
-                (Error error, string version) = Core.GetGameVersion((GameIndex)i);
+                (Error error, _, string version) = Core.GetGameVersion((GameIndex)i);
                 textBox.Text =
                     error == Error.GameExeNotFound ? LText.GameVersionsWindow.Error_GameExeNotFound :
                     error == Error.SneakyDllNotFound ? LText.GameVersionsWindow.Error_SneakyDllNotFound :

@@ -2166,12 +2166,12 @@ internal static class Core
 
     #endregion
 
-    internal static (Error Error, string Version)
+    internal static (Error Error, Version? Version, string VersionString)
     GetGameVersion(GameIndex game)
     {
         string gameExe = Config.GetGameExe(game);
-        if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, "");
-        if (!File.Exists(gameExe)) return (Error.GameExeNotFound, "");
+        if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
+        if (!File.Exists(gameExe)) return (Error.GameExeNotFound, null, "");
 
         string exeToSearch;
         if (GameIsDark(game))
@@ -2183,7 +2183,7 @@ internal static class Core
             // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
             if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
             {
-                return (Error.SneakyDllNotFound, "");
+                return (Error.SneakyDllNotFound, null, "");
             }
         }
 
@@ -2194,10 +2194,20 @@ internal static class Core
         }
         catch (FileNotFoundException)
         {
-            return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, "");
+            return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, null, "");
         }
 
-        return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, "") : (Error.None, vi.ProductVersion);
+        Version? version;
+        try
+        {
+            version = new Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
+        }
+        catch
+        {
+            version = null;
+        }
+
+        return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, vi.ProductVersion);
     }
 
     internal static Task PinOrUnpinFM(bool pin)

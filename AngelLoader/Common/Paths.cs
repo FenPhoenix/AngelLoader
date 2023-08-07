@@ -8,6 +8,9 @@ using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
+using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -135,7 +138,7 @@ internal static class Paths
         // This method is called rarely and only once in a row
         bool pathIsInTempDir = path.PathStartsWithI(baseTemp + "\\");
 
-        Utils.AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
+        AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
 
         if (!pathIsInTempDir) return;
 
@@ -338,6 +341,7 @@ internal static class Paths
 #endif
 
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
+    private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);
 
     internal static string GetSneakyOptionsIni()
     {
@@ -355,25 +359,28 @@ internal static class Paths
     {
         try
         {
-            /*
-            @SU11: Detect version for this? (minimum publicly available version that supports this is 1.1.10.519 (beta))
-            Minimum non-beta version is 1.1.11
-            We should detect the version here and quit early if we're below the minimum supported version.
-            */
-
             soIni = "";
 
-            string gamePath = Global.Config.GetGamePath(GameSupport.GameIndex.Thief3);
+            (_, Version? version, _) = Core.GetGameVersion(GameIndex.Thief3);
+            // @SU11: Do we want different behavior if version is null (the version get failed)?
+            // Should we just carry on and accept the very small chance that Sneaky.ini could exist in an older
+            // version due to a weird broken install or something?
+            if (version == null || version < _sneakyUpgradeMinimumPortableVersion)
+            {
+                return false;
+            }
+
+            string gamePath = Config.GetGamePath(GameIndex.Thief3);
             if (gamePath.IsWhiteSpace()) return false;
 
             // @SU11: We need to make sure we end up in [game root]\System directory, even if our exe is not in there
-            Utils.AssertR(new DirectoryInfo(gamePath).Name.EqualsI("System"), "T3 exe dir not System");
+            AssertR(new DirectoryInfo(gamePath).Name.EqualsI("System"), "T3 exe dir not System");
 
             string sneakyIni = Path.Combine(gamePath, "Sneaky.ini");
 
             if (!File.Exists(sneakyIni)) return false;
 
-            if (!Utils.TryReadAllLines(sneakyIni, out List<string>? lines))
+            if (!TryReadAllLines(sneakyIni, out List<string>? lines))
             {
                 return false;
             }
