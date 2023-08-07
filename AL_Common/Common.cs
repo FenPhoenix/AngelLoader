@@ -407,6 +407,9 @@ public static class Common
     /// <returns></returns>
     public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[line.Length - 1] == ']';
+
     #region ASCII-specific
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

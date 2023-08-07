@@ -400,7 +400,7 @@ internal static class Paths
                             ignoreSaveGameKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
                             break;
                         }
-                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.IsIniHeader())
                         {
                             break;
                         }

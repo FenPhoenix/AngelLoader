@@ -252,7 +252,7 @@ internal static class GameConfigFiles
                         alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
                         alwaysShowLoaderFound = true;
                     }
-                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    else if (lt.IsIniHeader())
                     {
                         break;
                     }
@@ -756,7 +756,7 @@ internal static class GameConfigFiles
                         prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1);
                         break;
                     }
-                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    else if (lt.IsIniHeader())
                     {
                         break;
                     }
@@ -826,7 +826,7 @@ internal static class GameConfigFiles
                     lines[i + 1] = key_FanMission;
                 }
 
-                if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']') break;
+                if (lt.IsIniHeader()) break;
 
                 i++;
             }

@@ -2779,7 +2779,7 @@ public sealed partial class Scanner : IDisposable
                 while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
-                    if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    if (lt.IsIniHeader())
                     {
                         break;
                     }
@@ -2796,7 +2796,7 @@ public sealed partial class Scanner : IDisposable
                 while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
-                    if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    if (lt.IsIniHeader())
                     {
                         break;
                     }
