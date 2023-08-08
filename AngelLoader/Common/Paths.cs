@@ -418,7 +418,7 @@ internal static class Paths
 
             if (!ignoreSaveGameKey) return false;
 
-            // @SU11: We need to make sure we're actually in the game root, not just a blind one-directory-up
+            // We just have to assume that one level up is the game root
             string? gameRootPath = Path.GetDirectoryName(gamePath);
             if (gameRootPath.IsWhiteSpace()) return false;
 
