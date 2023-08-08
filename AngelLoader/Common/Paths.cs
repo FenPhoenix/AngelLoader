@@ -362,19 +362,25 @@ internal static class Paths
             soIni = "";
 
             (_, Version? version, _) = Core.GetGameVersion(GameIndex.Thief3);
-            // @SU11: Do we want different behavior if version is null (the version get failed)?
-            // Should we just carry on and accept the very small chance that Sneaky.ini could exist in an older
-            // version due to a weird broken install or something?
-            if (version == null || version < _sneakyUpgradeMinimumPortableVersion)
+            if (version != null && version < _sneakyUpgradeMinimumPortableVersion)
             {
                 return false;
             }
 
+            // If no version found, carry on under the assumption that something has changed in a new SU version,
+            // and assume that if a valid Sneaky.ini is found then we're on a supported version.
+
             string gamePath = Config.GetGamePath(GameIndex.Thief3);
             if (gamePath.IsWhiteSpace()) return false;
 
-            // @SU11: We need to make sure we end up in [game root]\System directory, even if our exe is not in there
-            AssertR(new DirectoryInfo(gamePath).Name.EqualsI("System"), "T3 exe dir not System");
+            string expectedSystemDirName = new DirectoryInfo(gamePath).Name;
+            if (!expectedSystemDirName.EqualsI("System"))
+            {
+                Log("Specified Thief 3 executable is not located in a folder named 'System'. This is unexpected, but continuing.\r\n" +
+                    "Thief 3 executable: " + Config.GetGameExe(GameIndex.Thief3) + "\r\n" +
+                    "Thief 3 executable directory full path: " + gamePath + "\r\n" +
+                    "Thief 3 executable directory name: " + expectedSystemDirName);
+            }
 
             string sneakyIni = Path.Combine(gamePath, "Sneaky.ini");
 
