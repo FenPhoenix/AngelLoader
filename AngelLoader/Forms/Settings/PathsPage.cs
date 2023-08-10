@@ -39,10 +39,11 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
             ActualPathsPanel.SuspendLayout();
 
             // Manual crap. Yes, it's necessary. All automatic methods are "almost what we need but not quite".
-            int flpC = LayoutFLP.Controls.Count;
-            for (int i = 0; i < flpC; i++)
+            ControlCollection layoutFLPControls = LayoutFLP.Controls;
+            int layoutFLPControlsCount = layoutFLPControls.Count;
+            for (int i = 0; i < layoutFLPControlsCount; i++)
             {
-                LayoutFLP.Controls[i].Width = LayoutFLP.ClientSize.Width - 16;
+                layoutFLPControls[i].Width = LayoutFLP.ClientSize.Width - 16;
             }
 
             BackupPathHelpLabel.MaximumSize = BackupPathHelpLabel.MaximumSize with
@@ -60,9 +61,9 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 
             // Have to do this separately after, because our heights will have changed above
             int flpHeight = LayoutFLP.Padding.Vertical;
-            for (int i = 0; i < flpC; i++)
+            for (int i = 0; i < layoutFLPControlsCount; i++)
             {
-                Control c = LayoutFLP.Controls[i];
+                Control c = layoutFLPControls[i];
                 flpHeight += c.Margin.Vertical +
                              c.Padding.Vertical +
                              c.Height;
@@ -72,10 +73,11 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 
             int greatestTop = 0;
             Control? bottomMostControl = null;
-            int appC = ActualPathsPanel.Controls.Count;
-            for (int i = 0; i < appC; i++)
+            ControlCollection actualPathsPanelControls = ActualPathsPanel.Controls;
+            int actualPathsPanelControlsCount = actualPathsPanelControls.Count;
+            for (int i = 0; i < actualPathsPanelControlsCount; i++)
             {
-                Control c = ActualPathsPanel.Controls[i];
+                Control c = actualPathsPanelControls[i];
                 if (c.Top > greatestTop)
                 {
                     greatestTop = c.Top;

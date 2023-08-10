@@ -498,9 +498,11 @@ public sealed partial class MainForm : DarkFormBase,
 
                     if (control.Focused) return true;
 
-                    for (int i = 0; i < control.Controls.Count; i++)
+                    Control.ControlCollection controls = control.Controls;
+                    int count = controls.Count;
+                    for (int i = 0; i < count; i++)
                     {
-                        if (AnyControlFocusedIn(control.Controls[i], stackCounter)) return true;
+                        if (AnyControlFocusedIn(controls[i], stackCounter)) return true;
                     }
 
                     return false;
@@ -4215,12 +4217,12 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private static void ShowPerGameModsWindow(GameIndex gameIndex)
+    private void ShowPerGameModsWindow(GameIndex gameIndex)
     {
         if (GameSupportsMods(gameIndex))
         {
             using var f = new OriginalGameModsForm(gameIndex);
-            if (f.ShowDialogDark() != DialogResult.OK) return;
+            if (f.ShowDialogDark(this) != DialogResult.OK) return;
             Config.SetNewMantling(gameIndex, f.NewMantling);
             Config.SetDisabledMods(gameIndex, f.DisabledMods);
         }

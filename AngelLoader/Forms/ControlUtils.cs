@@ -725,7 +725,8 @@ internal static class ControlUtils
         if (control is DarkTabControl dtc)
         {
             Control[] backingPages = dtc.BackingTabPages;
-            for (int i = 0; i < backingPages.Length; i++)
+            int count = backingPages.Length;
+            for (int i = 0; i < count; i++)
             {
                 FillControlColorList(
                     control: backingPages[i],
@@ -740,10 +741,12 @@ internal static class ControlUtils
         }
         else
         {
-            for (int i = 0; i < control.Controls.Count; i++)
+            Control.ControlCollection controls = control.Controls;
+            int count = controls.Count;
+            for (int i = 0; i < count; i++)
             {
                 FillControlColorList(
-                    control: control.Controls[i],
+                    control: controls[i],
                     controlColors: controlColors,
                     createControlHandles: createControlHandles,
                     createHandlePredicate: createHandlePredicate
