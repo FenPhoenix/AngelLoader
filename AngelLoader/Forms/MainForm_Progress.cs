@@ -197,7 +197,6 @@ public sealed partial class MainForm
 
     public void HideProgressBox() => Invoke(() =>
     {
-        if (ProgressBox == null) return;
-        ProgressBox.HideThis();
+        ProgressBox?.HideThis();
     });
 }
