@@ -34,12 +34,14 @@ public static partial class Utils
 
         for (int si = 0, vi = 0; si < valueLength; si++, vi++)
         {
-            if (value[vi] > 127)
+            char vc = value[vi];
+
+            if (vc > 127)
             {
                 return str.StartsWith(value, OrdinalIgnoreCase);
             }
 
-            if (!str[si].EqualsIAscii(value[vi])) return false;
+            if (!str[si].EqualsIAscii(vc)) return false;
         }
 
         return true;
@@ -62,12 +64,14 @@ public static partial class Utils
 
         for (int si = start, vi = 0; si < strLength; si++, vi++)
         {
-            if (value[vi] > 127)
+            char vc = value[vi];
+
+            if (vc > 127)
             {
                 return str.EndsWith(value, OrdinalIgnoreCase);
             }
 
-            if (!str[si].EqualsIAscii(value[vi])) return false;
+            if (!str[si].EqualsIAscii(vc)) return false;
         }
 
         return true;
