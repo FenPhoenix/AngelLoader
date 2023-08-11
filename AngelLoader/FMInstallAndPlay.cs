@@ -64,7 +64,7 @@ internal static class FMInstallAndPlay
         if (fms[0].Installed)
         {
             await Uninstall(fms);
-            Core.View.SetAvailableFMCount();
+            Core.View.SetAvailableAndFinishedFMCount();
         }
         else
         {

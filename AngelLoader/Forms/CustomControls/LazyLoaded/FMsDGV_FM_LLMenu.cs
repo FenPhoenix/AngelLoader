@@ -729,12 +729,12 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else if (sender == DeleteFMMenuItem)
         {
             await FMDelete.DeleteFMsFromDisk(_owner.FMsDGV.GetSelectedFMs_InOrder_List());
-            _owner.SetAvailableFMCount();
+            _owner.SetAvailableAndFinishedFMCount();
         }
         else if (sender == DeleteFromDBMenuItem)
         {
             await FMDelete.DeleteFMsFromDB(_owner.GetSelectedFMs_InOrder_List());
-            _owner.SetAvailableFMCount();
+            _owner.SetAvailableAndFinishedFMCount();
         }
         else if (sender == OpenInDromEdMenuItem)
         {
@@ -882,7 +882,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         _owner.RefreshFMsListRowsOnlyKeepSelection();
 
-        _owner.SetAvailableFMCount();
+        _owner.SetAvailableAndFinishedFMCount();
         Ini.WriteFullFMDataIni();
     }
 

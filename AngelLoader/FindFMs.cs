@@ -232,7 +232,7 @@ internal static class FindFMs
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
         List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
-        Core.View!.SetAvailableFMCount();
+        Core.View!.SetAvailableAndFinishedFMCount();
         return fmsViewListUnscanned;
     }
 

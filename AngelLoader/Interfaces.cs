@@ -346,5 +346,5 @@ public interface IView : ISettingsChangeableView
 
     void ActivateThisInstance();
 
-    void SetAvailableFMCount();
+    void SetAvailableAndFinishedFMCount(bool forceRefresh = false);
 }

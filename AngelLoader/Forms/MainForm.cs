@@ -1061,7 +1061,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (Visible) return;
 
         // Set this explicitly AFTER the FMs list is populated
-        SetAvailableFMCount();
+        SetAvailableAndFinishedFMCount();
 
         // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
         // Find() to have been run first.
@@ -1589,7 +1589,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (FMsDGV.Focused && FMsDGV.RowSelected())
             {
                 await FMDelete.HandleDelete();
-                SetAvailableFMCount();
+                SetAvailableAndFinishedFMCount();
             }
         }
         else if (e.KeyCode == Keys.Escape)
@@ -1803,7 +1803,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region Top-right tabs area
 
-            if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount());
+            if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount(), forceRefresh: true);
 
             TopRightLLMenu.Localize();
 
@@ -1858,7 +1858,7 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_WebSearchButton.Localize();
 
             // On startup this is a race condition as the FMs list is still being populated!
-            if (!startup) SetAvailableFMCount();
+            if (!startup) SetAvailableAndFinishedFMCount(forceRefresh: true);
 
             SettingsButton.Text = LText.MainButtons.Settings;
             ExitLLButton.Localize();
@@ -5068,27 +5068,35 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region FM selected stats
 
-    // @PERF_TODO/@MEM(FM selected stats): Cache numbers and only reconstruct + set the text if different
+    // @PERF_TODO/@MEM(FM selected stats): Combine these methods into one to make only one call to RefreshFMStatsLabel()
+    // (there are currently two on startup)
 
-    private string _fmSelectedCountText = "";
-    private string _fmCountText = "";
-    private string _fmsFinishedText = "";
+    private int _fmsSelectedCount = -1;
+    private int _fmsAvailableCount = -1;
+    private int _fmsFinishedCount = -1;
 
-    private void SetFMSelectedCountMessage(int count)
+    private string _fmsSelectedCountText = "";
+    private string _fmsAvailableCountText = "";
+    private string _fmsFinishedCountText = "";
+
+    private void SetFMSelectedCountMessage(int count, bool forceRefresh = false)
     {
+        if (!forceRefresh && count == _fmsSelectedCount) return;
+        _fmsSelectedCount = count;
+
         string text =
             (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_BeforeNumber : LText.FMSelectedStats.FMsSelected_Plural_BeforeNumber) +
             count.ToString(CultureInfo.CurrentCulture) +
             (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
 
-        _fmSelectedCountText = text;
+        _fmsSelectedCountText = text;
 
         Lazy_TopRightBlocker.SetText(text);
 
         RefreshFMStatsLabel();
     }
 
-    public void SetAvailableFMCount()
+    public void SetAvailableAndFinishedFMCount(bool forceRefresh = false)
     {
         int availableCount = 0;
         int finishedCount = 0;
@@ -5121,12 +5129,22 @@ public sealed partial class MainForm : DarkFormBase,
         }
 #endif
 
-        _fmCountText =
+        if (!forceRefresh &&
+            availableCount == _fmsAvailableCount &&
+            finishedCount == _fmsFinishedCount)
+        {
+            return;
+        }
+
+        _fmsAvailableCount = availableCount;
+        _fmsFinishedCount = finishedCount;
+
+        _fmsAvailableCountText =
             (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
             availableCount.ToString(CultureInfo.CurrentCulture) +
             (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsAvailable_Plural_AfterNumber);
 
-        _fmsFinishedText =
+        _fmsFinishedCountText =
             (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_BeforeNumber : LText.FMSelectedStats.FMsFinished_Plural_BeforeNumber) +
             finishedCount.ToString(CultureInfo.CurrentCulture) +
             (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_AfterNumber : LText.FMSelectedStats.FMsFinished_Plural_AfterNumber);
@@ -5134,9 +5152,12 @@ public sealed partial class MainForm : DarkFormBase,
         RefreshFMStatsLabel();
     }
 
-    private void RefreshFMStatsLabel() => FMCountLabel.Text = _fmSelectedCountText + "\r\n" +
-                                                              _fmCountText + "\r\n" +
-                                                              _fmsFinishedText;
+    private void RefreshFMStatsLabel()
+    {
+        FMCountLabel.Text = _fmsSelectedCountText + "\r\n" +
+                            _fmsAvailableCountText + "\r\n" +
+                            _fmsFinishedCountText;
+    }
 
     #endregion
 
