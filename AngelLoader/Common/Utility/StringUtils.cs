@@ -26,7 +26,24 @@ public static partial class Utils
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: true);
+    internal static bool StartsWithI(this string str, string value)
+    {
+        if (str.IsEmpty()) return false;
+        int valueLength = value.Length;
+        if (str.Length < valueLength) return false;
+
+        for (int si = 0, vi = 0; si < valueLength; si++, vi++)
+        {
+            if (value[vi] > 127)
+            {
+                return str.StartsWith(value, OrdinalIgnoreCase);
+            }
+
+            if (!str[si].EqualsIAscii(value[vi])) return false;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -34,22 +51,20 @@ public static partial class Utils
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, start: false);
-
-    private static bool StartsWithOrEndsWithIFast(this string str, string value, bool start)
+    internal static bool EndsWithI(this string str, string value)
     {
-        if (str.IsEmpty() || str.Length < value.Length) return false;
+        if (str.IsEmpty()) return false;
+        int strLength = str.Length;
+        int valueLength = value.Length;
+        if (strLength < valueLength) return false;
 
-        int siStart = start ? 0 : str.Length - value.Length;
-        int siEnd = start ? value.Length : str.Length;
+        int start = strLength - valueLength;
 
-        for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
+        for (int si = start, vi = 0; si < strLength; si++, vi++)
         {
             if (value[vi] > 127)
             {
-                return start
-                    ? str.StartsWith(value, OrdinalIgnoreCase)
-                    : str.EndsWith(value, OrdinalIgnoreCase);
+                return str.EndsWith(value, OrdinalIgnoreCase);
             }
 
             if (!str[si].EqualsIAscii(value[vi])) return false;
