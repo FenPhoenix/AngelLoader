@@ -105,7 +105,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
         bool doubleSize = sizeMode == ProgressSizeMode.Double;
 
-        Size = Size with { Height = sizeMode == ProgressSizeMode.Double ? _extendedHeight : _regularHeight };
+        Size = Size with { Height = doubleSize ? _extendedHeight : _regularHeight };
         SubMessageLabel.Visible = doubleSize;
         SubPercentLabel.Visible = doubleSize;
         SubProgressBar.Visible = doubleSize;
