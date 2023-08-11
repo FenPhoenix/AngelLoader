@@ -329,46 +329,46 @@ internal static class Utility
         ReadOnlySpan<char> strA,
         ReadOnlySpan<char> strB)
     {
-        int num1 = Math.Min(strA.Length, strB.Length);
-        fixed (char* chPtr1 = &MemoryMarshal.GetReference(strA))
-        fixed (char* chPtr2 = &MemoryMarshal.GetReference(strB))
+        int length = Math.Min(strA.Length, strB.Length);
+        fixed (char* strARef = &MemoryMarshal.GetReference(strA))
+        fixed (char* strBRef = &MemoryMarshal.GetReference(strB))
         {
-            char* chPtr3 = chPtr1;
-            char* chPtr4 = chPtr2;
-            while (num1 != 0 &&
-                   //*chPtr3 <= '\u007F' &&
+            char* charA = strARef;
+            char* charB = strBRef;
+            while (length != 0 &&
+                   //*charA <= '\u007F' &&
                    // Only check the needle for non-ASCII chars, matching our old custom StartsWith/EndsWith
                    // function, and avoiding 99.9999% of ToString() allocations that would otherwise happen here.
-                   *chPtr4 <= '\u007F')
+                   *charB <= '\u007F')
             {
-                int num3 = *chPtr3;
-                int num4 = *chPtr4;
-                if (num3 == num4)
+                int currentA = *charA;
+                int currentB = *charB;
+                if (currentA == currentB)
                 {
-                    ++chPtr3;
-                    ++chPtr4;
-                    --num1;
+                    ++charA;
+                    ++charB;
+                    --length;
                 }
                 else
                 {
-                    if ((uint)(num3 - 97) <= 25U)
+                    if ((uint)(currentA - 97) <= 25U)
                     {
-                        num3 -= 32;
+                        currentA -= 32;
                     }
-                    if ((uint)(num4 - 97) <= 25U)
+                    if ((uint)(currentB - 97) <= 25U)
                     {
-                        num4 -= 32;
+                        currentB -= 32;
                     }
-                    if (num3 != num4)
+                    if (currentA != currentB)
                     {
-                        return new StringCompareReturn(compare: num3 - num4);
+                        return new StringCompareReturn(compare: currentA - currentB);
                     }
-                    ++chPtr3;
-                    ++chPtr4;
-                    --num1;
+                    ++charA;
+                    ++charB;
+                    --length;
                 }
             }
-            return num1 == 0
+            return length == 0
                 ? new StringCompareReturn(compare: strA.Length - strB.Length)
                 : new StringCompareReturn(requiresStringComparison: true);
         }

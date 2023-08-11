@@ -1856,7 +1856,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     {
         // BitConverter.GetBytes() does this, but it allocates a temp array every time.
         // I think I understand the general idea here but like yeah
-        fixed (byte* numPtr = _byteBuffer4) *(int*)numPtr = codePoint;
+        fixed (byte* b = _byteBuffer4) *(int*)b = codePoint;
 
         try
         {
