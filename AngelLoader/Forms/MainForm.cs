@@ -5068,6 +5068,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region FM selected stats
 
+    // @PERF_TODO/@MEM(FM selected stats): Cache numbers and only reconstruct + set the text if different
+
     private string _fmSelectedCountText = "";
     private string _fmCountText = "";
     private string _fmsFinishedText = "";
