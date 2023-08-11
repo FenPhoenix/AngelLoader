@@ -6,10 +6,10 @@ AngelLoader
 
 <hr>
 <h4 align="center">
-AngelLoader is supported by JetBrains under their Open Source License.
+Thanks to JetBrains for providing their tools to AngelLoader under their Open Source License.
 </h4>
 <p align="center">
-<a href="https://www.jetbrains.com/?from=AngelLoader"><img src="https://fenphoenix.com/github/AngelLoader/jetbrains.svg" /></a>
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" /></a>
 </p>
 
 ## Description
