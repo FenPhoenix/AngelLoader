@@ -81,7 +81,7 @@ internal sealed class AddTagLLDropDown : IDarkable
             foreach (string item in list) _listBox.Items.Add(item);
         }
 
-        Point p = _form.PointToClient_Fast(_realPage.AddTagTextBox.PointToScreen_Fast(new Point(0, 0)));
+        Point p = _form.PointToClient_Fast(_realPage.AddTagTextBox.PointToScreen_Fast(Point.Empty));
         _listBox.Location = p with { Y = p.Y + _realPage.AddTagTextBox.Height };
         _listBox.Size = new Size(Math.Max(_realPage.AddTagTextBox.Width, 256), 225);
 

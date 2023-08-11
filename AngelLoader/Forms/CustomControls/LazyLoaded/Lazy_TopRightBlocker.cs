@@ -53,7 +53,7 @@ internal sealed class Lazy_TopRightBlocker : IDarkable
 
         Panel = new DrawnPanel
         {
-            Location = new Point(0, 0),
+            Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
                 container.Width - _owner.TopRightCollapseButton.Width,

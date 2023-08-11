@@ -4942,7 +4942,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!control.Visible || !control.Enabled) return false;
 
-        Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(new Point(0, 0)));
+        Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(Point.Empty));
         Size rcs = fullArea ? control.Size : control.ClientSize;
 
         Point ptc = this.ClientCursorPos();
