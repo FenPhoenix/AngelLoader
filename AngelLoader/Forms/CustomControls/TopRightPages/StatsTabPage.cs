@@ -26,12 +26,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_StatsPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_StatsPage>();
 
         using (new DisableEvents(_owner))
         {

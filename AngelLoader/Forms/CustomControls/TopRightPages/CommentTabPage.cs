@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -14,12 +13,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_CommentPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_CommentPage>();
 
         using (new DisableEvents(_owner))
         {

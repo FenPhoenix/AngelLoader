@@ -23,12 +23,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_ModsPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_ModsPage>();
 
         using (new DisableEvents(_owner))
         {

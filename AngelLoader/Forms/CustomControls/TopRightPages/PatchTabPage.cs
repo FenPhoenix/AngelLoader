@@ -20,12 +20,7 @@ public sealed class PatchTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_PatchPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_PatchPage>();
 
         using (new DisableEvents(_owner))
         {

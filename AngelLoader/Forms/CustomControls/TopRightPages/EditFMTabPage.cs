@@ -77,12 +77,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_EditFMPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_EditFMPage>();
 
         AltTitlesLLMenu = new DynamicItemsLLMenu(_owner);
         Lazy_LangDetectError = new Lazy_LangDetectError(_owner, _page);

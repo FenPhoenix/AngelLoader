@@ -71,4 +71,11 @@ public class Lazy_TabsBase : DarkTabPageCustom
     {
         ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
     }
+
+    private protected static T ConstructPage<T>() where T : Control, new() => new()
+    {
+        Dock = DockStyle.Fill,
+        Tag = LoadType.Lazy,
+        Visible = false
+    };
 }

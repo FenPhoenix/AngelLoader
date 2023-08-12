@@ -51,12 +51,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
     {
         if (_constructed) return;
 
-        _page = new Lazy_TagsPage
-        {
-            Dock = DockStyle.Fill,
-            Tag = LoadType.Lazy,
-            Visible = false
-        };
+        _page = ConstructPage<Lazy_TagsPage>();
 
         AddTagLLDropDown = new AddTagLLDropDown(_owner, this, _page);
         AddTagLLMenu = new DynamicItemsLLMenu(_owner);
