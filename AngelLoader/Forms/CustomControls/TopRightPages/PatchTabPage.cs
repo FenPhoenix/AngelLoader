@@ -38,13 +38,7 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
             _page.PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
-
-            Localize();
+            FinishConstruct();
         }
 
         _page.Show();

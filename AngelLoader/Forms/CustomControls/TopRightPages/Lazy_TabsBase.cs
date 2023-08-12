@@ -67,7 +67,15 @@ public class Lazy_TabsBase : DarkTabPageCustom
 
     public virtual void UpdatePage() { }
 
-    private protected void RefreshTheme()
+    private protected void FinishConstruct()
+    {
+        _constructed = true;
+        UpdatePage();
+        if (DarkModeEnabled) RefreshTheme();
+        Localize();
+    }
+
+    private void RefreshTheme()
     {
         ControlUtils.SetTheme(this, _controlColors, base.DarkModeEnabled ? VisualTheme.Dark : VisualTheme.Classic);
     }

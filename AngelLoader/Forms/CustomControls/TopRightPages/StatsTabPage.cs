@@ -36,13 +36,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
             _page.StatsScanCustomResourcesButton.Click += ScanCustomResourcesButton_Clicked;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
-
-            Localize();
+            FinishConstruct();
         }
 
         _page.Show();

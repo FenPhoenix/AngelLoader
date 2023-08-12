@@ -44,13 +44,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
             _page.MainModsControl.DisabledModsTextBoxTextChanged += ModsDisabledModsTextBox_TextChanged;
             _page.MainModsControl.DisabledModsUpdated += Mods_DisabledModsUpdated;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
-
-            Localize();
+            FinishConstruct();
         }
 
         _page.Show();

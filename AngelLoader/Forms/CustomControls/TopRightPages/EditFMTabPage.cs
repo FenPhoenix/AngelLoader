@@ -125,14 +125,8 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             _page.EditFMScanLanguagesButton.PaintCustom += _owner.ScanIconButtons_Paint;
             _page.EditFMScanForReadmesButton.PaintCustom += _owner.ScanIconButtons_Paint;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
+            FinishConstruct();
         }
-
-        Localize();
 
         _page.Show();
     }

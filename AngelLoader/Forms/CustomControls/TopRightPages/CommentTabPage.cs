@@ -22,11 +22,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
             _page.CommentTextBox.Leave += _owner.TextBoxLeave_Save;
             _page.CommentTextBox.TextChanged += CommentTextBox_TextChanged;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
+            FinishConstruct();
         }
 
         _page.Show();

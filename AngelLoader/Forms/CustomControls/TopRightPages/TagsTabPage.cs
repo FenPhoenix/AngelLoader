@@ -67,14 +67,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
             _page.RemoveTagButton.Click += RemoveTagButton_Click;
             _page.AddTagFromListButton.Click += AddTagFromListButton_Click;
 
-            _constructed = true;
-
-            UpdatePage();
-
-            if (DarkModeEnabled) RefreshTheme();
+            FinishConstruct();
         }
-
-        Localize();
 
         _page.Show();
     }
