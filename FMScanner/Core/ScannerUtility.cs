@@ -56,7 +56,7 @@ internal static class Utility
                     vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
                 }
 
-                Array.Copy(vec2, vec1, vec1.Length);
+                Array.Copy(vec2, vec1, vecLength);
             }
 
             ret = 1.0 - ((double)vec2[string2Length] / Math.Max(string1Length, string2Length));
