@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
+using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
 
 namespace FMScanner;
@@ -12,45 +13,61 @@ namespace FMScanner;
 internal static class Utility
 {
     /// <summary>Returns a value between 0 and 1.0 that indicates how similar the two strings are.</summary>
-    internal static double SimilarityTo(this string string1, string string2, StringComparison stringComparison)
+    internal static double SimilarityTo(this string string1, string string2, StringComparison stringComparison, SevenZipContext sevenZipContext)
     {
         if (string1.Equals(string2, stringComparison)) return 1.0;
-        if (string1.Length == 0) return 0;
-        if (string2.Length == 0) return 0;
 
-        int[] vec1 = new int[string2.Length + 1];
-        int[] vec2 = new int[string2.Length + 1];
+        int string1Length = string1.Length;
+        if (string1Length == 0) return 0;
+        int string2Length = string2.Length;
+        if (string2Length == 0) return 0;
 
-        for (int i = 0; i < vec1.Length; i++) vec1[i] = i;
+        int vecLength = string2Length + 1;
 
-        for (int i = 0; i < string1.Length; i++)
+        double ret;
+
+        int[] vec1 = sevenZipContext.IntArrayPool.Rent(vecLength);
+        int[] vec2 = sevenZipContext.IntArrayPool.Rent(vecLength);
+        try
         {
-            vec2[0] = i + 1;
+            for (int i = 0; i < vecLength; i++) vec1[i] = i;
 
-            for (int j = 0; j < string2.Length; j++)
+            for (int i = 0; i < string1Length; i++)
             {
-                int delCost = vec1[j + 1] + 1;
-                int insCost = vec2[j] + 1;
+                vec2[0] = i + 1;
 
-                char str1Char = string1[i];
-                char str2Char = string2[j];
-                int substCost =
-                    str1Char < 128 && str2Char < 128
-                        ? str1Char.EqualsIAscii(str2Char)
-                            ? 0
-                            : 1
-                        : str1Char == str2Char ||
-                          str1Char.ToString().Equals(str2Char.ToString(), stringComparison)
-                            ? 0
-                            : 1;
+                for (int j = 0; j < string2.Length; j++)
+                {
+                    int delCost = vec1[j + 1] + 1;
+                    int insCost = vec2[j] + 1;
 
-                vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
+                    char str1Char = string1[i];
+                    char str2Char = string2[j];
+                    int substCost =
+                        str1Char < 128 && str2Char < 128
+                            ? str1Char.EqualsIAscii(str2Char)
+                                ? 0
+                                : 1
+                            : str1Char == str2Char ||
+                              str1Char.ToString().Equals(str2Char.ToString(), stringComparison)
+                                ? 0
+                                : 1;
+
+                    vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
+                }
+
+                Array.Copy(vec2, vec1, vec1.Length);
             }
 
-            Array.Copy(vec2, vec1, vec1.Length);
+            ret = 1.0 - ((double)vec2[string2Length] / Math.Max(string1Length, string2Length));
+        }
+        finally
+        {
+            sevenZipContext.IntArrayPool.Return(vec1);
+            sevenZipContext.IntArrayPool.Return(vec2);
         }
 
-        return 1.0 - ((double)vec2[string2.Length] / Math.Max(string1.Length, string2.Length));
+        return ret;
     }
 
     #region Readme validation
