@@ -4109,9 +4109,6 @@ public sealed partial class Scanner : IDisposable
 
         NameAndIndex smallestUsedMisFile;
         {
-            // @MEM(GetGameTypeAndEngine - choose smallest mis file - OrderBy etc.)
-            var misSizeList = new List<(NameAndIndex Mis, long Size)>(_usedMisFiles.Count);
-
             if (_usedMisFiles.Count == 1)
             {
                 smallestUsedMisFile = _usedMisFiles[0];
@@ -4120,8 +4117,11 @@ public sealed partial class Scanner : IDisposable
             // it is
             else
             {
-                foreach (NameAndIndex mis in _usedMisFiles)
+                int smallestSizeIndex = -1;
+                long smallestSize = long.MaxValue;
+                for (int i = 0; i < _usedMisFiles.Count; i++)
                 {
+                    NameAndIndex mis = _usedMisFiles[i];
                     long length;
                     if (_fmIsZip)
                     {
@@ -4133,10 +4133,15 @@ public sealed partial class Scanner : IDisposable
                         FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
-                    misSizeList.Add((mis, length));
+
+                    if (length <= smallestSize)
+                    {
+                        smallestSize = length;
+                        smallestSizeIndex = i;
+                    }
                 }
 
-                smallestUsedMisFile = misSizeList.OrderBy(static x => x.Size).First().Mis;
+                smallestUsedMisFile = _usedMisFiles[smallestSizeIndex];
             }
         }
 
