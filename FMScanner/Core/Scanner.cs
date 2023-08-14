@@ -4113,8 +4113,8 @@ public sealed partial class Scanner : IDisposable
             {
                 smallestUsedMisFile = _usedMisFiles[0];
             }
-            // We know usedMisFiles can never be empty at this point because we early-return way before this if
-            // it is
+            // We know we have at least 1 used mis file at this point because we early-return way before this if
+            // we don't
             else
             {
                 int smallestSizeIndex = -1;
