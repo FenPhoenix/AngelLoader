@@ -1823,7 +1823,7 @@ public sealed partial class Scanner : IDisposable
                 return true;
             }
 
-            string[] nums = dateString.Split_Char(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext);
+            string[] nums = dateString.Split_Char(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
             if (nums.Length == 3)
             {
                 bool unambiguousYearFound = false;
@@ -1899,7 +1899,7 @@ public sealed partial class Scanner : IDisposable
     {
         if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
-        List<string> list = fmData.TagsString.Split_Char(CA_CommaSemicolon, StringSplitOptions.None, _sevenZipContext).ToList();
+        List<string> list = fmData.TagsString.Split_Char(CA_CommaSemicolon, StringSplitOptions.None, _sevenZipContext.IntArrayPool).ToList();
         bool tagFound = false;
         for (int i = 0; i < list.Count; i++)
         {
@@ -2685,7 +2685,7 @@ public sealed partial class Scanner : IDisposable
 
         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !fmIni.Tags.IsEmpty())
         {
-            string[] tagsArray = fmIni.Tags.Split_Char(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext);
+            string[] tagsArray = fmIni.Tags.Split_Char(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
 
             string authorString = "";
             for (int i = 0, authorsFound = 0; i < tagsArray.Length; i++)
@@ -2959,7 +2959,7 @@ public sealed partial class Scanner : IDisposable
                     if (success)
                     {
                         last.Text = text;
-                        last.Lines.ClearAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext));
+                        last.Lines.ClearAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                     }
                 }
                 else
@@ -2975,7 +2975,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllText(readmeStream, Encoding.UTF8), Utf32CharBuffer)
                         : ReadAllTextE(readmeStream);
-                    last.Lines.ClearAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext));
+                    last.Lines.ClearAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
             finally
@@ -3671,7 +3671,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (value.Contains("  "))
                 {
-                    string[] titleWords = value.Split_String(SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext);
+                    string[] titleWords = value.Split_String(SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext.IntArrayPool);
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
