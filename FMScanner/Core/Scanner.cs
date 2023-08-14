@@ -2686,19 +2686,16 @@ public sealed partial class Scanner : IDisposable
         {
             string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
-            var authors = new List<string>();
-            for (int i = 0; i < tagsArray.Length; i++)
+            string authorString = "";
+            for (int i = 0, authorsFound = 0; i < tagsArray.Length; i++)
             {
                 string tag = tagsArray[i];
-                if (tag.StartsWithI_Local("author:")) authors.Add(tag);
-            }
-
-            string authorString = "";
-            for (int i = 0; i < authors.Count; i++)
-            {
-                string a = authors[i];
-                if (i > 0 && !authorString.EndsWithO(", ")) authorString += ", ";
-                authorString += a.Substring(a.IndexOf(':') + 1).Trim();
+                if (tag.StartsWithI_Local("author:"))
+                {
+                    if (authorsFound > 0 && !authorString.EndsWithO(", ")) authorString += ", ";
+                    authorString += tag.Substring(tag.IndexOf(':') + 1).Trim();
+                    authorsFound++;
+                }
             }
 
             ret.Author = authorString;
