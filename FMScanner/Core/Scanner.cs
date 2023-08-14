@@ -2904,103 +2904,83 @@ public sealed partial class Scanner : IDisposable
 
             if (!scanThisReadme) continue;
 
-            // try-finally instead of using, because we only want to initialize the readme stream if _fmIsZip
             Stream? readmeStream = null;
-            Stream? readmeHeaderStream = null;
             try
             {
-                if (_fmIsZip)
-                {
-                    /*
-                    We used to copy the entire stream into memory here first, because we needed to seek.
-                    With the new custom RTF converter, we don't need to seek anymore.
+                /*
+                We used to copy the entire stream into memory here first, because we needed to seek.
+                With the new custom RTF converter, we don't need to seek anymore.
 
-                    With the new converter, copying the stream to memory first results in the fastest
-                    performance, but slightly more memory use than the old RichTextBox method.
+                With the new converter, copying the stream to memory first results in the fastest
+                performance, but slightly more memory use than the old RichTextBox method.
 
-                    We've instead chosen to go with the buffered read here, which is slightly slower - but
-                    still vastly faster than the old RichTextBox-based converter - and saves a substantial
-                    amount of memory. Any other time I would choose ultimate speed, but RTF files can be
-                    extremely large (due to often containing images), so I'm erring on the side of caution.
-                    */
-                    readmeStream = _archive.OpenEntry(readmeEntry!);
-                }
-
-                _rtfHeaderBuffer.Clear();
+                We've instead chosen to go with the buffered read here, which is slightly slower - but
+                still vastly faster than the old RichTextBox-based converter - and saves a substantial
+                amount of memory. Any other time I would choose ultimate speed, but RTF files can be
+                extremely large (due to often containing images), so I'm erring on the side of caution.
+                */
 
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                try
+                readmeStream = _fmIsZip
+                    ? _archive.OpenEntry(readmeEntry!)
+                    : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
+
+                // Stupid micro-optimization
+                const int rtfHeaderBytesLength = 6;
+
+                _rtfHeaderBuffer.Clear();
+
+                if (readmeFileLen >= rtfHeaderBytesLength)
                 {
-                    readmeHeaderStream = _fmIsZip
-                        ? readmeStream!
-                        : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
-
-                    // Stupid micro-optimization
-                    const int rtfHeaderBytesLength = 6;
-
-                    if (readmeFileLen >= rtfHeaderBytesLength)
-                    {
-                        readmeHeaderStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
-                    }
+                    readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
                 }
-                finally
+
+                if (_fmIsZip)
                 {
-                    if (!_fmIsZip)
-                    {
-                        readmeHeaderStream?.Dispose();
-                    }
+                    readmeStream.Dispose();
+                }
+                else
+                {
+                    readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
                 ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
 
-                // file is rtf
-                if (_rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes))
+                bool readmeIsRtf = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
+                if (readmeIsRtf)
                 {
-                    bool success;
-                    string text;
                     if (_fmIsZip)
                     {
-                        readmeStream?.Dispose();
                         readmeStream = _archive.OpenEntry(readmeEntry!);
-                        (success, text) = RtfConverter.Convert(readmeStream, readmeFileLen);
-                    }
-                    else
-                    {
-                        using var fs = GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
-                        (success, text) = RtfConverter.Convert(fs, readmeFileLen);
                     }
 
+                    (bool success, string text) = RtfConverter.Convert(readmeStream, readmeFileLen);
                     if (success)
                     {
                         last.Text = text;
                         last.Lines.ClearAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
                     }
                 }
-                else // file is plain text
+                else
                 {
                     if (_fmIsZip)
                     {
-                        // Plain text, so load the whole thing in one go
-                        readmeStream?.Dispose();
                         readmeStream = new MemoryStream(readmeFileLen);
                         using var es = _archive.OpenEntry(readmeEntry!);
                         StreamCopyNoAlloc(es, readmeStream);
+                        readmeStream.Seek(0, SeekOrigin.Begin);
                     }
 
-                    last.Text = _fmIsZip
-                        ? ReadAllTextE(readmeStream!)
-                        : ReadAllTextE(readmeFileOnDisk);
-
-                    if (last.IsGlml) last.Text = Utility.GLMLToPlainText(last.Text);
-
+                    last.Text = last.IsGlml
+                        ? Utility.GLMLToPlainText(ReadAllText(readmeStream, Encoding.UTF8))
+                        : ReadAllTextE(readmeStream);
                     last.Lines.ClearAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                 }
             }
             finally
             {
                 readmeStream?.Dispose();
-                readmeHeaderStream?.Dispose();
             }
         }
     }
@@ -4667,17 +4647,13 @@ public sealed partial class Scanner : IDisposable
         return sr.Reader.ReadToEnd();
     }
 
-    /// <summary>
-    /// Reads all the text in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
-    /// correctly.
-    /// </summary>
-    /// <param name="file"></param>
-    /// <returns></returns>
-    private string ReadAllTextE(string file)
-    {
-        Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
+    #endregion
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
+    #region ReadAllText (as is)
+
+    private string ReadAllText(Stream stream, Encoding encoding)
+    {
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
