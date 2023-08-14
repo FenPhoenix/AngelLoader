@@ -16,6 +16,9 @@ public sealed partial class Scanner
 
     private readonly byte[] _misChunkHeaderBuffer = new byte[12];
 
+    private ListFast<char>? _utf32CharBuffer;
+    private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
+
     private readonly BinaryBuffer _binaryReadBuffer = new();
 
     private const char LeftDoubleQuote = '\u201C';

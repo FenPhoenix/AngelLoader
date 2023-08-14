@@ -7,6 +7,7 @@ using System.Text;
 using AL_Common;
 using SharpCompress.Archives.SevenZip;
 using static System.StringComparison;
+using static AL_Common.Common;
 
 namespace FMScanner;
 
@@ -564,7 +565,7 @@ internal static class Utility
         Closing
     }
 
-    internal static string GLMLToPlainText(string glml)
+    internal static string GLMLToPlainText(string glml, ListFast<char> charBuffer)
     {
         // @MEM: We could cache these, and maybe even as ListFast<char>s to avoid the cruft of StringBuilder appending?
         var sb = new StringBuilder(glml.Length);
@@ -579,6 +580,8 @@ internal static class Utility
             }
             return true;
         }
+
+        const char unicodeUnknownChar = '\u25A1';
 
         GLMLTagType tagType = GLMLTagType.None;
 
@@ -637,8 +640,15 @@ internal static class Utility
 
                             if (success)
                             {
-                                // @MEM: We can use the version from the rtf converter to avoid allocs and exception throwing
-                                sb.Append(char.ConvertFromUtf32(result));
+                                ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
+                                if (chars == null)
+                                {
+                                    sb.Append(unicodeUnknownChar);
+                                }
+                                else
+                                {
+                                    sb.Append(chars.ItemsArray, 0, chars.Count);
+                                }
                             }
                             else
                             {
@@ -665,8 +675,15 @@ internal static class Utility
                             if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
                                 int.TryParse(value, out int result))
                             {
-                                // @MEM: We can use the version from the rtf converter to avoid allocs and exception throwing
-                                sb.Append(char.ConvertFromUtf32(result));
+                                ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
+                                if (chars == null)
+                                {
+                                    sb.Append(unicodeUnknownChar);
+                                }
+                                else
+                                {
+                                    sb.Append(chars.ItemsArray, 0, chars.Count);
+                                }
                             }
                             else
                             {

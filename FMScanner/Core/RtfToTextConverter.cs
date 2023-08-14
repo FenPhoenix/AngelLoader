@@ -1148,7 +1148,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 // If our code point has been through a font translation table, it may be longer than 2 bytes.
                 if (param > 0xFFFF)
                 {
-                    ListFast<char>? chars = ConvertFromUtf32(param);
+                    ListFast<char>? chars = ConvertFromUtf32(param, _charGeneralBuffer);
                     if (chars == null)
                     {
                         _unicodeBuffer.Add(_unicodeUnknown_Char);
@@ -1655,7 +1655,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             }
             else if (ch == 'u')
             {
-                ListFast<char>? chars = ConvertFromUtf32(codePoint);
+                ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
                 if (chars != null)
                 {
                     finalChars = chars;
@@ -2007,7 +2007,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         if (codePoint is >= 0x20 and <= 0xFF)
         {
-            ListFast<char>? chars = ConvertFromUtf32(fontTable[codePoint - 0x20]);
+            ListFast<char>? chars = ConvertFromUtf32(fontTable[codePoint - 0x20], _charGeneralBuffer);
             if (chars != null)
             {
                 finalChars = chars;
@@ -2101,33 +2101,6 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         }
 
         return Error.OK;
-    }
-
-    /// <summary>
-    /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ListFast<char>? ConvertFromUtf32(int utf32)
-    {
-        uint utf32u = (uint)utf32;
-
-        if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)
-        {
-            return null;
-        }
-
-        if (utf32u <= 0xFFFFu)
-        {
-            _charGeneralBuffer.ItemsArray[0] = (char)utf32u;
-            _charGeneralBuffer.Count = 1;
-            return _charGeneralBuffer;
-        }
-
-        _charGeneralBuffer.ItemsArray[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
-        _charGeneralBuffer.ItemsArray[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
-        _charGeneralBuffer.Count = 2;
-
-        return _charGeneralBuffer;
     }
 
     /// <summary>

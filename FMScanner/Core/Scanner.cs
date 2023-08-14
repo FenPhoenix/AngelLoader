@@ -2973,7 +2973,7 @@ public sealed partial class Scanner : IDisposable
                     }
 
                     last.Text = last.IsGlml
-                        ? Utility.GLMLToPlainText(ReadAllText(readmeStream, Encoding.UTF8))
+                        ? Utility.GLMLToPlainText(ReadAllText(readmeStream, Encoding.UTF8), Utf32CharBuffer)
                         : ReadAllTextE(readmeStream);
                     last.Lines.ClearAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                 }
