@@ -2254,13 +2254,14 @@ public sealed partial class Scanner : IDisposable
                 {
                     // I tried getting rid of this GetDirectories call, but it made things more complicated
                     // for SS2 fingerprinting and didn't result in a clear perf win. At least not warm. Meh.
-                    var baseDirFolders = new List<string>();
-                    foreach (string dir in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+                    string[] baseDirFolders = Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
+                    for (int i = 0; i < baseDirFolders.Length; i++)
                     {
                         // @DIRSEP: Even for UNC paths, FM working path has to be at least like \\netPC\some_directory
                         // and we're getting dirs inside that, so it'll be at least \\netPC\some_directory\other
                         // so we'll always end up with "other" (for example). So we're safe here.
-                        baseDirFolders.Add(dir.Substring(dir.Rel_LastIndexOfDirSep() + 1));
+                        string folder = baseDirFolders[i];
+                        baseDirFolders[i] = folder.Substring(folder.Rel_LastIndexOfDirSep() + 1);
                     }
 
                     if (_scanOptions.ScanCustomResources)
