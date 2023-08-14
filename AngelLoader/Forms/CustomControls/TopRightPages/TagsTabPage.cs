@@ -334,7 +334,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
     {
         if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
         {
-            FMTags.AddTagToFM(fm, catAndTag);
+            FMTags.AddTagsToFM(fm, catAndTag);
             Ini.WriteFullFMDataIni();
             FillFMTags(fm.Tags, sort: true);
         }

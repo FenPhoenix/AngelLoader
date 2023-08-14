@@ -12,9 +12,9 @@ internal static class FMTags
 {
     #region Add tag
 
-    internal static void AddTagToFM(FanMission fm, string catAndTag, bool rebuildGlobalTags = true, StringBuilder? sb = null)
+    internal static void AddTagsToFM(FanMission fm, string tags, bool rebuildGlobalTags = true, StringBuilder? sb = null)
     {
-        AddTagsToFMAndGlobalList(catAndTag, fm.Tags, addToGlobalList: false);
+        AddTagsToFMAndGlobalList(tags, fm.Tags, addToGlobalList: false);
         UpdateFMTagsString(fm, sb);
         if (rebuildGlobalTags) RebuildGlobalTags();
     }

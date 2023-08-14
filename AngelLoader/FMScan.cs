@@ -391,7 +391,7 @@ internal static class FMScan
                         if (gameSup)
                         {
                             // Don't rebuild global tags for every FM; do it only once at the end
-                            FMTags.AddTagToFM(sel, tagsString, rebuildGlobalTags: false, tagsToStringSB);
+                            FMTags.AddTagsToFM(sel, tagsString, rebuildGlobalTags: false, tagsToStringSB);
                         }
                     }
 
@@ -401,7 +401,7 @@ internal static class FMScan
 
                         if (gameSup && scannedFM.MissionCount is > 1)
                         {
-                            FMTags.AddTagToFM(sel, "misc:campaign", rebuildGlobalTags: false);
+                            FMTags.AddTagsToFM(sel, "misc:campaign", rebuildGlobalTags: false);
                         }
                     }
 
