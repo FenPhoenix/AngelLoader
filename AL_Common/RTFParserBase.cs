@@ -1019,11 +1019,6 @@ public abstract partial class RTFParserBase
     /// </summary>
     protected long CurrentPos;
 
-    protected const int _bufferLen = 81920;
-    protected readonly byte[] _buffer = new byte[_bufferLen];
-    // Start it ready to roll over to 0 so we don't need extra logic for the first get
-    protected int _bufferPos = _bufferLen - 1;
-
     /*
     We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
     "into the stream", but they actually go in here and then when we go to read, we read from this first
@@ -1115,9 +1110,6 @@ public abstract partial class RTFParserBase
         Length = streamLength;
 
         CurrentPos = 0;
-
-        // Don't clear the buffer; we don't need to and it wastes time
-        _bufferPos = _bufferLen - 1;
 
         _unGetBuffer.Clear();
     }

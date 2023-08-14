@@ -95,10 +95,19 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     #region Stream
 
+    private const int _bufferLen = 81920;
+    private readonly byte[] _buffer = new byte[_bufferLen];
+    // Start it ready to roll over to 0 so we don't need extra logic for the first get
+    private int _bufferPos = _bufferLen - 1;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ResetStream(Stream stream, long streamLength)
     {
         _stream = stream;
+
+        // Don't clear the buffer; we don't need to and it wastes time
+        _bufferPos = _bufferLen - 1;
+
         base.ResetStreamBase(streamLength);
     }
 
