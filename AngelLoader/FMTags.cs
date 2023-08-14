@@ -228,6 +228,9 @@ internal static class FMTags
     {
         if (tagsToAdd.IsWhiteSpace()) return;
 
+        // @MEM(AddTagsToFMAndGlobalList/string.Split): This runs for every FM on startup, we could use the array-renting version
+        // Although the UI load is still the bottleneck, so speeding this up wouldn't actually decrease startup
+        // time at all. Meh.
         string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < tagsArray.Length; i++)
         {
