@@ -3485,7 +3485,12 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
+#if FMScanner_FullCode
         var titles = new List<string>(titlesStrLines.Count);
+#else
+        int titleFromTitlesFoundCount = 0;
+        string firstTitleFromTitles = "";
+#endif
         for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
         {
             string titleNum = "";
@@ -3506,7 +3511,15 @@ public sealed partial class Scanner : IDisposable
 
                 if (umfDotIndex > 4 && umf.StartsWithI_Local("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
                 {
+#if FMScanner_FullCode
                     titles.Add(title);
+#else
+                    if (titleFromTitlesFoundCount == 0)
+                    {
+                        firstTitleFromTitles = title;
+                    }
+                    titleFromTitlesFoundCount++;
+#endif
                 }
             }
 
@@ -3530,19 +3543,24 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
+#if FMScanner_FullCode
         if (titles.Count > 0)
         {
             if (_scanOptions.ScanTitle && titles.Count == 1)
             {
                 ret.TitleFromN = titles[0];
             }
-#if FMScanner_FullCode
             else if (_scanOptions.ScanCampaignMissionNames)
             {
                 ret.CampaignMissionNames = titles;
             }
-#endif
         }
+#else
+        if (_scanOptions.ScanTitle && titleFromTitlesFoundCount == 1)
+        {
+            ret.TitleFromN = firstTitleFromTitles;
+        }
+#endif
 
         return ret;
     }
