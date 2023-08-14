@@ -3,13 +3,12 @@ AngelLoader
 </h1>
 <p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v173a_900w.png" /></p>
 
-
 <hr>
 <h4 align="center">
 Thanks to JetBrains for providing their tools to AngelLoader under their Open Source License.
 </h4>
 <p align="center">
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" /></a>
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="128" height="128"/></a>
 </p>
 
 ## Description
