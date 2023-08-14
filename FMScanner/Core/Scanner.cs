@@ -4080,33 +4080,27 @@ public sealed partial class Scanner : IDisposable
         Game game = Game.Null;
 #endif
 
-        // @MEM(GetGameTypeAndEngine OrderBy etc.):
-        // 146 / 2,920
         #region Choose smallest .gam file
 
         static ZipArchiveFastEntry? GetSmallestGamEntry(ZipArchiveFast _archive, List<NameAndIndex> _baseDirFiles)
         {
-            NameAndIndex[] gamFiles = _baseDirFiles.Where(static x => x.Name.ExtIsGam()).ToArray();
-
-            switch (gamFiles.Length)
+            int smallestSizeIndex = -1;
+            long smallestSize = long.MaxValue;
+            for (int i = 0; i < _baseDirFiles.Count; i++)
             {
-                case 0:
-                    return null;
-                case 1:
-                    return _archive.Entries[gamFiles[0].Index];
-                default:
+                NameAndIndex item = _baseDirFiles[i];
+                if (item.Name.ExtIsGam())
                 {
-                    var gamSizeList = new List<(NameAndIndex Gam, long Size)>(gamFiles.Length);
-                    foreach (NameAndIndex gam in gamFiles)
+                    ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
+                    if (gamFile.Length <= smallestSize)
                     {
-                        long length = _archive.Entries[gam.Index].Length;
-                        gamSizeList.Add((gam, length));
+                        smallestSize = gamFile.Length;
+                        smallestSizeIndex = item.Index;
                     }
-
-                    NameAndIndex smallestGamFile = gamSizeList.OrderBy(static x => x.Size).First().Gam;
-                    return _archive.Entries[smallestGamFile.Index];
                 }
             }
+
+            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
         }
 
         #endregion
@@ -4115,6 +4109,7 @@ public sealed partial class Scanner : IDisposable
 
         NameAndIndex smallestUsedMisFile;
         {
+            // @MEM(GetGameTypeAndEngine - choose smallest mis file - OrderBy etc.)
             var misSizeList = new List<(NameAndIndex Mis, long Size)>(_usedMisFiles.Count);
 
             if (_usedMisFiles.Count == 1)
