@@ -220,7 +220,13 @@ internal static class FMTags
         return true;
     }
 
-    // Very awkward procedure that accesses global state in the name of only doing one iteration
+    /*
+    Very awkward procedure that accesses global state in the name of only doing one iteration
+    @vNext(AddTagsToFMAndGlobalList): The set of tags adding stuff in here is very awkwardly coupled
+    We did it so we can keep this one loop instead of two, but that's a stupid micro-optimization that almost
+    certainly gains us nothing perceptible but makes the logic in here very difficult to follow.
+    We should pull these apart and put them back together in a better way.
+    */
     internal static void AddTagsToFMAndGlobalList(
         string tagsToAdd,
         FMCategoriesCollection existingFMTags,
@@ -228,9 +234,13 @@ internal static class FMTags
     {
         if (tagsToAdd.IsWhiteSpace()) return;
 
-        // @MEM(AddTagsToFMAndGlobalList/string.Split): This runs for every FM on startup, we could use the array-renting version
-        // Although the UI load is still the bottleneck, so speeding this up wouldn't actually decrease startup
-        // time at all. Meh.
+        /*
+        @MEM(AddTagsToFMAndGlobalList/string.Split): This runs for every FM on startup, we could use the array-renting version
+        Although the UI load is still the bottleneck, so speeding this up wouldn't actually decrease startup
+        time at all. Meh.
+        Also, this returned array is also temporary, we really just want the substrings out of the main string,
+        and the Split array is just the easiest way to do it, but it's not actually necessary for the task at hand.
+        */
         string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < tagsArray.Length; i++)
         {
