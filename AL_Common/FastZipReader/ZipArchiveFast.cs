@@ -48,9 +48,9 @@ public sealed class ZipArchiveFast : IDisposable
     // invalid until ReadCentralDirectory
     private uint _numberOfThisDisk;
 
-    private readonly ZipReusableBundle _bundle;
+    private readonly ZipContext _context;
 
-    private readonly bool _disposeBundle;
+    private readonly bool _disposeContext;
 
     private readonly bool _allowUnsupportedEntries;
 
@@ -68,7 +68,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) :
-        this(stream, new ZipReusableBundle(), disposeBundle: true, allowUnsupportedEntries)
+        this(stream, new ZipContext(), disposeContext: true, allowUnsupportedEntries)
     {
     }
 
@@ -79,7 +79,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// <exception cref="ArgumentNullException">The stream is null.</exception>
     /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
     /// <param name="stream">The input or output stream.</param>
-    /// <param name="bundle"></param>
+    /// <param name="context"></param>
     /// <param name="allowUnsupportedEntries">
     /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
     /// <br/>
@@ -87,13 +87,13 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     [PublicAPI]
-    public ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool allowUnsupportedEntries) :
-        this(stream, bundle, disposeBundle: false, allowUnsupportedEntries)
+    public ZipArchiveFast(Stream stream, ZipContext context, bool allowUnsupportedEntries) :
+        this(stream, context, disposeContext: false, allowUnsupportedEntries)
     {
     }
 
     [PublicAPI]
-    private ZipArchiveFast(Stream stream, ZipReusableBundle bundle, bool disposeBundle, bool allowUnsupportedEntries)
+    private ZipArchiveFast(Stream stream, ZipContext context, bool disposeContext, bool allowUnsupportedEntries)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -101,11 +101,11 @@ public sealed class ZipArchiveFast : IDisposable
 
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
-        _disposeBundle = disposeBundle;
+        _disposeContext = disposeContext;
 
         if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-        _bundle = bundle;
+        _context = context;
 
         // Fen's note: Inlined Init() for nullable detection purposes...
         #region Init
@@ -131,7 +131,7 @@ public sealed class ZipArchiveFast : IDisposable
             _archiveStream = stream;
             ArchiveStreamLength = _archiveStream.Length;
 
-            bundle.ArchiveSubReadStream.SetSuperStream(_archiveStream);
+            context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
 
             ReadEndOfCentralDirectory();
         }
@@ -165,9 +165,9 @@ public sealed class ZipArchiveFast : IDisposable
 
         // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
-        _bundle.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
+        _context.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
 
-        return GetDataDecompressor(entry, _bundle.ArchiveSubReadStream);
+        return GetDataDecompressor(entry, _context.ArchiveSubReadStream);
     }
 
 #if false && NETFRAMEWORK
@@ -244,7 +244,7 @@ public sealed class ZipArchiveFast : IDisposable
         }
 
         _archiveStream.Seek(entry.OffsetOfLocalHeader, SeekOrigin.Begin);
-        if (!ZipLocalFileHeader.TrySkipBlock(_archiveStream, ArchiveStreamLength, _bundle))
+        if (!ZipLocalFileHeader.TrySkipBlock(_archiveStream, ArchiveStreamLength, _context))
         {
             message = SR.LocalFileHeaderCorrupt;
             return false;
@@ -281,18 +281,18 @@ public sealed class ZipArchiveFast : IDisposable
 
             if (!_entriesInitialized)
             {
-                if (_bundle.Entries.Capacity > 25_000)
+                if (_context.Entries.Capacity > 25_000)
                 {
-                    _bundle.Entries.Capacity = 0;
-                    _bundle.Entries.Count = 0;
+                    _context.Entries.Capacity = 0;
+                    _context.Entries.Count = 0;
                 }
 
-                if (_bundle.Entries.Capacity < (int)_expectedNumberOfEntries)
+                if (_context.Entries.Capacity < (int)_expectedNumberOfEntries)
                 {
-                    _bundle.Entries.Capacity = (int)_expectedNumberOfEntries;
+                    _context.Entries.Capacity = (int)_expectedNumberOfEntries;
                 }
 
-                _bundle.Entries.Count = (int)_expectedNumberOfEntries;
+                _context.Entries.Count = (int)_expectedNumberOfEntries;
 
                 #region Read central directory
 
@@ -305,16 +305,16 @@ public sealed class ZipArchiveFast : IDisposable
                     long numberOfEntries = 0;
 
                     //read the central directory
-                    while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _bundle, out var currentHeader))
+                    while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _context, out var currentHeader))
                     {
                         ZipArchiveFastEntry entry;
-                        if (_bundle.Entries.Count > numberOfEntries)
+                        if (_context.Entries.Count > numberOfEntries)
                         {
-                            entry = _bundle.Entries[(int)numberOfEntries];
+                            entry = _context.Entries[(int)numberOfEntries];
                             if (entry == null!)
                             {
                                 entry = new ZipArchiveFastEntry(currentHeader);
-                                _bundle.Entries[(int)numberOfEntries] = entry;
+                                _context.Entries[(int)numberOfEntries] = entry;
                             }
                             else
                             {
@@ -324,7 +324,7 @@ public sealed class ZipArchiveFast : IDisposable
                         else
                         {
                             entry = new ZipArchiveFastEntry(currentHeader);
-                            _bundle.Entries.Add(entry);
+                            _context.Entries.Add(entry);
                         }
 
                         numberOfEntries++;
@@ -378,7 +378,7 @@ public sealed class ZipArchiveFast : IDisposable
                 #endregion
             }
 
-            return _bundle.Entries;
+            return _context.Entries;
         }
     }
 
@@ -392,7 +392,7 @@ public sealed class ZipArchiveFast : IDisposable
         {
             // this seeks to the start of the end of central directory record
             _archiveStream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
-            if (!ZipHelpers.SeekBackwardsToSignature(_archiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant, _bundle))
+            if (!ZipHelpers.SeekBackwardsToSignature(_archiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant, _context))
             {
                 ThrowHelper.InvalidData(SR.EOCDNotFound);
             }
@@ -400,7 +400,7 @@ public sealed class ZipArchiveFast : IDisposable
             long eocdStart = _archiveStream.Position;
 
             // read the EOCD
-            bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(_archiveStream, _bundle, out ZipEndOfCentralDirectoryBlock eocd);
+            bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(_archiveStream, _context, out ZipEndOfCentralDirectoryBlock eocd);
             Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
             if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
@@ -427,10 +427,10 @@ public sealed class ZipArchiveFast : IDisposable
                 // seek to the zip 64 EOCD locator
                 _archiveStream.Seek(eocdStart - Zip64EndOfCentralDirectoryLocator.SizeOfBlockWithoutSignature, SeekOrigin.Begin);
                 // if we don't find it, assume it doesn't exist and use data from normal eocd
-                if (ZipHelpers.SeekBackwardsToSignature(_archiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant, _bundle))
+                if (ZipHelpers.SeekBackwardsToSignature(_archiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant, _context))
                 {
                     // use locator to get to Zip64EOCD
-                    bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(_archiveStream, _bundle, out Zip64EndOfCentralDirectoryLocator locator);
+                    bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(_archiveStream, _context, out Zip64EndOfCentralDirectoryLocator locator);
                     Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                     if (locator.OffsetOfZip64EOCD > long.MaxValue)
@@ -442,7 +442,7 @@ public sealed class ZipArchiveFast : IDisposable
                     _archiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                     // read Zip64EOCD
-                    if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(_archiveStream, _bundle, out Zip64EndOfCentralDirectoryRecord record))
+                    if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(_archiveStream, _context, out Zip64EndOfCentralDirectoryRecord record))
                     {
                         ThrowHelper.InvalidData(SR.Zip64EOCDNotWhereExpected);
                     }
@@ -498,10 +498,10 @@ public sealed class ZipArchiveFast : IDisposable
         if (disposing && !_isDisposed)
         {
             _archiveStream.Dispose();
-            _bundle.ArchiveSubReadStream.SetSuperStream(null);
+            _context.ArchiveSubReadStream.SetSuperStream(null);
             _backingStream?.Dispose();
 
-            if (_disposeBundle) _bundle.Dispose();
+            if (_disposeContext) _context.Dispose();
 
             _isDisposed = true;
         }

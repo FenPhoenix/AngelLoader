@@ -44,7 +44,7 @@ internal readonly ref struct ZipGenericExtraField
     internal static bool TryReadBlock(
         Stream stream,
         long endExtraField,
-        ZipReusableBundle bundle,
+        ZipContext context,
         out ZipGenericExtraField field)
     {
         // not enough bytes to read tag + size
@@ -54,8 +54,8 @@ internal readonly ref struct ZipGenericExtraField
             return false;
         }
 
-        ushort tag = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort dataSize = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
+        ushort tag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort dataSize = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
 
         // not enough bytes to read the data
         if (endExtraField - stream.Position < dataSize)
@@ -64,9 +64,9 @@ internal readonly ref struct ZipGenericExtraField
             return false;
         }
 
-        stream.ReadAll(bundle.DataBuffer, 0, dataSize);
+        stream.ReadAll(context.DataBuffer, 0, dataSize);
 
-        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: bundle.DataBuffer);
+        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: context.DataBuffer);
 
         return true;
     }
@@ -117,12 +117,12 @@ internal readonly ref struct Zip64ExtraField
         bool readCompressedSize,
         bool readLocalHeaderOffset,
         bool readStartDiskNumber,
-        ZipReusableBundle bundle)
+        ZipContext context)
     {
         while (ZipGenericExtraField.TryReadBlock(
                    stream: extraFieldStream,
                    endExtraField: extraFieldStream.Length,
-                   bundle: bundle,
+                   context: context,
                    out ZipGenericExtraField currentExtraField))
         {
             if (TryGetZip64BlockFromGenericExtraField(
@@ -227,18 +227,18 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipContext context,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
     {
-        if (BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer) != SignatureConstant)
+        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
         {
             zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator();
             return false;
         }
 
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // NumberOfDiskWithZip64EOCD
-        ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // TotalNumberOfDisks
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // NumberOfDiskWithZip64EOCD
+        ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // TotalNumberOfDisks
 
         zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator(offsetOfZip64EOCD: offsetOfZip64EOCD);
 
@@ -269,24 +269,24 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipContext context,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
     {
-        if (BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer) != SignatureConstant)
+        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
         {
             zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord();
             return false;
         }
 
-        BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer); // SizeOfThisRecord
-        BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer); // VersionMadeBy
-        BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer); // VersionNeededToExtract
-        uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // NumberOfDiskWithStartOfCD
-        ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer);
-        ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer); // SizeOfCentralDirectory
-        ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, bundle.BinaryReadBuffer);
+        BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer); // SizeOfThisRecord
+        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionMadeBy
+        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionNeededToExtract
+        uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // NumberOfDiskWithStartOfCD
+        ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
+        ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer); // SizeOfCentralDirectory
+        ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
 
         zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord(
             numberOfThisDisk: numberOfThisDisk,
@@ -303,17 +303,17 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipReusableBundle bundle)
+    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipContext context)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
-        if (BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer) != SignatureConstant) return false;
+        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant) return false;
         if (stream.Length < stream.Position + offsetToFilenameLength) return false;
 
         stream.Seek(offsetToFilenameLength, SeekOrigin.Current);
 
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
+        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
 
         if (streamLength < stream.Position + filenameLength + extraFieldLength)
         {
@@ -364,33 +364,33 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     // in either case, the zip64 extra field info will be incorporated into other fields
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipContext context,
         out ZipCentralDirectoryFileHeader header)
     {
-        if (BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer) != SignatureConstant)
+        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
         {
             header = new ZipCentralDirectoryFileHeader();
             return false;
         }
 
-        BinaryRead.ReadByte(stream, bundle.BinaryReadBuffer); // VersionMadeBySpecification
-        BinaryRead.ReadByte(stream, bundle.BinaryReadBuffer); // VersionMadeByCompatibility
-        BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer); // VersionNeededToExtract
-        BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer); // GeneralPurposeBitFlag
-        ushort compressionMethod = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        uint lastModified = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // Crc32
-        uint compressedSizeSmall = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
-        uint uncompressedSizeSmall = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort fileCommentLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort diskNumberStartSmall = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer); // InternalFileAttributes
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // ExternalFileAttributes
-        uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
+        BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeBySpecification
+        BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeByCompatibility
+        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionNeededToExtract
+        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // GeneralPurposeBitFlag
+        ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // Crc32
+        uint compressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        uint uncompressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort fileCommentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort diskNumberStartSmall = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // InternalFileAttributes
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // ExternalFileAttributes
+        uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
-        stream.ReadAll(bundle.FilenameBuffer, 0, filenameLength);
+        stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
 
         bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
         bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
@@ -399,21 +399,21 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 
         long endExtraFields = stream.Position + extraFieldLength;
 
-        bundle.ArchiveSubReadStream.Set(stream.Position, extraFieldLength);
+        context.ArchiveSubReadStream.Set(stream.Position, extraFieldLength);
 
         Zip64ExtraField zip64 = Zip64ExtraField.GetJustZip64Block(
-            extraFieldStream: bundle.ArchiveSubReadStream,
+            extraFieldStream: context.ArchiveSubReadStream,
             readUncompressedSize: uncompressedSizeInZip64,
             readCompressedSize: compressedSizeInZip64,
             readLocalHeaderOffset: relativeOffsetInZip64,
             readStartDiskNumber: diskNumberStartInZip64,
-            bundle: bundle);
+            context: context);
 
         // There are zip files that have malformed ExtraField blocks in which GetJustZip64Block() silently
         // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
         // stream's position to the proper place.
 
-        stream.AdvanceToPosition(endExtraFields + fileCommentLength, bundle);
+        stream.AdvanceToPosition(endExtraFields + fileCommentLength, context);
 
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;
@@ -427,7 +427,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
             uncompressedSize: uncompressedSize,
             diskNumberStart: diskNumberStart,
             relativeOffsetOfLocalHeader: relativeOffsetOfLocalHeader,
-            filename: bundle.FilenameBuffer,
+            filename: context.FilenameBuffer,
             filenameLength: filenameLength
         );
 
@@ -462,23 +462,23 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
 
     internal static bool TryReadBlock(
         Stream stream,
-        ZipReusableBundle bundle,
+        ZipContext context,
         out ZipEndOfCentralDirectoryBlock eocdBlock)
     {
-        if (BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer) != SignatureConstant)
+        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
         {
             eocdBlock = new ZipEndOfCentralDirectoryBlock();
             return false;
         }
 
-        ushort numberOfThisDisk = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer); // SizeOfCentralDirectory
-        uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, bundle.BinaryReadBuffer);
+        ushort numberOfThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // SizeOfCentralDirectory
+        uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
-        ushort commentLength = BinaryRead.ReadUInt16(stream, bundle.BinaryReadBuffer);
+        ushort commentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         stream.Seek(commentLength, SeekOrigin.Current); // ArchiveComment
 
         eocdBlock = new ZipEndOfCentralDirectoryBlock(

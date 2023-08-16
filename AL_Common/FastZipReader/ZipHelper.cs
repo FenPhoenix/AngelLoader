@@ -28,7 +28,7 @@ public sealed class ZipCompressionMethodException : Exception
 
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
-public sealed class ZipReusableBundle : IDisposable
+public sealed class ZipContext : IDisposable
 {
     internal readonly ListFast<ZipArchiveFastEntry> Entries = new(0);
 
@@ -118,24 +118,24 @@ public static class ZipHelpers
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
-    internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipReusableBundle bundle)
+    internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipContext context)
     {
         int bufferPointer = 0;
         uint currentSignature = 0;
-        bundle.BackwardsSeekingBuffer.Clear();
+        context.BackwardsSeekingBuffer.Clear();
 
         bool outOfBytes = false;
         bool signatureFound = false;
 
         while (!signatureFound && !outOfBytes)
         {
-            outOfBytes = SeekBackwardsAndRead(stream, bundle.BackwardsSeekingBuffer, out bufferPointer);
+            outOfBytes = SeekBackwardsAndRead(stream, context.BackwardsSeekingBuffer, out bufferPointer);
 
-            Debug.Assert(bufferPointer < bundle.BackwardsSeekingBuffer.Length);
+            Debug.Assert(bufferPointer < context.BackwardsSeekingBuffer.Length);
 
             while (bufferPointer >= 0 && !signatureFound)
             {
-                currentSignature = (currentSignature << 8) | bundle.BackwardsSeekingBuffer[bufferPointer];
+                currentSignature = (currentSignature << 8) | context.BackwardsSeekingBuffer[bufferPointer];
                 if (currentSignature == signatureToFind)
                 {
                     signatureFound = true;
@@ -159,15 +159,15 @@ public static class ZipHelpers
     }
 
     // Skip to a further position downstream (without relying on the stream being seekable)
-    internal static void AdvanceToPosition(this Stream stream, long position, ZipReusableBundle bundle)
+    internal static void AdvanceToPosition(this Stream stream, long position, ZipContext context)
     {
         long numBytesLeft = position - stream.Position;
         Debug.Assert(numBytesLeft >= 0);
         while (numBytesLeft != 0)
         {
-            bundle.ThrowawayBuffer.Clear();
-            int numBytesToSkip = numBytesLeft > ZipReusableBundle.ThrowAwayBufferSize ? ZipReusableBundle.ThrowAwayBufferSize : (int)numBytesLeft;
-            int numBytesActuallySkipped = stream.Read(bundle.ThrowawayBuffer, 0, numBytesToSkip);
+            context.ThrowawayBuffer.Clear();
+            int numBytesToSkip = numBytesLeft > ZipContext.ThrowAwayBufferSize ? ZipContext.ThrowAwayBufferSize : (int)numBytesLeft;
+            int numBytesActuallySkipped = stream.Read(context.ThrowawayBuffer, 0, numBytesToSkip);
             if (numBytesActuallySkipped == 0) ThrowHelper.IOException(SR.UnexpectedEndOfStream);
             numBytesLeft -= numBytesActuallySkipped;
         }
