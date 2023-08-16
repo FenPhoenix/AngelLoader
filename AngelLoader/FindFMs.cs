@@ -23,7 +23,7 @@ is and why it matters.
 */
 internal static class FindFMs
 {
-    private sealed class LastResortLinkupBundle
+    private sealed class LastResortLinkupContext
     {
         private readonly InstDirNameContext _instDirNameContext;
 
@@ -36,7 +36,7 @@ internal static class FindFMs
         private DictionaryI<string>? _archivesToInstDirNameNDLTruncated_FromFMDataIniList;
         private DictionaryI<string>? _installedDirs_FromFMDataIniList;
 
-        public LastResortLinkupBundle(InstDirNameContext instDirNameContext) => _instDirNameContext = instDirNameContext;
+        public LastResortLinkupContext(InstDirNameContext instDirNameContext) => _instDirNameContext = instDirNameContext;
 
         internal DictionaryI<string> GetInstDirFMSelToArchives(DictionaryI<ExpandableDate_FromTicks> archives, bool truncate)
         {
@@ -463,7 +463,7 @@ internal static class FindFMs
             return archivesDict;
         }
 
-        LastResortLinkupBundle? lastResortLinkupBundle = null;
+        LastResortLinkupContext? lastResortLinkupContext = null;
 
         // Attempt to set archive names for newly found installed FMs (best effort search)
         for (int i = 0; i < FMDataIniList.Count; i++)
@@ -484,8 +484,8 @@ internal static class FindFMs
                 // Skip the expensive archive name search if we're marked as having no archive
                 if (!fm.NoArchive)
                 {
-                    lastResortLinkupBundle ??= new LastResortLinkupBundle(instDirNameContext);
-                    archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupBundle);
+                    lastResortLinkupContext ??= new LastResortLinkupContext(instDirNameContext);
+                    archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupContext);
                 }
                 if (archiveName.IsEmpty()) continue;
 
@@ -651,7 +651,7 @@ internal static class FindFMs
     #endregion
 
     // @PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-    private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ExpandableDate_FromTicks> archives, LastResortLinkupBundle bundle)
+    private static string? GetArchiveNameFromInstalledDir(FanMission fm, DictionaryI<ExpandableDate_FromTicks> archives, LastResortLinkupContext context)
     {
         // The game type is supposed to be inferred from the installed location, but it could be unknown in
         // the following scenario:
@@ -675,12 +675,12 @@ internal static class FindFMs
             // we therefore already know this is not going to find anything?
             bool truncate = fm.Game != Game.Thief3;
 
-            if (!bundle.GetInstDirFMSelToArchives(archives, truncate).TryGetValue(fm.InstalledDir, out string? tryArchive) &&
-                !bundle.GetInstDirNDLTruncatedToArchives(archives).TryGetValue(fm.InstalledDir, out tryArchive) &&
-                !bundle.GetInstDirNameToArchives(archives).TryGetValue(fm.InstalledDir, out tryArchive) &&
-                !bundle.GetInstDirNameFMSelToArchives_FromFMDataIni(truncate).TryGetValue(fm.InstalledDir, out tryArchive) &&
-                !bundle.GetInstDirNDLTruncatedToArchives_FromFMDataIni().TryGetValue(fm.InstalledDir, out tryArchive) &&
-                !bundle.GetInstDirToArchives_FromFMDataIni().TryGetValue(fm.InstalledDir, out tryArchive))
+            if (!context.GetInstDirFMSelToArchives(archives, truncate).TryGetValue(fm.InstalledDir, out string? tryArchive) &&
+                !context.GetInstDirNDLTruncatedToArchives(archives).TryGetValue(fm.InstalledDir, out tryArchive) &&
+                !context.GetInstDirNameToArchives(archives).TryGetValue(fm.InstalledDir, out tryArchive) &&
+                !context.GetInstDirNameFMSelToArchives_FromFMDataIni(truncate).TryGetValue(fm.InstalledDir, out tryArchive) &&
+                !context.GetInstDirNDLTruncatedToArchives_FromFMDataIni().TryGetValue(fm.InstalledDir, out tryArchive) &&
+                !context.GetInstDirToArchives_FromFMDataIni().TryGetValue(fm.InstalledDir, out tryArchive))
             {
                 fm.NoArchive = true;
                 return null;
