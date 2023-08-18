@@ -4595,18 +4595,19 @@ public sealed partial class Scanner : IDisposable
     private static void DeleteDirectory(string directory)
     {
         /*
-        @vNext(Fast directory delete): Couldn't we just recursively delete directory and not do this weird extra work first?
         @vNext(Fast directory delete): This uses the slow (8.3 name getting) code. We can use a custom version to make it faster.
         */
-        DirAndFileTree_UnSetReadOnly(directory);
-
-        string[] dirs = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
-        for (int i = 0; i < dirs.Length; i++)
+        try
         {
-            Directory.Delete(dirs[i], recursive: true);
+            // Assume no readonly files
+            Directory.Delete(directory, recursive: true);
         }
-
-        Directory.Delete(directory, recursive: true);
+        // Readonly file was found (one of the eight million possibilities of this exception anyway...)
+        catch (IOException)
+        {
+            DirAndFileTree_UnSetReadOnly(directory);
+            Directory.Delete(directory, recursive: true);
+        }
     }
 
     #region Stream copy with buffer
