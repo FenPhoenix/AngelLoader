@@ -199,11 +199,11 @@ internal sealed class Latin1Prober : CharsetProber
         {
             byte b = buf[cur];
 
-            if (b == CharsetProber.GREATER_THAN)
+            if (b == GREATER_THAN)
             {
                 inTag = false;
             }
-            else if (b == CharsetProber.LESS_THAN)
+            else if (b == LESS_THAN)
             {
                 inTag = true;
             }
@@ -214,7 +214,7 @@ internal sealed class Latin1Prober : CharsetProber
                 if (cur > prev && !inTag)
                 {
                     memoryStream.Write(buf, prev, cur - prev);
-                    memoryStream.WriteByte(CharsetProber.SPACE);
+                    memoryStream.WriteByte(SPACE);
                 }
                 prev = cur + 1;
             }
