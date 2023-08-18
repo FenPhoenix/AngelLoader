@@ -55,7 +55,7 @@ internal sealed class EUCKRProber : CharsetProber
         return Charset.EUC_KR;
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         int max = offset + len;
 

@@ -36,7 +36,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+using System.Buffers;
+
 namespace Ude.NetStandard;
+
+public sealed class UdeContext
+{
+    public readonly MemoryStreamFast MemoryStream;
+    public readonly ArrayPool<byte> ByteArrayPool;
+
+    public UdeContext(int memoryStreamStartingSize)
+    {
+        MemoryStream = new MemoryStreamFast(memoryStreamStartingSize);
+        ByteArrayPool = ArrayPool<byte>.Create();
+    }
+}
 
 public enum Charset
 {
@@ -204,13 +218,13 @@ public sealed class CharsetDetector
             : Charset.Null;
     }
 
-    public void Run(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    public void Run(byte[] buf, int offset, int len, UdeContext context)
     {
-        Feed(buf, offset, len, memoryStream);
+        Feed(buf, offset, len, context);
         DataEnd();
     }
 
-    private void Feed(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    private void Feed(byte[] buf, int offset, int len, UdeContext context)
     {
         if (_done)
         {
@@ -285,7 +299,7 @@ public sealed class CharsetDetector
                 for (int i = 0; i < PROBERS_NUM; i++)
                 {
                     CharsetProber? prober = _charsetProbers[i];
-                    if (prober?.HandleData(buf, offset, len, memoryStream) == ProbingState.FoundIt)
+                    if (prober?.HandleData(buf, offset, len, context) == ProbingState.FoundIt)
                     {
                         _done = true;
                         _detectedCharset = prober.GetCharsetName();

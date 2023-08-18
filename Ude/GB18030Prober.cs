@@ -55,7 +55,7 @@ internal sealed class GB18030Prober : CharsetProber
 
     internal override Charset GetCharsetName() => Charset.GB_18030;
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         int max = offset + len;
 

@@ -21,7 +21,7 @@
  * Contributor(s):
  *          Shy Shalom <shooshX@gmail.com>
  *          Rudi Pettazzi <rudi.pettazzi@gmail.com> (C# port)
- * 
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -35,6 +35,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+using AL_Common;
 
 namespace Ude.NetStandard;
 
@@ -72,7 +74,7 @@ internal sealed class SBCSGroupProber : CharsetProber
         Reset();
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         //apply filter to original buffer, and we got new buffer back
         //depend on what script it is, we will feed them the new buffer
@@ -80,7 +82,7 @@ internal sealed class SBCSGroupProber : CharsetProber
         //this is done without any consideration to KeepEnglishLetters
         //of each prober since as of now, there are no probers here which
         //recognize languages with English characters.
-        byte[] newBuf = FilterWithoutEnglishLetters(buf, offset, len);
+        (byte[] newBuf, int newBufLength) = FilterWithoutEnglishLetters(buf, offset, len, context.MemoryStream);
         if (newBuf.Length == 0)
         {
             return _state; // Nothing to see here, move on.
@@ -93,7 +95,7 @@ internal sealed class SBCSGroupProber : CharsetProber
                 continue;
             }
 
-            ProbingState st = _probers[i].HandleData(newBuf, 0, newBuf.Length, memoryStream);
+            ProbingState st = _probers[i].HandleData(newBuf, 0, newBufLength, context);
 
             if (st == ProbingState.FoundIt)
             {
@@ -174,5 +176,50 @@ internal sealed class SBCSGroupProber : CharsetProber
             }
         }
         return _probers[_bestGuess].GetCharsetName();
+    }
+
+    /// <summary>
+    /// Helper functions used in the Latin1 and Group probers
+    /// </summary>
+    /// <returns>filtered buffer</returns>
+    private static (byte[] Array, int Length)
+    FilterWithoutEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast ms)
+    {
+        ms.EnsureCapacity(buf.Length);
+        ms.SetLength(0);
+        bool meetMSB = false;
+        int max = offset + len;
+        int prev = offset;
+        int cur = offset;
+
+        while (cur < max)
+        {
+            byte b = buf[cur];
+
+            if ((b & 0x80) != 0)
+            {
+                meetMSB = true;
+            }
+            else if (!b.IsAsciiAlpha())
+            {
+                if (meetMSB && cur > prev)
+                {
+                    ms.Write(buf, prev, cur - prev);
+                    ms.WriteByte(SPACE);
+                    meetMSB = false;
+                }
+                prev = cur + 1;
+            }
+            cur++;
+        }
+
+        if (meetMSB && cur > prev)
+        {
+            ms.Write(buf, prev, cur - prev);
+        }
+
+        ms.SetLength(ms.Position);
+
+        return (ms.Buffer, ms.Length);
     }
 }

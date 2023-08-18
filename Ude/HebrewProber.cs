@@ -207,7 +207,7 @@ internal sealed class HebrewProber : CharsetProber
          * The input buffer should not contain any white spaces that are not (' ')
          * or any low-ascii punctuation marks.
     */
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         // Both model probers say it's not them. No reason to continue.
         if (GetState() == ProbingState.NotMe)

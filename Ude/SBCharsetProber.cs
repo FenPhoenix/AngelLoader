@@ -80,7 +80,7 @@ internal sealed class SingleByteCharSetProber : CharsetProber
         Reset();
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         int max = offset + len;
 

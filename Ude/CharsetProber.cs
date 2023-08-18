@@ -54,9 +54,9 @@ internal abstract class CharsetProber
     protected ProbingState _state;
 
     // ASCII codes
-    private const byte SPACE = 0x20;
-    private const byte LESS_THAN = 0x3C;
-    private const byte GREATER_THAN = 0x3E;
+    internal const byte SPACE = 0x20;
+    internal const byte LESS_THAN = 0x3C;
+    internal const byte GREATER_THAN = 0x3E;
 
     /// <summary>
     /// Feed data to the prober
@@ -64,11 +64,11 @@ internal abstract class CharsetProber
     /// <param name="buf">a buffer</param>
     /// <param name="offset">offset into buffer</param>
     /// <param name="len">number of bytes available into buffer</param>
-    /// <param name="memoryStream"></param>
+    /// <param name="context"></param>
     /// <returns>
     /// A <see cref="ProbingState"/>
     /// </returns>
-    internal abstract ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream);
+    internal abstract ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context);
 
     /// <summary>
     /// Reset prober state
@@ -82,101 +82,5 @@ internal abstract class CharsetProber
     internal virtual ProbingState GetState()
     {
         return _state;
-    }
-
-    /// <summary>
-    /// Helper functions used in the Latin1 and Group probers
-    /// </summary>
-    /// <returns>filtered buffer</returns>
-    protected static byte[] FilterWithoutEnglishLetters(byte[] buf, int offset, int len)
-    {
-        var ms = new MemoryStreamFast(buf.Length);
-        bool meetMSB = false;
-        int max = offset + len;
-        int prev = offset;
-        int cur = offset;
-
-        while (cur < max)
-        {
-            byte b = buf[cur];
-
-            if ((b & 0x80) != 0)
-            {
-                meetMSB = true;
-            }
-            else if (!b.IsAsciiAlpha())
-            {
-                if (meetMSB && cur > prev)
-                {
-                    ms.Write(buf, prev, cur - prev);
-                    ms.WriteByte(SPACE);
-                    meetMSB = false;
-                }
-                prev = cur + 1;
-            }
-            cur++;
-        }
-
-        if (meetMSB && cur > prev)
-        {
-            ms.Write(buf, prev, cur - prev);
-        }
-
-        ms.SetLength(ms.Position);
-
-        return ms.ToArray();
-    }
-
-    /// <summary>
-    /// Do filtering to reduce load to probers (Remove ASCII symbols,
-    /// collapse spaces). This filter applies to all scripts which contain
-    /// both English characters and upper ASCII characters.
-    /// </summary>
-    /// <returns>a filtered copy of the input buffer</returns>
-    protected static MemoryStreamFast FilterWithEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
-    {
-        var ms = memoryStream ?? new MemoryStreamFast(buf.Length);
-        ms.SetLength(0);
-        bool inTag = false;
-        int max = offset + len;
-        int prev = offset;
-        int cur = offset;
-
-        while (cur < max)
-        {
-            byte b = buf[cur];
-
-            if (b == GREATER_THAN)
-            {
-                inTag = false;
-            }
-            else if (b == LESS_THAN)
-            {
-                inTag = true;
-            }
-
-            // it's ascii, but it's not a letter
-            if ((b & 0x80) == 0 && !b.IsAsciiAlpha())
-            {
-                if (cur > prev && !inTag)
-                {
-                    ms.Write(buf, prev, cur - prev);
-                    ms.WriteByte(SPACE);
-                }
-                prev = cur + 1;
-            }
-            cur++;
-        }
-
-        // If the current segment contains more than just a symbol
-        // and it is not inside a tag then keep it.
-        if (!inTag && cur > prev)
-        {
-            ms.Write(buf, prev, cur - prev);
-        }
-
-        ms.SetLength(ms.Position);
-
-        return ms;
     }
 }

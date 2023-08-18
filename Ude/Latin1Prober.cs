@@ -36,6 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+using AL_Common;
+
 namespace Ude.NetStandard;
 
 // TODO: Using trigrams the detector should be able to discriminate between
@@ -130,13 +132,13 @@ internal sealed class Latin1Prober : CharsetProber
         }
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
-        MemoryStreamFast newBuf = FilterWithEnglishLetters(buf, offset, len, memoryStream);
+        FilterWithEnglishLetters(buf, offset, len, context.MemoryStream);
 
-        for (int i = 0; i < newBuf.Length; i++)
+        for (int i = 0; i < context.MemoryStream.Length; i++)
         {
-            byte charClass = _latin1_CharToClass[newBuf[i]];
+            byte charClass = _latin1_CharToClass[context.MemoryStream[i]];
             byte freq = _latin1ClassModel[(_lastCharClass * CLASS_NUM) + charClass];
             if (freq == 0)
             {
@@ -176,5 +178,56 @@ internal sealed class Latin1Prober : CharsetProber
         // lower the confidence of latin1 so that other more accurate detector
         // can take priority.
         return confidence < 0.0f ? 0.0f : confidence * 0.5f;
+    }
+
+    /// <summary>
+    /// Do filtering to reduce load to probers (Remove ASCII symbols,
+    /// collapse spaces). This filter applies to all scripts which contain
+    /// both English characters and upper ASCII characters.
+    /// </summary>
+    /// <returns>a filtered copy of the input buffer</returns>
+    private static void FilterWithEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast memoryStream)
+    {
+        memoryStream.EnsureCapacity(buf.Length);
+        memoryStream.SetLength(0);
+        bool inTag = false;
+        int max = offset + len;
+        int prev = offset;
+        int cur = offset;
+
+        while (cur < max)
+        {
+            byte b = buf[cur];
+
+            if (b == CharsetProber.GREATER_THAN)
+            {
+                inTag = false;
+            }
+            else if (b == CharsetProber.LESS_THAN)
+            {
+                inTag = true;
+            }
+
+            // it's ascii, but it's not a letter
+            if ((b & 0x80) == 0 && !b.IsAsciiAlpha())
+            {
+                if (cur > prev && !inTag)
+                {
+                    memoryStream.Write(buf, prev, cur - prev);
+                    memoryStream.WriteByte(CharsetProber.SPACE);
+                }
+                prev = cur + 1;
+            }
+            cur++;
+        }
+
+        // If the current segment contains more than just a symbol
+        // and it is not inside a tag then keep it.
+        if (!inTag && cur > prev)
+        {
+            memoryStream.Write(buf, prev, cur - prev);
+        }
+
+        memoryStream.SetLength(memoryStream.Position);
     }
 }

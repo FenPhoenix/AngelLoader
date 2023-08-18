@@ -51,7 +51,7 @@ internal sealed class Big5Prober : CharsetProber
         Reset();
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         int max = offset + len;
 

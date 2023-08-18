@@ -86,60 +86,67 @@ internal sealed class MBCSGroupProber : CharsetProber
         _state = ProbingState.Detecting;
     }
 
-    internal override ProbingState HandleData(byte[] buf, int offset, int len, MemoryStreamFast? memoryStream)
+    internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         // do filtering to reduce load to probers
         // @Ude: Byte array allocation
-        byte[] highbyteBuf = new byte[len];
-        int hptr = 0;
-        //assume previous is not ascii, it will do no harm except add some noise
-        bool keepNext = true;
-        int max = offset + len;
-
-        for (int i = offset; i < max; i++)
+        byte[] highbyteBuf = context.ByteArrayPool.Rent(len);
+        try
         {
-            if ((buf[i] & 0x80) != 0)
+            int hptr = 0;
+            //assume previous is not ascii, it will do no harm except add some noise
+            bool keepNext = true;
+            int max = offset + len;
+
+            for (int i = offset; i < max; i++)
             {
-                highbyteBuf[hptr++] = buf[i];
-                keepNext = true;
-            }
-            else
-            {
-                //if previous is highbyte, keep this even it is a ASCII
-                if (keepNext)
+                if ((buf[i] & 0x80) != 0)
                 {
                     highbyteBuf[hptr++] = buf[i];
-                    keepNext = false;
+                    keepNext = true;
+                }
+                else
+                {
+                    //if previous is highbyte, keep this even it is a ASCII
+                    if (keepNext)
+                    {
+                        highbyteBuf[hptr++] = buf[i];
+                        keepNext = false;
+                    }
                 }
             }
-        }
 
-        for (int i = 0; i < _probers.Length; i++)
-        {
-            if (!_isActive[i])
+            for (int i = 0; i < _probers.Length; i++)
             {
-                continue;
-            }
-
-            ProbingState st = _probers[i].HandleData(highbyteBuf, 0, hptr, memoryStream);
-            if (st == ProbingState.FoundIt)
-            {
-                _bestGuess = i;
-                _state = ProbingState.FoundIt;
-                break;
-            }
-            else if (st == ProbingState.NotMe)
-            {
-                _isActive[i] = false;
-                _activeNum--;
-                if (_activeNum <= 0)
+                if (!_isActive[i])
                 {
-                    _state = ProbingState.NotMe;
+                    continue;
+                }
+
+                ProbingState st = _probers[i].HandleData(highbyteBuf, 0, hptr, context);
+                if (st == ProbingState.FoundIt)
+                {
+                    _bestGuess = i;
+                    _state = ProbingState.FoundIt;
                     break;
                 }
+                else if (st == ProbingState.NotMe)
+                {
+                    _isActive[i] = false;
+                    _activeNum--;
+                    if (_activeNum <= 0)
+                    {
+                        _state = ProbingState.NotMe;
+                        break;
+                    }
+                }
             }
+            return _state;
         }
-        return _state;
+        finally
+        {
+            context.ByteArrayPool.Return(highbyteBuf);
+        }
     }
 
     internal override float GetConfidence()
