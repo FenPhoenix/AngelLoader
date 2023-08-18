@@ -59,6 +59,8 @@ public sealed partial class Scanner : IDisposable
     private ZipContext ZipContext => _zipContext ??= new ZipContext();
     private readonly StreamReaderCustom _streamReaderCustom = new();
 
+    private readonly MemoryStream _generalMemoryStream = new();
+
     #endregion
 
     private readonly SevenZipContext _sevenZipContext = new();
@@ -2964,17 +2966,25 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
+                    Stream stream;
+
                     if (_fmIsZip)
                     {
-                        readmeStream = new MemoryStream(readmeFileLen);
+                        _generalMemoryStream.SetLength(readmeFileLen);
+                        _generalMemoryStream.Position = 0;
                         using var es = _archive.OpenEntry(readmeEntry!);
-                        StreamCopyNoAlloc(es, readmeStream);
-                        readmeStream.Seek(0, SeekOrigin.Begin);
+                        StreamCopyNoAlloc(es, _generalMemoryStream);
+                        _generalMemoryStream.Position = 0;
+                        stream = _generalMemoryStream;
+                    }
+                    else
+                    {
+                        stream = readmeStream;
                     }
 
                     last.Text = last.IsGlml
-                        ? Utility.GLMLToPlainText(ReadAllText(readmeStream, Encoding.UTF8), Utf32CharBuffer)
-                        : ReadAllTextE(readmeStream);
+                        ? Utility.GLMLToPlainText(ReadAllText(stream, Encoding.UTF8), Utf32CharBuffer)
+                        : ReadAllTextE(stream);
                     last.Lines.ClearAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
@@ -4643,7 +4653,7 @@ public sealed partial class Scanner : IDisposable
 
         stream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom, disposeStream: false);
         return sr.Reader.ReadToEnd();
     }
 
@@ -4653,7 +4663,7 @@ public sealed partial class Scanner : IDisposable
 
     private string ReadAllText(Stream stream, Encoding encoding)
     {
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom, disposeStream: false);
         return sr.Reader.ReadToEnd();
     }
 
@@ -4675,14 +4685,15 @@ public sealed partial class Scanner : IDisposable
 
         // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
         // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-        using var memStream = new MemoryStream((int)length);
-        StreamCopyNoAlloc(stream, memStream);
+        _generalMemoryStream.SetLength((int)length);
+        _generalMemoryStream.Position = 0;
+        StreamCopyNoAlloc(stream, _generalMemoryStream);
         stream.Dispose();
-        memStream.Position = 0;
-        Encoding encoding = _fileEncoding.DetectFileEncoding(memStream) ?? Encoding.GetEncoding(1252);
-        memStream.Position = 0;
+        _generalMemoryStream.Position = 0;
+        Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);
+        _generalMemoryStream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(memStream, encoding, false, _streamReaderCustom);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
@@ -4743,5 +4754,6 @@ public sealed partial class Scanner : IDisposable
         _archive?.Dispose();
         _zipContext?.Dispose();
         _streamReaderCustom.DeInit();
+        _generalMemoryStream.Dispose();
     }
 }

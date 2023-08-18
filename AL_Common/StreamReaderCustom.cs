@@ -32,8 +32,23 @@ public sealed class StreamReaderCustom
         public SRC_Wrapper(Stream stream, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, Encoding.UTF8, true, encodingCruftEnabled: false);
+            sr.Init(stream, Encoding.UTF8, true, encodingCruftEnabled: false, disposeStream: true);
         }
+
+#if ENABLE_UNUSED
+        /// <summary>
+        /// UTF8 version to avoid the encoding allocation batch stuff when we just want the cached StringBuilder.
+        /// If <paramref name="disposeStream"/> is <see langword="true"/>, the stream will be disposed when this struct is disposed.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="sr"></param>
+        /// <param name="disposeStream"></param>
+        public SRC_Wrapper(Stream stream, StreamReaderCustom sr, bool disposeStream)
+        {
+            Reader = sr;
+            sr.Init(stream, Encoding.UTF8, true, encodingCruftEnabled: false, disposeStream: disposeStream);
+        }
+#endif
 
         /// <summary>
         /// The stream will be disposed when this struct is disposed.
@@ -45,7 +60,21 @@ public sealed class StreamReaderCustom
         public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true);
+            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true, disposeStream: true);
+        }
+
+        /// <summary>
+        /// If <paramref name="disposeStream"/> is <see langword="true"/>, the stream will be disposed when this struct is disposed.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="encoding"></param>
+        /// <param name="detectEncodingFromByteOrderMarks"></param>
+        /// <param name="sr"></param>
+        /// <param name="disposeStream"></param>
+        public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr, bool disposeStream)
+        {
+            Reader = sr;
+            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true, disposeStream: disposeStream);
         }
 
         public void Dispose() => Reader.DeInit();
@@ -79,6 +108,8 @@ public sealed class StreamReaderCustom
 
     private bool _checkPreamble;
 
+    private bool _disposeStream;
+
 #if ENABLE_UNUSED
     private bool _isBlocked;
 #endif
@@ -89,8 +120,11 @@ public sealed class StreamReaderCustom
       Stream stream,
       Encoding encoding,
       bool detectEncodingFromByteOrderMarks,
-      bool encodingCruftEnabled)
+      bool encodingCruftEnabled,
+      bool disposeStream)
     {
+        _disposeStream = disposeStream;
+
         _stream = stream;
 
         _encoding = encoding;
@@ -161,7 +195,7 @@ public sealed class StreamReaderCustom
 
     public void DeInit()
     {
-        if (_stream != null!) _stream.Dispose();
+        if (_disposeStream && _stream != null!) _stream.Dispose();
         _stream = null!;
         _encoding = null!;
         _decoder = null!;
