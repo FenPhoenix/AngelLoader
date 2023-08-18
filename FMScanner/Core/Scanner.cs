@@ -4594,6 +4594,10 @@ public sealed partial class Scanner : IDisposable
     /// <param name="directory"></param>
     private static void DeleteDirectory(string directory)
     {
+        /*
+        @vNext(Fast directory delete): Couldn't we just recursively delete directory and not do this weird extra work first?
+        @vNext(Fast directory delete): This uses the slow (8.3 name getting) code. We can use a custom version to make it faster.
+        */
         DirAndFileTree_UnSetReadOnly(directory);
 
         string[] dirs = Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly);
