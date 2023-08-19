@@ -68,51 +68,58 @@ public abstract partial class RTFParserBase
 
     #region Font to Unicode conversion tables
 
-    private readonly Dictionary<int, int> _charSetToCodePage = new()
+    private const int _charSetToCodePageLength = 256;
+    private readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
+
+    private static int[] InitializeCharSetToCodePage()
     {
-        { 0, 1252 },           // "ANSI" (1252)
+        int[] charSetToCodePage = InitializedArray(_charSetToCodePageLength, -1);
+
+        charSetToCodePage[0] = 1252;   // "ANSI" (1252)
 
         // TODO: Code page 0 ("Default") is variable... should we force it to 1252?
         // "The system default Windows ANSI code page" says the doc page.
         // Terrible. Fortunately only two known FMs define it in a font entry, and neither one actually uses
         // said font entry. Still, maybe this should be 1252 as well, since we're rolling dice anyway we may
         // as well go with the statistically likeliest?
-        { 1, 0 },              // Default
+        charSetToCodePage[1] = 0;      // Default
 
-        { 2, 42 },             // Symbol
-        { 77, 10000 },         // Mac Roman
-        { 78, 10001 },         // Mac Shift Jis
-        { 79, 10003 },         // Mac Hangul
-        { 80, 10008 },         // Mac GB2312
-        { 81, 10002 },         // Mac Big5
-        //82                   // Mac Johab (old)
-        { 83, 10005 },         // Mac Hebrew
-        { 84, 10004 },         // Mac Arabic
-        { 85, 10006 },         // Mac Greek
-        { 86, 10081 },         // Mac Turkish
-        { 87, 10021 },         // Mac Thai
-        { 88, 10029 },         // Mac East Europe
-        { 89, 10007 },         // Mac Russian
-        { 128, 932 },          // Shift JIS (Windows-31J) (932)
-        { 129, 949 },          // Hangul
-        { 130, 1361 },         // Johab
-        { 134, 936 },          // GB2312
-        { 136, 950 },          // Big5
-        { 161, 1253 },         // Greek
-        { 162, 1254 },         // Turkish
-        { 163, 1258 },         // Vietnamese
-        { 177, 1255 },         // Hebrew
-        { 178, 1256 },         // Arabic
-        //179                  // Arabic Traditional (old)
-        //180                  // Arabic user (old)
-        //181                  // Hebrew user (old)
-        { 186, 1257 },         // Baltic
-        { 204, 1251 },         // Russian
-        { 222, 874 },          // Thai
-        { 238, 1250 },         // Eastern European
-        { 254, 437 },          // PC 437
-        { 255, 850 }           // OEM
-    };
+        charSetToCodePage[2] = 42;     // Symbol
+        charSetToCodePage[77] = 10000; // Mac Roman
+        charSetToCodePage[78] = 10001; // Mac Shift Jis
+        charSetToCodePage[79] = 10003; // Mac Hangul
+        charSetToCodePage[80] = 10008; // Mac GB2312
+        charSetToCodePage[81] = 10002; // Mac Big5
+        //charSetToCodePage[82] = ?    // Mac Johab (old)
+        charSetToCodePage[83] = 10005; // Mac Hebrew
+        charSetToCodePage[84] = 10004; // Mac Arabic
+        charSetToCodePage[85] = 10006; // Mac Greek
+        charSetToCodePage[86] = 10081; // Mac Turkish
+        charSetToCodePage[87] = 10021; // Mac Thai
+        charSetToCodePage[88] = 10029; // Mac East Europe
+        charSetToCodePage[89] = 10007; // Mac Russian
+        charSetToCodePage[128] = 932;  // Shift JIS (Windows-31J) (932)
+        charSetToCodePage[129] = 949;  // Hangul
+        charSetToCodePage[130] = 1361; // Johab
+        charSetToCodePage[134] = 936;  // GB2312
+        charSetToCodePage[136] = 950;  // Big5
+        charSetToCodePage[161] = 1253; // Greek
+        charSetToCodePage[162] = 1254; // Turkish
+        charSetToCodePage[163] = 1258; // Vietnamese
+        charSetToCodePage[177] = 1255; // Hebrew
+        charSetToCodePage[178] = 1256; // Arabic
+        //charSetToCodePage[179] = ?   // Arabic Traditional (old)
+        //charSetToCodePage[180] = ?   // Arabic user (old)
+        //charSetToCodePage[181] = ?   // Hebrew user (old)
+        charSetToCodePage[186] = 1257; // Baltic
+        charSetToCodePage[204] = 1251; // Russian
+        charSetToCodePage[222] = 874;  // Thai
+        charSetToCodePage[238] = 1250; // Eastern European
+        charSetToCodePage[254] = 437;  // PC 437
+        charSetToCodePage[255] = 850;  // OEM
+
+        return charSetToCodePage;
+    }
 
     #endregion
 
@@ -139,9 +146,15 @@ public abstract partial class RTFParserBase
                 // (which is guaranteed not to be negative)
                 if (_fontEntries.Count > 0 && _currentScope.InFontTable)
                 {
-                    _fontEntries.Top.CodePage = param >= 0 && _charSetToCodePage.TryGetValue(param, out int codePage)
-                        ? codePage
-                        : _header.CodePage;
+                    if (param is >= 0 and < _charSetToCodePageLength)
+                    {
+                        int codePage = _charSetToCodePage[param];
+                        _fontEntries.Top.CodePage = codePage != -1 ? codePage : _header.CodePage;
+                    }
+                    else
+                    {
+                        _fontEntries.Top.CodePage = _header.CodePage;
+                    }
                 }
                 break;
             case SpecialType.CodePage:
