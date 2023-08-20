@@ -4757,5 +4757,6 @@ public sealed partial class Scanner : IDisposable
         _zipContext?.Dispose();
         _streamReaderCustom.DeInit();
         _generalMemoryStream.Dispose();
+        _sevenZipContext.Close();
     }
 }

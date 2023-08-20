@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SharpCompress.Archives.SevenZip;
 
 namespace SharpCompress.Common.SevenZip;
 
@@ -25,7 +26,15 @@ internal ref struct CStreamSwitch
         _needRemove = true;
     }
 
-    public void Set(ArchiveReader archive, List<byte[]> dataVector)
+    public void Set(ArchiveReader archive, ArrayWithLength<byte> dataVector)
+    {
+        Dispose();
+        _archive = archive;
+        _archive.AddByteStream(dataVector.Array, 0, dataVector.Length);
+        _needRemove = true;
+    }
+
+    public void Set(ArchiveReader archive, List<ArrayWithLength<byte>> dataVector)
     {
         Dispose();
 
@@ -39,7 +48,7 @@ internal ref struct CStreamSwitch
             }
 
             _archive = archive;
-            _archive.AddByteStream(dataVector[dataIndex], 0, dataVector[dataIndex].Length);
+            _archive.AddByteStream(dataVector[dataIndex].Array, 0, dataVector[dataIndex].Length);
             _needRemove = true;
         }
     }

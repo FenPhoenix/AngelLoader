@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
+using System.Collections.Generic;
 using SharpCompress.Common.SevenZip;
 using static AL_Common.Common;
 
 namespace SharpCompress.Archives.SevenZip;
 
-#if false
-public sealed class ArrayWithLength<T>
+#if true
+public readonly struct ArrayWithLength<T>
 {
     public readonly T[] Array;
     public readonly int Length;
@@ -56,4 +57,25 @@ public sealed class SevenZipContext
     public readonly ListFast<long> ListOfLong = new(16);
 
     public readonly byte[] ArchiveHeader = new byte[0x20];
+    public readonly List<ArrayWithLength<byte>> ListOfOneByteArray = new(1);
+
+    public List<ArrayWithLength<byte>> ClearAndReturn(List<ArrayWithLength<byte>> list)
+    {
+        int listCount = list.Count;
+        for (int i = 0; i < listCount; i++)
+        {
+            ByteArrayPool.Return(list[i].Array);
+        }
+        list.Clear();
+        return list;
+    }
+
+    public void Close()
+    {
+        int listCount = ListOfOneByteArray.Count;
+        for (int i = 0; i < listCount; i++)
+        {
+            ByteArrayPool.Return(ListOfOneByteArray[i].Array);
+        }
+    }
 }
