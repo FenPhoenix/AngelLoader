@@ -47,7 +47,6 @@ internal sealed class ArchiveReader
     private DataReader _currentReader;
     private long _streamOrigin;
     private long _streamEnding;
-    private byte[] _header;
 
     private readonly SevenZipContext _context;
 
@@ -265,18 +264,25 @@ internal sealed class ArchiveReader
 
             byte mainByte = ReadByte();
             int idSize = (mainByte & 0xF);
-            byte[] longId = new byte[idSize];
-            ReadBytes(longId, 0, idSize);
-            if (idSize > 8)
+            byte[] longId = _context.ByteArrayPool.Rent(idSize);
+            try
             {
-                throw new NotSupportedException();
+                ReadBytes(longId, 0, idSize);
+                if (idSize > 8)
+                {
+                    throw new NotSupportedException();
+                }
+                ulong id = 0;
+                for (int j = 0; j < idSize; j++)
+                {
+                    id |= (ulong)longId[idSize - 1 - j] << (8 * j);
+                }
+                coder._methodId = id;
             }
-            ulong id = 0;
-            for (int j = 0; j < idSize; j++)
+            finally
             {
-                id |= (ulong)longId[idSize - 1 - j] << (8 * j);
+                _context.ByteArrayPool.Return(longId);
             }
-            coder._methodId = id;
 
             if ((mainByte & 0x10) != 0)
             {
@@ -913,10 +919,9 @@ internal sealed class ArchiveReader
         _streamEnding = stream.Length;
 
         // TODO: Check Signature!
-        _header = new byte[0x20];
         for (int offset = 0; offset < 0x20;)
         {
-            int delta = stream.Read(_header, offset, 0x20 - offset);
+            int delta = stream.Read(_context.ArchiveHeader, offset, 0x20 - offset);
             if (delta == 0)
             {
                 throw new EndOfStreamException();
@@ -934,18 +939,18 @@ internal sealed class ArchiveReader
         var db = new ArchiveDatabase();
         db.Clear();
 
-        db._majorVersion = _header[6];
-        db._minorVersion = _header[7];
+        db._majorVersion = _context.ArchiveHeader[6];
+        db._minorVersion = _context.ArchiveHeader[7];
 
         if (db._majorVersion != 0)
         {
             throw new InvalidOperationException();
         }
 
-        uint crcFromArchive = DataReader.Get32(_header, 8);
-        long nextHeaderOffset = (long)DataReader.Get64(_header, 0xC);
-        long nextHeaderSize = (long)DataReader.Get64(_header, 0x14);
-        uint nextHeaderCrc = DataReader.Get32(_header, 0x1C);
+        uint crcFromArchive = DataReader.Get32(_context.ArchiveHeader, 8);
+        long nextHeaderOffset = (long)DataReader.Get64(_context.ArchiveHeader, 0xC);
+        long nextHeaderSize = (long)DataReader.Get64(_context.ArchiveHeader, 0x14);
+        uint nextHeaderCrc = DataReader.Get32(_context.ArchiveHeader, 0x1C);
 
         uint crc = Crc.INIT_CRC;
         crc = Crc.Update(crc, nextHeaderOffset);
