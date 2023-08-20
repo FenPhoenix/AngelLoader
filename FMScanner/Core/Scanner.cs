@@ -284,19 +284,19 @@ public sealed partial class Scanner : IDisposable
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, bool forceFullIfNew)
+    Scan(string mission, string tempPath, bool forceFullIfNew, string name)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name) },
             tempPath, _scanOptions, null, CancellationToken.None)[0];
     }
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
+    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, name) },
             tempPath, scanOptions, null, CancellationToken.None)[0];
     }
 
