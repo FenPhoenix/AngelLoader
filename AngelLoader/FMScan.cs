@@ -67,10 +67,7 @@ internal static class FMScan
                       pr.FMsTotal +
                       LText.ProgressBox.ReportScanningLast))),
                 message2:
-                // @MEM: We could get really clever and not have to do this work if we cached stuff from earlier
-                pr.FMName.ExtIsArchive()
-                    ? pr.FMName.GetFileNameFast()
-                    : pr.FMName.GetDirNameFast(),
+                pr.FMName,
                 percent: pr.Percent
             );
 
@@ -162,7 +159,8 @@ internal static class FMScan
                             forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                             cachePath: fm.Archive.ExtIs7z()
                                 ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
-                                : ""
+                                : "",
+                            fm.Archive
                         ));
                     }
                     else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
@@ -174,7 +172,8 @@ internal static class FMScan
                             fms.Add(new FMScanner.FMToScan
                             (
                                 path: Path.Combine(fmInstalledPath, fm.InstalledDir),
-                                forceFullScan: scanFullIfNew && !fm.MarkedScanned
+                                forceFullScan: scanFullIfNew && !fm.MarkedScanned,
+                                fm.InstalledDir
                             ));
                         }
                     }

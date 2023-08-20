@@ -459,7 +459,7 @@ public sealed partial class Scanner : IDisposable
 
             if (progress != null)
             {
-                progressReport.FMName = missions[i].Path;
+                progressReport.FMName = missions[i].DisplayName;
                 progressReport.FMNumber = i + 1;
                 progressReport.FMsTotal = missions.Count;
                 progressReport.Percent = GetPercentFromValue_Int(missions.Count == 1 ? 0 : i + 1, missions.Count);
