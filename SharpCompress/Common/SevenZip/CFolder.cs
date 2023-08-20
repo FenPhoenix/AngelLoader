@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using AL_Common;
+using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
 
 namespace SharpCompress.Common.SevenZip;
@@ -82,11 +84,12 @@ internal sealed class CFolder
         return -1;
     }
 
-    public bool CheckStructure()
+    private const int kNumCodersMax = 32; // don't change it
+    internal const int kMaskSize = 32; // it must be >= kNumCodersMax
+    private const int kNumBindsMax = 32;
+
+    public bool CheckStructure(SevenZipContext context)
     {
-        const int kNumCodersMax = 32; // don't change it
-        const int kMaskSize = 32; // it must be >= kNumCodersMax
-        const int kNumBindsMax = 32;
 
         if (_coders.Count > kNumCodersMax || _bindPairs.Count > kNumBindsMax)
         {
@@ -124,9 +127,7 @@ internal sealed class CFolder
             }
         }
 
-        // @MEM(CFolder): We can cache this
-        uint[] mask = new uint[kMaskSize];
-
+        uint[] mask = context.CFolder_Mask.Cleared();
         {
             var inStreamToCoder = new List<int>();
             var outStreamToCoder = new List<int>();

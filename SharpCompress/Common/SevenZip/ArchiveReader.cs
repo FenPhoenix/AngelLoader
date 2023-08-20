@@ -6,6 +6,7 @@ using System.IO;
 using JetBrains.Annotations;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
+using static AL_Common.Common;
 
 namespace SharpCompress.Common.SevenZip;
 
@@ -452,7 +453,7 @@ internal sealed class ArchiveReader
     private void ReadSubStreamsInfo(
         List<CFolder> folders,
         out List<int> numUnpackStreamsInFolders,
-        out List<long> unpackSizes
+        out ListFast<long> unpackSizes
     )
     {
         numUnpackStreamsInFolders = null;
@@ -492,8 +493,7 @@ internal sealed class ArchiveReader
             }
         }
 
-        // @SharpCompress: Allocation hotspot: 288 / 882,592
-        unpackSizes = new List<long>(folders.Count);
+        unpackSizes = _context.ListOfLong.ClearedAndWithCapacityAtLeast(folders.Count);
         for (int i = 0; i < numUnpackStreamsInFolders.Count; i++)
         {
             // v3.13 incorrectly worked with empty folders
@@ -555,7 +555,7 @@ internal sealed class ArchiveReader
         out List<long> packSizes,
         out List<CFolder> folders,
         out List<int> numUnpackStreamsInFolders,
-        out List<long> unpackSizes)
+        out ListFast<long> unpackSizes)
     {
         dataOffset = long.MinValue;
         packSizes = null;
@@ -665,7 +665,7 @@ internal sealed class ArchiveReader
             type = ReadId();
         }
 
-        List<long> unpackSizes;
+        ListFast<long> unpackSizes;
 
         if (type == BlockType.MainStreamsInfo)
         {
@@ -682,7 +682,7 @@ internal sealed class ArchiveReader
         }
         else
         {
-            unpackSizes = new List<long>(db._folders.Count);
+            unpackSizes = _context.ListOfLong.ClearedAndWithCapacityAtLeast(db._folders.Count);
             db._numUnpackStreamsVector = new List<int>(db._folders.Count);
             for (int i = 0; i < db._folders.Count; i++)
             {

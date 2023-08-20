@@ -182,7 +182,7 @@ internal static class DecoderStreamHelper
         SevenZipContext context
     )
     {
-        if (!folderInfo.CheckStructure())
+        if (!folderInfo.CheckStructure(context))
         {
             throw new NotSupportedException("Unsupported stream binding structure.");
         }

@@ -275,6 +275,13 @@ public static class Common
             if (num < min) num = min;
             Capacity = num;
         }
+
+        public ListFast<T> ClearedAndWithCapacityAtLeast(int capacity)
+        {
+            EnsureCapacity(capacity);
+            ClearFast();
+            return this;
+        }
     }
 
     private static bool? _fieldStreamBufferFieldFound;

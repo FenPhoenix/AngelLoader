@@ -1,4 +1,6 @@
 ﻿using System.Buffers;
+using SharpCompress.Common.SevenZip;
+using static AL_Common.Common;
 
 namespace SharpCompress.Archives.SevenZip;
 
@@ -50,4 +52,6 @@ public sealed class SevenZipContext
     public readonly byte[] SubStreamBuffer = new byte[SubStreamBufferLength];
 
     public readonly byte[] Byte1 = new byte[1];
+    public readonly uint[] CFolder_Mask = new uint[CFolder.kMaskSize];
+    public readonly ListFast<long> ListOfLong = new(16);
 }
