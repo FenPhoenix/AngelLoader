@@ -51,6 +51,7 @@ public sealed class SevenZipArchive : IDisposable
     {
         if (!_disposed)
         {
+            _context.ReturnPossiblyRentedArrays();
             _srcStream.Dispose();
             _disposed = true;
         }
