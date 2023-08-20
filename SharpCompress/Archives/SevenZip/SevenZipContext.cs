@@ -5,6 +5,7 @@ using static AL_Common.Common;
 
 namespace SharpCompress.Archives.SevenZip;
 
+#if true
 public readonly struct ArrayWithLength<T>
 {
     public readonly T[] Array;
@@ -16,14 +17,13 @@ public readonly struct ArrayWithLength<T>
         Length = length;
     }
 
-#if false
     public T this[int index]
     {
         get => Array[index];
         set => Array[index] = value;
     }
-#endif
 }
+#endif
 
 public sealed class SevenZipContext
 {
@@ -70,7 +70,7 @@ public sealed class SevenZipContext
         return list;
     }
 
-    public void ReturnPossiblyRentedArrays()
+    public void Close()
     {
         int listCount = ListOfOneByteArray.Count;
         for (int i = 0; i < listCount; i++)
