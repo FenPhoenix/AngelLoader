@@ -634,7 +634,7 @@ internal static class DesignerGen
                             or "Panel"
                             or "DrawnPanel"
                             or "FlowLayoutPanel")
-                        // @vNext: Cheap hack temporarily
+                        // TODO: Cheap hack temporarily
                         && destNode.ControlName != "PagePanel")
                     {
                         destNode.IgnoreExceptForComments = true;

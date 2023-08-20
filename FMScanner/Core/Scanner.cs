@@ -1519,7 +1519,7 @@ public sealed partial class Scanner : IDisposable
 
             if (topDT != null && dt != null)
             {
-                // @vNext: We don't check the ambiguous date against the file(s) in this case
+                // TODO: We don't check the ambiguous date against the file(s) in this case
                 // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
                 // like we needed to.
                 if (!topDtIsAmbiguous && dtIsAmbiguous)
@@ -4594,9 +4594,6 @@ public sealed partial class Scanner : IDisposable
     /// <param name="directory"></param>
     private static void DeleteDirectory(string directory)
     {
-        /*
-        @vNext(Fast directory delete): This uses the slow (8.3 name getting) code. We can use a custom version to make it faster.
-        */
         try
         {
             // Assume no readonly files

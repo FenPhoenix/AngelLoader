@@ -222,7 +222,7 @@ internal static class FMTags
 
     /*
     Very awkward procedure that accesses global state in the name of only doing one iteration
-    @vNext(AddTagsToFMAndGlobalList): The set of tags adding stuff in here is very awkwardly coupled
+    TODO(AddTagsToFMAndGlobalList): The set of tags adding stuff in here is very awkwardly coupled
     We did it so we can keep this one loop instead of two, but that's a stupid micro-optimization that almost
     certainly gains us nothing perceptible but makes the logic in here very difficult to follow.
     We should pull these apart and put them back together in a better way.

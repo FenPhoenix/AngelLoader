@@ -89,7 +89,6 @@ internal sealed class MBCSGroupProber : CharsetProber
     internal override ProbingState HandleData(byte[] buf, int offset, int len, UdeContext context)
     {
         // do filtering to reduce load to probers
-        // @Ude: Byte array allocation
         byte[] highbyteBuf = context.ByteArrayPool.Rent(len);
         try
         {

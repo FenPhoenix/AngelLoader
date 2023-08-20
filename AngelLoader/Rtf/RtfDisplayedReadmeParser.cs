@@ -288,7 +288,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         {
             // CanBeDestOrNotDest is only relevant for plaintext extraction. As we're only parsing color
             // tables, we can just skip groups so marked.
-            // @vNext: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
+            // TODO: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
             case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
