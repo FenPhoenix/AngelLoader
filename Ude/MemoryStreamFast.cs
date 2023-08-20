@@ -6,8 +6,13 @@ namespace Ude.NetStandard;
 public sealed class MemoryStreamFast
 {
     public byte[] Buffer;
-    private int _position;
-    private int _length;
+
+    /// <summary>Do not modify!</summary>
+    public int Position;
+
+    /// <summary>Do not modify!</summary>
+    public int Length;
+
     private int _capacity;
 
     public MemoryStreamFast(int capacity)
@@ -92,9 +97,9 @@ public sealed class MemoryStreamFast
             if (value > 0)
             {
                 byte[] dst = new byte[value];
-                if (_length > 0)
+                if (Length > 0)
                 {
-                    System.Buffer.BlockCopy(Buffer, 0, dst, 0, _length);
+                    System.Buffer.BlockCopy(Buffer, 0, dst, 0, Length);
                 }
                 Buffer = dst;
             }
@@ -106,11 +111,7 @@ public sealed class MemoryStreamFast
         }
     }
 
-    /// <summary>Gets the length of the stream in bytes.</summary>
-    /// <returns>The length of the stream in bytes.</returns>
-    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    internal int Length => _length;
-
+#if false
     /// <summary>Gets or sets the current position within the stream.</summary>
     /// <returns>The current position within the stream.</returns>
     /// <exception cref="T:System.ArgumentOutOfRangeException">The position is set to a negative value or a value greater than <see cref="F:System.Int32.MaxValue" />.</exception>
@@ -129,6 +130,7 @@ public sealed class MemoryStreamFast
         }
 #endif
     }
+#endif
 
     /// <summary>Sets the length of the current stream to the specified value.</summary>
     /// <param name="value">The value at which to set the length.</param>
@@ -144,16 +146,16 @@ public sealed class MemoryStreamFast
             ThrowHelper.ArgumentOutOfRange(nameof(value), "StreamLength");
         }
         int num = (int)value;
-        if (!EnsureCapacity(num) && num > _length)
+        if (!EnsureCapacity(num) && num > Length)
         {
-            Array.Clear(Buffer, _length, num - _length);
+            Array.Clear(Buffer, Length, num - Length);
         }
-        _length = num;
-        if (_position <= num)
+        Length = num;
+        if (Position <= num)
         {
             return;
         }
-        _position = num;
+        Position = num;
     }
 
     /// <summary>Writes a block of bytes to the current stream using data read from a buffer.</summary>
@@ -183,35 +185,35 @@ public sealed class MemoryStreamFast
         {
             ThrowHelper.ArgumentException("Argument_InvalidOffLen");
         }
-        int num1 = _position + count;
+        int num1 = Position + count;
         if (num1 < 0)
         {
             ThrowHelper.IOException("StreamTooLong");
         }
-        if (num1 > _length)
+        if (num1 > Length)
         {
-            bool flag = _position > _length;
+            bool flag = Position > Length;
             if (num1 > _capacity && EnsureCapacity(num1))
             {
                 flag = false;
             }
             if (flag)
             {
-                Array.Clear(Buffer, _length, num1 - _length);
+                Array.Clear(Buffer, Length, num1 - Length);
             }
-            _length = num1;
+            Length = num1;
         }
         if (count <= 8 && buffer != Buffer)
         {
             int num2 = count;
             while (--num2 >= 0)
-                Buffer[_position + num2] = buffer[offset + num2];
+                Buffer[Position + num2] = buffer[offset + num2];
         }
         else
         {
-            System.Buffer.BlockCopy(buffer, offset, Buffer, _position, count);
+            System.Buffer.BlockCopy(buffer, offset, Buffer, Position, count);
         }
-        _position = num1;
+        Position = num1;
     }
 
     /// <summary>Writes a byte to the current stream at the current position.</summary>
@@ -222,21 +224,21 @@ public sealed class MemoryStreamFast
     /// <exception cref="T:System.ObjectDisposedException">The current stream is closed.</exception>
     internal void WriteByte(byte value)
     {
-        if (_position >= _length)
+        if (Position >= Length)
         {
-            int num = _position + 1;
-            bool flag = _position > _length;
+            int num = Position + 1;
+            bool flag = Position > Length;
             if (num >= _capacity && EnsureCapacity(num))
             {
                 flag = false;
             }
             if (flag)
             {
-                Array.Clear(Buffer, _length, _position - _length);
+                Array.Clear(Buffer, Length, Position - Length);
             }
-            _length = num;
+            Length = num;
         }
-        Buffer[_position++] = value;
+        Buffer[Position++] = value;
     }
 
     internal byte this[int index] => Buffer[index];

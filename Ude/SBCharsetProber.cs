@@ -86,7 +86,7 @@ internal sealed class SingleByteCharSetProber : CharsetProber
 
         for (int i = offset; i < max; i++)
         {
-            byte order = _model.GetOrder(buf[i]);
+            byte order = _model.CharToOrderMap[buf[i]];
 
             if (order < SYMBOL_CAT_ORDER)
             {
@@ -102,11 +102,11 @@ internal sealed class SingleByteCharSetProber : CharsetProber
                     _totalSeqs++;
                     if (!_reversed)
                     {
-                        ++_seqCounters[_model.GetPrecedence((_lastOrder * SAMPLE_SIZE) + order)];
+                        ++_seqCounters[_model.PrecedenceMatrix[(_lastOrder * SAMPLE_SIZE) + order]];
                     }
                     else // reverse the order of the letters in the lookup
                     {
-                        ++_seqCounters[_model.GetPrecedence((order * SAMPLE_SIZE) + _lastOrder)];
+                        ++_seqCounters[_model.PrecedenceMatrix[(order * SAMPLE_SIZE) + _lastOrder]];
                     }
                 }
             }

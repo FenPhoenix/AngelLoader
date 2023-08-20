@@ -41,11 +41,13 @@ namespace Ude.NetStandard;
 internal abstract class SequenceModel
 {
     // [256] table use to find a char's order
-    private readonly byte[] _charToOrderMap;
+    /// <summary>Do not modify!</summary>
+    public readonly byte[] CharToOrderMap;
 
     // [SAMPLE_SIZE][SAMPLE_SIZE] table to find a 2-char sequence's
     // frequency
-    private readonly byte[] _precedenceMatrix;
+    /// <summary>Do not modify!</summary>
+    public readonly byte[] PrecedenceMatrix;
 
     // freqSeqs / totalSeqs
 
@@ -59,13 +61,9 @@ internal abstract class SequenceModel
         float typicalPositiveRatio,
         Charset charsetName)
     {
-        _charToOrderMap = charToOrderMap;
-        _precedenceMatrix = precedenceMatrix;
+        CharToOrderMap = charToOrderMap;
+        PrecedenceMatrix = precedenceMatrix;
         TypicalPositiveRatio = typicalPositiveRatio;
         CharsetName = charsetName;
     }
-
-    internal byte GetOrder(byte b) => _charToOrderMap[b];
-
-    internal byte GetPrecedence(int pos) => _precedenceMatrix[pos];
 }
