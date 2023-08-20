@@ -155,7 +155,7 @@ internal sealed class ArchiveReader
         return ReadBitVector(length);
     }
 
-    private void ReadDummyNumberVector(List<ArrayWithLength<byte>> dataVector, int numFiles)
+    private void ReadDummyNumberVector(List<byte[]> dataVector, int numFiles)
     {
         BitVector defined = ReadOptionalBitVector(numFiles);
 
@@ -401,7 +401,7 @@ internal sealed class ArchiveReader
         }
     }
 
-    private void ReadUnpackInfo(List<ArrayWithLength<byte>> dataVector, out List<CFolder> folders)
+    private void ReadUnpackInfo(List<byte[]> dataVector, out List<CFolder> folders)
     {
         WaitAttribute(BlockType.Folder);
         int numFolders = ReadNum();
@@ -556,7 +556,7 @@ internal sealed class ArchiveReader
     }
 
     private void ReadStreamsInfo(
-        List<ArrayWithLength<byte>> dataVector,
+        List<byte[]> dataVector,
         out long dataOffset,
         out List<long> packSizes,
         out List<CFolder> folders,
@@ -594,7 +594,7 @@ internal sealed class ArchiveReader
         }
     }
 
-    private List<ArrayWithLength<byte>> ReadAndDecodePackedStreams(long baseOffset)
+    private List<byte[]> ReadAndDecodePackedStreams(long baseOffset)
     {
         ReadStreamsInfo(
             null,
@@ -607,7 +607,7 @@ internal sealed class ArchiveReader
 
         dataStartPos += baseOffset;
 
-        List<ArrayWithLength<byte>> dataVector = _context.ClearAndReturn(_context.ListOfOneByteArray);
+        var dataVector = new List<byte[]>(folders.Count);
         const int packIndex = 0;
         foreach (CFolder folder in folders)
         {
@@ -629,14 +629,13 @@ internal sealed class ArchiveReader
             );
 
             int unpackSize = checked((int)folder.GetUnpackSize());
-            byte[] data = _context.ByteArrayPool.Rent(unpackSize);
-            ReadExact(outStream, data, unpackSize);
+            byte[] data = new byte[unpackSize];
+            ReadExact(outStream, data);
             if (outStream.ReadByte() >= 0)
             {
-                _context.ByteArrayPool.Return(data);
                 throw new InvalidOperationException("Decoded stream is longer than expected.");
             }
-            dataVector.Add(new ArrayWithLength<byte>(data, unpackSize));
+            dataVector.Add(data);
 
             if (folder.UnpackCrcDefined)
             {
@@ -663,7 +662,7 @@ internal sealed class ArchiveReader
             type = ReadId();
         }
 
-        List<ArrayWithLength<byte>> dataVector = null;
+        List<byte[]> dataVector = null;
         if (type == BlockType.AdditionalStreamsInfo)
         {
             dataVector = ReadAndDecodePackedStreams(
@@ -986,7 +985,7 @@ internal sealed class ArchiveReader
         _stream.Seek(nextHeaderOffset, SeekOrigin.Current);
 
         byte[] header = new byte[nextHeaderSize];
-        ReadExact(_stream, header, header.Length);
+        ReadExact(_stream, header);
 
         if (Crc.Finish(Crc.Update(Crc.INIT_CRC, header, 0, header.Length)) != nextHeaderCrc)
         {
@@ -1005,7 +1004,7 @@ internal sealed class ArchiveReader
                     throw new InvalidOperationException();
                 }
 
-                List<ArrayWithLength<byte>> dataVector = ReadAndDecodePackedStreams(
+                List<byte[]> dataVector = ReadAndDecodePackedStreams(
                     db._startPositionAfterHeader
                 );
 
@@ -1036,7 +1035,7 @@ internal sealed class ArchiveReader
     }
 
     // @SharpCompress(ReadExact): Not 100% sure if stream can't be null, check into this
-    private static void ReadExact([CanBeNull] Stream stream, [NotNull] byte[] buffer, int length)
+    private static void ReadExact([CanBeNull] Stream stream, [NotNull] byte[] buffer)
     {
         if (stream is null)
         {
@@ -1044,6 +1043,7 @@ internal sealed class ArchiveReader
         }
 
         int offset = 0;
+        int length = buffer.Length;
 
         while (length > 0)
         {
