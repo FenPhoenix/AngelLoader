@@ -1,5 +1,12 @@
 #nullable disable
 
+/*
+@MEM(SharpCompress/array pooling) notes:
+We shouldn't pool arrays that get set as class-level fields or added to class-level lists or anything like that.
+We should only do it if we can guarantee the array can be rented and returned in scope without leaking out.
+We should also see if we can refactor the code to allow the above.
+*/
+
 using System;
 using System.Collections.Generic;
 using System.IO;
