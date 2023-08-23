@@ -1710,5 +1710,15 @@ public static class Common
         return charBuffer;
     }
 
+    public static void StreamCopyNoAlloc(Stream source, Stream destination, byte[] buffer)
+    {
+        buffer.Clear();
+        int count;
+        while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
+        {
+            destination.Write(buffer, 0, count);
+        }
+    }
+
     #endregion
 }

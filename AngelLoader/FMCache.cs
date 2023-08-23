@@ -156,7 +156,9 @@ internal static class FMCache
 
                 if (fm.Archive.ExtIsZip())
                 {
-                    ZipExtract(fmArchivePath, fmCachePath, readmes);
+                    byte[] zipExtractTempBuffer = new byte[Misc.StreamCopyBufferSize];
+
+                    ZipExtract(fmArchivePath, fmCachePath, readmes, zipExtractTempBuffer);
 
                     // @HTMLRefExtraction(FMCache):
                     // TODO: Support HTML ref extraction for .7z files too
@@ -180,7 +182,7 @@ internal static class FMCache
                     {
                         try
                         {
-                            ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
+                            ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer);
                         }
                         catch (Exception ex)
                         {
@@ -211,7 +213,7 @@ internal static class FMCache
 
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
-    private static void ExtractHTMLRefFiles(string fmArchivePath, string fmCachePath)
+    private static void ExtractHTMLRefFiles(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
     {
         var htmlRefFiles = new List<NameAndIndex>();
 
@@ -288,7 +290,7 @@ internal static class FMCache
             {
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                archive.Entries[f.Index].ExtractToFile(Path.Combine(fmCachePath, f.Name), overwrite: true);
+                archive.Entries[f.Index].ExtractToFile_Fast(Path.Combine(fmCachePath, f.Name), overwrite: true, zipExtractTempBuffer);
             }
         }
     }
@@ -296,7 +298,7 @@ internal static class FMCache
     // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
     // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
     // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, byte[] zipExtractTempBuffer)
     {
         try
         {
@@ -335,7 +337,7 @@ internal static class FMCache
                     : fmCachePath);
 
                 string fileNameFull = Path.Combine(fmCachePath, fn);
-                entry.ExtractToFile(fileNameFull, overwrite: true);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
                 readmes.Add(fn);
             }
         }

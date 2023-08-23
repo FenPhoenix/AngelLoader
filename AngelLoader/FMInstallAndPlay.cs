@@ -1423,6 +1423,8 @@ internal static class FMInstallAndPlay
             );
 
             BinaryBuffer buffer = new();
+            byte[]? zipExtractTempBuffer = null;
+            byte[]? fileStreamBuffer = null;
 
             for (int i = 0; i < fmDataList.Length; i++)
             {
@@ -1434,12 +1436,22 @@ internal static class FMInstallAndPlay
 
                 int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
 
+                bool fmIsZip = fmData.ArchivePath.ExtIsZip();
+
                 // Framework zip extracting is much faster, so use it if possible
                 // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
                 // But we don't want to parse out stupid console output for error detection and junk if we
                 // don't have to so whatever.
-                (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
-                    ? Task.Run(() => InstallFMZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
+
+                (bool canceled, bool installFailed) = await (fmIsZip
+                    ? InstallFMZip(
+                        fmData.ArchivePath,
+                        fmInstalledPath,
+                        fmData.FM.Archive,
+                        mainPercent,
+                        fmDataList.Length,
+                        zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
+                        fileStreamBuffer ??= new byte[FileStreamBufferSize])
                     : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                 if (installFailed)
@@ -1549,7 +1561,12 @@ internal static class FMInstallAndPlay
 
                 try
                 {
-                    await RestoreFM(fmData.FM, archivePaths, _installCts.Token);
+                    await RestoreFM(
+                        fmData.FM,
+                        archivePaths,
+                        _installCts.Token,
+                        zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
+                        fileStreamBuffer ??= new byte[FileStreamBufferSize]);
                 }
                 catch (Exception ex)
                 {
@@ -1576,68 +1593,78 @@ internal static class FMInstallAndPlay
         return true;
     }
 
-    private static (bool Canceled, bool InstallFailed)
-    InstallFMZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    private static Task<(bool Canceled, bool InstallFailed)>
+    InstallFMZip(
+        string fmArchivePath,
+        string fmInstalledPath,
+        string fmArchive,
+        int mainPercent,
+        int fmCount,
+        byte[] tempBuffer,
+        byte[] fileStreamBuffer)
     {
-        bool single = fmCount == 1;
-
-        try
+        return Task.Run(() =>
         {
-            Directory.CreateDirectory(fmInstalledPath);
+            bool single = fmCount == 1;
 
-            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
-
-            int filesCount = archive.Entries.Count;
-            for (int i = 0; i < filesCount; i++)
+            try
             {
-                ZipArchiveEntry entry = archive.Entries[i];
+                Directory.CreateDirectory(fmInstalledPath);
 
-                string fileName = entry.FullName;
+                using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
-                if (fileName[fileName.Length - 1].IsDirSep()) continue;
-
-                if (fileName.Rel_ContainsDirSep())
+                int filesCount = archive.Entries.Count;
+                for (int i = 0; i < filesCount; i++)
                 {
-                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-                }
+                    ZipArchiveEntry entry = archive.Entries[i];
 
-                string extractedName = Path.Combine(fmInstalledPath, fileName);
-                entry.ExtractToFile(extractedName, overwrite: true);
+                    string fileName = entry.FullName;
 
-                File_UnSetReadOnly(extractedName);
+                    if (fileName[fileName.Length - 1].IsDirSep()) continue;
 
-                int percent = GetPercentFromValue_Int(i + 1, filesCount);
+                    if (fileName.Rel_ContainsDirSep())
+                    {
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                    }
 
-                int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
+                    entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
 
-                if (single)
-                {
-                    Core.View.SetProgressPercent(percent);
-                }
-                else
-                {
-                    Core.View.SetProgressBoxState_Double(
-                        mainPercent: newMainPercent,
-                        subMessage: fmArchive,
-                        subPercent: percent
-                    );
-                }
+                    File_UnSetReadOnly(extractedName);
 
-                if (_installCts.Token.IsCancellationRequested)
-                {
-                    return (true, false);
+                    int percent = GetPercentFromValue_Int(i + 1, filesCount);
+
+                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                    if (single)
+                    {
+                        Core.View.SetProgressPercent(percent);
+                    }
+                    else
+                    {
+                        Core.View.SetProgressBoxState_Double(
+                            mainPercent: newMainPercent,
+                            subMessage: fmArchive,
+                            subPercent: percent
+                        );
+                    }
+
+                    if (_installCts.Token.IsCancellationRequested)
+                    {
+                        return (true, false);
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-            Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-            return (false, true);
-        }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+                Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+                return (false, true);
+            }
 
-        return (false, false);
+            return (false, false);
+        });
     }
 
     private static (bool Canceled, bool InstallFailed)
@@ -1831,6 +1858,8 @@ internal static class FMInstallAndPlay
 
             InstDirNameContext instDirNameContext = new();
 
+            byte[]? fileStreamBuffer = null;
+
             for (int i = 0; i < fmDataList.Length; i++)
             {
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
@@ -1897,7 +1926,7 @@ internal static class FMInstallAndPlay
                 archive folder on initial setup, and hasn't imported from NDL by this point.
                 */
 
-                if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath, archivePaths);
+                if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath, archivePaths, fileStreamBuffer ??= new byte[FileStreamBufferSize]);
 
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 

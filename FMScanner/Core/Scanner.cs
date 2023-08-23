@@ -2973,7 +2973,7 @@ public sealed partial class Scanner : IDisposable
                         _generalMemoryStream.SetLength(readmeFileLen);
                         _generalMemoryStream.Position = 0;
                         using var es = _archive.OpenEntry(readmeEntry!);
-                        StreamCopyNoAlloc(es, _generalMemoryStream);
+                        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
                         _generalMemoryStream.Position = 0;
                         stream = _generalMemoryStream;
                     }
@@ -4612,18 +4612,6 @@ public sealed partial class Scanner : IDisposable
     private byte[]? _streamCopyBuffer;
     private byte[] StreamCopyBuffer => _streamCopyBuffer ??= new byte[81920];
 
-    private void StreamCopyNoAlloc(Stream source, Stream destination)
-    {
-        byte[] buffer = StreamCopyBuffer;
-
-        buffer.Clear();
-        int count;
-        while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
-        {
-            destination.Write(buffer, 0, count);
-        }
-    }
-
     #endregion
 
     #region Generic dir/file functions
@@ -4689,7 +4677,7 @@ public sealed partial class Scanner : IDisposable
         // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
         _generalMemoryStream.SetLength((int)length);
         _generalMemoryStream.Position = 0;
-        StreamCopyNoAlloc(stream, _generalMemoryStream);
+        StreamCopyNoAlloc(stream, _generalMemoryStream, StreamCopyBuffer);
         stream.Dispose();
         _generalMemoryStream.Position = 0;
         Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);

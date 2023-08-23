@@ -231,7 +231,7 @@ internal static class FMBackupAndRestore
         return ret;
     }
 
-    internal static Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths)
+    internal static Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths, byte[] fileStreamBuffer)
     {
         bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
@@ -309,7 +309,7 @@ internal static class FMBackupAndRestore
             HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
             (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
-                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath);
+                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer);
 
             // If >90% of files are different, re-run and use only size difference
             // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -317,7 +317,7 @@ internal static class FMBackupAndRestore
             if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
             {
                 (changedList, addedList, fullList) =
-                    GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, useOnlySize: true);
+                    GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer, useOnlySize: true);
             }
 
             try
@@ -366,7 +366,7 @@ internal static class FMBackupAndRestore
         });
     }
 
-    internal static Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct)
+    internal static Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
@@ -392,7 +392,7 @@ internal static class FMBackupAndRestore
             string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
             string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-            using (ZipArchive archive = GetZipArchiveCharEnc(backupFile.Name))
+            using (ZipArchive archive = GetZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
             {
                 if (Canceled(ct)) return;
 
@@ -411,12 +411,12 @@ internal static class FMBackupAndRestore
                         if (!fn.Rel_ContainsDirSep())
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
-                            entry.ExtractToFile(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true, zipExtractTempBuffer);
                         }
                         else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
                         }
 
                         if (Canceled(ct)) return;
@@ -443,7 +443,7 @@ internal static class FMBackupAndRestore
                                   (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                                entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                                entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
                             }
 
                             if (Canceled(ct)) return;
@@ -517,7 +517,7 @@ internal static class FMBackupAndRestore
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                             }
 
-                            entry.ExtractToFile(Path.Combine(fmInstalledPath, efn), overwrite: true);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, efn), overwrite: true, zipExtractTempBuffer);
 
                             if (Canceled(ct)) return;
                         }
@@ -589,7 +589,7 @@ internal static class FMBackupAndRestore
     private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
 
     private static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
-    GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, bool useOnlySize = false)
+    GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, byte[] fileStreamBuffer, bool useOnlySize = false)
     {
         var changedList = new HashSetPathI();
         var addedList = new HashSetPathI();
@@ -598,7 +598,7 @@ internal static class FMBackupAndRestore
         bool fmIsZip = fmArchivePath.ExtIsZip();
         if (fmIsZip)
         {
-            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
+            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
             var entries = archive.Entries;
 

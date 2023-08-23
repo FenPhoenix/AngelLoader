@@ -175,4 +175,7 @@ public static partial class Misc
         internal const uint DaysRecent = 15;
         internal const uint MaxDaysRecent = 99999;
     }
+
+    internal const int StreamCopyBufferSize = 81920;
+    internal const int FileStreamBufferSize = 4096;
 }
