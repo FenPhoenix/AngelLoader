@@ -219,7 +219,7 @@ internal static class FMCache
     {
         var htmlRefFiles = new List<NameAndIndex>();
 
-        using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+        using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
         foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
         {
@@ -304,7 +304,7 @@ internal static class FMCache
     {
         try
         {
-            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
             for (int i = 0; i < archive.Entries.Count; i++)
             {

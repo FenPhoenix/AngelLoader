@@ -392,7 +392,7 @@ internal static class FMBackupAndRestore
             string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
             string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-            using (ZipArchive archive = GetZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
+            using (ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
             {
                 if (Canceled(ct)) return;
 
@@ -598,7 +598,7 @@ internal static class FMBackupAndRestore
         bool fmIsZip = fmArchivePath.ExtIsZip();
         if (fmIsZip)
         {
-            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
             var entries = archive.Entries;
 

@@ -260,7 +260,7 @@ public static partial class Utils
         }
     }
 
-    internal static ZipArchive GetZipArchiveCharEnc(string fileName, byte[] buffer)
+    internal static ZipArchive GetReadModeZipArchiveCharEnc(string fileName, byte[] buffer)
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc;

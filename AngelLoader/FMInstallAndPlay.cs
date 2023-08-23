@@ -1611,7 +1611,7 @@ internal static class FMInstallAndPlay
             {
                 Directory.CreateDirectory(fmInstalledPath);
 
-                using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+                using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
                 int filesCount = archive.Entries.Count;
                 for (int i = 0; i < filesCount; i++)
