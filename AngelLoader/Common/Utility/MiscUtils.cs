@@ -260,7 +260,7 @@ public static partial class Utils
         }
     }
 
-    internal static ZipArchive GetZipArchiveCharEnc(string fileName, byte[]? buffer = null)
+    internal static ZipArchive GetZipArchiveCharEnc(string fileName, byte[] buffer)
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc;
@@ -273,10 +273,7 @@ public static partial class Utils
             enc = Encoding.UTF8;
         }
 
-        Stream stream = buffer == null
-            ? File_OpenReadFast(fileName)
-            : GetReadModeFileStreamWithCachedBuffer(fileName, buffer);
-        return new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: false, enc);
+        return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
     internal static void LogFMInfo(

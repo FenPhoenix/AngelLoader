@@ -11,6 +11,7 @@ using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -156,9 +157,10 @@ internal static class FMCache
 
                 if (fm.Archive.ExtIsZip())
                 {
-                    byte[] zipExtractTempBuffer = new byte[Misc.StreamCopyBufferSize];
+                    byte[] zipExtractTempBuffer = new byte[StreamCopyBufferSize];
+                    byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-                    ZipExtract(fmArchivePath, fmCachePath, readmes, zipExtractTempBuffer);
+                    ZipExtract(fmArchivePath, fmCachePath, readmes, zipExtractTempBuffer, fileStreamBuffer);
 
                     // @HTMLRefExtraction(FMCache):
                     // TODO: Support HTML ref extraction for .7z files too
@@ -182,7 +184,7 @@ internal static class FMCache
                     {
                         try
                         {
-                            ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer);
+                            ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
                         }
                         catch (Exception ex)
                         {
@@ -213,11 +215,11 @@ internal static class FMCache
 
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
-    private static void ExtractHTMLRefFiles(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
+    private static void ExtractHTMLRefFiles(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         var htmlRefFiles = new List<NameAndIndex>();
 
-        using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
+        using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
         foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
         {
@@ -298,11 +300,11 @@ internal static class FMCache
     // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
     // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
     // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, byte[] zipExtractTempBuffer)
+    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         try
         {
-            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath);
+            using ZipArchive archive = GetZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
             for (int i = 0; i < archive.Entries.Count; i++)
             {
