@@ -126,6 +126,7 @@ internal static class FMAudio
             );
 
             BinaryBuffer buffer = new();
+            byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
             for (int i = 0; i < fms.Count; i++)
             {
@@ -136,7 +137,7 @@ internal static class FMAudio
                     percent: single ? null : GetPercentFromValue_Int(i + 1, fms.Count)
                 );
 
-                await ConvertToWAVs(fm, convertType, buffer);
+                await ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer);
 
                 if (!single && _conversionCts.IsCancellationRequested) return;
             }
@@ -148,7 +149,7 @@ internal static class FMAudio
         }
     }
 
-    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, CancellationToken? ct = null)
+    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
     {
         if (!GameIsDark(fm.Game)) return VoidTask;
 
@@ -160,14 +161,14 @@ internal static class FMAudio
             {
                 #region Local functions
 
-                static int GetBitDepthFast(string file, BinaryBuffer buffer)
+                static int GetBitDepthFast(string file, BinaryBuffer buffer, byte[] fileStreamBuffer)
                 {
                     // In case we read past the end of the file or can't open the file or whatever. We're trying
                     // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
                     // it in a minute.
                     try
                     {
-                        using var fs = File_OpenReadFast(file);
+                        using var fs = GetReadModeFileStreamWithCachedBuffer(file, fileStreamBuffer);
 
                         _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
                         if (!buffer.Buffer.StartsWith(_riff)) return -1;
@@ -269,7 +270,7 @@ internal static class FMAudio
 
                             if (Canceled(ct)) return;
 
-                            int bits = GetBitDepthFast(f, buffer);
+                            int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
                             if (Canceled(ct)) return;
 

@@ -1504,7 +1504,7 @@ internal static class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, buffer, _installCts.Token);
+                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, buffer, fileStreamBuffer ??= new byte[FileStreamBufferSize], _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1514,7 +1514,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, buffer, _installCts.Token);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, buffer, fileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1525,7 +1525,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, buffer, _installCts.Token);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, buffer, fileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
