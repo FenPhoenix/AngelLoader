@@ -1190,7 +1190,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         {
             if (_currentScope.InFontTable)
             {
-                _fontEntries.Add(val, new FontEntry());
+                _fontEntries.Add(val);
                 return Error.OK;
             }
             else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry))

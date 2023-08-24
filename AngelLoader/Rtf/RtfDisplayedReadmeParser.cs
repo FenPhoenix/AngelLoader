@@ -230,7 +230,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
         {
             if (_currentScope.InFontTable)
             {
-                _fontEntries.Add(val, new FontEntry());
+                _fontEntries.Add(val);
                 return Error.OK;
             }
 

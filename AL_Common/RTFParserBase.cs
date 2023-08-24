@@ -662,6 +662,15 @@ public abstract partial class RTFParserBase
         public SymbolFont SymbolFont = SymbolFont.Unset;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Reset()
+        {
+            _nameCharPos = 0;
+            _nameDone = false;
+            CodePage = null;
+            SymbolFont = SymbolFont.Unset;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool NameEquals(char[] array2)
         {
             if (_nameCharPos != array2.Length) return false;
@@ -680,6 +689,7 @@ public abstract partial class RTFParserBase
         SymbolFont enum and set it on the top font entry. Maybe we could even detect as we fill it out if it
         can't be a supported symbol font name and early-out with setting SymbolFont.None right there.
         */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AppendNameChar(char c)
         {
             if (!_nameDone && _nameCharPos < _nameMaxLength)
@@ -696,6 +706,9 @@ public abstract partial class RTFParserBase
 
     protected sealed class FontDictionary : Dictionary<int, FontEntry>
     {
+        private readonly ListFast<FontEntry> _fontEntryPool = new(250);
+        private int _fontEntryPoolVirtualCount;
+
         private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
 
         // Based on my ~540 file set (which is most if not all the known ones as of 2022-05-06), this is
@@ -703,33 +716,50 @@ public abstract partial class RTFParserBase
         // 30,000 * 12 bytes per object = 360,000 bytes. 1700 * 12 = 20400, much nicer.
         private const int _switchPoint = 1700;
 
-        public FontEntry Top = default!;
+        public FontEntry Top = null!;
         public FontDictionary(int capacity) : base(capacity) { }
 
         public new int Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public new void Add(int key, FontEntry value)
+        public void Add(int key)
         {
-            Top = value;
-            if (key >= _switchPoint)
+            FontEntry fontEntry;
+            if (_fontEntryPoolVirtualCount > 0)
             {
-                base[key] = value;
+                --_fontEntryPoolVirtualCount;
+                fontEntry = _fontEntryPool[_fontEntryPoolVirtualCount];
+                fontEntry.Reset();
             }
             else
             {
-                _array[key] = value;
+                fontEntry = new FontEntry();
+                _fontEntryPool.Add(fontEntry);
+                ++_fontEntryPoolVirtualCount;
+            }
+
+            Top = fontEntry;
+            if (key >= _switchPoint)
+            {
+                base[key] = fontEntry;
+            }
+            else
+            {
+                _array[key] = fontEntry;
             }
             Count++;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new void Clear()
         {
             base.Clear();
             _array.Clear();
             Count = 0;
+            _fontEntryPoolVirtualCount = _fontEntryPool.Count;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
         {
             if (key >= _switchPoint)
