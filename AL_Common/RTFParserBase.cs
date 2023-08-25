@@ -711,10 +711,13 @@ public abstract partial class RTFParserBase
 
         private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
 
-        // Based on my ~540 file set (which is most if not all the known ones as of 2022-05-06), this is
-        // about the ideal cutoff point. Any higher doesn't help us much until we get to ~30,000, and that's
-        // 30,000 * 12 bytes per object = 360,000 bytes. 1700 * 12 = 20400, much nicer.
-        private const int _switchPoint = 1700;
+        /*
+        \fN params are normally in the signed int16 range, but the Windows RichEdit control supports them in the
+        -30064771071 - 30064771070 (-0x6ffffffff - 0x6fffffffe) range (yes, bizarre numbers, but I tested and
+        there they are). So we're going to use the array for the expected "normal" range, and fall back to the
+        dictionary for weird crap that probably won't happen.
+        */
+        private const int _switchPoint = 32767;
 
         public FontEntry Top = null!;
         public FontDictionary(int capacity) : base(capacity) { }
@@ -738,7 +741,7 @@ public abstract partial class RTFParserBase
             }
 
             Top = fontEntry;
-            if (key >= _switchPoint)
+            if (key is < 0 or >= _switchPoint)
             {
                 base[key] = fontEntry;
             }
@@ -761,7 +764,7 @@ public abstract partial class RTFParserBase
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
         {
-            if (key >= _switchPoint)
+            if (key is < 0 or >= _switchPoint)
             {
                 return base.TryGetValue(key, out value);
             }
@@ -935,12 +938,6 @@ public abstract partial class RTFParserBase
     Highest measured was 131
     Fonts can specify themselves as whatever number they want, so we can't just count by index
     eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-    
-    Also, although the spec says most params are only int16 and a few are int32, the Windows RichEdit control
-    supports \fN params up to 30064771070 (0x6fffffffe). That's _slightly_ above int32 range. Bizarre. Also you
-    can add one to that and then it displays the text but not in the specified font, but anything above that and
-    it doesn't display the text at all. Anyway, it means we can't just allocate a 32k array and get rid of the
-    dictionary entirely. Meh.
     */
     protected readonly FontDictionary _fontEntries = new(150);
 
