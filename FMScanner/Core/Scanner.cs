@@ -2843,10 +2843,35 @@ public sealed partial class Scanner : IDisposable
                 }
             }
 
-            int readmeFileLen =
-                _fmIsZip ? (int)readmeEntry!.Length :
-                readmeFI != null ? (int)readmeFI.Length :
-                (int)new FileInfo(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)).Length;
+            int readmeFileLen;
+            if (_fmIsZip)
+            {
+                readmeFileLen = (int)readmeEntry!.Length;
+            }
+            else
+            {
+                if (readmeFI != null)
+                {
+                    readmeFileLen = (int)readmeFI.Length;
+                }
+                else
+                {
+                    try
+                    {
+                        /*
+                        If the readme was 0 length, it won't have been extracted, so in that case just skip this
+                        one and move on.
+                        */
+                        readmeFileLen =
+                            (int)new FileInfo(fullReadmeFileName ??=
+                                Path.Combine(_fmWorkingPath, readmeFile.Name)).Length;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
 
             string readmeFileOnDisk = "";
 
