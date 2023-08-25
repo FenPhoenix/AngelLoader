@@ -1964,11 +1964,11 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         if (scopeLang is > -1 and <= MaxLangNumIndex)
         {
             int translatedCodePage = LangToCodePage[scopeLang];
-            codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage ?? _header.CodePage;
+            codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _header.CodePage;
         }
         else
         {
-            codePage = fontEntry?.CodePage ?? _header.CodePage;
+            codePage = fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _header.CodePage;
         }
 
         if (codePage == 42) return (true, true, null, fontEntry);

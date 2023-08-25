@@ -246,7 +246,7 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
 
             _fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
 
-            int currentCodePage = fontEntry?.CodePage ?? _header.CodePage;
+            int currentCodePage = fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _header.CodePage;
 
             if (currentLang > -1 && currentLang != _undefinedLanguage && val != _undefinedLanguage)
             {

@@ -149,7 +149,7 @@ public abstract partial class RTFParserBase
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
                         int codePage = _charSetToCodePage[param];
-                        _fontEntries.Top.CodePage = codePage != -1 ? codePage : _header.CodePage;
+                        _fontEntries.Top.CodePage = codePage >= 0 ? codePage : _header.CodePage;
                     }
                     else
                     {
@@ -657,7 +657,7 @@ public abstract partial class RTFParserBase
 
         private bool _nameDone;
 
-        public int? CodePage;
+        public int CodePage = -1;
 
         public SymbolFont SymbolFont = SymbolFont.Unset;
 
@@ -666,7 +666,7 @@ public abstract partial class RTFParserBase
         {
             _nameCharPos = 0;
             _nameDone = false;
-            CodePage = null;
+            CodePage = -1;
             SymbolFont = SymbolFont.Unset;
         }
 
