@@ -94,6 +94,8 @@ public sealed class RtfDisplayedReadmeParser : AL_Common.RTFParserBase
     private void Reset(byte[] rtfBytes)
     {
         base.ResetBase();
+        // Don't carry around the font entry pool for the entire app lifetime
+        _fontEntries.ClearFull(0);
 
         #region Fixed-size fields
 

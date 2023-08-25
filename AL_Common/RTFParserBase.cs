@@ -762,6 +762,14 @@ public abstract partial class RTFParserBase
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearFull(int capacity)
+        {
+            _fontEntryPool.ClearFast();
+            _fontEntryPool.Capacity = capacity;
+            Clear();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
         {
             if (key is < 0 or >= _switchPoint)
