@@ -2835,7 +2835,8 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < _fmDirFileInfos.Count; i++)
                 {
                     FileInfoCustom f = _fmDirFileInfos[i];
-                    if (f.FullName.PathEqualsI(fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
+                    fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name);
+                    if (f.FullName.PathEqualsI(_fmIsSevenZip ? readmeFile.Name : fullReadmeFileName))
                     {
                         readmeFI = f;
                         break;
@@ -4161,7 +4162,9 @@ public sealed partial class Scanner : IDisposable
                     else
                     {
                         string? misFullPath = null;
-                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x =>
+                            x.FullName.PathEqualsI(misFullPath ??=
+                                _fmIsSevenZip ? mis.Name : Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
 
