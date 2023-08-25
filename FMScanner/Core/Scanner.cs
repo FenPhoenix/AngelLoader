@@ -157,6 +157,14 @@ public sealed partial class Scanner : IDisposable
             _lastWriteTime = fileInfo.LastWriteTime;
         }
 
+        /*
+        @MEM(FileInfoCustom.FullName janky horrible inconsistency explanation)
+        In this case, FullName will just be the entry name, so "readme.txt" for example, so not a full name AT ALL.
+        I'm going to assume I did this to avoid allocations - if we passed the fm working path into here and
+        combined it that's a string alloc for every entry, whereas we otherwise only need to do the combine for
+        a small number of entries. I'm pretty sure that's why I would have done this, because it necessitates an
+        fm-is-7zip check everywhere we do a name compare. UGH.
+        */
         internal FileInfoCustom(SevenZipArchiveEntry archiveFileInfo)
         {
             FullName = archiveFileInfo.FileName;
