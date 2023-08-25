@@ -60,16 +60,10 @@ public static partial class RTFParserCommon
     public readonly struct Context
     {
         public readonly ListFast<char> Keyword;
-
         public readonly ScopeStack ScopeStack;
-
         public readonly Scope CurrentScope;
-
-        // Don't reset
         public readonly FontDictionary FontEntries;
-
         public readonly Header Header;
-
         public readonly UnGetStack UnGetBuffer;
 
         public void Reset()
@@ -77,8 +71,8 @@ public static partial class RTFParserCommon
             Keyword.ClearFast();
             ScopeStack.ClearFast();
             CurrentScope.Reset();
-            Header.Reset();
             FontEntries.Clear();
+            Header.Reset();
             UnGetBuffer.Clear();
         }
 
