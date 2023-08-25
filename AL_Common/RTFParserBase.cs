@@ -57,7 +57,6 @@ public abstract partial class RTFParserBase
 {
     #region Constants
 
-    public const int _maxScopes = 100;
     public const int _keywordMaxLen = 32;
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
     public const int _paramMaxLen = 10;
@@ -71,7 +70,7 @@ public abstract partial class RTFParserBase
     public const int _charSetToCodePageLength = 256;
     public static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
 
-    public static int[] InitializeCharSetToCodePage()
+    private static int[] InitializeCharSetToCodePage()
     {
         int[] charSetToCodePage = InitializedArray(_charSetToCodePageLength, -1);
 
@@ -134,8 +133,10 @@ public abstract partial class RTFParserBase
 
     public sealed class ScopeStack
     {
+        private const int _maxScopes = 100;
+
         private readonly Scope[] _scopesArray;
-        public int Count;
+        private int Count;
 
         public ScopeStack()
         {
@@ -147,22 +148,16 @@ public abstract partial class RTFParserBase
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Push(Scope currentScope) => currentScope.DeepCopyTo(_scopesArray[Count++]);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Pop(Scope currentScope) => _scopesArray[--Count].DeepCopyTo(currentScope);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFast() => Count = 0;
 
         #region Scope push/pop
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError PushScope(Scope currentScope, ref int groupCount)
+        public RtfError Push(Scope currentScope, ref int groupCount)
         {
             if (Count >= _maxScopes) return RtfError.StackOverflow;
 
-            Push(currentScope);
+            currentScope.DeepCopyTo(_scopesArray[Count++]);
 
             currentScope.RtfInternalState = RtfInternalState.Normal;
 
@@ -172,11 +167,11 @@ public abstract partial class RTFParserBase
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError PopScope(Scope currentScope, ref int groupCount)
+        public RtfError Pop(Scope currentScope, ref int groupCount)
         {
             if (Count == 0) return RtfError.StackUnderflow;
 
-            Pop(currentScope);
+            _scopesArray[--Count].DeepCopyTo(currentScope);
             groupCount--;
 
             return RtfError.OK;
@@ -824,7 +819,7 @@ public abstract partial class RTFParserBase
         Skip
     }
 
-    public const int _propertiesLen = 4;
+    private const int _propertiesLen = 4;
     public enum Property
     {
         Hidden,

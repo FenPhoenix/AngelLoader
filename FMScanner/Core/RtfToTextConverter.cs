@@ -1012,13 +1012,13 @@ public sealed class RtfToTextConverter //: AL_Common.RTFParserBase
                     // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _scopeStack.PushScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _scopeStack.Push(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
                     // ditto the above
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _scopeStack.PopScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _scopeStack.Pop(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     // We have to check what the keyword is before deciding whether to parse the Unicode.

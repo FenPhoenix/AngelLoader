@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common;
 using JetBrains.Annotations;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskBand;
 using static AL_Common.Common;
 using static AL_Common.RTFParserBase;
 
@@ -28,7 +27,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     #region Stream
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected byte StreamReadByte() => _rtfBytes[(int)CurrentPos];
+    private byte StreamReadByte() => _rtfBytes[(int)CurrentPos];
 
     #endregion
 
@@ -139,10 +138,10 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
             switch (ch)
             {
                 case '{':
-                    if ((ec = _scopeStack.PushScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _scopeStack.Push(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
-                    if ((ec = _scopeStack.PopScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _scopeStack.Pop(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     if ((ec = ParseKeyword()) != RtfError.OK) return ec;
@@ -158,7 +157,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
 
     #region Act on keywords
 
-    protected RtfError DispatchKeyword(int param, bool hasParam)
+    private RtfError DispatchKeyword(int param, bool hasParam)
     {
         if (!Symbols.TryGetValue(_keyword, out Symbol? symbol))
         {
@@ -306,21 +305,21 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     #endregion
 
     // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
-    private RTFParserBase.RtfError ParseAndBuildColorTable()
+    private RtfError ParseAndBuildColorTable()
     {
         var _colorTableSB = new StringBuilder(4096);
 
-        RTFParserBase.RtfError ClearReturnFields(RTFParserBase.RtfError error)
+        RtfError ClearReturnFields(RtfError error)
         {
             _colorTable = null;
             return error;
         }
 
-        ClearReturnFields(RTFParserBase.RtfError.OK);
+        ClearReturnFields(RtfError.OK);
 
         while (true)
         {
-            if (!GetNextChar(out char ch)) return ClearReturnFields(RTFParserBase.RtfError.EndOfFile);
+            if (!GetNextChar(out char ch)) return ClearReturnFields(RtfError.EndOfFile);
             if (ch == '}')
             {
                 UnGetChar('}');
@@ -334,7 +333,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
         int realEntryCount = entries.Length;
         if (entries.Length == 0)
         {
-            return ClearReturnFields(RTFParserBase.RtfError.OK);
+            return ClearReturnFields(RtfError.OK);
         }
         // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
         // in the loop below
@@ -410,7 +409,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
             }
         }
 
-        return RTFParserBase.RtfError.OK;
+        return RtfError.OK;
     }
 
     #region Base
@@ -422,12 +421,12 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     /// <summary>
     /// Do not modify!
     /// </summary>
-    protected long Length;
+    private long Length;
 
     /// <summary>
     /// Do not modify!
     /// </summary>
-    protected long CurrentPos;
+    private long CurrentPos;
 
     /*
     We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
@@ -452,7 +451,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     /// <param name="c"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void UnGetChar(char c)
+    private void UnGetChar(char c)
     {
         if (CurrentPos < 0) return;
 
@@ -465,7 +464,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     /// </summary>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected bool GetNextChar(out char ch)
+    private bool GetNextChar(out char ch)
     {
         if (CurrentPos == Length)
         {
@@ -494,7 +493,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     /// </summary>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected char GetNextCharFast()
+    private char GetNextCharFast()
     {
         char ch;
         // Ditto above
@@ -513,7 +512,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
         return ch;
     }
 
-    protected void ResetStreamBase(long streamLength)
+    private void ResetStreamBase(long streamLength)
     {
         Length = streamLength;
 
@@ -526,24 +525,19 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
 
     #region Resettables
 
-    protected readonly ListFast<char> _keyword = new(_keywordMaxLen);
+    private readonly ListFast<char> _keyword = new(_keywordMaxLen);
 
-    protected int _binaryCharsLeftToSkip;
-    protected int _unicodeCharsLeftToSkip;
+    private int _binaryCharsLeftToSkip;
 
-    protected bool _skipDestinationIfUnknown;
-
-    // Static - otherwise the color table parser instantiates this huge thing every RTF readme in dark mode!
-    // Also it's readonly so it's thread-safe anyway.
-    public static readonly SymbolDict Symbols = new();
+    private bool _skipDestinationIfUnknown;
 
     // Highest measured was 10
-    protected readonly ScopeStack _scopeStack = new();
+    private readonly ScopeStack _scopeStack = new();
 
-    protected readonly Scope _currentScope = new();
+    private readonly Scope _currentScope = new();
 
     // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
-    protected int _groupCount;
+    private int _groupCount;
 
     /*
     FMs can have 100+ of these...
@@ -551,13 +545,13 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     Fonts can specify themselves as whatever number they want, so we can't just count by index
     eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
     */
-    protected readonly FontDictionary _fontEntries = new(150);
+    private readonly FontDictionary _fontEntries = new(150);
 
-    protected readonly Header _header = new();
+    private readonly Header _header = new();
 
     #endregion
 
-    protected void ResetBase()
+    private void ResetBase()
     {
         #region Fixed-size fields
 
@@ -566,7 +560,6 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
 
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
-        _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
 
         _currentScope.Reset();
@@ -580,7 +573,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
         _fontEntries.Clear();
     }
 
-    protected RtfError ParseKeyword()
+    private RtfError ParseKeyword()
     {
         bool hasParam = false;
         bool negateParam = false;
@@ -649,7 +642,7 @@ public sealed class RtfDisplayedReadmeParser //: AL_Common.RTFParserBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
+    private RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
     {
         switch (specialType)
         {
