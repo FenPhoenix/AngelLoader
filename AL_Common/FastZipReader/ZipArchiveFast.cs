@@ -284,7 +284,6 @@ public sealed class ZipArchiveFast : IDisposable
                 if (_context.Entries.Capacity > 25_000)
                 {
                     _context.Entries.Capacity = 0;
-                    _context.Entries.Count = 0;
                 }
 
                 if (_context.Entries.Capacity < (int)_expectedNumberOfEntries)

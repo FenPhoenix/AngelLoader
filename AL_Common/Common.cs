@@ -257,11 +257,13 @@ public static class Common
                     if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, Count);
                     ItemsArray = objArray;
                     _itemsArrayLength = value;
+                    if (_itemsArrayLength < Count) Count = _itemsArrayLength;
                 }
                 else
                 {
                     ItemsArray = Array.Empty<T>();
                     _itemsArrayLength = 0;
+                    Count = 0;
                 }
             }
         }

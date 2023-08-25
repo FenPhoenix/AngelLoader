@@ -764,7 +764,6 @@ public abstract partial class RTFParserBase
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFull(int capacity)
         {
-            _fontEntryPool.ClearFast();
             _fontEntryPool.Capacity = capacity;
             Clear();
         }
