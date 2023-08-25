@@ -735,7 +735,6 @@ public abstract partial class RTFParserBase
             {
                 fontEntry = new FontEntry();
                 _fontEntryPool.Add(fontEntry);
-                ++_fontEntryPoolVirtualCount;
             }
 
             Top = fontEntry;
