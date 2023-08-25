@@ -343,15 +343,15 @@ internal static class Paths
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
     private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);
 
-    internal static string GetSneakyOptionsIni()
+    internal static (string SoIni, bool IsPortable) GetSneakyOptionsIni()
     {
         if (TryGetSneakyOptionsIniFromGameDir(out string soIni))
         {
-            return soIni;
+            return (soIni, true);
         }
         else
         {
-            return GetSneakyOptionsIniFromRegistry();
+            return (GetSneakyOptionsIniFromRegistry(), false);
         }
     }
 

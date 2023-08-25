@@ -188,7 +188,7 @@ internal static class GameConfigFiles
                      string PrevFMSelectorValue, bool AlwaysShowLoader)
     GetInfoFromSneakyOptionsIni()
     {
-        string soIni = Paths.GetSneakyOptionsIni();
+        (string soIni, bool isPortable) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return (Error.SneakyOptionsNotFound, false, "", "", false);
@@ -268,6 +268,25 @@ internal static class GameConfigFiles
                     i++;
                 }
                 break;
+            }
+        }
+
+        if (isPortable && PathIsRelative(fmInstPath))
+        {
+            try
+            {
+                string? soIniDir = Path.GetDirectoryName(soIni);
+                if (soIniDir != null)
+                {
+                    fmInstPath = RelativeToAbsolute(soIniDir, fmInstPath);
+                    Directory.CreateDirectory(fmInstPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Unable to resolve the relative path " + fmInstPath + " with the absolute path where " + soIni + " is contained. Returning blank path.", ex);
+                fmInstPath = "";
+                fmInstPathFound = false;
             }
         }
 
@@ -716,7 +735,7 @@ internal static class GameConfigFiles
         bool existingAlwaysShowKeyOverwritten = false;
         int insertLineIndex = -1;
 
-        string soIni = Paths.GetSneakyOptionsIni();
+        (string soIni, _) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return false;
