@@ -27,22 +27,22 @@ public sealed partial class RtfToTextConverter
         #region Fixed-size fields
 
         // Specific capacity and won't grow; no need to deallocate
-        _ctx._keyword.ClearFast();
+        _ctx.Keyword.ClearFast();
 
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
 
-        _ctx._currentScope.Reset();
+        _ctx.CurrentScope.Reset();
 
         #endregion
 
-        _ctx._scopeStack.ClearFast();
+        _ctx.ScopeStack.ClearFast();
 
-        _ctx._header.Reset();
+        _ctx.Header.Reset();
 
-        _ctx._fontEntries.Clear();
+        _ctx.FontEntries.Clear();
     }
 
     #region Stream
@@ -71,7 +71,7 @@ public sealed partial class RtfToTextConverter
     {
         if (CurrentPos < 0) return;
 
-        _ctx._unGetBuffer.Push(c);
+        _ctx.UnGetBuffer.Push(c);
         if (CurrentPos > 0) CurrentPos--;
     }
 
@@ -90,9 +90,9 @@ public sealed partial class RtfToTextConverter
 
         // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
 #pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx._unGetBuffer.Count > 0)
+        if (_ctx.UnGetBuffer.Count > 0)
         {
-            ch = _ctx._unGetBuffer.Pop();
+            ch = _ctx.UnGetBuffer.Pop();
         }
         else
         {
@@ -114,9 +114,9 @@ public sealed partial class RtfToTextConverter
         char ch;
         // Ditto above
 #pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx._unGetBuffer.Count > 0)
+        if (_ctx.UnGetBuffer.Count > 0)
         {
-            ch = _ctx._unGetBuffer.Pop();
+            ch = _ctx.UnGetBuffer.Pop();
         }
         else
         {
@@ -134,7 +134,7 @@ public sealed partial class RtfToTextConverter
 
         CurrentPos = 0;
 
-        _ctx._unGetBuffer.Clear();
+        _ctx.UnGetBuffer.Clear();
     }
 
     #endregion
@@ -145,38 +145,38 @@ public sealed partial class RtfToTextConverter
         switch (specialType)
         {
             case SpecialType.HeaderCodePage:
-                _ctx._header.CodePage = param >= 0 ? param : 1252;
+                _ctx.Header.CodePage = param >= 0 ? param : 1252;
                 break;
             case SpecialType.FontTable:
-                _ctx._currentScope.InFontTable = true;
+                _ctx.CurrentScope.InFontTable = true;
                 break;
             case SpecialType.DefaultFont:
-                if (!_ctx._header.DefaultFontSet)
+                if (!_ctx.Header.DefaultFontSet)
                 {
-                    _ctx._header.DefaultFontNum = param;
-                    _ctx._header.DefaultFontSet = true;
+                    _ctx.Header.DefaultFontNum = param;
+                    _ctx.Header.DefaultFontSet = true;
                 }
                 break;
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
-                if (_ctx._fontEntries.Count > 0 && _ctx._currentScope.InFontTable)
+                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
                 {
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
                         int codePage = _charSetToCodePage[param];
-                        _ctx._fontEntries.Top.CodePage = codePage >= 0 ? codePage : _ctx._header.CodePage;
+                        _ctx.FontEntries.Top.CodePage = codePage >= 0 ? codePage : _ctx.Header.CodePage;
                     }
                     else
                     {
-                        _ctx._fontEntries.Top.CodePage = _ctx._header.CodePage;
+                        _ctx.FontEntries.Top.CodePage = _ctx.Header.CodePage;
                     }
                 }
                 break;
             case SpecialType.CodePage:
-                if (_ctx._fontEntries.Count > 0 && _ctx._currentScope.InFontTable)
+                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
                 {
-                    _ctx._fontEntries.Top.CodePage = param >= 0 ? param : _ctx._header.CodePage;
+                    _ctx.FontEntries.Top.CodePage = param >= 0 ? param : _ctx.Header.CodePage;
                 }
                 break;
             default:
@@ -194,7 +194,7 @@ public sealed partial class RtfToTextConverter
 
         if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
 
-        _ctx._keyword.ClearFast();
+        _ctx.Keyword.ClearFast();
 
         if (!ch.IsAsciiAlpha())
         {
@@ -205,7 +205,7 @@ public sealed partial class RtfToTextConverter
 
              So just go straight to dispatching without looking for a param and without eating the space.
             */
-            _ctx._keyword.AddFast(ch);
+            _ctx.Keyword.AddFast(ch);
             return DispatchKeyword(0, false);
         }
 
@@ -214,7 +214,7 @@ public sealed partial class RtfToTextConverter
         for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
         {
             if (eof) return RtfError.EndOfFile;
-            _ctx._keyword.AddFast(ch);
+            _ctx.Keyword.AddFast(ch);
         }
         if (i > _keywordMaxLen) return RtfError.KeywordTooLong;
 

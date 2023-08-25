@@ -59,26 +59,26 @@ public abstract partial class RTFParserBase
     // things in here (no mutable value types like the unicode skip counter etc.)
     public readonly struct Context
     {
-        public readonly ListFast<char> _keyword;
+        public readonly ListFast<char> Keyword;
 
-        public readonly ScopeStack _scopeStack;
+        public readonly ScopeStack ScopeStack;
 
-        public readonly Scope _currentScope;
+        public readonly Scope CurrentScope;
 
-        public readonly FontDictionary _fontEntries;
+        public readonly FontDictionary FontEntries;
 
-        public readonly Header _header;
+        public readonly Header Header;
 
-        public readonly UnGetStack _unGetBuffer;
+        public readonly UnGetStack UnGetBuffer;
 
         public Context()
         {
-            _keyword = new ListFast<char>(_keywordMaxLen);
+            Keyword = new ListFast<char>(_keywordMaxLen);
 
             // Highest measured was 10
-            _scopeStack = new ScopeStack();
+            ScopeStack = new ScopeStack();
 
-            _currentScope = new Scope();
+            CurrentScope = new Scope();
 
             /*
             FMs can have 100+ of these...
@@ -86,9 +86,9 @@ public abstract partial class RTFParserBase
             Fonts can specify themselves as whatever number they want, so we can't just count by index
             eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
             */
-            _fontEntries = new FontDictionary(150);
+            FontEntries = new FontDictionary(150);
 
-            _header = new Header();
+            Header = new Header();
 
             /*
             We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
@@ -103,7 +103,7 @@ public abstract partial class RTFParserBase
             We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
             rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
             */
-            _unGetBuffer = new UnGetStack();
+            UnGetBuffer = new UnGetStack();
         }
     }
 

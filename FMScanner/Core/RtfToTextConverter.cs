@@ -995,11 +995,11 @@ public sealed partial class RtfToTextConverter
 
             if (_groupCount < 0) return RtfError.StackUnderflow;
 
-            if (_ctx._currentScope.RtfInternalState == RtfInternalState.Binary)
+            if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
             {
                 if (--_binaryCharsLeftToSkip <= 0)
                 {
-                    _ctx._currentScope.RtfInternalState = RtfInternalState.Normal;
+                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
                     _binaryCharsLeftToSkip = 0;
                 }
                 continue;
@@ -1012,13 +1012,13 @@ public sealed partial class RtfToTextConverter
                     // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx._scopeStack.Push(_ctx._currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
                     // ditto the above
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx._scopeStack.Pop(_ctx._currentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     // We have to check what the keyword is before deciding whether to parse the Unicode.
@@ -1037,10 +1037,10 @@ public sealed partial class RtfToTextConverter
                         ParseUnicode();
                     }
 
-                    switch (_ctx._currentScope.RtfInternalState)
+                    switch (_ctx.CurrentScope.RtfInternalState)
                     {
                         case RtfInternalState.Normal:
-                            if (_ctx._currentScope.RtfDestinationState == RtfDestinationState.Normal)
+                            if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
                             {
                                 if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
                             }
@@ -1060,12 +1060,12 @@ public sealed partial class RtfToTextConverter
 
     private RtfError DispatchKeyword(int param, bool hasParam)
     {
-        if (!Symbols.TryGetValue(_ctx._keyword, out Symbol? symbol))
+        if (!Symbols.TryGetValue(_ctx.Keyword, out Symbol? symbol))
         {
             // If this is a new destination
             if (_skipDestinationIfUnknown)
             {
-                _ctx._currentScope.RtfDestinationState = RtfDestinationState.Skip;
+                _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
             }
             _skipDestinationIfUnknown = false;
             return RtfError.OK;
@@ -1092,7 +1092,7 @@ public sealed partial class RtfToTextConverter
         // skippable characters."
         // But don't do it if it's a hex char, because we handle it elsewhere in that case.
         if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.HexEncodedChar) &&
-            _ctx._currentScope.RtfInternalState != RtfInternalState.Binary &&
+            _ctx.CurrentScope.RtfInternalState != RtfInternalState.Binary &&
             _unicodeCharsLeftToSkip > 0)
         {
             if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
@@ -1110,20 +1110,20 @@ public sealed partial class RtfToTextConverter
         {
             case KeywordType.Property:
                 if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                return _ctx._currentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeProperty((Property)symbol.Index, param)
                     : RtfError.OK;
             case KeywordType.Character:
-                return _ctx._currentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ParseChar((char)symbol.Index)
                     : RtfError.OK;
             case KeywordType.Destination:
-                return _ctx._currentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
                     : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
-                return _ctx._currentScope.RtfDestinationState == RtfDestinationState.Normal ||
+                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal ||
                        specialType == SpecialType.Bin
                     ? DispatchSpecialKeyword(specialType, param)
                     : RtfError.OK;
@@ -1139,18 +1139,18 @@ public sealed partial class RtfToTextConverter
             case SpecialType.Bin:
                 if (param > 0)
                 {
-                    _ctx._currentScope.RtfInternalState = RtfInternalState.Binary;
+                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Binary;
                     _binaryCharsLeftToSkip = param;
                 }
                 break;
             case SpecialType.HexEncodedChar:
-                _ctx._currentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
+                _ctx.CurrentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
                 break;
             case SpecialType.SkipDest:
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-                _unicodeCharsLeftToSkip = _ctx._currentScope.Properties[(int)Property.UnicodeCharSkipCount];
+                _unicodeCharsLeftToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
                 // Make sure the code point is normalized before adding it to the buffer!
                 RtfError error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: true);
@@ -1176,7 +1176,7 @@ public sealed partial class RtfToTextConverter
                 }
                 break;
             case SpecialType.ColorTable:
-                _ctx._currentScope.RtfDestinationState = RtfDestinationState.Skip;
+                _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
                 break;
             default:
                 return HandleSpecialTypeFont(specialType, param);
@@ -1190,12 +1190,12 @@ public sealed partial class RtfToTextConverter
     {
         if (propertyTableIndex == Property.FontNum)
         {
-            if (_ctx._currentScope.InFontTable)
+            if (_ctx.CurrentScope.InFontTable)
             {
-                _ctx._fontEntries.Add(val);
+                _ctx.FontEntries.Add(val);
                 return RtfError.OK;
             }
-            else if (_ctx._fontEntries.TryGetValue(val, out FontEntry? fontEntry))
+            else if (_ctx.FontEntries.TryGetValue(val, out FontEntry? fontEntry))
             {
                 if (fontEntry.CodePage == 42)
                 {
@@ -1206,17 +1206,17 @@ public sealed partial class RtfToTextConverter
                 // Support bare characters that are supposed to be displayed in a symbol font. We use a simple
                 // enum so that we don't have to do a dictionary lookup on every single character, but only
                 // once per font change.
-                _ctx._currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
             }
             // \fN supersedes \langN
-            _ctx._currentScope.Properties[(int)Property.Lang] = -1;
+            _ctx.CurrentScope.Properties[(int)Property.Lang] = -1;
         }
         else if (propertyTableIndex == Property.Lang)
         {
             if (val == _undefinedLanguage) return RtfError.OK;
         }
 
-        _ctx._currentScope.Properties[(int)propertyTableIndex] = val;
+        _ctx.CurrentScope.Properties[(int)propertyTableIndex] = val;
 
         return RtfError.OK;
     }
@@ -1232,7 +1232,7 @@ public sealed partial class RtfToTextConverter
             case DestinationType.FieldInstruction:
                 return HandleFieldInstruction();
             case DestinationType.Skip:
-                _ctx._currentScope.RtfDestinationState = RtfDestinationState.Skip;
+                _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
                 return RtfError.OK;
             default:
                 return RtfError.InvalidSymbolTableEntry;
@@ -1242,9 +1242,9 @@ public sealed partial class RtfToTextConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseChar(char ch)
     {
-        if (_ctx._currentScope.InFontTable && _ctx._fontEntries.Count > 0)
+        if (_ctx.CurrentScope.InFontTable && _ctx.FontEntries.Count > 0)
         {
-            _ctx._fontEntries.Top.AppendNameChar(ch);
+            _ctx.FontEntries.Top.AppendNameChar(ch);
         }
 
         // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
@@ -1266,7 +1266,7 @@ public sealed partial class RtfToTextConverter
         RtfError ResetBufferAndStateAndReturn()
         {
             _hexBuffer.ClearFast();
-            _ctx._currentScope.RtfInternalState = RtfInternalState.Normal;
+            _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
             return RtfError.OK;
         }
 
@@ -1800,26 +1800,26 @@ public sealed partial class RtfToTextConverter
     private RtfError PutChar(char ch)
     {
         if (ch != '\0' &&
-            _ctx._currentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx._currentScope.InFontTable)
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
         {
             // We don't really have a way to set the default font num as the first scope's font num, because
             // the font definitions come AFTER the default font control word, so let's just do this check
             // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
             // anyway, so we shouldn't take much of a speed hit.
-            if (_ctx._currentScope.SymbolFont == SymbolFont.None &&
-                _ctx._currentScope.Properties[(int)Property.FontNum] == -1 &&
-                _ctx._header.DefaultFontNum > -1 &&
-                _ctx._fontEntries.TryGetValue(_ctx._header.DefaultFontNum, out FontEntry? fontEntry))
+            if (_ctx.CurrentScope.SymbolFont == SymbolFont.None &&
+                _ctx.CurrentScope.Properties[(int)Property.FontNum] == -1 &&
+                _ctx.Header.DefaultFontNum > -1 &&
+                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
             {
-                _ctx._currentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
             }
 
             // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx._currentScope.SymbolFont > SymbolFont.None)
+            if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
             {
 #pragma warning disable 8509
-                int[] fontTable = _ctx._currentScope.SymbolFont switch
+                int[] fontTable = _ctx.CurrentScope.SymbolFont switch
                 {
                     SymbolFont.Symbol => _symbolFontToUnicode,
                     SymbolFont.Wingdings => _wingdingsFontToUnicode,
@@ -1845,8 +1845,8 @@ public sealed partial class RtfToTextConverter
         // need to duplicate any of the bare-char symbol font stuff here.
 
         if (!(count == 1 && ch[0] == '\0') &&
-            _ctx._currentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx._currentScope.InFontTable)
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
         {
             _plainText.AddRange(ch, count);
         }
@@ -1906,7 +1906,7 @@ public sealed partial class RtfToTextConverter
     private RtfError RewindAndSkipGroup(char ch)
     {
         UnGetChar(ch);
-        _ctx._currentScope.RtfDestinationState = RtfDestinationState.Skip;
+        _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
         return RtfError.OK;
     }
 
@@ -1955,22 +1955,22 @@ public sealed partial class RtfToTextConverter
     private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
     GetCurrentEncoding()
     {
-        int scopeFontNum = _ctx._currentScope.Properties[(int)Property.FontNum];
-        int scopeLang = _ctx._currentScope.Properties[(int)Property.Lang];
+        int scopeFontNum = _ctx.CurrentScope.Properties[(int)Property.FontNum];
+        int scopeLang = _ctx.CurrentScope.Properties[(int)Property.Lang];
 
-        if (scopeFontNum == -1) scopeFontNum = _ctx._header.DefaultFontNum;
+        if (scopeFontNum == -1) scopeFontNum = _ctx.Header.DefaultFontNum;
 
-        _ctx._fontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
+        _ctx.FontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
 
         int codePage;
         if (scopeLang is > -1 and <= MaxLangNumIndex)
         {
             int translatedCodePage = LangToCodePage[scopeLang];
-            codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx._header.CodePage;
+            codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx.Header.CodePage;
         }
         else
         {
-            codePage = fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx._header.CodePage;
+            codePage = fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx.Header.CodePage;
         }
 
         if (codePage == 42) return (true, true, null, fontEntry);
@@ -2088,9 +2088,9 @@ public sealed partial class RtfToTextConverter
 
             int fontNum = _lastUsedFontWithCodePage42 > -1
                 ? _lastUsedFontWithCodePage42
-                : _ctx._header.DefaultFontNum;
+                : _ctx.Header.DefaultFontNum;
 
-            if (!_ctx._fontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
+            if (!_ctx.FontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
             {
                 return RtfError.OK;
             }
