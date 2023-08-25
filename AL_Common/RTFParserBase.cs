@@ -55,6 +55,58 @@ can be anything, even a keyword and all that other crap as we know.
 
 public abstract partial class RTFParserBase
 {
+    // Perf: A readonly struct is required to retain full performance, and therefore we can only put readonly
+    // things in here (no mutable value types like the unicode skip counter etc.)
+    public readonly struct Context
+    {
+        public readonly ListFast<char> _keyword;
+
+        public readonly ScopeStack _scopeStack;
+
+        public readonly Scope _currentScope;
+
+        public readonly FontDictionary _fontEntries;
+
+        public readonly Header _header;
+
+        public readonly UnGetStack _unGetBuffer;
+
+        public Context()
+        {
+            _keyword = new ListFast<char>(_keywordMaxLen);
+
+            // Highest measured was 10
+            _scopeStack = new ScopeStack();
+
+            _currentScope = new Scope();
+
+            /*
+            FMs can have 100+ of these...
+            Highest measured was 131
+            Fonts can specify themselves as whatever number they want, so we can't just count by index
+            eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+            */
+            _fontEntries = new FontDictionary(150);
+
+            _header = new Header();
+
+            /*
+            We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
+            "into the stream", but they actually go in here and then when we go to read, we read from this first
+            and so on until it's empty, then go back to reading from the main stream again. In this way, we
+            support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
+            This is required to support zip entry streams which are unseekable. If we required a seekable stream,
+            we would have to copy the entire, potentially very large, zip entry stream to memory first and then
+            read it, which is possibly unnecessarily memory-hungry.
+
+            2020-08-15:
+            We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
+            rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
+            */
+            _unGetBuffer = new UnGetStack();
+        }
+    }
+
     #region Constants
 
     public const int _keywordMaxLen = 32;
