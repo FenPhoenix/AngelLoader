@@ -220,7 +220,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     return RtfError.OK;
                 }
             default:
-                HandleSpecialTypeFont(specialType, param);
+                HandleSpecialTypeFont(_ctx, specialType, param);
                 return RtfError.OK;
         }
 

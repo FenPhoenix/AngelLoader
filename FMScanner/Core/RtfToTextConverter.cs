@@ -1179,7 +1179,7 @@ public sealed partial class RtfToTextConverter
                 _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
                 break;
             default:
-                return HandleSpecialTypeFont(specialType, param);
+                return HandleSpecialTypeFont(_ctx, specialType, param);
         }
 
         return RtfError.OK;

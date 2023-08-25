@@ -139,53 +139,6 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
-    {
-        switch (specialType)
-        {
-            case SpecialType.HeaderCodePage:
-                _ctx.Header.CodePage = param >= 0 ? param : 1252;
-                break;
-            case SpecialType.FontTable:
-                _ctx.CurrentScope.InFontTable = true;
-                break;
-            case SpecialType.DefaultFont:
-                if (!_ctx.Header.DefaultFontSet)
-                {
-                    _ctx.Header.DefaultFontNum = param;
-                    _ctx.Header.DefaultFontSet = true;
-                }
-                break;
-            case SpecialType.Charset:
-                // Reject negative codepage values as invalid and just use the header default in that case
-                // (which is guaranteed not to be negative)
-                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
-                {
-                    if (param is >= 0 and < _charSetToCodePageLength)
-                    {
-                        int codePage = _charSetToCodePage[param];
-                        _ctx.FontEntries.Top.CodePage = codePage >= 0 ? codePage : _ctx.Header.CodePage;
-                    }
-                    else
-                    {
-                        _ctx.FontEntries.Top.CodePage = _ctx.Header.CodePage;
-                    }
-                }
-                break;
-            case SpecialType.CodePage:
-                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
-                {
-                    _ctx.FontEntries.Top.CodePage = param >= 0 ? param : _ctx.Header.CodePage;
-                }
-                break;
-            default:
-                return RtfError.InvalidSymbolTableEntry;
-        }
-
-        return RtfError.OK;
-    }
-
     private RtfError ParseKeyword()
     {
         bool hasParam = false;
