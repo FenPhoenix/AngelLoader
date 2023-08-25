@@ -9,6 +9,56 @@ namespace AngelLoader;
 
 public sealed partial class RtfDisplayedReadmeParser
 {
+    #region Resettables
+
+    private readonly ListFast<char> _keyword = new(_keywordMaxLen);
+
+    private int _binaryCharsLeftToSkip;
+
+    private bool _skipDestinationIfUnknown;
+
+    // Highest measured was 10
+    private readonly ScopeStack _scopeStack = new();
+
+    private readonly Scope _currentScope = new();
+
+    // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
+    private int _groupCount;
+
+    /*
+    FMs can have 100+ of these...
+    Highest measured was 131
+    Fonts can specify themselves as whatever number they want, so we can't just count by index
+    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+    */
+    private readonly FontDictionary _fontEntries = new(150);
+
+    private readonly Header _header = new();
+
+    #endregion
+
+    private void ResetBase()
+    {
+        #region Fixed-size fields
+
+        // Specific capacity and won't grow; no need to deallocate
+        _keyword.ClearFast();
+
+        _groupCount = 0;
+        _binaryCharsLeftToSkip = 0;
+        _skipDestinationIfUnknown = false;
+
+        _currentScope.Reset();
+
+        #endregion
+
+        _scopeStack.ClearFast();
+
+        _header.Reset();
+
+        _fontEntries.Clear();
+    }
+
     #region Stream
 
     // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
@@ -118,54 +168,51 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    #region Resettables
-
-    private readonly ListFast<char> _keyword = new(_keywordMaxLen);
-
-    private int _binaryCharsLeftToSkip;
-
-    private bool _skipDestinationIfUnknown;
-
-    // Highest measured was 10
-    private readonly ScopeStack _scopeStack = new();
-
-    private readonly Scope _currentScope = new();
-
-    // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
-    private int _groupCount;
-
-    /*
-    FMs can have 100+ of these...
-    Highest measured was 131
-    Fonts can specify themselves as whatever number they want, so we can't just count by index
-    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-    */
-    private readonly FontDictionary _fontEntries = new(150);
-
-    private readonly Header _header = new();
-
-    #endregion
-
-    private void ResetBase()
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
     {
-        #region Fixed-size fields
+        switch (specialType)
+        {
+            case SpecialType.HeaderCodePage:
+                _header.CodePage = param >= 0 ? param : 1252;
+                break;
+            case SpecialType.FontTable:
+                _currentScope.InFontTable = true;
+                break;
+            case SpecialType.DefaultFont:
+                if (!_header.DefaultFontSet)
+                {
+                    _header.DefaultFontNum = param;
+                    _header.DefaultFontSet = true;
+                }
+                break;
+            case SpecialType.Charset:
+                // Reject negative codepage values as invalid and just use the header default in that case
+                // (which is guaranteed not to be negative)
+                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
+                {
+                    if (param is >= 0 and < _charSetToCodePageLength)
+                    {
+                        int codePage = _charSetToCodePage[param];
+                        _fontEntries.Top.CodePage = codePage >= 0 ? codePage : _header.CodePage;
+                    }
+                    else
+                    {
+                        _fontEntries.Top.CodePage = _header.CodePage;
+                    }
+                }
+                break;
+            case SpecialType.CodePage:
+                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
+                {
+                    _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
+                }
+                break;
+            default:
+                return RtfError.InvalidSymbolTableEntry;
+        }
 
-        // Specific capacity and won't grow; no need to deallocate
-        _keyword.ClearFast();
-
-        _groupCount = 0;
-        _binaryCharsLeftToSkip = 0;
-        _skipDestinationIfUnknown = false;
-
-        _currentScope.Reset();
-
-        #endregion
-
-        _scopeStack.ClearFast();
-
-        _header.Reset();
-
-        _fontEntries.Clear();
+        return RtfError.OK;
     }
 
     private RtfError ParseKeyword()
@@ -234,52 +281,5 @@ public sealed partial class RtfDisplayedReadmeParser
         if (ch != ' ') UnGetChar(ch);
 
         return DispatchKeyword(param, hasParam);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
-    {
-        switch (specialType)
-        {
-            case SpecialType.HeaderCodePage:
-                _header.CodePage = param >= 0 ? param : 1252;
-                break;
-            case SpecialType.FontTable:
-                _currentScope.InFontTable = true;
-                break;
-            case SpecialType.DefaultFont:
-                if (!_header.DefaultFontSet)
-                {
-                    _header.DefaultFontNum = param;
-                    _header.DefaultFontSet = true;
-                }
-                break;
-            case SpecialType.Charset:
-                // Reject negative codepage values as invalid and just use the header default in that case
-                // (which is guaranteed not to be negative)
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    if (param is >= 0 and < _charSetToCodePageLength)
-                    {
-                        int codePage = _charSetToCodePage[param];
-                        _fontEntries.Top.CodePage = codePage >= 0 ? codePage : _header.CodePage;
-                    }
-                    else
-                    {
-                        _fontEntries.Top.CodePage = _header.CodePage;
-                    }
-                }
-                break;
-            case SpecialType.CodePage:
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
-                }
-                break;
-            default:
-                return RtfError.InvalidSymbolTableEntry;
-        }
-
-        return RtfError.OK;
     }
 }
