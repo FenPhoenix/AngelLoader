@@ -65,11 +65,22 @@ public static partial class RTFParserBase
 
         public readonly Scope CurrentScope;
 
+        // Don't reset
         public readonly FontDictionary FontEntries;
 
         public readonly Header Header;
 
         public readonly UnGetStack UnGetBuffer;
+
+        public void Reset()
+        {
+            Keyword.ClearFast();
+            ScopeStack.ClearFast();
+            CurrentScope.Reset();
+            Header.Reset();
+            FontEntries.Clear();
+            UnGetBuffer.Clear();
+        }
 
         public Context()
         {

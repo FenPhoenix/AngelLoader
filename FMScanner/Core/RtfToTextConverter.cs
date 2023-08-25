@@ -110,7 +110,8 @@ public sealed partial class RtfToTextConverter
         // Don't clear the buffer; we don't need to and it wastes time
         _bufferPos = _bufferLen - 1;
 
-        ResetStreamBase(streamLength);
+        Length = streamLength;
+        CurrentPos = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -24,25 +24,12 @@ public sealed partial class RtfToTextConverter
 
     private void ResetBase()
     {
-        #region Fixed-size fields
-
-        // Specific capacity and won't grow; no need to deallocate
-        _ctx.Keyword.ClearFast();
+        _ctx.Reset();
 
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
-
-        _ctx.CurrentScope.Reset();
-
-        #endregion
-
-        _ctx.ScopeStack.ClearFast();
-
-        _ctx.Header.Reset();
-
-        _ctx.FontEntries.Clear();
     }
 
     #region Stream
@@ -126,15 +113,6 @@ public sealed partial class RtfToTextConverter
         CurrentPos++;
 
         return ch;
-    }
-
-    private void ResetStreamBase(long streamLength)
-    {
-        Length = streamLength;
-
-        CurrentPos = 0;
-
-        _ctx.UnGetBuffer.Clear();
     }
 
     #endregion

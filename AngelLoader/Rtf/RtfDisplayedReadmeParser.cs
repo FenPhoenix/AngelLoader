@@ -111,7 +111,9 @@ public sealed partial class RtfDisplayedReadmeParser
         _langItems = null;
 
         _rtfBytes = rtfBytes;
-        ResetStreamBase(rtfBytes.Length);
+
+        Length = rtfBytes.Length;
+        CurrentPos = 0;
     }
 
     private RtfError ParseRtf()
