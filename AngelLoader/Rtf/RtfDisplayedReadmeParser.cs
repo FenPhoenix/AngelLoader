@@ -6,7 +6,7 @@ using System.Text;
 using AL_Common;
 using JetBrains.Annotations;
 using static AL_Common.Common;
-using static AL_Common.RTFParserBase;
+using static AL_Common.RTFParserCommon;
 
 namespace AngelLoader;
 

@@ -53,7 +53,7 @@ Note the '?' is the usual Unicode fallback char at the end of the \u2341? keywor
 can be anything, even a keyword and all that other crap as we know.
 */
 
-public static partial class RTFParserBase
+public static partial class RTFParserCommon
 {
     // Perf: A readonly struct is required to retain full performance, and therefore we can only put readonly
     // things in here (no mutable value types like the unicode skip counter etc.)
@@ -962,7 +962,7 @@ public static partial class RTFParserBase
     public const int MaxLangNumIndex = 16385;
     public static readonly int[] LangToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
 
-    static RTFParserBase()
+    static RTFParserCommon()
     {
         /*
         There's a ton more languages than this, but it's not clear what code page they all translate to.

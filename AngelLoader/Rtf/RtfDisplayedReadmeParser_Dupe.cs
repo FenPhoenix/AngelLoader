@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using AL_Common;
-using static AL_Common.RTFParserBase;
+using static AL_Common.RTFParserCommon;
 
 namespace AngelLoader;
 

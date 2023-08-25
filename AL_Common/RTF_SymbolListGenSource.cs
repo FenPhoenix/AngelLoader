@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace AL_Common;
 
-public static partial class RTFParserBase
+public static partial class RTFParserCommon
 {
 #if SYMBOL_PERFECT_HASH_GEN
     // This is the original "canonical" list, generate the perfect hash from this

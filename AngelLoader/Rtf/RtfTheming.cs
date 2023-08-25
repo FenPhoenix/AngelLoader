@@ -162,7 +162,7 @@ internal static class RtfTheming
     #region Langs
 
     // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserBase.MaxLangNumDigits + 1);
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
 
     private static readonly byte[] _lang =
     {
@@ -393,7 +393,7 @@ internal static class RtfTheming
         {
             (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
             if (start > -1 && end > -1 &&
-                end - (start + 5) <= RTFParserBase.MaxLangNumDigits)
+                end - (start + 5) <= RTFParserCommon.MaxLangNumDigits)
             {
                 int num = 0;
                 for (int i = start + 5; i < end; i++)
@@ -406,9 +406,9 @@ internal static class RtfTheming
                     }
                 }
 
-                if (num <= RTFParserBase.MaxLangNumIndex)
+                if (num <= RTFParserCommon.MaxLangNumIndex)
                 {
-                    int codePage = RTFParserBase.LangToCodePage[num];
+                    int codePage = RTFParserCommon.LangToCodePage[num];
                     // The only known broken readmes only need code page 1251 to fix them, so for now let's just
                     // only support that, to exclude as many readmes as possible from an expensive full parse.
 #if true
