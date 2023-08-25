@@ -57,21 +57,21 @@ public abstract partial class RTFParserBase
 {
     #region Constants
 
-    private const int _maxScopes = 100;
-    private const int _keywordMaxLen = 32;
+    public const int _maxScopes = 100;
+    public const int _keywordMaxLen = 32;
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
-    private const int _paramMaxLen = 10;
+    public const int _paramMaxLen = 10;
 
-    protected const int _undefinedLanguage = 1024;
+    public const int _undefinedLanguage = 1024;
 
     #endregion
 
     #region Font to Unicode conversion tables
 
-    private const int _charSetToCodePageLength = 256;
-    private readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
+    public const int _charSetToCodePageLength = 256;
+    public static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
 
-    private static int[] InitializeCharSetToCodePage()
+    public static int[] InitializeCharSetToCodePage()
     {
         int[] charSetToCodePage = InitializedArray(_charSetToCodePageLength, -1);
 
@@ -123,53 +123,6 @@ public abstract partial class RTFParserBase
 
     #endregion
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected Error HandleSpecialTypeFont(SpecialType specialType, int param)
-    {
-        switch (specialType)
-        {
-            case SpecialType.HeaderCodePage:
-                _header.CodePage = param >= 0 ? param : 1252;
-                break;
-            case SpecialType.FontTable:
-                _currentScope.InFontTable = true;
-                break;
-            case SpecialType.DefaultFont:
-                if (!_header.DefaultFontSet)
-                {
-                    _header.DefaultFontNum = param;
-                    _header.DefaultFontSet = true;
-                }
-                break;
-            case SpecialType.Charset:
-                // Reject negative codepage values as invalid and just use the header default in that case
-                // (which is guaranteed not to be negative)
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    if (param is >= 0 and < _charSetToCodePageLength)
-                    {
-                        int codePage = _charSetToCodePage[param];
-                        _fontEntries.Top.CodePage = codePage >= 0 ? codePage : _header.CodePage;
-                    }
-                    else
-                    {
-                        _fontEntries.Top.CodePage = _header.CodePage;
-                    }
-                }
-                break;
-            case SpecialType.CodePage:
-                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
-                {
-                    _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
-                }
-                break;
-            default:
-                return Error.InvalidSymbolTableEntry;
-        }
-
-        return Error.OK;
-    }
-
     protected RTFParserBase()
     {
 #if !NETFRAMEWORK
@@ -179,7 +132,7 @@ public abstract partial class RTFParserBase
 
     #region Classes
 
-    protected sealed class ScopeStack
+    public sealed class ScopeStack
     {
         private readonly Scope[] _scopesArray;
         public int Count;
@@ -201,9 +154,38 @@ public abstract partial class RTFParserBase
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFast() => Count = 0;
+
+        #region Scope push/pop
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public RtfError PushScope(Scope currentScope, ref int groupCount)
+        {
+            if (Count >= _maxScopes) return RtfError.StackOverflow;
+
+            Push(currentScope);
+
+            currentScope.RtfInternalState = RtfInternalState.Normal;
+
+            groupCount++;
+
+            return RtfError.OK;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public RtfError PopScope(Scope currentScope, ref int groupCount)
+        {
+            if (Count == 0) return RtfError.StackUnderflow;
+
+            Pop(currentScope);
+            groupCount--;
+
+            return RtfError.OK;
+        }
+
+        #endregion
     }
 
-    protected sealed class Scope
+    public sealed class Scope
     {
         public RtfDestinationState RtfDestinationState;
         public RtfInternalState RtfInternalState;
@@ -237,7 +219,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class Symbol
+    public sealed class Symbol
     {
         public readonly string Keyword;
         public readonly int DefaultParam;
@@ -258,7 +240,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class Header
+    public sealed class Header
     {
         public int CodePage;
         public bool DefaultFontSet;
@@ -274,7 +256,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class SymbolDict
+    public sealed class SymbolDict
     {
         /* ANSI-C code produced by gperf version 3.1 */
         /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
@@ -606,7 +588,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class UnGetStack
+    public sealed class UnGetStack
     {
         private const int _resetCapacity = 100;
 
@@ -645,7 +627,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class FontEntry
+    public sealed class FontEntry
     {
         // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
         private const int _nameMaxLength = 9;
@@ -704,7 +686,7 @@ public abstract partial class RTFParserBase
         }
     }
 
-    protected sealed class FontDictionary : Dictionary<int, FontEntry>
+    public sealed class FontDictionary : Dictionary<int, FontEntry>
     {
         private readonly ListFast<FontEntry> _fontEntryPool = new(250);
         private int _fontEntryPoolVirtualCount;
@@ -787,7 +769,7 @@ public abstract partial class RTFParserBase
 
     #region Enums
 
-    protected enum SpecialType
+    public enum SpecialType
     {
         HeaderCodePage,
         DefaultFont,
@@ -801,7 +783,7 @@ public abstract partial class RTFParserBase
         ColorTable
     }
 
-    protected enum KeywordType
+    public enum KeywordType
     {
         Character,
         Property,
@@ -809,7 +791,7 @@ public abstract partial class RTFParserBase
         Special
     }
 
-    protected enum DestinationType
+    public enum DestinationType
     {
         FieldInstruction,
         /// <summary>
@@ -842,8 +824,8 @@ public abstract partial class RTFParserBase
         Skip
     }
 
-    private const int _propertiesLen = 4;
-    protected enum Property
+    public const int _propertiesLen = 4;
+    public enum Property
     {
         Hidden,
         UnicodeCharSkipCount,
@@ -851,7 +833,7 @@ public abstract partial class RTFParserBase
         Lang
     }
 
-    protected enum SymbolFont
+    public enum SymbolFont
     {
         None,
         Symbol,
@@ -860,20 +842,20 @@ public abstract partial class RTFParserBase
         Unset
     }
 
-    protected enum RtfDestinationState
+    public enum RtfDestinationState
     {
         Normal,
         Skip
     }
 
-    protected enum RtfInternalState
+    public enum RtfInternalState
     {
         Normal,
         Binary,
         HexEncodedChar
     }
 
-    protected enum Error
+    public enum RtfError
     {
         /// <summary>
         /// No error.
@@ -919,38 +901,9 @@ public abstract partial class RTFParserBase
 
     #endregion
 
-    #region Resettables
-
-    protected readonly ListFast<char> _keyword = new(_keywordMaxLen);
-
-    protected int _binaryCharsLeftToSkip;
-    protected int _unicodeCharsLeftToSkip;
-
-    protected bool _skipDestinationIfUnknown;
-
     // Static - otherwise the color table parser instantiates this huge thing every RTF readme in dark mode!
     // Also it's readonly so it's thread-safe anyway.
-    protected static readonly SymbolDict Symbols = new();
-
-    // Highest measured was 10
-    protected readonly ScopeStack _scopeStack = new();
-
-    protected readonly Scope _currentScope = new();
-
-    // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
-    protected int _groupCount;
-
-    /*
-    FMs can have 100+ of these...
-    Highest measured was 131
-    Fonts can specify themselves as whatever number they want, so we can't just count by index
-    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-    */
-    protected readonly FontDictionary _fontEntries = new(150);
-
-    protected readonly Header _header = new();
-
-    #endregion
+    public static readonly SymbolDict Symbols = new();
 
     #region Lang to code page
 
@@ -1035,237 +988,4 @@ public abstract partial class RTFParserBase
     }
 
     #endregion
-
-    protected void ResetBase()
-    {
-        #region Fixed-size fields
-
-        // Specific capacity and won't grow; no need to deallocate
-        _keyword.ClearFast();
-
-        _groupCount = 0;
-        _binaryCharsLeftToSkip = 0;
-        _unicodeCharsLeftToSkip = 0;
-        _skipDestinationIfUnknown = false;
-
-        _currentScope.Reset();
-
-        #endregion
-
-        _scopeStack.ClearFast();
-
-        _header.Reset();
-
-        _fontEntries.Clear();
-    }
-
-    #region Stream
-
-    // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
-    // length as a param and store it.
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    protected long Length;
-
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    protected long CurrentPos;
-
-    /*
-    We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
-    "into the stream", but they actually go in here and then when we go to read, we read from this first
-    and so on until it's empty, then go back to reading from the main stream again. In this way, we
-    support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
-    This is required to support zip entry streams which are unseekable. If we required a seekable stream,
-    we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-    read it, which is possibly unnecessarily memory-hungry.
-
-    2020-08-15:
-    We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
-    rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
-    */
-    private readonly UnGetStack _unGetBuffer = new();
-
-    /// <summary>
-    /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
-    /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
-    /// about that. Just use it as normal.
-    /// </summary>
-    /// <param name="c"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void UnGetChar(char c)
-    {
-        if (CurrentPos < 0) return;
-
-        _unGetBuffer.Push(c);
-        if (CurrentPos > 0) CurrentPos--;
-    }
-
-    /// <summary>
-    /// Returns false if the end of the stream has been reached.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected bool GetNextChar(out char ch)
-    {
-        if (CurrentPos == Length)
-        {
-            ch = '\0';
-            return false;
-        }
-
-        // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_unGetBuffer.Count > 0)
-        {
-            ch = _unGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
-
-        return true;
-    }
-
-    /// <summary>
-    /// For use in loops that already check the stream position against the end as a loop condition
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected char GetNextCharFast()
-    {
-        char ch;
-        // Ditto above
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_unGetBuffer.Count > 0)
-        {
-            ch = _unGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
-
-        return ch;
-    }
-
-    protected abstract byte StreamReadByte();
-
-    protected void ResetStreamBase(long streamLength)
-    {
-        Length = streamLength;
-
-        CurrentPos = 0;
-
-        _unGetBuffer.Clear();
-    }
-
-    #endregion
-
-    #region Scope push/pop
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected Error PushScope()
-    {
-        if (_scopeStack.Count >= _maxScopes) return Error.StackOverflow;
-
-        _scopeStack.Push(_currentScope);
-
-        _currentScope.RtfInternalState = RtfInternalState.Normal;
-
-        _groupCount++;
-
-        return Error.OK;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected Error PopScope()
-    {
-        if (_scopeStack.Count == 0) return Error.StackUnderflow;
-
-        _scopeStack.Pop(_currentScope);
-        _groupCount--;
-
-        return Error.OK;
-    }
-
-    #endregion
-
-    protected Error ParseKeyword()
-    {
-        bool hasParam = false;
-        bool negateParam = false;
-        int param = 0;
-
-        if (!GetNextChar(out char ch)) return Error.EndOfFile;
-
-        _keyword.ClearFast();
-
-        if (!ch.IsAsciiAlpha())
-        {
-            /* From the spec:
-             "A control symbol consists of a backslash followed by a single, non-alphabetical character.
-             For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
-             delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
-
-             So just go straight to dispatching without looking for a param and without eating the space.
-            */
-            _keyword.AddFast(ch);
-            return DispatchKeyword(0, false);
-        }
-
-        int i;
-        bool eof = false;
-        for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
-        {
-            if (eof) return Error.EndOfFile;
-            _keyword.AddFast(ch);
-        }
-        if (i > _keywordMaxLen) return Error.KeywordTooLong;
-
-        if (ch == '-')
-        {
-            negateParam = true;
-            if (!GetNextChar(out ch)) return Error.EndOfFile;
-        }
-
-        if (ch.IsAsciiNumeric())
-        {
-            hasParam = true;
-
-            // Parse param in real-time to avoid doing a second loop over
-            for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
-            {
-                if (eof) return Error.EndOfFile;
-                param += ch - '0';
-                param *= 10;
-            }
-            // Undo the last multiply just one time to avoid checking if we should do it every time through
-            // the loop
-            param /= 10;
-            if (i > _paramMaxLen) return Error.ParameterTooLong;
-
-            if (negateParam) param = -param;
-        }
-
-        /* From the spec:
-         "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
-         that is not counted in the characters to skip."
-         This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
-         the space from the skip-chars to count.
-        */
-        if (ch != ' ') UnGetChar(ch);
-
-        return DispatchKeyword(param, hasParam);
-    }
-
-    protected abstract Error DispatchKeyword(int param, bool hasParam);
 }

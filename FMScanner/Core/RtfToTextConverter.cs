@@ -68,12 +68,14 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using AL_Common;
 using JetBrains.Annotations;
 using static AL_Common.Common;
+using static AL_Common.RTFParserBase;
 
 namespace FMScanner;
 
-public sealed class RtfToTextConverter : AL_Common.RTFParserBase
+public sealed class RtfToTextConverter //: AL_Common.RTFParserBase
 {
     #region Constants
 
@@ -108,11 +110,11 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         // Don't clear the buffer; we don't need to and it wastes time
         _bufferPos = _bufferLen - 1;
 
-        base.ResetStreamBase(streamLength);
+        ResetStreamBase(streamLength);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected override byte StreamReadByte()
+    private byte StreamReadByte()
     {
         _bufferPos++;
         if (_bufferPos == _bufferLen)
@@ -943,8 +945,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 #else
         try
         {
-            Error error = ParseRtf();
-            return error == Error.OK ? (true, CreateStringFromChars(_plainText)) : (false, "");
+            RtfError error = ParseRtf();
+            return error == RtfError.OK ? (true, CreateStringFromChars(_plainText)) : (false, "");
         }
         catch
         {
@@ -957,7 +959,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     private void Reset(Stream stream, long streamLength)
     {
-        base.ResetBase();
+        ResetBase();
 
         #region Fixed-size fields
 
@@ -982,7 +984,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         ResetStream(stream, streamLength);
     }
 
-    private Error ParseRtf()
+    private RtfError ParseRtf()
     {
         int nibbleCount = 0;
         byte b = 0;
@@ -991,7 +993,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         {
             char ch = GetNextCharFast();
 
-            if (_groupCount < 0) return Error.StackUnderflow;
+            if (_groupCount < 0) return RtfError.StackUnderflow;
 
             if (_currentScope.RtfInternalState == RtfInternalState.Binary)
             {
@@ -1003,26 +1005,26 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 continue;
             }
 
-            Error ec;
+            RtfError ec;
             switch (ch)
             {
                 case '{':
                     // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = PushScope()) != Error.OK) return ec;
+                    if ((ec = _scopeStack.PushScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
                     // ditto the above
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = PopScope()) != Error.OK) return ec;
+                    if ((ec = _scopeStack.PopScope(_currentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     // We have to check what the keyword is before deciding whether to parse the Unicode.
                     // If it's another \uN keyword, then obviously we don't want to parse yet because the
                     // run isn't finished.
-                    if ((ec = ParseKeyword()) != Error.OK) return ec;
+                    if ((ec = ParseKeyword()) != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':
@@ -1040,23 +1042,23 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                         case RtfInternalState.Normal:
                             if (_currentScope.RtfDestinationState == RtfDestinationState.Normal)
                             {
-                                if ((ec = ParseChar(ch)) != Error.OK) return ec;
+                                if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
                             }
                             break;
                         case RtfInternalState.HexEncodedChar:
-                            if ((ec = ParseHex(ref nibbleCount, ref ch, ref b)) != Error.OK) return ec;
+                            if ((ec = ParseHex(ref nibbleCount, ref ch, ref b)) != RtfError.OK) return ec;
                             break;
                     }
                     break;
             }
         }
 
-        return _groupCount < 0 ? Error.StackUnderflow : _groupCount > 0 ? Error.UnmatchedBrace : Error.OK;
+        return _groupCount < 0 ? RtfError.StackUnderflow : _groupCount > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
     }
 
     #region Act on keywords
 
-    protected override Error DispatchKeyword(int param, bool hasParam)
+    private RtfError DispatchKeyword(int param, bool hasParam)
     {
         if (!Symbols.TryGetValue(_keyword, out Symbol? symbol))
         {
@@ -1066,7 +1068,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
             }
             _skipDestinationIfUnknown = false;
-            return Error.OK;
+            return RtfError.OK;
         }
 
         // From the spec:
@@ -1079,10 +1081,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             for (int i = 0; i < param; i++)
             {
                 bool success = GetNextChar(out _);
-                if (!success) return Error.EndOfFile;
+                if (!success) return RtfError.EndOfFile;
             }
             _unicodeCharsLeftToSkip--;
-            return Error.OK;
+            return RtfError.OK;
         }
 
         // From the spec:
@@ -1094,7 +1096,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             _unicodeCharsLeftToSkip > 0)
         {
             if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-            return Error.OK;
+            return RtfError.OK;
         }
 
         if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
@@ -1110,27 +1112,27 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                 return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeProperty((Property)symbol.Index, param)
-                    : Error.OK;
+                    : RtfError.OK;
             case KeywordType.Character:
                 return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ParseChar((char)symbol.Index)
-                    : Error.OK;
+                    : RtfError.OK;
             case KeywordType.Destination:
                 return _currentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
-                    : Error.OK;
+                    : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _currentScope.RtfDestinationState == RtfDestinationState.Normal ||
                        specialType == SpecialType.Bin
                     ? DispatchSpecialKeyword(specialType, param)
-                    : Error.OK;
+                    : RtfError.OK;
             default:
-                return Error.InvalidSymbolTableEntry;
+                return RtfError.InvalidSymbolTableEntry;
         }
     }
 
-    private Error DispatchSpecialKeyword(SpecialType specialType, int param)
+    private RtfError DispatchSpecialKeyword(SpecialType specialType, int param)
     {
         switch (specialType)
         {
@@ -1151,8 +1153,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 _unicodeCharsLeftToSkip = _currentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
                 // Make sure the code point is normalized before adding it to the buffer!
-                Error error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: true);
-                if (error != Error.OK) return error;
+                RtfError error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: true);
+                if (error != RtfError.OK) return error;
 
                 // If our code point has been through a font translation table, it may be longer than 2 bytes.
                 if (param > 0xFFFF)
@@ -1180,18 +1182,18 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 return HandleSpecialTypeFont(specialType, param);
         }
 
-        return Error.OK;
+        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error ChangeProperty(Property propertyTableIndex, int val)
+    private RtfError ChangeProperty(Property propertyTableIndex, int val)
     {
         if (propertyTableIndex == Property.FontNum)
         {
             if (_currentScope.InFontTable)
             {
                 _fontEntries.Add(val);
-                return Error.OK;
+                return RtfError.OK;
             }
             else if (_fontEntries.TryGetValue(val, out FontEntry? fontEntry))
             {
@@ -1211,34 +1213,34 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         }
         else if (propertyTableIndex == Property.Lang)
         {
-            if (val == _undefinedLanguage) return Error.OK;
+            if (val == _undefinedLanguage) return RtfError.OK;
         }
 
         _currentScope.Properties[(int)propertyTableIndex] = val;
 
-        return Error.OK;
+        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error ChangeDestination(DestinationType destinationType)
+    private RtfError ChangeDestination(DestinationType destinationType)
     {
         switch (destinationType)
         {
             case DestinationType.CanBeDestOrNotDest:
                 // Stupid crazy type of control word, see description for enum field
-                return Error.OK;
+                return RtfError.OK;
             case DestinationType.FieldInstruction:
                 return HandleFieldInstruction();
             case DestinationType.Skip:
                 _currentScope.RtfDestinationState = RtfDestinationState.Skip;
-                return Error.OK;
+                return RtfError.OK;
             default:
-                return Error.InvalidSymbolTableEntry;
+                return RtfError.InvalidSymbolTableEntry;
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error ParseChar(char ch)
+    private RtfError ParseChar(char ch)
     {
         if (_currentScope.InFontTable && _fontEntries.Count > 0)
         {
@@ -1247,7 +1249,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
         // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
         // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-        Error error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : Error.OK;
+        RtfError error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : RtfError.OK;
 
         if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
         return error;
@@ -1257,15 +1259,15 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
     #region Handle specially encoded characters
 
-    private Error ParseHex(ref int nibbleCount, ref char ch, ref byte b)
+    private RtfError ParseHex(ref int nibbleCount, ref char ch, ref byte b)
     {
         #region Local functions
 
-        Error ResetBufferAndStateAndReturn()
+        RtfError ResetBufferAndStateAndReturn()
         {
             _hexBuffer.ClearFast();
             _currentScope.RtfInternalState = RtfInternalState.Normal;
-            return Error.OK;
+            return RtfError.OK;
         }
 
         #endregion
@@ -1296,7 +1298,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         }
         else
         {
-            return Error.InvalidHex;
+            return RtfError.InvalidHex;
         }
 
         nibbleCount++;
@@ -1310,7 +1312,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             goto restartButDontClearBuffer;
         }
 
-        if (nibbleCount < 2) return Error.OK;
+        if (nibbleCount < 2) return RtfError.OK;
 
         _hexBuffer.Add(b);
 
@@ -1515,14 +1517,14 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     what we need, looped through six params and not found what we need, or reached a separator char, we quit
     and skip the rest of the group.
     */
-    private Error HandleFieldInstruction()
+    private RtfError HandleFieldInstruction()
     {
         _fldinstSymbolNumber.ClearFast();
         _fldinstSymbolFontName.ClearFast();
 
         int codePoint;
 
-        if (!GetNextChar(out char ch)) return Error.EndOfFile;
+        if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
 
         #region Check for SYMBOL instruction
 
@@ -1533,13 +1535,13 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         bool eof = false;
         for (i = 0; i < 6; i++, eof = !GetNextChar(out ch))
         {
-            if (eof) return Error.EndOfFile;
+            if (eof) return RtfError.EndOfFile;
             if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup(ch);
         }
 
         #endregion
 
-        if (!GetNextChar(out ch)) return Error.EndOfFile;
+        if (!GetNextChar(out ch)) return RtfError.EndOfFile;
 
         bool numIsHex = false;
         bool negateNum = false;
@@ -1577,7 +1579,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
              i < _fldinstSymbolNumberMaxLen && ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
              i++, eof = !GetNextChar(out ch))
         {
-            if (eof) return Error.EndOfFile;
+            if (eof) return RtfError.EndOfFile;
 
             if (alphaFound) alphaCharsFound = true;
 
@@ -1621,8 +1623,8 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         if (negateNum) codePoint = -codePoint;
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
-        Error error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);
-        if (error != Error.OK) return error;
+        RtfError error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);
+        if (error != RtfError.OK) return error;
 
         if (ch != ' ') return RewindAndSkipGroup(ch);
 
@@ -1642,7 +1644,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 continue;
             }
 
-            if (!GetNextChar(out ch)) return Error.EndOfFile;
+            if (!GetNextChar(out ch)) return RtfError.EndOfFile;
 
             // From the spec:
             // "Interprets text in field-argument as the value of an ANSI character."
@@ -1697,7 +1699,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             {
                 if (!GetNextChar(out ch))
                 {
-                    return Error.EndOfFile;
+                    return RtfError.EndOfFile;
                 }
                 else if (IsSeparatorChar(ch))
                 {
@@ -1708,7 +1710,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 {
                     if (!GetNextChar(out ch))
                     {
-                        return Error.EndOfFile;
+                        return RtfError.EndOfFile;
                     }
                     else if (ch != '\"')
                     {
@@ -1756,7 +1758,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             */
             else if (ch == 'h')
             {
-                if (!GetNextChar(out ch)) return Error.EndOfFile;
+                if (!GetNextChar(out ch)) return RtfError.EndOfFile;
                 if (IsSeparatorChar(ch)) break;
             }
             /*
@@ -1767,7 +1769,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             */
             else if (ch == 's')
             {
-                if (!GetNextChar(out ch)) return Error.EndOfFile;
+                if (!GetNextChar(out ch)) return RtfError.EndOfFile;
                 if (ch != ' ') return RewindAndSkipGroup(ch);
 
                 int numDigitCount = 0;
@@ -1795,7 +1797,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     #region PutChar
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error PutChar(char ch)
+    private RtfError PutChar(char ch)
     {
         if (ch != '\0' &&
             _currentScope.Properties[(int)Property.Hidden] == 0 &&
@@ -1834,10 +1836,10 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
                 _plainText.Add(ch);
             }
         }
-        return Error.OK;
+        return RtfError.OK;
     }
 
-    private Error PutChars(ListFast<char> ch, int count)
+    private RtfError PutChars(ListFast<char> ch, int count)
     {
         // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
         // need to duplicate any of the bare-char symbol font stuff here.
@@ -1848,7 +1850,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
         {
             _plainText.AddRange(ch, count);
         }
-        return Error.OK;
+        return RtfError.OK;
     }
 
     #endregion
@@ -1901,11 +1903,11 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error RewindAndSkipGroup(char ch)
+    private RtfError RewindAndSkipGroup(char ch)
     {
         UnGetChar(ch);
         _currentScope.RtfDestinationState = RtfDestinationState.Skip;
-        return Error.OK;
+        return RtfError.OK;
     }
 
     #endregion
@@ -2050,14 +2052,14 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Error NormalizeUnicodePoint(ref int codePoint, bool handleSymbolCharRange)
+    private RtfError NormalizeUnicodePoint(ref int codePoint, bool handleSymbolCharRange)
     {
         // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
         // correct value.
         if (codePoint < 0)
         {
             codePoint += 65536;
-            if (codePoint is < 0 or > ushort.MaxValue) return Error.InvalidUnicode;
+            if (codePoint is < 0 or > ushort.MaxValue) return RtfError.InvalidUnicode;
         }
 
         /*
@@ -2090,7 +2092,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
 
             if (!_fontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
             {
-                return Error.OK;
+                return RtfError.OK;
             }
 
             // We already know our code point is within bounds of the array, because the arrays also go from
@@ -2109,7 +2111,7 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
             }
         }
 
-        return Error.OK;
+        return RtfError.OK;
     }
 
     /// <summary>
@@ -2149,6 +2151,286 @@ public sealed class RtfToTextConverter : AL_Common.RTFParserBase
     {
         list.ItemsArray[0] = _unicodeUnknown_Char;
         list.Count = 1;
+    }
+
+    #endregion
+
+    #region Base
+
+    #region Resettables
+
+    private readonly ListFast<char> _keyword = new(_keywordMaxLen);
+
+    private int _binaryCharsLeftToSkip;
+    private int _unicodeCharsLeftToSkip;
+
+    private bool _skipDestinationIfUnknown;
+
+    // Highest measured was 10
+    private readonly ScopeStack _scopeStack = new();
+
+    private readonly Scope _currentScope = new();
+
+    // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
+    private int _groupCount;
+
+    /*
+    FMs can have 100+ of these...
+    Highest measured was 131
+    Fonts can specify themselves as whatever number they want, so we can't just count by index
+    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+    */
+    private readonly FontDictionary _fontEntries = new(150);
+
+    private readonly Header _header = new();
+
+    #endregion
+
+    private void ResetBase()
+    {
+        #region Fixed-size fields
+
+        // Specific capacity and won't grow; no need to deallocate
+        _keyword.ClearFast();
+
+        _groupCount = 0;
+        _binaryCharsLeftToSkip = 0;
+        _unicodeCharsLeftToSkip = 0;
+        _skipDestinationIfUnknown = false;
+
+        _currentScope.Reset();
+
+        #endregion
+
+        _scopeStack.ClearFast();
+
+        _header.Reset();
+
+        _fontEntries.Clear();
+    }
+
+    #region Stream
+
+    // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
+    // length as a param and store it.
+    /// <summary>
+    /// Do not modify!
+    /// </summary>
+    private long Length;
+
+    /// <summary>
+    /// Do not modify!
+    /// </summary>
+    private long CurrentPos;
+
+    /*
+    We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
+    "into the stream", but they actually go in here and then when we go to read, we read from this first
+    and so on until it's empty, then go back to reading from the main stream again. In this way, we
+    support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
+    This is required to support zip entry streams which are unseekable. If we required a seekable stream,
+    we would have to copy the entire, potentially very large, zip entry stream to memory first and then
+    read it, which is possibly unnecessarily memory-hungry.
+
+    2020-08-15:
+    We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
+    rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
+    */
+    private readonly UnGetStack _unGetBuffer = new();
+
+    /// <summary>
+    /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
+    /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
+    /// about that. Just use it as normal.
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void UnGetChar(char c)
+    {
+        if (CurrentPos < 0) return;
+
+        _unGetBuffer.Push(c);
+        if (CurrentPos > 0) CurrentPos--;
+    }
+
+    /// <summary>
+    /// Returns false if the end of the stream has been reached.
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool GetNextChar(out char ch)
+    {
+        if (CurrentPos == Length)
+        {
+            ch = '\0';
+            return false;
+        }
+
+        // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
+#pragma warning disable IDE0045 // Convert to conditional expression
+        if (_unGetBuffer.Count > 0)
+        {
+            ch = _unGetBuffer.Pop();
+        }
+        else
+        {
+            ch = (char)StreamReadByte();
+        }
+#pragma warning restore IDE0045 // Convert to conditional expression
+        CurrentPos++;
+
+        return true;
+    }
+
+    /// <summary>
+    /// For use in loops that already check the stream position against the end as a loop condition
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private char GetNextCharFast()
+    {
+        char ch;
+        // Ditto above
+#pragma warning disable IDE0045 // Convert to conditional expression
+        if (_unGetBuffer.Count > 0)
+        {
+            ch = _unGetBuffer.Pop();
+        }
+        else
+        {
+            ch = (char)StreamReadByte();
+        }
+#pragma warning restore IDE0045 // Convert to conditional expression
+        CurrentPos++;
+
+        return ch;
+    }
+
+    private void ResetStreamBase(long streamLength)
+    {
+        Length = streamLength;
+
+        CurrentPos = 0;
+
+        _unGetBuffer.Clear();
+    }
+
+    #endregion
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError HandleSpecialTypeFont(SpecialType specialType, int param)
+    {
+        switch (specialType)
+        {
+            case SpecialType.HeaderCodePage:
+                _header.CodePage = param >= 0 ? param : 1252;
+                break;
+            case SpecialType.FontTable:
+                _currentScope.InFontTable = true;
+                break;
+            case SpecialType.DefaultFont:
+                if (!_header.DefaultFontSet)
+                {
+                    _header.DefaultFontNum = param;
+                    _header.DefaultFontSet = true;
+                }
+                break;
+            case SpecialType.Charset:
+                // Reject negative codepage values as invalid and just use the header default in that case
+                // (which is guaranteed not to be negative)
+                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
+                {
+                    if (param is >= 0 and < _charSetToCodePageLength)
+                    {
+                        int codePage = _charSetToCodePage[param];
+                        _fontEntries.Top.CodePage = codePage >= 0 ? codePage : _header.CodePage;
+                    }
+                    else
+                    {
+                        _fontEntries.Top.CodePage = _header.CodePage;
+                    }
+                }
+                break;
+            case SpecialType.CodePage:
+                if (_fontEntries.Count > 0 && _currentScope.InFontTable)
+                {
+                    _fontEntries.Top.CodePage = param >= 0 ? param : _header.CodePage;
+                }
+                break;
+            default:
+                return RtfError.InvalidSymbolTableEntry;
+        }
+
+        return RtfError.OK;
+    }
+
+    private RtfError ParseKeyword()
+    {
+        bool hasParam = false;
+        bool negateParam = false;
+        int param = 0;
+
+        if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
+
+        _keyword.ClearFast();
+
+        if (!ch.IsAsciiAlpha())
+        {
+            /* From the spec:
+             "A control symbol consists of a backslash followed by a single, non-alphabetical character.
+             For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
+             delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
+
+             So just go straight to dispatching without looking for a param and without eating the space.
+            */
+            _keyword.AddFast(ch);
+            return DispatchKeyword(0, false);
+        }
+
+        int i;
+        bool eof = false;
+        for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
+        {
+            if (eof) return RtfError.EndOfFile;
+            _keyword.AddFast(ch);
+        }
+        if (i > _keywordMaxLen) return RtfError.KeywordTooLong;
+
+        if (ch == '-')
+        {
+            negateParam = true;
+            if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+        }
+
+        if (ch.IsAsciiNumeric())
+        {
+            hasParam = true;
+
+            // Parse param in real-time to avoid doing a second loop over
+            for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
+            {
+                if (eof) return RtfError.EndOfFile;
+                param += ch - '0';
+                param *= 10;
+            }
+            // Undo the last multiply just one time to avoid checking if we should do it every time through
+            // the loop
+            param /= 10;
+            if (i > _paramMaxLen) return RtfError.ParameterTooLong;
+
+            if (negateParam) param = -param;
+        }
+
+        /* From the spec:
+         "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
+         that is not counted in the characters to skip."
+         This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
+         the space from the skip-chars to count.
+        */
+        if (ch != ' ') UnGetChar(ch);
+
+        return DispatchKeyword(param, hasParam);
     }
 
     #endregion
