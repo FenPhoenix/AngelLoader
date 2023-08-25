@@ -931,10 +931,18 @@ public abstract partial class RTFParserBase
     // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
     protected int _groupCount;
 
-    // FMs can have 100+ of these...
-    // Highest measured was 131
-    // Fonts can specify themselves as whatever number they want, so we can't just count by index
-    // eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+    /*
+    FMs can have 100+ of these...
+    Highest measured was 131
+    Fonts can specify themselves as whatever number they want, so we can't just count by index
+    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+    
+    Also, although the spec says most params are only int16 and a few are int32, the Windows RichEdit control
+    supports \fN params up to 30064771070 (0x6fffffffe). That's _slightly_ above int32 range. Bizarre. Also you
+    can add one to that and then it displays the text but not in the specified font, but anything above that and
+    it doesn't display the text at all. Anyway, it means we can't just allocate a 32k array and get rid of the
+    dictionary entirely. Meh.
+    */
     protected readonly FontDictionary _fontEntries = new(150);
 
     protected readonly Header _header = new();
