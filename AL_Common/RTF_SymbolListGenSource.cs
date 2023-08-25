@@ -8,11 +8,11 @@ using System.Text.RegularExpressions;
 
 namespace AL_Common;
 
-public abstract partial class RTFParserBase
+public static partial class RTFParserBase
 {
 #if SYMBOL_PERFECT_HASH_GEN
     // This is the original "canonical" list, generate the perfect hash from this
-    private readonly Symbol[] _symbolList =
+    private static readonly Symbol[] _symbolList =
     {
         #region Code pages / charsets / fonts
 
@@ -182,7 +182,7 @@ public abstract partial class RTFParserBase
     8. Done!
     */
 
-    public void ConvertSymbolListToGPerfFormat(string gperfFormatFile)
+    public static void ConvertSymbolListToGPerfFormat(string gperfFormatFile)
     {
         var outLines = new List<string>();
         outLines.Add("struct Symbol { char *name; int dummy; };");
@@ -196,7 +196,7 @@ public abstract partial class RTFParserBase
         File.WriteAllLines(gperfFormatFile, outLines);
     }
 
-    public void ConvertGPerfOutputToCSharp(string inputFile, string outputFile, string symbolsCodeFile)
+    public static void ConvertGPerfOutputToCSharp(string inputFile, string outputFile, string symbolsCodeFile)
     {
         int FindIndexOfValueInSymbolList(string value)
         {
