@@ -124,8 +124,8 @@ public static partial class RTFParserCommon
 
     #region Font to Unicode conversion tables
 
-    public const int _charSetToCodePageLength = 256;
-    public static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
+    private const int _charSetToCodePageLength = 256;
+    private static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
 
     private static int[] InitializeCharSetToCodePage()
     {
