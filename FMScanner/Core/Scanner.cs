@@ -2843,8 +2843,9 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < _fmDirFileInfos.Count; i++)
                 {
                     FileInfoCustom f = _fmDirFileInfos[i];
-                    fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name);
-                    if (f.FullName.PathEqualsI(_fmIsSevenZip ? readmeFile.Name : fullReadmeFileName))
+                    if (f.FullName.PathEqualsI(_fmIsSevenZip
+                            ? readmeFile.Name
+                            : fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
                     {
                         readmeFI = f;
                         break;
