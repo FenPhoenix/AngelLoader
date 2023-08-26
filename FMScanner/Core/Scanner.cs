@@ -549,40 +549,6 @@ public sealed partial class Scanner : IDisposable
 
         if (!_fmWorkingPath.EndsWithDirSep()) _fmWorkingPath += "\\";
 
-        static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Unsupported,
-                MissionCount = 0
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
-        static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Null,
-                MissionCount = 0
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
-        static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = null,
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
         ulong sevenZipSize = 0;
 
         #region Setup
@@ -1396,6 +1362,44 @@ public sealed partial class Scanner : IDisposable
 #endif
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
+
+        #region Local functions
+
+        static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+        {
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Unsupported,
+                MissionCount = 0
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo
+        };
+
+        static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+        {
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Null,
+                MissionCount = 0
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo
+        };
+
+        static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+        {
+            ScannedFMData = null,
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo
+        };
+
+        #endregion
     }
 
     private void CopySevenZipReadmesToCacheDir(FMToScan fm)
