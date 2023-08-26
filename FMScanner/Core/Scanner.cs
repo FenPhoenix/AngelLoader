@@ -971,7 +971,6 @@ public sealed partial class Scanner : IDisposable
         #region Cache FM data
 
         bool success = ReadAndCacheFMData(fm.Path, fmData);
-
         if (!success)
         {
             string ext = _fmFormat switch
@@ -989,6 +988,23 @@ public sealed partial class Scanner : IDisposable
         #endregion
 
         bool fmIsT3 = fmData.Game == Game.Thief3;
+
+        // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
+        // theoretically possible to end up with some of these set. There's no way around it, so just unset
+        // them all here for consistency.
+        if (fmIsT3)
+        {
+            fmData.HasMap = null;
+            fmData.HasAutomap = null;
+            fmData.HasCustomCreatures = null;
+            fmData.HasCustomScripts = null;
+            fmData.HasCustomTextures = null;
+            fmData.HasCustomSounds = null;
+            fmData.HasCustomObjects = null;
+            fmData.HasCustomMotions = null;
+            fmData.HasCustomSubtitles = null;
+            fmData.HasMovies = null;
+        }
 
         bool singleMission = _usedMisFiles.Count == 1;
 
@@ -1337,23 +1353,6 @@ public sealed partial class Scanner : IDisposable
             }
 
             if (!_scanOptions.ScanAuthor) fmData.Author = "";
-        }
-
-        // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
-        // theoretically possible to end up with some of these set. There's no way around it, so just unset
-        // them all here for consistency.
-        if (fmIsT3)
-        {
-            fmData.HasMap = null;
-            fmData.HasAutomap = null;
-            fmData.HasCustomCreatures = null;
-            fmData.HasCustomScripts = null;
-            fmData.HasCustomTextures = null;
-            fmData.HasCustomSounds = null;
-            fmData.HasCustomObjects = null;
-            fmData.HasCustomMotions = null;
-            fmData.HasCustomSubtitles = null;
-            fmData.HasMovies = null;
         }
 
 #if DEBUG
