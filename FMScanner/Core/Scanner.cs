@@ -814,7 +814,6 @@ public sealed partial class Scanner : IDisposable
                 cancellationToken.ThrowIfCancellationRequested();
             }
         }
-
         else if (_fmFormat == FMFormat.Zip)
         {
             Debug.WriteLine("----------" + fm.Path);
@@ -941,28 +940,30 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanSize)
         {
-            if (_fmFormat == FMFormat.Zip)
+            switch (_fmFormat)
             {
-                fmData.Size = (ulong)_archive.ArchiveStreamLength;
-            }
-            else if (_fmFormat == FMFormat.SevenZip)
-            {
-                fmData.Size = sevenZipSize;
-            }
-            else
-            {
-                // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
-                // some time later by using the FileInfo list as a cache.
-                FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
-                if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
-                ulong size = 0;
-                for (int i = 0; i < fileInfos.Length; i++)
+                case FMFormat.Zip:
+                    fmData.Size = (ulong)_archive.ArchiveStreamLength;
+                    break;
+                case FMFormat.SevenZip:
+                    fmData.Size = sevenZipSize;
+                    break;
+                default:
                 {
-                    var fi = new FileInfoCustom(fileInfos[i]);
-                    _fmDirFileInfos.Add(fi);
-                    size += (ulong)fi.Length;
+                    // Getting the size is horrendously expensive for folders, but if we're doing it then we can
+                    // save some time later by using the FileInfo list as a cache.
+                    FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
+                    if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
+                    ulong size = 0;
+                    for (int i = 0; i < fileInfos.Length; i++)
+                    {
+                        var fi = new FileInfoCustom(fileInfos[i]);
+                        _fmDirFileInfos.Add(fi);
+                        size += (ulong)fi.Length;
+                    }
+                    fmData.Size = size;
+                    break;
                 }
-                fmData.Size = size;
             }
         }
 
@@ -1562,32 +1563,14 @@ public sealed partial class Scanner : IDisposable
                     misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
                         scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
-                else if (scanner._fmFormat == FMFormat.SevenZip)
+                else if (scanner._fmFormat == FMFormat.SevenZip || scanner._fmDirFileInfos.Count > 0)
                 {
                     misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
                 }
                 else
                 {
-                    if (scanner._fmDirFileInfos.Count > 0)
-                    {
-                        string fn = scanner._fmWorkingPath + usedMisFiles[0].Name;
-                        FileInfoCustom? misFile = null;
-                        for (int i = 0; i < scanner._fmDirFileInfos.Count; i++)
-                        {
-                            FileInfoCustom f = scanner._fmDirFileInfos[i];
-                            if (f.FullName.PathEqualsI(fn))
-                            {
-                                misFile = f;
-                                break;
-                            }
-                        }
-                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
-                    }
-                    else
-                    {
-                        var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
-                        misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                    }
+                    var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
+                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                 }
 
                 return misFileDate.Year > 1998
@@ -4141,21 +4124,11 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < _usedMisFiles.Count; i++)
                 {
                     NameAndIndex mis = _usedMisFiles[i];
-                    long length;
-                    if (_fmFormat == FMFormat.Zip)
-                    {
-                        length = _archive.Entries[mis.Index].Length;
-                    }
-                    else if (_fmFormat == FMFormat.SevenZip)
-                    {
-                        length = _fmDirFileInfos[mis.Index].Length;
-                    }
-                    else
-                    {
-                        string misFullPath = Path.Combine(_fmWorkingPath, mis.Name);
-                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath));
-                        length = misFI?.Length ?? new FileInfo(misFullPath).Length;
-                    }
+                    long length = _fmFormat == FMFormat.Zip
+                        ? _archive.Entries[mis.Index].Length
+                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
+                            ? _fmDirFileInfos[mis.Index].Length
+                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
 
                     if (length <= smallestSize)
                     {
