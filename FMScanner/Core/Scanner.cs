@@ -4170,9 +4170,9 @@ public sealed partial class Scanner : IDisposable
                     else
                     {
                         string? misFullPath = null;
-                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x =>
-                            x.FullName.PathEqualsI(misFullPath ??=
-                                _fmIsSevenZip ? mis.Name : Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(_fmIsSevenZip
+                            ? mis.Name
+                            : misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
 
