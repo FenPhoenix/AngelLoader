@@ -77,8 +77,14 @@ public sealed partial class Scanner : IDisposable
     private RtfToTextConverter? _rtfConverter;
     private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
 
-    private bool _fmIsZip;
-    private bool _fmIsSevenZip;
+    private enum FMFormat
+    {
+        NotInArchive,
+        Zip,
+        SevenZip
+    }
+
+    private FMFormat _fmFormat = FMFormat.NotInArchive;
 
     private string _fmWorkingPath = "";
 
@@ -368,8 +374,7 @@ public sealed partial class Scanner : IDisposable
         _ss2Fingerprinted = false;
         _fmWorkingPathDirName = null;
         _fmWorkingPathDirInfo = null;
-        _fmIsZip = false;
-        _fmIsSevenZip = false;
+        _fmFormat = FMFormat.NotInArchive;
         _sevenZipExtractedFilesList?.Clear();
         _sevenZipExtractedFilesTempList?.Clear();
 
@@ -436,11 +441,11 @@ public sealed partial class Scanner : IDisposable
             else
             {
                 string fmPath = missions[i].Path;
-                _fmIsZip = fmPath.ExtIsZip() || fmPath.ExtIs7z();
+                _fmFormat = fmPath.ExtIsZip() ? FMFormat.Zip : fmPath.ExtIs7z() ? FMFormat.SevenZip : FMFormat.NotInArchive;
 
                 _archive?.Dispose();
 
-                if (_fmIsZip)
+                if (_fmFormat > FMFormat.NotInArchive)
                 {
                     try
                     {
@@ -582,13 +587,8 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
-        #region Check for and setup 7-Zip
-
-        if (_fmIsZip && fm.Path.ExtIs7z())
+        if (_fmFormat == FMFormat.SevenZip)
         {
-            _fmIsZip = false;
-            _fmIsSevenZip = true;
-
             #region Partial 7z extract
 
             /*
@@ -849,109 +849,96 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        #endregion
-
-        #region Check for and setup Zip
-
-        if (_fmIsZip)
+        else if (_fmFormat == FMFormat.Zip)
         {
             Debug.WriteLine("----------" + fm.Path);
 
-            if (fm.Path.ExtIsZip())
+            try
             {
-                try
+                _archive = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(fm.Path, ZipContext.FileStreamBuffer), ZipContext, allowUnsupportedEntries: false);
+
+                // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
+                // thrown while loading them. If this passes, we're definitely good.
+                if (_archive.Entries.Count == 0)
                 {
-                    _archive = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(fm.Path, ZipContext.FileStreamBuffer), ZipContext, allowUnsupportedEntries: false);
-
-                    // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
-                    // thrown while loading them. If this passes, we're definitely good.
-                    if (_archive.Entries.Count == 0)
-                    {
-                        Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                        return UnsupportedZip(fm.Path, null, null, "");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    #region Notes about semi-broken zips
-                    /*
-                    Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
-                    
-                    Known semi-broken files:
-                    Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
-                    1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
-
-                    Both files are byte-identical but just with different names.
-
-                    Note that my version of the second file (same name) is not broken, I got it from
-                    http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-                    scanner with.
-
-                    These files throw with "The archive entry was compressed using an unsupported compression method."
-                    They throw on both ZipArchiveFast() and regular built-in ZipArchive().
-
-                    The compression method for each file in the archive is:
-
-                    MISS15.MIS:                6
-                    UGUEST.TXT:                6
-                    INTRFACE/NEWGAME.STR:      1
-                    INTRFACE/UGUEST/GOALS.STR: 1
-                    STRINGS/MISSFLAG.STR:      1
-                    STRINGS/TITLES.STR:        6
-
-                    1 = Shrink
-                    6 = Implode
-
-                    (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-
-                   .NET zip (all versions AFAIK) only supports Deflate.
-
-                    There also seem to be other errors, involving "headers" and "data past the end of archive".
-                    I don't really know enough about the zip format to understand these that much.
-
-                    7z.exe can handle these files, so we could use that as a fallback, but:
-
-                    7z.exe reports:
-
-                    ERRORS:
-                    Headers Error
-
-                    WARNINGS:
-                    There are data after the end of archive
-
-                    And it considers the error to be "fatal" even though it succeeds in this case (the
-                    extracted dir diffs identical with the extracted dir of the working one).
-                    But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-                    dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-                    not result in intact files on disk) error. If we just match by "Headers error" and/or
-                    "data past end" who knows if sometimes those might actually result in bad output and not
-                    others. I don't know. So we're going to continue to fail in this case, but at least tell
-                    the user what's wrong and give them an actionable suggestion.
-                    */
-                    #endregion
-                    if (ex is ZipCompressionMethodException zipEx)
-                    {
-                        Log(fm.Path + ": fm is zip.\r\n" +
-                            "UNSUPPORTED COMPRESSION METHOD\r\n" +
-                            "Zip contains one or more files compressed with an unsupported method. " +
-                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
-                            "Returning 'Unknown' game type.", zipEx);
-                        return UnknownZip(fm.Path, null, zipEx, "");
-                    }
-                    else
-                    {
-                        Log(fm.Path + ": fm is zip, exception in " +
-                            nameof(ZipArchiveFast) +
-                            " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                        return UnsupportedZip(fm.Path, null, ex, "");
-                    }
+                    Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
+                    return UnsupportedZip(fm.Path, null, null, "");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Log(fm.Path + ": " + nameof(_fmIsZip) +
-                    " == true, but extension was not .zip. Returning 'Unsupported' game type.", stackTrace: false);
-                return UnsupportedZip(fm.Path, null, null, "");
+                #region Notes about semi-broken zips
+                /*
+                Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+
+                Known semi-broken files:
+                Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+                1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+                Both files are byte-identical but just with different names.
+
+                Note that my version of the second file (same name) is not broken, I got it from
+                http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+                scanner with.
+
+                These files throw with "The archive entry was compressed using an unsupported compression method."
+                They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+                The compression method for each file in the archive is:
+
+                MISS15.MIS:                6
+                UGUEST.TXT:                6
+                INTRFACE/NEWGAME.STR:      1
+                INTRFACE/UGUEST/GOALS.STR: 1
+                STRINGS/MISSFLAG.STR:      1
+                STRINGS/TITLES.STR:        6
+
+                1 = Shrink
+                6 = Implode
+
+                (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+               .NET zip (all versions AFAIK) only supports Deflate.
+
+                There also seem to be other errors, involving "headers" and "data past the end of archive".
+                I don't really know enough about the zip format to understand these that much.
+
+                7z.exe can handle these files, so we could use that as a fallback, but:
+
+                7z.exe reports:
+
+                ERRORS:
+                Headers Error
+
+                WARNINGS:
+                There are data after the end of archive
+
+                And it considers the error to be "fatal" even though it succeeds in this case (the
+                extracted dir diffs identical with the extracted dir of the working one).
+                But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+                dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+                not result in intact files on disk) error. If we just match by "Headers error" and/or
+                "data past end" who knows if sometimes those might actually result in bad output and not
+                others. I don't know. So we're going to continue to fail in this case, but at least tell
+                the user what's wrong and give them an actionable suggestion.
+                */
+                #endregion
+                if (ex is ZipCompressionMethodException zipEx)
+                {
+                    Log(fm.Path + ": fm is zip.\r\n" +
+                        "UNSUPPORTED COMPRESSION METHOD\r\n" +
+                        "Zip contains one or more files compressed with an unsupported method. " +
+                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
+                        "Returning 'Unknown' game type.", zipEx);
+                    return UnknownZip(fm.Path, null, zipEx, "");
+                }
+                else
+                {
+                    Log(fm.Path + ": fm is zip, exception in " +
+                        nameof(ZipArchiveFast) +
+                        " construction or entries getting. Returning 'Unsupported' game type.", ex);
+                    return UnsupportedZip(fm.Path, null, ex, "");
+                }
             }
         }
         else
@@ -967,11 +954,9 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        #endregion
-
         var fmData = new ScannedFMData
         {
-            ArchiveName = _fmIsZip || _fmIsSevenZip
+            ArchiveName = _fmFormat > FMFormat.NotInArchive
                 ? Path.GetFileName(fm.Path)
                 : FMWorkingPathDirName
         };
@@ -990,11 +975,11 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanSize)
         {
-            if (_fmIsZip)
+            if (_fmFormat == FMFormat.Zip)
             {
                 fmData.Size = (ulong)_archive.ArchiveStreamLength;
             }
-            else if (_fmIsSevenZip)
+            else if (_fmFormat == FMFormat.SevenZip)
             {
                 fmData.Size = sevenZipSize;
             }
@@ -1023,11 +1008,16 @@ public sealed partial class Scanner : IDisposable
 
         if (!success)
         {
-            string ext = _fmIsZip ? "zip" : _fmIsSevenZip ? "7z" : "dir";
+            string ext = _fmFormat switch
+            {
+                FMFormat.Zip => "zip",
+                FMFormat.SevenZip => "7z",
+                _ => "dir"
+            };
             Log(fm.Path + ": fm is " + ext + ", " +
                 nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
 
-            return _fmIsZip || _fmIsSevenZip ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
+            return _fmFormat > FMFormat.NotInArchive ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
         }
 
         #endregion
@@ -1564,16 +1554,20 @@ public sealed partial class Scanner : IDisposable
             if (usedMisFiles.Count > 0)
             {
                 DateTime misFileDate;
-                if (scanner._fmIsZip)
+                if (scanner._fmFormat == FMFormat.Zip)
                 {
                     misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
                         scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                }
+                else if (scanner._fmFormat == FMFormat.SevenZip)
+                {
+                    misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
                 }
                 else
                 {
                     if (scanner._fmDirFileInfos.Count > 0)
                     {
-                        string fn = scanner._fmIsSevenZip ? usedMisFiles[0].Name : scanner._fmWorkingPath + usedMisFiles[0].Name;
+                        string fn = scanner._fmWorkingPath + usedMisFiles[0].Name;
                         FileInfoCustom? misFile = null;
                         for (int i = 0; i < scanner._fmDirFileInfos.Count; i++)
                         {
@@ -2007,18 +2001,17 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
-        if (_fmIsZip || _fmDirFileInfos.Count > 0)
+        if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
-            int filesCount = _fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count;
+            int filesCount = _fmFormat == FMFormat.Zip ? _archive.Entries.Count : _fmDirFileInfos.Count;
             for (int i = 0; i < filesCount; i++)
             {
-                string fn = _fmIsZip
-                    ? _archive.Entries[i].FullName
-                    : _fmIsSevenZip
-                        ? _fmDirFileInfos[i].FullName
-                        : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
-
-                int index = _fmIsZip ? i : -1;
+                string fn = _fmFormat switch
+                {
+                    FMFormat.Zip => _archive.Entries[i].FullName,
+                    FMFormat.SevenZip => _fmDirFileInfos[i].FullName,
+                    _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length)
+                };
 
                 if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
                     fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
@@ -2030,7 +2023,7 @@ public sealed partial class Scanner : IDisposable
                             if (_scanOptions.ScanMissionCount)
                             {
                                 // We only want the filename; we already know it's in the right folder
-                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), i));
                             }
                             continue;
                         }
@@ -2053,7 +2046,7 @@ public sealed partial class Scanner : IDisposable
                             if (_scanOptions.ScanMissionCount)
                             {
                                 // We only want the filename; we already know it's in the right folder
-                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), index));
+                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), i));
                             }
                             continue;
                         }
@@ -2064,17 +2057,17 @@ public sealed partial class Scanner : IDisposable
                 else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                          fn.PathStartsWithI(FMDirs.T3FMExtras2S))
                 {
-                    T3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
+                    T3FMExtrasDirFiles.Add(new NameAndIndex(fn, i));
                     continue;
                 }
                 else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
                 {
-                    _baseDirFiles.Add(new NameAndIndex(fn, index));
+                    _baseDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                 {
-                    _stringsDirFiles.Add(new NameAndIndex(fn, index));
+                    _stringsDirFiles.Add(new NameAndIndex(fn, i));
                     if (SS2FingerprintRequiredAndNotDone() &&
                         (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                          fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
@@ -2087,12 +2080,12 @@ public sealed partial class Scanner : IDisposable
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
                 {
-                    _intrfaceDirFiles.Add(new NameAndIndex(fn, index));
+                    _intrfaceDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
                 }
                 else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
                 {
-                    _booksDirFiles.Add(new NameAndIndex(fn, index));
+                    _booksDirFiles.Add(new NameAndIndex(fn, i));
                     continue;
                 }
                 else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
@@ -2432,7 +2425,7 @@ public sealed partial class Scanner : IDisposable
             List<string> mfLines;
 
             // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
-            if (_fmIsZip)
+            if (_fmFormat == FMFormat.Zip)
             {
                 using var es = _archive.OpenEntry(_archive.Entries[missFlag.Index]);
                 mfLines = ReadAllLines(es, Encoding.UTF8);
@@ -2515,7 +2508,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Load XML
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
             fmInfoXml.Load(es);
@@ -2585,7 +2578,7 @@ public sealed partial class Scanner : IDisposable
 
         List<string> iniLines;
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
@@ -2766,7 +2759,7 @@ public sealed partial class Scanner : IDisposable
 
         List<string> lines;
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
@@ -2834,76 +2827,58 @@ public sealed partial class Scanner : IDisposable
 
             ZipArchiveFastEntry? readmeEntry = null;
 
-            if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
-
-            string? fullReadmeFileName = null;
-            FileInfoCustom? readmeFI = null;
-            if (!_fmIsZip && _fmDirFileInfos.Count > 0)
-            {
-                for (int i = 0; i < _fmDirFileInfos.Count; i++)
-                {
-                    FileInfoCustom f = _fmDirFileInfos[i];
-                    if (f.FullName.PathEqualsI(_fmIsSevenZip
-                            ? readmeFile.Name
-                            : fullReadmeFileName ??= Path.Combine(_fmWorkingPath, readmeFile.Name)))
-                    {
-                        readmeFI = f;
-                        break;
-                    }
-                }
-            }
-
             int readmeFileLen;
-            if (_fmIsZip)
+            string readmeFileOnDisk = "";
+            bool isGlml;
+            DateTime? lastModifiedDate = null;
+
+            if (_fmFormat == FMFormat.Zip)
             {
-                readmeFileLen = (int)readmeEntry!.Length;
+                readmeEntry = _archive.Entries[readmeFile.Index];
+                readmeFileLen = (int)readmeEntry.Length;
+                if (readmeFileLen == 0) continue;
+
+                isGlml = readmeEntry.FullName.ExtIsGlml();
             }
             else
             {
-                if (readmeFI != null)
+                FileInfoCustom readmeFI;
+
+                if (_fmDirFileInfos.Count > 0)
                 {
-                    readmeFileLen = (int)readmeFI.Length;
+                    readmeFI = _fmDirFileInfos[readmeFile.Index];
+                    if (readmeFI.Length == 0) continue;
+
+                    readmeFileOnDisk = Path.Combine(_fmWorkingPath, readmeFile.Name);
                 }
                 else
                 {
+                    /*
+                    If the readme was 0 length, it won't have been extracted, so in that case just skip this
+                    one and move on.
+                    */
                     try
                     {
-                        /*
-                        If the readme was 0 length, it won't have been extracted, so in that case just skip this
-                        one and move on.
-                        */
-                        readmeFileLen =
-                            (int)new FileInfo(fullReadmeFileName ??=
-                                Path.Combine(_fmWorkingPath, readmeFile.Name)).Length;
+                        string fullReadmeFileName = Path.Combine(_fmWorkingPath, readmeFile.Name);
+
+                        FileInfo fi = new(fullReadmeFileName);
+                        if (fi.Length == 0) continue;
+
+                        readmeFI = new FileInfoCustom(fi);
+
+                        readmeFileOnDisk = fullReadmeFileName;
                     }
                     catch
                     {
                         continue;
                     }
                 }
+
+                readmeFileLen = (int)readmeFI.Length;
+
+                isGlml = readmeFI.FullName.ExtIsGlml();
+                lastModifiedDate = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
             }
-
-            string readmeFileOnDisk = "";
-
-            bool isGlml;
-            DateTime? lastModifiedDate = null;
-            long readmeSize;
-
-            if (_fmIsZip)
-            {
-                isGlml = readmeEntry!.FullName.ExtIsGlml();
-                readmeSize = readmeEntry.Length;
-            }
-            else
-            {
-                readmeFileOnDisk = fullReadmeFileName ?? Path.Combine(_fmWorkingPath, readmeFile.Name);
-                FileInfoCustom fi = readmeFI ?? new FileInfoCustom(new FileInfo(readmeFileOnDisk));
-                isGlml = fi.FullName.ExtIsGlml();
-                lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                readmeSize = fi.Length;
-            }
-
-            if (readmeSize == 0) continue;
 
             bool scanThisReadme =
                 !readmeFile.Name.ExtIsHtml() &&
@@ -2920,7 +2895,7 @@ public sealed partial class Scanner : IDisposable
 
             // We still add the readme even if we're not going to store nor scan its contents, because we still
             // may need to look at its last modified date.
-            if (_fmIsZip)
+            if (_fmFormat == FMFormat.Zip)
             {
                 _readmeFiles.Add(new ReadmeInternal(
                     isGlml: isGlml,
@@ -2959,7 +2934,7 @@ public sealed partial class Scanner : IDisposable
 
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                readmeStream = _fmIsZip
+                readmeStream = _fmFormat == FMFormat.Zip
                     ? _archive.OpenEntry(readmeEntry!)
                     : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
 
@@ -2973,7 +2948,7 @@ public sealed partial class Scanner : IDisposable
                     readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
                 }
 
-                if (_fmIsZip)
+                if (_fmFormat == FMFormat.Zip)
                 {
                     readmeStream.Dispose();
                 }
@@ -2987,7 +2962,7 @@ public sealed partial class Scanner : IDisposable
                 bool readmeIsRtf = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
-                    if (_fmIsZip)
+                    if (_fmFormat == FMFormat.Zip)
                     {
                         readmeStream = _archive.OpenEntry(readmeEntry!);
                     }
@@ -3003,7 +2978,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     Stream stream;
 
-                    if (_fmIsZip)
+                    if (_fmFormat == FMFormat.Zip)
                     {
                         _generalMemoryStream.SetLength(readmeFileLen);
                         _generalMemoryStream.Position = 0;
@@ -3434,7 +3409,7 @@ public sealed partial class Scanner : IDisposable
         NameAndIndex newGameStrFile = _intrfaceDirFiles[newGameStrFileIndex];
         List<string> lines;
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[newGameStrFile.Index];
             using var es = _archive.OpenEntry(e);
@@ -3598,7 +3573,7 @@ public sealed partial class Scanner : IDisposable
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
         {
-            if (_fmIsZip)
+            if (_fmFormat == FMFormat.Zip)
             {
                 int titlesFileIndex = -1;
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
@@ -4164,17 +4139,19 @@ public sealed partial class Scanner : IDisposable
                 {
                     NameAndIndex mis = _usedMisFiles[i];
                     long length;
-                    if (_fmIsZip)
+                    if (_fmFormat == FMFormat.Zip)
                     {
                         length = _archive.Entries[mis.Index].Length;
                     }
+                    else if (_fmFormat == FMFormat.SevenZip)
+                    {
+                        length = _fmDirFileInfos[mis.Index].Length;
+                    }
                     else
                     {
-                        string? misFullPath = null;
-                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(_fmIsSevenZip
-                            ? mis.Name
-                            : misFullPath ??= Path.Combine(_fmWorkingPath, mis.Name)));
-                        length = misFI?.Length ?? new FileInfo(misFullPath ?? Path.Combine(_fmWorkingPath, mis.Name)).Length;
+                        string misFullPath = Path.Combine(_fmWorkingPath, mis.Name);
+                        FileInfoCustom? misFI = _fmDirFileInfos.Find(x => x.FullName.PathEqualsI(misFullPath));
+                        length = misFI?.Length ?? new FileInfo(misFullPath).Length;
                     }
 
                     if (length <= smallestSize)
@@ -4196,7 +4173,7 @@ public sealed partial class Scanner : IDisposable
 
         string misFileOnDisk = "";
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
         }
@@ -4268,7 +4245,7 @@ public sealed partial class Scanner : IDisposable
         Stream? misStream = null;
         try
         {
-            misStream = _fmIsZip
+            misStream = _fmFormat == FMFormat.Zip
                 ? _archive.OpenEntry(misFileZipEntry)
                 : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
 
@@ -4285,7 +4262,7 @@ public sealed partial class Scanner : IDisposable
 
                 byte[] buffer;
 
-                if (_fmIsZip)
+                if (_fmFormat == FMFormat.Zip)
                 {
                     buffer = _zipOffsetBuffers[i];
                     int length = _zipOffsets[i];
@@ -4411,7 +4388,7 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
-        if (_fmIsZip)
+        if (_fmFormat == FMFormat.Zip)
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
@@ -4511,7 +4488,7 @@ public sealed partial class Scanner : IDisposable
 #endif
             == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmIsZip
+            using Stream stream = _fmFormat == FMFormat.Zip
                 ? _archive.OpenEntry(misFileZipEntry)
                 : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
             if (StreamContainsIdentString(
@@ -4588,7 +4565,7 @@ public sealed partial class Scanner : IDisposable
         {
             // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
             // That means our working path is NOT temporary!!!
-            if (!_fmIsSevenZip ||
+            if (_fmFormat != FMFormat.SevenZip ||
                 _fmWorkingPath.IsEmpty() ||
                 !Directory.Exists(_fmWorkingPath))
             {
