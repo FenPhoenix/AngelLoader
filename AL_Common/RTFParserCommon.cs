@@ -66,6 +66,7 @@ public static partial class RTFParserCommon
         public readonly Header Header;
         public readonly UnGetStack UnGetBuffer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
             Keyword.ClearFast();
@@ -250,6 +251,7 @@ public static partial class RTFParserCommon
             Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
             RtfDestinationState = 0;
@@ -293,6 +295,7 @@ public static partial class RTFParserCommon
 
         public Header() => Reset();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
             CodePage = 1252;
@@ -645,6 +648,7 @@ public static partial class RTFParserCommon
         /// </summary>
         public int Count;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             if (_capacity > _resetCapacity)
@@ -658,6 +662,7 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public char Pop() => _array[--Count];
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Push(char item)
         {
             if (Count == _capacity)
