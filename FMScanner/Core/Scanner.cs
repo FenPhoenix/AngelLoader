@@ -2407,19 +2407,8 @@ public sealed partial class Scanner : IDisposable
 
         if (missFlagIndex > -1)
         {
-            NameAndIndex missFlag = _stringsDirFiles[missFlagIndex];
-            List<string> mfLines;
-
             // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
-            if (_fmFormat == FMFormat.Zip)
-            {
-                using var es = _archive.OpenEntry(_archive.Entries[missFlag.Index]);
-                mfLines = ReadAllLines(es, Encoding.UTF8);
-            }
-            else
-            {
-                mfLines = ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
-            }
+            List<string> mfLines = ReadAllLinesUTF8(_stringsDirFiles[missFlagIndex]);
 
             for (int mfI = 0; mfI < _misFiles.Count; mfI++)
             {
@@ -4619,7 +4608,7 @@ public sealed partial class Scanner : IDisposable
 
     #region Read plaintext
 
-    #region ReadAllText (detect encoding)
+    #region Read all text
 
     /// <summary>
     /// Reads all the text in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
@@ -4637,10 +4626,6 @@ public sealed partial class Scanner : IDisposable
         return sr.Reader.ReadToEnd();
     }
 
-    #endregion
-
-    #region ReadAllText (as is)
-
     private string ReadAllText(Stream stream, Encoding encoding)
     {
         using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom, disposeStream: false);
@@ -4649,7 +4634,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    #region ReadAllLines (detect encoding)
+    #region Read all lines (detect encoding)
 
     /// <summary>
     /// Reads all the lines in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
@@ -4698,23 +4683,18 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    #region ReadAllLines (as is)
+    #region Read all lines (as is)
 
-    private List<string> ReadAllLines(Stream stream, Encoding encoding)
+    private List<string> ReadAllLinesUTF8(NameAndIndex item)
     {
         var lines = new List<string>();
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
-        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+        using Stream stream = _fmFormat == FMFormat.Zip
+            ? _archive.OpenEntry(_archive.Entries[item.Index])
+            : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
 
-        return lines;
-    }
-
-    private List<string> ReadAllLines(string file, Encoding encoding)
-    {
-        var lines = new List<string>();
-
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, false, _streamReaderCustom);
+        // Stupid micro-optimization: Don't call Dispose() method on stream twice
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
 
         return lines;
