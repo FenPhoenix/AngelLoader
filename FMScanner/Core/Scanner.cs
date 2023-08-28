@@ -116,6 +116,8 @@ public sealed partial class Scanner : IDisposable
     private List<string>? _sevenZipExtractedFilesTempList;
     private List<string> SevenZipExtractedFilesTempList => _sevenZipExtractedFilesTempList ??= new List<string>(50);
 
+    private readonly List<string> _tempLines = new();
+
     private readonly List<NameAndIndex> _baseDirFiles = new(20);
     private readonly List<NameAndIndex> _misFiles = new(20);
     private readonly List<NameAndIndex> _usedMisFiles = new(20);
@@ -2408,7 +2410,7 @@ public sealed partial class Scanner : IDisposable
         if (missFlagIndex > -1)
         {
             // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
-            List<string> mfLines = ReadAllLinesUTF8(_stringsDirFiles[missFlagIndex]);
+            ReadAllLinesUTF8(_stringsDirFiles[missFlagIndex], _tempLines);
 
             for (int mfI = 0; mfI < _misFiles.Count; mfI++)
             {
@@ -2421,9 +2423,9 @@ public sealed partial class Scanner : IDisposable
                     // character and not get a -1 index. And since we know our file starts with "miss", the
                     // -4 is guaranteed not to take us negative either.
                     int count = mf.Name.IndexOf('.') - 4;
-                    for (int mflI = 0; mflI < mfLines.Count; mflI++)
+                    for (int mflI = 0; mflI < _tempLines.Count; mflI++)
                     {
-                        string line = mfLines[mflI];
+                        string line = _tempLines[mflI];
                         if (line.StartsWithI_Local("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                         {
                             bool numsMatch = true;
@@ -2551,20 +2553,18 @@ public sealed partial class Scanner : IDisposable
 
         #region Load INI
 
-        List<string> iniLines;
-
         if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
-            iniLines = ReadAllLinesE(es, e.Length);
+            ReadAllLinesE(es, e.Length, _tempLines);
         }
         else
         {
-            iniLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
+            ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name), _tempLines);
         }
 
-        if (iniLines.Count == 0)
+        if (_tempLines.Count == 0)
         {
             return ("", ""
 #if FMScanner_FullCode
@@ -2579,7 +2579,7 @@ public sealed partial class Scanner : IDisposable
 
         bool inDescr = false;
 
-        foreach (string line in iniLines)
+        foreach (string line in _tempLines)
         {
             if (line.StartsWithI_Local("NiceName="))
             {
@@ -2732,29 +2732,27 @@ public sealed partial class Scanner : IDisposable
     {
         var ret = (Title: "", Author: "");
 
-        List<string> lines;
-
         if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[file.Index];
             using var es = _archive.OpenEntry(e);
-            lines = ReadAllLinesE(es, e.Length);
+            ReadAllLinesE(es, e.Length, _tempLines);
         }
         else
         {
-            lines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
+            ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name), _tempLines);
         }
 
-        if (lines.Count == 0) return ret;
+        if (_tempLines.Count == 0) return ret;
 
-        for (int i = 0; i < lines.Count; i++)
+        for (int i = 0; i < _tempLines.Count; i++)
         {
-            string lineT = lines[i].Trim();
+            string lineT = _tempLines[i].Trim();
             if (lineT.EqualsI_Local("[modName]"))
             {
-                while (i < lines.Count - 1)
+                while (i < _tempLines.Count - 1)
                 {
-                    string lt = lines[i + 1].Trim();
+                    string lt = _tempLines[i + 1].Trim();
                     if (lt.IsIniHeader())
                     {
                         break;
@@ -2769,9 +2767,9 @@ public sealed partial class Scanner : IDisposable
             }
             else if (lineT.EqualsI_Local("[authors]"))
             {
-                while (i < lines.Count - 1)
+                while (i < _tempLines.Count - 1)
                 {
-                    string lt = lines[i + 1].Trim();
+                    string lt = _tempLines[i + 1].Trim();
                     if (lt.IsIniHeader())
                     {
                         break;
@@ -3382,22 +3380,21 @@ public sealed partial class Scanner : IDisposable
         if (newGameStrFileIndex == -1) return "";
 
         NameAndIndex newGameStrFile = _intrfaceDirFiles[newGameStrFileIndex];
-        List<string> lines;
 
         if (_fmFormat == FMFormat.Zip)
         {
             ZipArchiveFastEntry e = _archive.Entries[newGameStrFile.Index];
             using var es = _archive.OpenEntry(e);
-            lines = ReadAllLinesE(es, e.Length);
+            ReadAllLinesE(es, e.Length, _tempLines);
         }
         else
         {
-            lines = ReadAllLinesE(Path.Combine(_fmWorkingPath, newGameStrFile.Name));
+            ReadAllLinesE(Path.Combine(_fmWorkingPath, newGameStrFile.Name), _tempLines);
         }
 
-        for (int i = 0; i < lines.Count; i++)
+        for (int i = 0; i < _tempLines.Count; i++)
         {
-            string lineT = lines[i].Trim();
+            string lineT = _tempLines[i].Trim();
             if (lineT.StartsWithI_Local("skip_training:"))
             {
                 string title = Utility.ExtractFromQuotedSection(lineT);
@@ -3542,8 +3539,6 @@ public sealed partial class Scanner : IDisposable
 
     private List<string>? GetTitlesStrLines()
     {
-        List<string>? titlesStrLines = null;
-
         #region Read title(s).str file
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
@@ -3565,13 +3560,13 @@ public sealed partial class Scanner : IDisposable
 
                 ZipArchiveFastEntry e = _archive.Entries[_stringsDirFiles[titlesFileIndex].Index];
                 using var es = _archive.OpenEntry(e);
-                titlesStrLines = ReadAllLinesE(es, e.Length);
+                ReadAllLinesE(es, e.Length, _tempLines);
             }
             else
             {
                 string titlesFile = Path.Combine(_fmWorkingPath, titlesFileLocation);
                 if (!File.Exists(titlesFile)) continue;
-                titlesStrLines = ReadAllLinesE(titlesFile);
+                ReadAllLinesE(titlesFile, _tempLines);
             }
 
             break;
@@ -3579,12 +3574,12 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        if (titlesStrLines == null || titlesStrLines.Count == 0) return null;
+        if (_tempLines.Count == 0) return null;
 
         #region Filter titlesStrLines
 
         // There's a way to do this with an IEqualityComparer, but no, for reasons
-        var tfLinesD = new List<string>(titlesStrLines.Count);
+        var tfLinesD = new List<string>(_tempLines.Count);
 
         static bool TFLinesDAny(string line, int indexOfColon, List<string> tfLinesD)
         {
@@ -3621,11 +3616,11 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
-        for (int i = 0; i < titlesStrLines.Count; i++)
+        for (int i = 0; i < _tempLines.Count; i++)
         {
             int indexOfColon;
             // Note: the Trim() is important, don't remove it
-            string line = titlesStrLines[i].Trim();
+            string line = _tempLines[i].Trim();
             if (!line.IsEmpty() &&
                 line.StartsWithI_Local("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
@@ -4642,11 +4637,11 @@ public sealed partial class Scanner : IDisposable
     /// </summary>
     /// <param name="stream">The stream to read.</param>
     /// <param name="length">The length of the stream in bytes.</param>
+    /// <param name="lines"></param>
     /// <returns></returns>
-    private List<string> ReadAllLinesE(Stream stream, long length)
+    private void ReadAllLinesE(Stream stream, long length, List<string> lines)
     {
-        // @MEM: Cache these lists into one that we reuse
-        var lines = new List<string>();
+        lines.Clear();
 
         // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
         // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
@@ -4659,8 +4654,6 @@ public sealed partial class Scanner : IDisposable
 
         using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-
-        return lines;
     }
 
     /// <summary>
@@ -4668,26 +4661,25 @@ public sealed partial class Scanner : IDisposable
     /// correctly.
     /// </summary>
     /// <param name="file">The file to read.</param>
+    /// <param name="lines"></param>
     /// <returns></returns>
-    private List<string> ReadAllLinesE(string file)
+    private void ReadAllLinesE(string file, List<string> lines)
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
 
-        var lines = new List<string>();
+        lines.Clear();
 
         using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-
-        return lines;
     }
 
     #endregion
 
     #region Read all lines (as is)
 
-    private List<string> ReadAllLinesUTF8(NameAndIndex item)
+    private void ReadAllLinesUTF8(NameAndIndex item, List<string> lines)
     {
-        var lines = new List<string>();
+        lines.Clear();
 
         using Stream stream = _fmFormat == FMFormat.Zip
             ? _archive.OpenEntry(_archive.Entries[item.Index])
@@ -4696,8 +4688,6 @@ public sealed partial class Scanner : IDisposable
         // Stupid micro-optimization: Don't call Dispose() method on stream twice
         using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-
-        return lines;
     }
 
     #endregion
