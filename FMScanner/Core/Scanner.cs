@@ -4668,7 +4668,6 @@ public sealed partial class Scanner : IDisposable
         _generalMemoryStream.SetLength((int)length);
         _generalMemoryStream.Position = 0;
         StreamCopyNoAlloc(stream, _generalMemoryStream, StreamCopyBuffer);
-        stream.Dispose();
         _generalMemoryStream.Position = 0;
         Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);
         _generalMemoryStream.Position = 0;
