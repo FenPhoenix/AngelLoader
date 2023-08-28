@@ -3539,6 +3539,8 @@ public sealed partial class Scanner : IDisposable
 
     private List<string>? GetTitlesStrLines()
     {
+        List<string>? titlesStrLines = null;
+
         #region Read title(s).str file
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
@@ -3561,12 +3563,14 @@ public sealed partial class Scanner : IDisposable
                 ZipArchiveFastEntry e = _archive.Entries[_stringsDirFiles[titlesFileIndex].Index];
                 using var es = _archive.OpenEntry(e);
                 ReadAllLinesE(es, e.Length, _tempLines);
+                titlesStrLines = _tempLines;
             }
             else
             {
                 string titlesFile = Path.Combine(_fmWorkingPath, titlesFileLocation);
                 if (!File.Exists(titlesFile)) continue;
                 ReadAllLinesE(titlesFile, _tempLines);
+                titlesStrLines = _tempLines;
             }
 
             break;
@@ -3574,7 +3578,7 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        if (_tempLines.Count == 0) return null;
+        if (titlesStrLines == null || titlesStrLines.Count == 0) return null;
 
         #region Filter titlesStrLines
 
