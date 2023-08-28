@@ -3583,7 +3583,7 @@ public sealed partial class Scanner : IDisposable
         #region Filter titlesStrLines
 
         // There's a way to do this with an IEqualityComparer, but no, for reasons
-        var tfLinesD = new List<string>(_tempLines.Count);
+        var tfLinesD = new List<string>(titlesStrLines.Count);
 
         static bool TFLinesDAny(string line, int indexOfColon, List<string> tfLinesD)
         {
@@ -3620,11 +3620,11 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
-        for (int i = 0; i < _tempLines.Count; i++)
+        for (int i = 0; i < titlesStrLines.Count; i++)
         {
             int indexOfColon;
             // Note: the Trim() is important, don't remove it
-            string line = _tempLines[i].Trim();
+            string line = titlesStrLines[i].Trim();
             if (!line.IsEmpty() &&
                 line.StartsWithI_Local("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
