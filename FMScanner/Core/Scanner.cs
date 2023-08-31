@@ -3545,21 +3545,21 @@ public sealed partial class Scanner : IDisposable
 
         foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
         {
+            int titlesFileIndex = -1;
+            for (int i = 0; i < _stringsDirFiles.Count; i++)
+            {
+                NameAndIndex item = _stringsDirFiles[i];
+                if (item.Name.PathEqualsI(titlesFileLocation))
+                {
+                    titlesFileIndex = i;
+                    break;
+                }
+            }
+
+            if (titlesFileIndex == -1) continue;
+
             if (_fmFormat == FMFormat.Zip)
             {
-                int titlesFileIndex = -1;
-                for (int i = 0; i < _stringsDirFiles.Count; i++)
-                {
-                    var item = _stringsDirFiles[i];
-                    if (item.Name.PathEqualsI(titlesFileLocation))
-                    {
-                        titlesFileIndex = i;
-                        break;
-                    }
-                }
-
-                if (titlesFileIndex == -1) continue;
-
                 ZipArchiveFastEntry e = _archive.Entries[_stringsDirFiles[titlesFileIndex].Index];
                 using var es = _archive.OpenEntry(e);
                 ReadAllLinesE(es, e.Length, _tempLines);
@@ -3568,7 +3568,6 @@ public sealed partial class Scanner : IDisposable
             else
             {
                 string titlesFile = Path.Combine(_fmWorkingPath, titlesFileLocation);
-                if (!File.Exists(titlesFile)) continue;
                 ReadAllLinesE(titlesFile, _tempLines);
                 titlesStrLines = _tempLines;
             }
