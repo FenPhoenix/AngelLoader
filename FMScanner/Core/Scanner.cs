@@ -2553,7 +2553,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Load INI
 
-        ReadAllLinesE(file, _tempLines);
+        ReadAllLinesDetectEncoding(file, _tempLines);
 
         if (_tempLines.Count == 0)
         {
@@ -2723,7 +2723,7 @@ public sealed partial class Scanner : IDisposable
     {
         var ret = (Title: "", Author: "");
 
-        ReadAllLinesE(file, _tempLines);
+        ReadAllLinesDetectEncoding(file, _tempLines);
 
         if (_tempLines.Count == 0) return ret;
 
@@ -2948,8 +2948,8 @@ public sealed partial class Scanner : IDisposable
                     }
 
                     last.Text = last.IsGlml
-                        ? Utility.GLMLToPlainText(ReadAllText(stream, Encoding.UTF8), Utf32CharBuffer)
-                        : ReadAllTextE(stream);
+                        ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
+                        : ReadAllTextDetectEncoding(stream);
                     last.Lines.ClearAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
@@ -3361,7 +3361,7 @@ public sealed partial class Scanner : IDisposable
 
         if (newGameStrFileIndex == -1) return "";
 
-        ReadAllLinesE(_intrfaceDirFiles[newGameStrFileIndex], _tempLines);
+        ReadAllLinesDetectEncoding(_intrfaceDirFiles[newGameStrFileIndex], _tempLines);
 
         for (int i = 0; i < _tempLines.Count; i++)
         {
@@ -3529,7 +3529,7 @@ public sealed partial class Scanner : IDisposable
 
             if (titlesFileIndex == -1) continue;
 
-            ReadAllLinesE(_stringsDirFiles[titlesFileIndex], _tempLines);
+            ReadAllLinesDetectEncoding(_stringsDirFiles[titlesFileIndex], _tempLines);
             titlesStrLines = _tempLines;
 
             break;
@@ -4568,25 +4568,18 @@ public sealed partial class Scanner : IDisposable
 
     #region Read all text
 
-    /// <summary>
-    /// Reads all the text in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
-    /// correctly.
-    /// </summary>
-    /// <param name="stream"></param>
-    /// <returns></returns>
-    private string ReadAllTextE(Stream stream)
+    private string ReadAllTextDetectEncoding(Stream stream)
     {
         Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
-
         stream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom, disposeStream: false);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom, disposeStream: false);
         return sr.Reader.ReadToEnd();
     }
 
-    private string ReadAllText(Stream stream, Encoding encoding)
+    private string ReadAllTextUTF8(Stream stream)
     {
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, true, _streamReaderCustom, disposeStream: false);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         return sr.Reader.ReadToEnd();
     }
 
@@ -4594,13 +4587,7 @@ public sealed partial class Scanner : IDisposable
 
     #region Read all lines
 
-    /// <summary>
-    /// Reads all the lines in a file, auto-detecting its encoding.
-    /// </summary>
-    /// <param name="item"></param>
-    /// <param name="lines"></param>
-    /// <returns></returns>
-    private void ReadAllLinesE(NameAndIndex item, List<string> lines)
+    private void ReadAllLinesDetectEncoding(NameAndIndex item, List<string> lines)
     {
         lines.Clear();
 
