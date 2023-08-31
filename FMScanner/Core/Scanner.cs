@@ -2553,16 +2553,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Load INI
 
-        if (_fmFormat == FMFormat.Zip)
-        {
-            ZipArchiveFastEntry e = _archive.Entries[file.Index];
-            using var es = _archive.OpenEntry(e);
-            ReadAllLinesE(es, e.Length, _tempLines);
-        }
-        else
-        {
-            ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name), _tempLines);
-        }
+        ReadAllLinesE(file, _tempLines);
 
         if (_tempLines.Count == 0)
         {
@@ -2732,16 +2723,7 @@ public sealed partial class Scanner : IDisposable
     {
         var ret = (Title: "", Author: "");
 
-        if (_fmFormat == FMFormat.Zip)
-        {
-            ZipArchiveFastEntry e = _archive.Entries[file.Index];
-            using var es = _archive.OpenEntry(e);
-            ReadAllLinesE(es, e.Length, _tempLines);
-        }
-        else
-        {
-            ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name), _tempLines);
-        }
+        ReadAllLinesE(file, _tempLines);
 
         if (_tempLines.Count == 0) return ret;
 
@@ -3379,18 +3361,7 @@ public sealed partial class Scanner : IDisposable
 
         if (newGameStrFileIndex == -1) return "";
 
-        NameAndIndex newGameStrFile = _intrfaceDirFiles[newGameStrFileIndex];
-
-        if (_fmFormat == FMFormat.Zip)
-        {
-            ZipArchiveFastEntry e = _archive.Entries[newGameStrFile.Index];
-            using var es = _archive.OpenEntry(e);
-            ReadAllLinesE(es, e.Length, _tempLines);
-        }
-        else
-        {
-            ReadAllLinesE(Path.Combine(_fmWorkingPath, newGameStrFile.Name), _tempLines);
-        }
+        ReadAllLinesE(_intrfaceDirFiles[newGameStrFileIndex], _tempLines);
 
         for (int i = 0; i < _tempLines.Count; i++)
         {
@@ -3558,19 +3529,8 @@ public sealed partial class Scanner : IDisposable
 
             if (titlesFileIndex == -1) continue;
 
-            if (_fmFormat == FMFormat.Zip)
-            {
-                ZipArchiveFastEntry e = _archive.Entries[_stringsDirFiles[titlesFileIndex].Index];
-                using var es = _archive.OpenEntry(e);
-                ReadAllLinesE(es, e.Length, _tempLines);
-                titlesStrLines = _tempLines;
-            }
-            else
-            {
-                string titlesFile = Path.Combine(_fmWorkingPath, titlesFileLocation);
-                ReadAllLinesE(titlesFile, _tempLines);
-                titlesStrLines = _tempLines;
-            }
+            ReadAllLinesE(_stringsDirFiles[titlesFileIndex], _tempLines);
+            titlesStrLines = _tempLines;
 
             break;
         }
@@ -4632,53 +4592,47 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    #region Read all lines (detect encoding)
+    #region Read all lines
 
     /// <summary>
-    /// Reads all the lines in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
-    /// correctly.
+    /// Reads all the lines in a file, auto-detecting its encoding.
     /// </summary>
-    /// <param name="stream">The stream to read.</param>
-    /// <param name="length">The length of the stream in bytes.</param>
+    /// <param name="item"></param>
     /// <param name="lines"></param>
     /// <returns></returns>
-    private void ReadAllLinesE(Stream stream, long length, List<string> lines)
+    private void ReadAllLinesE(NameAndIndex item, List<string> lines)
     {
         lines.Clear();
 
-        // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
-        // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-        _generalMemoryStream.SetLength((int)length);
-        _generalMemoryStream.Position = 0;
-        StreamCopyNoAlloc(stream, _generalMemoryStream, StreamCopyBuffer);
-        _generalMemoryStream.Position = 0;
-        Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);
-        _generalMemoryStream.Position = 0;
+        if (_fmFormat == FMFormat.Zip)
+        {
+            ZipArchiveFastEntry entry = _archive.Entries[item.Index];
+            using var entryStream = _archive.OpenEntry(entry);
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false, _streamReaderCustom, disposeStream: false);
-        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+            // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
+            // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
+            _generalMemoryStream.SetLength(entry.Length);
+            _generalMemoryStream.Position = 0;
+
+            StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
+            _generalMemoryStream.Position = 0;
+
+            Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);
+            _generalMemoryStream.Position = 0;
+
+            using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false, _streamReaderCustom, disposeStream: false);
+            while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+        }
+        else
+        {
+            var stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
+            Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
+            stream.Seek(0, SeekOrigin.Begin);
+
+            using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
+            while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+        }
     }
-
-    /// <summary>
-    /// Reads all the lines in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
-    /// correctly.
-    /// </summary>
-    /// <param name="file">The file to read.</param>
-    /// <param name="lines"></param>
-    /// <returns></returns>
-    private void ReadAllLinesE(string file, List<string> lines)
-    {
-        Encoding encoding = _fileEncoding.DetectFileEncoding(file) ?? Encoding.GetEncoding(1252);
-
-        lines.Clear();
-
-        using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(file, DiskFileStreamBuffer), encoding, true, _streamReaderCustom);
-        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-    }
-
-    #endregion
-
-    #region Read all lines (as is)
 
     private void ReadAllLinesUTF8(NameAndIndex item, List<string> lines)
     {
