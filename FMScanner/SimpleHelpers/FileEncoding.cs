@@ -43,8 +43,6 @@ namespace FMScanner.SimpleHelpers;
 
 public sealed class FileEncoding
 {
-    private const int DEFAULT_BUFFER_SIZE = ByteSize.KB * 128;
-
     private bool _started;
     private readonly int[] _encodingFrequency = new int[CharsetDetector.CharsetCount];
     // Stupid micro-optimization
@@ -54,23 +52,11 @@ public sealed class FileEncoding
     private Charset _encodingCharset;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
-    private readonly byte[] _fileStreamBuffer = new byte[DEFAULT_BUFFER_SIZE];
     private bool _canBeASCII = true;
     // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
     private readonly UdeContext _udeContext = new(ByteSize.KB * 100);
 
     private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
-
-    /// <summary>
-    /// Tries to detect the file encoding.
-    /// </summary>
-    /// <param name="inputFilename">The input filename.</param>
-    /// <returns>The detected encoding, or <see langword="null"/> if the detection failed.</returns>
-    public Encoding? DetectFileEncoding(string inputFilename)
-    {
-        using var stream = GetReadModeFileStreamWithCachedBuffer(inputFilename, _fileStreamBuffer);
-        return DetectFileEncoding(stream);
-    }
 
     /// <summary>
     /// Tries to detect the file encoding.
