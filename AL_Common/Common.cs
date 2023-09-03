@@ -231,7 +231,6 @@ public static class Common
             Count += length;
         }
 
-#if false
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddRange_Large(ListFast<T> items)
         {
@@ -240,7 +239,6 @@ public static class Common
             Array.Copy(items.ItemsArray, 0, ItemsArray, Count, length);
             Count += length;
         }
-#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddFast(T item) => ItemsArray[Count++] = item;

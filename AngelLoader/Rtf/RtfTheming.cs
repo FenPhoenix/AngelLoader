@@ -155,7 +155,7 @@ internal static class RtfTheming
         (byte)'x'
     };
 
-    private static readonly List<byte> _colorNumberBytes = new(3);
+    private static readonly ListFast<byte> _colorNumberBytes = new(3);
 
     #endregion
 
@@ -194,7 +194,7 @@ internal static class RtfTheming
                                                                + "}}}}}";
     private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
-    private static List<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
+    private static ListFast<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
     {
         #region Local functions
 
@@ -202,17 +202,17 @@ internal static class RtfTheming
         // our new background color to keep author intent (avoiding spoilers etc.)
         static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
 
-        static List<byte> ByteToASCIICharBytes(byte number)
+        static ListFast<byte> ByteToASCIICharBytes(byte number)
         {
             // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
             // a new byte array EVERY time through here (which is a lot)
-            _colorNumberBytes.Clear();
+            _colorNumberBytes.ClearFast();
 
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
 
             for (int i = 0; i < digits; i++)
             {
-                _colorNumberBytes.Insert(0, (byte)((number % 10) + '0'));
+                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
                 number /= 10;
             }
 
@@ -224,12 +224,12 @@ internal static class RtfTheming
         const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
 
         // Size us large enough that we don't reallocate
-        var colorEntriesBytesList = new List<byte>(
+        var colorEntriesBytesList = new ListFast<byte>(
             _colortbl.Length +
             (maxColorEntryStringLength * colorTable?.Count ?? 0)
             + 2);
 
-        colorEntriesBytesList.AddRange(_colortbl);
+        colorEntriesBytesList.AddRange_Large(_colortbl);
 
         if (colorTable != null)
         {
@@ -255,14 +255,14 @@ internal static class RtfTheming
                             : ColorUtils.InvertLightness(currentColor);
                 }
 
-                colorEntriesBytesList.AddRange(_redFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.R));
+                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
 
-                colorEntriesBytesList.AddRange(_greenFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.G));
+                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
 
-                colorEntriesBytesList.AddRange(_blueFieldBytes);
-                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.B));
+                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
 
                 colorEntriesBytesList.Add((byte)';');
             }
@@ -458,7 +458,7 @@ internal static class RtfTheming
 
         int colorTableEntryLength = 0;
 
-        List<byte>? colorEntriesBytesList = null;
+        ListFast<byte>? colorEntriesBytesList = null;
 
         if (success && darkMode && colorTableFound)
         {
