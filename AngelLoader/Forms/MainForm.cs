@@ -5184,6 +5184,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
+    public void RefreshMods() => ModsTabPage.UpdatePage();
+
     public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
 
     private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)

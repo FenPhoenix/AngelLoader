@@ -712,6 +712,10 @@ internal static class Core
             // is not referencing a stale FM object that no longer exists in the list!
             await View.SortAndSetFilter(forceDisplayFM: true, keepSelection: keepSel);
         }
+        else
+        {
+            View.RefreshMods();
+        }
 
         Ini.WriteConfigIni();
 
