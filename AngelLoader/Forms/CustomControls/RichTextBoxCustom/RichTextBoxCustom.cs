@@ -370,37 +370,24 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                     ContentIsPlainText = true;
 
                     byte[] bytes = File.ReadAllBytes(path);
-                    bool loadAsText = false;
 
                     if (fileType == ReadmeType.Wri)
                     {
-                        _currentReadmeSupportsEncodingChange = false;
-                        _currentReadmeBytes = Array.Empty<byte>();
-
                         (bool success, byte[] retBytes, string retText) = WriConversion.LoadWriFileAsPlainText(bytes);
 
                         if (success)
                         {
+                            _currentReadmeSupportsEncodingChange = false;
                             _currentReadmeBytes = retBytes;
                             Text = retText;
-                        }
-                        else
-                        {
-                            loadAsText = true;
+                            break;
                         }
                     }
-                    else
-                    {
-                        loadAsText = true;
-                    }
 
-                    if (loadAsText)
-                    {
-                        _currentReadmeSupportsEncodingChange = true;
-                        _currentReadmeBytes = bytes;
+                    _currentReadmeSupportsEncodingChange = true;
+                    _currentReadmeBytes = bytes;
 
-                        retEncoding = ChangeEncoding(encoding, suspendResume: false);
-                    }
+                    retEncoding = ChangeEncoding(encoding, suspendResume: false);
 
                     break;
             }
