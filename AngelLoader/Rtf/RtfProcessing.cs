@@ -69,7 +69,7 @@ Notes:
  https://keestalkstech.com/2016/06/rasterizing-emf-files-png-net-csharp/
 */
 
-internal static class RtfTheming
+internal static class RtfProcessing
 {
     #region Private fields
 

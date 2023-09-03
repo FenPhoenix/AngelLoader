@@ -80,7 +80,7 @@ internal sealed partial class RichTextBoxCustom
 
             _preProcessedRTF = new PreProcessedRTF(
                 readmeFile,
-                RtfTheming.GetProcessedRTFBytes(_currentReadmeBytes, darkMode),
+                RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, darkMode),
                 darkMode
             );
         }

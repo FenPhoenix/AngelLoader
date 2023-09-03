@@ -327,7 +327,7 @@ internal static class GLMLConversion
         if (darkModeEnabled)
         {
             // Background code at the end again, cause why not, it works
-            sb.Append(RtfTheming.RTF_DarkBackgroundString);
+            sb.Append(RtfProcessing.RTF_DarkBackgroundString);
         }
 
         sb.Append('}');
