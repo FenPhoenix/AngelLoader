@@ -270,14 +270,11 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             }
         }
 
-        if (checkedStates.Length == CheckItems.Length)
+        using (new DisableEvents(this))
         {
-            using (new DisableEvents(this))
+            for (int i = 0; i < checkedStates.Length; i++)
             {
-                for (int i = 0; i < checkedStates.Length; i++)
-                {
-                    SetChecked(i, checkedStates[i]);
-                }
+                SetChecked(i, checkedStates[i]);
             }
         }
 
