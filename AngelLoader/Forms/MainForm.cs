@@ -2313,6 +2313,8 @@ public sealed partial class MainForm : DarkFormBase,
     // controls properly) but keep the rest of the work before load
     private void ChangeFilterControlsForGameType()
     {
+        bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
+
         if (Config.GameOrganization == GameOrganization.ByTab)
         {
             #region Select target tab in advance
@@ -2320,8 +2322,6 @@ public sealed partial class MainForm : DarkFormBase,
             // Perf optimization: We select what will be our target tab in advance, because otherwise we might
             // cause a chain reaction where one tab gets hidden and the next gets selected, triggering a refresh,
             // and then that tab gets hidden and the next gets selected, triggering a refresh, etc.
-
-            bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
 
             int selectedTabOrderIndex = 0;
             TabPage? selectedTab = GamesTabControl.SelectedTab;
@@ -2353,12 +2353,12 @@ public sealed partial class MainForm : DarkFormBase,
             // tabs in the list, thus setting selection to none and screwing us up
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                bool visible = checkedStates[i];
                 if (visible) GamesTabControl.ShowTab(_gameTabs[i], true);
             }
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                bool visible = checkedStates[i];
                 if (!visible) GamesTabControl.ShowTab(_gameTabs[i], false);
             }
 
@@ -2373,7 +2373,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                bool visible = GameFilterControlsLLMenu.GetCheckedStates()[i];
+                bool visible = checkedStates[i];
                 ToolStripButtonCustom button = _filterByGameButtons[i];
                 button.Visible = visible;
                 if (button.Checked && !visible) button.Checked = false;
