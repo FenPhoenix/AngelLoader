@@ -306,9 +306,13 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
             List<Mod> mods = Config.GetMods(gameIndex);
 
-            HashSetI disabledModsHash = disabledMods
-                .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
-                .ToHashSetI();
+            HashSetI? disabledModsHash = null;
+            if (!disabledMods.IsEmpty())
+            {
+                disabledModsHash = disabledMods
+                    .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                    .ToHashSetI();
+            }
 
             var checkItems = new CheckItem[mods.Count];
 
@@ -316,7 +320,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             {
                 Mod mod = mods[i];
                 checkItems[i] = new CheckItem(
-                    @checked: !disabledModsHash.Contains(mod.InternalName),
+                    @checked: disabledModsHash == null || !disabledModsHash.Contains(mod.InternalName),
                     text: mod.InternalName,
                     caution: mod.IsUber);
             }
