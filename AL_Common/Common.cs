@@ -223,7 +223,34 @@ public static class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange_Large(T[] items)
+        {
+            int length = items.Length;
+            EnsureCapacity(Count + length);
+            Array.Copy(items, 0, ItemsArray, Count, length);
+            Count += length;
+        }
+
+#if false
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange_Large(ListFast<T> items)
+        {
+            int length = items.Count;
+            EnsureCapacity(Count + length);
+            Array.Copy(items.ItemsArray, 0, ItemsArray, Count, length);
+            Count += length;
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddFast(T item) => ItemsArray[Count++] = item;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearFullAndAdd(T[] items)
+        {
+            ClearFull();
+            AddRange_Large(items);
+        }
 
         public void InsertAtZeroFast(T item)
         {
@@ -244,6 +271,16 @@ public static class Common
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFast() => Count = 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearFull()
+        {
+            if (Count > 0)
+            {
+                Array.Clear(ItemsArray, 0, Count);
+                Count = 0;
+            }
+        }
 
         public int Capacity
         {
@@ -272,10 +309,10 @@ public static class Common
         public void EnsureCapacity(int min)
         {
             if (_itemsArrayLength >= min) return;
-            int num = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
-            if ((uint)num > 2146435071U) num = 2146435071;
-            if (num < min) num = min;
-            Capacity = num;
+            int newCapacity = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
+            if ((uint)newCapacity > 2146435071U) newCapacity = 2146435071;
+            if (newCapacity < min) newCapacity = min;
+            Capacity = newCapacity;
         }
 
         public ListFast<T> ClearedAndWithCapacityAtLeast(int capacity)
@@ -1389,27 +1426,55 @@ public static class Common
         return true;
     }
 
+    public static void AddRange_Small<T>(this List<T> list, List<T> items)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            list.Add(items[i]);
+        }
+    }
+
+    public static void AddRange_Small<T>(this List<T> list, T[] items)
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            list.Add(items[i]);
+        }
+    }
+
     #region Clear and add
 
-    public static void ClearAndAdd<T>(this List<T> list, T item)
+    public static void ClearAndAdd_Single<T>(this List<T> list, T item)
     {
         list.Clear();
         list.Add(item);
     }
 
-    public static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
+    public static void ClearAndAdd_Small<T>(this List<T> list, List<T> items)
     {
         list.Clear();
-        list.AddRange(items);
+        for (int i = 0; i < items.Count; i++)
+        {
+            list.Add(items[i]);
+        }
     }
 
-    public static void ClearAndAdd<T>(this List<T> list, List<T> items)
+    public static void ClearAndAdd_Small<T>(this List<T> list, T[] items)
     {
         list.Clear();
-        list.AddRange(items);
+        for (int i = 0; i < items.Length; i++)
+        {
+            list.Add(items[i]);
+        }
     }
 
-    public static void ClearAndAdd<T>(this List<T> list, T[] items)
+    /// <summary>
+    /// Uses AddRange(), which incurs an extra copy of the passed array for no conceivable reason.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="items"></param>
+    public static void ClearAndAdd_Large<T>(this List<T> list, T[] items)
     {
         list.Clear();
         /*

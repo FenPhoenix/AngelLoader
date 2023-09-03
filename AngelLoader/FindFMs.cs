@@ -296,8 +296,8 @@ internal static class FindFMs
                 }
                 else
                 {
-                    FMDataIniList.ClearAndAdd(backupList);
-                    FMsViewList.ClearAndAdd(viewBackupList);
+                    FMDataIniList.ClearAndAdd_Large(backupList);
+                    FMsViewList.ClearAndAdd_Large(viewBackupList);
                     return new List<FanMission>();
                 }
             }

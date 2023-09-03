@@ -521,7 +521,7 @@ internal static class Core
 
         Config.FMsBackupPath = outConfig.FMsBackupPath;
 
-        Config.FMArchivePaths.ClearAndAdd(outConfig.FMArchivePaths);
+        Config.FMArchivePaths.ClearAndAdd_Small(outConfig.FMArchivePaths);
 
         Config.FMArchivePathsIncludeSubfolders = outConfig.FMArchivePathsIncludeSubfolders;
 
@@ -555,7 +555,7 @@ internal static class Core
         Config.UseShortGameTabNames = outConfig.UseShortGameTabNames;
 
         Config.EnableArticles = outConfig.EnableArticles;
-        Config.Articles.ClearAndAdd(outConfig.Articles);
+        Config.Articles.ClearAndAdd_Small(outConfig.Articles);
         Config.MoveArticlesToEnd = outConfig.MoveArticlesToEnd;
 
         Config.RatingDisplayStyle = outConfig.RatingDisplayStyle;

@@ -191,7 +191,7 @@ public sealed partial class Scanner : IDisposable
         internal readonly bool Scan;
         internal readonly bool UseForDateDetect;
         internal readonly bool IsGlml;
-        internal readonly List<string> Lines = new();
+        internal readonly ListFast<string> Lines = new(0);
         internal string Text = "";
 
         private uint? _lastModifiedDateRaw;
@@ -1264,7 +1264,7 @@ public sealed partial class Scanner : IDisposable
                 List<string>? titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
                 if (titles != null && altTitles.Count > 0)
                 {
-                    titles.AddRange(altTitles);
+                    titles.AddRange_Small(altTitles);
                 }
 
                 string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, titles);
@@ -2459,7 +2459,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles);
+        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange_Small(_misFiles);
 
         #endregion
 
@@ -2927,7 +2927,7 @@ public sealed partial class Scanner : IDisposable
                     if (success)
                     {
                         last.Text = text;
-                        last.Lines.ClearAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                        last.Lines.ClearFullAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                     }
                 }
                 else
@@ -2951,7 +2951,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    last.Lines.ClearFullAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
             finally
@@ -3029,7 +3029,7 @@ public sealed partial class Scanner : IDisposable
             // Finds eg.
             // Author:
             //      GORT (Shaun M.D. Morin)
-            static string GetAuthorNextLine(List<string> lines)
+            static string GetAuthorNextLine(ListFast<string> lines)
             {
                 for (int i = 0; i < lines.Count; i++)
                 {
@@ -3074,7 +3074,7 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+    private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, ListFast<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
@@ -3647,7 +3647,7 @@ public sealed partial class Scanner : IDisposable
 
     #region Author
 
-    private string GetAuthorFromTopOfReadme(List<string> lines, List<string>? titles)
+    private string GetAuthorFromTopOfReadme(ListFast<string> lines, List<string>? titles)
     {
         if (lines.Count == 0) return "";
 
@@ -3740,9 +3740,9 @@ public sealed partial class Scanner : IDisposable
         {
             if (!rf.Scan) continue;
 
-            foreach (string line in rf.Lines)
+            for (int i = 0; i < rf.Lines.Count; i++)
             {
-                string lineT = line.Trim();
+                string lineT = rf.Lines[i].Trim();
 
                 if (!lineT.ContainsI(" by ")) continue;
 
@@ -3792,8 +3792,10 @@ public sealed partial class Scanner : IDisposable
             bool inCopyrightSection = false;
             bool pastFirstLineOfCopyrightSection = false;
 
-            foreach (string line in rf.Lines)
+            for (int i = 0; i < rf.Lines.Count; i++)
             {
+                string line = rf.Lines[i];
+
                 if (line.IsWhiteSpace()) continue;
 
                 if (inCopyrightSection)

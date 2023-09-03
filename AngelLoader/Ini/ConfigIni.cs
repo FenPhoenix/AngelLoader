@@ -151,7 +151,7 @@ internal static partial class Ini
     {
         string[] articles = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
-        config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
+        config.Articles.ClearAndAdd_Small(articles.Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
     }
 
     private static void Config_MoveArticlesToEnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
