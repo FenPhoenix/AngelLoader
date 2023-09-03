@@ -332,7 +332,12 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
                 }
 
                 RecreateList(maxModCount);
-                Config.ModsChanged = false;
+                /*
+                IMPORTANT: DO NOT set ModsChanged to false if we're on the original-game-window path, or we get a crash on the mods tab after!
+                If we have not yet loaded the Mods tab, and we go into the original game settings window, then
+                close, then load the mods tab, we crash with index out of range.
+                */
+                if (!forceRecreateList) Config.ModsChanged = false;
             }
 
             if (checkItems.Length == 0)
