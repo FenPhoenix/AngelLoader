@@ -473,7 +473,7 @@ internal sealed class CBZip2InputStream : Stream
         }
     }
 
-    private void RecvDecodingTables()
+    private unsafe void RecvDecodingTables()
     {
         char[][] len = InitCharArray(BZip2Constants.N_GROUPS, BZip2Constants.MAX_ALPHA_SIZE);
         int i,
@@ -484,19 +484,12 @@ internal sealed class CBZip2InputStream : Stream
             alphaSize;
         int minLen,
             maxLen;
-        bool[] inUse16 = new bool[16];
+        bool* inUse16 = stackalloc bool[16];
 
         /* Receive the mapping table */
         for (i = 0; i < 16; i++)
         {
-            if (BsR(1) == 1)
-            {
-                inUse16[i] = true;
-            }
-            else
-            {
-                inUse16[i] = false;
-            }
+            inUse16[i] = BsR(1) == 1;
         }
 
         for (i = 0; i < 256; i++)
