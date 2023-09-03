@@ -1412,6 +1412,13 @@ public static class Common
     public static void ClearAndAdd<T>(this List<T> list, T[] items)
     {
         list.Clear();
+        /*
+        @MEM(List.AddRange): This thing allocates a new array every time! WTF?!
+
+        T[] array = new T[count];
+        objs.CopyTo(array, 0);
+        array.CopyTo((Array) this._items, index);
+        */
         list.AddRange(items);
     }
 
