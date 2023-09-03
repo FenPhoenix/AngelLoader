@@ -68,7 +68,8 @@ public sealed partial class Scanner : IDisposable
     private readonly string _sevenZipWorkingPath;
     private readonly string _sevenZipExePath;
 
-    private readonly FileEncoding _fileEncoding = new();
+    // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
+    private readonly FileEncoding _fileEncoding = new(ByteSize.KB * 100);
 
     private readonly List<FileInfoCustom> _fmDirFileInfos = new();
 

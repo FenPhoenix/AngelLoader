@@ -53,8 +53,11 @@ public sealed class FileEncoding
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
     private bool _canBeASCII = true;
-    // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
-    private readonly UdeContext _udeContext = new(ByteSize.KB * 100);
+    private readonly UdeContext _udeContext;
+
+    public FileEncoding() => _udeContext = new UdeContext(4096);
+
+    public FileEncoding(int contextSize) => _udeContext = new UdeContext(contextSize);
 
     private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
 
