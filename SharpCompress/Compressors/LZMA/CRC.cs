@@ -1,4 +1,6 @@
-﻿namespace SharpCompress.Compressors.LZMA;
+﻿using static AL_Common.Common;
+
+namespace SharpCompress.Compressors.LZMA;
 
 internal static class Crc
 {
@@ -45,7 +47,7 @@ internal static class Crc
 
     public static uint Update(uint crc, long value) => Update(crc, (ulong)value);
 
-    public static uint Update(uint crc, byte[] buffer, int offset, int length)
+    public static uint Update(uint crc, ListFast<byte> buffer, int offset, int length)
     {
         for (int i = 0; i < length; i++)
         {

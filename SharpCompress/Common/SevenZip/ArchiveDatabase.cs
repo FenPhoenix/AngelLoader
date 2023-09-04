@@ -18,6 +18,8 @@ internal sealed class ArchiveDatabase
     internal readonly ListFast<int> _numUnpackStreamsVector = new(0);
     internal readonly ListFast<long> UnpackSizes = new(16);
     internal readonly ListFast<SevenZipArchiveEntry> _files = new(0);
+    internal readonly ListFast<byte> Header = new(0);
+    internal readonly ListFast<ListFast<byte>> DataVector = new(0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Clear()
@@ -27,8 +29,12 @@ internal sealed class ArchiveDatabase
         _startPositionAfterHeader = 0;
 
         _folders.ClearFast();
+        PackSizes.ClearFast();
         _numUnpackStreamsVector.ClearFast();
+        UnpackSizes.ClearFast();
         _files.ClearFast();
+        Header.ClearFast();
+        DataVector.ClearFast();
     }
 
     private void FillFolderStartFileIndex()
