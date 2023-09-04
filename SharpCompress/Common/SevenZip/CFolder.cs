@@ -4,15 +4,16 @@ using System.Runtime.CompilerServices;
 using AL_Common;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
+using static AL_Common.Common;
 
 namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CFolder
 {
     internal readonly List<CCoderInfo> _coders = new();
-    internal readonly List<CBindPair> _bindPairs = new();
-    internal readonly List<int> _packStreams = new();
-    internal readonly List<long> _unpackSizes = new();
+    internal readonly ListFast<CBindPair> _bindPairs = new(0);
+    internal readonly ListFast<int> _packStreams = new(0);
+    internal readonly ListFast<long> _unpackSizes = new(0);
     internal uint? _unpackCrc;
 
     internal bool UnpackCrcDefined => _unpackCrc != null;
@@ -21,9 +22,9 @@ internal sealed class CFolder
     internal void Reset()
     {
         _coders.Clear();
-        _bindPairs.Clear();
-        _packStreams.Clear();
-        _unpackSizes.Clear();
+        _bindPairs.ClearFast();
+        _packStreams.ClearFast();
+        _unpackSizes.ClearFast();
         _unpackCrc = null;
     }
 
@@ -60,7 +61,7 @@ internal sealed class CFolder
     {
         for (int i = 0; i < _bindPairs.Count; i++)
         {
-            if (_bindPairs[i]._inIndex == inStreamIndex)
+            if (_bindPairs[i].InIndex == inStreamIndex)
             {
                 return i;
             }
@@ -73,7 +74,7 @@ internal sealed class CFolder
     {
         for (int i = 0; i < _bindPairs.Count; i++)
         {
-            if (_bindPairs[i]._outIndex == outStreamIndex)
+            if (_bindPairs[i].OutIndex == outStreamIndex)
             {
                 return i;
             }
@@ -112,7 +113,7 @@ internal sealed class CFolder
 
             for (int i = 0; i < _bindPairs.Count; i++)
             {
-                if (v.GetAndSet(_bindPairs[i]._inIndex))
+                if (v.GetAndSet(_bindPairs[i].InIndex))
                 {
                     return false;
                 }
@@ -131,7 +132,7 @@ internal sealed class CFolder
             var v = new BitVector(_unpackSizes.Count);
             for (int i = 0; i < _bindPairs.Count; i++)
             {
-                if (v.GetAndSet(_bindPairs[i]._outIndex))
+                if (v.GetAndSet(_bindPairs[i].OutIndex))
                 {
                     return false;
                 }
@@ -158,7 +159,7 @@ internal sealed class CFolder
             for (int i = 0; i < _bindPairs.Count; i++)
             {
                 CBindPair bp = _bindPairs[i];
-                mask[inStreamToCoder[bp._inIndex]] |= (1u << outStreamToCoder[bp._outIndex]);
+                mask[inStreamToCoder[bp.InIndex]] |= (1u << outStreamToCoder[bp.OutIndex]);
             }
         }
 

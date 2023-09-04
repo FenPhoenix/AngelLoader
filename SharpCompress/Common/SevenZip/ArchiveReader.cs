@@ -319,15 +319,11 @@ internal sealed class ArchiveReader
         }
 
         int numBindPairs = numOutStreams - 1;
-        folder._bindPairs.ClearAndEnsureCapacity(numBindPairs);
+        folder._bindPairs.ClearFastAndEnsureCapacity(numBindPairs);
         for (int i = 0; i < numBindPairs; i++)
         {
-            var bp = new CBindPair
-            {
-                _inIndex = ReadNum(),
-                _outIndex = ReadNum()
-            };
-            folder._bindPairs.Add(bp);
+            CBindPair bp = new(inIndex: ReadNum(), outIndex: ReadNum());
+            folder._bindPairs.AddFast(bp);
         }
         if (numInStreams < numBindPairs)
         {
@@ -336,14 +332,14 @@ internal sealed class ArchiveReader
 
         int numPackStreams = numInStreams - numBindPairs;
 
-        //folder.PackStreams.Reserve(numPackStreams);
+        folder._packStreams.EnsureCapacity(numInStreams);
         if (numPackStreams == 1)
         {
             for (int i = 0; i < numInStreams; i++)
             {
                 if (folder.FindBindPairForInStream(i) < 0)
                 {
-                    folder._packStreams.Add(i);
+                    folder._packStreams.AddFast(i);
                     break;
                 }
             }
@@ -358,7 +354,7 @@ internal sealed class ArchiveReader
             for (int i = 0; i < numPackStreams; i++)
             {
                 int num = ReadNum();
-                folder._packStreams.Add(num);
+                folder._packStreams.AddFast(num);
             }
         }
     }
@@ -492,7 +488,7 @@ internal sealed class ArchiveReader
                 for (int i = 0; i < db._folders.Count; i++)
                 {
                     int num = ReadNum();
-                    db._numUnpackStreamsVector.Add(num);
+                    db._numUnpackStreamsVector.AddFast(num);
                 }
                 continue;
             }
@@ -512,7 +508,7 @@ internal sealed class ArchiveReader
             db._numUnpackStreamsVector.ClearFastAndEnsureCapacity(db._folders.Count);
             for (int i = 0; i < db._folders.Count; i++)
             {
-                db._numUnpackStreamsVector.Add(1);
+                db._numUnpackStreamsVector.AddFast(1);
             }
         }
 
@@ -707,8 +703,8 @@ internal sealed class ArchiveReader
             for (int i = 0; i < db._folders.Count; i++)
             {
                 CFolder folder = db._folders[i];
-                unpackSizes.Add(folder.GetUnpackSize());
-                db._numUnpackStreamsVector.Add(1);
+                unpackSizes.AddFast(folder.GetUnpackSize());
+                db._numUnpackStreamsVector.AddFast(1);
             }
         }
 

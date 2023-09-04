@@ -1,7 +1,13 @@
 namespace SharpCompress.Common.SevenZip;
 
-internal sealed class CBindPair
+internal readonly struct CBindPair
 {
-    internal int _inIndex;
-    internal int _outIndex;
+    internal readonly int InIndex;
+    internal readonly int OutIndex;
+
+    public CBindPair(int inIndex, int outIndex)
+    {
+        InIndex = inIndex;
+        OutIndex = outIndex;
+    }
 }

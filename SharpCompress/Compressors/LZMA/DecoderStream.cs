@@ -121,7 +121,7 @@ internal static class DecoderStreamHelper
             int bindPairIndex = folderInfo.FindBindPairForInStream(inStreamId);
             if (bindPairIndex >= 0)
             {
-                int pairedOutIndex = folderInfo._bindPairs[bindPairIndex]._outIndex;
+                int pairedOutIndex = folderInfo._bindPairs[bindPairIndex].OutIndex;
 
                 if (outStreams[pairedOutIndex] != null)
                 {
