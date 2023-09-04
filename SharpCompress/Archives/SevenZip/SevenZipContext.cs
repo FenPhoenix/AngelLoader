@@ -47,6 +47,7 @@ public sealed class SevenZipContext
 
     public readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Create();
     public readonly ArrayPool<int> IntArrayPool = ArrayPool<int>.Create();
+    public readonly ArrayPool<long> LongArrayPool = ArrayPool<long>.Create();
 
     public const int SubStreamBufferLength = 32768;
     public readonly byte[] SubStreamBuffer = new byte[SubStreamBufferLength];

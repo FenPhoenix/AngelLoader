@@ -178,6 +178,7 @@ internal static class DecoderStreamHelper
         Stream inStream,
         long startPos,
         long[] packSizes,
+        int packSizesLength,
         CFolder folderInfo,
         SevenZipContext context
     )
@@ -187,8 +188,8 @@ internal static class DecoderStreamHelper
             throw new NotSupportedException("Unsupported stream binding structure.");
         }
 
-        Stream[] inStreams = new Stream[folderInfo._packStreams.Count];
-        for (int j = 0; j < folderInfo._packStreams.Count; j++)
+        Stream[] inStreams = new Stream[packSizesLength];
+        for (int j = 0; j < packSizesLength; j++)
         {
             inStreams[j] = new BufferedSubStream(inStream, startPos, packSizes[j], context);
             startPos += packSizes[j];

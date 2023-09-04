@@ -619,41 +619,46 @@ internal sealed class ArchiveReader
         foreach (CFolder folder in folders)
         {
             long oldDataStartPos = dataStartPos;
-            long[] myPackSizes = new long[folder._packStreams.Count];
-            for (int i = 0; i < myPackSizes.Length; i++)
+            int myPackSizesLength = folder._packStreams.Count;
+            long[] myPackSizes = _context.LongArrayPool.Rent(myPackSizesLength);
+            try
             {
-                long packSize = packSizes[packIndex + i];
-                myPackSizes[i] = packSize;
-                dataStartPos += packSize;
-            }
-
-            using Stream outStream = DecoderStreamHelper.CreateDecoderStream(
-                _stream,
-                oldDataStartPos,
-                myPackSizes,
-                folder,
-                _context
-            );
-
-            int unpackSize = checked((int)folder.GetUnpackSize());
-            byte[] data = new byte[unpackSize];
-            ReadExact(outStream, data);
-            if (outStream.ReadByte() >= 0)
-            {
-                throw new InvalidOperationException("Decoded stream is longer than expected.");
-            }
-            dataVector.Add(data);
-
-            if (folder.UnpackCrcDefined)
-            {
-                if (Crc.Finish(Crc.Update(Crc.INIT_CRC, data, 0, unpackSize))
-                    != folder._unpackCrc
-                   )
+                for (int i = 0; i < myPackSizesLength; i++)
                 {
-                    throw new InvalidOperationException(
-                        "Decoded stream does not match expected CRC."
-                    );
+                    long packSize = packSizes[packIndex + i];
+                    myPackSizes[i] = packSize;
+                    dataStartPos += packSize;
                 }
+
+                using Stream outStream = DecoderStreamHelper.CreateDecoderStream(
+                    _stream,
+                    oldDataStartPos,
+                    myPackSizes,
+                    myPackSizesLength,
+                    folder,
+                    _context
+                );
+
+                int unpackSize = checked((int)folder.GetUnpackSize());
+                byte[] data = new byte[unpackSize];
+                ReadExact(outStream, data);
+                if (outStream.ReadByte() >= 0)
+                {
+                    throw new InvalidOperationException("Decoded stream is longer than expected.");
+                }
+                dataVector.Add(data);
+
+                if (folder.UnpackCrcDefined)
+                {
+                    if (Crc.Finish(Crc.Update(Crc.INIT_CRC, data, 0, unpackSize)) != folder._unpackCrc)
+                    {
+                        throw new InvalidOperationException("Decoded stream does not match expected CRC.");
+                    }
+                }
+            }
+            finally
+            {
+                _context.LongArrayPool.Return(myPackSizes);
             }
         }
         return dataVector;
