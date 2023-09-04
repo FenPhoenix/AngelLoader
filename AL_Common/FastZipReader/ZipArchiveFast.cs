@@ -281,7 +281,7 @@ public sealed class ZipArchiveFast : IDisposable
 
             if (!_entriesInitialized)
             {
-                _context.Entries.SetRecycleState((int)_expectedNumberOfEntries, 25_000);
+                _context.Entries.SetRecycleState((int)_expectedNumberOfEntries);
 
                 #region Read central directory
 

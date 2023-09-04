@@ -304,7 +304,7 @@ public static class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetRecycleState(int count, int maxEntriesBeforeCapacityReset)
+        public void SetRecycleState(int count, int maxEntriesBeforeCapacityReset = 25_000)
         {
             if (_itemsArrayLength > maxEntriesBeforeCapacityReset)
             {

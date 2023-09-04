@@ -413,7 +413,7 @@ internal sealed class ArchiveReader
         {
             streamSwitch.Set(this, dataVector);
 
-            db._folders.SetRecycleState(numFolders, 25_000);
+            db._folders.SetRecycleState(numFolders);
             for (int i = 0; i < numFolders; i++)
             {
                 CFolder folder = db._folders[i];
@@ -712,7 +712,7 @@ internal sealed class ArchiveReader
 
         int numFiles = ReadNum();
 
-        db._files.SetRecycleState(numFiles, 25_000);
+        db._files.SetRecycleState(numFiles);
 
         for (int i = 0; i < numFiles; i++)
         {
