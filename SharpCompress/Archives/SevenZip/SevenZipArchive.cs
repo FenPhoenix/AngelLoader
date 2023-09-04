@@ -27,8 +27,7 @@ public sealed class SevenZipArchive : IDisposable
             {
                 _srcStream.Position = 0;
                 ArchiveReader reader = new(_context);
-                reader.Open(_srcStream);
-                ArchiveDatabase database = reader.ReadDatabase();
+                ArchiveDatabase database = reader.ReadDatabase(_srcStream);
 
                 _lazyEntries = new ReadOnlyCollection<SevenZipArchiveEntry>(database._files);
             }

@@ -57,4 +57,6 @@ public sealed class SevenZipContext
     public readonly ListFast<long> ListOfLong = new(16);
 
     public readonly byte[] ArchiveHeader = new byte[0x20];
+
+    internal readonly ArchiveDatabase ArchiveDatabase = new();
 }

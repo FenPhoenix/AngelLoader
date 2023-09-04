@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SharpCompress.Archives.SevenZip;
+using static AL_Common.Common;
 
 namespace SharpCompress.Common.SevenZip;
 
@@ -12,14 +13,18 @@ internal sealed class ArchiveDatabase
     internal byte _minorVersion;
     internal long _startPositionAfterHeader;
 
-    internal List<CFolder> _folders = new();
-    internal List<int> _numUnpackStreamsVector;
-    internal List<SevenZipArchiveEntry> _files = new();
+    internal readonly List<CFolder> _folders = new();
+    internal readonly ListFast<int> _numUnpackStreamsVector = new(0);
+    internal readonly List<SevenZipArchiveEntry> _files = new();
 
     internal void Clear()
     {
+        _majorVersion = 0;
+        _minorVersion = 0;
+        _startPositionAfterHeader = 0;
+
         _folders.Clear();
-        _numUnpackStreamsVector = null!;
+        _numUnpackStreamsVector.ClearFast();
         _files.Clear();
     }
 
@@ -73,5 +78,5 @@ internal sealed class ArchiveDatabase
         }
     }
 
-    public void Fill() => FillFolderStartFileIndex();
+    internal void Fill() => FillFolderStartFileIndex();
 }

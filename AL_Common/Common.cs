@@ -319,6 +319,12 @@ public static class Common
             ClearFast();
             return this;
         }
+
+        public void ClearFastAndEnsureCapacity(int capacity)
+        {
+            EnsureCapacity(capacity);
+            ClearFast();
+        }
     }
 
     private static bool? _fieldStreamBufferFieldFound;
@@ -1486,6 +1492,12 @@ public static class Common
         c.CopyTo(_items, index);
         */
         list.AddRange(items);
+    }
+
+    public static void ClearAndEnsureCapacity<T>(this List<T> list, int capacity)
+    {
+        list.Clear();
+        if (list.Capacity < capacity) list.Capacity = capacity;
     }
 
     #endregion
