@@ -27,7 +27,9 @@ internal sealed class ArchiveDatabase
         _startPositionAfterHeader = 0;
 
         _folders.ClearFast();
+        PackSizes.ClearFast();
         _numUnpackStreamsVector.ClearFast();
+        UnpackSizes.ClearFast();
         _files.ClearFast();
     }
 
