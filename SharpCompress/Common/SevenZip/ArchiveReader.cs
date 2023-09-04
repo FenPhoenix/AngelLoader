@@ -470,7 +470,7 @@ internal sealed class ArchiveReader
         }
     }
 
-    private void ReadSubStreamsInfo(out ListFast<long> unpackSizes)
+    private void ReadSubStreamsInfo()
     {
         ArchiveDatabase db = _context.ArchiveDatabase;
 
@@ -512,7 +512,7 @@ internal sealed class ArchiveReader
             }
         }
 
-        unpackSizes = _context.ListOfLong.ClearedAndWithCapacityAtLeast(db._folders.Count);
+        ListFast<long> unpackSizes = _context.ArchiveDatabase.UnpackSizes.ClearedAndWithCapacityAtLeast(db._folders.Count);
         for (int i = 0; i < db._numUnpackStreamsVector.Count; i++)
         {
             // v3.13 incorrectly worked with empty folders
@@ -571,12 +571,10 @@ internal sealed class ArchiveReader
     private void ReadStreamsInfo(
         List<byte[]> dataVector,
         out long dataOffset,
-        out List<long> packSizes,
-        out ListFast<long> unpackSizes)
+        out List<long> packSizes)
     {
         dataOffset = long.MinValue;
         packSizes = null;
-        unpackSizes = null;
 
         for (; ; )
         {
@@ -591,7 +589,7 @@ internal sealed class ArchiveReader
                     ReadUnpackInfo(dataVector);
                     break;
                 case BlockType.SubStreamsInfo:
-                    ReadSubStreamsInfo(out unpackSizes);
+                    ReadSubStreamsInfo();
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -606,8 +604,7 @@ internal sealed class ArchiveReader
         ReadStreamsInfo(
             null,
             out long dataStartPos,
-            out List<long> packSizes,
-            out _
+            out List<long> packSizes
         );
 
         dataStartPos += baseOffset;
@@ -687,20 +684,22 @@ internal sealed class ArchiveReader
 
         if (type == BlockType.MainStreamsInfo)
         {
+            unpackSizes = _context.ArchiveDatabase.UnpackSizes;
+
             ReadStreamsInfo(
                 dataVector,
                 out _,
-                out _,
-                out unpackSizes
+                out _
             );
 
             type = ReadId();
         }
         else
         {
-            unpackSizes = _context.ListOfLong.ClearedAndWithCapacityAtLeast(db._folders.Count);
-            db._numUnpackStreamsVector.ClearFastAndEnsureCapacity(db._folders.Count);
-            for (int i = 0; i < db._folders.Count; i++)
+            int foldersCount = db._folders.Count;
+            unpackSizes = _context.ArchiveDatabase.UnpackSizes.ClearedAndWithCapacityAtLeast(foldersCount);
+            db._numUnpackStreamsVector.ClearFastAndEnsureCapacity(foldersCount);
+            for (int i = 0; i < foldersCount; i++)
             {
                 CFolder folder = db._folders[i];
                 unpackSizes.AddFast(folder.GetUnpackSize());

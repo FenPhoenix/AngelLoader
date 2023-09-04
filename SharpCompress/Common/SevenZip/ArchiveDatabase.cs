@@ -15,6 +15,7 @@ internal sealed class ArchiveDatabase
 
     internal readonly ListFast<CFolder> _folders = new(0);
     internal readonly ListFast<int> _numUnpackStreamsVector = new(0);
+    internal readonly ListFast<long> UnpackSizes = new(16);
     internal readonly ListFast<SevenZipArchiveEntry> _files = new(0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
