@@ -118,6 +118,8 @@ public sealed partial class Scanner : IDisposable
     private List<string> SevenZipExtractedFilesTempList => _sevenZipExtractedFilesTempList ??= new List<string>(50);
 
     private readonly List<string> _tempLines = new();
+    private const int _maxTopLines = 5;
+    private readonly List<string> _topLines = new(_maxTopLines);
 
     private readonly List<NameAndIndex> _baseDirFiles = new(20);
     private readonly List<NameAndIndex> _misFiles = new(20);
@@ -373,6 +375,7 @@ public sealed partial class Scanner : IDisposable
     private void ResetCachedFields()
     {
         _tempLines.Clear();
+        _topLines.Clear();
         _readmeFiles.Clear();
         _fmDirFileInfos.Clear();
         _ss2Fingerprinted = false;
@@ -1025,7 +1028,7 @@ public sealed partial class Scanner : IDisposable
             return new ScannedFMDataAndError { ScannedFMData = fmData };
         }
 
-        var altTitles = new List<string>();
+        List<string>? altTitles = null;
 
         string finalTitle = "";
 
@@ -1039,9 +1042,16 @@ public sealed partial class Scanner : IDisposable
             {
                 finalTitle = value;
             }
-            else if (!finalTitle.EqualsI_Local(value) && !altTitles.ContainsI(value))
+            else if (!finalTitle.EqualsI_Local(value))
             {
-                altTitles.Add(value);
+                if (altTitles == null)
+                {
+                    altTitles = new List<string> { value };
+                }
+                else if (!altTitles.ContainsI(value))
+                {
+                    altTitles.Add(value);
+                }
             }
         }
 
@@ -1242,7 +1252,7 @@ public sealed partial class Scanner : IDisposable
             if (!scanTitleForAuthorPurposesOnly)
             {
                 fmData.Title = finalTitle;
-                fmData.AlternateTitles = altTitles.ToArray();
+                fmData.AlternateTitles = altTitles?.ToArray() ?? Array.Empty<string>();
                 for (int i = 0; i < fmData.AlternateTitles.Length; i++)
                 {
                     fmData.AlternateTitles[i] = fmData.AlternateTitles[i].Trim();
@@ -1263,7 +1273,7 @@ public sealed partial class Scanner : IDisposable
             if (fmData.Author.IsEmpty())
             {
                 List<string>? titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
-                if (titles != null && altTitles.Count > 0)
+                if (titles != null && altTitles?.Count > 0)
                 {
                     titles.AddRange_Small(altTitles);
                 }
@@ -1672,8 +1682,6 @@ public sealed partial class Scanner : IDisposable
 
         if (_readmeFiles.Count == 0) return null;
 
-        const int maxTopLines = 5;
-
         foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
@@ -1694,7 +1702,7 @@ public sealed partial class Scanner : IDisposable
                 }
 
                 topLineCount++;
-                if (topLineCount == maxTopLines) break;
+                if (topLineCount == _maxTopLines) break;
             }
         }
 
@@ -3262,30 +3270,26 @@ public sealed partial class Scanner : IDisposable
 
         List<string>? ret = null;
 
-        const int maxTopLines = 5;
-
-        var lines = new List<string>(maxTopLines);
-
         foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
 
-            lines.Clear();
+            _topLines.Clear();
 
             for (int i = 0; i < r.Lines.Count; i++)
             {
                 string line = r.Lines[i];
-                if (!line.IsWhiteSpace()) lines.Add(line);
-                if (lines.Count == maxTopLines) break;
+                if (!line.IsWhiteSpace()) _topLines.Add(line);
+                if (_topLines.Count == _maxTopLines) break;
             }
 
-            if (lines.Count < 2) continue;
+            if (_topLines.Count < 2) continue;
 
             string titleConcat = "";
 
-            for (int i = 0; i < lines.Count; i++)
+            for (int i = 0; i < _topLines.Count; i++)
             {
-                string lineT = lines[i].Trim();
+                string lineT = _topLines[i].Trim();
                 if (i > 0 &&
                     (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: ") ||
                      lineT.StartsWithI_Local("Original concept by ") ||
@@ -3303,7 +3307,7 @@ public sealed partial class Scanner : IDisposable
                     for (int j = 0; j < i; j++)
                     {
                         if (j > 0) titleConcat += " ";
-                        titleConcat += lines[j];
+                        titleConcat += _topLines[j];
                     }
                     // Set a cutoff for the length so we don't end up with a huge string that's obviously more
                     // than a title
@@ -3667,26 +3671,24 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        const int maxTopLines = 5;
-
         // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
         // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
-        var topLines = new List<string>(maxTopLines);
+        _topLines.Clear();
 
         for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
-            if (!line.IsWhiteSpace()) topLines.Add(line);
-            if (topLines.Count == maxTopLines) break;
+            if (!line.IsWhiteSpace()) _topLines.Add(line);
+            if (_topLines.Count == _maxTopLines) break;
         }
 
-        if (topLines.Count < 2) return "";
+        if (_topLines.Count < 2) return "";
 
-        for (int i = 0; i < topLines.Count; i++)
+        for (int i = 0; i < _topLines.Count; i++)
         {
             if (i == 0 && titleStartsWithBy) continue;
 
-            string lineT = topLines[i].Trim();
+            string lineT = _topLines[i].Trim();
             if (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: "))
             {
                 string author = lineT.Substring(lineT.IndexOf(' ')).TrimStart();
@@ -3694,9 +3696,9 @@ public sealed partial class Scanner : IDisposable
             }
             else if (lineT.EqualsI_Local("By"))
             {
-                if (!titleContainsBy && i < topLines.Count - 1)
+                if (!titleContainsBy && i < _topLines.Count - 1)
                 {
-                    return topLines[i + 1].Trim();
+                    return _topLines[i + 1].Trim();
                 }
             }
             else
