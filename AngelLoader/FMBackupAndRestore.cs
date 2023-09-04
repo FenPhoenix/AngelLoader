@@ -679,13 +679,14 @@ internal static class FMBackupAndRestore
             using var fs = File_OpenReadFast(fmArchivePath);
             var archive = new SevenZipArchive(fs);
 
-            int entriesCount = archive.Entries.Count;
+            ListFast<SevenZipArchiveEntry> entries = archive.Entries;
+            int entriesCount = entries.Count;
 
             var entriesFullNamesHash = new HashSetPathI(entriesCount);
 
-            for (int i = 0; i < archive.Entries.Count; i++)
+            for (int i = 0; i < entriesCount; i++)
             {
-                SevenZipArchiveEntry entry = archive.Entries[i];
+                SevenZipArchiveEntry entry = entries[i];
 
                 if (entry.IsAnti) continue;
 

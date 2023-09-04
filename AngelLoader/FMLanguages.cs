@@ -286,9 +286,10 @@ internal static class FMLanguages
             {
                 using var fs = File_OpenReadFast(archivePath);
                 var sevenZipArchive = new SevenZipArchive(fs);
-                for (int i = 0; i < sevenZipArchive.Entries.Count; i++)
+                ListFast<SevenZipArchiveEntry> entries = sevenZipArchive.Entries;
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    SevenZipArchiveEntry entry = sevenZipArchive.Entries[i];
+                    SevenZipArchiveEntry entry = entries[i];
 
                     if (entry.IsAnti) continue;
 
