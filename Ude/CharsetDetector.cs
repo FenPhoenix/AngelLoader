@@ -159,6 +159,8 @@ public sealed class CharsetDetector
     private EscCharsetProber? _escCharsetProber;
     private Charset _detectedCharset;
 
+    public bool CanBeASCII = true;
+
 #if false
     public void Feed(Stream stream)
     {
@@ -175,6 +177,7 @@ public sealed class CharsetDetector
 
     public void Reset()
     {
+        CanBeASCII = true;
         Charset = Charset.Null;
         Confidence = 0.0f;
 
@@ -234,34 +237,49 @@ public sealed class CharsetDetector
             _gotData = true;
         }
 
+        const byte NoBreakSpace = 0xA0;
+
         for (int i = 0; i < len; i++)
         {
+            byte b = buf[i];
+
             // other than 0xa0, if every other character is ascii, the page is ascii
-            if ((buf[i] & 0x80) != 0 && buf[i] != 0xA0)
+            if ((b & 0x80) != 0)
             {
-                // we got a non-ascii byte (high-byte)
-                if (_inputState != InputState.HighByte)
+                // Fen: If literally any byte is non-ASCII, we're going to call ourselves non-ASCII. We're not
+                // messing around with supporting NBSP, wtf.
+                CanBeASCII = false;
+
+                if (b != NoBreakSpace)
                 {
-                    _inputState = InputState.HighByte;
+                    // we got a non-ascii byte (high-byte)
+                    if (_inputState != InputState.HighByte)
+                    {
+                        _inputState = InputState.HighByte;
 
-                    // kill EscCharsetProber if it is active
-                    _escCharsetProber = null;
+                        // kill EscCharsetProber if it is active
+                        _escCharsetProber = null;
 
-                    // start multibyte and singlebyte charset prober
-                    _charsetProbers[0] ??= new MBCSGroupProber();
-                    _charsetProbers[1] ??= new SBCSGroupProber();
-                    _charsetProbers[2] ??= new Latin1Prober();
+                        // start multibyte and singlebyte charset prober
+                        _charsetProbers[0] ??= new MBCSGroupProber();
+                        _charsetProbers[1] ??= new SBCSGroupProber();
+                        _charsetProbers[2] ??= new Latin1Prober();
+                    }
+                }
+                else
+                {
+                    _lastChar = b;
                 }
             }
             else
             {
                 if (_inputState == InputState.PureASCII &&
-                    (buf[i] == 0x1B || (buf[i] == 0x7B && _lastChar == 0x7E)))
+                    (b == 0x1B || (b == 0x7B && _lastChar == 0x7E)))
                 {
                     // found escape character or HZ "~{"
                     _inputState = InputState.EscASCII;
                 }
-                _lastChar = buf[i];
+                _lastChar = b;
             }
         }
 

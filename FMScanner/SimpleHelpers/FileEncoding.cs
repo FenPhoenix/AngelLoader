@@ -50,10 +50,8 @@ public sealed class FileEncoding
     private readonly CharsetDetector _ude = new();
     private readonly CharsetDetector _singleUde = new();
     private Charset _encodingCharset;
-    private Charset _quickDetectCharset;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
-    private bool _canBeASCII = true;
     private readonly UdeContext _udeContext;
 
     public FileEncoding() => _udeContext = new UdeContext(4096);
@@ -71,10 +69,10 @@ public sealed class FileEncoding
     {
         try
         {
-            Detect(inputStream);
-            if (_quickDetectCharset != Charset.Null)
+            Charset bomCharset = Detect(inputStream);
+            if (bomCharset != Charset.Null)
             {
-                return _quickDetectCharset switch
+                return bomCharset switch
                 {
                     Charset.UTF8 => Encoding.UTF8,
                     Charset.UTF16LE => Encoding.Unicode,
@@ -97,55 +95,6 @@ public sealed class FileEncoding
         }
     }
 
-    /// <summary>
-    /// Detects if contains textual data.
-    /// </summary>
-    /// <param name="rawData">The raw data.</param>
-    /// <param name="count">The count.</param>
-    private bool CheckForTextualData(byte[] rawData, int count)
-    {
-        if (rawData.Length < count || count < 4)
-        {
-            return true;
-        }
-
-        Charset charSet = CharsetDetector.GetBOMCharset(rawData, rawData.Length);
-        if (charSet != Charset.Null)
-        {
-            _quickDetectCharset = charSet;
-            return true;
-        }
-
-        // http://stackoverflow.com/questions/910873/how-can-i-determine-if-a-file-is-binary-or-text-in-c
-        // http://www.gnu.org/software/diffutils/manual/html_node/Binary.html
-        // count the number of null bytes sequences
-        // considering only sequences of 2 0s: "\0\0" or control characters below 10
-        int nullSequences = 0;
-        int controlSequences = 0;
-        for (int i = 1; i < count; i++)
-        {
-            // Fix(Fen): Any bytes >127 mean we can't be ASCII, period. But somewhere along the line, we're
-            // deciding we can detect "ASCII" anyway, even if we have bytes >127. So set a bool to force us
-            // to reject "ASCII" encoding if it's impossible.
-            if (rawData[i - 1] > 127 || rawData[i] > 127)
-            {
-                _canBeASCII = false;
-            }
-
-            if (rawData[i - 1] == 0 && rawData[i] == 0)
-            {
-                if (++nullSequences > 1) break;
-            }
-            else if (rawData[i - 1] == 0 && rawData[i] < 10)
-            {
-                ++controlSequences;
-            }
-        }
-
-        // is text if there is no null byte sequences or less than 10% of the buffer has control characters
-        return nullSequences == 0 && controlSequences <= rawData.Length / 10;
-    }
-
     private void Reset()
     {
         _started = false;
@@ -154,17 +103,15 @@ public sealed class FileEncoding
         _ude.Reset();
         _singleUde.Reset();
         _encodingCharset = Charset.Null;
-        _quickDetectCharset = Charset.Null;
-        _canBeASCII = true;
     }
 
     /// <summary>
     /// Detects the encoding of textual data of the specified input data.
     /// </summary>
     /// <param name="inputData">The input data.</param>
-    /// <returns>Detected encoding name</returns>
+    /// <returns>If charset was detected from BOM, returns that charset; otherwise, returns <see cref="Charset.Null"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
-    private void Detect(Stream inputData)
+    private Charset Detect(Stream inputData)
     {
         const int maxSize = ByteSize.MB * 20;
         const int bufferSize = ByteSize.KB * 16;
@@ -172,18 +119,19 @@ public sealed class FileEncoding
         const int maxIterations = maxSize / bufferSize;
 
         int i = 0;
-        _buffer.Clear();
         while (i++ < maxIterations)
         {
             int sz = inputData.ReadAll(_buffer, 0, _buffer.Length);
             if (sz <= 0) break;
 
-            Detect(_buffer, sz);
-            if (_quickDetectCharset != Charset.Null)
+            Charset bomCharset = Detect(_buffer, sz);
+            if (bomCharset != Charset.Null)
             {
-                return;
+                return bomCharset;
             }
         }
+
+        return Charset.Null;
     }
 
     /// <summary>
@@ -191,17 +139,16 @@ public sealed class FileEncoding
     /// </summary>
     /// <param name="inputData">The input data.</param>
     /// <param name="count">The count.</param>
-    /// <returns>Detected encoding name</returns>
-    private void Detect(byte[] inputData, int count)
+    /// <returns>If charset was detected from BOM, returns that charset; otherwise, returns <see cref="Charset.Null"/>.</returns>
+    private Charset Detect(byte[] inputData, int count)
     {
         if (!_started)
         {
-            Reset();
             _started = true;
-            if (!CheckForTextualData(inputData, count) ||
-                _quickDetectCharset != Charset.Null)
+            Charset charSet = CharsetDetector.GetBOMCharset(inputData, count);
+            if (charSet != Charset.Null)
             {
-                return;
+                return charSet;
             }
         }
 
@@ -210,7 +157,7 @@ public sealed class FileEncoding
         if (_ude.IsDone() && _ude.Charset != Charset.Null)
         {
             IncrementFrequency(_ude.Charset);
-            return;
+            return Charset.Null;
         }
 
         // singular buffer detection
@@ -225,6 +172,8 @@ public sealed class FileEncoding
                 IncrementFrequency(_singleUde.Charset);
             }
         }
+
+        return Charset.Null;
     }
 
     private void IncrementFrequency(Charset charset)
@@ -275,7 +224,7 @@ public sealed class FileEncoding
             if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so why not
             just get rid of any reference to ancient stuff if we can.
             */
-            ret = !_canBeASCII ? Charset.Windows1252 : Charset.UTF8;
+            ret = !_ude.CanBeASCII ? Charset.Windows1252 : Charset.UTF8;
         }
 
         return ret;
