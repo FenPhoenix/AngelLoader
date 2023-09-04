@@ -371,8 +371,10 @@ internal static class FMCache
             {
                 var entries = extractor.Entries;
                 extractorFilesCount = entries.Count;
-                foreach (SevenZipArchiveEntry entry in entries)
+                for (int i = 0; i < entries.Count; i++)
                 {
+                    SevenZipArchiveEntry entry = entries[i];
+
                     if (entry.IsAnti) continue;
 
                     string fn = entry.FileName;

@@ -701,7 +701,7 @@ internal sealed class ArchiveReader
             }
         }
 
-        db._files.Clear();
+        db._files.ClearFast();
 
         if (type == BlockType.End)
         {
@@ -714,10 +714,20 @@ internal sealed class ArchiveReader
         }
 
         int numFiles = ReadNum();
-        db._files.ClearAndEnsureCapacity(numFiles);
+
+        db._files.SetRecycleState(numFiles, 25_000);
+
         for (int i = 0; i < numFiles; i++)
         {
-            db._files.Add(new SevenZipArchiveEntry());
+            SevenZipArchiveEntry file = db._files[i];
+            if (file != null)
+            {
+                file.Reset();
+            }
+            else
+            {
+                db._files[i] = new SevenZipArchiveEntry();
+            }
         }
 
         var emptyStreamVector = new BitVector(numFiles);

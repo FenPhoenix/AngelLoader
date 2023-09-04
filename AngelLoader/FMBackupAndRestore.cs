@@ -683,8 +683,10 @@ internal static class FMBackupAndRestore
 
             var entriesFullNamesHash = new HashSetPathI(entriesCount);
 
-            foreach (SevenZipArchiveEntry entry in archive.Entries)
+            for (int i = 0; i < archive.Entries.Count; i++)
             {
+                SevenZipArchiveEntry entry = archive.Entries[i];
+
                 if (entry.IsAnti) continue;
 
                 string efn = entry.FileName.ToBackSlashes();

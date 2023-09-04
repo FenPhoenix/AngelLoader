@@ -37,4 +37,16 @@ public sealed class SevenZipArchiveEntry
     }
 
     public bool IsDirectory;
+
+    internal void Reset()
+    {
+        HasStream = true;
+        MTime = 0;
+        IsAnti = false;
+        FileName = "";
+        UncompressedSize = 0;
+        _lastModifiedTimeSet = false;
+        _lastModifiedTime = null;
+        IsDirectory = false;
+    }
 }

@@ -15,7 +15,7 @@ internal sealed class ArchiveDatabase
 
     internal readonly List<CFolder> _folders = new();
     internal readonly ListFast<int> _numUnpackStreamsVector = new(0);
-    internal readonly List<SevenZipArchiveEntry> _files = new();
+    internal readonly ListFast<SevenZipArchiveEntry> _files = new(0);
 
     internal void Clear()
     {
@@ -25,7 +25,7 @@ internal sealed class ArchiveDatabase
 
         _folders.Clear();
         _numUnpackStreamsVector.ClearFast();
-        _files.Clear();
+        _files.ClearFast();
     }
 
     private void FillFolderStartFileIndex()

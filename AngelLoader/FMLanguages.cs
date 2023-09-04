@@ -286,8 +286,10 @@ internal static class FMLanguages
             {
                 using var fs = File_OpenReadFast(archivePath);
                 using var sevenZipArchive = new SevenZipArchive(fs);
-                foreach (SevenZipArchiveEntry entry in sevenZipArchive.Entries)
+                for (int i = 0; i < sevenZipArchive.Entries.Count; i++)
                 {
+                    SevenZipArchiveEntry entry = sevenZipArchive.Entries[i];
+
                     if (entry.IsAnti) continue;
 
                     string fn = entry.FileName.ToForwardSlashes();

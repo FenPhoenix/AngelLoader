@@ -4,9 +4,9 @@ Lots of byte[] allocations, stream recreations, etc. However, we're already pret
 */
 
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using SharpCompress.Common.SevenZip;
+using static AL_Common.Common;
 
 namespace SharpCompress.Archives.SevenZip;
 
@@ -18,8 +18,8 @@ public sealed class SevenZipArchive : IDisposable
     private readonly SevenZipContext _context;
 
     // @SharpCompress: Reuse one list of entries like we do with zips
-    private ReadOnlyCollection<SevenZipArchiveEntry>? _lazyEntries;
-    public ReadOnlyCollection<SevenZipArchiveEntry> Entries
+    private ListFast<SevenZipArchiveEntry>? _lazyEntries;
+    public ListFast<SevenZipArchiveEntry> Entries
     {
         get
         {
@@ -29,7 +29,7 @@ public sealed class SevenZipArchive : IDisposable
                 ArchiveReader reader = new(_context);
                 ArchiveDatabase database = reader.ReadDatabase(_srcStream);
 
-                _lazyEntries = new ReadOnlyCollection<SevenZipArchiveEntry>(database._files);
+                _lazyEntries = database._files;
             }
 
             return _lazyEntries;
