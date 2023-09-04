@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace SharpCompress.Archives.SevenZip;
 
@@ -38,6 +39,7 @@ public sealed class SevenZipArchiveEntry
 
     public bool IsDirectory;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Reset()
     {
         HasStream = true;

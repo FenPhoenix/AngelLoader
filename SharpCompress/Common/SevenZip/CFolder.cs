@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using AL_Common;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Compressors.LZMA;
@@ -8,13 +9,23 @@ namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CFolder
 {
-    internal List<CCoderInfo> _coders = new();
-    internal List<CBindPair> _bindPairs = new();
+    internal readonly List<CCoderInfo> _coders = new();
+    internal readonly List<CBindPair> _bindPairs = new();
     internal readonly List<int> _packStreams = new();
     internal readonly List<long> _unpackSizes = new();
     internal uint? _unpackCrc;
 
     internal bool UnpackCrcDefined => _unpackCrc != null;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void Reset()
+    {
+        _coders.Clear();
+        _bindPairs.Clear();
+        _packStreams.Clear();
+        _unpackSizes.Clear();
+        _unpackCrc = null;
+    }
 
     public long GetUnpackSize()
     {

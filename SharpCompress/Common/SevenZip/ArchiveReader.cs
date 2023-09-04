@@ -261,7 +261,7 @@ internal sealed class ArchiveReader
     private void GetNextFolderItem(CFolder folder)
     {
         int numCoders = ReadNum();
-        folder._coders = new List<CCoderInfo>(numCoders);
+        folder._coders.ClearAndEnsureCapacity(numCoders);
         int numInStreams = 0;
         int numOutStreams = 0;
         for (int i = 0; i < numCoders; i++)
@@ -319,7 +319,7 @@ internal sealed class ArchiveReader
         }
 
         int numBindPairs = numOutStreams - 1;
-        folder._bindPairs = new List<CBindPair>(numBindPairs);
+        folder._bindPairs.ClearAndEnsureCapacity(numBindPairs);
         for (int i = 0; i < numBindPairs; i++)
         {
             var bp = new CBindPair
@@ -419,12 +419,21 @@ internal sealed class ArchiveReader
         {
             streamSwitch.Set(this, dataVector);
 
-            db._folders.ClearAndEnsureCapacity(numFolders);
+            db._folders.SetRecycleState(numFolders, 25_000);
             for (int i = 0; i < numFolders; i++)
             {
-                var f = new CFolder();
-                db._folders.Add(f);
-                GetNextFolderItem(f);
+                CFolder folder = db._folders[i];
+                if (folder != null)
+                {
+                    folder.Reset();
+                }
+                else
+                {
+                    folder = new CFolder();
+                    db._folders[i] = folder;
+                }
+
+                GetNextFolderItem(folder);
             }
         }
 
@@ -609,8 +618,10 @@ internal sealed class ArchiveReader
 
         var dataVector = new List<byte[]>(db._folders.Count);
         const int packIndex = 0;
-        foreach (CFolder folder in db._folders)
+        for (int folderIndex = 0; folderIndex < db._folders.Count; folderIndex++)
         {
+            CFolder folder = db._folders[folderIndex];
+
             long oldDataStartPos = dataStartPos;
             int myPackSizesLength = folder._packStreams.Count;
             long[] myPackSizes = _context.LongArrayPool.Rent(myPackSizesLength);

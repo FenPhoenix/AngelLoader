@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
 using System;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 
@@ -13,17 +13,18 @@ internal sealed class ArchiveDatabase
     internal byte _minorVersion;
     internal long _startPositionAfterHeader;
 
-    internal readonly List<CFolder> _folders = new();
+    internal readonly ListFast<CFolder> _folders = new(0);
     internal readonly ListFast<int> _numUnpackStreamsVector = new(0);
     internal readonly ListFast<SevenZipArchiveEntry> _files = new(0);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Clear()
     {
         _majorVersion = 0;
         _minorVersion = 0;
         _startPositionAfterHeader = 0;
 
-        _folders.Clear();
+        _folders.ClearFast();
         _numUnpackStreamsVector.ClearFast();
         _files.ClearFast();
     }
