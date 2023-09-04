@@ -49,7 +49,6 @@ internal sealed class ArchiveReader
         Dummy = 25
     }
 
-    private Stream _stream;
     private readonly Stack<DataReader> _readerStack = new();
     private DataReader _currentReader;
     private long _streamOrigin;
@@ -593,7 +592,7 @@ internal sealed class ArchiveReader
         }
     }
 
-    private List<byte[]> ReadAndDecodePackedStreams(long baseOffset)
+    private List<byte[]> ReadAndDecodePackedStreams(Stream stream, long baseOffset)
     {
         ArchiveDatabase db = _context.ArchiveDatabase;
 
@@ -620,7 +619,7 @@ internal sealed class ArchiveReader
                 }
 
                 using Stream outStream = DecoderStreamHelper.CreateDecoderStream(
-                    _stream,
+                    stream,
                     oldDataStartPos,
                     myPackSizes,
                     myPackSizesLength,
@@ -653,8 +652,10 @@ internal sealed class ArchiveReader
         return dataVector;
     }
 
-    private void ReadHeader(ArchiveDatabase db)
+    private void ReadHeader(Stream stream, ArchiveDatabase db, bool onlyGetEntryCount, out int entriesCount)
     {
+        entriesCount = 0;
+
         BlockType? type = ReadId();
 
         if (type == BlockType.ArchiveProperties)
@@ -667,6 +668,7 @@ internal sealed class ArchiveReader
         if (type == BlockType.AdditionalStreamsInfo)
         {
             dataVector = ReadAndDecodePackedStreams(
+                stream,
                 db._startPositionAfterHeader
             );
             type = ReadId();
@@ -711,6 +713,13 @@ internal sealed class ArchiveReader
         }
 
         int numFiles = ReadNum();
+
+        entriesCount = numFiles;
+
+        if (onlyGetEntryCount)
+        {
+            return;
+        }
 
         db._files.SetRecycleState(numFiles);
 
@@ -921,9 +930,17 @@ internal sealed class ArchiveReader
 
     #region Public Methods
 
-    public ArchiveDatabase ReadDatabase(Stream stream)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="onlyGetEntryCount"></param>
+    /// <returns>The number of entries in the 7z file.</returns>
+    /// <exception cref="EndOfStreamException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
+    public int ReadDatabase(Stream stream, bool onlyGetEntryCount = false)
     {
-        _stream?.Dispose();
+        int entriesCount = 0;
 
         ArchiveDatabase db = _context.ArchiveDatabase;
 
@@ -942,8 +959,6 @@ internal sealed class ArchiveReader
             }
             offset += delta;
         }
-
-        _stream = stream;
 
         db._majorVersion = _context.ArchiveHeader[6];
         db._minorVersion = _context.ArchiveHeader[7];
@@ -975,7 +990,7 @@ internal sealed class ArchiveReader
         if (nextHeaderSize == 0)
         {
             db.Fill();
-            return db;
+            return entriesCount;
         }
 
         if (nextHeaderOffset < 0 || nextHeaderSize < 0 || nextHeaderSize > int.MaxValue)
@@ -988,10 +1003,10 @@ internal sealed class ArchiveReader
             throw new InvalidOperationException("nextHeaderOffset is invalid");
         }
 
-        _stream.Seek(nextHeaderOffset, SeekOrigin.Current);
+        stream.Seek(nextHeaderOffset, SeekOrigin.Current);
 
         byte[] header = new byte[nextHeaderSize];
-        ReadExact(_stream, header);
+        ReadExact(stream, header);
 
         if (Crc.Finish(Crc.Update(Crc.INIT_CRC, header, 0, header.Length)) != nextHeaderCrc)
         {
@@ -1011,6 +1026,7 @@ internal sealed class ArchiveReader
                 }
 
                 List<byte[]> dataVector = ReadAndDecodePackedStreams(
+                    stream,
                     db._startPositionAfterHeader
                 );
 
@@ -1018,7 +1034,7 @@ internal sealed class ArchiveReader
                 if (dataVector.Count == 0)
                 {
                     db.Fill();
-                    return db;
+                    return entriesCount;
                 }
 
                 if (dataVector.Count != 1)
@@ -1034,10 +1050,10 @@ internal sealed class ArchiveReader
                 }
             }
 
-            ReadHeader(db);
+            ReadHeader(stream, db, onlyGetEntryCount, out entriesCount);
         }
-        db.Fill();
-        return db;
+        if (!onlyGetEntryCount) db.Fill();
+        return entriesCount;
     }
 
     // @SharpCompress(ReadExact): Not 100% sure if stream can't be null, check into this

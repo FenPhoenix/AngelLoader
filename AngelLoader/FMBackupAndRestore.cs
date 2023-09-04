@@ -677,7 +677,7 @@ internal static class FMBackupAndRestore
         else
         {
             using var fs = File_OpenReadFast(fmArchivePath);
-            using var archive = new SevenZipArchive(fs);
+            var archive = new SevenZipArchive(fs);
 
             int entriesCount = archive.Entries.Count;
 

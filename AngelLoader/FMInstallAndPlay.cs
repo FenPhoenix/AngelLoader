@@ -1680,9 +1680,9 @@ internal static class FMInstallAndPlay
             int entriesCount;
 
             using (var fs = File_OpenReadFast(fmArchivePath))
-            using (var extractor = new SevenZipArchive(fs))
             {
-                entriesCount = extractor.Entries.Count;
+                var extractor = new SevenZipArchive(fs);
+                entriesCount = extractor.GetEntryCountOnly();
             }
 
             void ReportProgress(Fen7z.ProgressReport pr)

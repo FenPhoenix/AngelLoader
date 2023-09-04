@@ -285,7 +285,7 @@ internal static class FMLanguages
             else
             {
                 using var fs = File_OpenReadFast(archivePath);
-                using var sevenZipArchive = new SevenZipArchive(fs);
+                var sevenZipArchive = new SevenZipArchive(fs);
                 for (int i = 0; i < sevenZipArchive.Entries.Count; i++)
                 {
                     SevenZipArchiveEntry entry = sevenZipArchive.Entries[i];

@@ -367,8 +367,8 @@ internal static class FMCache
             int extractorFilesCount;
 
             using (var fs = File_OpenReadFast(fmArchivePath))
-            using (var extractor = new SevenZipArchive(fs))
             {
+                var extractor = new SevenZipArchive(fs);
                 var entries = extractor.Entries;
                 extractorFilesCount = entries.Count;
                 for (int i = 0; i < entries.Count; i++)
