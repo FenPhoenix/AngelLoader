@@ -50,6 +50,7 @@ public sealed class FileEncoding
     private readonly CharsetDetector _ude = new();
     private readonly CharsetDetector _singleUde = new();
     private Charset _encodingCharset;
+    private Charset _quickDetectCharset;
     // Stupid micro-optimization to reduce GC time
     private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
     private bool _canBeASCII = true;
@@ -71,6 +72,18 @@ public sealed class FileEncoding
         try
         {
             Detect(inputStream);
+            if (_quickDetectCharset != Charset.Null)
+            {
+                return _quickDetectCharset switch
+                {
+                    Charset.UTF8 => Encoding.UTF8,
+                    Charset.UTF16LE => Encoding.Unicode,
+                    Charset.UTF16BE => Encoding.BigEndianUnicode,
+                    Charset.UTF32LE => Encoding.UTF32,
+                    Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
+                    _ => Encoding.UTF8
+                };
+            }
             _encodingCharset = GetCurrentEncoding();
             return _encodingCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(_encodingCharset));
         }
@@ -96,8 +109,10 @@ public sealed class FileEncoding
             return true;
         }
 
-        if (CharsetDetector.GetBOMCharset(rawData, rawData.Length) != Charset.Null)
+        Charset charSet = CharsetDetector.GetBOMCharset(rawData, rawData.Length);
+        if (charSet != Charset.Null)
         {
+            _quickDetectCharset = charSet;
             return true;
         }
 
@@ -139,6 +154,7 @@ public sealed class FileEncoding
         _ude.Reset();
         _singleUde.Reset();
         _encodingCharset = Charset.Null;
+        _quickDetectCharset = Charset.Null;
         _canBeASCII = true;
     }
 
@@ -163,6 +179,10 @@ public sealed class FileEncoding
             if (sz <= 0) break;
 
             Detect(_buffer, sz);
+            if (_quickDetectCharset != Charset.Null)
+            {
+                return;
+            }
         }
     }
 
@@ -178,7 +198,8 @@ public sealed class FileEncoding
         {
             Reset();
             _started = true;
-            if (!CheckForTextualData(inputData, count))
+            if (!CheckForTextualData(inputData, count) ||
+                _quickDetectCharset != Charset.Null)
             {
                 return;
             }

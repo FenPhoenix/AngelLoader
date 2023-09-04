@@ -1572,7 +1572,8 @@ internal static class Core
                         }
                         sw.WriteLine(readme);
                         var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                        Encoding? encoding = fe.DetectFileEncoding(readmePath);
+                        using var fs = File.OpenRead(readmePath);
+                        Encoding? encoding = fe.DetectFileEncoding(fs);
                         if (encoding != null)
                         {
                             sw.WriteLine(encoding.EncodingName + " (" + encoding.CodePage + ")");

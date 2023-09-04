@@ -151,7 +151,6 @@ public sealed class CharsetDetector
     private const float MINIMUM_THRESHOLD = 0.20f;
 
     private InputState _inputState = InputState.PureASCII;
-    private bool _start = true;
     private bool _gotData;
     private bool _done;
     private byte _lastChar;
@@ -180,7 +179,6 @@ public sealed class CharsetDetector
         Confidence = 0.0f;
 
         _done = false;
-        _start = true;
         _detectedCharset = Charset.Null;
         _gotData = false;
         _inputState = InputState.PureASCII;
@@ -234,21 +232,6 @@ public sealed class CharsetDetector
         if (len > 0)
         {
             _gotData = true;
-        }
-
-        // If the data starts with BOM, we know it is UTF
-        if (_start)
-        {
-            _start = false;
-
-            Charset bomCharset = GetBOMCharset(buf, len);
-            if (bomCharset != Charset.Null) _detectedCharset = bomCharset;
-
-            if (_detectedCharset != Charset.Null)
-            {
-                _done = true;
-                return;
-            }
         }
 
         for (int i = 0; i < len; i++)
