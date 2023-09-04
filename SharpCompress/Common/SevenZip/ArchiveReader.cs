@@ -371,21 +371,19 @@ internal sealed class ArchiveReader
         }
     }
 
-    private void ReadPackInfo(
-        out long dataOffset,
-        out List<long> packSizes
-    )
+    private void ReadPackInfo(out long dataOffset)
     {
         dataOffset = checked((long)ReadNumber());
 
         int numPackStreams = ReadNum();
 
         WaitAttribute(BlockType.Size);
-        packSizes = new List<long>(numPackStreams);
+        ListFast<long> packSizes = _context.ArchiveDatabase.PackSizes;
+        packSizes.ClearFastAndEnsureCapacity(numPackStreams);
         for (int i = 0; i < numPackStreams; i++)
         {
             long size = checked((long)ReadNumber());
-            packSizes.Add(size);
+            packSizes.AddFast(size);
         }
 
         for (; ; )
@@ -570,11 +568,9 @@ internal sealed class ArchiveReader
 
     private void ReadStreamsInfo(
         List<byte[]> dataVector,
-        out long dataOffset,
-        out List<long> packSizes)
+        out long dataOffset)
     {
         dataOffset = long.MinValue;
-        packSizes = null;
 
         for (; ; )
         {
@@ -583,7 +579,7 @@ internal sealed class ArchiveReader
                 case BlockType.End:
                     return;
                 case BlockType.PackInfo:
-                    ReadPackInfo(out dataOffset, out packSizes);
+                    ReadPackInfo(out dataOffset);
                     break;
                 case BlockType.UnpackInfo:
                     ReadUnpackInfo(dataVector);
@@ -601,11 +597,7 @@ internal sealed class ArchiveReader
     {
         ArchiveDatabase db = _context.ArchiveDatabase;
 
-        ReadStreamsInfo(
-            null,
-            out long dataStartPos,
-            out List<long> packSizes
-        );
+        ReadStreamsInfo(null, out long dataStartPos);
 
         dataStartPos += baseOffset;
 
@@ -622,7 +614,7 @@ internal sealed class ArchiveReader
             {
                 for (int i = 0; i < myPackSizesLength; i++)
                 {
-                    long packSize = packSizes[packIndex + i];
+                    long packSize = db.PackSizes[packIndex + i];
                     myPackSizes[i] = packSize;
                     dataStartPos += packSize;
                 }
@@ -688,7 +680,6 @@ internal sealed class ArchiveReader
 
             ReadStreamsInfo(
                 dataVector,
-                out _,
                 out _
             );
 
