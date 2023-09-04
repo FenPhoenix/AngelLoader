@@ -248,7 +248,7 @@ public sealed class CharsetDetector
             {
                 // Fen: If literally any byte is non-ASCII, we're going to call ourselves non-ASCII. We're not
                 // messing around with supporting NBSP, wtf.
-                CanBeASCII = false;
+                if (CanBeASCII) CanBeASCII = false;
 
                 if (b != NoBreakSpace)
                 {
