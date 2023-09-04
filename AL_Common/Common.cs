@@ -1482,7 +1482,7 @@ public static class Common
         objs.CopyTo(array, 0);
         array.CopyTo((Array) this._items, index);
 
-        @MEM(List.AddRange): They fixed this in .NET 7 at least.
+        @NET5(List.AddRange): They fixed this in .NET 7 at least.
         c.CopyTo(_items, index);
         */
         list.AddRange(items);
