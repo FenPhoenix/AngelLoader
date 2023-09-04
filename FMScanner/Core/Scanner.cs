@@ -372,6 +372,7 @@ public sealed partial class Scanner : IDisposable
 
     private void ResetCachedFields()
     {
+        _tempLines.Clear();
         _readmeFiles.Clear();
         _fmDirFileInfos.Clear();
         _ss2Fingerprinted = false;
@@ -3308,7 +3309,11 @@ public sealed partial class Scanner : IDisposable
                     // than a title
                     if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                     {
-                        ret ??= new List<string>();
+                        if (ret == null)
+                        {
+                            ret = _tempLines;
+                            ret.Clear();
+                        }
                         ret.Add(titleConcat);
                     }
 
