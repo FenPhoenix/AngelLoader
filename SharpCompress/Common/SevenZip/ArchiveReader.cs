@@ -261,21 +261,13 @@ internal sealed class ArchiveReader
     private void GetNextFolderItem(CFolder folder)
     {
         int numCoders = ReadNum();
-        folder._coders.SetRecycleState(numCoders, 25_000);
+        folder._coders.ClearAndEnsureCapacity(numCoders);
         int numInStreams = 0;
         int numOutStreams = 0;
         for (int i = 0; i < numCoders; i++)
         {
-            CCoderInfo coder = folder._coders[i];
-            if (coder != null)
-            {
-                coder.Reset(_context);
-            }
-            else
-            {
-                coder = new CCoderInfo();
-                folder._coders[i] = coder;
-            }
+            var coder = new CCoderInfo();
+            folder._coders.Add(coder);
 
             byte mainByte = ReadByte();
             int idSize = (mainByte & 0xF);
@@ -313,7 +305,7 @@ internal sealed class ArchiveReader
             if ((mainByte & 0x20) != 0)
             {
                 int propsSize = ReadNum();
-                coder._props = _context.ByteArrayPool.Rent(propsSize);
+                coder._props = new byte[propsSize];
                 ReadBytes(coder._props, 0, propsSize);
             }
 

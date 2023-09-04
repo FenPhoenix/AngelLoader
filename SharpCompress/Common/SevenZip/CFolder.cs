@@ -1,5 +1,3 @@
-#nullable disable
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -12,7 +10,7 @@ namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CFolder
 {
-    internal readonly ListFast<CCoderInfo> _coders = new(0);
+    internal readonly List<CCoderInfo> _coders = new();
     internal readonly ListFast<CBindPair> _bindPairs = new(0);
     internal readonly ListFast<int> _packStreams = new(0);
     internal readonly ListFast<long> _unpackSizes = new(0);
@@ -23,7 +21,7 @@ internal sealed class CFolder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Reset()
     {
-        _coders.ClearFast();
+        _coders.Clear();
         _bindPairs.ClearFast();
         _packStreams.ClearFast();
         _unpackSizes.ClearFast();
