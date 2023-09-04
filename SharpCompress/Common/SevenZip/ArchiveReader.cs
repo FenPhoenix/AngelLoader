@@ -162,7 +162,7 @@ internal sealed class ArchiveReader
         return ReadBitVector(length);
     }
 
-    private void ReadDummyNumberVector(ListFast<ListFast<byte>> dataVector, int numFiles)
+    private void ReadDummyNumberVector(List<byte[]> dataVector, int numFiles)
     {
         BitVector defined = ReadOptionalBitVector(numFiles);
 
@@ -402,7 +402,7 @@ internal sealed class ArchiveReader
         }
     }
 
-    private void ReadUnpackInfo()
+    private void ReadUnpackInfo(List<byte[]> dataVector)
     {
         ArchiveDatabase db = _context.ArchiveDatabase;
 
@@ -411,7 +411,7 @@ internal sealed class ArchiveReader
 
         using (var streamSwitch = new CStreamSwitch())
         {
-            streamSwitch.Set(this, db.DataVector);
+            streamSwitch.Set(this, dataVector);
 
             db._folders.SetRecycleState(numFolders, 25_000);
             for (int i = 0; i < numFolders; i++)
@@ -567,6 +567,7 @@ internal sealed class ArchiveReader
     }
 
     private void ReadStreamsInfo(
+        List<byte[]> dataVector,
         out long dataOffset)
     {
         dataOffset = long.MinValue;
@@ -581,7 +582,7 @@ internal sealed class ArchiveReader
                     ReadPackInfo(out dataOffset);
                     break;
                 case BlockType.UnpackInfo:
-                    ReadUnpackInfo();
+                    ReadUnpackInfo(dataVector);
                     break;
                 case BlockType.SubStreamsInfo:
                     ReadSubStreamsInfo();
@@ -592,15 +593,15 @@ internal sealed class ArchiveReader
         }
     }
 
-    private void ReadAndDecodePackedStreams(long baseOffset)
+    private List<byte[]> ReadAndDecodePackedStreams(long baseOffset)
     {
         ArchiveDatabase db = _context.ArchiveDatabase;
 
-        ReadStreamsInfo(out long dataStartPos);
+        ReadStreamsInfo(null, out long dataStartPos);
 
         dataStartPos += baseOffset;
 
-        db.DataVector.SetRecycleState(db._folders.Count, 25_000);
+        var dataVector = new List<byte[]>(db._folders.Count);
         const int packIndex = 0;
         for (int folderIndex = 0; folderIndex < db._folders.Count; folderIndex++)
         {
@@ -628,29 +629,13 @@ internal sealed class ArchiveReader
                 );
 
                 int unpackSize = checked((int)folder.GetUnpackSize());
-
-                bool dataExisted;
-                ListFast<byte> data = db.DataVector[folderIndex];
-                if (data != null)
-                {
-                    dataExisted = true;
-                }
-                else
-                {
-                    data = new ListFast<byte>(unpackSize);
-                    dataExisted = false;
-                }
-                data.SetRecycleState(unpackSize, 25_000);
-
+                byte[] data = new byte[unpackSize];
                 ReadExact(outStream, data);
                 if (outStream.ReadByte() >= 0)
                 {
                     throw new InvalidOperationException("Decoded stream is longer than expected.");
                 }
-                if (!dataExisted)
-                {
-                    db.DataVector[folderIndex] = data;
-                }
+                dataVector.Add(data);
 
                 if (folder.UnpackCrcDefined)
                 {
@@ -665,6 +650,7 @@ internal sealed class ArchiveReader
                 _context.LongArrayPool.Return(myPackSizes);
             }
         }
+        return dataVector;
     }
 
     private void ReadHeader(ArchiveDatabase db)
@@ -677,9 +663,12 @@ internal sealed class ArchiveReader
             type = ReadId();
         }
 
+        List<byte[]> dataVector = null;
         if (type == BlockType.AdditionalStreamsInfo)
         {
-            ReadAndDecodePackedStreams(db._startPositionAfterHeader);
+            dataVector = ReadAndDecodePackedStreams(
+                db._startPositionAfterHeader
+            );
             type = ReadId();
         }
 
@@ -689,7 +678,10 @@ internal sealed class ArchiveReader
         {
             unpackSizes = _context.ArchiveDatabase.UnpackSizes;
 
-            ReadStreamsInfo(out _);
+            ReadStreamsInfo(
+                dataVector,
+                out _
+            );
 
             type = ReadId();
         }
@@ -755,7 +747,7 @@ internal sealed class ArchiveReader
                 case BlockType.Name:
                     using (var streamSwitch = new CStreamSwitch())
                     {
-                        streamSwitch.Set(this, db.DataVector);
+                        streamSwitch.Set(this, dataVector);
                         for (int i = 0; i < db._files.Count; i++)
                         {
                             db._files[i].FileName = _currentReader.ReadString();
@@ -767,7 +759,7 @@ internal sealed class ArchiveReader
                     // FenPhoenix 2023: We don't use it so just read past it
                     BitVector boolVector = ReadOptionalBitVector(numFiles);
                     using var streamSwitch = new CStreamSwitch();
-                    streamSwitch.Set(this, db.DataVector);
+                    streamSwitch.Set(this, dataVector);
                     for (int i = 0; i < numFiles; i++)
                     {
                         if (boolVector[i])
@@ -827,7 +819,7 @@ internal sealed class ArchiveReader
                     antiFileVector = ReadBitVector(numEmptyStreams);
                     break;
                 case BlockType.StartPos:
-                    ReadDummyNumberVector(db.DataVector, numFiles);
+                    ReadDummyNumberVector(dataVector, numFiles);
                     //ReadNumberVector(
                     //    dataVector,
                     //    numFiles,
@@ -837,7 +829,7 @@ internal sealed class ArchiveReader
                     //);
                     break;
                 case BlockType.CTime:
-                    ReadDummyNumberVector(db.DataVector, numFiles);
+                    ReadDummyNumberVector(dataVector, numFiles);
                     //ReadDateTimeVector(
                     //    dataVector,
                     //    numFiles,
@@ -847,7 +839,7 @@ internal sealed class ArchiveReader
                     //);
                     break;
                 case BlockType.ATime:
-                    ReadDummyNumberVector(db.DataVector, numFiles);
+                    ReadDummyNumberVector(dataVector, numFiles);
                     //ReadDateTimeVector(
                     //    dataVector,
                     //    numFiles,
@@ -861,7 +853,7 @@ internal sealed class ArchiveReader
                     BitVector defined = ReadOptionalBitVector(numFiles);
 
                     using var streamSwitch = new CStreamSwitch();
-                    streamSwitch.Set(this, db.DataVector);
+                    streamSwitch.Set(this, dataVector);
 
                     for (int i = 0; i < numFiles; i++)
                     {
@@ -998,17 +990,17 @@ internal sealed class ArchiveReader
 
         _stream.Seek(nextHeaderOffset, SeekOrigin.Current);
 
-        db.Header.SetRecycleState((int)nextHeaderSize, 25_000);
-        ReadExact(_stream, db.Header);
+        byte[] header = new byte[nextHeaderSize];
+        ReadExact(_stream, header);
 
-        if (Crc.Finish(Crc.Update(Crc.INIT_CRC, db.Header, 0, db.Header.Count)) != nextHeaderCrc)
+        if (Crc.Finish(Crc.Update(Crc.INIT_CRC, header, 0, header.Length)) != nextHeaderCrc)
         {
             throw new InvalidOperationException();
         }
 
         using (var streamSwitch = new CStreamSwitch())
         {
-            streamSwitch.Set(this, db.Header);
+            streamSwitch.Set(this, header);
 
             BlockType? type = ReadId();
             if (type != BlockType.Header)
@@ -1018,21 +1010,23 @@ internal sealed class ArchiveReader
                     throw new InvalidOperationException();
                 }
 
-                ReadAndDecodePackedStreams(db._startPositionAfterHeader);
+                List<byte[]> dataVector = ReadAndDecodePackedStreams(
+                    db._startPositionAfterHeader
+                );
 
                 // compressed header without content is odd but ok
-                if (db.DataVector.Count == 0)
+                if (dataVector.Count == 0)
                 {
                     db.Fill();
                     return db;
                 }
 
-                if (db.DataVector.Count != 1)
+                if (dataVector.Count != 1)
                 {
                     throw new InvalidOperationException();
                 }
 
-                streamSwitch.Set(this, db.DataVector[0]);
+                streamSwitch.Set(this, dataVector[0]);
 
                 if (ReadId() != BlockType.Header)
                 {
@@ -1047,7 +1041,7 @@ internal sealed class ArchiveReader
     }
 
     // @SharpCompress(ReadExact): Not 100% sure if stream can't be null, check into this
-    private static void ReadExact([CanBeNull] Stream stream, [NotNull] ListFast<byte> buffer)
+    private static void ReadExact([CanBeNull] Stream stream, [NotNull] byte[] buffer)
     {
         if (stream is null)
         {
@@ -1055,11 +1049,11 @@ internal sealed class ArchiveReader
         }
 
         int offset = 0;
-        int length = buffer.Count;
+        int length = buffer.Length;
 
         while (length > 0)
         {
-            int fetched = stream.Read(buffer.ItemsArray, offset, length);
+            int fetched = stream.Read(buffer, offset, length);
             if (fetched <= 0)
             {
                 throw new EndOfStreamException();

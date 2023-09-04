@@ -1,5 +1,5 @@
 using System;
-using static AL_Common.Common;
+using System.Collections.Generic;
 
 namespace SharpCompress.Common.SevenZip;
 
@@ -17,15 +17,15 @@ internal ref struct CStreamSwitch
         }
     }
 
-    public void Set(ArchiveReader archive, ListFast<byte> dataVector)
+    public void Set(ArchiveReader archive, byte[] dataVector)
     {
         Dispose();
         _archive = archive;
-        _archive.AddByteStream(dataVector.ItemsArray, 0, dataVector.Count);
+        _archive.AddByteStream(dataVector, 0, dataVector.Length);
         _needRemove = true;
     }
 
-    public void Set(ArchiveReader archive, ListFast<ListFast<byte>> dataVector)
+    public void Set(ArchiveReader archive, List<byte[]> dataVector)
     {
         Dispose();
 
@@ -39,7 +39,7 @@ internal ref struct CStreamSwitch
             }
 
             _archive = archive;
-            _archive.AddByteStream(dataVector[dataIndex].ItemsArray, 0, dataVector[dataIndex].Count);
+            _archive.AddByteStream(dataVector[dataIndex], 0, dataVector[dataIndex].Length);
             _needRemove = true;
         }
     }
