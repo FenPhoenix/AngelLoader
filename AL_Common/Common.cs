@@ -1481,6 +1481,9 @@ public static class Common
         T[] array = new T[count];
         objs.CopyTo(array, 0);
         array.CopyTo((Array) this._items, index);
+
+        @MEM(List.AddRange): They fixed this in .NET 7 at least.
+        c.CopyTo(_items, index);
         */
         list.AddRange(items);
     }
