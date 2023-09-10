@@ -79,7 +79,7 @@ public static partial class RTFParserCommon
 
         public Context()
         {
-            Keyword = new ListFast<char>(_keywordMaxLen);
+            Keyword = new ListFast<char>(KeywordMaxLen);
 
             // Highest measured was 10
             ScopeStack = new ScopeStack();
@@ -115,15 +115,17 @@ public static partial class RTFParserCommon
 
     #region Constants
 
-    public const int _keywordMaxLen = 32;
+    public const int KeywordMaxLen = 32;
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
-    public const int _paramMaxLen = 10;
+    public const int ParamMaxLen = 10;
 
-    public const int _undefinedLanguage = 1024;
+    public const int UndefinedLanguage = 1024;
 
     #endregion
 
-    #region Font to Unicode conversion tables
+    #region Conversion tables
+
+    #region Charset to code page
 
     private const int _charSetToCodePageLength = 256;
     private static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
@@ -177,6 +179,96 @@ public static partial class RTFParserCommon
 
         return charSetToCodePage;
     }
+
+    #endregion
+
+    #region Lang to code page
+
+    public const int MaxLangNumDigits = 5;
+    public const int MaxLangNumIndex = 16385;
+    public static readonly int[] LangToCodePage = InitializeLangToCodePage();
+
+    private static int[] InitializeLangToCodePage()
+    {
+        int[] langToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
+
+        /*
+        There's a ton more languages than this, but it's not clear what code page they all translate to.
+        This should be enough to get on with for now though...
+
+        Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
+
+        2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
+        */
+#if false
+        // Arabic
+        langToCodePage[1065] = 1256;
+        langToCodePage[1025] = 1256;
+        langToCodePage[2049] = 1256;
+        langToCodePage[3073] = 1256;
+        langToCodePage[4097] = 1256;
+        langToCodePage[5121] = 1256;
+        langToCodePage[6145] = 1256;
+        langToCodePage[7169] = 1256;
+        langToCodePage[8193] = 1256;
+        langToCodePage[9217] = 1256;
+        langToCodePage[10241] = 1256;
+        langToCodePage[11265] = 1256;
+        langToCodePage[12289] = 1256;
+        langToCodePage[13313] = 1256;
+        langToCodePage[14337] = 1256;
+        langToCodePage[15361] = 1256;
+        langToCodePage[16385] = 1256;
+        langToCodePage[1056] = 1256;
+        langToCodePage[2118] = 1256;
+        langToCodePage[2137] = 1256;
+        langToCodePage[1119] = 1256;
+        langToCodePage[1120] = 1256;
+        langToCodePage[1123] = 1256;
+        langToCodePage[1164] = 1256;
+#endif
+
+        // Cyrillic
+        langToCodePage[1049] = 1251;
+#if false
+        langToCodePage[1026] = 1251;
+        langToCodePage[10266] = 1251;
+        langToCodePage[1058] = 1251;
+        langToCodePage[2073] = 1251;
+        langToCodePage[3098] = 1251;
+        langToCodePage[7194] = 1251;
+        langToCodePage[8218] = 1251;
+        langToCodePage[12314] = 1251;
+        langToCodePage[1059] = 1251;
+        langToCodePage[1064] = 1251;
+        langToCodePage[2092] = 1251;
+        langToCodePage[1071] = 1251;
+        langToCodePage[1087] = 1251;
+        langToCodePage[1088] = 1251;
+        langToCodePage[2115] = 1251;
+        langToCodePage[1092] = 1251;
+        langToCodePage[1104] = 1251;
+        langToCodePage[1133] = 1251;
+        langToCodePage[1157] = 1251;
+
+        // Greek
+        langToCodePage[1032] = 1253;
+
+        // Hebrew
+        langToCodePage[1037] = 1255;
+        langToCodePage[1085] = 1255;
+
+        // Vietnamese
+        langToCodePage[1066] = 1258;
+#endif
+
+        // Western European
+        langToCodePage[1033] = 1252;
+
+        return langToCodePage;
+    }
+
+    #endregion
 
     #endregion
 
@@ -954,90 +1046,6 @@ public static partial class RTFParserCommon
     // Static - otherwise the color table parser instantiates this huge thing every RTF readme in dark mode!
     // Also it's readonly so it's thread-safe anyway.
     public static readonly SymbolDict Symbols = new();
-
-    #region Lang to code page
-
-    public const int MaxLangNumDigits = 5;
-    public const int MaxLangNumIndex = 16385;
-    public static readonly int[] LangToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
-
-    static RTFParserCommon()
-    {
-        /*
-        There's a ton more languages than this, but it's not clear what code page they all translate to.
-        This should be enough to get on with for now though...
-
-        Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
-
-        2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
-        */
-#if false
-        // Arabic
-        LangToCodePage[1065] = 1256;
-        LangToCodePage[1025] = 1256;
-        LangToCodePage[2049] = 1256;
-        LangToCodePage[3073] = 1256;
-        LangToCodePage[4097] = 1256;
-        LangToCodePage[5121] = 1256;
-        LangToCodePage[6145] = 1256;
-        LangToCodePage[7169] = 1256;
-        LangToCodePage[8193] = 1256;
-        LangToCodePage[9217] = 1256;
-        LangToCodePage[10241] = 1256;
-        LangToCodePage[11265] = 1256;
-        LangToCodePage[12289] = 1256;
-        LangToCodePage[13313] = 1256;
-        LangToCodePage[14337] = 1256;
-        LangToCodePage[15361] = 1256;
-        LangToCodePage[16385] = 1256;
-        LangToCodePage[1056] = 1256;
-        LangToCodePage[2118] = 1256;
-        LangToCodePage[2137] = 1256;
-        LangToCodePage[1119] = 1256;
-        LangToCodePage[1120] = 1256;
-        LangToCodePage[1123] = 1256;
-        LangToCodePage[1164] = 1256;
-#endif
-
-        // Cyrillic
-        LangToCodePage[1049] = 1251;
-#if false
-        LangToCodePage[1026] = 1251;
-        LangToCodePage[10266] = 1251;
-        LangToCodePage[1058] = 1251;
-        LangToCodePage[2073] = 1251;
-        LangToCodePage[3098] = 1251;
-        LangToCodePage[7194] = 1251;
-        LangToCodePage[8218] = 1251;
-        LangToCodePage[12314] = 1251;
-        LangToCodePage[1059] = 1251;
-        LangToCodePage[1064] = 1251;
-        LangToCodePage[2092] = 1251;
-        LangToCodePage[1071] = 1251;
-        LangToCodePage[1087] = 1251;
-        LangToCodePage[1088] = 1251;
-        LangToCodePage[2115] = 1251;
-        LangToCodePage[1092] = 1251;
-        LangToCodePage[1104] = 1251;
-        LangToCodePage[1133] = 1251;
-        LangToCodePage[1157] = 1251;
-
-        // Greek
-        LangToCodePage[1032] = 1253;
-
-        // Hebrew
-        LangToCodePage[1037] = 1255;
-        LangToCodePage[1085] = 1255;
-
-        // Vietnamese
-        LangToCodePage[1066] = 1258;
-#endif
-
-        // Western European
-        LangToCodePage[1033] = 1252;
-    }
-
-    #endregion
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static RtfError HandleSpecialTypeFont(Context _ctx, SpecialType specialType, int param)

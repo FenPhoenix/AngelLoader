@@ -254,7 +254,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             int currentCodePage = fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx.Header.CodePage;
 
-            if (currentLang > -1 && currentLang != _undefinedLanguage && val != _undefinedLanguage)
+            if (currentLang > -1 && currentLang != UndefinedLanguage && val != UndefinedLanguage)
             {
                 if (val is > -1 and <= MaxLangNumIndex)
                 {
@@ -278,7 +278,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     }
                 }
 
-                if (val == _undefinedLanguage) return RtfError.OK;
+                if (val == UndefinedLanguage) return RtfError.OK;
             }
         }
 

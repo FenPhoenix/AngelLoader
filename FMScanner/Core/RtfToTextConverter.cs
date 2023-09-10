@@ -1214,7 +1214,7 @@ public sealed partial class RtfToTextConverter
         }
         else if (propertyTableIndex == Property.Lang)
         {
-            if (val == _undefinedLanguage) return RtfError.OK;
+            if (val == UndefinedLanguage) return RtfError.OK;
         }
 
         _ctx.CurrentScope.Properties[(int)propertyTableIndex] = val;

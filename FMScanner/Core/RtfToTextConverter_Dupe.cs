@@ -142,12 +142,12 @@ public sealed partial class RtfToTextConverter
 
         int i;
         bool eof = false;
-        for (i = 0; i < _keywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
+        for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
         {
             if (eof) return RtfError.EndOfFile;
             _ctx.Keyword.AddFast(ch);
         }
-        if (i > _keywordMaxLen) return RtfError.KeywordTooLong;
+        if (i > KeywordMaxLen) return RtfError.KeywordTooLong;
 
         if (ch == '-')
         {
@@ -160,7 +160,7 @@ public sealed partial class RtfToTextConverter
             hasParam = true;
 
             // Parse param in real-time to avoid doing a second loop over
-            for (i = 0; i < _paramMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
+            for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
             {
                 if (eof) return RtfError.EndOfFile;
                 param += ch - '0';
@@ -169,7 +169,7 @@ public sealed partial class RtfToTextConverter
             // Undo the last multiply just one time to avoid checking if we should do it every time through
             // the loop
             param /= 10;
-            if (i > _paramMaxLen) return RtfError.ParameterTooLong;
+            if (i > ParamMaxLen) return RtfError.ParameterTooLong;
 
             if (negateParam) param = -param;
         }
