@@ -343,6 +343,8 @@ public static partial class RTFParserCommon
             Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
         }
 
+        public Scope() => Reset();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
