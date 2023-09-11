@@ -278,29 +278,29 @@ public static partial class RTFParserCommon
     {
         private const int _maxScopes = 100;
 
-        private readonly Scope[] _scopesArray;
-        private int Count;
+        private readonly Scope[] _scopes;
+        private int _count;
 
         public ScopeStack()
         {
-            _scopesArray = new Scope[_maxScopes];
+            _scopes = new Scope[_maxScopes];
             for (int i = 0; i < _maxScopes; i++)
             {
-                _scopesArray[i] = new Scope();
+                _scopes[i] = new Scope();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ClearFast() => Count = 0;
+        public void ClearFast() => _count = 0;
 
         #region Scope push/pop
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RtfError Push(Scope currentScope, ref int groupCount)
         {
-            if (Count >= _maxScopes) return RtfError.StackOverflow;
+            if (_count >= _maxScopes) return RtfError.StackOverflow;
 
-            currentScope.DeepCopyTo(_scopesArray[Count++]);
+            currentScope.DeepCopyTo(_scopes[_count++]);
 
             currentScope.RtfInternalState = RtfInternalState.Normal;
 
@@ -312,9 +312,9 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RtfError Pop(Scope currentScope, ref int groupCount)
         {
-            if (Count == 0) return RtfError.StackUnderflow;
+            if (_count == 0) return RtfError.StackUnderflow;
 
-            _scopesArray[--Count].DeepCopyTo(currentScope);
+            _scopes[--_count].DeepCopyTo(currentScope);
             groupCount--;
 
             return RtfError.OK;
@@ -1050,43 +1050,43 @@ public static partial class RTFParserCommon
     public static readonly SymbolDict Symbols = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static RtfError HandleSpecialTypeFont(Context _ctx, SpecialType specialType, int param)
+    public static RtfError HandleSpecialTypeFont(Context ctx, SpecialType specialType, int param)
     {
         switch (specialType)
         {
             case SpecialType.HeaderCodePage:
-                _ctx.Header.CodePage = param >= 0 ? param : 1252;
+                ctx.Header.CodePage = param >= 0 ? param : 1252;
                 break;
             case SpecialType.FontTable:
-                _ctx.CurrentScope.InFontTable = true;
+                ctx.CurrentScope.InFontTable = true;
                 break;
             case SpecialType.DefaultFont:
-                if (!_ctx.Header.DefaultFontSet)
+                if (!ctx.Header.DefaultFontSet)
                 {
-                    _ctx.Header.DefaultFontNum = param;
-                    _ctx.Header.DefaultFontSet = true;
+                    ctx.Header.DefaultFontNum = param;
+                    ctx.Header.DefaultFontSet = true;
                 }
                 break;
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
-                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Count > 0 && ctx.CurrentScope.InFontTable)
                 {
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
                         int codePage = _charSetToCodePage[param];
-                        _ctx.FontEntries.Top.CodePage = codePage >= 0 ? codePage : _ctx.Header.CodePage;
+                        ctx.FontEntries.Top.CodePage = codePage >= 0 ? codePage : ctx.Header.CodePage;
                     }
                     else
                     {
-                        _ctx.FontEntries.Top.CodePage = _ctx.Header.CodePage;
+                        ctx.FontEntries.Top.CodePage = ctx.Header.CodePage;
                     }
                 }
                 break;
             case SpecialType.CodePage:
-                if (_ctx.FontEntries.Count > 0 && _ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Count > 0 && ctx.CurrentScope.InFontTable)
                 {
-                    _ctx.FontEntries.Top.CodePage = param >= 0 ? param : _ctx.Header.CodePage;
+                    ctx.FontEntries.Top.CodePage = param >= 0 ? param : ctx.Header.CodePage;
                 }
                 break;
             default:
