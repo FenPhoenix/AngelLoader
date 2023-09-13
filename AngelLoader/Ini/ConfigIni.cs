@@ -782,7 +782,8 @@ internal static partial class Ini
         }
     }
 
-    private static readonly unsafe Dictionary<string, Config_DelegatePointerWrapper> _actionDict_Config = new(new KeyComparer())
+    private static unsafe Dictionary<string, Config_DelegatePointerWrapper>
+    CreateConfigDictionary() => new(new KeyComparer())
     {
         #region Settings window state
 
@@ -1011,6 +1012,9 @@ internal static partial class Ini
     {
         List<string> iniLines = File_ReadAllLines_List(path);
 
+        // We only read config once on startup, so GC the dictionary after we're done with it
+        var configDict = CreateConfigDictionary();
+
         for (int li = 0; li < iniLines.Count; li++)
         {
             string lineTS = iniLines[li].TrimStart();
@@ -1066,7 +1070,7 @@ internal static partial class Ini
 
                 // @GENGAMES (ConfigIni prefix detector) - End
 
-                if (_actionDict_Config.TryGetValue(lineTS, out var result))
+                if (configDict.TryGetValue(lineTS, out var result))
                 {
                     result.Action(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
                 }
