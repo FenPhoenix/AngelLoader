@@ -135,7 +135,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
         if (!_darkModeEnabled) return;
 
-        SetButtonState((e.Button & MouseButtons.Left) == MouseButtons.Left &&
+        SetButtonState((e.Button & MouseButtons.Left) != 0 &&
                        ClientRectangle.Contains(e.Location) &&
                        DroppedDown
             ? DarkControlState.Pressed
@@ -355,8 +355,8 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         SolidBrush textColorBrush = DarkColors.LightTextBrush;
         SolidBrush fillColorBrush = DarkColors.LightBackgroundBrush;
 
-        if ((e.State & DrawItemState.Selected) == DrawItemState.Selected ||
-            (e.State & DrawItemState.Focus) == DrawItemState.Focus)
+        if ((e.State & DrawItemState.Selected) != 0 ||
+            (e.State & DrawItemState.Focus) != 0)
         {
             fillColorBrush = DarkColors.BlueSelectionBrush;
         }

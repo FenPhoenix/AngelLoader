@@ -633,7 +633,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         // That way, we can get a good, visible separator color for all cases by just having two.
 
         static bool IsSelected(DataGridViewElementStates state) =>
-            (state & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected;
+            (state & DataGridViewElementStates.Selected) != 0;
 
         if (e.RowIndex > -1)
         {

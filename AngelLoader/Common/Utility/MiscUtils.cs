@@ -78,7 +78,7 @@ public static partial class Utils
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
+    internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool FMNeedsScan(FanMission fm) => !fm.MarkedUnavailable && (fm.Game == Game.Null ||
@@ -111,16 +111,16 @@ public static partial class Utils
     #region Enum HasFlagFast
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) == flag;
+    internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) == flag;
+    internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) == flag;
+    internal static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) == flag;
+    internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) != 0;
 
     #endregion
 

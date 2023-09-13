@@ -65,7 +65,7 @@ internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
 
     protected override void OnDrawNode(DrawTreeNodeEventArgs e)
     {
-        bool nodeFocused = (e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused;
+        bool nodeFocused = (e.State & TreeNodeStates.Focused) != 0;
 
         bool darkMode = _darkModeEnabled;
 

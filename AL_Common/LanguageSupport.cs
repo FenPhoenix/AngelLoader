@@ -68,5 +68,5 @@ public static partial class LanguageSupport
         }
     }
 
-    public static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) == flag;
+    public static bool HasFlagFast(this Language language, Language flag) => (language & flag) != 0;
 }
