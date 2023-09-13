@@ -632,16 +632,15 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         // This is for having different colored grid lines in recent-highlighted rows.
         // That way, we can get a good, visible separator color for all cases by just having two.
 
-        static bool IsSelected(DataGridViewElementStates state) =>
-            (state & DataGridViewElementStates.Selected) != 0;
-
         if (e.RowIndex > -1)
         {
             FanMission fm = GetFMFromIndex(e.RowIndex);
 
+            bool isSelected = (e.State & DataGridViewElementStates.Selected) != 0;
+
             #region Paint cell background
 
-            SolidBrush bgBrush = IsSelected(e.State)
+            SolidBrush bgBrush = isSelected
                 ? DarkColors.BlueSelectionBrush
                 : fm.MarkedUnavailable
                     ? DarkColors.Fen_RedHighlightBrush
@@ -657,7 +656,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
             #region Draw content
 
-            e.CellStyle.ForeColor = IsSelected(e.State)
+            e.CellStyle.ForeColor = isSelected
                 ? DarkColors.Fen_HighlightText
                 : DarkColors.Fen_DarkForeground;
 
