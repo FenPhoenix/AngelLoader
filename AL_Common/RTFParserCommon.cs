@@ -830,8 +830,11 @@ public static partial class RTFParserCommon
         }
     }
 
-    public sealed class FontDictionary : Dictionary<int, FontEntry>
+    public sealed class FontDictionary
     {
+        private readonly int _capacity;
+        private Dictionary<int, FontEntry>? _dict;
+
         private readonly ListFast<FontEntry> _fontEntryPool = new(250);
         private int _fontEntryPoolVirtualCount;
 
@@ -846,9 +849,9 @@ public static partial class RTFParserCommon
         private const int _switchPoint = 32767;
 
         public FontEntry Top = null!;
-        public FontDictionary(int capacity) : base(capacity) { }
+        public FontDictionary(int capacity) => _capacity = capacity;
 
-        public new int Count;
+        public int Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(int key)
@@ -869,7 +872,8 @@ public static partial class RTFParserCommon
             Top = fontEntry;
             if (key is < 0 or >= _switchPoint)
             {
-                base[key] = fontEntry;
+                _dict ??= new Dictionary<int, FontEntry>(_capacity);
+                _dict[key] = fontEntry;
             }
             else
             {
@@ -879,9 +883,9 @@ public static partial class RTFParserCommon
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public new void Clear()
+        public void Clear()
         {
-            base.Clear();
+            _dict?.Clear();
             _array.Clear();
             Count = 0;
             _fontEntryPoolVirtualCount = _fontEntryPool.Count;
@@ -895,11 +899,19 @@ public static partial class RTFParserCommon
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public new bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
+        public bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
         {
             if (key is < 0 or >= _switchPoint)
             {
-                return base.TryGetValue(key, out value);
+                if (_dict == null)
+                {
+                    value = null;
+                    return false;
+                }
+                else
+                {
+                    return _dict.TryGetValue(key, out value);
+                }
             }
             else
             {
