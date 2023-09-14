@@ -826,7 +826,7 @@ internal static class ControlUtils
 
     #endregion
 
-    public static void DrawCheckMark(Graphics g, Pen pen, RectangleF rect)
+    internal static void DrawCheckMark(Graphics g, Pen pen, RectangleF rect)
     {
         SmoothingMode oldSmoothingMode = g.SmoothingMode;
         g.SmoothingMode = SmoothingMode.HighQuality;
@@ -850,8 +850,15 @@ internal static class ControlUtils
         g.SmoothingMode = oldSmoothingMode;
     }
 
-    public static string GetRatingString(int rating, RatingDisplayStyle style)
+    internal static string GetRatingString(int rating, RatingDisplayStyle style)
     {
         return (style == RatingDisplayStyle.FMSel ? rating / 2.0 : rating).ToString(CultureInfo.CurrentCulture);
     }
+
+    /// <summary>
+    /// For text that goes in menus: "&" is a reserved character, so escape "&" to "&&"
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
 }

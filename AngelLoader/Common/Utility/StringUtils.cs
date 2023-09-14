@@ -134,13 +134,6 @@ public static partial class Utils
     internal static string ToRNEscapes(this string value) => value.Replace("\\", @"\\").Replace("\r\n", @"\r\n");
 
     /// <summary>
-    /// For text that goes in menus: "&" is a reserved character, so escape "&" to "&&"
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
-
-    /// <summary>
     /// Just puts a \ in front of each character in the string.
     /// </summary>
     /// <param name="value"></param>
