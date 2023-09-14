@@ -8,11 +8,12 @@ public static partial class Utils
 {
     #region StartsWith and EndsWith
 
-    internal static bool StartsWithFast_NoNullChecks(this string str, string value)
+    internal static bool StartsWithFast(this string str, string value)
     {
-        if (str.Length < value.Length) return false;
+        int valueLength = value.Length;
+        if (str.Length < valueLength) return false;
 
-        for (int i = 0; i < value.Length; i++)
+        for (int i = 0; i < valueLength; i++)
         {
             if (str[i] != value[i]) return false;
         }

@@ -570,7 +570,7 @@ internal static class Import
                     {
                         // TODO: FMSel: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
-                        if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
+                        if (lineFM.StartsWithFast("NiceName="))
                         {
                             fm.Title = lineFM.Substring(9);
                         }
@@ -581,30 +581,30 @@ internal static class Import
                         archives in different folders with a subdir prefix and a bracketed number after the
                         install dir name and all.
                         */
-                        else if (lineFM.StartsWithFast_NoNullChecks("Archive="))
+                        else if (lineFM.StartsWithFast("Archive="))
                         {
                             fm.Archive = lineFM.Substring(8);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
+                        else if (lineFM.StartsWithFast("ReleaseDate="))
                         {
                             fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("LastStarted="))
+                        else if (lineFM.StartsWithFast("LastStarted="))
                         {
                             fm.LastPlayed.UnixDateString = lineFM.Substring(12);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Completed="))
+                        else if (lineFM.StartsWithFast("Completed="))
                         {
                             int.TryParse(lineFM.Substring(10), out int result);
                             // Unfortunately FMSel doesn't let you choose the difficulty you finished on, so
                             // we have to have this fallback value as a best-effort thing.
                             if (result > 0) fm.FinishedOnUnknown = true;
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Rating="))
+                        else if (lineFM.StartsWithFast("Rating="))
                         {
                             fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Notes="))
+                        else if (lineFM.StartsWithFast("Notes="))
                         {
                             fm.Comment = lineFM.Substring(6)
                                 .Replace(@"\n", @"\r\n")
@@ -612,15 +612,15 @@ internal static class Import
                                 .Replace(@"\""", "\"")
                                 .Replace(@"\\", "\\");
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
+                        else if (lineFM.StartsWithFast("ModExclude="))
                         {
                             fm.DisabledMods = lineFM.Substring(11);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
+                        else if (lineFM.StartsWithFast("Tags="))
                         {
                             fm.TagsString = lineFM.Substring(5);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
+                        else if (lineFM.StartsWithFast("InfoFile="))
                         {
                             fm.SelectedReadme = lineFM.Substring(9);
                         }
@@ -666,7 +666,7 @@ internal static class Import
                     {
                         // TODO: NDL: We're not trimming these lines at all. Is this to spec?
                         string lc = lines[i + 1];
-                        if (lc.StartsWithFast_NoNullChecks("ArchiveRoot="))
+                        if (lc.StartsWithFast("ArchiveRoot="))
                         {
                             archiveDir = lc.Substring(12).Trim();
                             break;
@@ -731,46 +731,46 @@ internal static class Import
                     {
                         // TODO: NDL: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
-                        if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
+                        if (lineFM.StartsWithFast("NiceName="))
                         {
                             fm.Title = lineFM.Substring(9);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
+                        else if (lineFM.StartsWithFast("ReleaseDate="))
                         {
                             fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("LastCompleted="))
+                        else if (lineFM.StartsWithFast("LastCompleted="))
                         {
                             fm.LastPlayed.UnixDateString = lineFM.Substring(14);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
+                        else if (lineFM.StartsWithFast("Finished="))
                         {
                             uint.TryParse(lineFM.Substring(9), out uint result);
                             // result will be 0 on fail, which is the empty value so it's fine
                             fm.FinishedOn = result;
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Rating="))
+                        else if (lineFM.StartsWithFast("Rating="))
                         {
                             fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Comment="))
+                        else if (lineFM.StartsWithFast("Comment="))
                         {
                             fm.Comment = lineFM.Substring(8);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
+                        else if (lineFM.StartsWithFast("ModExclude="))
                         {
                             fm.DisabledMods = lineFM.Substring(11);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
+                        else if (lineFM.StartsWithFast("Tags="))
                         {
                             string val = lineFM.Substring(5);
                             if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
+                        else if (lineFM.StartsWithFast("InfoFile="))
                         {
                             fm.SelectedReadme = lineFM.Substring(9);
                         }
-                        else if (lineFM.StartsWithFast_NoNullChecks("FMSize="))
+                        else if (lineFM.StartsWithFast("FMSize="))
                         {
                             ulong.TryParse(lineFM.Substring(7), out ulong result);
                             fm.SizeBytes = result;
