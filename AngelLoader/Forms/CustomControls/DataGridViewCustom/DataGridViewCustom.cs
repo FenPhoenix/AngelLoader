@@ -545,8 +545,17 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     protected override void OnCellDoubleClick(DataGridViewCellEventArgs e)
     {
-        if (_secondToLastMouseDownRowIndex != _lastMouseDownRowIndex) return;
-        base.OnCellDoubleClick(e);
+        if (_secondToLastMouseDownRowIndex != _lastMouseDownRowIndex)
+        {
+            _lastMouseDownRowIndex = -1;
+            _secondToLastMouseDownRowIndex = -1;
+        }
+        else
+        {
+            _lastMouseDownRowIndex = -1;
+            _secondToLastMouseDownRowIndex = -1;
+            base.OnCellDoubleClick(e);
+        }
     }
 
     protected override void OnMouseDown(MouseEventArgs e)
