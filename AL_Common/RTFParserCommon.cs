@@ -835,7 +835,7 @@ public static partial class RTFParserCommon
         private readonly int _capacity;
         private Dictionary<int, FontEntry>? _dict;
 
-        private readonly ListFast<FontEntry> _fontEntryPool = new(250);
+        private readonly ListFast<FontEntry> _fontEntryPool;
         private int _fontEntryPoolVirtualCount;
 
         private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
@@ -849,7 +849,12 @@ public static partial class RTFParserCommon
         private const int _switchPoint = 32767;
 
         public FontEntry Top = null!;
-        public FontDictionary(int capacity) => _capacity = capacity;
+
+        public FontDictionary(int capacity)
+        {
+            _capacity = capacity;
+            _fontEntryPool = new ListFast<FontEntry>(capacity);
+        }
 
         public int Count;
 
