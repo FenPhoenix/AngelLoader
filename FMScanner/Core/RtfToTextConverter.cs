@@ -1243,7 +1243,7 @@ public sealed partial class RtfToTextConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseChar(char ch)
     {
-        if (_ctx.CurrentScope.InFontTable && _ctx.FontEntries.Count > 0)
+        if (_ctx.CurrentScope.InFontTable && _ctx.FontEntries.Top != null)
         {
             _ctx.FontEntries.Top.AppendNameChar(ch);
         }

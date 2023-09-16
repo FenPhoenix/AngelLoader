@@ -848,15 +848,13 @@ public static partial class RTFParserCommon
         */
         private const int _switchPoint = 32767;
 
-        public FontEntry Top = null!;
+        public FontEntry? Top;
 
         public FontDictionary(int capacity)
         {
             _capacity = capacity;
             _fontEntryPool = new ListFast<FontEntry>(capacity);
         }
-
-        public int Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(int key)
@@ -884,15 +882,14 @@ public static partial class RTFParserCommon
             {
                 _array[key] = fontEntry;
             }
-            Count++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
+            Top = null;
             _dict?.Clear();
             _array.Clear();
-            Count = 0;
             _fontEntryPoolVirtualCount = _fontEntryPool.Count;
         }
 
@@ -1087,7 +1084,7 @@ public static partial class RTFParserCommon
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
-                if (ctx.FontEntries.Count > 0 && ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Top != null && ctx.CurrentScope.InFontTable)
                 {
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
@@ -1101,7 +1098,7 @@ public static partial class RTFParserCommon
                 }
                 break;
             case SpecialType.CodePage:
-                if (ctx.FontEntries.Count > 0 && ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Top != null && ctx.CurrentScope.InFontTable)
                 {
                     ctx.FontEntries.Top.CodePage = param >= 0 ? param : ctx.Header.CodePage;
                 }
