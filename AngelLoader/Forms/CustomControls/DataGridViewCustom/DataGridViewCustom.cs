@@ -535,43 +535,14 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         base.OnMouseLeave(e);
     }
 
-    /*
-    Ridiculous hack to fix the "double click across row boundaries still counts as a double click of the latest
-    row" bug... it only happens sometimes(?) by which I mean right now I'm running the app and it always happens,
-    but yesterday I couldn't get it to happen at all... meh...
-    */
-    private int _lastMouseDownRowIndex = -1;
-    private int _secondToLastMouseDownRowIndex = -1;
-
-    protected override void OnCellDoubleClick(DataGridViewCellEventArgs e)
-    {
-        if (_secondToLastMouseDownRowIndex != _lastMouseDownRowIndex)
-        {
-            _lastMouseDownRowIndex = -1;
-            _secondToLastMouseDownRowIndex = -1;
-        }
-        else
-        {
-            _lastMouseDownRowIndex = -1;
-            _secondToLastMouseDownRowIndex = -1;
-            base.OnCellDoubleClick(e);
-        }
-    }
-
     protected override void OnMouseDown(MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
             HitTestInfo ht = HitTest(e.X, e.Y);
-            switch (ht.Type)
+            if (ht.Type == DataGridViewHitTestType.ColumnHeader)
             {
-                case DataGridViewHitTestType.ColumnHeader:
-                    _mouseDownOnHeader = ht.ColumnIndex;
-                    break;
-                case DataGridViewHitTestType.Cell:
-                    _secondToLastMouseDownRowIndex = _lastMouseDownRowIndex;
-                    _lastMouseDownRowIndex = ht.RowIndex;
-                    break;
+                _mouseDownOnHeader = ht.ColumnIndex;
             }
         }
 
