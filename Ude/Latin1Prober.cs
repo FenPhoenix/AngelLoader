@@ -188,8 +188,7 @@ internal sealed class Latin1Prober : CharsetProber
     /// <returns>a filtered copy of the input buffer</returns>
     private static void FilterWithEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast memoryStream)
     {
-        memoryStream.EnsureCapacity(buf.Length);
-        memoryStream.SetLength(0);
+        memoryStream.ResetToCapacity(buf.Length);
         bool inTag = false;
         int max = offset + len;
         int prev = offset;
@@ -227,7 +226,5 @@ internal sealed class Latin1Prober : CharsetProber
         {
             memoryStream.Write(buf, prev, cur - prev);
         }
-
-        memoryStream.SetLength(memoryStream.Position);
     }
 }

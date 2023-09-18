@@ -185,8 +185,7 @@ internal sealed class SBCSGroupProber : CharsetProber
     private static (byte[] Array, int Length)
     FilterWithoutEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast ms)
     {
-        ms.EnsureCapacity(buf.Length);
-        ms.SetLength(0);
+        ms.ResetToCapacity(buf.Length);
         bool meetMSB = false;
         int max = offset + len;
         int prev = offset;
@@ -217,8 +216,6 @@ internal sealed class SBCSGroupProber : CharsetProber
         {
             ms.Write(buf, prev, cur - prev);
         }
-
-        ms.SetLength(ms.Position);
 
         return (ms.Buffer, ms.Length);
     }

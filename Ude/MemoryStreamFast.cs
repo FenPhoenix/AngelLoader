@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using AL_Common;
 
 namespace Ude.NetStandard;
@@ -8,7 +9,7 @@ public sealed class MemoryStreamFast
     public byte[] Buffer;
 
     /// <summary>Do not modify!</summary>
-    public int Position;
+    private int _position;
 
     /// <summary>Do not modify!</summary>
     public int Length;
@@ -27,7 +28,7 @@ public sealed class MemoryStreamFast
         _capacity = capacity;
     }
 
-    public bool EnsureCapacity(int value)
+    private bool EnsureCapacity(int value)
     {
         if (value < 0) ThrowHelper.IOException("StreamTooLong");
 
@@ -88,29 +89,12 @@ public sealed class MemoryStreamFast
         }
     }
 
-    /// <summary>Sets the length of the current stream to the specified value.</summary>
-    /// <param name="value">The value at which to set the length.</param>
-    /// <exception cref="T:System.NotSupportedException">The current stream is not resizable and <paramref name="value" /> is larger than the current capacity.
-    /// -or-
-    /// The current stream does not support writing.</exception>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">
-    /// <paramref name="value" /> is negative or is greater than the maximum length of the <see cref="T:System.IO.MemoryStreamFast" />, where the maximum length is(<see cref="F:System.Int32.MaxValue" /> - origin), and origin is the index into the underlying buffer at which the stream starts.</exception>
-    internal void SetLength(int value)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void ResetToCapacity(int capacity)
     {
-        if (value < 0)
-        {
-            ThrowHelper.ArgumentOutOfRange(nameof(value), "StreamLength");
-        }
-        if (!EnsureCapacity(value) && value > Length)
-        {
-            Array.Clear(Buffer, Length, value - Length);
-        }
-        Length = value;
-        if (Position <= value)
-        {
-            return;
-        }
-        Position = value;
+        EnsureCapacity(capacity);
+        Length = 0;
+        _position = 0;
     }
 
     /// <summary>Writes a block of bytes to the current stream using data read from a buffer.</summary>
@@ -141,7 +125,7 @@ public sealed class MemoryStreamFast
             ThrowHelper.ArgumentException("Argument_InvalidOffLen");
         }
 
-        int i = Position + count;
+        int i = _position + count;
         if (i < 0)
         {
             ThrowHelper.IOException("StreamTooLong");
@@ -149,7 +133,7 @@ public sealed class MemoryStreamFast
 
         if (i > Length)
         {
-            bool mustZero = Position > Length;
+            bool mustZero = _position > Length;
             if (i > _capacity && EnsureCapacity(i))
             {
                 mustZero = false;
@@ -165,14 +149,14 @@ public sealed class MemoryStreamFast
             int byteCount = count;
             while (--byteCount >= 0)
             {
-                Buffer[Position + byteCount] = buffer[offset + byteCount];
+                Buffer[_position + byteCount] = buffer[offset + byteCount];
             }
         }
         else
         {
-            System.Buffer.BlockCopy(buffer, offset, Buffer, Position, count);
+            System.Buffer.BlockCopy(buffer, offset, Buffer, _position, count);
         }
-        Position = i;
+        _position = i;
     }
 
     /// <summary>Writes a byte to the current stream at the current position.</summary>
@@ -183,21 +167,21 @@ public sealed class MemoryStreamFast
     /// <exception cref="T:System.ObjectDisposedException">The current stream is closed.</exception>
     internal void WriteByte(byte value)
     {
-        if (Position >= Length)
+        if (_position >= Length)
         {
-            int newLength = Position + 1;
-            bool mustZero = Position > Length;
+            int newLength = _position + 1;
+            bool mustZero = _position > Length;
             if (newLength >= _capacity && EnsureCapacity(newLength))
             {
                 mustZero = false;
             }
             if (mustZero)
             {
-                Array.Clear(Buffer, Length, Position - Length);
+                Array.Clear(Buffer, Length, _position - Length);
             }
             Length = newLength;
         }
-        Buffer[Position++] = value;
+        Buffer[_position++] = value;
     }
 
     internal byte this[int index] => Buffer[index];
