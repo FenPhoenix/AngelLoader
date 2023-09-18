@@ -29,49 +29,26 @@ public sealed class MemoryStreamFast
 
     public bool EnsureCapacity(int value)
     {
-        if (value < 0)
+        if (value < 0) ThrowHelper.IOException("StreamTooLong");
+
+        if (value > _capacity)
         {
-            ThrowHelper.IOException("StreamTooLong");
+            int newCapacity = value;
+            if (newCapacity < 256) newCapacity = 256;
+            if (newCapacity < _capacity * 2) newCapacity = _capacity * 2;
+
+            if ((uint)(_capacity * 2) > 2147483591U)
+            {
+                newCapacity = value > 2147483591 ? value : 2147483591;
+            }
+
+            Capacity = newCapacity;
+
+            return true;
         }
-        if (value <= _capacity)
-        {
-            return false;
-        }
-        int num = value;
-        if (num < 256)
-        {
-            num = 256;
-        }
-        if (num < _capacity * 2)
-        {
-            num = _capacity * 2;
-        }
-        if ((uint)(_capacity * 2) > 2147483591U)
-        {
-            num = value > 2147483591 ? value : 2147483591;
-        }
-        Capacity = num;
-        return true;
+
+        return false;
     }
-
-#if false
-
-    /// <summary>Returns the array of unsigned bytes from which this stream was created.</summary>
-    /// <returns>The byte array from which this stream was created, or the underlying array if a byte array was not provided to the <see cref="T:System.IO.MemoryStreamFast" /> constructor during construction of the current instance.</returns>
-    /// <exception cref="T:System.UnauthorizedAccessException">The <see langword="MemoryStreamFast" /> instance was not created with a publicly visible buffer.</exception>
-    public byte[] GetBuffer() => _buffer;
-
-    /// <summary>Returns the array of unsigned bytes from which this stream was created. The return value indicates whether the conversion succeeded.</summary>
-    /// <param name="buffer">The byte array segment from which this stream was created.</param>
-    /// <returns>
-    /// <see langword="true" /> if the conversion was successful; otherwise, <see langword="false" />.</returns>
-    public bool TryGetBuffer(out ArraySegment<byte> buffer)
-    {
-        buffer = new ArraySegment<byte>(_buffer, _origin, _length - _origin);
-        return true;
-    }
-
-#endif
 
     /// <summary>Gets or sets the number of bytes allocated for this stream.</summary>
     /// <returns>The length of the usable portion of the buffer for the stream.</returns>
@@ -96,12 +73,12 @@ public sealed class MemoryStreamFast
             }
             if (value > 0)
             {
-                byte[] dst = new byte[value];
+                byte[] newBuffer = new byte[value];
                 if (Length > 0)
                 {
-                    System.Buffer.BlockCopy(Buffer, 0, dst, 0, Length);
+                    System.Buffer.BlockCopy(Buffer, 0, newBuffer, 0, Length);
                 }
-                Buffer = dst;
+                Buffer = newBuffer;
             }
             else
             {
@@ -111,27 +88,6 @@ public sealed class MemoryStreamFast
         }
     }
 
-#if false
-    /// <summary>Gets or sets the current position within the stream.</summary>
-    /// <returns>The current position within the stream.</returns>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">The position is set to a negative value or a value greater than <see cref="F:System.Int32.MaxValue" />.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The stream is closed.</exception>
-    internal long Position
-    {
-        get => _position;
-#if false
-        set
-        {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_NeedNonNegNum");
-            if (value > int.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(value), "ArgumentOutOfRange_StreamLength");
-            _position = _origin + (int)value;
-        }
-#endif
-    }
-#endif
-
     /// <summary>Sets the length of the current stream to the specified value.</summary>
     /// <param name="value">The value at which to set the length.</param>
     /// <exception cref="T:System.NotSupportedException">The current stream is not resizable and <paramref name="value" /> is larger than the current capacity.
@@ -139,23 +95,22 @@ public sealed class MemoryStreamFast
     /// The current stream does not support writing.</exception>
     /// <exception cref="T:System.ArgumentOutOfRangeException">
     /// <paramref name="value" /> is negative or is greater than the maximum length of the <see cref="T:System.IO.MemoryStreamFast" />, where the maximum length is(<see cref="F:System.Int32.MaxValue" /> - origin), and origin is the index into the underlying buffer at which the stream starts.</exception>
-    internal void SetLength(long value)
+    internal void SetLength(int value)
     {
-        if (value is < 0L or > int.MaxValue)
+        if (value < 0)
         {
             ThrowHelper.ArgumentOutOfRange(nameof(value), "StreamLength");
         }
-        int num = (int)value;
-        if (!EnsureCapacity(num) && num > Length)
+        if (!EnsureCapacity(value) && value > Length)
         {
-            Array.Clear(Buffer, Length, num - Length);
+            Array.Clear(Buffer, Length, value - Length);
         }
-        Length = num;
-        if (Position <= num)
+        Length = value;
+        if (Position <= value)
         {
             return;
         }
-        Position = num;
+        Position = value;
     }
 
     /// <summary>Writes a block of bytes to the current stream using data read from a buffer.</summary>
@@ -185,35 +140,39 @@ public sealed class MemoryStreamFast
         {
             ThrowHelper.ArgumentException("Argument_InvalidOffLen");
         }
-        int num1 = Position + count;
-        if (num1 < 0)
+
+        int i = Position + count;
+        if (i < 0)
         {
             ThrowHelper.IOException("StreamTooLong");
         }
-        if (num1 > Length)
+
+        if (i > Length)
         {
-            bool flag = Position > Length;
-            if (num1 > _capacity && EnsureCapacity(num1))
+            bool mustZero = Position > Length;
+            if (i > _capacity && EnsureCapacity(i))
             {
-                flag = false;
+                mustZero = false;
             }
-            if (flag)
+            if (mustZero)
             {
-                Array.Clear(Buffer, Length, num1 - Length);
+                Array.Clear(Buffer, Length, i - Length);
             }
-            Length = num1;
+            Length = i;
         }
         if (count <= 8 && buffer != Buffer)
         {
-            int num2 = count;
-            while (--num2 >= 0)
-                Buffer[Position + num2] = buffer[offset + num2];
+            int byteCount = count;
+            while (--byteCount >= 0)
+            {
+                Buffer[Position + byteCount] = buffer[offset + byteCount];
+            }
         }
         else
         {
             System.Buffer.BlockCopy(buffer, offset, Buffer, Position, count);
         }
-        Position = num1;
+        Position = i;
     }
 
     /// <summary>Writes a byte to the current stream at the current position.</summary>
@@ -226,17 +185,17 @@ public sealed class MemoryStreamFast
     {
         if (Position >= Length)
         {
-            int num = Position + 1;
-            bool flag = Position > Length;
-            if (num >= _capacity && EnsureCapacity(num))
+            int newLength = Position + 1;
+            bool mustZero = Position > Length;
+            if (newLength >= _capacity && EnsureCapacity(newLength))
             {
-                flag = false;
+                mustZero = false;
             }
-            if (flag)
+            if (mustZero)
             {
                 Array.Clear(Buffer, Length, Position - Length);
             }
-            Length = num;
+            Length = newLength;
         }
         Buffer[Position++] = value;
     }
