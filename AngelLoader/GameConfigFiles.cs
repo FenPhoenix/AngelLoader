@@ -70,7 +70,7 @@ internal static class GameConfigFiles
                      List<string> FMSelectorLines, bool AlwaysShowLoader, List<string>? AllLines)
     GetInfoFromCamModIni(string gamePath, bool langOnly, bool returnAllLines)
     {
-        string CreateAndReturnFMsPath()
+        static string CreateAndReturnFMsPath(string gamePath)
         {
             string fmsPath = Path.Combine(gamePath, "FMs");
             try
@@ -93,7 +93,7 @@ internal static class GameConfigFiles
         // @BetterErrors: Throw up dialog if not found, cause that means we're OldDark or broken.
         if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
         {
-            return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false, null);
+            return (!langOnly ? CreateAndReturnFMsPath(gamePath) : "", "", false, fmSelectorLines, false, null);
         }
 
         string path = "";
@@ -132,31 +132,31 @@ internal static class GameConfigFiles
 
                 if (line.IsEmpty()) continue;
 
-                line = line.TrimStart();
+                string lineTS = line.TrimStart();
 
                 // Quick check; these lines will be checked more thoroughly when we go to use them
-                if (!langOnly && line.ContainsI(key_fm_selector)) fmSelectorLines.Add(line);
-                if (!langOnly && line.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
+                if (!langOnly && lineTS.ContainsI(key_fm_selector)) fmSelectorLines.Add(lineTS);
+                if (!langOnly && lineTS.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
 
-                if (line.IsEmpty() || line[0] == ';') continue;
+                if (lineTS.IsEmpty() || lineTS[0] == ';') continue;
 
-                if (!langOnly && line.StartsWithIPlusWhiteSpace(key_fm_path))
+                if (!langOnly && lineTS.StartsWithIPlusWhiteSpace(key_fm_path))
                 {
-                    path = line.Substring(key_fm_path_len).Trim();
+                    path = lineTS.Substring(key_fm_path_len).Trim();
                 }
-                else if (line.StartsWithIPlusWhiteSpace(key_fm_language))
+                else if (lineTS.StartsWithIPlusWhiteSpace(key_fm_language))
                 {
-                    fm_language = line.Substring(key_fm_language_len).Trim();
+                    fm_language = lineTS.Substring(key_fm_language_len).Trim();
                 }
-                else if (line.StartsWithI(key_fm_language_forced))
+                else if (lineTS.StartsWithI(key_fm_language_forced))
                 {
-                    if (line.Trim().Length == key_fm_language_forced_len)
+                    if (lineTS.Trim().Length == key_fm_language_forced_len)
                     {
                         fm_language_forced = true;
                     }
-                    else if (char.IsWhiteSpace(line[key_fm_language_forced_len]))
+                    else if (char.IsWhiteSpace(lineTS[key_fm_language_forced_len]))
                     {
-                        fm_language_forced = line.Substring(key_fm_language_forced_len).Trim() != "0";
+                        fm_language_forced = lineTS.Substring(key_fm_language_forced_len).Trim() != "0";
                     }
                 }
             }
@@ -175,11 +175,11 @@ internal static class GameConfigFiles
             }
             catch
             {
-                return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
+                return (CreateAndReturnFMsPath(gamePath), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
             }
         }
 
-        return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
+        return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(gamePath),
             fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
     }
 
