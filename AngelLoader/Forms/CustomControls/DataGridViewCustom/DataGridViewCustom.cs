@@ -777,7 +777,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                     headerText,
                     e.CellStyle.Font,
                     textRect,
-                    RowsDefaultCellStyle.ForeColor,
+                    DarkColors.Fen_DarkForeground,
                     textFormatFlags);
 
                 int textLength = TextRenderer.MeasureText(
