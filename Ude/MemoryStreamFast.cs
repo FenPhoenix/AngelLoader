@@ -30,8 +30,6 @@ public sealed class MemoryStreamFast
 
     private bool EnsureCapacity(int value)
     {
-        if (value < 0) ThrowHelper.IOException("StreamTooLong");
-
         if (value > _capacity)
         {
             int newCapacity = value;
@@ -43,50 +41,18 @@ public sealed class MemoryStreamFast
                 newCapacity = value > 2147483591 ? value : 2147483591;
             }
 
-            Capacity = newCapacity;
+            byte[] newBuffer = new byte[newCapacity];
+            if (Length > 0)
+            {
+                System.Buffer.BlockCopy(Buffer, 0, newBuffer, 0, Length);
+            }
+            Buffer = newBuffer;
+            _capacity = newCapacity;
 
             return true;
         }
 
         return false;
-    }
-
-    /// <summary>Gets or sets the number of bytes allocated for this stream.</summary>
-    /// <returns>The length of the usable portion of the buffer for the stream.</returns>
-    /// <exception cref="T:System.ArgumentOutOfRangeException">A capacity is set that is negative or less than the current length of the stream.</exception>
-    /// <exception cref="T:System.ObjectDisposedException">The current stream is closed.</exception>
-    /// <exception cref="T:System.NotSupportedException">
-    /// <see langword="set" /> is invoked on a stream whose capacity cannot be modified.</exception>
-    public int Capacity
-    {
-#if false
-        get => _capacity - _origin;
-#endif
-        set
-        {
-            if (value < Length)
-            {
-                ThrowHelper.ArgumentOutOfRange(nameof(value), "SmallCapacity");
-            }
-            if (value == _capacity)
-            {
-                return;
-            }
-            if (value > 0)
-            {
-                byte[] newBuffer = new byte[value];
-                if (Length > 0)
-                {
-                    System.Buffer.BlockCopy(Buffer, 0, newBuffer, 0, Length);
-                }
-                Buffer = newBuffer;
-            }
-            else
-            {
-                Buffer = Array.Empty<byte>();
-            }
-            _capacity = value;
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
