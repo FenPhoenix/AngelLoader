@@ -138,7 +138,7 @@ internal sealed class Latin1Prober : CharsetProber
 
         for (int i = 0; i < context.MemoryStream.Length; i++)
         {
-            byte charClass = _latin1_CharToClass[context.MemoryStream[i]];
+            byte charClass = _latin1_CharToClass[context.MemoryStream.Buffer[i]];
             byte freq = _latin1ClassModel[(_lastCharClass * CLASS_NUM) + charClass];
             if (freq == 0)
             {
