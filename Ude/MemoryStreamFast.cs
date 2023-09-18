@@ -8,7 +8,6 @@ public sealed class MemoryStreamFast
 {
     public byte[] Buffer;
 
-    /// <summary>Do not modify!</summary>
     private int _position;
 
     /// <summary>Do not modify!</summary>
