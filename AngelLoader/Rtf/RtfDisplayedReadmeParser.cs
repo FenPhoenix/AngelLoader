@@ -24,13 +24,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    #region Stream
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private byte StreamReadByte() => _rtfBytes[(int)CurrentPos];
-
-    #endregion
-
     #region Resettables
 
     private List<Color>? _colorTable;
@@ -324,7 +317,7 @@ public sealed partial class RtfDisplayedReadmeParser
             if (!GetNextChar(out char ch)) return ClearReturnFields(RtfError.EndOfFile);
             if (ch == '}')
             {
-                UnGetChar('}');
+                UnGetChar();
                 break;
             }
             _colorTableSB.Append(ch);

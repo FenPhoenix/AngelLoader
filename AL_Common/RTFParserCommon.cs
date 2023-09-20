@@ -64,7 +64,6 @@ public static partial class RTFParserCommon
         public readonly Scope CurrentScope;
         public readonly FontDictionary FontEntries;
         public readonly Header Header;
-        public readonly UnGetStack UnGetBuffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
@@ -74,7 +73,6 @@ public static partial class RTFParserCommon
             CurrentScope.Reset();
             FontEntries.Clear();
             Header.Reset();
-            UnGetBuffer.Clear();
         }
 
         public Context()
@@ -95,21 +93,6 @@ public static partial class RTFParserCommon
             FontEntries = new FontDictionary(150);
 
             Header = new Header();
-
-            /*
-            We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
-            "into the stream", but they actually go in here and then when we go to read, we read from this first
-            and so on until it's empty, then go back to reading from the main stream again. In this way, we
-            support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
-            This is required to support zip entry streams which are unseekable. If we required a seekable stream,
-            we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-            read it, which is possibly unnecessarily memory-hungry.
-
-            2020-08-15:
-            We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
-            rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
-            */
-            UnGetBuffer = new UnGetStack();
         }
     }
 
@@ -727,47 +710,6 @@ public static partial class RTFParserCommon
 
             result = null;
             return false;
-        }
-    }
-
-    public sealed class UnGetStack
-    {
-        private const int _resetCapacity = 100;
-
-        private char[] _array = new char[_resetCapacity];
-        private int _capacity = _resetCapacity;
-
-        /// <summary>
-        /// Do not set from outside. Properties are slow.
-        /// </summary>
-        public int Count;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-            if (_capacity > _resetCapacity)
-            {
-                _array = new char[_resetCapacity];
-                _capacity = _resetCapacity;
-            }
-            Count = 0;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public char Pop() => _array[--Count];
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Push(char item)
-        {
-            if (Count == _capacity)
-            {
-                int capacity = _array.Length == 0 ? 4 : 2 * _array.Length;
-                char[] destinationArray = new char[capacity];
-                Array.Copy(_array, 0, destinationArray, 0, Count);
-                _array = destinationArray;
-                _capacity = capacity;
-            }
-            _array[Count++] = item;
         }
     }
 

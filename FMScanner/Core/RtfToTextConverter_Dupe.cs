@@ -25,6 +25,7 @@ public sealed partial class RtfToTextConverter
     private void ResetBase()
     {
         _ctx.Reset();
+        _unGetBuffer.Clear();
 
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
@@ -58,7 +59,7 @@ public sealed partial class RtfToTextConverter
     {
         if (CurrentPos < 0) return;
 
-        _ctx.UnGetBuffer.Push(c);
+        _unGetBuffer.Push(c);
         if (CurrentPos > 0) CurrentPos--;
     }
 
@@ -77,9 +78,9 @@ public sealed partial class RtfToTextConverter
 
         // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
 #pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx.UnGetBuffer.Count > 0)
+        if (_unGetBuffer.Count > 0)
         {
-            ch = _ctx.UnGetBuffer.Pop();
+            ch = _unGetBuffer.Pop();
         }
         else
         {
@@ -101,9 +102,9 @@ public sealed partial class RtfToTextConverter
         char ch;
         // Ditto above
 #pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx.UnGetBuffer.Count > 0)
+        if (_unGetBuffer.Count > 0)
         {
-            ch = _ctx.UnGetBuffer.Pop();
+            ch = _unGetBuffer.Pop();
         }
         else
         {

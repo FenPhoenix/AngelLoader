@@ -45,18 +45,12 @@ public sealed partial class RtfDisplayedReadmeParser
     private long CurrentPos;
 
     /// <summary>
-    /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
-    /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
-    /// about that. Just use it as normal.
+    /// Decrements the stream position.
     /// </summary>
-    /// <param name="c"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UnGetChar(char c)
+    private void UnGetChar()
     {
-        if (CurrentPos < 0) return;
-
-        _ctx.UnGetBuffer.Push(c);
         if (CurrentPos > 0) CurrentPos--;
     }
 
@@ -73,18 +67,7 @@ public sealed partial class RtfDisplayedReadmeParser
             return false;
         }
 
-        // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx.UnGetBuffer.Count > 0)
-        {
-            ch = _ctx.UnGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
+        ch = (char)_rtfBytes[(int)CurrentPos++];
 
         return true;
     }
@@ -94,24 +77,7 @@ public sealed partial class RtfDisplayedReadmeParser
     /// </summary>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private char GetNextCharFast()
-    {
-        char ch;
-        // Ditto above
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_ctx.UnGetBuffer.Count > 0)
-        {
-            ch = _ctx.UnGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
-
-        return ch;
-    }
+    private char GetNextCharFast() => (char)_rtfBytes[(int)CurrentPos++];
 
     #endregion
 
@@ -178,7 +144,7 @@ public sealed partial class RtfDisplayedReadmeParser
          This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
          the space from the skip-chars to count.
         */
-        if (ch != ' ') UnGetChar(ch);
+        if (ch != ' ') UnGetChar();
 
         return DispatchKeyword(param, hasParam);
     }
