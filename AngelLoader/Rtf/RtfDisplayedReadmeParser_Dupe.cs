@@ -16,16 +16,12 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private bool _skipDestinationIfUnknown;
 
-    // We really do need this tracking var, as the scope stack could be empty but we're still valid (I think)
-    private int _groupCount;
-
     #endregion
 
     private void ResetBase()
     {
         _ctx.Reset();
 
-        _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
     }

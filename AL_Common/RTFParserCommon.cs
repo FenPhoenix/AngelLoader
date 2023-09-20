@@ -262,7 +262,9 @@ public static partial class RTFParserCommon
         private const int _maxScopes = 100;
 
         private readonly Scope[] _scopes;
-        private int _count;
+
+        /// <summary>Do not modify!</summary>
+        public int Count;
 
         public ScopeStack()
         {
@@ -274,31 +276,28 @@ public static partial class RTFParserCommon
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ClearFast() => _count = 0;
+        public void ClearFast() => Count = 0;
 
         #region Scope push/pop
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError Push(Scope currentScope, ref int groupCount)
+        public RtfError Push(Scope currentScope)
         {
-            if (_count >= _maxScopes) return RtfError.StackOverflow;
+            if (Count >= _maxScopes) return RtfError.StackOverflow;
 
-            currentScope.DeepCopyTo(_scopes[_count++]);
+            currentScope.DeepCopyTo(_scopes[Count++]);
 
             currentScope.RtfInternalState = RtfInternalState.Normal;
-
-            groupCount++;
 
             return RtfError.OK;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError Pop(Scope currentScope, ref int groupCount)
+        public RtfError Pop(Scope currentScope)
         {
-            if (_count == 0) return RtfError.StackUnderflow;
+            if (Count == 0) return RtfError.StackUnderflow;
 
-            _scopes[--_count].DeepCopyTo(currentScope);
-            groupCount--;
+            _scopes[--Count].DeepCopyTo(currentScope);
 
             return RtfError.OK;
         }

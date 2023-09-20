@@ -117,8 +117,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
             char ch = GetNextCharFast();
 
-            if (_groupCount < 0) return RtfError.StackUnderflow;
-
             if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
             {
                 if (--_binaryCharsLeftToSkip <= 0)
@@ -133,10 +131,10 @@ public sealed partial class RtfDisplayedReadmeParser
             switch (ch)
             {
                 case '{':
-                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope)) != RtfError.OK) return ec;
                     break;
                 case '}':
-                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     if ((ec = ParseKeyword()) != RtfError.OK) return ec;
@@ -147,7 +145,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
         }
 
-        return _groupCount < 0 ? RtfError.StackUnderflow : _groupCount > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
+        return _ctx.ScopeStack.Count > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
     }
 
     #region Act on keywords
