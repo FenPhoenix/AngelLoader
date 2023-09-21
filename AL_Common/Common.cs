@@ -1815,7 +1815,6 @@ public static class Common
 
     public static void StreamCopyNoAlloc(Stream source, Stream destination, byte[] buffer)
     {
-        buffer.Clear();
         int count;
         while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
         {

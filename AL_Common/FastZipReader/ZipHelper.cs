@@ -165,7 +165,6 @@ public static class ZipHelpers
         Debug.Assert(numBytesLeft >= 0);
         while (numBytesLeft != 0)
         {
-            context.ThrowawayBuffer.Clear();
             int numBytesToSkip = numBytesLeft > ZipContext.ThrowAwayBufferSize ? ZipContext.ThrowAwayBufferSize : (int)numBytesLeft;
             int numBytesActuallySkipped = stream.Read(context.ThrowawayBuffer, 0, numBytesToSkip);
             if (numBytesActuallySkipped == 0) ThrowHelper.IOException(SR.UnexpectedEndOfStream);
