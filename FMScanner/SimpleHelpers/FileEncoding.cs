@@ -49,9 +49,9 @@ public sealed class FileEncoding
     private bool _encodingFrequencyTouched;
     private readonly CharsetDetector _ude = new();
     private readonly CharsetDetector _singleUde = new();
-    private Charset _encodingCharset;
+    private const int _bufferSize = ByteSize.KB * 16;
     // Stupid micro-optimization to reduce GC time
-    private readonly byte[] _buffer = new byte[ByteSize.KB * 16];
+    private readonly byte[] _buffer = new byte[_bufferSize];
     private readonly UdeContext _udeContext;
 
     public FileEncoding() => _udeContext = new UdeContext(4096);
@@ -82,8 +82,8 @@ public sealed class FileEncoding
                     _ => Encoding.UTF8
                 };
             }
-            _encodingCharset = GetCurrentEncoding();
-            return _encodingCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(_encodingCharset));
+            Charset finalCharset = GetCurrentEncoding();
+            return finalCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(finalCharset));
         }
         catch
         {
@@ -102,7 +102,6 @@ public sealed class FileEncoding
         _encodingFrequencyTouched = false;
         _ude.Reset();
         _singleUde.Reset();
-        _encodingCharset = Charset.Null;
     }
 
     /// <summary>
@@ -114,14 +113,12 @@ public sealed class FileEncoding
     private Charset Detect(Stream inputData)
     {
         const int maxSize = ByteSize.MB * 20;
-        const int bufferSize = ByteSize.KB * 16;
-
-        const int maxIterations = maxSize / bufferSize;
+        const int maxIterations = maxSize / _bufferSize;
 
         int i = 0;
         while (i++ < maxIterations)
         {
-            int sz = inputData.ReadAll(_buffer, 0, _buffer.Length);
+            int sz = inputData.ReadAll(_buffer, 0, _bufferSize);
             if (sz <= 0) break;
 
             Charset bomCharset = Detect(_buffer, sz);
