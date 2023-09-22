@@ -32,8 +32,8 @@
  */
 #endregion
 
-using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common;
 using Ude.NetStandard;
@@ -43,7 +43,6 @@ namespace FMScanner.SimpleHelpers;
 
 public sealed class FileEncoding
 {
-    private bool _started;
     private readonly int[] _encodingFrequency = new int[CharsetDetector.CharsetCount];
     // Stupid micro-optimization
     private bool _encodingFrequencyTouched;
@@ -58,6 +57,7 @@ public sealed class FileEncoding
 
     public FileEncoding(int contextSize) => _udeContext = new UdeContext(contextSize);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
 
     /// <summary>
@@ -69,21 +69,56 @@ public sealed class FileEncoding
     {
         try
         {
-            Charset bomCharset = Detect(inputStream);
-            if (bomCharset != Charset.Null)
+            const int maxSize = ByteSize.MB * 20;
+            const int maxIterations = maxSize / _bufferSize;
+            const int udeFeedSize = ByteSize.KB * 4;
+
+            for (int i = 0; i < maxIterations; i++)
             {
-                return bomCharset switch
+                int bytesRead = inputStream.ReadAll(_buffer, 0, _bufferSize);
+                if (bytesRead <= 0) break;
+
+                if (i == 0)
                 {
-                    Charset.UTF8 => Encoding.UTF8,
-                    Charset.UTF16LE => Encoding.Unicode,
-                    Charset.UTF16BE => Encoding.BigEndianUnicode,
-                    Charset.UTF32LE => Encoding.UTF32,
-                    Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
-                    _ => Encoding.UTF8
-                };
+                    Charset bomCharset = CharsetDetector.GetBOMCharset(_buffer, bytesRead);
+                    if (bomCharset != Charset.Null)
+                    {
+                        return bomCharset switch
+                        {
+                            Charset.UTF8 => Encoding.UTF8,
+                            Charset.UTF16LE => Encoding.Unicode,
+                            Charset.UTF16BE => Encoding.BigEndianUnicode,
+                            Charset.UTF32LE => Encoding.UTF32,
+                            Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
+                            _ => Encoding.UTF8
+                        };
+                    }
+                }
+
+                // execute charset detector
+                _ude.Run(_buffer, 0, bytesRead, _udeContext);
+                if (_ude.IsDone() && _ude.Charset != Charset.Null)
+                {
+                    IncrementFrequency(_ude.Charset);
+                }
+                else
+                {
+                    // singular buffer detection
+                    _singleUde.Reset();
+                    int step = bytesRead < udeFeedSize ? bytesRead : udeFeedSize;
+                    for (int pos = 0; pos < bytesRead; pos += step)
+                    {
+                        _singleUde.Run(_buffer, pos, pos + step > bytesRead ? bytesRead - pos : step, _udeContext);
+                        if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)
+                        {
+                            IncrementFrequency(_singleUde.Charset);
+                        }
+                    }
+                }
             }
-            Charset finalCharset = GetCurrentEncoding();
-            return finalCharset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(finalCharset));
+
+            Charset charset = GetCurrentEncoding();
+            return charset == Charset.Null ? null : Encoding.GetEncoding(GetCharsetCodePage(charset));
         }
         catch
         {
@@ -91,88 +126,14 @@ public sealed class FileEncoding
         }
         finally
         {
-            Reset();
+            _encodingFrequency.Clear();
+            _encodingFrequencyTouched = false;
+            _ude.Reset();
+            _singleUde.Reset();
         }
     }
 
-    private void Reset()
-    {
-        _started = false;
-        _encodingFrequency.Clear();
-        _encodingFrequencyTouched = false;
-        _ude.Reset();
-        _singleUde.Reset();
-    }
-
-    /// <summary>
-    /// Detects the encoding of textual data of the specified input data.
-    /// </summary>
-    /// <param name="inputData">The input data.</param>
-    /// <returns>If charset was detected from BOM, returns that charset; otherwise, returns <see cref="Charset.Null"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
-    private Charset Detect(Stream inputData)
-    {
-        const int maxSize = ByteSize.MB * 20;
-        const int maxIterations = maxSize / _bufferSize;
-
-        int i = 0;
-        while (i++ < maxIterations)
-        {
-            int sz = inputData.ReadAll(_buffer, 0, _bufferSize);
-            if (sz <= 0) break;
-
-            Charset bomCharset = Detect(_buffer, sz);
-            if (bomCharset != Charset.Null)
-            {
-                return bomCharset;
-            }
-        }
-
-        return Charset.Null;
-    }
-
-    /// <summary>
-    /// Detects the encoding of textual data of the specified input data.
-    /// </summary>
-    /// <param name="inputData">The input data.</param>
-    /// <param name="count">The count.</param>
-    /// <returns>If charset was detected from BOM, returns that charset; otherwise, returns <see cref="Charset.Null"/>.</returns>
-    private Charset Detect(byte[] inputData, int count)
-    {
-        if (!_started)
-        {
-            _started = true;
-            Charset charSet = CharsetDetector.GetBOMCharset(inputData, count);
-            if (charSet != Charset.Null)
-            {
-                return charSet;
-            }
-        }
-
-        // execute charset detector
-        _ude.Run(inputData, 0, count, _udeContext);
-        if (_ude.IsDone() && _ude.Charset != Charset.Null)
-        {
-            IncrementFrequency(_ude.Charset);
-            return Charset.Null;
-        }
-
-        // singular buffer detection
-        _singleUde.Reset();
-        const int udeFeedSize = ByteSize.KB * 4;
-        int step = count < udeFeedSize ? count : udeFeedSize;
-        for (int pos = 0; pos < count; pos += step)
-        {
-            _singleUde.Run(inputData, pos, pos + step > count ? count - pos : step, _udeContext);
-            if (_singleUde.Confidence > 0.3 && _singleUde.Charset != Charset.Null)
-            {
-                IncrementFrequency(_singleUde.Charset);
-            }
-        }
-
-        return Charset.Null;
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void IncrementFrequency(Charset charset)
     {
         // Fen: Matching original behavior with ranking ASCII the lowest always
