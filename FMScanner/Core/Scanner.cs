@@ -1267,53 +1267,53 @@ public sealed partial class Scanner : IDisposable
                 {
                     fmData.AlternateTitles[i] = fmData.AlternateTitles[i].Trim();
                 }
-            }
-            else
-            {
-                _scanOptions.ScanTitle = false;
-            }
 
-            unsafe
-            {
-                if (!fmData.Title.IsEmpty() && fmData.AlternateTitles.Length > 0)
+                unsafe
                 {
-                    char* titleAcronymChars = stackalloc char[10];
-                    char* altTitleAcronymChars = stackalloc char[10];
-                    int titleAcronymCharsLength = 0;
-
-                    bool titleAcronymSuccess =
-                        Utility.AnyConsecutiveAsciiUppercaseChars(fmData.Title) &&
-                        Utility.GetAcronym(fmData.Title, titleAcronymChars, ref titleAcronymCharsLength);
-
-                    if (titleAcronymSuccess)
+                    if (!fmData.Title.IsEmpty() && fmData.AlternateTitles.Length > 0)
                     {
-                        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
-                        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
+                        char* titleAcronymChars = stackalloc char[10];
+                        char* altTitleAcronymChars = stackalloc char[10];
+                        int titleAcronymCharsLength = 0;
 
-                        for (int altTitleIndex = 0; altTitleIndex < fmData.AlternateTitles.Length; altTitleIndex++)
+                        bool titleAcronymSuccess =
+                            Utility.AnyConsecutiveAsciiUppercaseChars(fmData.Title) &&
+                            Utility.GetAcronym(fmData.Title, titleAcronymChars, ref titleAcronymCharsLength);
+
+                        if (titleAcronymSuccess)
                         {
-                            string altTitle = fmData.AlternateTitles[altTitleIndex];
-                            int altTitleAcronymLength = 0;
+                            ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+                            ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
 
-                            bool acronymSuccess =
-                                Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
-
-                            if (acronymSuccess &&
-                                !fmData.Title.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
-                                Utility.SequenceEqual_CharPtr(
-                                    titleAcronymChars,
-                                    altTitleAcronymChars,
-                                    titleAcronymCharsLength,
-                                    altTitleAcronymLength))
+                            for (int altTitleIndex = 0; altTitleIndex < fmData.AlternateTitles.Length; altTitleIndex++)
                             {
-                                string title = fmData.Title;
-                                fmData.Title = altTitle;
-                                fmData.AlternateTitles[altTitleIndex] = title;
-                                break;
+                                string altTitle = fmData.AlternateTitles[altTitleIndex];
+                                int altTitleAcronymLength = 0;
+
+                                bool acronymSuccess =
+                                    Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
+
+                                if (acronymSuccess &&
+                                    !fmData.Title.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
+                                    Utility.SequenceEqual_CharPtr(
+                                        titleAcronymChars,
+                                        altTitleAcronymChars,
+                                        titleAcronymCharsLength,
+                                        altTitleAcronymLength))
+                                {
+                                    string title = fmData.Title;
+                                    fmData.Title = altTitle;
+                                    fmData.AlternateTitles[altTitleIndex] = title;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+            }
+            else
+            {
+                _scanOptions.ScanTitle = false;
             }
         }
 
