@@ -1038,9 +1038,7 @@ public sealed partial class Scanner : IDisposable
             return new ScannedFMDataAndError { ScannedFMData = fmData };
         }
 
-        List<string>? altTitles = null;
-
-        string finalTitle = "";
+        List<string> titles = new();
 
         void SetOrAddTitle(string value)
         {
@@ -1048,21 +1046,11 @@ public sealed partial class Scanner : IDisposable
 
             if (value.IsEmpty()) return;
 
-            if (finalTitle.IsEmpty())
+            if (!titles.ContainsI(value))
             {
-                finalTitle = value;
+                titles.Add(value);
             }
-            else if (!finalTitle.EqualsI_Local(value))
-            {
-                if (altTitles == null)
-                {
-                    altTitles = new List<string> { value };
-                }
-                else if (!altTitles.ContainsI(value))
-                {
-                    altTitles.Add(value);
-                }
-            }
+
         }
 
         bool fmIsSS2 = false;
@@ -1261,11 +1249,17 @@ public sealed partial class Scanner : IDisposable
 
             if (!scanTitleForAuthorPurposesOnly)
             {
-                fmData.Title = finalTitle;
-                fmData.AlternateTitles = altTitles?.ToArray() ?? Array.Empty<string>();
-                for (int i = 0; i < fmData.AlternateTitles.Length; i++)
+                if (titles.Count > 0)
                 {
-                    fmData.AlternateTitles[i] = fmData.AlternateTitles[i].Trim();
+                    fmData.Title = titles[0];
+                    if (titles.Count > 1)
+                    {
+                        fmData.AlternateTitles = new string[titles.Count - 1];
+                        for (int i = 1; i < titles.Count; i++)
+                        {
+                            fmData.AlternateTitles[i - 1] = titles[i].Trim();
+                        }
+                    }
                 }
 
                 unsafe
@@ -1325,13 +1319,9 @@ public sealed partial class Scanner : IDisposable
         {
             if (fmData.Author.IsEmpty())
             {
-                List<string>? titles = !finalTitle.IsEmpty() ? new List<string> { finalTitle } : null;
-                if (titles != null && altTitles?.Count > 0)
-                {
-                    titles.AddRange_Small(altTitles);
-                }
+                List<string>? passTitles = titles.Count > 0 ? titles : null;
 
-                string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, titles);
+                string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, passTitles);
 
                 fmData.Author = CleanupValue(author).Trim();
             }
