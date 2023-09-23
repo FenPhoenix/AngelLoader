@@ -53,8 +53,6 @@ internal abstract class CharsetProber
 
     // ASCII codes
     internal const byte SPACE = 0x20;
-    internal const byte LESS_THAN = 0x3C;
-    internal const byte GREATER_THAN = 0x3E;
 
     /// <summary>
     /// Feed data to the prober

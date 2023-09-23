@@ -189,7 +189,6 @@ internal sealed class Latin1Prober : CharsetProber
     private static void FilterWithEnglishLetters(byte[] buf, int offset, int len, MemoryStreamFast memoryStream)
     {
         memoryStream.ResetToCapacity(buf.Length);
-        bool inTag = false;
         int max = offset + len;
         int prev = offset;
         int cur = offset;
@@ -198,19 +197,10 @@ internal sealed class Latin1Prober : CharsetProber
         {
             byte b = buf[cur];
 
-            if (b == GREATER_THAN)
-            {
-                inTag = false;
-            }
-            else if (b == LESS_THAN)
-            {
-                inTag = true;
-            }
-
             // it's ascii, but it's not a letter
             if ((b & 0x80) == 0 && !b.IsAsciiAlpha())
             {
-                if (cur > prev && !inTag)
+                if (cur > prev)
                 {
                     memoryStream.Write(buf, prev, cur - prev);
                     memoryStream.WriteByte(SPACE);
@@ -222,7 +212,7 @@ internal sealed class Latin1Prober : CharsetProber
 
         // If the current segment contains more than just a symbol
         // and it is not inside a tag then keep it.
-        if (!inTag && cur > prev)
+        if (cur > prev)
         {
             memoryStream.Write(buf, prev, cur - prev);
         }
