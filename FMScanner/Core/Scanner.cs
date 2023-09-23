@@ -3670,31 +3670,47 @@ public sealed partial class Scanner : IDisposable
             Utility.AnyConsecutiveAsciiUppercaseChars(mainTitle) &&
             Utility.GetAcronym(mainTitle, titleAcronymChars, ref titleAcronymCharsLength);
 
-        if (!titleAcronymSuccess) return;
-
-        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
-        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
-
-        for (int altTitleIndex = 1; altTitleIndex < titles.Count; altTitleIndex++)
+        if (titleAcronymSuccess)
         {
-            string altTitle = titles[altTitleIndex];
-            int altTitleAcronymLength = 0;
+            ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+            ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
 
-            bool acronymSuccess =
-                Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
-
-            if (acronymSuccess &&
-                !mainTitle.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
-                Utility.SequenceEqual_CharPtr(
-                    titleAcronymChars,
-                    altTitleAcronymChars,
-                    titleAcronymCharsLength,
-                    altTitleAcronymLength))
+            for (int i = 1; i < titles.Count; i++)
             {
-                string title = titles[0];
-                titles[0] = altTitle;
-                titles[altTitleIndex] = title;
-                break;
+                string altTitle = titles[i];
+                int altTitleAcronymLength = 0;
+
+                bool acronymSuccess =
+                    Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
+
+                if (acronymSuccess &&
+                    !mainTitle.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
+                    Utility.SequenceEqual_CharPtr(
+                        titleAcronymChars,
+                        altTitleAcronymChars,
+                        titleAcronymCharsLength,
+                        altTitleAcronymLength))
+                {
+                    (titles[0], titles[i]) = (titles[i], titles[0]);
+                    break;
+                }
+            }
+
+            mainTitle = titles[0];
+        }
+
+        if (!mainTitle.ContainsWhiteSpace() && mainTitle.ContainsMultipleWords())
+        {
+            for (int i = 1; i < titles.Count; i++)
+            {
+                string altTitle = titles[i];
+                if (altTitle.ContainsWhiteSpace() &&
+                    !(altTitle.Length >= 2 && altTitle[altTitle.Length - 1].IsAsciiUpper() &&
+                      !altTitle[altTitle.Length - 2].IsAsciiAlphanumeric()))
+                {
+                    (titles[0], titles[i]) = (titles[i], titles[0]);
+                    break;
+                }
             }
         }
     }

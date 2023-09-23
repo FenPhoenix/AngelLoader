@@ -614,6 +614,40 @@ internal static class Utility
         return true;
     }
 
+    internal static bool ContainsMultipleWords(this string value)
+    {
+        int length = value.Length;
+        int upperCaseIndex = -1;
+        for (int i = 0; i < length; i++)
+        {
+            char c = value[i];
+            if (c.IsAsciiUpper())
+            {
+                if (upperCaseIndex == -1)
+                {
+                    upperCaseIndex = i;
+                }
+                else if (i > upperCaseIndex + 1)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    internal static bool ContainsWhiteSpace(this string value)
+    {
+        int length = value.Length;
+        for (int i = 0; i < length; i++)
+        {
+            if (char.IsWhiteSpace(value[i])) return true;
+        }
+
+        return false;
+    }
+
     internal static bool EqualsIgnoreCaseAndWhiteSpace(this string str1, string str2, ListFast<char> temp1, ListFast<char> temp2)
     {
         int str1Length = str1.Length;
