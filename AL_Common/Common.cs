@@ -463,6 +463,7 @@ public static class Common
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithO(this string str, string value) => str.StartsWith(value, Ordinal);
 
     /// <summary>
@@ -471,6 +472,7 @@ public static class Common
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -544,6 +546,7 @@ public static class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [ContractAnnotation("null => true")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsEmpty([NotNullWhen(false)] this string? value) => string.IsNullOrEmpty(value);
 
     /// <summary>
@@ -552,6 +555,7 @@ public static class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [ContractAnnotation("null => true")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
     #endregion
@@ -562,6 +566,7 @@ public static class Common
     /// Determines whether this string and a specified <see langword="string"/> object have the same value.
     /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
 
     /// <summary>
@@ -569,6 +574,7 @@ public static class Common
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
     /// <summary>
@@ -576,6 +582,7 @@ public static class Common
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsFalse(this string value) => string.Equals(value, bool.FalseString, OrdinalIgnoreCase);
 
     /// <summary>
@@ -640,6 +647,7 @@ public static class Common
 
     #region Contains
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
     public static bool Contains(this string value, string substring, StringComparison comparison) =>
@@ -652,6 +660,7 @@ public static class Common
     /// <param name="value"></param>
     /// <param name="substring"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ContainsI(this string value, string substring) => value.Contains(substring, OrdinalIgnoreCase);
 
     /// <summary>
@@ -809,8 +818,10 @@ public static class Common
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int ClampToZero(this int value) => Math.Max(value, 0);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ClampZeroToOne(this float value) => value.Clamp(0, 1.0f);
 
     /// <summary>

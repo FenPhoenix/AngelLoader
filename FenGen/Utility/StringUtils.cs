@@ -11,7 +11,7 @@ internal static partial class Misc
 {
     internal static string ToVarCase(this string value)
     {
-        return value.IsEmpty() ? value : value[0].ToString().ToLowerInvariant() + value.Substring(1);
+        return value.IsEmpty() ? value : char.ToLowerInvariant(value[0]) + value.Substring(1);
     }
 
     #region ASCII-specific
@@ -25,18 +25,22 @@ internal static partial class Misc
     public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
         (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
         (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsAsciiNumeric(this char c) => c is >= '0' and <= '9';
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
 
     [PublicAPI]
@@ -61,6 +65,7 @@ internal static partial class Misc
     }
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
     /// <summary>
@@ -70,6 +75,7 @@ internal static partial class Misc
     /// <param name="substring"></param>
     /// <returns></returns>
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ContainsI(this string value, string substring) => value.Contains(substring, OrdinalIgnoreCase);
 
     /// <summary>
@@ -79,6 +85,7 @@ internal static partial class Misc
     /// <param name="str"></param>
     /// <returns></returns>
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, OrdinalIgnoreCase);
 
     /// <summary>
@@ -88,6 +95,7 @@ internal static partial class Misc
     /// <param name="str"></param>
     /// <returns></returns>
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ContainsI(this string[] array, string str) => array.Contains(str, OrdinalIgnoreCase);
 
     [PublicAPI]
@@ -115,9 +123,11 @@ internal static partial class Misc
     /// <param name="second"></param>
     /// <returns></returns>
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool EqualsI(this string first, string second) => string.Equals(first, second, OrdinalIgnoreCase);
 
     [PublicAPI]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
     #endregion
@@ -130,6 +140,7 @@ internal static partial class Misc
     /// <param name="value"></param>
     /// <returns></returns>
     [ContractAnnotation("null => true")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsEmpty([NotNullWhen(false)] this string? value) => string.IsNullOrEmpty(value);
 
     /// <summary>
@@ -138,6 +149,7 @@ internal static partial class Misc
     /// <param name="value"></param>
     /// <returns></returns>
     [ContractAnnotation("null => true")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
     #endregion
@@ -150,6 +162,7 @@ internal static partial class Misc
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, Ordinal);
 
     /// <summary>
@@ -158,6 +171,7 @@ internal static partial class Misc
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
     /// <summary>
@@ -216,7 +230,4 @@ internal static partial class Misc
     }
 
     #endregion
-
-    [PublicAPI]
-    internal static string FirstCharToLower(this string str) => char.ToLowerInvariant(str[0]) + str.Substring(1);
 }
