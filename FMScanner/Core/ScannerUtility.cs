@@ -556,6 +556,107 @@ internal static class Utility
         return false;
     }
 
+    internal static unsafe bool GetAcronym(string title, char* acronymChars, ref int acronymLength)
+    {
+        for (int i = 0; i < title.Length; i++)
+        {
+            char c = title[i];
+            if (!char.IsWhiteSpace(c) && (c.IsAsciiNumeric() || c.IsAsciiUpper()))
+            {
+                acronymChars[acronymLength++] = c;
+                if (acronymLength >= 10)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /*
+    @vNext(AnyConsecutiveAsciiUppercaseChars):
+    Catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just be a
+    perf tweak, as everything works out fine as is in terms of accuracy.
+    */
+    internal static bool AnyConsecutiveAsciiUppercaseChars(string value)
+    {
+        int consecutiveAsciiUpperCharCount = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+
+            if (c.IsAsciiUpper())
+            {
+                consecutiveAsciiUpperCharCount++;
+                if (consecutiveAsciiUpperCharCount > 1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                consecutiveAsciiUpperCharCount = 0;
+            }
+        }
+
+        return false;
+    }
+
+    internal static unsafe bool SequenceEqual_CharPtr(char* first, char* second, int firstLength, int secondLength)
+    {
+        if (firstLength != secondLength) return false;
+
+        for (int i = 0; i < firstLength; i++)
+        {
+            if (first[i] != second[i]) return false;
+        }
+        return true;
+    }
+
+    internal static bool EqualsIgnoreCaseAndWhiteSpace(this string str1, string str2, ListFast<char> temp1, ListFast<char> temp2)
+    {
+        int str1Length = str1.Length;
+        temp1.ClearFast();
+        for (int i = 0; i < str1Length; i++)
+        {
+            char c = str1[i];
+            if (!char.IsWhiteSpace(c))
+            {
+                temp1.Add(c);
+            }
+        }
+
+        int str2Length = str2.Length;
+        temp2.ClearFast();
+        for (int i = 0; i < str2Length; i++)
+        {
+            char c = str2[i];
+            if (!char.IsWhiteSpace(c))
+            {
+                temp2.Add(c);
+            }
+        }
+
+        if (temp1.Count != temp2.Count) return false;
+
+        for (int i = 0; i < temp1.Count; i++)
+        {
+            char c1 = temp1[i];
+            char c2 = temp2[i];
+            if (c1 < 128 && c2 < 128)
+            {
+                if (!c1.EqualsIAscii(c2)) return false;
+            }
+            else
+            {
+                if (char.ToUpperInvariant(c1) != char.ToUpperInvariant(c2)) return false;
+            }
+        }
+
+        return true;
+    }
+
     #region GLML
 
     private enum GLMLTagType

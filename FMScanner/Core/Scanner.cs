@@ -121,6 +121,12 @@ public sealed partial class Scanner : IDisposable
     private const int _maxTopLines = 5;
     private readonly List<string> _topLines = new(_maxTopLines);
 
+    private ListFast<char>? _title1_TempNonWhitespaceChars;
+    private ListFast<char> Title1_TempNonWhitespaceChars => _title1_TempNonWhitespaceChars ??= new ListFast<char>(50);
+
+    private ListFast<char>? _title2_TempNonWhitespaceChars;
+    private ListFast<char> Title2_TempNonWhitespaceChars => _title2_TempNonWhitespaceChars ??= new ListFast<char>(50);
+
     private readonly List<NameAndIndex> _baseDirFiles = new(20);
     private readonly List<NameAndIndex> _misFiles = new(20);
     private readonly List<NameAndIndex> _usedMisFiles = new(20);
@@ -384,6 +390,9 @@ public sealed partial class Scanner : IDisposable
         _fmFormat = FMFormat.NotInArchive;
         _sevenZipExtractedFilesList?.Clear();
         _sevenZipExtractedFilesTempList?.Clear();
+
+        _title1_TempNonWhitespaceChars?.ClearFast();
+        _title2_TempNonWhitespaceChars?.ClearFast();
 
         _baseDirFiles.Clear();
         _misFiles.Clear();
@@ -1262,6 +1271,49 @@ public sealed partial class Scanner : IDisposable
             else
             {
                 _scanOptions.ScanTitle = false;
+            }
+
+            unsafe
+            {
+                if (!fmData.Title.IsEmpty() && fmData.AlternateTitles.Length > 0)
+                {
+                    char* titleAcronymChars = stackalloc char[10];
+                    char* altTitleAcronymChars = stackalloc char[10];
+                    int titleAcronymCharsLength = 0;
+
+                    bool titleAcronymSuccess =
+                        Utility.AnyConsecutiveAsciiUppercaseChars(fmData.Title) &&
+                        Utility.GetAcronym(fmData.Title, titleAcronymChars, ref titleAcronymCharsLength);
+
+                    if (titleAcronymSuccess)
+                    {
+                        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+                        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
+
+                        for (int altTitleIndex = 0; altTitleIndex < fmData.AlternateTitles.Length; altTitleIndex++)
+                        {
+                            string altTitle = fmData.AlternateTitles[altTitleIndex];
+                            int altTitleAcronymLength = 0;
+
+                            bool acronymSuccess =
+                                Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
+
+                            if (acronymSuccess &&
+                                !fmData.Title.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
+                                Utility.SequenceEqual_CharPtr(
+                                    titleAcronymChars,
+                                    altTitleAcronymChars,
+                                    titleAcronymCharsLength,
+                                    altTitleAcronymLength))
+                            {
+                                string title = fmData.Title;
+                                fmData.Title = altTitle;
+                                fmData.AlternateTitles[altTitleIndex] = title;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
 
