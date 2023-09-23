@@ -1249,6 +1249,8 @@ public sealed partial class Scanner : IDisposable
 
             if (!scanTitleForAuthorPurposesOnly)
             {
+                OrderTitlesOptimally(titles);
+
                 if (titles.Count > 0)
                 {
                     fmData.Title = titles[0];
@@ -1258,49 +1260,6 @@ public sealed partial class Scanner : IDisposable
                         for (int i = 1; i < titles.Count; i++)
                         {
                             fmData.AlternateTitles[i - 1] = titles[i].Trim();
-                        }
-                    }
-                }
-
-                unsafe
-                {
-                    if (!fmData.Title.IsEmpty() && fmData.AlternateTitles.Length > 0)
-                    {
-                        char* titleAcronymChars = stackalloc char[10];
-                        char* altTitleAcronymChars = stackalloc char[10];
-                        int titleAcronymCharsLength = 0;
-
-                        bool titleAcronymSuccess =
-                            Utility.AnyConsecutiveAsciiUppercaseChars(fmData.Title) &&
-                            Utility.GetAcronym(fmData.Title, titleAcronymChars, ref titleAcronymCharsLength);
-
-                        if (titleAcronymSuccess)
-                        {
-                            ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
-                            ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
-
-                            for (int altTitleIndex = 0; altTitleIndex < fmData.AlternateTitles.Length; altTitleIndex++)
-                            {
-                                string altTitle = fmData.AlternateTitles[altTitleIndex];
-                                int altTitleAcronymLength = 0;
-
-                                bool acronymSuccess =
-                                    Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
-
-                                if (acronymSuccess &&
-                                    !fmData.Title.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
-                                    Utility.SequenceEqual_CharPtr(
-                                        titleAcronymChars,
-                                        altTitleAcronymChars,
-                                        titleAcronymCharsLength,
-                                        altTitleAcronymLength))
-                                {
-                                    string title = fmData.Title;
-                                    fmData.Title = altTitle;
-                                    fmData.AlternateTitles[altTitleIndex] = title;
-                                    break;
-                                }
-                            }
                         }
                     }
                 }
@@ -3693,6 +3652,51 @@ public sealed partial class Scanner : IDisposable
         }
 
         return CleanupValue(value).Trim();
+    }
+
+    private unsafe void OrderTitlesOptimally(List<string> titles)
+    {
+        if (titles.Count <= 1) return;
+
+        string mainTitle = titles[0];
+
+        if (mainTitle.IsEmpty()) return;
+
+        char* titleAcronymChars = stackalloc char[10];
+        char* altTitleAcronymChars = stackalloc char[10];
+        int titleAcronymCharsLength = 0;
+
+        bool titleAcronymSuccess =
+            Utility.AnyConsecutiveAsciiUppercaseChars(mainTitle) &&
+            Utility.GetAcronym(mainTitle, titleAcronymChars, ref titleAcronymCharsLength);
+
+        if (!titleAcronymSuccess) return;
+
+        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
+
+        for (int altTitleIndex = 1; altTitleIndex < titles.Count; altTitleIndex++)
+        {
+            string altTitle = titles[altTitleIndex];
+            int altTitleAcronymLength = 0;
+
+            bool acronymSuccess =
+                Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
+
+            if (acronymSuccess &&
+                !mainTitle.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
+                Utility.SequenceEqual_CharPtr(
+                    titleAcronymChars,
+                    altTitleAcronymChars,
+                    titleAcronymCharsLength,
+                    altTitleAcronymLength))
+            {
+                string title = titles[0];
+                titles[0] = altTitle;
+                titles[altTitleIndex] = title;
+                break;
+            }
+        }
     }
 
     #endregion
