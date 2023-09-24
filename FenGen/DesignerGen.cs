@@ -109,10 +109,10 @@ internal static class DesignerGen
     */
     private static void GenerateDesignerFile(DesignerCSFile designerFile)
     {
-        var controlTypes = new Dictionary<string, string>();
-        var controlAttributes = new Dictionary<string, string>();
-        var controlsInFlowLayoutPanels = new HashSet<string>();
-        var controlProperties = new Dictionary<string, CProps>();
+        var controlTypes = new Dictionary<string, string>(StringComparer.Ordinal);
+        var controlAttributes = new Dictionary<string, string>(StringComparer.Ordinal);
+        var controlsInFlowLayoutPanels = new HashSet<string>(StringComparer.Ordinal);
+        var controlProperties = new Dictionary<string, CProps>(StringComparer.Ordinal);
         var destNodes = new List<NodeCustom>();
 
         string formFileName = Path.GetFileName(designerFile.FileName);
@@ -346,8 +346,8 @@ internal static class DesignerGen
             curNode.PropName = left.Name.ToString();
 
             if (left.DescendantNodes().Any(
-                    n => (n is ThisExpressionSyntax && left.DescendantNodes().Count() == 2) ||
-                         (n is not ThisExpressionSyntax && left.DescendantNodes().Count() == 1)))
+                    n => (n is ThisExpressionSyntax && left.DescendantNodes().Take(3).Count() == 2) ||
+                         (n is not ThisExpressionSyntax && left.DescendantNodes().Take(2).Count() == 1)))
             {
                 CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                 props.IsFormProperty = true;
@@ -391,8 +391,8 @@ internal static class DesignerGen
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
                         oce.Type.ToString() == "System.Drawing.Size" &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
-                        int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
-                        int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int height))
+                        Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
+                        Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int height))
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
 
@@ -426,8 +426,8 @@ internal static class DesignerGen
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
                         oce.Type.ToString() == "System.Drawing.Point" &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
-                        int.TryParse(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
-                        int.TryParse(oce.ArgumentList.Arguments[1].ToString(), out int y))
+                        Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
+                        Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int y))
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                         props.Location = new Point(x, y);

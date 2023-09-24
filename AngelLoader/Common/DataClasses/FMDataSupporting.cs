@@ -1,6 +1,7 @@
 ﻿#define FenGen_TypeSource
 
 using System;
+using System.Globalization;
 using JetBrains.Annotations;
 using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
@@ -33,7 +34,7 @@ internal sealed class ExpandableDate
         {
             _dateTime = value;
             UnixDateString = value != null
-                ? new DateTimeOffset((DateTime)value).ToUnixTimeSeconds().ToString("X")
+                ? new DateTimeOffset((DateTime)value).ToUnixTimeSeconds().ToString("X", CultureInfo.InvariantCulture)
                 : "";
             _expanded = true;
         }

@@ -133,7 +133,7 @@ public static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public sealed class FenGenFlagsSingleAssignment : Attribute { }
+    public sealed class FenGenFlagsSingleAssignmentAttribute : Attribute { }
 
     #endregion
 

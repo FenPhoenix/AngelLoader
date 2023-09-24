@@ -1183,7 +1183,7 @@ internal static class GameConfigFiles
             {
                 string[] fields = lt.Split(_ca_Space_Tab_Semicolon, StringSplitOptions.RemoveEmptyEntries);
                 ret = fields.Length >= 2 &&
-                      int.TryParse(fields[1], out int result) &&
+                      Int_TryParseInv(fields[1], out int result) &&
                       result == 0;
             }
         }
@@ -1268,7 +1268,7 @@ internal static class GameConfigFiles
         RemoveKeyLine(key_game_screen_size, lines);
 
         System.Drawing.Rectangle res = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-        lines.Add(key_game_screen_size + " " + res.Width + " " + res.Height);
+        lines.Add(key_game_screen_size + " " + res.Width.ToStrInv() + " " + res.Height.ToStrInv());
 
         RemoveConsecutiveWhiteSpace(lines);
 

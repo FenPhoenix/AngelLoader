@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static System.StringComparison;
@@ -27,6 +28,7 @@ public static class Common
     /// <summary>
     /// Stores a filename/index pair for quick lookups into a zip file.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct NameAndIndex
     {
         public readonly string Name;
@@ -862,27 +864,6 @@ public static class Common
     {
         return float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
     }
-
-    #region Disabled until needed
-
-#if false
-
-    /// <summary>
-    /// Calls <see langword="double"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="double"/> <paramref name="result"/>);
-    /// </summary>
-    /// <param name="s">A string representing a number to convert.</param>
-    /// <param name="result"></param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Double_TryParseInv(string s, out double result)
-    {
-        return double.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
-    }
-
-#endif
-
-    #endregion
 
     /// <summary>
     /// Calls <see langword="int"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="int"/> <paramref name="result"/>);
@@ -1834,4 +1815,8 @@ public static class Common
     }
 
     #endregion
+
+    public static string ToStrInv(this int value) => value.ToString(CultureInfo.InvariantCulture);
+
+    public static string ToStrInv(this bool value) => value.ToString(CultureInfo.InvariantCulture);
 }

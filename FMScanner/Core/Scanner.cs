@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -1486,6 +1487,7 @@ public sealed partial class Scanner : IDisposable
 
     #region Dates
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct ParsedDateTime
     {
         private readonly bool _isAmbiguous;
@@ -1501,6 +1503,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct MisFileDateTime
     {
         private readonly bool _succeeded;
@@ -1835,7 +1838,7 @@ public sealed partial class Scanner : IDisposable
 
                 for (int i = 0; i < nums.Length; i++)
                 {
-                    if (int.TryParse(nums[i], out int numInt))
+                    if (Int_TryParseInv(nums[i], out int numInt))
                     {
                         switch (numInt)
                         {
@@ -1885,7 +1888,7 @@ public sealed partial class Scanner : IDisposable
 
             if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
 
-            if (fmData.TagsString.Contains(lang))
+            if (fmData.TagsString.Contains(lang, Ordinal))
             {
                 fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + LanguagesC[i]);
             }
@@ -3634,7 +3637,7 @@ public sealed partial class Scanner : IDisposable
 
             if (titleContainsLowerCaseAsciiChars)
             {
-                if (value.Contains("  "))
+                if (value.Contains("  ", Ordinal))
                 {
                     string[] titleWords = value.Split_String(SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext.IntArrayPool);
                     for (int i = 0; i < titleWords.Length; i++)

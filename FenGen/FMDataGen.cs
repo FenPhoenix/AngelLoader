@@ -42,7 +42,7 @@ internal static class FMData
         CommaSeparated
     }
 
-    private static readonly HashSet<string> _numericTypes = new()
+    private static readonly HashSet<string> _numericTypes = new(System.StringComparer.Ordinal)
     {
         "byte",
         "sbyte",
@@ -174,7 +174,7 @@ internal static class FMData
                             // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
                             // number. But ToString() gives us the string version of the entire number. Argh...
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            long.TryParse(val, out long result);
+                            Long_TryParseInv(val, out long result);
                             field.NumericEmpty = result;
                             break;
                         }
@@ -182,7 +182,7 @@ internal static class FMData
                         {
                             CheckParamCount(attr, 1);
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            int.TryParse(val, out int result);
+                            Int_TryParseInv(val, out int result);
                             field.MaxDigits = result > 0 ? result : null;
                             break;
                         }
@@ -385,19 +385,19 @@ internal static class FMData
                 {
                     if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                     {
-                        w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                        w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
                     }
                     else
                     {
                         w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
                     }
-                    w.WL(objDotField + " = success ? result : " + field.NumericEmpty + ";");
+                    w.WL(objDotField + " = success ? result : " + ((long)field.NumericEmpty).ToStrInv() + ";");
                 }
                 else
                 {
                     if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                     {
-                        w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + field.MaxDigits + ", out " + field.Type + " result);");
+                        w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
                     }
                     else
                     {
@@ -661,7 +661,7 @@ internal static class FMData
                 string floatArgs = GetFloatArgsWrite(field.Type);
                 if (field.NumericEmpty != null)
                 {
-                    w.WL("if (" + objDotField + " != " + field.NumericEmpty + ")");
+                    w.WL("if (" + objDotField + " != " + ((long)field.NumericEmpty).ToStrInv() + ")");
                     w.WL("{");
                     swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                     w.WL("}");

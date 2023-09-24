@@ -279,6 +279,7 @@ internal static class Utility
 
     #region StartsWith and EndsWith
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct StringCompareReturn
     {
         internal readonly bool RequiresStringComparison;
@@ -771,7 +772,7 @@ internal static class Utility
 
                             bool success = num.Length > 0 && num[0] == 'x'
                                 ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
-                                : int.TryParse(num, out result);
+                                : Int_TryParseInv(num, out result);
 
                             if (success)
                             {
@@ -808,7 +809,7 @@ internal static class Utility
                             string name = subSB.ToString();
 
                             if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
-                                int.TryParse(value, out int result))
+                                Int_TryParseInv(value, out int result))
                             {
                                 ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
                                 if (chars == null)

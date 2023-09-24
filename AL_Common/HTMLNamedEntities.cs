@@ -23,7 +23,7 @@ public static class HTML
                     decompressedMS.Position = 0;
                 }
 
-                _htmlNamedEntities = new Dictionary<string, string>(2032);
+                _htmlNamedEntities = new Dictionary<string, string>(2032, System.StringComparer.Ordinal);
 
                 var keySB = new StringBuilder();
                 var valueSB = new StringBuilder();

@@ -3697,7 +3697,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             DateFormat.CurrentCultureShort => dt.ToShortDateString(),
             DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-            _ => dt.ToString(Config.DateCustomFormatString)
+            _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture)
         };
 
         static string FormatSize(ulong size) =>
@@ -3793,7 +3793,7 @@ public sealed partial class MainForm : DarkFormBase,
             case Column.Rating:
                 if (Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader)
                 {
-                    e.Value = fm.Rating == -1 ? "" : fm.Rating.ToString();
+                    e.Value = fm.Rating == -1 ? "" : fm.Rating.ToString(CultureInfo.CurrentCulture);
                 }
                 else if (Config.RatingUseStars)
                 {

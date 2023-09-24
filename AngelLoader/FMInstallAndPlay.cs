@@ -452,7 +452,7 @@ internal static class FMInstallAndPlay
             // IMPORTANT (Stub comm file encoding):
             // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
             using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
-            sw.WriteLine("PlayOriginalGame=" + (fm == null));
+            sw.WriteLine("PlayOriginalGame=" + (fm == null).ToStrInv());
             if (fm == null)
             {
                 if (!originalT3 && !origDisabledMods.IsEmpty())
@@ -729,7 +729,7 @@ internal static class FMInstallAndPlay
             foreach (string mf in misFiles)
             {
                 Match m = Regex.Match(mf, "miss(?<Num>[0123456789]+).mis", IgnoreCaseInvariant);
-                if (m.Success && int.TryParse(m.Groups["Num"].Value, out int result))
+                if (m.Success && Int_TryParseInv(m.Groups["Num"].Value, out int result))
                 {
                     misNums.Add(result);
                 }
@@ -797,7 +797,7 @@ internal static class FMInstallAndPlay
                 var missFlagLines = new List<string>();
                 for (int i = 1; i <= lastMisNum; i++)
                 {
-                    string curLine = "miss_" + i + ": ";
+                    string curLine = "miss_" + i.ToStrInv() + ": ";
                     if (misNums.Contains(i))
                     {
                         curLine += "\"no_briefing, no_loadout";
@@ -1564,9 +1564,9 @@ internal static class FMInstallAndPlay
                     await RestoreFM(
                         fmData.FM,
                         archivePaths,
-                        _installCts.Token,
                         zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
-                        fileStreamBuffer ??= new byte[FileStreamBufferSize]);
+                        fileStreamBuffer ??= new byte[FileStreamBufferSize],
+                        _installCts.Token);
                 }
                 catch (Exception ex)
                 {

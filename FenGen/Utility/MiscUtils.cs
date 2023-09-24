@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -333,4 +335,86 @@ internal static partial class Misc
             }
         }
     }
+
+    #region TryParse Invariant
+
+    /// <summary>
+    /// Calls <see langword="float"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="float"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Float_TryParseInv(string s, out float result)
+    {
+        return float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="double"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Float"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="double"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Double_TryParseInv(string s, out double result)
+    {
+        return double.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="int"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="int"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Int_TryParseInv(string s, out int result)
+    {
+        return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="uint"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="uint"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool UInt_TryParseInv(string s, out uint result)
+    {
+        return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="long"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="long"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Long_TryParseInv(string s, out long result)
+    {
+        return long.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="ulong"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="ulong"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ULong_TryParseInv(string s, out ulong result)
+    {
+        return ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    #endregion
 }

@@ -90,12 +90,12 @@ internal static partial class Ini
             string lastWrittenFileNumStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
 
             int newNum = 1;
-            if (int.TryParse(lastWrittenFileNumStr, out int lastWrittenFileNum))
+            if (Int_TryParseInv(lastWrittenFileNumStr, out int lastWrittenFileNum))
             {
                 newNum = lastWrittenFileNum >= maxBackups ? 1 : lastWrittenFileNum + 1;
             }
 
-            return Path.Combine(Paths.Data, Paths.FMDataBakBase + newNum);
+            return Path.Combine(Paths.Data, Paths.FMDataBakBase + newNum.ToStrInv());
         }
         catch
         {
@@ -652,10 +652,10 @@ internal static partial class Ini
             {
                 switch (i)
                 {
-                    case 0 when int.TryParse(cProps[i], out int di):
+                    case 0 when Int_TryParseInv(cProps[i], out int di):
                         col.DisplayIndex = di;
                         break;
-                    case 1 when int.TryParse(cProps[i], out int width):
+                    case 1 when Int_TryParseInv(cProps[i], out int width):
                         col.Width = width;
                         break;
                     case 2:
@@ -751,7 +751,7 @@ internal static partial class Ini
 
     private static string FilterDate(DateTime? dt) => dt == null
         ? ""
-        : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
+        : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X", CultureInfo.InvariantCulture);
 
     private static string TagsToString(FMCategoriesCollection tagsList, StringBuilder sb)
     {

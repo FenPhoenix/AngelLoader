@@ -116,7 +116,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
             {
                 using var sr = new StreamReader(ConfigFile);
                 string? indexStr = sr.ReadLine();
-                if (indexStr != null && int.TryParse(indexStr, out int index))
+                if (indexStr != null && Int_TryParseInv(indexStr, out int index))
                 {
                     RTFFileComboBox.SelectedIndex = index;
                 }
@@ -199,7 +199,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
     private void RTF_Visual_Test_Form_FormClosing(object sender, FormClosingEventArgs e)
     {
         Directory.CreateDirectory(ConfigDir);
-        File.WriteAllText(ConfigFile, RTFFileComboBox.SelectedIndex.ToString());
+        File.WriteAllText(ConfigFile, RTFFileComboBox.SelectedIndex.ToStrInv());
     }
 }
 #endif

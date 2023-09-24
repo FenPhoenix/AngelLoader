@@ -216,7 +216,7 @@ internal static class Core
     }
 
     private static readonly Dictionary<string, GenType>
-    _argToTaskMap = new()
+    _argToTaskMap = new(StringComparer.Ordinal)
     {
         { "-fmd", GenType.FMData },
         { "-lang", GenType.Language },
@@ -416,7 +416,7 @@ internal static class Core
             defineHeaders.Add(DefineHeaders.EnumDataDest);
         }
 
-        var taggedFilesDict = new Dictionary<string, string>();
+        var taggedFilesDict = new Dictionary<string, string>(StringComparer.Ordinal);
         if (forceFindRequiredFiles || defineHeaders.Count > 0)
         {
             taggedFilesDict = FindRequiredCodeFiles(defineHeaders.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
@@ -582,7 +582,7 @@ internal static class Core
 
         #endregion
 
-        var ret = new Dictionary<string, string>(defineHeaders.Count);
+        var ret = new Dictionary<string, string>(defineHeaders.Count, StringComparer.Ordinal);
         for (int i = 0; i < defineHeaders.Count; i++)
         {
             ret.Add(defineHeaders[i], taggedFiles[i][0]);

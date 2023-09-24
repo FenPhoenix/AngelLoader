@@ -61,7 +61,7 @@ internal static class EnumDataGen
                         if (attr.ArgumentList is { Arguments.Count: 1 })
                         {
                             string tempStr = attr.ArgumentList.Arguments[0].ToString();
-                            if (int.TryParse(tempStr, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result))
+                            if (Int_TryParseInv(tempStr, out int result))
                             {
                                 enumData.CountPlusOrMinus = result;
                             }
@@ -88,7 +88,7 @@ internal static class EnumDataGen
         {
             if (enumData.GenerateCount)
             {
-                w.WL("public const int " + enumData.Name + "Count = " + (enumData.ItemNames.Count + enumData.CountPlusOrMinus) + ";");
+                w.WL("public const int " + enumData.Name + "Count = " + (enumData.ItemNames.Count + enumData.CountPlusOrMinus).ToStrInv() + ";");
             }
             if (enumData.GenerateNames)
             {

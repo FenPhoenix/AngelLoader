@@ -1011,7 +1011,7 @@ internal static class Core
     SetFilter()
     {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        View.SetDebug2Text(int.TryParse(View.GetDebug2Text(), out int result) ? (result + 1).ToString() : "1");
+        View.SetDebug2Text(Int_TryParseInv(View.GetDebug2Text(), out int result) ? (result + 1).ToStrInv() : "1");
 #endif
 
         (FanMission? titleExactMatch, FanMission? authorExactMatch) ret = (null, null);
@@ -1782,7 +1782,7 @@ internal static class Core
             // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
             // due to performance concerns.
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-            View.SetDebug1Text(int.TryParse(View.GetDebug1Text(), out int result) ? (result + 1).ToString() : "1");
+            View.SetDebug1Text(Int_TryParseInv(View.GetDebug1Text(), out int result) ? (result + 1).ToStrInv() : "1");
 #endif
 
             #endregion
@@ -2301,7 +2301,7 @@ internal static class Core
         #region Readme
 
         List<string> readmeFiles = cacheData.Readmes;
-        readmeFiles.Sort();
+        readmeFiles.Sort(StringComparer.Ordinal);
 
         if (!readmeFiles.PathContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
 

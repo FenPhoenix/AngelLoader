@@ -231,7 +231,12 @@ internal static class FMBackupAndRestore
         return ret;
     }
 
-    internal static Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath, List<string> archivePaths, byte[] fileStreamBuffer)
+    internal static Task BackupFM(
+        FanMission fm,
+        string fmInstalledPath,
+        string fmArchivePath,
+        List<string> archivePaths,
+        byte[] fileStreamBuffer)
     {
         bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
@@ -366,7 +371,12 @@ internal static class FMBackupAndRestore
         });
     }
 
-    internal static Task RestoreFM(FanMission fm, List<string> archivePaths, CancellationToken ct, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    internal static Task RestoreFM(
+        FanMission fm,
+        List<string> archivePaths,
+        byte[] zipExtractTempBuffer,
+        byte[] fileStreamBuffer,
+        CancellationToken ct)
     {
         static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
 
@@ -490,8 +500,8 @@ internal static class FMBackupAndRestore
                                     !val.EndsWithDirSep() &&
                                     !val.Contains(':') &&
                                     // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
-                                    !val.Contains("./") &&
-                                    !val.Contains(".\\"))
+                                    !val.Contains("./", StringComparison.Ordinal) &&
+                                    !val.Contains(".\\", StringComparison.Ordinal))
                                 {
                                     fileExcludes.Add(val);
                                 }

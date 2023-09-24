@@ -240,7 +240,7 @@ internal static class FMCache
                 // narrow it down to these because a) we want to future-proof against any new ways to link
                 // that might come about, and b) HTML files can link out to other formats like CSS and
                 // who knows what else, and we don't want to write parsers for every format under the sun.
-                if (html.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != i))
+                if (html.ContainsI(e.Name) && htmlRefFiles.TrueForAll(x => x.Index != i))
                 {
                     htmlRefFiles.Add(new NameAndIndex(e.FullName, i));
                 }
@@ -278,7 +278,7 @@ internal static class FMCache
                         continue;
                     }
 
-                    if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != ei))
+                    if (content.ContainsI(e.Name) && htmlRefFiles.TrueForAll(x => x.Index != ei))
                     {
                         htmlRefFiles.Add(new NameAndIndex(e.FullName, ei));
                     }

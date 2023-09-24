@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using static System.StringComparison;
@@ -230,4 +231,10 @@ internal static partial class Misc
     }
 
     #endregion
+
+    internal static string ToStrInv(this int value) => value.ToString(CultureInfo.InvariantCulture);
+
+    internal static string ToStrInv(this long value) => value.ToString(CultureInfo.InvariantCulture);
+
+    internal static string ToStrInv(this bool value) => value.ToString(CultureInfo.InvariantCulture);
 }

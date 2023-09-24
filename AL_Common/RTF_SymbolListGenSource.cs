@@ -229,7 +229,7 @@ public static partial class RTFParserCommon
             if (line.StartsWithO("#line"))
             {
                 string lineNumRaw = line.Substring(5, line.IndexOf('\"') - 5).Trim();
-                if (int.TryParse(lineNumRaw, out int result))
+                if (Common.Int_TryParseInv(lineNumRaw, out int result))
                 {
                     // -3 because the gperf in format is like
                     // (line 1) struct declaration

@@ -214,7 +214,7 @@ internal static class Native
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     [StructLayout(LayoutKind.Sequential)]
-    internal class ENLINK
+    internal sealed class ENLINK
     {
         internal NMHDR nmhdr;
         internal int msg = 0;
@@ -235,7 +235,7 @@ internal static class Native
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
-    internal class CHARRANGE
+    internal sealed class CHARRANGE
     {
         internal int cpMin;
         internal int cpMax;

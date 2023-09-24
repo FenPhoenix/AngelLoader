@@ -534,7 +534,7 @@ internal static class FindFMs
                     if (j > 999) return;
 
                     // Conform to FMSel's numbering format
-                    string append = "(" + (j + 2) + ")";
+                    string append = "(" + (j + 2).ToStrInv() + ")";
 
                     if (truncate && fm.InstalledDir.Length + append.Length > 30)
                     {

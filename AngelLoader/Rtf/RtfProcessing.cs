@@ -190,7 +190,7 @@ internal static class RtfProcessing
     #endregion
 
     internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
-                                                               + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground)
+                                                               + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground).ToStrInv()
                                                                + "}}}}}";
     private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 

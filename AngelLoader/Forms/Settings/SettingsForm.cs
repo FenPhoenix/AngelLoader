@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -293,7 +294,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         const string engLang = "English";
 
-        var langsList = config.LanguageNames.ToList().OrderBy(static x => x.Key);
+        var langsList = config.LanguageNames.ToList().OrderBy(static x => x.Key, StringComparer.Ordinal);
 
         using (new UpdateRegion(LangComboBox))
         {
@@ -307,7 +308,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             }
         }
 
-        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language)
+        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language, StringComparer.Ordinal)
             ? config.Language
             : engLang);
 
@@ -1617,7 +1618,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // config reader and reset to default if they aren't valid) but not 100% certain.
         try
         {
-            exampleDateString = _exampleDate.ToString(formatString);
+            exampleDateString = _exampleDate.ToString(formatString, CultureInfo.CurrentCulture);
             return true;
         }
         catch (FormatException)

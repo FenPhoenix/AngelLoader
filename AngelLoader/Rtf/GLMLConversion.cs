@@ -242,12 +242,12 @@ internal static class GLMLConversion
 
                             bool success = num.Length > 0 && num[0] == 'x'
                                 ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
-                                : int.TryParse(num, out result);
+                                : Int_TryParseInv(num, out result);
 
                             if (success)
                             {
                                 sb.Append(@"\u");
-                                sb.Append(result.ToString());
+                                sb.Append(result.ToStrInv());
                                 sb.Append('?');
                             }
                             else
@@ -312,7 +312,7 @@ internal static class GLMLConversion
             else if (c > 127)
             {
                 sb.Append(@"\u");
-                sb.Append(((int)c).ToString());
+                sb.Append(((int)c).ToStrInv());
                 sb.Append('?');
             }
             else

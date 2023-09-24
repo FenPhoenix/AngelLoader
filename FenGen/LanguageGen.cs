@@ -56,7 +56,7 @@ internal static class Language
         var lTextClass = (ClassDeclarationSyntax)markedMember;
 
         SyntaxNode[] childNodes = lTextClass.ChildNodes().ToArray();
-        var classInstanceDict = new Dictionary<string, string>();
+        var classInstanceDict = new Dictionary<string, string>(StringComparer.Ordinal);
 
         // Once through first to get the instance types and names
         for (int i = 0; i < childNodes.Length; i++)
@@ -69,7 +69,7 @@ internal static class Language
 
         var sections = new List<IniSection>();
 
-        var perGameSets = new Dictionary<string, (string Field, string Section)[]>();
+        var perGameSets = new Dictionary<string, (string Field, string Section)[]>(StringComparer.Ordinal);
 
         // Now through again to get the language string names from the nested classes
         foreach (SyntaxNode cn in childNodes)

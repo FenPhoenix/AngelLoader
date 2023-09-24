@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using AngelLoader.DataClasses;
@@ -13,7 +14,7 @@ internal static partial class Ini
         const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
         FieldInfo[] sectionFields = typeof(LText_Class).GetFields(_bfLText);
-        var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length);
+        var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, StringComparer.Ordinal);
         for (int i = 0; i < sectionFields.Length; i++)
         {
             FieldInfo f = sectionFields[i];
