@@ -1,7 +1,7 @@
 <h1 align="center">
 AngelLoader
 </h1>
-<p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v173a_900w.png" /></p>
+<p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v175_900w.png" /></p>
 
 <hr>
 <h4 align="center">
