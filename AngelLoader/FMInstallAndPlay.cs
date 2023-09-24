@@ -1622,6 +1622,8 @@ internal static class FMInstallAndPlay
 
                     if (fileName[fileName.Length - 1].IsDirSep()) continue;
 
+                    // Disabled for this release as I need to test it more thoroughly
+#if false
                     #region Relative/malicious path check
 
                     // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't
@@ -1638,6 +1640,7 @@ internal static class FMInstallAndPlay
                     }
 
                     #endregion
+#endif
 
                     if (fileName.Rel_ContainsDirSep())
                     {
@@ -1645,6 +1648,7 @@ internal static class FMInstallAndPlay
                             fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
                     }
 
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
                     entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
 
                     File_UnSetReadOnly(extractedName);
