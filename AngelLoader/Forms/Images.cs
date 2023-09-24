@@ -1667,23 +1667,23 @@ public static class Images
     }
 
     internal static void PaintBitmapButton(
+        PaintEventArgs e,
+        Image img,
+        RectangleF scaledRect)
+    {
+        e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+        e.Graphics.DrawImage(img, scaledRect);
+    }
+
+    internal static void PaintBitmapButton(
         Button button,
         PaintEventArgs e,
         Image img,
         int x = 0,
-        int? y = null,
-        RectangleF? scaledRect = null)
+        int? y = null)
     {
-        if (scaledRect != null)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            e.Graphics.DrawImage(img, (RectangleF)scaledRect);
-        }
-        else
-        {
-            y ??= (button.Height - img.Height) / 2;
-            e.Graphics.DrawImage(img, x, (int)y);
-        }
+        y ??= (button.Height - img.Height) / 2;
+        e.Graphics.DrawImage(img, x, (int)y);
     }
 
     internal static void PaintPlusButton(Button button, PaintEventArgs e)

@@ -409,13 +409,13 @@ internal static class FMCache
             string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
             Fen7z.Result result = Fen7z.Extract(
-                Paths.SevenZipPath,
-                Paths.SevenZipExe,
-                fmArchivePath,
-                fmCachePath,
-                extractorFilesCount,
-                listFile,
-                fileNamesList,
+                sevenZipWorkingPath: Paths.SevenZipPath,
+                sevenZipPathAndExe: Paths.SevenZipExe,
+                archivePath: fmArchivePath,
+                outputPath: fmCachePath,
+                entriesCount: extractorFilesCount,
+                listFile: listFile,
+                fileNamesList: fileNamesList,
                 progress: progress);
 
             if (result.ErrorOccurred)

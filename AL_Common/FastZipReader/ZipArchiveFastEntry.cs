@@ -45,10 +45,10 @@ public sealed class ZipArchiveFastEntry
 
     #endregion
 
-    public ZipArchiveFastEntry(ZipCentralDirectoryFileHeader cd) => Set(cd);
+    public ZipArchiveFastEntry(ZipCentralDirectoryFileHeader cd) => Set(in cd);
 
     [MemberNotNull(nameof(FullName))]
-    public void Set(ZipCentralDirectoryFileHeader cd)
+    public void Set(in ZipCentralDirectoryFileHeader cd)
     {
         CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;
 

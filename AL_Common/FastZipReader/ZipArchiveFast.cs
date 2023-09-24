@@ -307,7 +307,7 @@ public sealed class ZipArchiveFast : IDisposable
                             }
                             else
                             {
-                                entry.Set(currentHeader);
+                                entry.Set(in currentHeader);
                             }
                         }
                         else

@@ -1713,8 +1713,8 @@ internal static class FMInstallAndPlay
                 Paths.SevenZipExe,
                 fmArchivePath,
                 fmInstalledPath,
-                entriesCount,
                 cancellationToken: _installCts.Token,
+                entriesCount,
                 progress: progress
             );
 

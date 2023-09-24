@@ -30,7 +30,8 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
     private VisualTheme _theme;
     private bool _closingAllowed;
 
-    private readonly Rectangle _messageRect = new Rectangle(1, 120, 646, 63);
+    private const int _messageRectY = 120;
+    private readonly Rectangle _messageRect = new Rectangle(1, _messageRectY, 646, 63);
 
     // Paranoid to make absolutely sure we're not accessing any cross-thread-disallowed Control properties in
     // SetMessage() (thread safety for FM finder)
@@ -163,7 +164,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         int checkPos = (Width / 2) + (_checkMessageWidth / 2);
 
         using var checkMarkPen = new Pen(_foreColorCached, 1.6f);
-        var outlineBoxRect = new Rectangle(checkPos, _messageRect.Y + 4, 12, 12);
+        var outlineBoxRect = new Rectangle(checkPos, _messageRectY + 4, 12, 12);
         ControlUtils.DrawCheckMark(_graphicsContext.G, checkMarkPen, outlineBoxRect);
     }
 

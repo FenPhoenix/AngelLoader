@@ -784,9 +784,9 @@ public sealed partial class Scanner : IDisposable
                     sevenZipPathAndExe: _sevenZipExePath,
                     archivePath: fm.Path,
                     outputPath: _fmWorkingPath,
+                    cancellationToken: cancellationToken,
                     listFile: listFile,
-                    fileNamesList: fileNamesList,
-                    cancellationToken: cancellationToken);
+                    fileNamesList: fileNamesList);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -1981,7 +1981,7 @@ public sealed partial class Scanner : IDisposable
         {
             for (int i = 0; i < array.Length; i++)
             {
-                if (fn.AsSpan().EndsWithI_Local(array[i]))
+                if (Utility.EndsWithI_Local(fn.AsSpan(), array[i]))
                 {
                     return true;
                 }
@@ -4054,10 +4054,10 @@ public sealed partial class Scanner : IDisposable
             // "Italiano" will be caught by StartsWithI("italian")
 
             // Extra logic to account for whatever-style naming
-            if (fnNoExt.EqualsI_Local("rus") ||
-                fnNoExt.EndsWithI_Local("_ru") ||
-                fnNoExt.EndsWithI_Local("_rus") ||
-                (fnNoExt.Length >= 4 && fnNoExt.EndsWithI_Local("RUS") && fnNoExt[fnNoExt.Length - 4].IsAsciiLower()) ||
+            if (Utility.EqualsI_Local(fnNoExt, "rus") ||
+                Utility.EndsWithI_Local(fnNoExt, "_ru") ||
+                Utility.EndsWithI_Local(fnNoExt, "_rus") ||
+                (fnNoExt.Length >= 4 && Utility.EndsWithI_Local(fnNoExt, "RUS") && fnNoExt[fnNoExt.Length - 4].IsAsciiLower()) ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
                 langs |= Language.Russian;
@@ -4078,7 +4078,7 @@ public sealed partial class Scanner : IDisposable
             {
                 langs |= Language.Dutch;
             }
-            else if (fnNoExt.EqualsI_Local("huntext"))
+            else if (Utility.EqualsI_Local(fnNoExt, "huntext"))
             {
                 langs |= Language.Hungarian;
             }

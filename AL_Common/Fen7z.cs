@@ -79,7 +79,6 @@ public static class Fen7z
     /// <param name="entriesCount">Only used if <paramref name="progress"/> is provided (non-null).</param>
     /// <param name="listFile"></param>
     /// <param name="fileNamesList"></param>
-    /// <param name="cancellationToken"></param>
     /// <param name="progress"></param>
     /// <returns></returns>
     public static Result Extract(
@@ -90,7 +89,44 @@ public static class Fen7z
         int entriesCount = 0,
         string listFile = "",
         List<string>? fileNamesList = null,
-        CancellationToken? cancellationToken = null,
+        IProgress<ProgressReport>? progress = null)
+    {
+        return Extract(
+            sevenZipWorkingPath: sevenZipWorkingPath,
+            sevenZipPathAndExe: sevenZipPathAndExe,
+            archivePath: archivePath,
+            outputPath: outputPath,
+            cancellationToken: CancellationToken.None,
+            entriesCount: entriesCount,
+            listFile: listFile,
+            fileNamesList: fileNamesList,
+            progress: progress);
+    }
+
+    /// <summary>
+    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+    /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
+    /// Hooray!
+    /// </summary>
+    /// <param name="sevenZipWorkingPath"></param>
+    /// <param name="sevenZipPathAndExe"></param>
+    /// <param name="archivePath"></param>
+    /// <param name="outputPath"></param>
+    /// <param name="cancellationToken"></param>
+    /// <param name="entriesCount">Only used if <paramref name="progress"/> is provided (non-null).</param>
+    /// <param name="listFile"></param>
+    /// <param name="fileNamesList"></param>
+    /// <param name="progress"></param>
+    /// <returns></returns>
+    public static Result Extract(
+        string sevenZipWorkingPath,
+        string sevenZipPathAndExe,
+        string archivePath,
+        string outputPath,
+        CancellationToken cancellationToken,
+        int entriesCount = 0,
+        string listFile = "",
+        List<string>? fileNamesList = null,
         IProgress<ProgressReport>? progress = null)
     {
         bool selectiveFiles = !listFile.IsWhiteSpace() && fileNamesList?.Count > 0;
@@ -142,7 +178,7 @@ public static class Fen7z
             p.OutputDataReceived += (sender, e) =>
             {
                 var proc = (Process)sender;
-                if (!canceled && cancellationToken != null && ((CancellationToken)cancellationToken).IsCancellationRequested)
+                if (!canceled && cancellationToken.IsCancellationRequested)
                 {
                     canceled = true;
 

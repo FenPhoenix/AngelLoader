@@ -1005,6 +1005,7 @@ public static partial class RTFParserCommon
     public static readonly SymbolDict Symbols = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // @RTF(in Context ctx): Test perf with in vs. without
     public static RtfError HandleSpecialTypeFont(Context ctx, SpecialType specialType, int param)
     {
         switch (specialType)

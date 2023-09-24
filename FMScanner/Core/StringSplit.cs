@@ -9,13 +9,11 @@ internal static class StringSplit
     {
         public readonly T[] Array;
         public readonly int Length;
-        public readonly bool IsEmpty;
 
         public RentedArray(T[] array, int length)
         {
             Array = array;
             Length = length;
-            IsEmpty = false;
         }
 
         public static RentedArray<T> Empty => new();
@@ -23,8 +21,7 @@ internal static class StringSplit
         public RentedArray()
         {
             Array = System.Array.Empty<T>();
-            Length = 0;
-            IsEmpty = true;
+            Length = -1;
         }
     }
 
@@ -175,13 +172,13 @@ internal static class StringSplit
             {
                 splitStrings[arrIndex++] = str.Substring(currIndex, sepList.Array[i] - currIndex);
             }
-            currIndex = sepList.Array[i] + (lengthList.IsEmpty ? 1 : lengthList.Array[i]);
+            currIndex = sepList.Array[i] + (lengthList.Length == -1 ? 1 : lengthList.Array[i]);
             if (arrIndex == count - 1)
             {
                 // If all the remaining entries at the end are empty, skip them
                 while (i < numReplaces - 1 && currIndex == sepList.Array[++i])
                 {
-                    currIndex += lengthList.IsEmpty ? 1 : lengthList.Array[i];
+                    currIndex += lengthList.Length == -1 ? 1 : lengthList.Array[i];
                 }
                 break;
             }
@@ -221,7 +218,7 @@ internal static class StringSplit
         for (int i = 0; i < numActualReplaces && currIndex < str.Length; i++)
         {
             splitStrings[arrIndex++] = str.Substring(currIndex, sepList.Array[i] - currIndex);
-            currIndex = sepList.Array[i] + (lengthList.IsEmpty ? 1 : lengthList.Array[i]);
+            currIndex = sepList.Array[i] + (lengthList.Length == -1 ? 1 : lengthList.Array[i]);
         }
 
         //Handle the last string at the end of the array if there is one.

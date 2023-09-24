@@ -307,7 +307,7 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EqualsI_Local(this ReadOnlySpan<char> str1, string str2)
+    internal static bool EqualsI_Local(ReadOnlySpan<char> str1, string str2)
     {
         int str1Len = str1.Length;
         int str2Len = str2.Length;
@@ -331,7 +331,7 @@ internal static class Utility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EndsWithI_Local(this ReadOnlySpan<char> str1, string str2)
+    internal static bool EndsWithI_Local(ReadOnlySpan<char> str1, string str2)
     {
         int str1Len = str1.Length;
         int str2Len = str2.Length;
