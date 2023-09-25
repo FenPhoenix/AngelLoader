@@ -2539,24 +2539,22 @@ internal static class Core
 
         #region Mods
 
-        if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex))
+        if (fm.Game.ConvertsToModSupporting(out GameIndex gameIndex) && fm.DisableAllMods)
         {
-            bool allDisabled = fm.DisableAllMods;
-
-            if (allDisabled) fm.DisabledMods = "";
+            fm.DisabledMods = "";
 
             List<Mod> mods = Config.GetMods(gameIndex);
             for (int i = 0; i < mods.Count; i++)
             {
                 Mod mod = mods[i];
-                if (allDisabled && !mod.IsUber)
+                if (!mod.IsUber)
                 {
                     if (!fm.DisabledMods.IsEmpty()) fm.DisabledMods += "+";
                     fm.DisabledMods += mod.InternalName;
                 }
             }
 
-            if (allDisabled) fm.DisableAllMods = false;
+            fm.DisableAllMods = false;
         }
 
         #endregion
