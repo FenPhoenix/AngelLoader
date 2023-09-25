@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
@@ -445,15 +446,15 @@ internal enum ModType
     MPUberModPath
 }
 
-internal sealed class Mod
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct Mod
 {
     internal readonly string InternalName;
-    internal readonly ModType Type;
-    internal bool IsUber => Type is ModType.UberModPath or ModType.MPUberModPath;
+    internal readonly bool IsUber;
 
     internal Mod(string internalName, ModType type)
     {
         InternalName = internalName;
-        Type = type;
+        IsUber = type is ModType.UberModPath or ModType.MPUberModPath;
     }
 }
