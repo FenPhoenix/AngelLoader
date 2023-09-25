@@ -3659,7 +3659,7 @@ public sealed partial class Scanner : IDisposable
 
     private unsafe void OrderTitlesOptimally(List<string> titles)
     {
-        if (titles.Count <= 1) return;
+        if (titles.Count < 2) return;
 
         string mainTitle = titles[0];
 
