@@ -538,7 +538,7 @@ public sealed partial class Scanner
         new Regex(@"\s+\)", RegexOptions.Compiled);
 
     private readonly Regex DaySuffixesRegex =
-        new Regex(@"\d(?<Suffix>(st|nd|rd|th)).+",
+        new Regex("[0123456789](?<Suffix>(st|nd|rd|th)).+",
             RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
 
     private readonly Regex AuthorEmailRegex =
@@ -612,7 +612,7 @@ public sealed partial class Scanner
         //language=regexp
         "(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
         //language=regexp
-        @"(?(Months)(, ?| ))\d*( by| to)? (?<Author>.+)";
+        "(?(Months)(, ?| ))[0123456789]*( by| to)? (?<Author>.+)";
 
     // Unicode 00A9 = copyright symbol
 
@@ -652,7 +652,7 @@ public sealed partial class Scanner
             @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-    private readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);
+    private readonly Regex CopyrightAuthorYearRegex = new Regex(" [0123456789]+.*$", RegexOptions.Compiled);
 
     private readonly Regex TitleByAuthorRegex =
         new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
