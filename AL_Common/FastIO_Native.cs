@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common;
 
@@ -50,11 +48,15 @@ public static class FastIO_Native
     }
 #pragma warning restore IDE0004, IDE0003
 
-    [UsedImplicitly]
-    public class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
+    public readonly ref struct SafeSearchHandle
     {
-        public SafeSearchHandle() : base(true) { }
-        protected override bool ReleaseHandle() => FindClose(handle);
+        public readonly IntPtr Handle;
+
+        public SafeSearchHandle(IntPtr handle) => Handle = handle;
+
+        public bool IsInvalid => Handle == IntPtr.Zero || Handle == new IntPtr(-1);
+
+        public void Dispose() => FindClose(Handle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool FindClose(IntPtr hFindFile);
@@ -88,7 +90,7 @@ public static class FastIO_Native
     #region P/Invoke definitions
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    public static extern SafeSearchHandle FindFirstFileExW(
+    public static extern IntPtr FindFirstFileExW(
         string lpFileName,
         int fInfoLevelId,
         out WIN32_FIND_DATAW lpFindFileData,
@@ -97,7 +99,7 @@ public static class FastIO_Native
         int dwAdditionalFlags);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    public static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATAW lpFindFileData);
+    public static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
     #endregion
 

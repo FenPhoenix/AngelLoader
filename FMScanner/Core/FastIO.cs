@@ -67,15 +67,15 @@ internal static class FastIO
         {
             bool searchPatternHas3CharExt = SearchPatternHas3CharExt(p);
 
-            using SafeSearchHandle findHandle = FindFirstFileExW(
+            using SafeSearchHandle searchHandle = new(FindFirstFileExW(
                 searchPath + p,
                 FindExInfoBasic,
                 out findData,
                 FindExSearchNameMatch,
                 IntPtr.Zero,
-                0);
+                0));
 
-            if (findHandle.IsInvalid)
+            if (searchHandle.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
                 if (err == ERROR_FILE_NOT_FOUND) continue;
@@ -93,20 +93,20 @@ internal static class FastIO
                 {
                     return true;
                 }
-            } while (FindNextFileW(findHandle, out findData));
+            } while (FindNextFileW(searchHandle.Handle, out findData));
 
             if (searchOption == FastIOSearchOption.TopDirectoryOnly) return false;
         }
 
-        using (SafeSearchHandle findHandle = FindFirstFileExW(
+        using (SafeSearchHandle searchHandle = new(FindFirstFileExW(
                    searchPath + "*",
                    FindExInfoBasic,
                    out findData,
                    FindExSearchNameMatch,
                    IntPtr.Zero,
-                   0))
+                   0)))
         {
-            if (findHandle.IsInvalid)
+            if (searchHandle.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
                 if (err != ERROR_FILE_NOT_FOUND)
@@ -123,7 +123,7 @@ internal static class FastIO
                 {
                     return true;
                 }
-            } while (FindNextFileW(findHandle, out findData));
+            } while (FindNextFileW(searchHandle.Handle, out findData));
 
             return false;
         }

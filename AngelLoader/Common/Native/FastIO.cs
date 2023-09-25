@@ -136,15 +136,15 @@ internal static class FastIO
 
         string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
-        using SafeSearchHandle findHandle = FindFirstFileExW(
+        using SafeSearchHandle searchHandle = new(FindFirstFileExW(
             searchPath,
             FindExInfoBasic,
             out WIN32_FIND_DATAW findData,
             FindExSearchNameMatch,
             IntPtr.Zero,
-            FIND_FIRST_EX_LARGE_FETCH);
+            FIND_FIRST_EX_LARGE_FETCH));
 
-        if (findHandle.IsInvalid)
+        if (searchHandle.IsInvalid)
         {
             int err = Marshal.GetLastWin32Error();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return;
@@ -176,7 +176,7 @@ internal static class FastIO
                 // need it.
                 dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
             }
-        } while (FindNextFileW(findHandle, out findData));
+        } while (FindNextFileW(searchHandle.Handle, out findData));
     }
 
     /// <summary>
@@ -196,11 +196,11 @@ internal static class FastIO
         path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
 
         string searchPath = MakeUNCPath(path) + "\\*";
-        using SafeSearchHandle findHandle = FindFirstFileExW(searchPath,
+        using SafeSearchHandle searchHandle = new(FindFirstFileExW(searchPath,
             FindExInfoBasic, out WIN32_FIND_DATAW findData,
-            FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+            FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH));
 
-        if (findHandle.IsInvalid)
+        if (searchHandle.IsInvalid)
         {
             int err = Marshal.GetLastWin32Error();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
@@ -226,7 +226,7 @@ internal static class FastIO
                     searchList.Add(Path.Combine(path, findData.cFileName));
                 }
             }
-        } while (FindNextFileW(findHandle, out findData));
+        } while (FindNextFileW(searchHandle.Handle, out findData));
 
         return false;
     }
