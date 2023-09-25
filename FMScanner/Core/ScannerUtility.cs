@@ -562,7 +562,7 @@ internal static class Utility
         for (int i = 0; i < title.Length; i++)
         {
             char c = title[i];
-            if (!char.IsWhiteSpace(c) && (c.IsAsciiNumeric() || c.IsAsciiUpper()))
+            if (c.IsAsciiNumeric() || c.IsAsciiUpper())
             {
                 acronymChars[acronymLength++] = c;
                 if (acronymLength >= 10)
