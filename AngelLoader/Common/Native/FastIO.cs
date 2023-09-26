@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -136,15 +135,12 @@ internal static class FastIO
 
         string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
 
-        using SafeSearchHandle searchHandle = new(FindFirstFileExW(
+        using FileFinder fileFinder = FileFinder.Create(
             searchPath,
-            FindExInfoBasic,
-            out WIN32_FIND_DATAW findData,
-            FindExSearchNameMatch,
-            IntPtr.Zero,
-            FIND_FIRST_EX_LARGE_FETCH));
+            FIND_FIRST_EX_LARGE_FETCH,
+            out WIN32_FIND_DATAW findData);
 
-        if (searchHandle.IsInvalid)
+        if (fileFinder.IsInvalid)
         {
             int err = Marshal.GetLastWin32Error();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return;
@@ -176,7 +172,7 @@ internal static class FastIO
                 // need it.
                 dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
             }
-        } while (FindNextFileW(searchHandle.Handle, out findData));
+        } while (fileFinder.TryFindNextFile(out findData));
     }
 
     /// <summary>
@@ -196,11 +192,12 @@ internal static class FastIO
         path = NormalizeAndCheckPath(path, pathIsKnownValid: true);
 
         string searchPath = MakeUNCPath(path) + "\\*";
-        using SafeSearchHandle searchHandle = new(FindFirstFileExW(searchPath,
-            FindExInfoBasic, out WIN32_FIND_DATAW findData,
-            FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH));
+        using FileFinder fileFinder = FileFinder.Create(
+            searchPath,
+            FIND_FIRST_EX_LARGE_FETCH,
+            out WIN32_FIND_DATAW findData);
 
-        if (searchHandle.IsInvalid)
+        if (fileFinder.IsInvalid)
         {
             int err = Marshal.GetLastWin32Error();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
@@ -226,7 +223,7 @@ internal static class FastIO
                     searchList.Add(Path.Combine(path, findData.cFileName));
                 }
             }
-        } while (FindNextFileW(searchHandle.Handle, out findData));
+        } while (fileFinder.TryFindNextFile(out findData));
 
         return false;
     }

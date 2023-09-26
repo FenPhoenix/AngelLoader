@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -57,8 +56,6 @@ internal static class FastIO
         //const int ERROR_REM_NOT_LIST = 0x33;
         //const int ERROR_BAD_NETPATH = 0x35;
 
-        WIN32_FIND_DATAW findData;
-
         // Search the base directory first, and only then search subdirectories.
 
         string searchPath = MakeUNCPath(path) + "\\";
@@ -67,15 +64,12 @@ internal static class FastIO
         {
             bool searchPatternHas3CharExt = SearchPatternHas3CharExt(p);
 
-            using SafeSearchHandle searchHandle = new(FindFirstFileExW(
+            using FileFinder fileFinder = FileFinder.Create(
                 searchPath + p,
-                FindExInfoBasic,
-                out findData,
-                FindExSearchNameMatch,
-                IntPtr.Zero,
-                0));
+                0,
+                out WIN32_FIND_DATAW findData);
 
-            if (searchHandle.IsInvalid)
+            if (fileFinder.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
                 if (err == ERROR_FILE_NOT_FOUND) continue;
@@ -93,20 +87,17 @@ internal static class FastIO
                 {
                     return true;
                 }
-            } while (FindNextFileW(searchHandle.Handle, out findData));
+            } while (fileFinder.TryFindNextFile(out findData));
 
             if (searchOption == FastIOSearchOption.TopDirectoryOnly) return false;
         }
 
-        using (SafeSearchHandle searchHandle = new(FindFirstFileExW(
+        using (FileFinder fileFinder = FileFinder.Create(
                    searchPath + "*",
-                   FindExInfoBasic,
-                   out findData,
-                   FindExSearchNameMatch,
-                   IntPtr.Zero,
-                   0)))
+                   0,
+                   out WIN32_FIND_DATAW findData))
         {
-            if (searchHandle.IsInvalid)
+            if (fileFinder.IsInvalid)
             {
                 int err = Marshal.GetLastWin32Error();
                 if (err != ERROR_FILE_NOT_FOUND)
@@ -123,7 +114,7 @@ internal static class FastIO
                 {
                     return true;
                 }
-            } while (FindNextFileW(searchHandle.Handle, out findData));
+            } while (fileFinder.TryFindNextFile(out findData));
 
             return false;
         }

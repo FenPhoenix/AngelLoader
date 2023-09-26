@@ -48,23 +48,51 @@ public static class FastIO_Native
     }
 #pragma warning restore IDE0004, IDE0003
 
-    public readonly ref struct SafeSearchHandle
+    public readonly ref struct FileFinder
     {
-        public readonly IntPtr Handle;
+        private const int FindExInfoBasic = 1;
+        private const int FindExSearchNameMatch = 0;
 
-        public SafeSearchHandle(IntPtr handle) => Handle = handle;
+        private readonly IntPtr _handle;
 
-        public bool IsInvalid => Handle == IntPtr.Zero || Handle == new IntPtr(-1);
+        private FileFinder(IntPtr handle) => _handle = handle;
 
-        public void Dispose() => FindClose(Handle);
+        public static FileFinder Create(string fileName, int additionalFlags, out WIN32_FIND_DATAW findData)
+        {
+            return new FileFinder(FindFirstFileExW(
+                fileName,
+                FindExInfoBasic,
+                out findData,
+                FindExSearchNameMatch,
+                IntPtr.Zero,
+                additionalFlags));
+        }
+
+        public bool TryFindNextFile(out WIN32_FIND_DATAW findData) => FindNextFileW(_handle, out findData);
+
+        public bool IsInvalid => _handle == IntPtr.Zero || _handle == new IntPtr(-1);
+
+        public void Dispose() => FindClose(_handle);
+
+        #region P/Invoke
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr FindFirstFileExW(
+            string lpFileName,
+            int fInfoLevelId,
+            out WIN32_FIND_DATAW lpFindFileData,
+            int fSearchOp,
+            IntPtr lpSearchFilter,
+            int dwAdditionalFlags);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool FindClose(IntPtr hFindFile);
+
+        #endregion
     }
-
-    public const int FindExInfoBasic = 1;
-
-    public const int FindExSearchNameMatch = 0;
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
@@ -84,22 +112,6 @@ public static class FastIO_Native
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
         public string cAlternateFileName;
     }
-
-    #endregion
-
-    #region P/Invoke definitions
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    public static extern IntPtr FindFirstFileExW(
-        string lpFileName,
-        int fInfoLevelId,
-        out WIN32_FIND_DATAW lpFindFileData,
-        int fSearchOp,
-        IntPtr lpSearchFilter,
-        int dwAdditionalFlags);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    public static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
     #endregion
 
