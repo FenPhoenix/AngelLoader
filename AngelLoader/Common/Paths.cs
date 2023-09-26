@@ -341,6 +341,7 @@ internal static class Paths
 #endif
 
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
+    // First release version to support portable is 1.1.11, but there was a 1.1.10.519 beta that supported it too
     private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);
 
     internal static (string SoIni, bool IsPortable) GetSneakyOptionsIni()
