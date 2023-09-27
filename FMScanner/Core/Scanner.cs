@@ -3173,7 +3173,7 @@ public sealed partial class Scanner : IDisposable
                 int indexDash = lineStartTrimmed.IndexOf('-', indexAfterKey);
                 int indexUnicodeDash = lineStartTrimmed.IndexOf('\u2013', indexAfterKey);
 
-                int index = indexColon > -1 && indexDash > -1
+                int index = (indexColon | indexDash) > -1
                     ? Math.Min(indexColon, indexDash)
                     : Math.Max(indexColon, indexDash);
 

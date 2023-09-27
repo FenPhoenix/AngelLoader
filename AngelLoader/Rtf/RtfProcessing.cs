@@ -392,7 +392,7 @@ internal static class RtfProcessing
         while (startFrom > -1 && startFrom < currentReadmeBytes.Length - 1)
         {
             (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
-            if (start > -1 && end > -1 &&
+            if ((start | end) > -1 &&
                 end - (start + 5) <= RTFParserCommon.MaxLangNumDigits)
             {
                 int num = 0;

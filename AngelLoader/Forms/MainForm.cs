@@ -3867,7 +3867,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             FMsDGV.ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.Menu;
         }
-        else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
+        else if (ht.Type == DataGridViewHitTestType.Cell && (ht.ColumnIndex | ht.RowIndex) > -1)
         {
             FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
             if (!FMsDGV.Rows[ht.RowIndex].Selected)
