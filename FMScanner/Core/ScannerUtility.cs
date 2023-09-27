@@ -13,10 +13,10 @@ namespace FMScanner;
 
 internal static class Utility
 {
-    /// <summary>Returns a value between 0 and 1.0 that indicates how similar the two strings are.</summary>
-    internal static double SimilarityTo(this string string1, string string2, StringComparison stringComparison, SevenZipContext sevenZipContext)
+    /// <summary>Returns a value between 0 and 1.0 that indicates how similar the two strings are (case-insensitive).</summary>
+    internal static double SimilarityTo(this string string1, string string2, SevenZipContext sevenZipContext)
     {
-        if (string1.Equals(string2, stringComparison)) return 1.0;
+        if (string1.EqualsI(string2)) return 1.0;
 
         int string1Length = string1.Length;
         if (string1Length == 0) return 0;
@@ -37,7 +37,7 @@ internal static class Utility
             {
                 vec2[0] = i + 1;
 
-                for (int j = 0; j < string2.Length; j++)
+                for (int j = 0; j < string2Length; j++)
                 {
                     int delCost = vec1[j + 1] + 1;
                     int insCost = vec2[j] + 1;
@@ -45,12 +45,12 @@ internal static class Utility
                     char str1Char = string1[i];
                     char str2Char = string2[j];
                     int substCost =
-                        str1Char < 128 && str2Char < 128
+                        (str1Char | str2Char) < 128
                             ? str1Char.EqualsIAscii(str2Char)
                                 ? 0
                                 : 1
                             : str1Char == str2Char ||
-                              str1Char.ToString().Equals(str2Char.ToString(), stringComparison)
+                              char.ToUpperInvariant(str1Char) == char.ToUpperInvariant(str2Char)
                                 ? 0
                                 : 1;
 

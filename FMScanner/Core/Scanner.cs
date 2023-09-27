@@ -1364,7 +1364,7 @@ public sealed partial class Scanner : IDisposable
                 if (anonAuthor.EqualsI_Local("Anon") ||
                     anonAuthor.EqualsI_Local("Withheld") ||
                     anonAuthor.EqualsI_Local("Unknown") ||
-                    anonAuthor.SimilarityTo("Anonymous", OrdinalIgnoreCase, _sevenZipContext) > 0.75)
+                    anonAuthor.SimilarityTo("Anonymous", _sevenZipContext) > 0.75)
                 {
                     SetMiscTag(fmData, "unknown author");
                 }
@@ -3824,7 +3824,7 @@ public sealed partial class Scanner : IDisposable
                 bool fuzzyMatched = false;
                 foreach (string title in titles)
                 {
-                    if (titleCandidate.SimilarityTo(title, OrdinalIgnoreCase, _sevenZipContext) > 0.75)
+                    if (titleCandidate.SimilarityTo(title, _sevenZipContext) > 0.75)
                     {
                         fuzzyMatched = true;
                         break;
