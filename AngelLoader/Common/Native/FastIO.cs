@@ -26,7 +26,7 @@ internal static class FastIO
 
         var ex = new Win32Exception(err);
         throw new Win32Exception(err,
-            "System error code: " + err + "\r\n" +
+            "System error code: " + err.ToStrInv() + "\r\n" +
             ex.Message + "\r\n" +
             "path: '" + path + "'\r\n" +
             "search pattern: " + searchPattern + "\r\n");

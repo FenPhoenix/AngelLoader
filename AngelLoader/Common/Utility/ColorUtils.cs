@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using AL_Common;
 using static AngelLoader.Utils;
 
@@ -11,6 +12,7 @@ internal static class ColorUtils
 
     // Public domain code ported/implemented from https://bottosson.github.io/posts/oklab/
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct Lab
     {
         internal readonly float L;
@@ -26,6 +28,7 @@ internal static class ColorUtils
     }
 
     // Lightness, chroma, hue
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct LCh
     {
         internal readonly float L;

@@ -20,6 +20,7 @@ public static class Logger
     #region Interop
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [StructLayout(LayoutKind.Sequential)]
     private struct SYSTEMTIME
     {
         internal ushort wYear;

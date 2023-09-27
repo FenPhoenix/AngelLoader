@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -61,10 +62,10 @@ internal static class FMScan
                 message1:
                 scanMessage ??
                 (LText.ProgressBox.ReportScanningFirst +
-                 pr.FMNumber +
+                 pr.FMNumber.ToString(NumberFormatInfo.CurrentInfo) +
                  (pr.CachedString ??=
                      (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                      pr.FMsTotal +
+                      pr.FMsTotal.ToString(NumberFormatInfo.CurrentInfo) +
                       LText.ProgressBox.ReportScanningLast))),
                 message2:
                 pr.FMName,

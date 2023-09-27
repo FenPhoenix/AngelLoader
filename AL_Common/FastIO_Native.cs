@@ -24,29 +24,14 @@ public static class FastIO_Native
     #region Classes / structs / enums
 
     // Reimplementing this internal struct for output parity with DirectoryInfo.Get*
-    // Screw it, not touching this one at all and just shutting up all warnings.
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    [SuppressMessage("ReSharper", "RedundantCast")]
-#pragma warning disable IDE0003, IDE0004
+    [StructLayout(LayoutKind.Sequential)]
     public struct FILE_TIME
     {
-        public uint ftTimeLow;
-        public uint ftTimeHigh;
+        internal uint ftTimeLow;
+        internal uint ftTimeHigh;
 
-        public FILE_TIME(long fileTime)
-        {
-            this.ftTimeLow = (uint)fileTime;
-            this.ftTimeHigh = (uint)(fileTime >> 32);
-        }
-
-        public readonly long ToTicks()
-        {
-            return ((long)this.ftTimeHigh << 32) + (long)this.ftTimeLow;
-        }
+        public readonly long ToTicks() => ((long)ftTimeHigh << 32) + ftTimeLow;
     }
-#pragma warning restore IDE0004, IDE0003
 
     public readonly ref struct FileFinder
     {

@@ -827,10 +827,10 @@ internal static partial class Ini
             config.DateCustomFormatString = GetFormattedDateString(config);
         }
 
-        if (!ValidDateFormats.Contains(config.DateCustomFormat1) ||
-            !ValidDateFormats.Contains(config.DateCustomFormat2) ||
-            !ValidDateFormats.Contains(config.DateCustomFormat3) ||
-            !ValidDateFormats.Contains(config.DateCustomFormat4))
+        if (!ValidDateFormats.Contains(config.DateCustomFormat1, StringComparer.Ordinal) ||
+            !ValidDateFormats.Contains(config.DateCustomFormat2, StringComparer.Ordinal) ||
+            !ValidDateFormats.Contains(config.DateCustomFormat3, StringComparer.Ordinal) ||
+            !ValidDateFormats.Contains(config.DateCustomFormat4, StringComparer.Ordinal))
         {
             ResetCustomDate(config);
         }

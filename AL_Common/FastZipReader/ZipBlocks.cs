@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace AL_Common.FastZipReader;
 
@@ -72,6 +73,7 @@ internal readonly ref struct ZipGenericExtraField
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct Zip64ExtraField
 {
     // Size is size of the record not including the tag or size fields
@@ -246,6 +248,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct Zip64EndOfCentralDirectoryRecord
 {
     private const uint SignatureConstant = 0x06064B50;
@@ -435,6 +438,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct ZipEndOfCentralDirectoryBlock
 {
     internal const uint SignatureConstant = 0x06054B50;

@@ -35,6 +35,7 @@ internal static class Native
     internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
 
     [PublicAPI]
+    [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT
     {
         public readonly int left;
