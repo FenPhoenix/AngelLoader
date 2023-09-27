@@ -475,7 +475,7 @@ public sealed class ZipArchiveFast : IDisposable
 
     private void ThrowIfDisposed()
     {
-        if (_isDisposed) throw new ObjectDisposedException(GetType().ToString());
+        if (_isDisposed) throw new ObjectDisposedException(typeof(ZipArchiveFast).ToString());
     }
 
     /// <summary>
