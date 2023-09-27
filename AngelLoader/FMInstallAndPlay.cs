@@ -2004,17 +2004,18 @@ internal static class FMInstallAndPlay
         return (true, atLeastOneFMMarkedUnavailable);
     }
 
-    internal static async Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
+    internal static Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
     {
         // If any FMs are gone, refresh the list to remove them. Otherwise, don't refresh the list because
         // then the FMs might move in the list if we're sorting by installed state.
         if (atLeastOneFMMarkedUnavailable && !Core.View.GetShowUnavailableFMsFilter())
         {
-            await Core.View.SortAndSetFilter(keepSelection: true);
+            return Core.View.SortAndSetFilter(keepSelection: true);
         }
         else
         {
             Core.View.RefreshAllSelectedFMs_UpdateInstallState();
+            return VoidTask;
         }
     }
 
