@@ -483,6 +483,9 @@ public static class Common
     #region ASCII-specific
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool BothAreAscii(char char1, char char2) => (char1 | char2) < 128;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiUpper(this char c) => (uint)(c - 'A') <= 'Z' - 'A';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -726,7 +729,7 @@ public static class Common
         int startIndex = -1;
         for (int i = 0; i < hayLength; i++)
         {
-            if (hay[i] < 128 && needle[0] < 128)
+            if (BothAreAscii(hay[i], needle[0]))
             {
                 if (hay[i].EqualsIAscii(needle[0]))
                 {
@@ -756,7 +759,7 @@ public static class Common
             char needleChar = needle[needleUsed];
 
             // Don't allocate unless we need to...
-            if (hayChar < 128 && needleChar < 128)
+            if (BothAreAscii(hayChar, needleChar))
             {
                 if (hayChar.EqualsIAscii(needleChar))
                 {
@@ -1077,7 +1080,7 @@ public static class Common
             char fc = first[i];
             char sc = second[i];
 
-            if (fc > 127 || sc > 127)
+            if (!BothAreAscii(fc, sc))
             {
                 return first.Equals(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
@@ -1104,7 +1107,7 @@ public static class Common
             char fc = first[i];
             char sc = second[i];
 
-            if (fc > 127 || sc > 127)
+            if (!BothAreAscii(fc, sc))
             {
                 return first.StartsWith(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
@@ -1131,7 +1134,7 @@ public static class Common
             char fc = first[fi];
             char sc = second[si];
 
-            if (fc > 127 || sc > 127)
+            if (!BothAreAscii(fc, sc))
             {
                 return first.EndsWith(second, OrdinalIgnoreCase) ||
                        CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);

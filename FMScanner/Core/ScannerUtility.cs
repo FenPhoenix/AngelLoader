@@ -679,7 +679,7 @@ internal static class Utility
         {
             char c1 = temp1[i];
             char c2 = temp2[i];
-            if (c1 < 128 && c2 < 128)
+            if (BothAreAscii(c1, c2))
             {
                 if (!c1.EqualsIAscii(c2)) return false;
             }
