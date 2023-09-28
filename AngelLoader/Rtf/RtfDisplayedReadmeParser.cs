@@ -33,14 +33,22 @@ public sealed partial class RtfDisplayedReadmeParser
 
     internal sealed class LangItem
     {
+        private static int GetDigitsUpTo5(int number) =>
+            number <= 9 ? 1 :
+            number <= 99 ? 2 :
+            number <= 999 ? 3 :
+            number <= 9999 ? 4 :
+            5;
+
         internal int Index;
         internal readonly int CodePage;
-        internal int DigitsCount;
+        internal readonly int DigitsCount;
 
         internal LangItem(int index, int codePage)
         {
             Index = index;
             CodePage = codePage;
+            DigitsCount = GetDigitsUpTo5(codePage);
         }
     }
 

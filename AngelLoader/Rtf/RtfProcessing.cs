@@ -280,16 +280,6 @@ internal static class RtfProcessing
 
         #region Local functions
 
-        static int GetDigitsUpTo5(int number)
-        {
-            return
-                number <= 9 ? 1 :
-                number <= 99 ? 2 :
-                number <= 999 ? 3 :
-                number <= 9999 ? 4 :
-                5;
-        }
-
         static ListFast<byte> CodePageToBytes(int codePage, int digits)
         {
             _codePageBytes.ClearFast();
@@ -613,10 +603,8 @@ internal static class RtfProcessing
             {
                 RtfDisplayedReadmeParser.LangItem item = langItems[i];
                 item.Index += colorTableEntryLength;
-                int digitsCount = GetDigitsUpTo5(item.CodePage);
-                item.DigitsCount = digitsCount;
                 // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += ansiCpgLength + digitsCount + 1;
+                extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
             }
 
             #endregion
