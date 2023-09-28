@@ -182,7 +182,12 @@ public sealed class FileEncoding
             if we detected ASCII, just return UTF-8 because that's an exact superset but modern, so why not
             just get rid of any reference to ancient stuff if we can.
             */
-            ret = !_ude.CanBeASCII ? Charset.Windows1252 : Charset.UTF8;
+            ret = _ude.DomainSpecificGuess switch
+            {
+                DomainSpecificGuess.UTF8 => Charset.UTF8,
+                DomainSpecificGuess.CannotBeAscii => Charset.Windows1252,
+                _ => Charset.UTF8
+            };
         }
 
         return ret;

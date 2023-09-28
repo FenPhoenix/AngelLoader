@@ -82,6 +82,13 @@ public enum Charset
     X_MAC_CYRILLIC
 }
 
+public enum DomainSpecificGuess
+{
+    None,
+    CannotBeAscii,
+    UTF8
+}
+
 /// <summary>
 /// <para>
 /// Default implementation of charset detection interface.
@@ -159,7 +166,7 @@ public sealed class CharsetDetector
     private EscCharsetProber? _escCharsetProber;
     private Charset _detectedCharset;
 
-    public bool CanBeASCII = true;
+    public DomainSpecificGuess DomainSpecificGuess = DomainSpecificGuess.None;
 
 #if false
     public void Feed(Stream stream)
@@ -177,7 +184,7 @@ public sealed class CharsetDetector
 
     public void Reset()
     {
-        CanBeASCII = true;
+        DomainSpecificGuess = DomainSpecificGuess.None;
         Charset = Charset.Null;
         Confidence = 0.0f;
 
@@ -248,7 +255,10 @@ public sealed class CharsetDetector
             {
                 // Fen: If literally any byte is non-ASCII, we're going to call ourselves non-ASCII. We're not
                 // messing around with supporting NBSP, wtf.
-                if (CanBeASCII) CanBeASCII = false;
+                if (DomainSpecificGuess < DomainSpecificGuess.CannotBeAscii)
+                {
+                    DomainSpecificGuess = DomainSpecificGuess.CannotBeAscii;
+                }
 
                 if (b != NoBreakSpace)
                 {
@@ -265,10 +275,14 @@ public sealed class CharsetDetector
                         _charsetProbers[1] ??= new SBCSGroupProber();
                         _charsetProbers[2] ??= new Latin1Prober();
                     }
-                }
-                else
-                {
-                    _lastChar = b;
+
+                    // Fen: We see copyright symbols in readmes a lot, and UTF-8 copyright is C2 A9. The general
+                    // detector doesn't take this into account, so let's help it out.
+                    // Fixes "Nightwalk" and "Troubling Transitions".
+                    if (b == 0xA9 && _lastChar == 0xC2)
+                    {
+                        DomainSpecificGuess = DomainSpecificGuess.UTF8;
+                    }
                 }
             }
             else
@@ -279,8 +293,8 @@ public sealed class CharsetDetector
                     // found escape character or HZ "~{"
                     _inputState = InputState.EscASCII;
                 }
-                _lastChar = b;
             }
+            _lastChar = b;
         }
 
         switch (_inputState)
