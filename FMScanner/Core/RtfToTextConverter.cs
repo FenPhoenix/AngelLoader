@@ -1072,13 +1072,13 @@ public sealed partial class RtfToTextConverter
                     // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
                     // ditto the above
                     _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope)) != RtfError.OK) return ec;
+                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
                     // We have to check what the keyword is before deciding whether to parse the Unicode.
@@ -1113,7 +1113,7 @@ public sealed partial class RtfToTextConverter
             }
         }
 
-        return _ctx.ScopeStack.Count > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
+        return _groupCount > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
     }
 
     #region Act on keywords

@@ -16,12 +16,16 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private bool _skipDestinationIfUnknown;
 
+    // For whatever reason it's faster to have this
+    private int _groupCount;
+
     #endregion
 
     private void ResetBase()
     {
         _ctx.Reset();
 
+        _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
     }

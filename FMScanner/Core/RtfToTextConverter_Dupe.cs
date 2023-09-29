@@ -17,6 +17,9 @@ public sealed partial class RtfToTextConverter
 
     private bool _skipDestinationIfUnknown;
 
+    // For whatever reason it's faster to have this
+    private int _groupCount;
+
     #endregion
 
     private void ResetBase()
@@ -24,6 +27,7 @@ public sealed partial class RtfToTextConverter
         _ctx.Reset();
         _unGetBuffer.Clear();
 
+        _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
         _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
