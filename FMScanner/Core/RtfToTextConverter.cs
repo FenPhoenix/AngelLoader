@@ -204,7 +204,7 @@ public sealed partial class RtfToTextConverter
     */
 
     // ReSharper disable RedundantExplicitArraySize
-    private readonly int[] _symbolFontToUnicode = new int[224]
+    private readonly uint[] _symbolFontToUnicode = new uint[224]
     {
         ' ',
         0x0021,
@@ -457,7 +457,7 @@ public sealed partial class RtfToTextConverter
         _unicodeUnknown_Char
     };
 
-    private readonly int[] _wingdingsFontToUnicode = new int[224]
+    private readonly uint[] _wingdingsFontToUnicode = new uint[224]
     {
         ' ',
         0x1F589,
@@ -689,7 +689,7 @@ public sealed partial class RtfToTextConverter
         _unicodeUnknown_Char
     };
 
-    private readonly int[] _webdingsFontToUnicode = new int[224]
+    private readonly uint[] _webdingsFontToUnicode = new uint[224]
     {
         ' ',
         0x1F577,
@@ -1213,13 +1213,13 @@ public sealed partial class RtfToTextConverter
                 _unicodeCharsLeftToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
 
                 // Make sure the code point is normalized before adding it to the buffer!
-                RtfError error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: true);
+                RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
                 if (error != RtfError.OK) return error;
 
                 // If our code point has been through a font translation table, it may be longer than 2 bytes.
-                if (param > 0xFFFF)
+                if (codePoint > 0xFFFF)
                 {
-                    ListFast<char>? chars = ConvertFromUtf32(param, _charGeneralBuffer);
+                    ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
                     if (chars == null)
                     {
                         _unicodeBuffer.Add(_unicodeUnknown_Char);
@@ -1231,8 +1231,8 @@ public sealed partial class RtfToTextConverter
                 }
                 else
                 {
-                    // At this point, param is guaranteed to fit into a char
-                    _unicodeBuffer.Add((char)param);
+                    // At this point, codePoint is guaranteed to fit into a char
+                    _unicodeBuffer.Add((char)codePoint);
                 }
                 break;
             case SpecialType.ColorTable:
@@ -1683,8 +1683,7 @@ public sealed partial class RtfToTextConverter
         param = BranchlessConditionalNegate(param, negateNum);
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
-        RtfError error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: false);
-        uint codePoint = (uint)param;
+        RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: false, out uint codePoint);
         if (error != RtfError.OK) return error;
 
         if (ch != ' ') return RewindAndSkipGroup(ch);
@@ -1880,7 +1879,7 @@ public sealed partial class RtfToTextConverter
             if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
             {
 #pragma warning disable 8509
-                int[] fontTable = _ctx.CurrentScope.SymbolFont switch
+                uint[] fontTable = _ctx.CurrentScope.SymbolFont switch
                 {
                     SymbolFont.Symbol => _symbolFontToUnicode,
                     SymbolFont.Wingdings => _wingdingsFontToUnicode,
@@ -2073,7 +2072,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetCharFromConversionList_UInt(uint codePoint, int[] fontTable, out ListFast<char> finalChars)
+    private bool GetCharFromConversionList_UInt(uint codePoint, uint[] fontTable, out ListFast<char> finalChars)
     {
         finalChars = _charGeneralBuffer;
 
@@ -2113,7 +2112,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetCharFromConversionList_Byte(byte codePoint, int[] fontTable, out ListFast<char> finalChars)
+    private void GetCharFromConversionList_Byte(byte codePoint, uint[] fontTable, out ListFast<char> finalChars)
     {
         finalChars = _charGeneralBuffer;
 
@@ -2146,15 +2145,21 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError NormalizeUnicodePoint(ref int codePoint, bool handleSymbolCharRange)
+    private RtfError NormalizeUnicodePoint(int codePoint, bool handleSymbolCharRange, out uint returnCodePoint)
     {
         // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
         // correct value.
         if (codePoint < 0)
         {
             codePoint += 65536;
-            if (codePoint is < 0 or > ushort.MaxValue) return RtfError.InvalidUnicode;
+            if (codePoint is < 0 or > ushort.MaxValue)
+            {
+                returnCodePoint = 0;
+                return RtfError.InvalidUnicode;
+            }
         }
+
+        returnCodePoint = (uint)codePoint;
 
         /*
         From the spec:
@@ -2174,11 +2179,9 @@ public sealed partial class RtfToTextConverter
         (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
         even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
         */
-        if (handleSymbolCharRange &&
-            // We know the code point is >= 0 by this point so the uint cast is fine and seems to add perf somehow
-            ((uint)(codePoint - 0xF020) <= 0xF0FF - 0xF020))
+        if (handleSymbolCharRange && (returnCodePoint - 0xF020 <= 0xF0FF - 0xF020))
         {
-            codePoint -= 0xF000;
+            returnCodePoint -= 0xF000;
 
             int fontNum = _lastUsedFontWithCodePage42 > -1
                 ? _lastUsedFontWithCodePage42
@@ -2194,13 +2197,13 @@ public sealed partial class RtfToTextConverter
             switch (GetSymbolFontTypeFromFontEntry(fontEntry))
             {
                 case SymbolFont.Wingdings:
-                    codePoint = _wingdingsFontToUnicode[codePoint - 0x20];
+                    returnCodePoint = _wingdingsFontToUnicode[returnCodePoint - 0x20];
                     break;
                 case SymbolFont.Webdings:
-                    codePoint = _webdingsFontToUnicode[codePoint - 0x20];
+                    returnCodePoint = _webdingsFontToUnicode[returnCodePoint - 0x20];
                     break;
                 case SymbolFont.Symbol:
-                    codePoint = _symbolFontToUnicode[codePoint - 0x20];
+                    returnCodePoint = _symbolFontToUnicode[returnCodePoint - 0x20];
                     break;
             }
         }
