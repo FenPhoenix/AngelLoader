@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-09-29:  ?           329MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
 2020-08-20:  157MB/s     211MB/s
 2020-08-19:  88.2 MB/s   97MB/s
@@ -66,7 +67,6 @@ Other:
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common;
@@ -78,51 +78,6 @@ namespace FMScanner;
 
 public sealed partial class RtfToTextConverter
 {
-    #region Classes
-
-    public sealed class UnGetStack
-    {
-        private const int _resetCapacity = 100;
-
-        private char[] _array = new char[_resetCapacity];
-        private int _capacity = _resetCapacity;
-
-        /// <summary>
-        /// Do not set from outside. Properties are slow.
-        /// </summary>
-        public int Count;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-            if (_capacity > _resetCapacity)
-            {
-                _array = new char[_resetCapacity];
-                _capacity = _resetCapacity;
-            }
-            Count = 0;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public char Pop() => _array[--Count];
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Push(char item)
-        {
-            if (Count == _capacity)
-            {
-                int capacity = _array.Length == 0 ? 4 : 2 * _array.Length;
-                char[] destinationArray = new char[capacity];
-                Array.Copy(_array, 0, destinationArray, 0, Count);
-                _array = destinationArray;
-                _capacity = capacity;
-            }
-            _array[Count++] = item;
-        }
-    }
-
-    #endregion
-
     #region Constants
 
     private const int _windows1252 = 1252;
@@ -137,54 +92,17 @@ public sealed partial class RtfToTextConverter
 
     #region Private fields
 
-    private Stream _stream = null!;
+    private ArrayWithLength<byte> _rtfBytes = ArrayWithLength<byte>.Empty();
 
     #endregion
 
     #region Stream
 
-    /*
-    We use this as a "seek-back" buffer for when we want to move back in the stream. We put chars back
-    "into the stream", but they actually go in here and then when we go to read, we read from this first
-    and so on until it's empty, then go back to reading from the main stream again. In this way, we
-    support a rudimentary form of peek-and-rewind without ever actually seeking backwards in the stream.
-    This is required to support zip entry streams which are unseekable. If we required a seekable stream,
-    we would have to copy the entire, potentially very large, zip entry stream to memory first and then
-    read it, which is possibly unnecessarily memory-hungry.
-
-    2020-08-15:
-    We now have a buffered stream so in theory we could check if we're > 0 in the buffer and just actually
-    rewind if we are, but our seek-back buffer is fast enough already so we're just keeping that for now.
-    */
-    private readonly UnGetStack _unGetBuffer = new();
-
-    private const int _bufferLen = 81920;
-    private readonly byte[] _buffer = new byte[_bufferLen];
-    // Start it ready to roll over to 0 so we don't need extra logic for the first get
-    private int _bufferPos = _bufferLen - 1;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ResetStream(Stream stream, long streamLength)
+    private void ResetStream(ArrayWithLength<byte> rtfBytes)
     {
-        _stream = stream;
-
-        // Don't clear the buffer; we don't need to and it wastes time
-        _bufferPos = _bufferLen - 1;
-
-        Length = streamLength;
+        _rtfBytes = rtfBytes;
         CurrentPos = 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private byte StreamReadByte()
-    {
-        _bufferPos++;
-        if (_bufferPos == _bufferLen)
-        {
-            _bufferPos = 0;
-            _stream.ReadAll(_buffer, 0, _bufferLen);
-        }
-        return _buffer[_bufferPos];
     }
 
     #endregion
@@ -996,9 +914,9 @@ public sealed partial class RtfToTextConverter
 
     [PublicAPI]
     public (bool Success, string Text)
-    Convert(Stream stream, long streamLength)
+    Convert(ArrayWithLength<byte> rtfBytes)
     {
-        Reset(stream, streamLength);
+        Reset(rtfBytes);
 
 #if ReleaseRTFTest || DebugRTFTest
         RtfError error = ParseRtf();
@@ -1014,12 +932,16 @@ public sealed partial class RtfToTextConverter
         {
             return (false, "");
         }
+        finally
+        {
+            _rtfBytes = ArrayWithLength<byte>.Empty();
+        }
 #endif
     }
 
     #endregion
 
-    private void Reset(Stream stream, long streamLength)
+    private void Reset(ArrayWithLength<byte> rtfBytes)
     {
         ResetBase();
 
@@ -1043,7 +965,7 @@ public sealed partial class RtfToTextConverter
         // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
-        ResetStream(stream, streamLength);
+        ResetStream(rtfBytes);
     }
 
     private RtfError ParseRtf()
@@ -1051,7 +973,7 @@ public sealed partial class RtfToTextConverter
         int nibbleCount = 0;
         byte b = 0;
 
-        while (CurrentPos < Length)
+        while (CurrentPos < _rtfBytes.Length)
         {
             char ch = GetNextCharFast();
 
@@ -1365,7 +1287,7 @@ public sealed partial class RtfToTextConverter
         {
             if (!GetNextChar(out ch))
             {
-                UnGetChar(ch);
+                CurrentPos--;
                 return ResetBufferAndStateAndReturn();
             }
             goto restartButDontClearBuffer;
@@ -1388,16 +1310,15 @@ public sealed partial class RtfToTextConverter
         {
             bool lastCharInStream = false;
 
-            // Put the LAST char back (for pch1 it's ch, for pch2 it's pch1) to fix last-char-in-stream
-            // corner case
+            // @vNext: Fix last-char-in-stream corner case(?) - test this again now!
             if (!GetNextChar(out char pch1))
             {
-                UnGetChar(ch);
+                CurrentPos--;
                 lastCharInStream = true;
             }
             if (!GetNextChar(out char pch2))
             {
-                UnGetChar(pch1);
+                CurrentPos--;
                 lastCharInStream = true;
             }
 
@@ -1408,8 +1329,7 @@ public sealed partial class RtfToTextConverter
                 {
                     if (!GetNextChar(out ch))
                     {
-                        UnGetChar(pch2);
-                        UnGetChar(pch1);
+                        CurrentPos -= 2;
 
                         return ResetBufferAndStateAndReturn();
                     }
@@ -1418,8 +1338,7 @@ public sealed partial class RtfToTextConverter
                 }
                 else
                 {
-                    UnGetChar(pch2);
-                    UnGetChar(pch1);
+                    CurrentPos -= 2;
                 }
             }
         }
@@ -1588,14 +1507,14 @@ public sealed partial class RtfToTextConverter
         #region Check for SYMBOL instruction
 
         // Straight-up just check for S, because SYMBOL is the only word we care about.
-        if (ch != 'S') return RewindAndSkipGroup(ch);
+        if (ch != 'S') return RewindAndSkipGroup();
 
         int i;
         bool eof = false;
         for (i = 0; i < 6; i++, eof = !GetNextChar(out ch))
         {
             if (eof) return RtfError.EndOfFile;
-            if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup(ch);
+            if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup();
         }
 
         #endregion
@@ -1622,7 +1541,7 @@ public sealed partial class RtfToTextConverter
             if (ch == '-')
             {
                 GetNextChar(out ch);
-                if (ch != ' ') return RewindAndSkipGroup(ch);
+                if (ch != ' ') return RewindAndSkipGroup();
                 negateNum = 1;
             }
             numIsHex = true;
@@ -1649,7 +1568,7 @@ public sealed partial class RtfToTextConverter
             i >= _fldinstSymbolNumberMaxLen ||
             (!numIsHex && alphaCharsFound))
         {
-            return RewindAndSkipGroup(ch);
+            return RewindAndSkipGroup();
         }
 
         #endregion
@@ -1667,7 +1586,7 @@ public sealed partial class RtfToTextConverter
                     NumberFormatInfo.InvariantInfo,
                     out param))
             {
-                return RewindAndSkipGroup(ch);
+                return RewindAndSkipGroup();
             }
         }
         else
@@ -1685,7 +1604,7 @@ public sealed partial class RtfToTextConverter
         RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: false, out uint codePoint);
         if (error != RtfError.OK) return error;
 
-        if (ch != ' ') return RewindAndSkipGroup(ch);
+        if (ch != ' ') return RewindAndSkipGroup();
 
         const int maxParams = 6;
         const int useCurrentScopeCodePage = -1;
@@ -1783,7 +1702,7 @@ public sealed partial class RtfToTextConverter
                     {
                         if (fontNameCharCount >= _fldinstSymbolFontNameMaxLen || IsSeparatorChar(ch))
                         {
-                            return RewindAndSkipGroup(ch);
+                            return RewindAndSkipGroup();
                         }
                         _fldinstSymbolFontName.Add(ch);
                         fontNameCharCount++;
@@ -1794,17 +1713,17 @@ public sealed partial class RtfToTextConverter
                     if (SeqEqual(_fldinstSymbolFontName, _symbolChars) &&
                         !GetCharFromConversionList_UInt(codePoint, _symbolFontToUnicode, out finalChars))
                     {
-                        return RewindAndSkipGroup(ch);
+                        return RewindAndSkipGroup();
                     }
                     else if (SeqEqual(_fldinstSymbolFontName, _wingdingsChars) &&
                              !GetCharFromConversionList_UInt(codePoint, _wingdingsFontToUnicode, out finalChars))
                     {
-                        return RewindAndSkipGroup(ch);
+                        return RewindAndSkipGroup();
                     }
                     else if (SeqEqual(_fldinstSymbolFontName, _webdingsChars) &&
                              !GetCharFromConversionList_UInt(codePoint, _webdingsFontToUnicode, out finalChars))
                     {
-                        return RewindAndSkipGroup(ch);
+                        return RewindAndSkipGroup();
                     }
                 }
             }
@@ -1829,7 +1748,7 @@ public sealed partial class RtfToTextConverter
             else if (ch == 's')
             {
                 if (!GetNextChar(out ch)) return RtfError.EndOfFile;
-                if (ch != ' ') return RewindAndSkipGroup(ch);
+                if (ch != ' ') return RewindAndSkipGroup();
 
                 int numDigitCount = 0;
                 while (GetNextChar(out ch) && ch.IsAsciiNumeric())
@@ -1848,7 +1767,7 @@ public sealed partial class RtfToTextConverter
 
         if (finalChars.Count > 0) PutChars(finalChars, finalChars.Count);
 
-        return RewindAndSkipGroup(ch);
+        return RewindAndSkipGroup();
     }
 
     #endregion
@@ -1962,9 +1881,9 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError RewindAndSkipGroup(char ch)
+    private RtfError RewindAndSkipGroup()
     {
-        UnGetChar(ch);
+        CurrentPos--;
         _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
         return RtfError.OK;
     }

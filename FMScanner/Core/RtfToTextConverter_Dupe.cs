@@ -25,7 +25,6 @@ public sealed partial class RtfToTextConverter
     private void ResetBase()
     {
         _ctx.Reset();
-        _unGetBuffer.Clear();
 
         _groupCount = 0;
         _binaryCharsLeftToSkip = 0;
@@ -35,33 +34,7 @@ public sealed partial class RtfToTextConverter
 
     #region Stream
 
-    // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
-    // length as a param and store it.
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    private long Length;
-
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    private long CurrentPos;
-
-    /// <summary>
-    /// Puts a char back into the stream and decrements the read position. Actually doesn't really do that
-    /// but uses an internal seek-back buffer to allow it work with forward-only streams. But don't worry
-    /// about that. Just use it as normal.
-    /// </summary>
-    /// <param name="c"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UnGetChar(char c)
-    {
-        if (CurrentPos < 0) return;
-
-        _unGetBuffer.Push(c);
-        if (CurrentPos > 0) CurrentPos--;
-    }
+    private int CurrentPos;
 
     /// <summary>
     /// Returns false if the end of the stream has been reached.
@@ -70,24 +43,13 @@ public sealed partial class RtfToTextConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool GetNextChar(out char ch)
     {
-        if (CurrentPos == Length)
+        if (CurrentPos == _rtfBytes.Length)
         {
             ch = '\0';
             return false;
         }
 
-        // For some reason leaving this as a full if makes us fast but changing it to a ternary makes us slow?!
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_unGetBuffer.Count > 0)
-        {
-            ch = _unGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
+        ch = (char)_rtfBytes[CurrentPos++];
 
         return true;
     }
@@ -97,24 +59,7 @@ public sealed partial class RtfToTextConverter
     /// </summary>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private char GetNextCharFast()
-    {
-        char ch;
-        // Ditto above
-#pragma warning disable IDE0045 // Convert to conditional expression
-        if (_unGetBuffer.Count > 0)
-        {
-            ch = _unGetBuffer.Pop();
-        }
-        else
-        {
-            ch = (char)StreamReadByte();
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-        CurrentPos++;
-
-        return ch;
-    }
+    private char GetNextCharFast() => (char)_rtfBytes[CurrentPos++];
 
     #endregion
 
@@ -181,7 +126,8 @@ public sealed partial class RtfToTextConverter
          This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
          the space from the skip-chars to count.
         */
-        if (ch != ' ') UnGetChar(ch);
+        // Current position will be > 0 at this point, so a decrement is always safe
+        CurrentPos += MinusOneIfNotEqual(ch, ' ');
 
         return DispatchKeyword(param, hasParam);
     }

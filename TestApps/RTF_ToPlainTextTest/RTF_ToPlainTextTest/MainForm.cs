@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using FMScanner;
+using static AL_Common.Common;
 
 namespace RTF_ToPlainTextTest;
 
@@ -144,8 +145,10 @@ public sealed partial class MainForm : Form
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Cave_v1__readme.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__VaultChronicles__vcse_de.rtf";
                 string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
-                using var ms = File.Open(file, FileMode.Open, FileAccess.Read);
-                (_, string text) = rtfreader.Convert(ms, ms.Length);
+                using var fs = File.Open(file, FileMode.Open, FileAccess.Read);
+                byte[] array = new byte[fs.Length];
+                int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+                (_, string text) = rtfreader.Convert(new ArrayWithLength<byte>(array, bytesRead));
                 WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
             }
             else
@@ -153,45 +156,41 @@ public sealed partial class MainForm : Form
                 var rtfReader = new RtfToTextConverter();
 
 #if true
-                MemoryStream[] memStreams = new MemoryStream[rtfFiles.Length];
+                ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
 
                 for (int i = 0; i < rtfFiles.Length; i++)
                 {
                     string f = rtfFiles[i];
                     using var fs = File.Open(f, FileMode.Open, FileAccess.Read);
-                    memStreams[i] = new MemoryStream((int)fs.Length);
-                    fs.CopyTo(memStreams[i]);
-                    memStreams[i].Seek(0, SeekOrigin.Begin);
+                    byte[] array = new byte[fs.Length];
+                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+                    byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
                 }
 
                 var sw = new Stopwatch();
                 sw.Start();
 
-                for (int i = 0; i < memStreams.Length; i++)
+                for (int i = 0; i < byteArrays.Length; i++)
                 {
                     string f = rtfFiles[i];
                     Trace.WriteLine(f);
-                    var stream = memStreams[i];
-                    (_, string text) = rtfReader.Convert(stream, stream.Length);
+                    ArrayWithLength<byte> array = byteArrays[i];
+                    (_, string text) = rtfReader.Convert(array);
                     WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
 
                 sw.Stop();
                 MessageBox.Show(sw.Elapsed.ToString() + "\r\n");
 
-                foreach (var stream in memStreams)
-                {
-                    stream.Dispose();
-                }
-
                 return;
 #endif
-                //foreach (var stream in memStreams)
                 foreach (string f in rtfFiles)
                 {
                     Trace.WriteLine(f);
-                    using var stream = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.None, 81920);
-                    (_, string text) = rtfReader.Convert(stream, stream.Length);
+                    using var fs = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.None, 81920);
+                    byte[] array = new byte[fs.Length];
+                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+                    (_, string text) = rtfReader.Convert(new ArrayWithLength<byte>(array, bytesRead));
                     WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
 

@@ -47,6 +47,33 @@ public static class Common
         }
     }
 
+    [PublicAPI]
+    public readonly struct ArrayWithLength<T>
+    {
+        public readonly T[] Array;
+        public readonly int Length;
+
+        public ArrayWithLength()
+        {
+            Array = System.Array.Empty<T>();
+            Length = 0;
+        }
+
+        public ArrayWithLength(T[] array, int length)
+        {
+            Array = array;
+            Length = length;
+        }
+
+        public static ArrayWithLength<T> Empty() => new();
+
+        public T this[int index]
+        {
+            get => Array[index];
+            set => Array[index] = value;
+        }
+    }
+
     #region Custom hash tables
 
     private static readonly PathComparer _pathComparer = new();

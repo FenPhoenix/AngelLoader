@@ -2937,11 +2937,20 @@ public sealed partial class Scanner : IDisposable
                         readmeStream = _archive.OpenEntry(readmeEntry!);
                     }
 
-                    (bool success, string text) = RtfConverter.Convert(readmeStream, readmeFileLen);
-                    if (success)
+                    byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
+                    try
                     {
-                        last.Text = text;
-                        last.Lines.ClearFullAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                        int bytesRead = readmeStream.ReadAll(rtfBytes, 0, readmeFileLen);
+                        (bool success, string text) = RtfConverter.Convert(new ArrayWithLength<byte>(rtfBytes, bytesRead));
+                        if (success)
+                        {
+                            last.Text = text;
+                            last.Lines.ClearFullAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                        }
+                    }
+                    finally
+                    {
+                        _sevenZipContext.ByteArrayPool.Return(rtfBytes);
                     }
                 }
                 else
