@@ -144,7 +144,8 @@ public sealed partial class RtfDisplayedReadmeParser
          This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
          the space from the skip-chars to count.
         */
-        if (ch != ' ') UnGetChar();
+        // Current position will be > 0 at this point, so a decrement is always safe
+        CurrentPos += MinusOneIfEquals(ch, ' ');
 
         return DispatchKeyword(param, hasParam);
     }

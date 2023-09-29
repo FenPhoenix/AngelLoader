@@ -1052,4 +1052,21 @@ public static partial class RTFParserCommon
 
         return RtfError.OK;
     }
+
+    /// <summary>
+    /// Specialized thing for branchless handling of optional spaces after rtf control words.
+    /// </summary>
+    /// <param name="char1"></param>
+    /// <param name="char2"></param>
+    /// <returns>-1 if <paramref name="char1"/> is equal to <paramref name="char2"/>, otherwise, 0.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int MinusOneIfEquals(char char1, char char2)
+    {
+        int ret = char1 ^ char2;
+        ret |= (ret >> 8);
+        ret |= (ret >> 4);
+        ret |= (ret >> 2);
+        ret |= (ret >> 1);
+        return -(ret & 1);
+    }
 }
