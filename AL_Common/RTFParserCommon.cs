@@ -1058,12 +1058,12 @@ public static partial class RTFParserCommon
     /// </summary>
     /// <param name="char1"></param>
     /// <param name="char2"></param>
-    /// <returns>-1 if <paramref name="char1"/> is equal to <paramref name="char2"/>, otherwise, 0.</returns>
+    /// <returns>-1 if <paramref name="char1"/> is not equal to <paramref name="char2"/>, otherwise, 0.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int MinusOneIfEquals(char char1, char char2)
+    public static int MinusOneIfNotEqual(char char1, char char2)
     {
         int ret = char1 ^ char2;
-        ret |= (ret >> 8);
+        // We only use 8 bits of a char's 16, so we can skip a couple  shifts (tested)
         ret |= (ret >> 4);
         ret |= (ret >> 2);
         ret |= (ret >> 1);

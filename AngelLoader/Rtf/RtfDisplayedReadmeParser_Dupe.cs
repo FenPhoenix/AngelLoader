@@ -145,7 +145,7 @@ public sealed partial class RtfDisplayedReadmeParser
          the space from the skip-chars to count.
         */
         // Current position will be > 0 at this point, so a decrement is always safe
-        CurrentPos += MinusOneIfEquals(ch, ' ');
+        CurrentPos += MinusOneIfNotEqual(ch, ' ');
 
         return DispatchKeyword(param, hasParam);
     }

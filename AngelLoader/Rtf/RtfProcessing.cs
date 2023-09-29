@@ -1,4 +1,4 @@
-﻿#define PROCESS_README_TIME_TEST
+﻿//#define PROCESS_README_TIME_TEST
 
 using System;
 using System.Collections.Generic;
