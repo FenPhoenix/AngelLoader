@@ -1785,33 +1785,6 @@ public static class Common
     /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ListFast<char>? ConvertFromUtf32(int utf32, ListFast<char> charBuffer)
-    {
-        uint utf32u = (uint)utf32;
-
-        if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)
-        {
-            return null;
-        }
-
-        if (utf32u <= 0xFFFFu)
-        {
-            charBuffer.ItemsArray[0] = (char)utf32u;
-            charBuffer.Count = 1;
-            return charBuffer;
-        }
-
-        charBuffer.ItemsArray[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
-        charBuffer.ItemsArray[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
-        charBuffer.Count = 2;
-
-        return charBuffer;
-    }
-
-    /// <summary>
-    /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListFast<char>? ConvertFromUtf32(uint utf32u, ListFast<char> charBuffer)
     {
         if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)

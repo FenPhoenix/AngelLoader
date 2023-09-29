@@ -771,8 +771,8 @@ internal static class Utility
                             string num = subSB.ToString();
 
                             bool success = num.Length > 0 && num[0] == 'x'
-                                ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
-                                : Int_TryParseInv(num, out result);
+                                ? uint.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint result)
+                                : UInt_TryParseInv(num, out result);
 
                             if (success)
                             {
@@ -809,7 +809,7 @@ internal static class Utility
                             string name = subSB.ToString();
 
                             if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
-                                Int_TryParseInv(value, out int result))
+                                UInt_TryParseInv(value, out uint result))
                             {
                                 ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
                                 if (chars == null)
