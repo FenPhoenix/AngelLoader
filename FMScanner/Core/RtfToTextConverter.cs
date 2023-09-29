@@ -1440,11 +1440,11 @@ public sealed partial class RtfToTextConverter
             {
                 if (codePageWas42 && _hexBuffer.Count == 1)
                 {
-                    int codePoint = _hexBuffer.ItemsArray[0];
+                    byte codePoint = _hexBuffer.ItemsArray[0];
 
                     if (fontEntry == null)
                     {
-                        GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
+                        GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
                         if (finalChars.Count == 0)
                         {
                             SetListFastToUnknownChar(finalChars);
@@ -1455,13 +1455,13 @@ public sealed partial class RtfToTextConverter
                         switch (GetSymbolFontTypeFromFontEntry(fontEntry))
                         {
                             case SymbolFont.Wingdings:
-                                GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars);
+                                GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
                                 break;
                             case SymbolFont.Webdings:
-                                GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars);
+                                GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
                                 break;
                             case SymbolFont.Symbol:
-                                GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars);
+                                GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
                                 break;
                             default:
                                 try
@@ -1582,7 +1582,7 @@ public sealed partial class RtfToTextConverter
         _fldinstSymbolNumber.ClearFast();
         _fldinstSymbolFontName.ClearFast();
 
-        int codePoint;
+        int param;
 
         if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
 
@@ -1666,24 +1666,25 @@ public sealed partial class RtfToTextConverter
             if (!int.TryParse(CreateStringFromChars(_fldinstSymbolNumber),
                     NumberStyles.HexNumber,
                     NumberFormatInfo.InvariantInfo,
-                    out codePoint))
+                    out param))
             {
                 return RewindAndSkipGroup(ch);
             }
         }
         else
         {
-            codePoint = ParseIntFast(_fldinstSymbolNumber);
+            param = ParseIntFast(_fldinstSymbolNumber);
         }
 
         #endregion
 
         #endregion
 
-        codePoint = BranchlessConditionalNegate(codePoint, negateNum);
+        param = BranchlessConditionalNegate(param, negateNum);
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
-        RtfError error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);
+        RtfError error = NormalizeUnicodePoint(ref param, handleSymbolCharRange: false);
+        uint codePoint = (uint)param;
         if (error != RtfError.OK) return error;
 
         if (ch != ' ') return RewindAndSkipGroup(ch);
@@ -1793,17 +1794,17 @@ public sealed partial class RtfToTextConverter
                     // Just hardcoding the three most common fonts here, because there's only so far you
                     // really want to go down this path.
                     if (SeqEqual(_fldinstSymbolFontName, _symbolChars) &&
-                        !GetCharFromConversionList(codePoint, _symbolFontToUnicode, out finalChars))
+                        !GetCharFromConversionList_UInt(codePoint, _symbolFontToUnicode, out finalChars))
                     {
                         return RewindAndSkipGroup(ch);
                     }
                     else if (SeqEqual(_fldinstSymbolFontName, _wingdingsChars) &&
-                             !GetCharFromConversionList(codePoint, _wingdingsFontToUnicode, out finalChars))
+                             !GetCharFromConversionList_UInt(codePoint, _wingdingsFontToUnicode, out finalChars))
                     {
                         return RewindAndSkipGroup(ch);
                     }
                     else if (SeqEqual(_fldinstSymbolFontName, _webdingsChars) &&
-                             !GetCharFromConversionList(codePoint, _webdingsFontToUnicode, out finalChars))
+                             !GetCharFromConversionList_UInt(codePoint, _webdingsFontToUnicode, out finalChars))
                     {
                         return RewindAndSkipGroup(ch);
                     }
@@ -1886,7 +1887,7 @@ public sealed partial class RtfToTextConverter
                     SymbolFont.Webdings => _webdingsFontToUnicode
                 };
 #pragma warning restore 8509
-                if (GetCharFromConversionList(ch, fontTable, out ListFast<char> result))
+                if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
                 {
                     _plainText.AddRange(result, result.Count);
                 }
@@ -1923,11 +1924,11 @@ public sealed partial class RtfToTextConverter
     private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe ListFast<char> GetCharFromCodePage(int codePage, int codePoint)
+    private unsafe ListFast<char> GetCharFromCodePage(int codePage, uint codePoint)
     {
         // BitConverter.GetBytes() does this, but it allocates a temp array every time.
         // I think I understand the general idea here but like yeah
-        fixed (byte* b = _byteBuffer4) *(int*)b = codePoint;
+        fixed (byte* b = _byteBuffer4) *(uint*)b = codePoint;
 
         try
         {
@@ -2072,11 +2073,11 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetCharFromConversionList(int codePoint, int[] fontTable, out ListFast<char> finalChars)
+    private bool GetCharFromConversionList_UInt(uint codePoint, int[] fontTable, out ListFast<char> finalChars)
     {
         finalChars = _charGeneralBuffer;
 
-        if (codePoint is >= 0x20 and <= 0xFF)
+        if (codePoint - 0x20 <= 0xFF - 0x20)
         {
             ListFast<char>? chars = ConvertFromUtf32(fontTable[codePoint - 0x20], _charGeneralBuffer);
             if (chars != null)
@@ -2109,6 +2110,39 @@ public sealed partial class RtfToTextConverter
         }
 
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void GetCharFromConversionList_Byte(byte codePoint, int[] fontTable, out ListFast<char> finalChars)
+    {
+        finalChars = _charGeneralBuffer;
+
+        if (codePoint >= 0x20)
+        {
+            ListFast<char>? chars = ConvertFromUtf32(fontTable[codePoint - 0x20], _charGeneralBuffer);
+            if (chars != null)
+            {
+                finalChars = chars;
+            }
+            else
+            {
+                SetListFastToUnknownChar(finalChars);
+            }
+        }
+        else
+        {
+            try
+            {
+                _byteBuffer1[0] = codePoint;
+                finalChars.EnsureCapacity(1);
+                finalChars.Count = GetEncodingFromCachedList(_windows1252)
+                    .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
+            }
+            catch
+            {
+                SetListFastToUnknownChar(finalChars);
+            }
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
