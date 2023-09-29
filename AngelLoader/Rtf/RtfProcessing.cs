@@ -431,7 +431,10 @@ internal static class RtfProcessing
 #endif
 
         (bool success, List<Color>? colorTable, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
-            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode && colorTableFound, getLangs: langWorkRequired);
+            RtfDisplayedReadmeParser.GetData(
+                new ArrayWithLength<byte>(currentReadmeBytes, currentReadmeBytes.Length),
+                getColorTable: darkMode && colorTableFound,
+                getLangs: langWorkRequired);
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();

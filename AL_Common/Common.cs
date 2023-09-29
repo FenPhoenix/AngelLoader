@@ -65,6 +65,7 @@ public static class Common
             Length = length;
         }
 
+        // This MUST be a method (not a static field) to maintain performance!
         public static ArrayWithLength<T> Empty() => new();
 
         public T this[int index]

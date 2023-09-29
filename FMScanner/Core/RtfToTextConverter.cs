@@ -64,7 +64,6 @@ Other:
  so statistically it's likely it may not even hit broken text even if it exists.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -87,12 +86,6 @@ public sealed partial class RtfToTextConverter
     // 20 bytes * 4 for up to 4 bytes per char. Chars are 2 bytes but like whatever, why do math when you can
     // over-provision.
     private readonly ListFast<char> _charGeneralBuffer = new(20 * 4);
-
-    #endregion
-
-    #region Private fields
-
-    private ArrayWithLength<byte> _rtfBytes = ArrayWithLength<byte>.Empty();
 
     #endregion
 
@@ -975,7 +968,7 @@ public sealed partial class RtfToTextConverter
 
         while (CurrentPos < _rtfBytes.Length)
         {
-            char ch = GetNextCharFast();
+            char ch = (char)_rtfBytes[CurrentPos++];
 
             if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
             {

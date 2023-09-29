@@ -18,12 +18,6 @@ namespace AngelLoader;
 
 public sealed partial class RtfDisplayedReadmeParser
 {
-    #region Private fields
-
-    private byte[] _rtfBytes = Array.Empty<byte>();
-
-    #endregion
-
     #region Resettables
 
     private List<Color>? _colorTable;
@@ -60,7 +54,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     [PublicAPI]
     internal (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
-    GetData(byte[] rtfBytes, bool getColorTable, bool getLangs)
+    GetData(ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
         {
@@ -88,13 +82,13 @@ public sealed partial class RtfDisplayedReadmeParser
         finally
         {
             // Reset after so we don't carry around any waste after running
-            Reset(Array.Empty<byte>());
+            Reset(ArrayWithLength<byte>.Empty());
         }
     }
 
     #endregion
 
-    private void Reset(byte[] rtfBytes)
+    private void Reset(ArrayWithLength<byte> rtfBytes)
     {
         ResetBase();
         // Don't carry around the font entry pool for the entire app lifetime
@@ -123,7 +117,7 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
 
-            char ch = GetNextCharFast();
+            char ch = (char)_rtfBytes[CurrentPos++];
 
             if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
             {
@@ -323,7 +317,7 @@ public sealed partial class RtfDisplayedReadmeParser
             if (!GetNextChar(out char ch)) return ClearReturnFields(RtfError.EndOfFile);
             if (ch == '}')
             {
-                UnGetChar();
+                CurrentPos--;
                 break;
             }
             _colorTableSB.Append(ch);

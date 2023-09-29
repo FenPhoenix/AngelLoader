@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using AL_Common;
+using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
 namespace AngelLoader;
@@ -11,6 +12,8 @@ public sealed partial class RtfDisplayedReadmeParser
     private readonly Context _ctx = new();
 
     #region Resettables
+
+    private ArrayWithLength<byte> _rtfBytes = ArrayWithLength<byte>.Empty();
 
     private int _binaryCharsLeftToSkip;
 
@@ -37,22 +40,9 @@ public sealed partial class RtfDisplayedReadmeParser
     /// <summary>
     /// Do not modify!
     /// </summary>
-    private long Length;
+    private int Length;
 
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    private long CurrentPos;
-
-    /// <summary>
-    /// Decrements the stream position.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UnGetChar()
-    {
-        if (CurrentPos > 0) CurrentPos--;
-    }
+    private int CurrentPos;
 
     /// <summary>
     /// Returns false if the end of the stream has been reached.
@@ -67,17 +57,10 @@ public sealed partial class RtfDisplayedReadmeParser
             return false;
         }
 
-        ch = (char)_rtfBytes[(int)CurrentPos++];
+        ch = (char)_rtfBytes[CurrentPos++];
 
         return true;
     }
-
-    /// <summary>
-    /// For use in loops that already check the stream position against the end as a loop condition
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private char GetNextCharFast() => (char)_rtfBytes[(int)CurrentPos++];
 
     #endregion
 

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using AL_Common;
+using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
 namespace FMScanner;
@@ -11,6 +12,8 @@ public sealed partial class RtfToTextConverter
     private readonly Context _ctx = new();
 
     #region Resettables
+
+    private ArrayWithLength<byte> _rtfBytes = ArrayWithLength<byte>.Empty();
 
     private int _binaryCharsLeftToSkip;
     private int _unicodeCharsLeftToSkip;
@@ -53,13 +56,6 @@ public sealed partial class RtfToTextConverter
 
         return true;
     }
-
-    /// <summary>
-    /// For use in loops that already check the stream position against the end as a loop condition
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private char GetNextCharFast() => (char)_rtfBytes[CurrentPos++];
 
     #endregion
 
