@@ -432,7 +432,7 @@ internal static class RtfProcessing
 
         (bool success, List<Color>? colorTable, List<RtfDisplayedReadmeParser.LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
-                new ArrayWithLength<byte>(currentReadmeBytes, currentReadmeBytes.Length),
+                new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: darkMode && colorTableFound,
                 getLangs: langWorkRequired);
 

@@ -35,13 +35,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #region Stream
 
-    // We can't actually get the length of some kinds of streams (zip entry streams), so we take the
-    // length as a param and store it.
-    /// <summary>
-    /// Do not modify!
-    /// </summary>
-    private int Length;
-
     private int CurrentPos;
 
     /// <summary>
@@ -51,7 +44,7 @@ public sealed partial class RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool GetNextChar(out char ch)
     {
-        if (CurrentPos == Length)
+        if (CurrentPos == _rtfBytes.Length)
         {
             ch = '\0';
             return false;

@@ -59,6 +59,12 @@ public static class Common
             Length = 0;
         }
 
+        public ArrayWithLength(T[] array)
+        {
+            Array = array;
+            Length = array.Length;
+        }
+
         public ArrayWithLength(T[] array, int length)
         {
             Array = array;

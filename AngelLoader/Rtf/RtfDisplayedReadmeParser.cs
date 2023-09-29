@@ -107,13 +107,12 @@ public sealed partial class RtfDisplayedReadmeParser
 
         _rtfBytes = rtfBytes;
 
-        Length = rtfBytes.Length;
         CurrentPos = 0;
     }
 
     private RtfError ParseRtf()
     {
-        while (CurrentPos < Length)
+        while (CurrentPos < _rtfBytes.Length)
         {
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
 
