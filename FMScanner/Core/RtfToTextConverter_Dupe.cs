@@ -121,7 +121,7 @@ public sealed partial class RtfToTextConverter
     private RtfError ParseKeyword()
     {
         bool hasParam = false;
-        bool negateParam = false;
+        int negateParam = 0;
         int param = 0;
 
         if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
@@ -152,7 +152,7 @@ public sealed partial class RtfToTextConverter
 
         if (ch == '-')
         {
-            negateParam = true;
+            negateParam = 1;
             if (!GetNextChar(out ch)) return RtfError.EndOfFile;
         }
 
@@ -172,7 +172,7 @@ public sealed partial class RtfToTextConverter
             param /= 10;
             if (i > ParamMaxLen) return RtfError.ParameterTooLong;
 
-            if (negateParam) param = -param;
+            param = (param ^ -negateParam) + negateParam;
         }
 
         /* From the spec:
