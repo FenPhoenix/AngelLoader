@@ -1069,4 +1069,7 @@ public static partial class RTFParserCommon
         ret |= (ret >> 1);
         return -(ret & 1);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int BranchlessConditionalNegate(int value, int negate) => (value ^ -negate) + negate;
 }

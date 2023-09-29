@@ -1604,14 +1604,14 @@ public sealed partial class RtfToTextConverter
         if (!GetNextChar(out ch)) return RtfError.EndOfFile;
 
         bool numIsHex = false;
-        bool negateNum = false;
+        int negateNum = 0;
 
         #region Parse numeric field parameter
 
         if (ch == '-')
         {
             GetNextChar(out ch);
-            negateNum = true;
+            negateNum = 1;
         }
 
         #region Handle if the param is hex
@@ -1624,7 +1624,7 @@ public sealed partial class RtfToTextConverter
             {
                 GetNextChar(out ch);
                 if (ch != ' ') return RewindAndSkipGroup(ch);
-                negateNum = true;
+                negateNum = 1;
             }
             numIsHex = true;
         }
@@ -1680,7 +1680,7 @@ public sealed partial class RtfToTextConverter
 
         #endregion
 
-        if (negateNum) codePoint = -codePoint;
+        codePoint = BranchlessConditionalNegate(codePoint, negateNum);
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
         RtfError error = NormalizeUnicodePoint(ref codePoint, handleSymbolCharRange: false);

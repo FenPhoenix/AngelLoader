@@ -172,7 +172,7 @@ public sealed partial class RtfToTextConverter
             param /= 10;
             if (i > ParamMaxLen) return RtfError.ParameterTooLong;
 
-            param = (param ^ -negateParam) + negateParam;
+            param = BranchlessConditionalNegate(param, negateParam);
         }
 
         /* From the spec:
