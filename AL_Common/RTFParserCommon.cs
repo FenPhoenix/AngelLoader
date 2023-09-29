@@ -1063,7 +1063,7 @@ public static partial class RTFParserCommon
     public static int MinusOneIfNotEqual(char char1, char char2)
     {
         int ret = char1 ^ char2;
-        // We only use 8 bits of a char's 16, so we can skip a couple  shifts (tested)
+        // We only use 8 bits of a char's 16, so we can skip a couple shifts (tested)
         ret |= (ret >> 4);
         ret |= (ret >> 2);
         ret |= (ret >> 1);
