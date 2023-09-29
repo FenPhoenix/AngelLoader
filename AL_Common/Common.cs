@@ -1792,7 +1792,7 @@ public static class Common
             return null;
         }
 
-        if (utf32u <= 0xFFFFu)
+        if (utf32u <= char.MaxValue)
         {
             charBuffer.ItemsArray[0] = (char)utf32u;
             charBuffer.Count = 1;

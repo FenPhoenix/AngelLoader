@@ -1217,7 +1217,7 @@ public sealed partial class RtfToTextConverter
                 if (error != RtfError.OK) return error;
 
                 // If our code point has been through a font translation table, it may be longer than 2 bytes.
-                if (codePoint > 0xFFFF)
+                if (codePoint > char.MaxValue)
                 {
                     ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
                     if (chars == null)
@@ -1231,7 +1231,6 @@ public sealed partial class RtfToTextConverter
                 }
                 else
                 {
-                    // At this point, codePoint is guaranteed to fit into a char
                     _unicodeBuffer.Add((char)codePoint);
                 }
                 break;
