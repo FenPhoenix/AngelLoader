@@ -387,10 +387,10 @@ public static partial class RTFParserCommon
         /* Command-line: gperf --output-file='C:\\gperf_out.txt' -t 'C:\\gperf_in.txt'  */
         /* Computed positions: -k'1-3,$' */
 
-        //const int TOTAL_KEYWORDS = 75;
-        private const int MIN_WORD_LENGTH = 1;
+        //private const int TOTAL_KEYWORDS = 75;
+        //private const int MIN_WORD_LENGTH = 1;
         private const int MAX_WORD_LENGTH = 10;
-        //const int MIN_HASH_VALUE = 1;
+        //private const int MIN_HASH_VALUE = 1;
         private const int MAX_HASH_VALUE = 196;
         /* maximum key range = 196, duplicates = 0 */
 
@@ -655,7 +655,8 @@ public static partial class RTFParserCommon
         public bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
         {
             int len = str.Count;
-            if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
+            // Min word length is 1, and we're guaranteed to always be at least 1, so no need to check for >= min
+            if (len <= MAX_WORD_LENGTH)
             {
                 int key = len;
 
@@ -687,7 +688,7 @@ public static partial class RTFParserCommon
                         return false;
                     }
 
-                    var seq2 = symbol.Keyword;
+                    string seq2 = symbol.Keyword;
                     if (len != seq2.Length)
                     {
                         result = null;
