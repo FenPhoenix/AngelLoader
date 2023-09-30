@@ -1055,14 +1055,14 @@ public static partial class RTFParserCommon
 
     /// <summary>
     /// Specialized thing for branchless handling of optional spaces after rtf control words.
+    /// Char values must be no higher than a byte (0-255) for the logic to work (perf).
     /// </summary>
-    /// <param name="char1"></param>
-    /// <param name="char2"></param>
-    /// <returns>-1 if <paramref name="char1"/> is not equal to <paramref name="char2"/>, otherwise, 0.</returns>
+    /// <param name="character"></param>
+    /// <returns>-1 if <paramref name="character"/> is not equal to the ascii space character (0x20), otherwise, 0.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int MinusOneIfNotEqual(char char1, char char2)
+    public static int MinusOneIfNotSpace_8Bits(char character)
     {
-        int ret = char1 ^ char2;
+        int ret = character ^ ' ';
         // We only use 8 bits of a char's 16, so we can skip a couple shifts (tested)
         ret |= (ret >> 4);
         ret |= (ret >> 2);

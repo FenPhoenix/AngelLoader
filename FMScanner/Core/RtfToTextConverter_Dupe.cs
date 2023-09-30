@@ -123,7 +123,7 @@ public sealed partial class RtfToTextConverter
          the space from the skip-chars to count.
         */
         // Current position will be > 0 at this point, so a decrement is always safe
-        CurrentPos += MinusOneIfNotEqual(ch, ' ');
+        CurrentPos += MinusOneIfNotSpace_8Bits(ch);
 
         return DispatchKeyword(param, hasParam);
     }
