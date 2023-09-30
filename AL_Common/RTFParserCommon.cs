@@ -6,53 +6,6 @@ using static AL_Common.Common;
 
 namespace AL_Common;
 
-/* @PERF_TODO(RTF parser / UnGetChar):
-We might be able to get rid of our un-get buffer if we're clever...
-The only place "UnGet" is called in the original example in the spec file is when it un-gets the non-space
-char after a keyword if there isn't a space.
-
-We use it in:
--ParseKeyword() (the above-mentioned optional-space-after-keyword logic)
--Hex parser (a bunch of times, mostly to do with "last char in stream corner case")
--Field instruction parser ("rewind and skip group")
-
-If we can get rid of the un-get buffer, we can avoid the hot-loop branch that checks if there's anything in
-said buffer every time we get a char, and associated un-getting logic (which is minimal, but still).
-
-Counts of GetNextChar()/GetNextCharFast() sources:
-Stream:       172,766,662
-UnGet buffer: 996,390
-
-In ParseKeyword():
-Char | Number of times un-get-ed
-'\'    862809
-'{'    21558
-'?'    402
-'13'   37765
-';'    9942
-'}'    9732
-'10'   533
-'.'    2
-
-* numbers are ascii codes, so 13 and 10 are CR and LF
-
-In theory, the un-get-ed char here can be:
-
-If the keyword had no param, then it can be anything not alphanumeric and not a space.
-Because if it was alpha, it would have been part of the keyword, and if it was numeric, it would have been
-a param.
-
-If the keyword DID have a param, then it can be anything not numeric and not a space. It CAN be alpha,
-because we've just come off the numeric param, and so alpha would be distinguishable from the last thing
-we were parsing so it would pass (not tested but I'm pretty sure that's the case).
-
-Obviously rtf is not supposed to have non-ASCII chars in it, so if any are present then it's undefined,
-but I guess they would all be un-get-ed too.
-
-Note the '?' is the usual Unicode fallback char at the end of the \u2341? keyword for example. But that char
-can be anything, even a keyword and all that other crap as we know.
-*/
-
 public static partial class RTFParserCommon
 {
     // Perf: A readonly struct is required to retain full performance, and therefore we can only put readonly
