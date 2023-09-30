@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -254,7 +253,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (langCodePage == -1)
                     {
                         _langItems ??= new List<LangItem>();
-                        _langItems.Add(new LangItem((int)CurrentPos, currentCodePage));
+                        _langItems.Add(new LangItem(CurrentPos, currentCodePage));
                     }
                 }
             }
@@ -266,7 +265,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (langCodePage > -1 && langCodePage != currentCodePage)
                     {
                         _langItems ??= new List<LangItem>();
-                        _langItems.Add(new LangItem((int)CurrentPos, langCodePage));
+                        _langItems.Add(new LangItem(CurrentPos, langCodePage));
                     }
                 }
 
