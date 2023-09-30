@@ -970,16 +970,6 @@ public sealed partial class RtfToTextConverter
         {
             char ch = (char)_rtfBytes[CurrentPos++];
 
-            if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
-            {
-                if (--_binaryCharsLeftToSkip <= 0)
-                {
-                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
-                    _binaryCharsLeftToSkip = 0;
-                }
-                continue;
-            }
-
             RtfError ec;
             switch (ch)
             {
@@ -1051,13 +1041,9 @@ public sealed partial class RtfToTextConverter
         // data that follows are considered one character for skipping purposes."
         if (symbol.KeywordType == KeywordType.Special && symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
         {
-            // Hard-skip the chars here, because if we mess around with just incrementing the chars left to
-            // skip count, we don't end up skipping control char data in the binary run (which we need to).
-            for (int i = 0; i < param; i++)
-            {
-                bool success = GetNextChar(out _);
-                if (!success) return RtfError.EndOfFile;
-            }
+            CurrentPos += param;
+            if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
+
             _unicodeCharsLeftToSkip--;
             return RtfError.OK;
         }
@@ -1067,7 +1053,6 @@ public sealed partial class RtfToTextConverter
         // skippable characters."
         // But don't do it if it's a hex char, because we handle it elsewhere in that case.
         if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.HexEncodedChar) &&
-            _ctx.CurrentScope.RtfInternalState != RtfInternalState.Binary &&
             _unicodeCharsLeftToSkip > 0)
         {
             if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
@@ -1114,8 +1099,8 @@ public sealed partial class RtfToTextConverter
             case SpecialType.Bin:
                 if (param > 0)
                 {
-                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Binary;
-                    _binaryCharsLeftToSkip = param;
+                    CurrentPos += param;
+                    if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
                 }
                 break;
             case SpecialType.HexEncodedChar:

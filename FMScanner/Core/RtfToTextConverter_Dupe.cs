@@ -15,7 +15,6 @@ public sealed partial class RtfToTextConverter
 
     private ArrayWithLength<byte> _rtfBytes = ArrayWithLength<byte>.Empty();
 
-    private int _binaryCharsLeftToSkip;
     private int _unicodeCharsLeftToSkip;
 
     private bool _skipDestinationIfUnknown;
@@ -30,7 +29,6 @@ public sealed partial class RtfToTextConverter
         _ctx.Reset();
 
         _groupCount = 0;
-        _binaryCharsLeftToSkip = 0;
         _unicodeCharsLeftToSkip = 0;
         _skipDestinationIfUnknown = false;
     }

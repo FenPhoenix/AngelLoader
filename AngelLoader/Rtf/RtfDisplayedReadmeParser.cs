@@ -117,16 +117,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
             char ch = (char)_rtfBytes[CurrentPos++];
 
-            if (_ctx.CurrentScope.RtfInternalState == RtfInternalState.Binary)
-            {
-                if (--_binaryCharsLeftToSkip <= 0)
-                {
-                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
-                    _binaryCharsLeftToSkip = 0;
-                }
-                continue;
-            }
-
             RtfError ec;
             switch (ch)
             {
@@ -194,8 +184,8 @@ public sealed partial class RtfDisplayedReadmeParser
             case SpecialType.Bin:
                 if (param > 0)
                 {
-                    _ctx.CurrentScope.RtfInternalState = RtfInternalState.Binary;
-                    _binaryCharsLeftToSkip = param;
+                    CurrentPos += param;
+                    if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
                 }
                 break;
             case SpecialType.SkipDest:

@@ -951,7 +951,6 @@ public static partial class RTFParserCommon
     public enum RtfInternalState
     {
         Normal,
-        Binary,
         HexEncodedChar
     }
 
