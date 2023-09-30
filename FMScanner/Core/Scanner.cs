@@ -2889,19 +2889,6 @@ public sealed partial class Scanner : IDisposable
             Stream? readmeStream = null;
             try
             {
-                /*
-                We used to copy the entire stream into memory here first, because we needed to seek.
-                With the new custom RTF converter, we don't need to seek anymore.
-
-                With the new converter, copying the stream to memory first results in the fastest
-                performance, but slightly more memory use than the old RichTextBox method.
-
-                We've instead chosen to go with the buffered read here, which is slightly slower - but
-                still vastly faster than the old RichTextBox-based converter - and saves a substantial
-                amount of memory. Any other time I would choose ultimate speed, but RTF files can be
-                extremely large (due to often containing images), so I'm erring on the side of caution.
-                */
-
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
                 readmeStream = _fmFormat == FMFormat.Zip
