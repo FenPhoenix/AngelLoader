@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-09-30:  ?           363MB/s (x86)
 2023-09-29:  ?           335MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
 2020-08-20:  157MB/s     211MB/s
@@ -913,7 +914,7 @@ public sealed partial class RtfToTextConverter
 
 #if ReleaseRTFTest || DebugRTFTest
         RtfError error = ParseRtf();
-        return error == RtfError.OK ? (true, CreateStringFromChars(_plainText)) : throw new Exception("RTF converter error: " + error);
+        return error == RtfError.OK ? (true, CreateStringFromChars(_plainText)) : throw new System.Exception("RTF converter error: " + error);
         //return error == Error.OK ? (true, "") : throw new Exception("RTF converter error: " + error);
 #else
         try
