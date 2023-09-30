@@ -8,12 +8,6 @@ Perf log:
 2020-08-20:  157MB/s     211MB/s
 2020-08-19:  88.2 MB/s   97MB/s
 
-2022-11-06:
-@x64(RTF converter): Here's one genuinely good reason to consider switching to 64-bit:
-With RtfToPlainTextTest with "Any CPU" (which I believe means x64 in my case) the time taken on the test set is
-~583ms, as opposed to ~940ms on x86. That's WAY faster and gets us to ~295MB/s!
-It also explains the discrepancy up there in the perf numbers with different apps...
-
 ---
 
 Note to self:
@@ -24,42 +18,31 @@ total size: 88,714,908
 
 ---
 
-This is a fast, no-frills, platform-agnostic RTF-to-text converter. It can be used in place of RichTextBox when
-you simply want to convert RTF to plaintext without being tied to Windows.
+This is a fast RTF-to-plaintext converter designed to provide scannable text for FMScanner.
 
-The goals of this RTF-to-text converter are:
-1. It should be platform-agnostic and have no dependencies on Windows.
-2. It should correctly preserve all characters - ASCII or otherwise - as they would appear in rich text.
-3. It should work with unseekable streams, that is, streams that can only be read forward.
-4. It should be faster and use less memory than the RichTextBox-with-prepass-for-image-strip method.
- 
-To that end:
-1. We use the System.Text.Encoding.CodePages package to get all Windows-supported codepages on all platforms
-   (only needed on .NET 5+). We don't use RichTextBox or RichEdit.
-2. We go to great lengths to detect character encoding accurately, even converting symbol fonts to their Unicode
-   equivalents. We surpass even RichEdit in this respect.
-3. We support forward-only streams so we can read straight out of a compressed zip file entry with no copying.
-4. We're mindful of our allocations and minimize them wherever possible. We do absolutely nothing other than convert
-   to plaintext, simply skipping over anything that can't be converted. We thereby avoid the substantial overhead
-   of a full parser.
+Goals:
+1. Be platform-agnostic (no RichTextBox dependency).
+2. Achieve faster performance than RichTextBox, and ideally be as fast as possible beyond that.
+3. Accurately convert all "general text" characters as the user would be intended to see them, even symbol font
+   glyphs.
 
--Note that we don't check for {\rtf1 at the start of the file to validate, as we assume that will have been done
- already.
+Non-Goals:
+1. Perfectly match RichTextBox in output. The output is not designed to be displayed to the user, so we don't
+   care about extra whitespace lines, indenting, bulleted/numbered list characters, etc.
+2. Extremely strict validation or enforcement of spec. We assume the stream has been checked for an rtf header
+   already. We also allow for what RichTextBox allows - or has allowed - for, even if it's not quite to spec.
+3. Forward-only stream support. We used to have this, but it entailed a fairly sizable performance loss. The
+   need for an un-get buffer caused constant branching inside a tight loop, and also precluded optimizations
+   afforded by being able to move the stream index freely.
+
+---
 
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
-Perf: (RtfToTextConverter)
--We could collapse fonts if we find multiple ones with the same name and charset but different numbers.
- I mean it looks like we're plenty fast and memory-reasonable without doing so, but you know, idea.
-
-Memory:
--n/a at the moment
-
-Other:
--Really implement a proper Peek() function for the stream. I know it's possible, and having to use UnGetChar() is
- getting really nasty and error-prone.
+TODO(RTF to plaintext converter):
+-Implement a Peek() function to make the former "un-get" sites more ergonomic/idiomatic.
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
  so statistically it's likely it may not even hit broken text even if it exists.
