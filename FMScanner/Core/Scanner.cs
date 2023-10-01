@@ -4560,13 +4560,12 @@ public sealed partial class Scanner : IDisposable
         {
             // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
             // That means our working path is NOT temporary!!!
-            if (_fmFormat != FMFormat.SevenZip ||
-                _fmWorkingPath.IsEmpty() ||
-                !Directory.Exists(_fmWorkingPath))
+            if (_fmFormat == FMFormat.SevenZip &&
+                !_fmWorkingPath.IsEmpty() &&
+                Directory.Exists(_fmWorkingPath))
             {
-                return;
+                DeleteDirectory(_fmWorkingPath);
             }
-            DeleteDirectory(_fmWorkingPath);
         }
         catch
         {
