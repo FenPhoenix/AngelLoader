@@ -2277,7 +2277,7 @@ internal static class Core
         AssertR(fm != null, nameof(fm) + " == null");
         if (fm == null) return fm;
 
-        if (FMNeedsScan(fm))
+        if (fm.NeedsScan())
         {
             if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
             {

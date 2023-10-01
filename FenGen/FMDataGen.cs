@@ -492,7 +492,7 @@ internal static class FMData
         {
             w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
             w.WL("{");
-            w.WL("SetFMResource(" + obj + ", CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
+            w.WL(obj + ".SetResource(CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
             w.WL(obj + ".ResourcesScanned = true;");
             w.WL("}");
             w.WL();

@@ -555,7 +555,7 @@ internal static partial class Ini
                         CustomResources cr = (CustomResources)at;
                         if (fieldsString.SegmentEquals(curStart, i, CustomResourcesNames[crI]))
                         {
-                            SetFMResource(fm, cr, true);
+                            fm.SetResource(cr, true);
                             break;
                         }
                     }

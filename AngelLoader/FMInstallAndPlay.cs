@@ -77,7 +77,7 @@ internal static class FMInstallAndPlay
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-            Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
+            Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
             return;
         }
 
@@ -495,7 +495,7 @@ internal static class FMInstallAndPlay
                 "Reason: Unable to write the stub comm file.\r\n\r\n" +
                 (fm == null
                     ? "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly."
-                    : "Without a valid stub comm file, the FM '" + GetFMId(fm) +
+                    : "Without a valid stub comm file, the FM '" + fm.GetId() +
                       "' cannot be passed to the game and therefore cannot be played."));
 
             return false;
@@ -818,7 +818,7 @@ internal static class FMInstallAndPlay
             {
                 LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
                 Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
-                                       GetFMId(fm) + "\r\n\r\n" +
+                                       fm.GetId() + "\r\n\r\n" +
                                        "The FM will probably not be able to play its mission(s).");
             }
         }
@@ -1174,7 +1174,7 @@ internal static class FMInstallAndPlay
             if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
                 LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-                Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" + ErrorText.FMGameU);
+                Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
                 return fail;
             }
 
@@ -1202,7 +1202,7 @@ internal static class FMInstallAndPlay
                 if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
                 {
                     LogFMInfo(fm, "FM archive field was empty; this means an archive was not found for it on the last search.");
-                    Core.Dialogs.ShowError(GetFMId(fm) + "\r\n" +
+                    Core.Dialogs.ShowError(fm.GetId() + "\r\n" +
                                            LText.AlertMessages.Install_ArchiveNotFound);
 
                     return fail;
@@ -1218,7 +1218,7 @@ internal static class FMInstallAndPlay
                         Log("Game executable not found.\r\n" +
                             "Game executable: " + gameExe);
                         Core.Dialogs.ShowError(gameName + ":\r\n" +
-                                               GetFMId(fm) + "\r\n" +
+                                               fm.GetId() + "\r\n" +
                                                LText.AlertMessages.Install_ExecutableNotFound);
 
                         return fail;
@@ -1231,7 +1231,7 @@ internal static class FMInstallAndPlay
                         LogFMInfo(fm, "FM install path not found.");
 
                         Core.Dialogs.ShowError(gameName + ":\r\n" +
-                                               GetFMId(fm) + "\r\n" +
+                                               fm.GetId() + "\r\n" +
                                                LText.AlertMessages.Install_FMInstallPathNotFound);
 
                         return fail;
@@ -1350,7 +1350,7 @@ internal static class FMInstallAndPlay
                             FMData fmData = fmDataList[j];
 
                             Core.View.SetProgressBoxState_Single(
-                                message2: GetFMId(fmData.FM),
+                                message2: fmData.FM.GetId(),
                                 percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
 
                             RemoveFMFromDisk(fmData);
@@ -1957,7 +1957,7 @@ internal static class FMInstallAndPlay
                     LogFMInfo(fm, ErrorText.Un + "delete FM installed directory.");
                     Core.Dialogs.ShowError(
                         LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
-                        "FM: " + GetFMId(fm));
+                        "FM: " + fm.GetId());
                 }
 
                 fm.Installed = false;
@@ -1980,7 +1980,7 @@ internal static class FMInstallAndPlay
                 if (!single)
                 {
                     Core.View.SetProgressBoxState_Single(
-                        message2: GetFMId(fm),
+                        message2: fm.GetId(),
                         percent: GetPercentFromValue_Int(i + 1, fmDataList.Length)
                     );
                 }

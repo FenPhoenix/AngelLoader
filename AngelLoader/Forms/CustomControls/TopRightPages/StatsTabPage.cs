@@ -101,7 +101,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
                 for (int i = 0, at = 1; i < Misc.CustomResourcesCount - 1; i++, at <<= 1)
                 {
-                    _page._checkBoxes[i].Checked = FMHasResource(fm, (CustomResources)at);
+                    _page._checkBoxes[i].Checked = fm.HasResource((CustomResources)at);
                 }
 
                 _page.StatsCheckBoxesPanel.Enabled = true;

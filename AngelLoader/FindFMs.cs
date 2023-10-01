@@ -821,7 +821,7 @@ internal static class FindFMs
             }
 
             // Perf so we don't have to iterate the list again later
-            if (FMNeedsScan(fm)) fmsViewListUnscanned.Add(fm);
+            if (fm.NeedsScan()) fmsViewListUnscanned.Add(fm);
 
             fm.Title =
                 !fm.Title.IsEmpty() ? fm.Title :

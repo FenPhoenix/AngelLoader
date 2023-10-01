@@ -353,16 +353,16 @@ internal static class FMScan
                         // We don't scan custom resources for Thief 3, so they should never be set in that case.
                         if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
                         {
-                            SetFMResource(sel, CustomResources.Map, scannedFM.HasMap == true);
-                            SetFMResource(sel, CustomResources.Automap, scannedFM.HasAutomap == true);
-                            SetFMResource(sel, CustomResources.Scripts, scannedFM.HasCustomScripts == true);
-                            SetFMResource(sel, CustomResources.Textures, scannedFM.HasCustomTextures == true);
-                            SetFMResource(sel, CustomResources.Sounds, scannedFM.HasCustomSounds == true);
-                            SetFMResource(sel, CustomResources.Objects, scannedFM.HasCustomObjects == true);
-                            SetFMResource(sel, CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
-                            SetFMResource(sel, CustomResources.Motions, scannedFM.HasCustomMotions == true);
-                            SetFMResource(sel, CustomResources.Movies, scannedFM.HasMovies == true);
-                            SetFMResource(sel, CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
+                            sel.SetResource(CustomResources.Map, scannedFM.HasMap == true);
+                            sel.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);
+                            sel.SetResource(CustomResources.Scripts, scannedFM.HasCustomScripts == true);
+                            sel.SetResource(CustomResources.Textures, scannedFM.HasCustomTextures == true);
+                            sel.SetResource(CustomResources.Sounds, scannedFM.HasCustomSounds == true);
+                            sel.SetResource(CustomResources.Objects, scannedFM.HasCustomObjects == true);
+                            sel.SetResource(CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
+                            sel.SetResource(CustomResources.Motions, scannedFM.HasCustomMotions == true);
+                            sel.SetResource(CustomResources.Movies, scannedFM.HasMovies == true);
+                            sel.SetResource(CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
                             sel.ResourcesScanned = true;
                         }
                         else

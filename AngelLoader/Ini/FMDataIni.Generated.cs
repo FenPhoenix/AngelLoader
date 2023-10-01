@@ -271,61 +271,61 @@ internal static partial class Ini
 
     private static void FMData_HasMap_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Map, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Map, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasAutomap_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Automap, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Automap, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasScripts_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Scripts, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Scripts, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasTextures_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Textures, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Textures, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasSounds_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Sounds, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Sounds, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasObjects_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Objects, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Objects, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasCreatures_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Creatures, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Creatures, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasMotions_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Motions, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Motions, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasMovies_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Movies, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Movies, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 
     private static void FMData_HasSubtitles_Set(FanMission fm, string val, int eqIndex)
     {
-        SetFMResource(fm, CustomResources.Subtitles, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Subtitles, val.EndEqualsTrue(eqIndex + 1));
         fm.ResourcesScanned = true;
     }
 

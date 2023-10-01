@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using AngelLoader.DataClasses;
 using static AL_Common.Common;
+using static AL_Common.Logger;
 
 namespace AngelLoader;
 
@@ -230,6 +234,39 @@ public static partial class Utils
 #endif
 
     #endregion
+
+    #endregion
+
+    #region Try read and write lines
+
+    internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
+    {
+        try
+        {
+            lines = File_ReadAllLines_List(file);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExRead + file, ex);
+            lines = null;
+            return false;
+        }
+    }
+
+    internal static bool TryWriteAllLines(string file, List<string> lines)
+    {
+        try
+        {
+            File.WriteAllLines(file, lines);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExWrite + file, ex);
+            return false;
+        }
+    }
 
     #endregion
 }

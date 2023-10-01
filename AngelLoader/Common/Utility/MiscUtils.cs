@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.Common;
-using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -36,53 +30,7 @@ public static partial class Utils
         string detailedMessage = "")
         => Trace.Assert(condition, message, detailedMessage);
 
-    #region Numeric
-
-    #region Clamping
-
-    internal static float ClampToRichTextBoxZoomMinMax(this float value) => value.Clamp(0.1f, 5.0f);
-
-    internal static float ClampToFMsDGVFontSizeMinMax(this float value)
-    {
-        if (value < Math.Round(1.00f, 2)) value = 1.00f;
-        if (value > Math.Round(41.25f, 2)) value = 41.25f;
-        return (float)Math.Round(value, 2);
-    }
-
-    internal static int SetRatingClamped(this int rating) => rating.Clamp(-1, 10);
-
-    #endregion
-
-    internal static int MathMax3(int num1, int num2, int num3) => Math.Max(Math.Max(num1, num2), num3);
-
-    internal static int MathMax4(int num1, int num2, int num3, int num4) => Math.Max(Math.Max(Math.Max(num1, num2), num3), num4);
-
-    internal static float CubicRoot(float x) => (float)Math.Pow(x, 1f / 3f);
-
-    #endregion
-
     #region FM utils
-
-    /// <summary>
-    /// If FM's archive name is non-blank, returns it; otherwise, returns FM's installed dir name.
-    /// </summary>
-    /// <param name="fm"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static string GetFMId(FanMission fm) => !fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
-    {
-        if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) != 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool FMNeedsScan(FanMission fm) => !fm.MarkedUnavailable && (fm.Game == Game.Null ||
-        (fm.Game != Game.Unsupported && !fm.MarkedScanned));
 
     /// <summary>
     /// Returns true if <paramref name="fm"/> is actually installed on disk. Specifically, it checks only if
@@ -104,111 +52,6 @@ public static partial class Utils
         string instPath = Config.GetFMInstallPath(gameIndex);
         return !instPath.IsEmpty() &&
                TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
-    }
-
-    #endregion
-
-    #region Enum HasFlagFast
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this FinishedState @enum, FinishedState flag) => (@enum & flag) != 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Game @enum, Game flag) => (@enum & flag) != 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Language @enum, Language flag) => (@enum & flag) != 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) != 0;
-
-    #endregion
-
-    #region CancellationToken
-
-    internal static void CancelIfNotDisposed(this CancellationTokenSource value)
-    {
-        try { value.Cancel(); } catch (ObjectDisposedException) { }
-    }
-
-    /// <summary>
-    /// Disposes and assigns a new one.
-    /// </summary>
-    /// <param name="cts"></param>
-    /// <returns></returns>
-    [MustUseReturnValue]
-    internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
-    {
-        cts.Dispose();
-        return new CancellationTokenSource();
-    }
-
-    #endregion
-
-    #region Zip
-
-    internal static ZipArchive GetReadModeZipArchiveCharEnc(string fileName, byte[] buffer)
-    {
-        // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
-        Encoding enc;
-        try
-        {
-            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
-        }
-        catch
-        {
-            enc = Encoding.UTF8;
-        }
-
-        return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
-    }
-
-    internal static void ExtractToFile_Fast(
-        this ZipArchiveEntry entry,
-        string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
-    {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = entry.Open())
-        {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
-        }
-        File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
-    }
-
-    #endregion
-
-    #region Read and write lines
-
-    internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
-    {
-        try
-        {
-            lines = File_ReadAllLines_List(file);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExRead + file, ex);
-            lines = null;
-            return false;
-        }
-    }
-
-    internal static bool TryWriteAllLines(string file, List<string> lines)
-    {
-        try
-        {
-            File.WriteAllLines(file, lines);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExWrite + file, ex);
-            return false;
-        }
     }
 
     #endregion

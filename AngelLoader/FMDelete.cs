@@ -202,7 +202,7 @@ internal static class FMDelete
 
         (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
             message: single
-                ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + GetFMId(fms[0])
+                ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].GetId()
                 : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount.ToString(CultureInfo.CurrentCulture) +
                   LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
             title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
@@ -324,7 +324,7 @@ internal static class FMDelete
                     if (!single)
                     {
                         Core.View.SetProgressBoxState_Single(
-                            message2: GetFMId(fm),
+                            message2: fm.GetId(),
                             percent: GetPercentFromValue_Int(i + 1, fms.Count));
                     }
 

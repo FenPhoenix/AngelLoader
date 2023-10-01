@@ -133,7 +133,7 @@ internal static class FMAudio
                 FanMission fm = fms[i];
 
                 Core.View.SetProgressBoxState_Single(
-                    message2: GetFMId(fm),
+                    message2: fm.GetId(),
                     percent: single ? null : GetPercentFromValue_Int(i + 1, fms.Count)
                 );
 

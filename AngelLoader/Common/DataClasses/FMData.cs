@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
@@ -160,4 +161,28 @@ public sealed class FanMission
     [FenGenIgnore]
     internal DateAccuracy DateAccuracy = DateAccuracy.Null;
 #endif
+
+    #region Utility methods
+
+    /// <summary>
+    /// If <see cref="T:Archive"/> is non-blank, returns it; otherwise, returns <see cref="T:InstalledDir"/>.
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal string GetId() => !Archive.IsEmpty() ? Archive : InstalledDir;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void SetResource(CustomResources resource, bool value)
+    {
+        if (value) { Resources |= resource; } else { Resources &= ~resource; }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool HasResource(CustomResources resource) => (Resources & resource) != 0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool NeedsScan() => !MarkedUnavailable && (Game == Game.Null ||
+        (Game != Game.Unsupported && !MarkedScanned));
+
+    #endregion
 }
