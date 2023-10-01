@@ -528,8 +528,7 @@ public static class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
-        (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
-        (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
+        (char1.IsAsciiAlpha() && char2.IsAsciiAlpha() && (char1 & '_') == (char2 & '_'));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiAlpha(this char c) => (((uint)c - 'A') & ~0x20) < 26;
@@ -544,7 +543,7 @@ public static class Common
     public static bool IsAsciiNumeric(this byte c) => (uint)(c - '0') <= '9' - '0';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlphanumeric(this char c) => ((((uint)c - 'A') & ~0x20) < 26) || ((uint)(c - '0') <= '9' - '0');
+    public static bool IsAsciiAlphanumeric(this char c) => IsAsciiAlpha(c) || IsAsciiNumeric(c);
 
     public static bool IsAsciiAlphaUpper(this string str)
     {
@@ -560,7 +559,7 @@ public static class Common
         for (int i = 0; i < str.Length; i++)
         {
             char c = str[i];
-            if (c > 127 || ((uint)(c - 'A') <= 'Z' - 'A')) return false;
+            if (c > 127 || IsAsciiUpper(c)) return false;
         }
         return true;
     }
@@ -570,7 +569,7 @@ public static class Common
         for (int i = start; i < str.Length; i++)
         {
             char c = str[i];
-            if (c > 127 || ((uint)(c - 'A') <= 'Z' - 'A')) return false;
+            if (c > 127 || IsAsciiUpper(c)) return false;
         }
         return true;
     }
