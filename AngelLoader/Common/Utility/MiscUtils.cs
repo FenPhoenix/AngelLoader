@@ -124,6 +124,95 @@ public static partial class Utils
 
     #endregion
 
+    #region CancellationToken
+
+    internal static void CancelIfNotDisposed(this CancellationTokenSource value)
+    {
+        try { value.Cancel(); } catch (ObjectDisposedException) { }
+    }
+
+    /// <summary>
+    /// Disposes and assigns a new one.
+    /// </summary>
+    /// <param name="cts"></param>
+    /// <returns></returns>
+    [MustUseReturnValue]
+    internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
+    {
+        cts.Dispose();
+        return new CancellationTokenSource();
+    }
+
+    #endregion
+
+    #region Zip
+
+    internal static ZipArchive GetReadModeZipArchiveCharEnc(string fileName, byte[] buffer)
+    {
+        // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
+        Encoding enc;
+        try
+        {
+            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch
+        {
+            enc = Encoding.UTF8;
+        }
+
+        return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
+    }
+
+    internal static void ExtractToFile_Fast(
+        this ZipArchiveEntry entry,
+        string fileName,
+        bool overwrite,
+        byte[] tempBuffer)
+    {
+        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream source = entry.Open())
+        {
+            StreamCopyNoAlloc(source, destination, tempBuffer);
+        }
+        File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
+    }
+
+    #endregion
+
+    #region Read and write lines
+
+    internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
+    {
+        try
+        {
+            lines = File_ReadAllLines_List(file);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExRead + file, ex);
+            lines = null;
+            return false;
+        }
+    }
+
+    internal static bool TryWriteAllLines(string file, List<string> lines)
+    {
+        try
+        {
+            File.WriteAllLines(file, lines);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExWrite + file, ex);
+            return false;
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
     /// </summary>
@@ -228,23 +317,6 @@ public static partial class Utils
         return false;
     }
 
-    internal static void CancelIfNotDisposed(this CancellationTokenSource value)
-    {
-        try { value.Cancel(); } catch (ObjectDisposedException) { }
-    }
-
-    /// <summary>
-    /// Disposes and assigns a new one.
-    /// </summary>
-    /// <param name="cts"></param>
-    /// <returns></returns>
-    [MustUseReturnValue]
-    internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
-    {
-        cts.Dispose();
-        return new CancellationTokenSource();
-    }
-
     internal static bool WinVersionIs7OrAbove()
     {
         try
@@ -258,22 +330,6 @@ public static partial class Utils
         {
             return false;
         }
-    }
-
-    internal static ZipArchive GetReadModeZipArchiveCharEnc(string fileName, byte[] buffer)
-    {
-        // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
-        Encoding enc;
-        try
-        {
-            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
-        }
-        catch
-        {
-            enc = Encoding.UTF8;
-        }
-
-        return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
     internal static void LogFMInfo(
@@ -295,54 +351,7 @@ public static partial class Utils
             (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
     }
 
-    internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
-    {
-        try
-        {
-            lines = File_ReadAllLines_List(file);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExRead + file, ex);
-            lines = null;
-            return false;
-        }
-    }
-
-    internal static bool TryWriteAllLines(string file, List<string> lines)
-    {
-        try
-        {
-            File.WriteAllLines(file, lines);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.ExWrite + file, ex);
-            return false;
-        }
-    }
-
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-
-#if DateAccTest
-    internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
-    {
-        DateAccuracy.Green => "Green",
-        DateAccuracy.Yellow => "Yellow",
-        DateAccuracy.Red => "Red",
-        _ => "Null"
-    };
-
-    internal static DateAccuracy DateAccuracy_Deserialize(string str) => str switch
-    {
-        "Green" => DateAccuracy.Green,
-        "Yellow" => DateAccuracy.Yellow,
-        "Red" => DateAccuracy.Red,
-        _ => DateAccuracy.Null
-    };
-#endif
 
     internal static string AutodetectDarkLoaderFile(string fileName)
     {
@@ -397,18 +406,21 @@ public static partial class Utils
         return "";
     }
 
-    internal static void ExtractToFile_Fast(
-        this ZipArchiveEntry entry,
-        string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
+#if DateAccTest
+    internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = entry.Open())
-        {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
-        }
-        File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
-    }
+        DateAccuracy.Green => "Green",
+        DateAccuracy.Yellow => "Yellow",
+        DateAccuracy.Red => "Red",
+        _ => "Null"
+    };
+
+    internal static DateAccuracy DateAccuracy_Deserialize(string str) => str switch
+    {
+        "Green" => DateAccuracy.Green,
+        "Yellow" => DateAccuracy.Yellow,
+        "Red" => DateAccuracy.Red,
+        _ => DateAccuracy.Null
+    };
+#endif
 }
