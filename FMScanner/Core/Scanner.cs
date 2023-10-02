@@ -4628,11 +4628,14 @@ public sealed partial class Scanner : IDisposable
 
     private string[] EnumFiles(string path, SearchOption searchOption)
     {
-        string fullDir = Path.Combine(_fmWorkingPath, path);
-
-        return Directory.Exists(fullDir)
-            ? Directory.GetFiles(fullDir, "*", searchOption)
-            : Array.Empty<string>();
+        try
+        {
+            return Directory.GetFiles(Path.Combine(_fmWorkingPath, path), "*", searchOption);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return Array.Empty<string>();
+        }
     }
 
     #endregion

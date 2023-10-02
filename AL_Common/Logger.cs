@@ -99,7 +99,7 @@ public static class Logger
 
             try
             {
-                if (File.Exists(_logFile) && new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
+                if (new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
 
                 using var sw = new StreamWriter(_logFile, append: true);
 

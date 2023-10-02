@@ -156,10 +156,11 @@ internal static partial class Ini
                     string file = GetBackupFileName();
                     try
                     {
-                        if (File.Exists(Paths.FMDataIni))
-                        {
-                            File.Copy(Paths.FMDataIni, file, overwrite: true);
-                        }
+                        File.Copy(Paths.FMDataIni, file, overwrite: true);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // ignore
                     }
                     catch (Exception ex)
                     {
