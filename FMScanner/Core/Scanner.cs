@@ -40,17 +40,6 @@ public sealed partial class Scanner : IDisposable
     private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
 
-    #region Public properties
-
-    /// <summary>
-    /// Hack to support scanning two different sets of fields depending on a bool, you pass in "full" scan
-    /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
-    /// </summary>
-    [PublicAPI]
-    public ScanOptions FullScanOptions = new();
-
-    #endregion
-
     #region Private fields
 
     #region Disposable
@@ -63,6 +52,12 @@ public sealed partial class Scanner : IDisposable
     private readonly MemoryStream _generalMemoryStream = new();
 
     #endregion
+
+    /// <summary>
+    /// Hack to support scanning two different sets of fields depending on a bool, you pass in "full" scan
+    /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
+    /// </summary>
+    private readonly ScanOptions _fullScanOptions;
 
     private readonly SevenZipContext _sevenZipContext = new();
 
@@ -249,17 +244,24 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
     [PublicAPI]
-    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath)
+    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions())
+    {
+    }
+
+    [PublicAPI]
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions())
     {
     }
 #endif
 
     [PublicAPI]
-    public Scanner(string sevenZipWorkingPath, string sevenZipExePath)
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath, ScanOptions fullScanOptions)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
+
+        _fullScanOptions = fullScanOptions;
 
         _sevenZipWorkingPath = sevenZipWorkingPath;
         _sevenZipExePath = sevenZipExePath;
@@ -509,7 +511,7 @@ public sealed partial class Scanner : IDisposable
                     if (missions[i].ForceFullScan)
                     {
                         _tempScanOptions = _scanOptions.DeepCopy();
-                        _scanOptions = FullScanOptions.DeepCopy();
+                        _scanOptions = _fullScanOptions.DeepCopy();
                     }
 
                     try

@@ -198,8 +198,7 @@ internal static class FMScan
 
                     if (_scanCts.IsCancellationRequested) return false;
 
-                    using var scanner = new FMScanner.Scanner(Paths.SevenZipPath, Paths.SevenZipExe);
-                    scanner.FullScanOptions = GetDefaultScanOptions();
+                    using var scanner = new FMScanner.Scanner(Paths.SevenZipPath, Paths.SevenZipExe, GetDefaultScanOptions());
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                 }
                 catch (OperationCanceledException)
