@@ -45,7 +45,7 @@ internal static class Utility
                     char str1Char = string1[i];
                     char str2Char = string2[j];
                     int substCost =
-                        (str1Char | str2Char) < 128
+                        BothAreAscii(str1Char, str2Char)
                             ? str1Char.EqualsIAscii(str2Char)
                                 ? 0
                                 : 1

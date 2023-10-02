@@ -169,7 +169,7 @@ public static partial class Common
         int i1 = value.LastIndexOf('/');
         int i2 = value.LastIndexOf('\\');
 
-        return i1 == -1 && i2 == -1 ? -1 : Math.Max(i1, i2);
+        return (i1 & i2) == -1 ? -1 : Math.Max(i1, i2);
     }
 
     /// <summary>
