@@ -1202,6 +1202,9 @@ public sealed partial class RtfToTextConverter
 
     #region Handle specially encoded characters
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool CharsAreHexControlSymbol(char char1, char char2) => (char1 << 8 | char2) == (('\\' << 8) | '\'');
+
     private RtfError ParseHex(ref int nibbleCount, ref char ch, ref byte b)
     {
         #region Local functions
@@ -1287,7 +1290,7 @@ public sealed partial class RtfToTextConverter
             // Horrific hacks everywhere, argh... I refuse to use another goto
             if (!lastCharInStream)
             {
-                if (pch1 == '\\' && pch2 == '\'')
+                if (CharsAreHexControlSymbol(pch1, pch2))
                 {
                     if (!GetNextChar(out ch))
                     {
