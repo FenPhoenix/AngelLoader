@@ -42,11 +42,14 @@ Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
-TODO(RTF to plaintext converter):
+@RTF(RTF to plaintext converter):
 -Implement a Peek() function to make the former "un-get" sites more ergonomic/idiomatic.
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
  so statistically it's likely it may not even hit broken text even if it exists.
+
+@RTF(Font table perf): We need a separate font table parser!
+So the main one doesn't have to pay the cost of checking if every single plaintext char is part of a font name.
 */
 
 using System.Collections.Generic;
