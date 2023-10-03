@@ -1067,7 +1067,49 @@ public sealed partial class RtfToTextConverter
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-                SkipUnicodeFallbackChars(_ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount]);
+                //SkipUnicodeFallbackChars(_ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount]);
+                int numToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
+                while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
+                {
+                    char c = (char)_rtfBytes[CurrentPos++];
+                    switch (c)
+                    {
+                        case '\\':
+                            CurrentPos += 3;
+                            numToSkip--;
+                            break;
+
+                            if (CurrentPos < _rtfBytes.Length - 4 &&
+                                _rtfBytes[CurrentPos] == '\'' &&
+                                _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
+                                _rtfBytes[CurrentPos + 2].IsAsciiHex())
+                            {
+                                CurrentPos += 3;
+                                numToSkip--;
+                            }
+                            else if (CurrentPos < _rtfBytes.Length - 2 &&
+                                     _rtfBytes[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
+                            {
+                                CurrentPos++;
+                                numToSkip--;
+                            }
+                            else
+                            {
+                                numToSkip--;
+                            }
+                            break;
+                        case '?':
+                            numToSkip--;
+                            break;
+                        // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
+                        case '{' or '}':
+                            CurrentPos--;
+                            return RtfError.OK;
+                        default:
+                            numToSkip--;
+                            break;
+                    }
+                }
 
                 // Make sure the code point is normalized before adding it to the buffer!
                 RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
@@ -1110,6 +1152,10 @@ public sealed partial class RtfToTextConverter
             switch (c)
             {
                 case '\\':
+                    CurrentPos += 3;
+                    numToSkip--;
+                    break;
+
                     if (CurrentPos < _rtfBytes.Length - 4 &&
                         _rtfBytes[CurrentPos] == '\'' &&
                         _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
@@ -1128,6 +1174,9 @@ public sealed partial class RtfToTextConverter
                     {
                         numToSkip--;
                     }
+                    break;
+                case '?':
+                    numToSkip--;
                     break;
                 // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
                 case '{' or '}':
