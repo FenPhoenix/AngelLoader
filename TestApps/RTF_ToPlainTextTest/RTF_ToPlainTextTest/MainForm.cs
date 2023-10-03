@@ -113,7 +113,7 @@ public sealed partial class MainForm : Form
             foreach (string f in rtfFiles)
             {
                 rtfBox.LoadFile(f, RichTextBoxStreamType.RichText);
-                //WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
+                WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
             }
         }
         else
@@ -144,7 +144,9 @@ public sealed partial class MainForm : Form
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-10-17_Ack!TheresaZombiein__Game_Info.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Cave_v1__readme.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__VaultChronicles__vcse_de.rtf";
-                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
+                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
+                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-02-29_c5Summit_The__summit.rtf";
+                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
                 using var fs = File.Open(file, FileMode.Open, FileAccess.Read);
                 byte[] array = new byte[fs.Length];
                 int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
@@ -172,11 +174,11 @@ public sealed partial class MainForm : Form
 
                 for (int i = 0; i < byteArrays.Length; i++)
                 {
-                    string f = rtfFiles[i];
-                    Trace.WriteLine(f);
+                    //string f = rtfFiles[i];
+                    //Trace.WriteLine(f);
                     ArrayWithLength<byte> array = byteArrays[i];
                     (_, string text) = rtfReader.Convert(array);
-                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                    //WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
 
                 sw.Stop();
