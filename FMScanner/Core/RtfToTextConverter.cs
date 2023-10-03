@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-10-03:  ?           374MB/s (x86)
 2023-09-30:  ?           363MB/s (x86)
 2023-09-29:  ?           335MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
