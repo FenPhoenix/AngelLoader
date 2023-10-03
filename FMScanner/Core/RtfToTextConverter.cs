@@ -1151,14 +1151,50 @@ public sealed partial class RtfToTextConverter
             _ctx.FontEntries.Top.AppendNameChar(ch);
         }
 
-        // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
-        // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-        PutChar(ch);
+        if (ch != '\0' &&
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
+        {
+            // We don't really have a way to set the default font num as the first scope's font num, because
+            // the font definitions come AFTER the default font control word, so let's just do this check
+            // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
+            // anyway, so we shouldn't take much of a speed hit.
+            if (_ctx.CurrentScope.SymbolFont == SymbolFont.None &&
+                _ctx.CurrentScope.Properties[(int)Property.FontNum] == -1 &&
+                _ctx.Header.DefaultFontNum > -1 &&
+                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
+            {
+                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+            }
+
+            // Support bare characters that are supposed to be displayed in a symbol font.
+            if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
+            {
+#pragma warning disable 8509
+                uint[] fontTable = _ctx.CurrentScope.SymbolFont switch
+                {
+                    SymbolFont.Symbol => _symbolFontToUnicode,
+                    SymbolFont.Wingdings => _wingdingsFontToUnicode,
+                    SymbolFont.Webdings => _webdingsFontToUnicode
+                };
+#pragma warning restore 8509
+                if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
+                {
+                    _plainText.AddRange(result, result.Count);
+                }
+            }
+            else
+            {
+                _plainText.Add(ch);
+            }
+        }
     }
 
     #endregion
 
     #region Handle specially encoded characters
+
+    #region Hex
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharsAreHexControlSymbol(char char1, char char2) => (char1 << 8 | char2) == (('\\' << 8) | '\'');
@@ -1347,6 +1383,8 @@ public sealed partial class RtfToTextConverter
         return ResetBufferAndStateAndReturn();
     }
 
+    #endregion
+
     #region Unicode
 
     private RtfError HandleUnicodeRun()
@@ -1534,6 +1572,8 @@ public sealed partial class RtfToTextConverter
     }
 
     #endregion
+
+    #region Field instructions
 
     /*
     Field instructions are completely out to lunch with a totally unique syntax and even escaped control
@@ -1828,71 +1868,6 @@ public sealed partial class RtfToTextConverter
         return RewindAndSkipGroup();
     }
 
-    #endregion
-
-    #region PutChar
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PutChar(char ch)
-    {
-        if (ch != '\0' &&
-            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx.CurrentScope.InFontTable)
-        {
-            // We don't really have a way to set the default font num as the first scope's font num, because
-            // the font definitions come AFTER the default font control word, so let's just do this check
-            // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
-            // anyway, so we shouldn't take much of a speed hit.
-            if (_ctx.CurrentScope.SymbolFont == SymbolFont.None &&
-                _ctx.CurrentScope.Properties[(int)Property.FontNum] == -1 &&
-                _ctx.Header.DefaultFontNum > -1 &&
-                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
-            {
-                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-            }
-
-            // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
-            {
-#pragma warning disable 8509
-                uint[] fontTable = _ctx.CurrentScope.SymbolFont switch
-                {
-                    SymbolFont.Symbol => _symbolFontToUnicode,
-                    SymbolFont.Wingdings => _wingdingsFontToUnicode,
-                    SymbolFont.Webdings => _webdingsFontToUnicode
-                };
-#pragma warning restore 8509
-                if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
-                {
-                    _plainText.AddRange(result, result.Count);
-                }
-            }
-            else
-            {
-                _plainText.Add(ch);
-            }
-        }
-    }
-
-    private void PutChars(ListFast<char> ch, int count)
-    {
-        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
-        // need to duplicate any of the bare-char symbol font stuff here.
-
-        if (!(count == 1 && ch[0] == '\0') &&
-            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx.CurrentScope.InFontTable)
-        {
-            _plainText.AddRange(ch, count);
-        }
-    }
-
-    #endregion
-
-    #region Helpers
-
-    #region Field instruction methods
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
@@ -1907,7 +1882,6 @@ public sealed partial class RtfToTextConverter
         {
             if (codePage > -1)
             {
-                _charGeneralBuffer.EnsureCapacity(4);
                 _charGeneralBuffer.Count = GetEncodingFromCachedList(codePage)
                     .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
                 return _charGeneralBuffer;
@@ -1917,7 +1891,6 @@ public sealed partial class RtfToTextConverter
                 (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
                 if (success && enc != null)
                 {
-                    _charGeneralBuffer.EnsureCapacity(4);
                     _charGeneralBuffer.Count = enc
                         .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
                     return _charGeneralBuffer;
@@ -1945,6 +1918,27 @@ public sealed partial class RtfToTextConverter
     }
 
     #endregion
+
+    #endregion
+
+    #region PutChar
+
+    private void PutChars(ListFast<char> ch, int count)
+    {
+        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
+        // need to duplicate any of the bare-char symbol font stuff here.
+
+        if (!(count == 1 && ch[0] == '\0') &&
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
+        {
+            _plainText.AddRange(ch, count);
+        }
+    }
+
+    #endregion
+
+    #region Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string CreateStringFromChars(ListFast<char> chars) => new string(chars.ItemsArray, 0, chars.Count);
@@ -2072,7 +2066,6 @@ public sealed partial class RtfToTextConverter
             try
             {
                 _byteBuffer1[0] = (byte)codePoint;
-                finalChars.EnsureCapacity(1);
                 finalChars.Count = GetEncodingFromCachedList(_windows1252)
                     .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
             }
@@ -2107,7 +2100,6 @@ public sealed partial class RtfToTextConverter
             try
             {
                 _byteBuffer1[0] = codePoint;
-                finalChars.EnsureCapacity(1);
                 finalChars.Count = GetEncodingFromCachedList(_windows1252)
                     .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
             }
