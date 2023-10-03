@@ -238,8 +238,6 @@ public static partial class RTFParserCommon
 
             currentScope.DeepCopyTo(_scopes[_count++]);
 
-            currentScope.RtfInternalState = RtfInternalState.Normal;
-
             groupCount++;
 
             return RtfError.OK;
@@ -262,7 +260,6 @@ public static partial class RTFParserCommon
     public sealed class Scope
     {
         public RtfDestinationState RtfDestinationState;
-        public RtfInternalState RtfInternalState;
         public bool InFontTable;
         public SymbolFont SymbolFont;
 
@@ -272,7 +269,6 @@ public static partial class RTFParserCommon
         public void DeepCopyTo(Scope dest)
         {
             dest.RtfDestinationState = RtfDestinationState;
-            dest.RtfInternalState = RtfInternalState;
             dest.InFontTable = InFontTable;
             dest.SymbolFont = SymbolFont;
 
@@ -285,7 +281,6 @@ public static partial class RTFParserCommon
         public void Reset()
         {
             RtfDestinationState = 0;
-            RtfInternalState = 0;
             InFontTable = false;
             SymbolFont = SymbolFont.None;
 
@@ -902,12 +897,6 @@ public static partial class RTFParserCommon
         Skip
     }
 
-    public enum RtfInternalState
-    {
-        Normal,
-        HexEncodedChar
-    }
-
     public enum RtfError
     {
         /// <summary>
@@ -949,7 +938,11 @@ public static partial class RTFParserCommon
         /// <summary>
         /// A parameter was found that exceeds the max parameter length.
         /// </summary>
-        ParameterTooLong
+        ParameterTooLong,
+        /// <summary>
+        /// Internal use only.
+        /// </summary>
+        ParseHexDone
     }
 
     #endregion

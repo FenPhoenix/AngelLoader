@@ -2,7 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
-2023-10-03:  ?           374MB/s (x86)
+2023-10-03:  ?           403MB/s (x86)
 2023-09-30:  ?           363MB/s (x86)
 2023-09-29:  ?           335MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
@@ -949,9 +949,6 @@ public sealed partial class RtfToTextConverter
 
     private RtfError ParseRtf()
     {
-        int nibbleCount = 0;
-        byte b = 0;
-
         while (CurrentPos < _rtfBytes.Length)
         {
             char ch = (char)_rtfBytes[CurrentPos++];
@@ -960,41 +957,21 @@ public sealed partial class RtfToTextConverter
             switch (ch)
             {
                 case '{':
-                    //if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
-                    //if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
-                    // We have to check what the keyword is before deciding whether to parse the Unicode.
-                    // If it's another \uN keyword, then obviously we don't want to parse yet because the
-                    // run isn't finished.
                     if ((ec = ParseKeyword()) != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':
-                    // These DON'T count as Unicode barriers, so don't parse the Unicode here!
                     break;
                 default:
-                    // It's a Unicode barrier, so parse the Unicode here.
-                    //if (_unicodeBuffer.Count > 0)
-                    //{
-                    //    ParseUnicode();
-                    //}
-
-                    switch (_ctx.CurrentScope.RtfInternalState)
+                    if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
                     {
-                        case RtfInternalState.Normal:
-                            if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
-                            {
-                                if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
-                            }
-                            break;
-                        case RtfInternalState.HexEncodedChar:
-                            if ((ec = ParseHex(ref nibbleCount, ref ch, ref b)) != RtfError.OK) return ec;
-                            break;
+                        if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
                     }
                     break;
             }
@@ -1017,12 +994,6 @@ public sealed partial class RtfToTextConverter
             _skipDestinationIfUnknown = false;
             return RtfError.OK;
         }
-
-        //if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
-        //    _unicodeBuffer.Count > 0)
-        //{
-        //    ParseUnicode();
-        //}
 
         _skipDestinationIfUnknown = false;
         switch (symbol.KeywordType)
@@ -1063,8 +1034,31 @@ public sealed partial class RtfToTextConverter
                 }
                 break;
             case SpecialType.HexEncodedChar:
-                _ctx.CurrentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
+            {
+                int nibbleCount = 0;
+                byte b = 0;
+                while (CurrentPos < _rtfBytes.Length)
+                {
+                    char c = (char)_rtfBytes[CurrentPos++];
+                    if (c is not '{' and not '}' and not '\\' and not '\r' and not '\n')
+                    {
+                        RtfError ec = ParseHex(ref nibbleCount, ref c, ref b);
+                        if (ec == RtfError.ParseHexDone)
+                        {
+                            break;
+                        }
+                        else if (ec != RtfError.OK)
+                        {
+                            return ec;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 break;
+            }
             case SpecialType.SkipDest:
                 _skipDestinationIfUnknown = true;
                 break;
@@ -1330,8 +1324,7 @@ public sealed partial class RtfToTextConverter
         RtfError ResetBufferAndStateAndReturn()
         {
             _hexBuffer.ClearFast();
-            _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
-            return RtfError.OK;
+            return RtfError.ParseHexDone;
         }
 
         #endregion
