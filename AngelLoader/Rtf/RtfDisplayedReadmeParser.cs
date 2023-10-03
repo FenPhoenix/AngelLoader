@@ -117,17 +117,23 @@ public sealed partial class RtfDisplayedReadmeParser
 
             char ch = (char)_rtfBytes[CurrentPos++];
 
-            RtfError ec;
             switch (ch)
             {
+                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
+                    _ctx.CurrentScope.DeepCopyTo(_ctx.ScopeStack.Scopes[_ctx.ScopeStack.Count++]);
+                    _groupCount++;
                     break;
                 case '}':
-                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
+                    _ctx.ScopeStack.Scopes[--_ctx.ScopeStack.Count].DeepCopyTo(_ctx.CurrentScope);
+                    _groupCount--;
                     break;
                 case '\\':
-                    if ((ec = ParseKeyword()) != RtfError.OK) return ec;
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':
