@@ -958,14 +958,10 @@ public sealed partial class RtfToTextConverter
             switch (ch)
             {
                 case '{':
-                    // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
-                    _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
-                    // ditto the above
-                    _unicodeCharsLeftToSkip = 0;
                     if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
@@ -981,7 +977,7 @@ public sealed partial class RtfToTextConverter
                     break;
                 default:
                     // It's a Unicode barrier, so parse the Unicode here.
-                    if (_unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
+                    if (_unicodeBuffer.Count > 0)
                     {
                         ParseUnicode();
                     }
@@ -1020,31 +1016,8 @@ public sealed partial class RtfToTextConverter
             return RtfError.OK;
         }
 
-        // From the spec:
-        // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
-        // data that follows are considered one character for skipping purposes."
-        if (symbol.KeywordType == KeywordType.Special && symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
-        {
-            CurrentPos += param;
-            if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
-
-            _unicodeCharsLeftToSkip--;
-            return RtfError.OK;
-        }
-
-        // From the spec:
-        // "Any RTF control word or symbol is considered a single character for the purposes of counting
-        // skippable characters."
-        // But don't do it if it's a hex char, because we handle it elsewhere in that case.
-        if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.HexEncodedChar) &&
-            _unicodeCharsLeftToSkip > 0)
-        {
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-            return RtfError.OK;
-        }
-
         if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
-            _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
+            _unicodeBuffer.Count > 0)
         {
             ParseUnicode();
         }
@@ -1094,7 +1067,7 @@ public sealed partial class RtfToTextConverter
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-                _unicodeCharsLeftToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
+                SkipUnicodeFallbackChars(_ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount]);
 
                 // Make sure the code point is normalized before adding it to the buffer!
                 RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
@@ -1126,6 +1099,44 @@ public sealed partial class RtfToTextConverter
         }
 
         return RtfError.OK;
+    }
+
+    private void SkipUnicodeFallbackChars(int numToSkip)
+    {
+        while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
+        {
+            char c = (char)_rtfBytes[CurrentPos++];
+            switch (c)
+            {
+                case '\\':
+                    if (CurrentPos < _rtfBytes.Length - 4 &&
+                        _rtfBytes[CurrentPos] == '\'' &&
+                        _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
+                        _rtfBytes[CurrentPos + 2].IsAsciiHex())
+                    {
+                        CurrentPos += 3;
+                        numToSkip--;
+                    }
+                    else if (CurrentPos < _rtfBytes.Length - 2 &&
+                             _rtfBytes[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
+                    {
+                        CurrentPos++;
+                        numToSkip--;
+                    }
+                    else
+                    {
+                        numToSkip--;
+                    }
+                    break;
+                // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
+                case '{' or '}':
+                    CurrentPos--;
+                    return;
+                default:
+                    numToSkip--;
+                    break;
+            }
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1192,9 +1203,8 @@ public sealed partial class RtfToTextConverter
 
         // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
         // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-        RtfError error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : RtfError.OK;
+        RtfError error = PutChar(ch);
 
-        if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
         return error;
     }
 
@@ -1267,11 +1277,9 @@ public sealed partial class RtfToTextConverter
 
         (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
 
-        // DON'T try to combine this byte with the next one if:
-        // -We're on code page 42 (symbol font translation) - then we're guaranteed to be single-byte, and
-        //  combining won't give a correct result
-        // -This hex char is part of a Unicode skip
-        if (!codePageWas42 && _unicodeCharsLeftToSkip == 0)
+        // DON'T try to combine this byte with the next one if we're on code page 42 (symbol font translation) -
+        // then we're guaranteed to be single-byte, and combining won't give a correct result
+        if (!codePageWas42)
         {
             bool lastCharInStream = false;
 
@@ -1308,92 +1316,86 @@ public sealed partial class RtfToTextConverter
             }
         }
 
-        if (_unicodeCharsLeftToSkip > 0)
+        ListFast<char> finalChars = _charGeneralBuffer;
+        if (!success)
         {
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
+            SetListFastToUnknownChar(finalChars);
         }
         else
         {
-            ListFast<char> finalChars = _charGeneralBuffer;
-            if (!success)
+            if (codePageWas42 && _hexBuffer.Count == 1)
             {
-                SetListFastToUnknownChar(finalChars);
-            }
-            else
-            {
-                if (codePageWas42 && _hexBuffer.Count == 1)
-                {
-                    byte codePoint = _hexBuffer.ItemsArray[0];
+                byte codePoint = _hexBuffer.ItemsArray[0];
 
-                    if (fontEntry == null)
-                    {
-                        GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
-                        if (finalChars.Count == 0)
-                        {
-                            SetListFastToUnknownChar(finalChars);
-                        }
-                    }
-                    else
-                    {
-                        switch (GetSymbolFontTypeFromFontEntry(fontEntry))
-                        {
-                            case SymbolFont.Wingdings:
-                                GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
-                                break;
-                            case SymbolFont.Webdings:
-                                GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
-                                break;
-                            case SymbolFont.Symbol:
-                                GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
-                                break;
-                            default:
-                                try
-                                {
-                                    if (enc != null)
-                                    {
-                                        int sourceBufferCount = _hexBuffer.Count;
-                                        finalChars.EnsureCapacity(sourceBufferCount);
-                                        finalChars.Count = enc
-                                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
-                                    }
-                                    else
-                                    {
-                                        SetListFastToUnknownChar(finalChars);
-                                    }
-                                }
-                                catch
-                                {
-                                    SetListFastToUnknownChar(finalChars);
-                                }
-                                break;
-                        }
-                    }
-                }
-                else
+                if (fontEntry == null)
                 {
-                    try
-                    {
-                        if (enc != null)
-                        {
-                            int sourceBufferCount = _hexBuffer.Count;
-                            finalChars.EnsureCapacity(sourceBufferCount);
-                            finalChars.Count = enc
-                                .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
-                        }
-                        else
-                        {
-                            SetListFastToUnknownChar(finalChars);
-                        }
-                    }
-                    catch
+                    GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
+                    if (finalChars.Count == 0)
                     {
                         SetListFastToUnknownChar(finalChars);
                     }
                 }
+                else
+                {
+                    switch (GetSymbolFontTypeFromFontEntry(fontEntry))
+                    {
+                        case SymbolFont.Wingdings:
+                            GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
+                            break;
+                        case SymbolFont.Webdings:
+                            GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
+                            break;
+                        case SymbolFont.Symbol:
+                            GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
+                            break;
+                        default:
+                            try
+                            {
+                                if (enc != null)
+                                {
+                                    int sourceBufferCount = _hexBuffer.Count;
+                                    finalChars.EnsureCapacity(sourceBufferCount);
+                                    finalChars.Count = enc
+                                        .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
+                                            finalChars.ItemsArray, 0);
+                                }
+                                else
+                                {
+                                    SetListFastToUnknownChar(finalChars);
+                                }
+                            }
+                            catch
+                            {
+                                SetListFastToUnknownChar(finalChars);
+                            }
+                            break;
+                    }
+                }
             }
-
-            PutChars(finalChars, finalChars.Count);
+            else
+            {
+                try
+                {
+                    if (enc != null)
+                    {
+                        int sourceBufferCount = _hexBuffer.Count;
+                        finalChars.EnsureCapacity(sourceBufferCount);
+                        finalChars.Count = enc
+                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
+                    }
+                    else
+                    {
+                        SetListFastToUnknownChar(finalChars);
+                    }
+                }
+                catch
+                {
+                    SetListFastToUnknownChar(finalChars);
+                }
+            }
         }
+
+        PutChars(finalChars, finalChars.Count);
 
         return ResetBufferAndStateAndReturn();
     }

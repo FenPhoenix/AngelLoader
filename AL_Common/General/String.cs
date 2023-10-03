@@ -63,6 +63,12 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiAlphanumeric(this char c) => IsAsciiAlpha(c) || IsAsciiNumeric(c);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiHex(this byte b) =>
+        b.IsAsciiNumeric() ||
+        ((uint)(b - 'a') <= 'f' - 'a') ||
+        ((uint)(b - 'A') <= 'F' - 'A');
+
     public static bool IsAsciiAlphaUpper(this string str)
     {
         for (int i = 0; i < str.Length; i++)
