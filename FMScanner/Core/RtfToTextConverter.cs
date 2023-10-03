@@ -1872,7 +1872,7 @@ public sealed partial class RtfToTextConverter
         }
     }
 
-    private RtfError PutChars(ListFast<char> ch, int count)
+    private void PutChars(ListFast<char> ch, int count)
     {
         // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
         // need to duplicate any of the bare-char symbol font stuff here.
@@ -1883,7 +1883,6 @@ public sealed partial class RtfToTextConverter
         {
             _plainText.AddRange(ch, count);
         }
-        return RtfError.OK;
     }
 
     #endregion
