@@ -49,6 +49,7 @@ TODO(RTF to plaintext converter):
 */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -958,11 +959,11 @@ public sealed partial class RtfToTextConverter
             switch (ch)
             {
                 case '{':
-                    if (_unicodeBuffer.Count > 0) ParseUnicode();
+                    //if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '}':
-                    if (_unicodeBuffer.Count > 0) ParseUnicode();
+                    //if (_unicodeBuffer.Count > 0) ParseUnicode();
                     if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
                     break;
                 case '\\':
@@ -977,10 +978,10 @@ public sealed partial class RtfToTextConverter
                     break;
                 default:
                     // It's a Unicode barrier, so parse the Unicode here.
-                    if (_unicodeBuffer.Count > 0)
-                    {
-                        ParseUnicode();
-                    }
+                    //if (_unicodeBuffer.Count > 0)
+                    //{
+                    //    ParseUnicode();
+                    //}
 
                     switch (_ctx.CurrentScope.RtfInternalState)
                     {
@@ -1016,11 +1017,11 @@ public sealed partial class RtfToTextConverter
             return RtfError.OK;
         }
 
-        if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
-            _unicodeBuffer.Count > 0)
-        {
-            ParseUnicode();
-        }
+        //if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
+        //    _unicodeBuffer.Count > 0)
+        //{
+        //    ParseUnicode();
+        //}
 
         _skipDestinationIfUnknown = false;
         switch (symbol.KeywordType)
@@ -1067,71 +1068,11 @@ public sealed partial class RtfToTextConverter
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-                //SkipUnicodeFallbackChars(_ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount]);
-                int numToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
-                while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
-                {
-                    char c = (char)_rtfBytes[CurrentPos++];
-                    switch (c)
-                    {
-                        case '\\':
-                            CurrentPos += 3;
-                            numToSkip--;
-                            break;
-
-                            if (CurrentPos < _rtfBytes.Length - 4 &&
-                                _rtfBytes[CurrentPos] == '\'' &&
-                                _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
-                                _rtfBytes[CurrentPos + 2].IsAsciiHex())
-                            {
-                                CurrentPos += 3;
-                                numToSkip--;
-                            }
-                            else if (CurrentPos < _rtfBytes.Length - 2 &&
-                                     _rtfBytes[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
-                            {
-                                CurrentPos++;
-                                numToSkip--;
-                            }
-                            else
-                            {
-                                numToSkip--;
-                            }
-                            break;
-                        case '?':
-                            numToSkip--;
-                            break;
-                        // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
-                        case '{' or '}':
-                            CurrentPos--;
-                            return RtfError.OK;
-                        default:
-                            numToSkip--;
-                            break;
-                    }
-                }
-
-                // Make sure the code point is normalized before adding it to the buffer!
-                RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
+                SkipUnicodeFallbackChars();
+                RtfError error = UnicodeBufferAdd(param);
                 if (error != RtfError.OK) return error;
-
-                // If our code point has been through a font translation table, it may be longer than 2 bytes.
-                if (codePoint > char.MaxValue)
-                {
-                    ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
-                    if (chars == null)
-                    {
-                        _unicodeBuffer.Add(_unicodeUnknown_Char);
-                    }
-                    else
-                    {
-                        _unicodeBuffer.AddRange(chars, 2);
-                    }
-                }
-                else
-                {
-                    _unicodeBuffer.Add((char)codePoint);
-                }
+                error = HandleUnicodeRun();
+                if (error != RtfError.OK) return error;
                 break;
             case SpecialType.ColorTable:
                 _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
@@ -1144,17 +1085,133 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SkipUnicodeFallbackChars(int numToSkip)
+    private RtfError UnicodeBufferAdd(int param)
     {
+        // Make sure the code point is normalized before adding it to the buffer!
+        RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
+        if (error != RtfError.OK) return error;
+
+        // If our code point has been through a font translation table, it may be longer than 2 bytes.
+        if (codePoint > char.MaxValue)
+        {
+            ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
+            if (chars == null)
+            {
+                _unicodeBuffer.Add(_unicodeUnknown_Char);
+            }
+            else
+            {
+                _unicodeBuffer.AddRange(chars, 2);
+            }
+        }
+        else
+        {
+            _unicodeBuffer.Add((char)codePoint);
+        }
+
+        return RtfError.OK;
+    }
+
+    private RtfError HandleUnicodeRun()
+    {
+        int rtfLength = _rtfBytes.Length;
+        while (CurrentPos < rtfLength)
+        {
+            //Trace.WriteLine(((char)_rtfBytes[CurrentPos]).ToString());
+            char c = (char)_rtfBytes[CurrentPos++];
+            //Trace.WriteLine(c.ToString());
+            //Trace.WriteLine(((char)_rtfBytes[CurrentPos]).ToString());
+            if (c == '\\')
+            {
+                int negateParam = 0;
+                bool eof = false;
+                //lastCharWasBackslash = true;
+
+                if (!GetNextChar(out c)) return RtfError.EndOfFile;
+
+                if (c == 'u')
+                {
+                    if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                    if (c == '-')
+                    {
+                        negateParam = 1;
+                        if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                    }
+                    if (c.IsAsciiNumeric())
+                    {
+                        //hasParam = true;
+
+                        int param = 0;
+
+                        // Parse param in real-time to avoid doing a second loop over
+                        int i;
+                        for (i = 0; i < ParamMaxLen && c.IsAsciiNumeric(); i++, eof = !GetNextChar(out c))
+                        {
+                            if (eof) return RtfError.EndOfFile;
+                            param += c - '0';
+                            param *= 10;
+                        }
+                        // Undo the last multiply just one time to avoid checking if we should do it every time through
+                        // the loop
+                        param /= 10;
+                        if (i > ParamMaxLen) return RtfError.ParameterTooLong;
+
+                        param = BranchlessConditionalNegate(param, negateParam);
+                        UnicodeBufferAdd(param);
+                        //CurrentPos--;
+                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        SkipUnicodeFallbackChars();
+                    }
+                    else
+                    {
+                        CurrentPos -= (3 + negateParam);
+                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        //if (_rtfBytes[CurrentPos] == ' ') CurrentPos--;
+                        //Trace.WriteLine(((char)_rtfBytes[CurrentPos]).ToString());
+                        ParseUnicode();
+                        return RtfError.OK;
+                    }
+                }
+                else
+                {
+                    CurrentPos -= 2;
+                    ParseUnicode();
+                    return RtfError.OK;
+                }
+            }
+            //else if (c is '{' or '}')
+            //{
+            //    CurrentPos--;
+            //    ParseUnicode();
+            //    return RtfError.OK;
+            //}
+            else
+            {
+                CurrentPos--;
+                //CurrentPos -= 2;
+                //CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                //if (_rtfBytes[CurrentPos] == ' ') CurrentPos--;
+                ParseUnicode();
+                return RtfError.OK;
+            }
+        }
+
+        return RtfError.OK;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SkipUnicodeFallbackChars()
+    {
+        int numToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
         while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
         {
             char c = (char)_rtfBytes[CurrentPos++];
             switch (c)
             {
                 case '\\':
-                    CurrentPos += 3;
-                    numToSkip--;
-                    break;
+                    //CurrentPos += 3;
+                    //numToSkip--;
+                    //break;
 
                     if (CurrentPos < _rtfBytes.Length - 4 &&
                         _rtfBytes[CurrentPos] == '\'' &&
