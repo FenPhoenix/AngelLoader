@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-10-03:  ?           492MB/s (x86)
 2023-09-30:  ?           363MB/s (x86)
 2023-09-29:  ?           335MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
@@ -41,11 +42,14 @@ Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
-TODO(RTF to plaintext converter):
+@RTF(RTF to plaintext converter):
 -Implement a Peek() function to make the former "un-get" sites more ergonomic/idiomatic.
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
  so statistically it's likely it may not even hit broken text even if it exists.
+
+@RTF(Font table perf): We need a separate font table parser!
+So the main one doesn't have to pay the cost of checking if every single plaintext char is part of a font name.
 */
 
 using System.Collections.Generic;
@@ -947,56 +951,35 @@ public sealed partial class RtfToTextConverter
 
     private RtfError ParseRtf()
     {
-        int nibbleCount = 0;
-        byte b = 0;
-
         while (CurrentPos < _rtfBytes.Length)
         {
             char ch = (char)_rtfBytes[CurrentPos++];
 
-            RtfError ec;
             switch (ch)
             {
+                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
-                    _unicodeCharsLeftToSkip = 0;
-                    if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx.ScopeStack.Push(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
+                    _ctx.CurrentScope.DeepCopyTo(_ctx.ScopeStack.Scopes[_ctx.ScopeStack.Count++]);
+                    _groupCount++;
                     break;
                 case '}':
-                    // ditto the above
-                    _unicodeCharsLeftToSkip = 0;
-                    if (_unicodeBuffer.Count > 0) ParseUnicode();
-                    if ((ec = _ctx.ScopeStack.Pop(_ctx.CurrentScope, ref _groupCount)) != RtfError.OK) return ec;
+                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
+                    _ctx.ScopeStack.Scopes[--_ctx.ScopeStack.Count].DeepCopyTo(_ctx.CurrentScope);
+                    _groupCount--;
                     break;
                 case '\\':
-                    // We have to check what the keyword is before deciding whether to parse the Unicode.
-                    // If it's another \uN keyword, then obviously we don't want to parse yet because the
-                    // run isn't finished.
-                    if ((ec = ParseKeyword()) != RtfError.OK) return ec;
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':
-                    // These DON'T count as Unicode barriers, so don't parse the Unicode here!
                     break;
                 default:
-                    // It's a Unicode barrier, so parse the Unicode here.
-                    if (_unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
+                    if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
                     {
-                        ParseUnicode();
-                    }
-
-                    switch (_ctx.CurrentScope.RtfInternalState)
-                    {
-                        case RtfInternalState.Normal:
-                            if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
-                            {
-                                if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
-                            }
-                            break;
-                        case RtfInternalState.HexEncodedChar:
-                            if ((ec = ParseHex(ref nibbleCount, ref ch, ref b)) != RtfError.OK) return ec;
-                            break;
+                        ParseChar(ch);
                     }
                     break;
             }
@@ -1020,35 +1003,6 @@ public sealed partial class RtfToTextConverter
             return RtfError.OK;
         }
 
-        // From the spec:
-        // "While this is not likely to occur (or recommended), a \binN keyword, its argument, and the binary
-        // data that follows are considered one character for skipping purposes."
-        if (symbol.KeywordType == KeywordType.Special && symbol.Index == (int)SpecialType.Bin && _unicodeCharsLeftToSkip > 0)
-        {
-            CurrentPos += param;
-            if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
-
-            _unicodeCharsLeftToSkip--;
-            return RtfError.OK;
-        }
-
-        // From the spec:
-        // "Any RTF control word or symbol is considered a single character for the purposes of counting
-        // skippable characters."
-        // But don't do it if it's a hex char, because we handle it elsewhere in that case.
-        if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.HexEncodedChar) &&
-            _unicodeCharsLeftToSkip > 0)
-        {
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-            return RtfError.OK;
-        }
-
-        if ((symbol.KeywordType != KeywordType.Special || symbol.Index != (int)SpecialType.UnicodeChar) &&
-            _unicodeBuffer.Count > 0 && _unicodeCharsLeftToSkip == 0)
-        {
-            ParseUnicode();
-        }
-
         _skipDestinationIfUnknown = false;
         switch (symbol.KeywordType)
         {
@@ -1058,9 +1012,11 @@ public sealed partial class RtfToTextConverter
                     ? ChangeProperty((Property)symbol.Index, param)
                     : RtfError.OK;
             case KeywordType.Character:
-                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
-                    ? ParseChar((char)symbol.Index)
-                    : RtfError.OK;
+                if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
+                {
+                    ParseChar((char)symbol.Index);
+                }
+                return RtfError.OK;
             case KeywordType.Destination:
                 return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
@@ -1088,35 +1044,40 @@ public sealed partial class RtfToTextConverter
                 }
                 break;
             case SpecialType.HexEncodedChar:
-                _ctx.CurrentScope.RtfInternalState = RtfInternalState.HexEncodedChar;
+            {
+                int nibbleCount = 0;
+                byte b = 0;
+                while (CurrentPos < _rtfBytes.Length)
+                {
+                    char c = (char)_rtfBytes[CurrentPos++];
+                    if (c is not '{' and not '}' and not '\\' and not '\r' and not '\n')
+                    {
+                        RtfError ec = ParseHex(ref nibbleCount, ref c, ref b);
+                        if (ec == RtfError.ParseHexDone)
+                        {
+                            break;
+                        }
+                        else if (ec != RtfError.OK)
+                        {
+                            return ec;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 break;
+            }
             case SpecialType.SkipDest:
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-                _unicodeCharsLeftToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
-
-                // Make sure the code point is normalized before adding it to the buffer!
-                RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
+                SkipUnicodeFallbackChars();
+                RtfError error = UnicodeBufferAdd(param);
                 if (error != RtfError.OK) return error;
-
-                // If our code point has been through a font translation table, it may be longer than 2 bytes.
-                if (codePoint > char.MaxValue)
-                {
-                    ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
-                    if (chars == null)
-                    {
-                        _unicodeBuffer.Add(_unicodeUnknown_Char);
-                    }
-                    else
-                    {
-                        _unicodeBuffer.AddRange(chars, 2);
-                    }
-                }
-                else
-                {
-                    _unicodeBuffer.Add((char)codePoint);
-                }
+                error = HandleUnicodeRun();
+                if (error != RtfError.OK) return error;
                 break;
             case SpecialType.ColorTable:
                 _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
@@ -1183,24 +1144,57 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseChar(char ch)
+    private void ParseChar(char ch)
     {
         if (_ctx.CurrentScope.InFontTable && _ctx.FontEntries.Top != null)
         {
             _ctx.FontEntries.Top.AppendNameChar(ch);
         }
 
-        // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
-        // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-        RtfError error = _unicodeCharsLeftToSkip == 0 ? PutChar(ch) : RtfError.OK;
+        if (ch != '\0' &&
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
+        {
+            // We don't really have a way to set the default font num as the first scope's font num, because
+            // the font definitions come AFTER the default font control word, so let's just do this check
+            // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
+            // anyway, so we shouldn't take much of a speed hit.
+            if (_ctx.CurrentScope.SymbolFont == SymbolFont.None &&
+                _ctx.CurrentScope.Properties[(int)Property.FontNum] == -1 &&
+                _ctx.Header.DefaultFontNum > -1 &&
+                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
+            {
+                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+            }
 
-        if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
-        return error;
+            // Support bare characters that are supposed to be displayed in a symbol font.
+            if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
+            {
+#pragma warning disable 8509
+                uint[] fontTable = _ctx.CurrentScope.SymbolFont switch
+                {
+                    SymbolFont.Symbol => _symbolFontToUnicode,
+                    SymbolFont.Wingdings => _wingdingsFontToUnicode,
+                    SymbolFont.Webdings => _webdingsFontToUnicode
+                };
+#pragma warning restore 8509
+                if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
+                {
+                    _plainText.AddRange(result, result.Count);
+                }
+            }
+            else
+            {
+                _plainText.Add(ch);
+            }
+        }
     }
 
     #endregion
 
     #region Handle specially encoded characters
+
+    #region Hex
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharsAreHexControlSymbol(char char1, char char2) => (char1 << 8 | char2) == (('\\' << 8) | '\'');
@@ -1212,8 +1206,7 @@ public sealed partial class RtfToTextConverter
         RtfError ResetBufferAndStateAndReturn()
         {
             _hexBuffer.ClearFast();
-            _ctx.CurrentScope.RtfInternalState = RtfInternalState.Normal;
-            return RtfError.OK;
+            return RtfError.ParseHexDone;
         }
 
         #endregion
@@ -1267,11 +1260,9 @@ public sealed partial class RtfToTextConverter
 
         (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
 
-        // DON'T try to combine this byte with the next one if:
-        // -We're on code page 42 (symbol font translation) - then we're guaranteed to be single-byte, and
-        //  combining won't give a correct result
-        // -This hex char is part of a Unicode skip
-        if (!codePageWas42 && _unicodeCharsLeftToSkip == 0)
+        // DON'T try to combine this byte with the next one if we're on code page 42 (symbol font translation) -
+        // then we're guaranteed to be single-byte, and combining won't give a correct result
+        if (!codePageWas42)
         {
             bool lastCharInStream = false;
 
@@ -1308,108 +1299,246 @@ public sealed partial class RtfToTextConverter
             }
         }
 
-        if (_unicodeCharsLeftToSkip > 0)
+        ListFast<char> finalChars = _charGeneralBuffer;
+        if (!success)
         {
-            if (--_unicodeCharsLeftToSkip <= 0) _unicodeCharsLeftToSkip = 0;
+            SetListFastToUnknownChar(finalChars);
         }
         else
         {
-            ListFast<char> finalChars = _charGeneralBuffer;
-            if (!success)
+            if (codePageWas42 && _hexBuffer.Count == 1)
             {
-                SetListFastToUnknownChar(finalChars);
-            }
-            else
-            {
-                if (codePageWas42 && _hexBuffer.Count == 1)
-                {
-                    byte codePoint = _hexBuffer.ItemsArray[0];
+                byte codePoint = _hexBuffer.ItemsArray[0];
 
-                    if (fontEntry == null)
-                    {
-                        GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
-                        if (finalChars.Count == 0)
-                        {
-                            SetListFastToUnknownChar(finalChars);
-                        }
-                    }
-                    else
-                    {
-                        switch (GetSymbolFontTypeFromFontEntry(fontEntry))
-                        {
-                            case SymbolFont.Wingdings:
-                                GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
-                                break;
-                            case SymbolFont.Webdings:
-                                GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
-                                break;
-                            case SymbolFont.Symbol:
-                                GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
-                                break;
-                            default:
-                                try
-                                {
-                                    if (enc != null)
-                                    {
-                                        int sourceBufferCount = _hexBuffer.Count;
-                                        finalChars.EnsureCapacity(sourceBufferCount);
-                                        finalChars.Count = enc
-                                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
-                                    }
-                                    else
-                                    {
-                                        SetListFastToUnknownChar(finalChars);
-                                    }
-                                }
-                                catch
-                                {
-                                    SetListFastToUnknownChar(finalChars);
-                                }
-                                break;
-                        }
-                    }
-                }
-                else
+                if (fontEntry == null)
                 {
-                    try
-                    {
-                        if (enc != null)
-                        {
-                            int sourceBufferCount = _hexBuffer.Count;
-                            finalChars.EnsureCapacity(sourceBufferCount);
-                            finalChars.Count = enc
-                                .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
-                        }
-                        else
-                        {
-                            SetListFastToUnknownChar(finalChars);
-                        }
-                    }
-                    catch
+                    GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
+                    if (finalChars.Count == 0)
                     {
                         SetListFastToUnknownChar(finalChars);
                     }
                 }
+                else
+                {
+                    switch (GetSymbolFontTypeFromFontEntry(fontEntry))
+                    {
+                        case SymbolFont.Wingdings:
+                            GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
+                            break;
+                        case SymbolFont.Webdings:
+                            GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
+                            break;
+                        case SymbolFont.Symbol:
+                            GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
+                            break;
+                        default:
+                            try
+                            {
+                                if (enc != null)
+                                {
+                                    int sourceBufferCount = _hexBuffer.Count;
+                                    finalChars.EnsureCapacity(sourceBufferCount);
+                                    finalChars.Count = enc
+                                        .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
+                                            finalChars.ItemsArray, 0);
+                                }
+                                else
+                                {
+                                    SetListFastToUnknownChar(finalChars);
+                                }
+                            }
+                            catch
+                            {
+                                SetListFastToUnknownChar(finalChars);
+                            }
+                            break;
+                    }
+                }
             }
-
-            PutChars(finalChars, finalChars.Count);
+            else
+            {
+                try
+                {
+                    if (enc != null)
+                    {
+                        int sourceBufferCount = _hexBuffer.Count;
+                        finalChars.EnsureCapacity(sourceBufferCount);
+                        finalChars.Count = enc
+                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
+                    }
+                    else
+                    {
+                        SetListFastToUnknownChar(finalChars);
+                    }
+                }
+                catch
+                {
+                    SetListFastToUnknownChar(finalChars);
+                }
+            }
         }
+
+        PutChars(finalChars, finalChars.Count);
 
         return ResetBufferAndStateAndReturn();
     }
 
-    /*
-    Unlike the hex parser, we can't just cordon this off in its own little world. The reason is that we need
-    to skip characters if necessary, and a "character" could mean any of the following:
-    -An actual single character
-    -A hex-encoded character (\'hh)
-    -An entire control word
-    -A \binN word, the space after it, and all of its binary data
+    #endregion
 
-    If we wanted to handle all that, we would have to pretty much duplicate the entire RTF parser just in
-    here. So we mix this in with the regular parser and just accept the less followable logic as a lesser
-    cost than the alternative.
-    */
+    #region Unicode
+
+    private RtfError HandleUnicodeRun()
+    {
+        int rtfLength = _rtfBytes.Length;
+        while (CurrentPos < rtfLength)
+        {
+            char c = (char)_rtfBytes[CurrentPos++];
+            if (c == '\\')
+            {
+                int negateParam = 0;
+                bool eof = false;
+
+                if (!GetNextChar(out c)) return RtfError.EndOfFile;
+
+                if (c == 'u')
+                {
+                    if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                    if (c == '-')
+                    {
+                        negateParam = 1;
+                        if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                    }
+                    if (c.IsAsciiNumeric())
+                    {
+                        int param = 0;
+
+                        // Parse param in real-time to avoid doing a second loop over
+                        int i;
+                        for (i = 0; i < ParamMaxLen && c.IsAsciiNumeric(); i++, eof = !GetNextChar(out c))
+                        {
+                            if (eof) return RtfError.EndOfFile;
+                            param += c - '0';
+                            param *= 10;
+                        }
+                        // Undo the last multiply just one time to avoid checking if we should do it every time through
+                        // the loop
+                        param /= 10;
+                        if (i > ParamMaxLen) return RtfError.ParameterTooLong;
+
+                        param = BranchlessConditionalNegate(param, negateParam);
+                        UnicodeBufferAdd(param);
+                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        SkipUnicodeFallbackChars();
+                    }
+                    else
+                    {
+                        CurrentPos -= (3 + negateParam);
+                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        ParseUnicode();
+                        return RtfError.OK;
+                    }
+                }
+                else
+                {
+                    CurrentPos -= 2;
+                    ParseUnicode();
+                    return RtfError.OK;
+                }
+            }
+            else
+            {
+                CurrentPos--;
+                ParseUnicode();
+                return RtfError.OK;
+            }
+        }
+
+        return RtfError.OK;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError UnicodeBufferAdd(int param)
+    {
+        // Make sure the code point is normalized before adding it to the buffer!
+        RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
+        if (error != RtfError.OK) return error;
+
+        // If our code point has been through a font translation table, it may be longer than 2 bytes.
+        if (codePoint > char.MaxValue)
+        {
+            ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
+            if (chars == null)
+            {
+                _unicodeBuffer.Add(_unicodeUnknown_Char);
+            }
+            else
+            {
+                _unicodeBuffer.AddRange(chars, 2);
+            }
+        }
+        else
+        {
+            _unicodeBuffer.Add((char)codePoint);
+        }
+
+        return RtfError.OK;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SkipUnicodeFallbackChars()
+    {
+        /*
+        The spec states that, for the purposes of Unicode fallback character skipping, a "character" could mean
+        any of the following:
+        -An actual single character
+        -A hex-encoded character (\'hh)
+        -An entire control word
+        -A \binN word, the space after it, and all of its binary data
+
+        However, the Windows RichEdit control only counts raw chars and hex-encoded chars, so it doesn't conform
+        to spec fully here. This is actually really fortunate, because ignoring the thorny "entire control word
+        including bin and its data" thing means we get simpler and faster.
+        */
+        int numToSkip = _ctx.CurrentScope.Properties[(int)Property.UnicodeCharSkipCount];
+        while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
+        {
+            char c = (char)_rtfBytes[CurrentPos++];
+            switch (c)
+            {
+                case '\\':
+                    if (CurrentPos < _rtfBytes.Length - 4 &&
+                        _rtfBytes[CurrentPos] == '\'' &&
+                        _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
+                        _rtfBytes[CurrentPos + 2].IsAsciiHex())
+                    {
+                        CurrentPos += 3;
+                        numToSkip--;
+                    }
+                    else if (CurrentPos < _rtfBytes.Length - 2 &&
+                             _rtfBytes[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
+                    {
+                        CurrentPos++;
+                        numToSkip--;
+                    }
+                    else
+                    {
+                        numToSkip--;
+                    }
+                    break;
+                case '?':
+                    numToSkip--;
+                    break;
+                // Per spec, if we encounter a group delimiter during Unicode skipping, we end skipping early
+                case '{' or '}':
+                    CurrentPos--;
+                    return;
+                default:
+                    numToSkip--;
+                    break;
+            }
+        }
+    }
+
     private void ParseUnicode()
     {
         #region Handle surrogate pairs and fix up bad Unicode
@@ -1441,6 +1570,10 @@ public sealed partial class RtfToTextConverter
 
         _unicodeBuffer.ClearFast();
     }
+
+    #endregion
+
+    #region Field instructions
 
     /*
     Field instructions are completely out to lunch with a totally unique syntax and even escaped control
@@ -1735,73 +1868,6 @@ public sealed partial class RtfToTextConverter
         return RewindAndSkipGroup();
     }
 
-    #endregion
-
-    #region PutChar
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError PutChar(char ch)
-    {
-        if (ch != '\0' &&
-            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx.CurrentScope.InFontTable)
-        {
-            // We don't really have a way to set the default font num as the first scope's font num, because
-            // the font definitions come AFTER the default font control word, so let's just do this check
-            // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
-            // anyway, so we shouldn't take much of a speed hit.
-            if (_ctx.CurrentScope.SymbolFont == SymbolFont.None &&
-                _ctx.CurrentScope.Properties[(int)Property.FontNum] == -1 &&
-                _ctx.Header.DefaultFontNum > -1 &&
-                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
-            {
-                _ctx.CurrentScope.SymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-            }
-
-            // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx.CurrentScope.SymbolFont > SymbolFont.None)
-            {
-#pragma warning disable 8509
-                uint[] fontTable = _ctx.CurrentScope.SymbolFont switch
-                {
-                    SymbolFont.Symbol => _symbolFontToUnicode,
-                    SymbolFont.Wingdings => _wingdingsFontToUnicode,
-                    SymbolFont.Webdings => _webdingsFontToUnicode
-                };
-#pragma warning restore 8509
-                if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
-                {
-                    _plainText.AddRange(result, result.Count);
-                }
-            }
-            else
-            {
-                _plainText.Add(ch);
-            }
-        }
-        return RtfError.OK;
-    }
-
-    private RtfError PutChars(ListFast<char> ch, int count)
-    {
-        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
-        // need to duplicate any of the bare-char symbol font stuff here.
-
-        if (!(count == 1 && ch[0] == '\0') &&
-            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
-            !_ctx.CurrentScope.InFontTable)
-        {
-            _plainText.AddRange(ch, count);
-        }
-        return RtfError.OK;
-    }
-
-    #endregion
-
-    #region Helpers
-
-    #region Field instruction methods
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
@@ -1816,7 +1882,6 @@ public sealed partial class RtfToTextConverter
         {
             if (codePage > -1)
             {
-                _charGeneralBuffer.EnsureCapacity(4);
                 _charGeneralBuffer.Count = GetEncodingFromCachedList(codePage)
                     .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
                 return _charGeneralBuffer;
@@ -1826,7 +1891,6 @@ public sealed partial class RtfToTextConverter
                 (bool success, _, Encoding? enc, _) = GetCurrentEncoding();
                 if (success && enc != null)
                 {
-                    _charGeneralBuffer.EnsureCapacity(4);
                     _charGeneralBuffer.Count = enc
                         .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
                     return _charGeneralBuffer;
@@ -1854,6 +1918,27 @@ public sealed partial class RtfToTextConverter
     }
 
     #endregion
+
+    #endregion
+
+    #region PutChar
+
+    private void PutChars(ListFast<char> ch, int count)
+    {
+        // This is only ever called from encoded-char handlers (hex, Unicode, field instructions), so we don't
+        // need to duplicate any of the bare-char symbol font stuff here.
+
+        if (!(count == 1 && ch[0] == '\0') &&
+            _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
+            !_ctx.CurrentScope.InFontTable)
+        {
+            _plainText.AddRange(ch, count);
+        }
+    }
+
+    #endregion
+
+    #region Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string CreateStringFromChars(ListFast<char> chars) => new string(chars.ItemsArray, 0, chars.Count);
@@ -1981,7 +2066,6 @@ public sealed partial class RtfToTextConverter
             try
             {
                 _byteBuffer1[0] = (byte)codePoint;
-                finalChars.EnsureCapacity(1);
                 finalChars.Count = GetEncodingFromCachedList(_windows1252)
                     .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
             }
@@ -2016,7 +2100,6 @@ public sealed partial class RtfToTextConverter
             try
             {
                 _byteBuffer1[0] = codePoint;
-                finalChars.EnsureCapacity(1);
                 finalChars.Count = GetEncodingFromCachedList(_windows1252)
                     .GetChars(_byteBuffer1, 0, 1, finalChars.ItemsArray, 0);
             }

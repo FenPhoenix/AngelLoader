@@ -212,57 +212,28 @@ public static partial class RTFParserCommon
 
     public sealed class ScopeStack
     {
-        private const int _maxScopes = 100;
+        public const int MaxScopes = 100;
 
-        private readonly Scope[] _scopes;
-        private int _count;
+        public readonly Scope[] Scopes;
+        /// <summary>Do not modify!</summary>
+        public int Count;
 
         public ScopeStack()
         {
-            _scopes = new Scope[_maxScopes];
-            for (int i = 0; i < _maxScopes; i++)
+            Scopes = new Scope[MaxScopes];
+            for (int i = 0; i < MaxScopes; i++)
             {
-                _scopes[i] = new Scope();
+                Scopes[i] = new Scope();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ClearFast() => _count = 0;
-
-        #region Scope push/pop
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError Push(Scope currentScope, ref int groupCount)
-        {
-            if (_count >= _maxScopes) return RtfError.StackOverflow;
-
-            currentScope.DeepCopyTo(_scopes[_count++]);
-
-            currentScope.RtfInternalState = RtfInternalState.Normal;
-
-            groupCount++;
-
-            return RtfError.OK;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RtfError Pop(Scope currentScope, ref int groupCount)
-        {
-            if (_count == 0) return RtfError.StackUnderflow;
-
-            _scopes[--_count].DeepCopyTo(currentScope);
-            groupCount--;
-
-            return RtfError.OK;
-        }
-
-        #endregion
+        public void ClearFast() => Count = 0;
     }
 
     public sealed class Scope
     {
         public RtfDestinationState RtfDestinationState;
-        public RtfInternalState RtfInternalState;
         public bool InFontTable;
         public SymbolFont SymbolFont;
 
@@ -272,7 +243,6 @@ public static partial class RTFParserCommon
         public void DeepCopyTo(Scope dest)
         {
             dest.RtfDestinationState = RtfDestinationState;
-            dest.RtfInternalState = RtfInternalState;
             dest.InFontTable = InFontTable;
             dest.SymbolFont = SymbolFont;
 
@@ -285,7 +255,6 @@ public static partial class RTFParserCommon
         public void Reset()
         {
             RtfDestinationState = 0;
-            RtfInternalState = 0;
             InFontTable = false;
             SymbolFont = SymbolFont.None;
 
@@ -902,12 +871,6 @@ public static partial class RTFParserCommon
         Skip
     }
 
-    public enum RtfInternalState
-    {
-        Normal,
-        HexEncodedChar
-    }
-
     public enum RtfError
     {
         /// <summary>
@@ -949,7 +912,11 @@ public static partial class RTFParserCommon
         /// <summary>
         /// A parameter was found that exceeds the max parameter length.
         /// </summary>
-        ParameterTooLong
+        ParameterTooLong,
+        /// <summary>
+        /// Internal use only.
+        /// </summary>
+        ParseHexDone
     }
 
     #endregion

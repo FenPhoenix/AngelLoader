@@ -110,10 +110,37 @@ public sealed partial class MainForm : Form
             }
 
             using var rtfBox = new RichTextBox();
-            foreach (string f in rtfFiles)
+
+            MemoryStream[] memStreams = new MemoryStream[rtfFiles.Length];
+            try
             {
-                rtfBox.LoadFile(f, RichTextBoxStreamType.RichText);
-                WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
+                for (int i = 0; i < rtfFiles.Length; i++)
+                {
+                    string f = rtfFiles[i];
+                    using var fs = File.Open(f, FileMode.Open, FileAccess.Read);
+                    byte[] array = new byte[fs.Length];
+                    fs.ReadAll(array, 0, (int)fs.Length);
+                    memStreams[i] = new MemoryStream(array);
+                }
+
+                var sw = new Stopwatch();
+                sw.Start();
+
+                for (int i = 0; i < memStreams.Length; i++)
+                {
+                    rtfBox.LoadFile(memStreams[i], RichTextBoxStreamType.RichText);
+                    //WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
+                }
+
+                sw.Stop();
+                MessageBox.Show(sw.Elapsed + "\r\n");
+            }
+            finally
+            {
+                foreach (MemoryStream ms in memStreams)
+                {
+                    ms.Dispose();
+                }
             }
         }
         else
@@ -146,7 +173,8 @@ public sealed partial class MainForm : Form
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__VaultChronicles__vcse_de.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-02-29_c5Summit_The__summit.rtf";
-                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
+                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
+                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
                 using var fs = File.Open(file, FileMode.Open, FileAccess.Read);
                 byte[] array = new byte[fs.Length];
                 int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
@@ -182,7 +210,7 @@ public sealed partial class MainForm : Form
                 }
 
                 sw.Stop();
-                MessageBox.Show(sw.Elapsed.ToString() + "\r\n");
+                MessageBox.Show(sw.Elapsed + "\r\n");
 
                 return;
 #endif
