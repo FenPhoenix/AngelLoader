@@ -1101,6 +1101,7 @@ public sealed partial class RtfToTextConverter
         return RtfError.OK;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SkipUnicodeFallbackChars(int numToSkip)
     {
         while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
