@@ -2,7 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
-2023-10-03:  ?           403MB/s (x86)
+2023-10-03:  ?           444MB/s (x86)
 2023-09-30:  ?           363MB/s (x86)
 2023-09-29:  ?           335MB/s (x86)
 2020-08-24:  179MB/s     254MB/s
@@ -971,7 +971,7 @@ public sealed partial class RtfToTextConverter
                 default:
                     if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
                     {
-                        if ((ec = ParseChar(ch)) != RtfError.OK) return ec;
+                        ParseChar(ch);
                     }
                     break;
             }
@@ -1004,9 +1004,11 @@ public sealed partial class RtfToTextConverter
                     ? ChangeProperty((Property)symbol.Index, param)
                     : RtfError.OK;
             case KeywordType.Character:
-                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
-                    ? ParseChar((char)symbol.Index)
-                    : RtfError.OK;
+                if (_ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal)
+                {
+                    ParseChar((char)symbol.Index);
+                }
+                return RtfError.OK;
             case KeywordType.Destination:
                 return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
@@ -1296,7 +1298,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseChar(char ch)
+    private void ParseChar(char ch)
     {
         if (_ctx.CurrentScope.InFontTable && _ctx.FontEntries.Top != null)
         {
@@ -1305,9 +1307,7 @@ public sealed partial class RtfToTextConverter
 
         // Don't get clever and change the order of things. We need to know if our count is > 0 BEFORE
         // trying to print, because we want to not print if it's > 0. Only then do we decrement it.
-        RtfError error = PutChar(ch);
-
-        return error;
+        PutChar(ch);
     }
 
     #endregion
@@ -1843,7 +1843,7 @@ public sealed partial class RtfToTextConverter
     #region PutChar
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError PutChar(char ch)
+    private void PutChar(char ch)
     {
         if (ch != '\0' &&
             _ctx.CurrentScope.Properties[(int)Property.Hidden] == 0 &&
@@ -1882,7 +1882,6 @@ public sealed partial class RtfToTextConverter
                 _plainText.Add(ch);
             }
         }
-        return RtfError.OK;
     }
 
     private RtfError PutChars(ListFast<char> ch, int count)
