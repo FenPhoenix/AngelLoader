@@ -202,11 +202,11 @@ public sealed partial class MainForm : Form
 
                 for (int i = 0; i < byteArrays.Length; i++)
                 {
-                    string f = rtfFiles[i];
-                    Trace.WriteLine(f);
+                    //string f = rtfFiles[i];
+                    //Trace.WriteLine(f);
                     ArrayWithLength<byte> array = byteArrays[i];
                     (_, string text) = rtfReader.Convert(array);
-                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                    //WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
 
                 sw.Stop();
