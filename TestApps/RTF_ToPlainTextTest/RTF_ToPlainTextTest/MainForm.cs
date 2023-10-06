@@ -129,6 +129,7 @@ public sealed partial class MainForm : Form
                 for (int i = 0; i < memStreams.Length; i++)
                 {
                     rtfBox.LoadFile(memStreams[i], RichTextBoxStreamType.RichText);
+                    //string f = rtfFiles[i];
                     //WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
                 }
 
