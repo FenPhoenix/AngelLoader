@@ -169,6 +169,8 @@ public static partial class Common
         int i1 = value.LastIndexOf('/');
         int i2 = value.LastIndexOf('\\');
 
+        // IMPORTANT! This is a very specific trick that only works for comparing equality to -1
+        // Because for -1 all bits are 1. Any other number would result in an incorrect result for equality.
         return (i1 & i2) == -1 ? -1 : Math.Max(i1, i2);
     }
 
