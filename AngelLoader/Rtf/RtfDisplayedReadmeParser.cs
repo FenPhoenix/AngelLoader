@@ -123,12 +123,12 @@ public sealed partial class RtfDisplayedReadmeParser
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
                     if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
-                    _ctx.CurrentScope.DeepCopyTo(_ctx.ScopeStack.Scopes[_ctx.ScopeStack.Count++]);
+                    _ctx.ScopeStack.DeepCopyToNext();
                     _groupCount++;
                     break;
                 case '}':
                     if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
-                    _ctx.ScopeStack.Scopes[--_ctx.ScopeStack.Count].DeepCopyTo(_ctx.CurrentScope);
+                    --_ctx.ScopeStack.Count;
                     _groupCount--;
                     break;
                 case '\\':
@@ -153,7 +153,7 @@ public sealed partial class RtfDisplayedReadmeParser
             // If this is a new destination
             if (_skipDestinationIfUnknown)
             {
-                _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
+                _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
             }
             _skipDestinationIfUnknown = false;
             return RtfError.OK;
@@ -164,16 +164,16 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             case KeywordType.Property:
                 if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                return _getLangs && _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _getLangs && _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                     ? ChangeProperty((Property)symbol.Index, param)
                     : RtfError.OK;
             case KeywordType.Destination:
-                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal
+                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                     ? ChangeDestination((DestinationType)symbol.Index)
                     : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
-                return _ctx.CurrentScope.RtfDestinationState == RtfDestinationState.Normal ||
+                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
                        specialType == SpecialType.Bin
                     ? DispatchSpecialKeyword(specialType, param)
                     : RtfError.OK;
@@ -221,20 +221,20 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         if (propertyTableIndex == Property.FontNum)
         {
-            if (_ctx.CurrentScope.InFontTable)
+            if (_ctx.ScopeStack.CurrentInFontTable)
             {
                 _ctx.FontEntries.Add(val);
                 return RtfError.OK;
             }
 
             // \fN supersedes \langN
-            _ctx.CurrentScope.Properties[(int)Property.Lang] = -1;
+            _ctx.ScopeStack.CurrentProperties[(int)Property.Lang] = -1;
         }
         else if (propertyTableIndex == Property.Lang)
         {
-            int currentLang = _ctx.CurrentScope.Properties[(int)Property.Lang];
+            int currentLang = _ctx.ScopeStack.CurrentProperties[(int)Property.Lang];
 
-            int scopeFontNum = _ctx.CurrentScope.Properties[(int)Property.FontNum];
+            int scopeFontNum = _ctx.ScopeStack.CurrentProperties[(int)Property.FontNum];
             if (scopeFontNum == -1) scopeFontNum = _ctx.Header.DefaultFontNum;
 
             _ctx.FontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
@@ -269,7 +269,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
         }
 
-        _ctx.CurrentScope.Properties[(int)propertyTableIndex] = val;
+        _ctx.ScopeStack.CurrentProperties[(int)propertyTableIndex] = val;
 
         return RtfError.OK;
     }
@@ -284,7 +284,7 @@ public sealed partial class RtfDisplayedReadmeParser
             // TODO: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
             case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
-                _ctx.CurrentScope.RtfDestinationState = RtfDestinationState.Skip;
+                _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 return RtfError.OK;
             default:
                 return RtfError.OK;

@@ -13,7 +13,6 @@ public static partial class RTFParserCommon
     {
         public readonly ListFast<char> Keyword;
         public readonly ScopeStack ScopeStack;
-        public readonly Scope CurrentScope;
         public readonly FontDictionary FontEntries;
         public readonly Header Header;
 
@@ -22,7 +21,7 @@ public static partial class RTFParserCommon
         {
             Keyword.ClearFast();
             ScopeStack.ClearFast();
-            CurrentScope.Reset();
+            ScopeStack.ResetCurrent();
             FontEntries.Clear();
             Header.Reset();
         }
@@ -33,8 +32,6 @@ public static partial class RTFParserCommon
 
             // Highest measured was 10
             ScopeStack = new ScopeStack();
-
-            CurrentScope = new Scope();
 
             /*
             FMs can have 100+ of these...
@@ -211,61 +208,104 @@ public static partial class RTFParserCommon
 
     public sealed class ScopeStack
     {
+        // SOA and removal of bounds checking through fixed-sized buffers improves perf
+
+        private unsafe struct RtfDestinationStateWrapper
+        {
+            internal fixed int Array[MaxScopes];
+        }
+
+        private unsafe struct InFontTableWrapper
+        {
+            internal fixed bool Array[MaxScopes];
+        }
+
+        private unsafe struct SymbolFontWrapper
+        {
+            internal fixed int Array[MaxScopes];
+        }
+
         public const int MaxScopes = 100;
 
-        public readonly Scope[] Scopes;
+        private RtfDestinationStateWrapper RtfDestinationStates;
+        private InFontTableWrapper InFontTables;
+        private SymbolFontWrapper SymbolFonts;
+        private readonly int[][] Properties = new int[MaxScopes][];
+
         /// <summary>Do not modify!</summary>
         public int Count;
 
         public ScopeStack()
         {
-            Scopes = new Scope[MaxScopes];
             for (int i = 0; i < MaxScopes; i++)
             {
-                Scopes[i] = new Scope();
+                Properties[i] = new int[_propertiesLen];
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void DeepCopyToNext()
+        {
+            RtfDestinationStates.Array[Count + 1] = RtfDestinationStates.Array[Count];
+            InFontTables.Array[Count + 1] = InFontTables.Array[Count];
+            SymbolFonts.Array[Count + 1] = SymbolFonts.Array[Count];
+            for (int i = 0; i < _propertiesLen; i++)
+            {
+                Properties[Count + 1][i] = Properties[Count][i];
+            }
+            ++Count;
+        }
+
+        #region Current scope
+
+        public unsafe RtfDestinationState CurrentRtfDestinationState
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (RtfDestinationState)RtfDestinationStates.Array[Count];
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => RtfDestinationStates.Array[Count] = (int)value;
+        }
+
+        public unsafe bool CurrentInFontTable
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => InFontTables.Array[Count];
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => InFontTables.Array[Count] = value;
+        }
+
+        public unsafe SymbolFont CurrentSymbolFont
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (SymbolFont)SymbolFonts.Array[Count];
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => SymbolFonts.Array[Count] = (int)value;
+        }
+
+        public int[] CurrentProperties
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Properties[Count];
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ResetCurrent()
+        {
+            RtfDestinationStates.Array[Count] = 0;
+            InFontTables.Array[Count] = false;
+            SymbolFonts.Array[Count] = (int)SymbolFont.None;
+
+            Properties[Count][(int)Property.Hidden] = 0;
+            Properties[Count][(int)Property.UnicodeCharSkipCount] = 1;
+            Properties[Count][(int)Property.FontNum] = -1;
+            Properties[Count][(int)Property.Lang] = -1;
+        }
+
+        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFast() => Count = 0;
-    }
-
-    public sealed class Scope
-    {
-        public RtfDestinationState RtfDestinationState;
-        public bool InFontTable;
-        public SymbolFont SymbolFont;
-
-        public readonly int[] Properties = new int[_propertiesLen];
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DeepCopyTo(Scope dest)
-        {
-            dest.RtfDestinationState = RtfDestinationState;
-            dest.InFontTable = InFontTable;
-            dest.SymbolFont = SymbolFont;
-
-            // Slightly faster to do a loop than an Array.Copy() call
-            for (int i = 0; i < _propertiesLen; i++)
-            {
-                dest.Properties[i] = Properties[i];
-            }
-        }
-
-        public Scope() => Reset();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Reset()
-        {
-            RtfDestinationState = 0;
-            InFontTable = false;
-            SymbolFont = SymbolFont.None;
-
-            Properties[(int)Property.Hidden] = 0;
-            Properties[(int)Property.UnicodeCharSkipCount] = 1;
-            Properties[(int)Property.FontNum] = -1;
-            Properties[(int)Property.Lang] = -1;
-        }
     }
 
     public sealed class Symbol
@@ -938,7 +978,7 @@ public static partial class RTFParserCommon
                 ctx.Header.CodePage = param >= 0 ? param : 1252;
                 break;
             case SpecialType.FontTable:
-                ctx.CurrentScope.InFontTable = true;
+                ctx.ScopeStack.CurrentInFontTable = true;
                 break;
             case SpecialType.DefaultFont:
                 if (!ctx.Header.DefaultFontSet)
@@ -950,7 +990,7 @@ public static partial class RTFParserCommon
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
-                if (ctx.FontEntries.Top != null && ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Top != null && ctx.ScopeStack.CurrentInFontTable)
                 {
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
@@ -964,7 +1004,7 @@ public static partial class RTFParserCommon
                 }
                 break;
             case SpecialType.CodePage:
-                if (ctx.FontEntries.Top != null && ctx.CurrentScope.InFontTable)
+                if (ctx.FontEntries.Top != null && ctx.ScopeStack.CurrentInFontTable)
                 {
                     ctx.FontEntries.Top.CodePage = param >= 0 ? param : ctx.Header.CodePage;
                 }
