@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-10-05:  ?           521MB/s (x64)
 2023-10-03:  ?           512MB/s (x64)
 2023-10-03:  ?           492MB/s (x86)
 2023-09-30:  ?           363MB/s (x86)
@@ -1074,17 +1075,71 @@ public sealed partial class RtfToTextConverter
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
+            {
                 SkipUnicodeFallbackChars();
                 RtfError error = UnicodeBufferAdd(param);
                 if (error != RtfError.OK) return error;
                 error = HandleUnicodeRun();
                 if (error != RtfError.OK) return error;
                 break;
+            }
             case SpecialType.ColorTable:
                 _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 break;
+            case SpecialType.FontTable:
+            {
+                _ctx.ScopeStack.CurrentInFontTable = true;
+                RtfError error = HandleFontTable();
+                if (error != RtfError.OK) return error;
+                break;
+            }
             default:
                 return HandleSpecialTypeFont(_ctx, specialType, param);
+        }
+
+        return RtfError.OK;
+    }
+
+    private RtfError HandleFontTable()
+    {
+        int fontTableScopeLevel = _ctx.ScopeStack.Count;
+
+        while (CurrentPos < _rtfBytes.Length)
+        {
+            char ch = (char)_rtfBytes[CurrentPos++];
+
+            switch (ch)
+            {
+                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // a second branch to check the return error code from the push/pop method.
+                case '{':
+                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
+                    _ctx.ScopeStack.DeepCopyToNext();
+                    _groupCount++;
+                    break;
+                case '}':
+                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.ScopeStack.Count;
+                    _groupCount--;
+                    if (_groupCount < fontTableScopeLevel)
+                    {
+                        return RtfError.OK;
+                    }
+                    break;
+                case '\\':
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                    if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                    {
+                        _ctx.FontEntries.Top?.AppendNameChar(ch);
+                    }
+                    break;
+            }
         }
 
         return RtfError.OK;
@@ -1147,14 +1202,8 @@ public sealed partial class RtfToTextConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ParseChar(char ch)
     {
-        if (_ctx.ScopeStack.CurrentInFontTable && _ctx.FontEntries.Top != null)
-        {
-            _ctx.FontEntries.Top.AppendNameChar(ch);
-        }
-
         if (ch != '\0' &&
-            _ctx.ScopeStack.CurrentProperties[(int)Property.Hidden] == 0 &&
-            !_ctx.ScopeStack.CurrentInFontTable)
+            _ctx.ScopeStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
             // We don't really have a way to set the default font num as the first scope's font num, because
             // the font definitions come AFTER the default font control word, so let's just do this check
@@ -1461,7 +1510,7 @@ public sealed partial class RtfToTextConverter
     private RtfError UnicodeBufferAdd(int param)
     {
         // Make sure the code point is normalized before adding it to the buffer!
-        RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: true, out uint codePoint);
+        RtfError error = NormalizeUnicodePoint_HandleSymbolCharRange(param, out uint codePoint);
         if (error != RtfError.OK) return error;
 
         // If our code point has been through a font translation table, it may be longer than 2 bytes.
@@ -1700,7 +1749,7 @@ public sealed partial class RtfToTextConverter
         param = BranchlessConditionalNegate(param, negateNum);
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
-        RtfError error = NormalizeUnicodePoint(param, handleSymbolCharRange: false, out uint codePoint);
+        RtfError error = NormalizeUnicodePoint(param, out uint codePoint);
         if (error != RtfError.OK) return error;
 
         if (ch != ' ') return RewindAndSkipGroup();
@@ -2112,7 +2161,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError NormalizeUnicodePoint(int codePoint, bool handleSymbolCharRange, out uint returnCodePoint)
+    private RtfError NormalizeUnicodePoint_HandleSymbolCharRange(int codePoint, out uint returnCodePoint)
     {
         // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
         // correct value.
@@ -2146,7 +2195,7 @@ public sealed partial class RtfToTextConverter
         (despite the spec saying that \uN must be signed int16). So we need to fall through to this section
         even if we did the above, because by adding 65536 we might now be in the 0xF020-0xF0FF range.
         */
-        if (handleSymbolCharRange && (returnCodePoint - 0xF020 <= 0xF0FF - 0xF020))
+        if (returnCodePoint - 0xF020 <= 0xF0FF - 0xF020)
         {
             returnCodePoint -= 0xF000;
 
@@ -2174,6 +2223,26 @@ public sealed partial class RtfToTextConverter
                     break;
             }
         }
+
+        return RtfError.OK;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static RtfError NormalizeUnicodePoint(int codePoint, out uint returnCodePoint)
+    {
+        // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
+        // correct value.
+        if (codePoint < 0)
+        {
+            codePoint += 65536;
+            if (codePoint is < 0 or > ushort.MaxValue)
+            {
+                returnCodePoint = 0;
+                return RtfError.InvalidUnicode;
+            }
+        }
+
+        returnCodePoint = (uint)codePoint;
 
         return RtfError.OK;
     }
