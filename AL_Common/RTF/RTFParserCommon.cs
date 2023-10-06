@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static AL_Common.Common;
@@ -246,7 +245,11 @@ public static partial class RTFParserCommon
             dest.InFontTable = InFontTable;
             dest.SymbolFont = SymbolFont;
 
-            Array.Copy(Properties, 0, dest.Properties, 0, _propertiesLen);
+            // Slightly faster to do a loop than an Array.Copy() call
+            for (int i = 0; i < _propertiesLen; i++)
+            {
+                dest.Properties[i] = Properties[i];
+            }
         }
 
         public Scope() => Reset();
