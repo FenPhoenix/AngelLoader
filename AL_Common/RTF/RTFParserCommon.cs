@@ -21,7 +21,7 @@ public static partial class RTFParserCommon
         {
             Keyword.ClearFast();
             ScopeStack.ClearFast();
-            ScopeStack.ResetCurrent();
+            ScopeStack.ResetFirst();
             FontEntries.Clear();
             Header.Reset();
         }
@@ -30,7 +30,6 @@ public static partial class RTFParserCommon
         {
             Keyword = new ListFast<char>(KeywordMaxLen);
 
-            // Highest measured was 10
             ScopeStack = new ScopeStack();
 
             /*
@@ -220,6 +219,7 @@ public static partial class RTFParserCommon
             internal fixed bool Array[MaxScopes];
         }
 
+        // Highest measured was 10
         public const int MaxScopes = 100;
 
         private IntArrayWrapper RtfDestinationStates;
@@ -283,18 +283,18 @@ public static partial class RTFParserCommon
             get => Properties[Count];
         }
 
-
+        // Current scope always begins at scope 0, so reset just that one
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void ResetCurrent()
+        public unsafe void ResetFirst()
         {
-            RtfDestinationStates.Array[Count] = 0;
-            InFontTables.Array[Count] = false;
-            SymbolFonts.Array[Count] = (int)SymbolFont.None;
+            RtfDestinationStates.Array[0] = 0;
+            InFontTables.Array[0] = false;
+            SymbolFonts.Array[0] = (int)SymbolFont.None;
 
-            Properties[Count][(int)Property.Hidden] = 0;
-            Properties[Count][(int)Property.UnicodeCharSkipCount] = 1;
-            Properties[Count][(int)Property.FontNum] = -1;
-            Properties[Count][(int)Property.Lang] = -1;
+            Properties[0][(int)Property.Hidden] = 0;
+            Properties[0][(int)Property.UnicodeCharSkipCount] = 1;
+            Properties[0][(int)Property.FontNum] = -1;
+            Properties[0][(int)Property.Lang] = -1;
         }
 
         #endregion
