@@ -210,26 +210,21 @@ public static partial class RTFParserCommon
     {
         // SOA and removal of bounds checking through fixed-sized buffers improves perf
 
-        private unsafe struct RtfDestinationStateWrapper
+        private unsafe struct IntArrayWrapper
         {
             internal fixed int Array[MaxScopes];
         }
 
-        private unsafe struct InFontTableWrapper
+        private unsafe struct BoolArrayWrapper
         {
             internal fixed bool Array[MaxScopes];
         }
 
-        private unsafe struct SymbolFontWrapper
-        {
-            internal fixed int Array[MaxScopes];
-        }
-
         public const int MaxScopes = 100;
 
-        private RtfDestinationStateWrapper RtfDestinationStates;
-        private InFontTableWrapper InFontTables;
-        private SymbolFontWrapper SymbolFonts;
+        private IntArrayWrapper RtfDestinationStates;
+        private BoolArrayWrapper InFontTables;
+        private IntArrayWrapper SymbolFonts;
         private readonly int[][] Properties = new int[MaxScopes][];
 
         /// <summary>Do not modify!</summary>
