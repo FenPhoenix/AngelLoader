@@ -1009,10 +1009,12 @@ public sealed partial class RtfToTextConverter
         switch (symbol.KeywordType)
         {
             case KeywordType.Property:
-                if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
-                    ? ChangeProperty((Property)symbol.Index, param)
-                    : RtfError.OK;
+                if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                {
+                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
+                    ChangeProperty((Property)symbol.Index, param);
+                }
+                return RtfError.OK;
             case KeywordType.Character:
                 if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                 {
@@ -1146,14 +1148,14 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ChangeProperty(Property propertyTableIndex, int val)
+    private void ChangeProperty(Property propertyTableIndex, int val)
     {
         if (propertyTableIndex == Property.FontNum)
         {
             if (_ctx.ScopeStack.CurrentInFontTable)
             {
                 _ctx.FontEntries.Add(val);
-                return RtfError.OK;
+                return;
             }
             else if (_ctx.FontEntries.TryGetValue(val, out FontEntry? fontEntry))
             {
@@ -1173,12 +1175,10 @@ public sealed partial class RtfToTextConverter
         }
         else if (propertyTableIndex == Property.Lang)
         {
-            if (val == UndefinedLanguage) return RtfError.OK;
+            if (val == UndefinedLanguage) return;
         }
 
         _ctx.ScopeStack.CurrentProperties[(int)propertyTableIndex] = val;
-
-        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
