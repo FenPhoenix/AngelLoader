@@ -86,20 +86,6 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #endregion
 
-    internal new void SelectAll()
-    {
-        Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
-        try
-        {
-            base.SelectAll();
-            Focus();
-        }
-        finally
-        {
-            ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
-        }
-    }
-
     public RichTextBoxCustom() => InitWorkarounds();
 
     #region Private methods
@@ -152,71 +138,25 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         this.ResumeDrawing();
     }
 
-    internal Encoding? ChangeEncoding(Encoding? encoding, bool suspendResume = true)
-    {
-        if (!_currentReadmeSupportsEncodingChange) return null;
-
-        Encoding? retEncoding = null;
-
-        Native.SCROLLINFO si = new();
-        try
-        {
-            if (suspendResume)
-            {
-                si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
-                SaveZoom();
-                this.SuspendDrawing();
-            }
-
-            using var ms = new MemoryStream(_currentReadmeBytes);
-
-            if (encoding == null)
-            {
-                var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
-                retEncoding = encoding;
-                ms.Position = 0;
-            }
-
-            using var sr = new StreamReader(ms, encoding);
-            Text = sr.ReadToEnd();
-
-            return retEncoding;
-        }
-        catch (Exception ex)
-        {
-            /*
-            NOTE - exception handling in RTFBox/ChangeEncodingInternal():
-            It's extremely, extremely unlikely that an exception could occur here. I think the only way it
-            could happen is if the encoding detector were to throw, and/or if there were invalid bytes in the
-            readme file.
-
-            A dialog here would be obnoxious; the readme would probably be visibly broken anyway and that
-            should be indication enough that something failed.
-            */
-            Log(ErrorText.Un + "set encoding", ex);
-            return retEncoding;
-        }
-        finally
-        {
-            if (suspendResume)
-            {
-                RestoreZoom();
-                // Copy only the nPos value, otherwise we get a glitched-length scrollbar if our encoding
-                // change changes the height of the text.
-                Native.SCROLLINFO newSi = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
-                newSi.nPos = si.nPos;
-                ControlUtils.RepositionScroll(Handle, newSi, Native.SB_VERT);
-                this.ResumeDrawing();
-            }
-        }
-    }
-
     #endregion
 
     #region Public methods
 
     internal void SetOwner(MainForm owner) => _owner = owner;
+
+    internal new void SelectAll()
+    {
+        Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+        try
+        {
+            base.SelectAll();
+            Focus();
+        }
+        finally
+        {
+            ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
+        }
+    }
 
     #region Zoom stuff
 
@@ -407,6 +347,83 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #endregion
 
+    internal Encoding? ChangeEncoding(Encoding? encoding, bool suspendResume = true)
+    {
+        if (!_currentReadmeSupportsEncodingChange) return null;
+
+        Encoding? retEncoding = null;
+
+        Native.SCROLLINFO si = new();
+        try
+        {
+            if (suspendResume)
+            {
+                si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                SaveZoom();
+                this.SuspendDrawing();
+            }
+
+            using var ms = new MemoryStream(_currentReadmeBytes);
+
+            if (encoding == null)
+            {
+                var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
+                retEncoding = encoding;
+                ms.Position = 0;
+            }
+
+            using var sr = new StreamReader(ms, encoding);
+            Text = sr.ReadToEnd();
+
+            return retEncoding;
+        }
+        catch (Exception ex)
+        {
+            /*
+            NOTE - exception handling in RTFBox/ChangeEncodingInternal():
+            It's extremely, extremely unlikely that an exception could occur here. I think the only way it
+            could happen is if the encoding detector were to throw, and/or if there were invalid bytes in the
+            readme file.
+
+            A dialog here would be obnoxious; the readme would probably be visibly broken anyway and that
+            should be indication enough that something failed.
+            */
+            Log(ErrorText.Un + "set encoding", ex);
+            return retEncoding;
+        }
+        finally
+        {
+            if (suspendResume)
+            {
+                RestoreZoom();
+                // Copy only the nPos value, otherwise we get a glitched-length scrollbar if our encoding
+                // change changes the height of the text.
+                Native.SCROLLINFO newSi = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                newSi.nPos = si.nPos;
+                ControlUtils.RepositionScroll(Handle, newSi, Native.SB_VERT);
+                this.ResumeDrawing();
+            }
+        }
+    }
+
+    #endregion
+
+    #region Event overrides
+
+    protected override void OnEnabledChanged(EventArgs e)
+    {
+        if (!_darkModeEnabled) base.OnEnabledChanged(e);
+        // Just suppress the base method call and done, no recoloring. Argh! I totally didn't make a huge
+        // ridiculous system for getting around it! I totally knew all along!
+    }
+
+    protected override void OnVScroll(EventArgs e)
+    {
+        Workarounds_OnVScroll();
+        base.OnVScroll(e);
+    }
+
     protected override void OnLinkClicked(LinkClickedEventArgs e)
     {
         base.OnLinkClicked(e);
@@ -433,25 +450,6 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
         }
     }
-
-    #endregion
-
-    #region Event overrides
-
-    protected override void OnEnabledChanged(EventArgs e)
-    {
-        if (!_darkModeEnabled) base.OnEnabledChanged(e);
-        // Just suppress the base method call and done, no recoloring. Argh! I totally didn't make a huge
-        // ridiculous system for getting around it! I totally knew all along!
-    }
-
-    protected override void OnVScroll(EventArgs e)
-    {
-        Workarounds_OnVScroll();
-        base.OnVScroll(e);
-    }
-
-    #endregion
 
     /*
     Hack to work around a memory issue...
@@ -535,6 +533,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         base.OnHandleDestroyed(e);
     }
+
+    #endregion
 
     protected override void Dispose(bool disposing)
     {
