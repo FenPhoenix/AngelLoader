@@ -85,13 +85,13 @@ internal readonly ref struct Zip64ExtraField
     internal readonly long? UncompressedSize;
     internal readonly long? CompressedSize;
     internal readonly long? LocalHeaderOffset;
-    internal readonly int? StartDiskNumber;
+    internal readonly uint? StartDiskNumber;
 
     private Zip64ExtraField(
         long? uncompressedSize,
         long? compressedSize,
         long? localHeaderOffset,
-        int? startDiskNumber)
+        uint? startDiskNumber)
     {
         UncompressedSize = uncompressedSize;
         CompressedSize = compressedSize;
@@ -175,7 +175,7 @@ internal readonly ref struct Zip64ExtraField
         long? uncompressedSize = null;
         long? compressedSize = null;
         long? localHeaderOffset = null;
-        int? startDiskNumber = null;
+        uint? startDiskNumber = null;
 
         int arrayIndex = 0;
         if (readUncompressedSize)
@@ -195,14 +195,13 @@ internal readonly ref struct Zip64ExtraField
         }
         if (readStartDiskNumber)
         {
-            startDiskNumber = ZipHelpers.ReadInt32(extraField.Data, dataSize, arrayIndex);
+            startDiskNumber = ZipHelpers.ReadUInt32(extraField.Data, dataSize, arrayIndex);
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
         if (uncompressedSize is < 0) ThrowHelper.InvalidData(SR.FieldTooBigUncompressedSize);
         if (compressedSize is < 0) ThrowHelper.InvalidData(SR.FieldTooBigCompressedSize);
         if (localHeaderOffset is < 0) ThrowHelper.InvalidData(SR.FieldTooBigLocalHeaderOffset);
-        if (startDiskNumber is < 0) ThrowHelper.InvalidData(SR.FieldTooBigStartDiskNumber);
 
         zip64Block = new Zip64ExtraField(
             uncompressedSize: uncompressedSize,
@@ -337,7 +336,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     internal readonly uint LastModified;
     internal readonly long CompressedSize;
     internal readonly long UncompressedSize;
-    internal readonly int DiskNumberStart;
+    internal readonly uint DiskNumberStart;
     internal readonly long RelativeOffsetOfLocalHeader;
 
     internal readonly byte[] Filename = Array.Empty<byte>();
@@ -348,7 +347,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         uint lastModified,
         long compressedSize,
         long uncompressedSize,
-        int diskNumberStart,
+        uint diskNumberStart,
         long relativeOffsetOfLocalHeader,
         byte[] filename,
         ushort filenameLength)
@@ -421,7 +420,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;
         long relativeOffsetOfLocalHeader = zip64.LocalHeaderOffset ?? relativeOffsetOfLocalHeaderSmall;
-        int diskNumberStart = zip64.StartDiskNumber ?? diskNumberStartSmall;
+        uint diskNumberStart = zip64.StartDiskNumber ?? diskNumberStartSmall;
 
         header = new ZipCentralDirectoryFileHeader(
             compressionMethod: compressionMethod,

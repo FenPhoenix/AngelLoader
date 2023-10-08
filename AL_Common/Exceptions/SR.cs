@@ -32,7 +32,6 @@ public static class SR
     public static readonly string FieldTooBigNumEntries = "Number of Entries cannot be held in an Int64.";
     public static readonly string FieldTooBigOffsetToCD = "Offset to Central Directory cannot be held in an Int64.";
     public static readonly string FieldTooBigOffsetToZip64EOCD = "Offset to Zip64 End Of Central Directory record cannot be held in an Int64.";
-    public static readonly string FieldTooBigStartDiskNumber = "Start Disk Number cannot be held in an Int64.";
     public static readonly string FieldTooBigUncompressedSize = "Uncompressed Size cannot be held in an Int64.";
     public static readonly string LocalFileHeaderCorrupt = "A local file header is corrupt.";
     public static readonly string NumEntriesWrong = "Number of entries expected in End Of Central Directory does not correspond to number of entries in Central Directory.";

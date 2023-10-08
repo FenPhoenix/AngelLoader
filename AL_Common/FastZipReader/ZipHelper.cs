@@ -54,6 +54,8 @@ public static class ZipHelpers
 {
     private const int ValidZipDate_YearMin = 1980;
 
+    private static readonly DateTime _invalidDateIndicator = new(ValidZipDate_YearMin, 1, 1, 0, 0, 0);
+
     /// <summary>
     /// Converts a Zip timestamp to a DateTime object. If <paramref name="zipDateTime"/> is not a
     /// valid Zip timestamp, an indicator value of 1980 January 1 at midnight will be returned.
@@ -62,6 +64,11 @@ public static class ZipHelpers
     /// <returns></returns>
     public static DateTime ZipTimeToDateTime(uint zipDateTime)
     {
+        if (zipDateTime == 0)
+        {
+            return _invalidDateIndicator;
+        }
+
         // DosTime format 32 bits
         // Year: 7 bits, 0 is 1980
         // Month: 4 bits
@@ -89,7 +96,7 @@ public static class ZipHelpers
         // about at all.
         catch (ArgumentOutOfRangeException)
         {
-            return new DateTime(ValidZipDate_YearMin, 1, 1, 0, 0, 0);
+            return _invalidDateIndicator;
         }
     }
 
@@ -195,7 +202,7 @@ public static class ZipHelpers
     }
 
     // These come from BitConverter.ToInt32/64 methods
-    internal static unsafe int ReadInt32(byte[] value, int valueLength, int startIndex)
+    internal static unsafe uint ReadUInt32(byte[] value, int valueLength, int startIndex)
     {
         if (startIndex >= valueLength)
         {
@@ -208,11 +215,11 @@ public static class ZipHelpers
 
         fixed (byte* b = &value[startIndex])
         {
-            return startIndex % 4 == 0
+            return (uint)(startIndex % 4 == 0
                 ? *(int*)b
                 : BitConverter.IsLittleEndian
                     ? *b | (*(b + 1) << 8) | (*(b + 2) << 16) | (*(b + 3) << 24)
-                    : (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3);
+                    : (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3));
         }
     }
 
