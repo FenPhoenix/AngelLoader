@@ -51,11 +51,11 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
     }
 
     [DllImport("user32", CharSet = CharSet.Unicode)]
-    private static extern int RegisterWindowMessage(string message);
+    private static extern int RegisterWindowMessageW(string message);
 
     private const int HWND_BROADCAST = 0xffff;
-    private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessage(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
-    private static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessage(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + AppGuid);
+    private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessageW(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
+    private static readonly int WM_CHANGERICHTEXTBOXSCROLLINFO = RegisterWindowMessageW(nameof(WM_CHANGERICHTEXTBOXSCROLLINFO) + "|" + AppGuid);
 
     private bool _broadcastEnabled = true;
 

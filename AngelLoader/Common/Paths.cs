@@ -28,7 +28,7 @@ internal static class Paths
     // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern int GetModuleFileName(HandleRef hModule, StringBuilder buffer, int length);
+    private static extern int GetModuleFileNameW(HandleRef hModule, StringBuilder buffer, int length);
     private static string GetStartupPath()
     {
         var nullHandleRef = new HandleRef(null, IntPtr.Zero);
@@ -39,7 +39,7 @@ internal static class Paths
         var buffer = new StringBuilder(MAX_PATH);
         int noOfTimes = 1;
         int length;
-        while (((length = GetModuleFileName(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&
+        while (((length = GetModuleFileNameW(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&
                Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER &&
                buffer.Capacity < MAX_UNICODESTRING_LEN)
         {

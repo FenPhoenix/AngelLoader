@@ -808,13 +808,13 @@ internal static class Native
         internal int iPaddedBorderWidth;
     }
 
-    [DllImport("user32", CharSet = CharSet.Unicode)]
-    private static extern int SystemParametersInfo(int uAction, int uParam, ref NONCLIENTMETRICSW lpvParam, int fuWinIni);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
         var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
-        SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
+        SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
     }
 

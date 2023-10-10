@@ -116,7 +116,7 @@ public static partial class Utils
             if (!hProc.IsInvalid)
             {
                 int size = buffer.Capacity;
-                if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
+                if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
             }
             return "";
         }
