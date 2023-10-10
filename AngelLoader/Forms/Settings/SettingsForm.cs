@@ -151,28 +151,32 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief1ExePathLabel,
             PathsPage.Thief2ExePathLabel,
             PathsPage.Thief3ExePathLabel,
-            PathsPage.SS2ExePathLabel
+            PathsPage.SS2ExePathLabel,
+            PathsPage.TDMExePathLabel
         };
         GameExeTextBoxes = new[]
         {
             PathsPage.Thief1ExePathTextBox,
             PathsPage.Thief2ExePathTextBox,
             PathsPage.Thief3ExePathTextBox,
-            PathsPage.SS2ExePathTextBox
+            PathsPage.SS2ExePathTextBox,
+            PathsPage.TDMExePathTextBox
         };
         GameExeBrowseButtons = new[]
         {
             PathsPage.Thief1ExePathBrowseButton,
             PathsPage.Thief2ExePathBrowseButton,
             PathsPage.Thief3ExePathBrowseButton,
-            PathsPage.SS2ExePathBrowseButton
+            PathsPage.SS2ExePathBrowseButton,
+            PathsPage.TDMExePathBrowseButton
         };
         GameUseSteamCheckBoxes = new[]
         {
             PathsPage.Thief1UseSteamCheckBox,
             PathsPage.Thief2UseSteamCheckBox,
             PathsPage.Thief3UseSteamCheckBox,
-            PathsPage.SS2UseSteamCheckBox
+            PathsPage.SS2UseSteamCheckBox,
+            new DarkCheckBox() // Dummy
         };
 
         // @GENGAMES (Settings): We've traded one form of jank for another

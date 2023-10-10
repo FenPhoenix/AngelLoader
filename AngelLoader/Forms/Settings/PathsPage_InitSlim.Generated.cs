@@ -48,6 +48,9 @@ sealed partial class PathsPage
         this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Thief1ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+        this.TDMExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.TDMExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
+        this.TDMExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.PagePanel.SuspendLayout();
         this.ActualPathsPanel.SuspendLayout();
         this.LayoutFLP.SuspendLayout();
@@ -67,7 +70,7 @@ sealed partial class PathsPage
         this.PagePanel.Controls.Add(this.ActualPathsPanel);
         this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 847);
+        this.PagePanel.Size = new System.Drawing.Size(440, 898);
         this.PagePanel.TabIndex = 3;
         // 
         // ActualPathsPanel
@@ -78,7 +81,7 @@ sealed partial class PathsPage
         this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
         this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
         this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
-        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 824);
+        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 864);
         this.ActualPathsPanel.TabIndex = 4;
         // 
         // LayoutFLP
@@ -88,7 +91,7 @@ sealed partial class PathsPage
         this.LayoutFLP.Controls.Add(this.OtherGroupBox);
         this.LayoutFLP.Controls.Add(this.FMArchivePathsGroupBox);
         this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-        this.LayoutFLP.Location = new System.Drawing.Point(0, 437);
+        this.LayoutFLP.Location = new System.Drawing.Point(0, 472);
         this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
         this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
         this.LayoutFLP.Size = new System.Drawing.Size(440, 392);
@@ -147,6 +150,7 @@ sealed partial class PathsPage
         // 
         this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
         this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
+        this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.TabIndex = 2;
         // 
         // FMArchivePathsGroupBox
@@ -202,7 +206,7 @@ sealed partial class PathsPage
         this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
         this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
         this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
-        this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 252);
+        this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 288);
         this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
         this.SteamOptionsGroupBox.TabIndex = 1;
         this.SteamOptionsGroupBox.TabStop = false;
@@ -276,6 +280,9 @@ sealed partial class PathsPage
         // 
         this.PathsToGameExesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
+        this.PathsToGameExesGroupBox.Controls.Add(this.TDMExePathLabel);
+        this.PathsToGameExesGroupBox.Controls.Add(this.TDMExePathBrowseButton);
+        this.PathsToGameExesGroupBox.Controls.Add(this.TDMExePathTextBox);
         this.PathsToGameExesGroupBox.Controls.Add(this.GameRequirementsPanel);
         this.PathsToGameExesGroupBox.Controls.Add(this.SS2ExePathLabel);
         this.PathsToGameExesGroupBox.Controls.Add(this.Thief3ExePathLabel);
@@ -291,7 +298,7 @@ sealed partial class PathsPage
         this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathTextBox);
         this.PathsToGameExesGroupBox.Location = new System.Drawing.Point(8, 8);
         this.PathsToGameExesGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(424, 232);
+        this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(424, 280);
         this.PathsToGameExesGroupBox.TabIndex = 0;
         this.PathsToGameExesGroupBox.TabStop = false;
         // 
@@ -301,7 +308,7 @@ sealed partial class PathsPage
         | System.Windows.Forms.AnchorStyles.Right)));
         this.GameRequirementsPanel.AutoScroll = true;
         this.GameRequirementsPanel.Controls.Add(this.GameRequirementsLabel);
-        this.GameRequirementsPanel.Location = new System.Drawing.Point(16, 192);
+        this.GameRequirementsPanel.Location = new System.Drawing.Point(16, 232);
         this.GameRequirementsPanel.Size = new System.Drawing.Size(392, 32);
         this.GameRequirementsPanel.TabIndex = 12;
         // 
@@ -391,12 +398,31 @@ sealed partial class PathsPage
         this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 200);
         this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
         // 
+        // TDMExePathLabel
+        // 
+        this.TDMExePathLabel.AutoSize = true;
+        this.TDMExePathLabel.Location = new System.Drawing.Point(16, 184);
+        // 
+        // TDMExePathBrowseButton
+        // 
+        this.TDMExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.TDMExePathBrowseButton.Location = new System.Drawing.Point(336, 199);
+        this.TDMExePathBrowseButton.TabIndex = 15;
+        // 
+        // TDMExePathTextBox
+        // 
+        this.TDMExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.TDMExePathTextBox.Location = new System.Drawing.Point(16, 200);
+        this.TDMExePathTextBox.Size = new System.Drawing.Size(320, 20);
+        this.TDMExePathTextBox.TabIndex = 14;
+        // 
         // PathsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 847);
+        this.Size = new System.Drawing.Size(440, 898);
         this.PagePanel.ResumeLayout(false);
         this.ActualPathsPanel.ResumeLayout(false);
         this.LayoutFLP.ResumeLayout(false);
