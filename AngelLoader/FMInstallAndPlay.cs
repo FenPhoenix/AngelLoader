@@ -388,6 +388,8 @@ internal static class FMInstallAndPlay
     [MustUseReturnValue]
     private static bool SetUsAsSelector(GameIndex gameIndex, string gamePath, PlaySource playSource)
     {
+        if (gameIndex == GameIndex.TDM) return true;
+
         bool success = GameIsDark(gameIndex)
             ? GameConfigFiles.SetDarkFMSelector(gameIndex, gamePath)
             : GameConfigFiles.SetT3FMSelector();

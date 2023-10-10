@@ -1058,6 +1058,14 @@ internal static partial class Ini
                                 ignoreGameIndex = false;
                                 lineTS = lineTS.Substring(2);
                                 break;
+                            case 'D':
+                                if (eqIndex >= 3 && lineTS[2] == 'M')
+                                {
+                                    gameIndex = GameIndex.TDM;
+                                    ignoreGameIndex = false;
+                                    lineTS = lineTS.Substring(3);
+                                }
+                                break;
                         }
                     }
                     else if (eqIndex >= 3 && lineTS[0] == 'S' && lineTS[1] == 'S' && lineTS[2] == '2')
@@ -1151,11 +1159,10 @@ internal static partial class Ini
 
         sb.Append("LaunchGamesWithSteam").Append('=').Append(config.LaunchGamesWithSteam).AppendLine();
 
-        // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
-        // read-only "IsOnSteam" bool and check it before writing/reading this
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
+            if (GetGameSteamId(gameIndex).IsEmpty()) continue;
             sb.Append(GetGamePrefix(gameIndex)).Append("UseSteam").Append('=').Append(config.GetUseSteamSwitch(gameIndex)).AppendLine();
         }
 

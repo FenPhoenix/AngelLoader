@@ -318,9 +318,11 @@ internal static class FindFMs
 
         for (int gi = 0; gi < SupportedGameCount; gi++)
         {
+            GameIndex gameIndex = (GameIndex)gi;
+
             perGameInstFMDirsItems[gi] = new DictionaryI<InstDirValueData>();
 
-            string instPath = Config.GetFMInstallPath((GameIndex)gi);
+            string instPath = Config.GetFMInstallPath(gameIndex);
             if (Directory.Exists(instPath))
             {
                 try
@@ -329,15 +331,31 @@ internal static class FindFMs
                     for (int di = 0; di < files.Count; di++)
                     {
                         string d = files[di];
-                        if (!d.EqualsI(Paths.FMSelCache))
+                        if (gameIndex == GameIndex.TDM)
                         {
-                            var fm = new FanMission
+                            if (!d.EqualsI("_missionshots"))
                             {
-                                InstalledDir = d,
-                                Game = GameIndexToGame((GameIndex)gi),
-                                Installed = true
-                            };
-                            perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
+                                var fm = new FanMission
+                                {
+                                    InstalledDir = d,
+                                    Game = Game.TDM,
+                                    Installed = false
+                                };
+                                perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
+                            }
+                        }
+                        else
+                        {
+                            if (!d.EqualsI(Paths.FMSelCache))
+                            {
+                                var fm = new FanMission
+                                {
+                                    InstalledDir = d,
+                                    Game = GameIndexToGame(gameIndex),
+                                    Installed = true
+                                };
+                                perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
+                            }
                         }
                     }
                 }
@@ -470,6 +488,8 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniList[i];
 
+            if (fm.Game == Game.TDM) continue;
+
             if (fm.Archive.IsEmpty())
             {
                 if (fm.InstalledDir.IsEmpty())
@@ -520,6 +540,8 @@ internal static class FindFMs
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
+            if (fm.Game == Game.TDM) continue;
+
             if (!hash.Contains(fm.InstalledDir))
             {
                 hash.Add(fm.InstalledDir);
@@ -562,6 +584,8 @@ internal static class FindFMs
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
+            if (fm.Game == Game.TDM) continue;
+
             if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
             {
                 fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
@@ -632,7 +656,7 @@ internal static class FindFMs
             if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
             {
                 fm.Game = gFM.Game;
-                fm.Installed = true;
+                fm.Installed = gFM.Game != Game.TDM;
                 fm.DateAdded ??= item.Value.DateTime.DateTime;
             }
             else
@@ -641,7 +665,7 @@ internal static class FindFMs
                 {
                     InstalledDir = gFM.InstalledDir,
                     Game = gFM.Game,
-                    Installed = true,
+                    Installed = gFM.Game != Game.TDM,
                     DateAdded = item.Value.DateTime.DateTime
                 });
             }

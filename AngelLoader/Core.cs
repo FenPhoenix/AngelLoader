@@ -832,6 +832,11 @@ internal static class Core
                 }
             }
         }
+        else if (gameIndex == GameIndex.TDM)
+        {
+            Config.SetFMInstallPath(GameIndex.TDM,
+                gameExeSpecified && !gamePath.IsEmpty() ? Path.Combine(gamePath, "fms") : "");
+        }
         else
         {
             if (gameExeSpecified)

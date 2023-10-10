@@ -173,6 +173,7 @@ public static partial class GameSupport
     internal static string GetLocalizedNoModSupportText(GameIndex gameIndex) => gameIndex switch
     {
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+        GameIndex.TDM => LText.PlayOriginalGameMenu.Mods_TDMNotSupported,
         _ => ""
     };
 

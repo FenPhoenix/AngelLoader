@@ -627,6 +627,7 @@ internal sealed class LText_Class
         internal readonly string TheDarkMod_PlayOriginal = "";
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
+        internal readonly string Mods_TDMNotSupported = "AngelLoader does not support managing settings for The Dark Mod.";
         [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
         internal readonly string Mods_EnableOrDisableModsForThief1 = "Enable or disable mods for Thief 1:";
         internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
