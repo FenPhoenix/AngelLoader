@@ -655,9 +655,23 @@ internal static class FindFMs
 
             if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
             {
-                fm.Game = gFM.Game;
-                fm.Installed = gFM.Game != Game.TDM;
-                fm.DateAdded ??= item.Value.DateTime.DateTime;
+                if ((gFM.Game != Game.TDM && fm.Game != Game.TDM) ||
+                    (gFM.Game == Game.TDM && fm.Game == Game.TDM))
+                {
+                    fm.Game = gFM.Game;
+                    fm.Installed = gFM.Game != Game.TDM;
+                    fm.DateAdded ??= item.Value.DateTime.DateTime;
+                }
+                else if (gFM.Game != Game.TDM && fm.Game == Game.TDM)
+                {
+                    FMDataIniList.Add(new FanMission
+                    {
+                        InstalledDir = gFM.InstalledDir,
+                        Game = Game.TDM,
+                        Installed = false,
+                        DateAdded = item.Value.DateTime.DateTime
+                    });
+                }
             }
             else
             {
