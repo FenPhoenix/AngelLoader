@@ -824,11 +824,13 @@ public static class Images
         var t2 = new PerGameSizedImage(large: Thief2_21, small: Thief2_16);
         var t3 = new PerGameSizedImage(large: Thief3_21, small: Thief3_16);
         var ss2 = new PerGameSizedImage(large: Shock2_21, small: Shock2_16);
+        var tdm = new PerGameSizedImage(large: TDM_21, small: TDM_16);
 
         ret[(int)GameIndex.Thief1] = new PerGameImage(t1Primary, t1Secondary);
         ret[(int)GameIndex.Thief2] = new PerGameImage(t2, t2);
         ret[(int)GameIndex.Thief3] = new PerGameImage(t3, t3);
         ret[(int)GameIndex.SS2] = new PerGameImage(ss2, ss2);
+        ret[(int)GameIndex.TDM] = new PerGameImage(tdm, tdm);
         // @GENGAMES (Images.InitPerGameImageGetters()) - End
 
         return ret;
@@ -862,6 +864,9 @@ public static class Images
             ? _ss2_16_Dark ??= Resources.SS2_16_Dark
             : _ss2_16 ??= Resources.SS2_16;
 
+    private static Bitmap? _tdm_16;
+    private static Bitmap TDM_16() => _tdm_16 ??= Resources.TDM_16;
+
     private static Bitmap? _t1_21;
     private static Bitmap? _t1_21_Dark;
     private static Bitmap Thief1_21() =>
@@ -887,6 +892,9 @@ public static class Images
         Config.DarkMode
             ? _ss2_21_Dark ??= Resources.SS2_21_Dark
             : _ss2_21 ??= Resources.SS2_21;
+
+    private static Bitmap? _tdm_21;
+    private static Bitmap TDM_21() => _tdm_21 ??= Resources.TDM_21;
 
     // @GENGAMES (Images/game image properties): End
 

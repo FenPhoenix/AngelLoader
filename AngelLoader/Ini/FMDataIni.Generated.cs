@@ -98,6 +98,10 @@ internal static partial class Ini
         {
             fm.Game = Game.SS2;
         }
+        else if (val.ValueEqualsIAscii("TDM", eqIndex + 1))
+        {
+            fm.Game = Game.TDM;
+        }
         else if (val.ValueEqualsIAscii("Unsupported", eqIndex + 1))
         {
             fm.Game = Game.Unsupported;
@@ -456,6 +460,9 @@ internal static partial class Ini
                     break;
                 case Game.SS2:
                     sb.Append("Game").Append('=').AppendLine("SS2");
+                    break;
+                case Game.TDM:
+                    sb.Append("Game").Append('=').AppendLine("TDM");
                     break;
                 case Game.Unsupported:
                     sb.Append("Game").Append('=').AppendLine("Unsupported");

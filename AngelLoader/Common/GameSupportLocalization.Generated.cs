@@ -15,7 +15,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.Global.Thief1,
         GameIndex.Thief2 => LText.Global.Thief2,
         GameIndex.Thief3 => LText.Global.Thief3,
-        _ => LText.Global.SystemShock2
+        GameIndex.SS2 => LText.Global.SystemShock2,
+        _ => LText.Global.TheDarkMod
     };
 
     internal static string GetShortLocalizedGameName(GameIndex gameIndex) => gameIndex switch
@@ -23,7 +24,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.Global.Thief1_Short,
         GameIndex.Thief2 => LText.Global.Thief2_Short,
         GameIndex.Thief3 => LText.Global.Thief3_Short,
-        _ => LText.Global.SystemShock2_Short
+        GameIndex.SS2 => LText.Global.SystemShock2_Short,
+        _ => LText.Global.TheDarkMod_Short
     };
 
     internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => gameIndex switch
@@ -31,7 +33,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.Global.Thief1_Colon,
         GameIndex.Thief2 => LText.Global.Thief2_Colon,
         GameIndex.Thief3 => LText.Global.Thief3_Colon,
-        _ => LText.Global.SystemShock2_Colon
+        GameIndex.SS2 => LText.Global.SystemShock2_Colon,
+        _ => LText.Global.TheDarkMod_Colon
     };
 
     internal static string GetLocalizedGamePlayOriginalText(GameIndex gameIndex) => gameIndex switch
@@ -39,7 +42,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.PlayOriginalGameMenu.Thief1_PlayOriginal,
         GameIndex.Thief2 => LText.PlayOriginalGameMenu.Thief2_PlayOriginal,
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Thief3_PlayOriginal,
-        _ => LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal
+        GameIndex.SS2 => LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal,
+        _ => LText.PlayOriginalGameMenu.TheDarkMod_PlayOriginal
     };
 
     internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex) => gameIndex switch
@@ -47,7 +51,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief1,
         GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief2,
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief3,
-        _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2
+        GameIndex.SS2 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2,
+        _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForTDM
     };
 
     #endregion

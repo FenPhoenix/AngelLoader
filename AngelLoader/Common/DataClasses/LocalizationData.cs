@@ -96,18 +96,21 @@ internal sealed class LText_Class
         internal readonly string Thief2 = "Thief 2";
         internal readonly string Thief3 = "Thief 3";
         internal readonly string SystemShock2 = "System Shock 2";
+        internal readonly string TheDarkMod = "The Dark Mod";
         [FenGenBlankLine]
         [FenGenGameSet("GetShortLocalizedGameName")]
         internal readonly string Thief1_Short = "T1";
         internal readonly string Thief2_Short = "T2";
         internal readonly string Thief3_Short = "T3";
         internal readonly string SystemShock2_Short = "SS2";
+        internal readonly string TheDarkMod_Short = "TDM";
         [FenGenBlankLine]
         [FenGenGameSet("GetLocalizedGameNameColon")]
         internal readonly string Thief1_Colon = "Thief 1:";
         internal readonly string Thief2_Colon = "Thief 2:";
         internal readonly string Thief3_Colon = "Thief 3:";
         internal readonly string SystemShock2_Colon = "System Shock 2:";
+        internal readonly string TheDarkMod_Colon = "The Dark Mod:";
         // @GENGAMES (Localization - Global): End
         [FenGenBlankLine]
         internal readonly string ZoomIn = "Zoom in (Ctrl++)";
@@ -620,14 +623,18 @@ internal sealed class LText_Class
         internal readonly string Thief2_PlayOriginal = "Play Thief 2 without FM";
         internal readonly string Thief3_PlayOriginal = "Play Thief 3 without FM";
         internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 without FM";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string TheDarkMod_PlayOriginal = "";
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
         [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
         internal readonly string Mods_EnableOrDisableModsForThief1 = "Enable or disable mods for Thief 1:";
         internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
-        [FenGenDoNotWrite] // T3 is a dummy just to keep the game count the same
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
         internal readonly string Mods_EnableOrDisableModsForThief3 = "";
         internal readonly string Mods_EnableOrDisableModsForSS2 = "Enable or disable mods for System Shock 2:";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_EnableOrDisableModsForTDM = "";
         internal readonly string Mods_SubMenu = "Settings";
     }
     // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End

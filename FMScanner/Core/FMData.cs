@@ -215,6 +215,8 @@ public enum Game
     Thief3,
     /// <summary>System Shock 2.</summary>
     SS2,
+    /// <summary>The Dark Mod.</summary>
+    TDM,
     /// <summary>Invalid or corrupt mission, not a mission, or mission for an unsupported game.</summary>
     Unsupported
 }

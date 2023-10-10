@@ -15,7 +15,8 @@ public static partial class GameSupport
         Thief1,
         Thief2,
         Thief3,
-        SS2
+        SS2,
+        TDM
     }
 
     #region Per-game constants
@@ -25,7 +26,8 @@ public static partial class GameSupport
         "T1",
         "T2",
         "T3",
-        "SS2"
+        "SS2",
+        "TDM"
     };
 
     public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
@@ -35,7 +37,8 @@ public static partial class GameSupport
         "211600",
         "211740",
         "6980",
-        "238210"
+        "238210",
+        ""
     };
 
     public static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
@@ -45,7 +48,8 @@ public static partial class GameSupport
         "DromEd",
         "DromEd",
         "",
-        "ShockEd"
+        "ShockEd",
+        ""
     };
 
     public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(int)index];
@@ -65,7 +69,8 @@ public static partial class GameSupport
             Game.Thief1 => GameIndex.Thief1,
             Game.Thief2 => GameIndex.Thief2,
             Game.Thief3 => GameIndex.Thief3,
-            _ => GameIndex.SS2
+            Game.SS2 => GameIndex.SS2,
+            _ => GameIndex.TDM
         };
     }
 
@@ -78,7 +83,8 @@ public static partial class GameSupport
         GameIndex.Thief1 => Game.Thief1,
         GameIndex.Thief2 => Game.Thief2,
         GameIndex.Thief3 => Game.Thief3,
-        _ => Game.SS2
+        GameIndex.SS2 => Game.SS2,
+        _ => Game.TDM
     };
 
     #endregion

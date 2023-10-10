@@ -38,9 +38,11 @@ public static partial class GameSupport
         Thief3 = 4,
         [FenGenGame(prefix: "SS2", steamId: "238210", editorName: "ShockEd")]
         SS2 = 8,
+        [FenGenGame(prefix: "TDM", steamId: "", editorName: "")]
+        TDM = 16,
 
         [FenGenIgnore]
-        Unsupported = 16
+        Unsupported = 32
     }
 
     #endregion
@@ -56,6 +58,7 @@ public static partial class GameSupport
         FMScanner.Game.Thief2 => Game.Thief2,
         FMScanner.Game.Thief3 => Game.Thief3,
         FMScanner.Game.SS2 => Game.SS2,
+        FMScanner.Game.TDM => Game.TDM,
         _ => Game.Null
     };
 
