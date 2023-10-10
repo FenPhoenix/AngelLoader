@@ -161,7 +161,8 @@ internal static class FMScan
                             cachePath: fm.Archive.ExtIs7z()
                                 ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
                                 : "",
-                            fm.Archive
+                            isTDM: fm.Game == Game.TDM,
+                            displayName: fm.Archive
                         ));
                     }
                     else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
@@ -174,7 +175,8 @@ internal static class FMScan
                             (
                                 path: Path.Combine(fmInstalledPath, fm.InstalledDir),
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
-                                fm.InstalledDir
+                                isTDM: fm.Game == Game.TDM,
+                                displayName: fm.InstalledDir
                             ));
                         }
                     }

@@ -246,20 +246,24 @@ public sealed class FMToScan
 
     public readonly string DisplayName;
 
-    public FMToScan(string path, bool forceFullScan, string cachePath, string displayName)
+    public readonly bool IsTDM;
+
+    public FMToScan(string path, bool forceFullScan, string cachePath, bool isTDM, string displayName)
     {
         Path = path;
         ForceFullScan = forceFullScan;
         CachePath = cachePath;
         DisplayName = displayName;
+        IsTDM = isTDM;
     }
 
-    public FMToScan(string path, bool forceFullScan, string displayName)
+    public FMToScan(string path, bool forceFullScan, bool isTDM, string displayName)
     {
         Path = path;
         ForceFullScan = forceFullScan;
         CachePath = "";
         DisplayName = displayName;
+        IsTDM = isTDM;
     }
 }
 

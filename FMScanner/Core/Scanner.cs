@@ -516,7 +516,11 @@ public sealed partial class Scanner : IDisposable
 
                     try
                     {
-                        scannedFMAndError = ScanCurrentFM(missions[i], tempPath, cancellationToken);
+                        FMToScan? fm = missions[i];
+                        scannedFMAndError =
+                            fm.IsTDM
+                                ? ScanCurrentDarkModFM(fm, cancellationToken)
+                                : ScanCurrentFM(fm, tempPath, cancellationToken);
                     }
                     catch (OperationCanceledException)
                     {
@@ -553,6 +557,15 @@ public sealed partial class Scanner : IDisposable
         }
 
         return scannedFMDataList;
+    }
+
+    private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm, CancellationToken cancellationToken)
+    {
+        /*
+        -Detect/read darkmod.txt for title and author
+        -Detect/read readme.txt for parseable release date (that's the only thing we need from there)
+        -Detect/read fms\missions.tdminfo for last played/finished-on
+        */
     }
 
     private ScannedFMDataAndError
