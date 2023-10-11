@@ -340,6 +340,8 @@ internal static class Paths
     internal const string UserBnd = "user.bnd";
 #endif
 
+    internal const string TDMCurrentFMFile = "currentfm.txt";
+
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
     // First release version to support portable is 1.1.11, but there was a 1.1.10.519 beta that supported it too
     private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);

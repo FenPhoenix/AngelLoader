@@ -54,6 +54,8 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
+    private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
+
     /*
     We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
     so just put it here and never dispose... meh.
@@ -74,6 +76,10 @@ internal static class Core
 
         ViewEnv = viewEnv;
         Dialogs = ViewEnv.GetDialogs();
+
+        TDMSelectedFMWatcher.Changed += TDMSelectedFMWatcher_Changed;
+        TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
+        TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
 
         bool openSettings = false;
         bool cleanStart = false;
@@ -309,6 +315,27 @@ internal static class Core
 #pragma warning restore IDE0002
 #endif
 
+                bool watcherWasEnabled;
+                try
+                {
+                    watcherWasEnabled = TDMSelectedFMWatcher.EnableRaisingEvents;
+                }
+                catch
+                {
+                    watcherWasEnabled = false;
+                }
+                if (watcherWasEnabled)
+                {
+                    try
+                    {
+                        TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
                 Exception? ex = null;
                 // IMPORTANT: Begin no-splash-screen-call zone
                 // The FM finder will update the splash screen from another thread (accessing only the graphics
@@ -316,18 +343,21 @@ internal static class Core
                 // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
-                    for (int i = 0; i < SupportedGameCount; i++)
+                    lock (_tdmFMChangeLock)
                     {
-                        List<string>? camModIniLines = perGameCamModIniLines[i];
-                        if (camModIniLines != null)
+                        for (int i = 0; i < SupportedGameCount; i++)
                         {
-                            GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
+                            List<string>? camModIniLines = perGameCamModIniLines[i];
+                            if (camModIniLines != null)
+                            {
+                                GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
+                            }
                         }
-                    }
-                    (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
-                    if (ex == null)
-                    {
-                        ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                        (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                        if (ex == null)
+                        {
+                            ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                        }
                     }
                 });
 
@@ -345,6 +375,20 @@ internal static class Core
 #endif
 
                 // IMPORTANT: End no-splash-screen-call zone
+
+                UpdateTDMInstalledFMStatus();
+
+                if (watcherWasEnabled)
+                {
+                    try
+                    {
+                        TDMSelectedFMWatcher.EnableRaisingEvents = true;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
 
                 if (ex != null)
                 {
@@ -375,6 +419,95 @@ internal static class Core
             {
                 splashScreen.Show(Config.VisualTheme);
                 await DoParallelLoad();
+            }
+        }
+    }
+
+    private static readonly object _tdmFMChangeLock = new();
+
+    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
+    {
+        UpdateTDMInstalledFMStatus(e.FullPath);
+    }
+
+    private static void UpdateTDMInstalledFMStatus(string? file = null)
+    {
+        lock (_tdmFMChangeLock)
+        {
+            if (file == null)
+            {
+                string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
+                if (fmInstallPath.IsEmpty()) return;
+                try
+                {
+                    file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+
+            if (!File.Exists(file)) return;
+
+            List<string>? lines = null;
+            for (int tryIndex = 0; tryIndex < 3; tryIndex++)
+            {
+                if (TryGetLines(file, out lines))
+                {
+                    break;
+                }
+            }
+
+            if (lines == null)
+            {
+                return;
+            }
+
+            if (lines.Count > 0)
+            {
+                string fmName = lines[0];
+                for (int i = 0; i < FMsViewList.Count; i++)
+                {
+                    FanMission fm = FMsViewList[i];
+                    if (fm.Game == Game.TDM)
+                    {
+                        fm.Installed = fm.InstalledDir == fmName;
+                        if (fm.Installed)
+                        {
+                            Trace.WriteLine("Updated TDM installed FM. FM is now: " + fm.GetId());
+                        }
+                    }
+                }
+            }
+
+            static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
+            {
+                try
+                {
+                    lines = File_ReadAllLines_List(file);
+                    return true;
+                }
+                catch
+                {
+                    lines = null;
+                    return false;
+                }
+            }
+        }
+    }
+
+    private static void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
+    {
+        lock (_tdmFMChangeLock)
+        {
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                if (fm.Game == Game.TDM)
+                {
+                    fm.Installed = false;
+                }
             }
         }
     }
@@ -717,6 +850,8 @@ internal static class Core
             View.RefreshMods();
         }
 
+        UpdateTDMInstalledFMStatus();
+
         Ini.WriteConfigIni();
 
         return true;
@@ -836,6 +971,44 @@ internal static class Core
         {
             Config.SetFMInstallPath(GameIndex.TDM,
                 gameExeSpecified && !gamePath.IsEmpty() ? Path.Combine(gamePath, "fms") : "");
+
+            if (gameExeSpecified)
+            {
+                try
+                {
+                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                    TDMSelectedFMWatcher.Path = gamePath;
+                    TDMSelectedFMWatcher.Filter = Paths.TDMCurrentFMFile;
+                    TDMSelectedFMWatcher.NotifyFilter =
+                        NotifyFilters.LastWrite |
+                        NotifyFilters.CreationTime;
+                    TDMSelectedFMWatcher.EnableRaisingEvents = true;
+                }
+                catch (ArgumentException)
+                {
+                    try
+                    {
+                        TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                        TDMSelectedFMWatcher.Path = "";
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                    TDMSelectedFMWatcher.Path = "";
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
         }
         else
         {
