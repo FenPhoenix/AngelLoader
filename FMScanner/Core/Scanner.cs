@@ -656,7 +656,7 @@ public sealed partial class Scanner : IDisposable
         (done) Detect/read readme.txt for parseable release date
          (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
         -Detect/read fms\missions.tdminfo for last played/finished-on
-        -Scan size! Do we just ignore the savegames folder, or do we ignore everything but the pk4?
+        (done) Scan size! Do we just ignore the savegames folder, or do we ignore everything but the pk4?
         (done) Detect mission count - find out how
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
 
@@ -679,13 +679,28 @@ public sealed partial class Scanner : IDisposable
 
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
+        string? zipPath = null;
+        if (_scanOptions.ScanSize)
+        {
+            try
+            {
+                zipPath ??= Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+                FileInfo fi = new(zipPath);
+                fmData.Size = (ulong)fi.Length;
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
         if (_scanOptions.ScanMissionCount)
         {
             int misCount = 0;
 
             try
             {
-                string zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+                zipPath ??= Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
                 var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
                 if (zipResult.Success)
                 {
