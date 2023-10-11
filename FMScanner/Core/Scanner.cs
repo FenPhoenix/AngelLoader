@@ -599,6 +599,44 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
+    private bool SetupAuthorRequiredTitleScan()
+    {
+        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
+        // titles in that case, but we shouldn't actually set the title in the return object because the
+        // caller didn't request it.
+        bool scanTitleForAuthorPurposesOnly = false;
+        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
+        {
+            _scanOptions.ScanTitle = true;
+            scanTitleForAuthorPurposesOnly = true;
+        }
+
+        return scanTitleForAuthorPurposesOnly;
+    }
+
+    private void EndTitleScan(
+        bool scanTitleForAuthorPurposesOnly,
+        ScannedFMData fmData, List<string> titles)
+    {
+        List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
+        if (topOfReadmeTitles?.Count > 0)
+        {
+            for (int i = 0; i < topOfReadmeTitles.Count; i++)
+            {
+                SetOrAddTitle(titles, topOfReadmeTitles[i]);
+            }
+        }
+
+        if (!scanTitleForAuthorPurposesOnly)
+        {
+            SetFMTitles(fmData, titles);
+        }
+        else
+        {
+            _scanOptions.ScanTitle = false;
+        }
+    }
+
     private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
         /*
@@ -625,6 +663,8 @@ public sealed partial class Scanner : IDisposable
             ArchiveName = FMWorkingPathDirName,
             Game = Game.TDM
         };
+
+        bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
         if (_scanOptions.ScanMissionCount)
         {
@@ -711,68 +751,72 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        string darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
-        string readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
-
-        int darkModTxtIndex = AddReadme(darkModTxt);
-        int readmeTxtIndex = AddReadme(readmeTxt);
-
-        List<string> titles = new();
-
-        /*
-        The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
-        That's _TERRIBLE_ but we want to match behavior.
-        */
-        if (darkModTxtIndex > -1)
+        if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
-            ReadmeInternal readme = _readmeFiles[darkModTxtIndex];
+            string darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
+            string readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
 
-            MatchCollection matches = Regex.Matches(readme.Text, "(Title:|Author:|Description:|Version:|Required TDM Version:)");
-            int plus = 0;
-            foreach (Match match in matches)
+            int darkModTxtIndex = AddReadme(darkModTxt);
+            int readmeTxtIndex = AddReadme(readmeTxt);
+
+            List<string> titles = new();
+
+            /*
+            The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
+            That's _TERRIBLE_ but we want to match behavior.
+            */
+            if (darkModTxtIndex > -1)
             {
-                if (match.Index > 0)
+                ReadmeInternal readme = _readmeFiles[darkModTxtIndex];
+
+                MatchCollection matches = Regex.Matches(readme.Text, "(Title:|Author:|Description:|Version:|Required TDM Version:)");
+                int plus = 0;
+                foreach (Match match in matches)
                 {
-                    char c = readme.Text[match.Index - 1];
-                    if (c == '\r' ||
-                        c == '\n' ||
-                        !char.IsWhiteSpace(c))
+                    if (match.Index > 0)
                     {
-                        readme.Text = readme.Text.Insert(match.Index + plus, "\r\n");
-                        plus += 2;
+                        char c = readme.Text[match.Index - 1];
+                        if (c == '\r' ||
+                            c == '\n' ||
+                            !char.IsWhiteSpace(c))
+                        {
+                            readme.Text = readme.Text.Insert(match.Index + plus, "\r\n");
+                            plus += 2;
+                        }
                     }
+                }
+
+                if (plus > 0)
+                {
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
 
-            if (plus > 0)
+            if (_scanOptions.ScanTitle)
             {
-                readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                if (darkModTxtIndex > -1 && readmeTxtIndex > -1)
+                {
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: darkModTxtIndex));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: readmeTxtIndex));
+                }
+                else
+                {
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
+                }
+
+                EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
+            }
+
+            if (_scanOptions.ScanAuthor)
+            {
+                GetAuthor(fmData, titles);
+            }
+
+            if (_scanOptions.ScanReleaseDate)
+            {
+                fmData.LastUpdateDate = GetReleaseDate();
             }
         }
-
-        if (darkModTxtIndex > -1 && readmeTxtIndex > -1)
-        {
-            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: darkModTxtIndex));
-            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: readmeTxtIndex));
-        }
-        else
-        {
-            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
-        }
-        List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
-        if (topOfReadmeTitles?.Count > 0)
-        {
-            for (int i = 0; i < topOfReadmeTitles.Count; i++)
-            {
-                SetOrAddTitle(titles, topOfReadmeTitles[i]);
-            }
-        }
-
-        SetFMTitles(fmData, titles);
-
-        GetAuthor(fmData, titles);
-
-        fmData.LastUpdateDate = GetReleaseDate();
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
 
@@ -1232,15 +1276,7 @@ public sealed partial class Scanner : IDisposable
                 : FMWorkingPathDirName
         };
 
-        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
-        // titles in that case, but we shouldn't actually set the title in the return object because the
-        // caller didn't request it.
-        bool scanTitleForAuthorPurposesOnly = false;
-        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
-        {
-            _scanOptions.ScanTitle = true;
-            scanTitleForAuthorPurposesOnly = true;
-        }
+        bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
         #region Size
 
@@ -1517,20 +1553,7 @@ public sealed partial class Scanner : IDisposable
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
 
-            List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
-            if (topOfReadmeTitles?.Count > 0)
-            {
-                for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(titles, topOfReadmeTitles[i]);
-            }
-
-            if (!scanTitleForAuthorPurposesOnly)
-            {
-                SetFMTitles(fmData, titles);
-            }
-            else
-            {
-                _scanOptions.ScanTitle = false;
-            }
+            EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
         }
 
         #endregion
