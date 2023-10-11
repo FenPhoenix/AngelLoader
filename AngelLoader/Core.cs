@@ -279,7 +279,7 @@ internal static class Core
         {
             splashScreen.SetMessage(LText.SplashScreen.CheckingRequiredSettingsFields);
 
-            bool backupPathExists = Directory.Exists(Config.FMsBackupPath);
+            bool backupPathInvalid = BackupPathInvalid(Config.FMsBackupPath);
             bool allArchivePathsExist = true;
             for (int i = 0; i < Config.FMArchivePaths.Count; i++)
             {
@@ -289,7 +289,7 @@ internal static class Core
                     break;
                 }
             }
-            openSettings = !backupPathExists || !allArchivePathsExist;
+            openSettings = backupPathInvalid || !allArchivePathsExist;
         }
 
         splashScreen.SetMessage(LText.SplashScreen.ReadingGameConfigFiles);

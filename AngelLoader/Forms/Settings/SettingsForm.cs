@@ -776,7 +776,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
             PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
 
-            PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
+            PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info + "\r\n\r\n" +
+                                                 LText.SettingsWindow.Paths_BackupPath_Required;
             // Required for the startup version where the lang box is on the same page as paths!
             PathsPage.LayoutFLP.PerformLayout();
 
@@ -1282,8 +1283,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void ExePathTextBoxes_Leave(object sender, EventArgs e)
     {
-        var s = (DarkTextBox)sender;
-        ShowPathError(s, !s.Text.IsEmpty() && !File.Exists(s.Text));
+        var exePathTextBox = (DarkTextBox)sender;
+        ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
+        ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
     }
 
     private void ExePathBrowseButtons_Click(object sender, EventArgs e)
@@ -1315,10 +1317,26 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
     }
 
+    private static bool BackupPathInvalid_Settings(string backupPath, DarkTextBox[] gameExeTextBoxes)
+    {
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            if (GameRequiresBackupPath(gameIndex) &&
+                !gameExeTextBoxes[i].Text.IsEmpty() &&
+                !Directory.Exists(backupPath))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void BackupPathTextBox_Leave(object sender, EventArgs e)
     {
         var s = (DarkTextBox)sender;
-        ShowPathError(s, !Directory.Exists(s.Text));
+        ShowPathError(s, BackupPathInvalid_Settings(s.Text, GameExeTextBoxes));
     }
 
     // @NET5: Do it on this side of the boundary now because we'll want to use the built-in Vista dialog that comes with .NET 5
@@ -1744,7 +1762,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             }
         }
 
-        if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
+        if (BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes))
         {
             error = true;
             ShowPathError(PathsPage.BackupPathTextBox, true);

@@ -182,5 +182,7 @@ public static partial class GameSupport
     internal static bool GameSupportsLanguages(Game game) => GameIsDark(game);
 
     internal static bool GameSupportsResourceDetection(Game game) => GameIsDark(game);
+
+    internal static bool GameRequiresBackupPath(GameIndex gameIndex) => GameIsDark(gameIndex) || gameIndex is GameIndex.Thief3;
 }
 // @GENGAMES (GameSupport): End

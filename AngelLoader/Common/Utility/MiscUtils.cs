@@ -255,6 +255,22 @@ public static partial class Utils
         return "";
     }
 
+    internal static bool BackupPathInvalid(string backupPath)
+    {
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            if (GameRequiresBackupPath(gameIndex) &&
+                !Config.GetGameExe(gameIndex).IsEmpty() &&
+                !Directory.Exists(backupPath))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
