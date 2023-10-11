@@ -121,7 +121,14 @@ internal static class FMDelete
             {
                 foreach (FanMission fm in fmToDeleteIniCopies)
                 {
-                    FMDataIniList.Remove(fm);
+                    if (fm.Game == Game.TDM)
+                    {
+                        FMDataIniListTDM.Remove(fm);
+                    }
+                    else
+                    {
+                        FMDataIniList.Remove(fm);
+                    }
 #if !TEST_NO_DELETE_CACHE_DIR
                     FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
 #endif
@@ -129,7 +136,14 @@ internal static class FMDelete
             }
             else
             {
-                FMDataIniList.Remove(fmToDelete);
+                if (fmToDelete.Game == Game.TDM)
+                {
+                    FMDataIniListTDM.Remove(fmToDelete);
+                }
+                else
+                {
+                    FMDataIniList.Remove(fmToDelete);
+                }
 #if !TEST_NO_DELETE_CACHE_DIR
                 FMCache.ClearCacheDir(fmToDelete, deleteCacheDirItself: true);
 #endif

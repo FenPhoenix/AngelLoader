@@ -54,6 +54,8 @@ internal static class FMCache
 
     internal static void ClearCacheDir(FanMission fm, bool deleteCacheDirItself = false)
     {
+        if (fm.Game == Game.TDM) return;
+
         string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
         if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
         {
