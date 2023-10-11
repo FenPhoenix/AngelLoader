@@ -97,6 +97,7 @@ internal static class FMInstallAndPlay
             if (deselect) fm.Installed = false;
             using var sw = new StreamWriter(currentFMFile);
             sw.WriteLine(!deselect ? fm.InstalledDir : "");
+            Core.View.RefreshAllSelectedFMs_UpdateInstallState();
         }
         catch
         {

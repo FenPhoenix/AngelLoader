@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -52,7 +53,9 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
                 (LText.Global.UninstallFMs, TextRenderer.MeasureText(LText.Global.UninstallFMs, Button.Font).Width),
                 (LText.Global.UninstallFM, TextRenderer.MeasureText(LText.Global.UninstallFM, Button.Font).Width),
                 (LText.Global.InstallFMs, TextRenderer.MeasureText(LText.Global.InstallFMs, Button.Font).Width),
-                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width)
+                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width),
+                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.DeselectFM_DarkMod, Button.Font).Width),
+                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.SelectFM_DarkMod, Button.Font).Width)
             };
 
             stringsAndLengths = stringsAndLengths.OrderByDescending(static x => x.Length).ToArray();
@@ -78,16 +81,8 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
         if (_constructed)
         {
             bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
-
-            // Special-cased; don't autosize this one
-            Button.Text =
-                value
-                    ? multiSelected
-                        ? LText.Global.InstallFMs
-                        : LText.Global.InstallFM
-                    : multiSelected
-                        ? LText.Global.UninstallFMs
-                        : LText.Global.UninstallFM;
+            Game game = _owner.GetMainSelectedFMOrNull()?.Game ?? Game.Null;
+            Button.Text = ControlUtils.GetInstallStateText(game, value, multiSelected);
             Button.Invalidate();
         }
         _sayInstall = value;

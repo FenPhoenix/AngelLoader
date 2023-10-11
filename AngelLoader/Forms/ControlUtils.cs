@@ -12,6 +12,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
@@ -861,4 +862,19 @@ internal static class ControlUtils
     /// <param name="value"></param>
     /// <returns></returns>
     internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
+
+    internal static string GetInstallStateText(Game game, bool value, bool multiSelected)
+    {
+        return game == Game.TDM
+            ? value && !multiSelected
+                ? LText.Global.SelectFM_DarkMod
+                : LText.Global.DeselectFM_DarkMod
+            : value
+                ? multiSelected
+                    ? LText.Global.InstallFMs
+                    : LText.Global.InstallFM
+                : multiSelected
+                    ? LText.Global.UninstallFMs
+                    : LText.Global.UninstallFM;
+    }
 }

@@ -462,19 +462,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     internal void SetInstallUninstallMenuItemText(bool sayInstall, bool multiSelected, Game game)
     {
         if (!_constructed) return;
-
-        InstallUninstallMenuItem.Text =
-            game == Game.TDM
-                ? sayInstall && !multiSelected
-                    ? LText.Global.SelectFM_DarkMod
-                    : LText.Global.DeselectFM_DarkMod
-                : sayInstall
-                    ? multiSelected
-                        ? LText.Global.InstallFMs
-                        : LText.Global.InstallFM
-                    : multiSelected
-                        ? LText.Global.UninstallFMs
-                        : LText.Global.UninstallFM;
+        InstallUninstallMenuItem.Text = ControlUtils.GetInstallStateText(game, sayInstall, multiSelected);
     }
 
     internal void SetPinOrUnpinMenuItemState(bool sayPin)
