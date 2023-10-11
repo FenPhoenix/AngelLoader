@@ -119,7 +119,7 @@ public sealed class FanMission
     private string _disabledMods = "";
     internal string DisabledMods
     {
-        get => Game == Game.Thief3 ? "" : _disabledMods;
+        get => GameSupportsMods(Game) ? _disabledMods : "";
         set => _disabledMods = value;
     }
 
