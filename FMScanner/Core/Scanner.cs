@@ -3535,44 +3535,52 @@ public sealed partial class Scanner : IDisposable
     {
         if (value.IsEmpty()) return value;
 
-        string ret = value.TrimEnd();
+        value = value.TrimEnd();
 
-        if (ret.IsEmpty()) return ret;
+        if (value.IsEmpty()) return value;
 
-        if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim(CA_DoubleQuote);
+        if (value[0] == '\"' && value[value.Length - 1] == '\"') value = value.Trim(CA_DoubleQuote);
 
-        if (ret.IsEmpty()) return ret;
+        if (value.IsEmpty()) return value;
 
-        if ((ret[0] == LeftDoubleQuote || ret[0] == RightDoubleQuote) &&
-            (ret[ret.Length - 1] == LeftDoubleQuote || ret[ret.Length - 1] == RightDoubleQuote))
+        if ((value[0] == LeftDoubleQuote || value[0] == RightDoubleQuote) &&
+            (value[value.Length - 1] == LeftDoubleQuote || value[value.Length - 1] == RightDoubleQuote))
         {
-            ret = ret.Trim(CA_UnicodeQuotes);
+            value = value.Trim(CA_UnicodeQuotes);
         }
 
-        ret = ret.RemoveUnpairedLeadingOrTrailingQuotes();
+        value = value.RemoveUnpairedLeadingOrTrailingQuotes();
 
-        ret = MultipleWhiteSpaceRegex.Replace(ret, " ");
-        ret = ret.Replace('\t', ' ');
+        value = MultipleWhiteSpaceRegex.Replace(value, " ");
+        value = value.Replace('\t', ' ');
 
         #region Parentheses
 
-        ret = ret.RemoveSurroundingParentheses();
+        value = value.RemoveSurroundingParentheses();
 
-        bool containsOpenParen = ret.Contains('(');
-        bool containsCloseParen = ret.Contains(')');
+        bool containsOpenParen = value.Contains('(');
+        bool containsCloseParen = value.Contains(')');
 
-        if (containsOpenParen) ret = OpenParenSpacesRegex.Replace(ret, "(");
-        if (containsCloseParen) ret = CloseParenSpacesRegex.Replace(ret, ")");
+        if (containsOpenParen) value = OpenParenSpacesRegex.Replace(value, "(");
+        if (containsCloseParen) value = CloseParenSpacesRegex.Replace(value, ")");
 
         // If there's stuff like "(this an incomplete sentence and" at the end, chop it right off
-        if (containsOpenParen && !containsCloseParen && ret.CharAppearsExactlyOnce('('))
+        if (containsOpenParen && !containsCloseParen && value.CharAppearsExactlyOnce('('))
         {
-            ret = ret.Substring(0, ret.LastIndexOf('(')).TrimEnd();
+            value = value.Substring(0, value.LastIndexOf('(')).TrimEnd();
         }
 
         #endregion
 
-        return ret;
+        // Remove trailing period unless it's at the end of a single letter (eg. "Robin G.")
+        if (value.CharAppearsExactlyOnce('.') && value[value.Length - 1] == '.' &&
+            !((value.Length >= 3 && !char.IsWhiteSpace(value[value.Length - 2]) && char.IsWhiteSpace(value[value.Length - 3])) ||
+              (value.Length == 2 && !char.IsWhiteSpace(value[value.Length - 2]))))
+        {
+            value = value.Substring(0, value.Length - 1);
+        }
+
+        return value;
     }
 
     #region Title(s) and mission names
@@ -3964,11 +3972,6 @@ public sealed partial class Scanner : IDisposable
                     value = value.Replace(" ", "");
                 }
             }
-        }
-
-        if (value.CharAppearsExactlyOnce('.') && value[value.Length - 1] == '.')
-        {
-            value = value.Substring(0, value.Length - 1);
         }
 
         return CleanupValue(value).Trim();
