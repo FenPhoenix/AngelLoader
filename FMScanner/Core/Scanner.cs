@@ -530,7 +530,7 @@ public sealed partial class Scanner : IDisposable
                         FMToScan? fm = missions[i];
                         scannedFMAndError =
                             fm.IsTDM
-                                ? ScanCurrentDarkModFM()
+                                ? ScanCurrentDarkModFM(fm)
                                 : ScanCurrentFM(fm, tempPath, cancellationToken);
                     }
                     catch (OperationCanceledException)
@@ -599,15 +599,15 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private ScannedFMDataAndError ScanCurrentDarkModFM()
+    private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
         /*
         (done) Detect/read darkmod.txt for title and author
         (done) Detect/read readme.txt for parseable release date
          (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
         -Detect/read fms\missions.tdminfo for last played/finished-on
-        -Detect mission count - find out how
-        -No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
+        (done) Detect mission count - find out how
+        (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
 
         Mission count:
         tdm_mapsequence.txt in the root of the pk4
@@ -618,6 +618,36 @@ public sealed partial class Scanner : IDisposable
         Mission 3: forest
 
         We could probably just read this file and be done with it, count them up and there you go.
+
+        --- MISSION COUNT COMPLICATIONS! ---
+
+        -We need to make sure our lines aren't inside a block comment
+        -We need to support multiple map files on one line, which appears to just be space delineated
+
+        From https://wiki.thedarkmod.com/index.php?title=Tdm_mapsequence.txt
+
+        the number X defines the mission, starting with the number 1. After the mandatory colon the name of one or more map files need to be listed without extensions.
+           
+        Note: while the file format supports more than one mission to be defined in each mission line, this is not fully supported yet in TDM's game code. 
+
+        / **
+           * This file defines the mission order for this campaign
+           *
+           * The syntax is:
+           * Mission <N>: <mapname> [<mapname> ...]
+           *
+           * N is the mission number, with the first mission carrying the number 1.
+           *
+           * It's possible to define more than one map filename for a mission,
+           * in case there are loading zones in it, but usually you won't need that.
+           *
+           * Line comments can be initiated with the double forward slash // 
+           * Block comments (like this one) are possible too.
+           * / 
+           Mission 1: red
+           Mission 2: blue
+           Mission 3: green
+        * /
         */
 
         ScannedFMData fmData = new()
@@ -625,6 +655,57 @@ public sealed partial class Scanner : IDisposable
             ArchiveName = FMWorkingPathDirName,
             Game = Game.TDM
         };
+
+        if (_scanOptions.ScanMissionCount)
+        {
+            int misCount = 0;
+
+            try
+            {
+                // @TDM: Extract out the normal zip construction code so we get all the error handling here too
+                string zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
+                if (zipResult.Success)
+                {
+                    _archive = zipResult.Archive!;
+
+                    ListFast<ZipArchiveFastEntry> entries = _archive.Entries;
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        ZipArchiveFastEntry entry = entries[i];
+                        if (entry.FullName == "tdm_mapsequence.txt")
+                        {
+                            using (Stream es = _archive.OpenEntry(entry))
+                            {
+                                // Stupid micro-optimization: Don't call Dispose() method on stream twice
+                                using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false,
+                                    _streamReaderCustom, disposeStream: false);
+                                while (sr.Reader.ReadLine() is { } line)
+                                {
+                                    string lineT = line.Trim();
+                                    if (Regex.Match(lineT, @"Mission [0123456789]+\:\s*.+").Success)
+                                    {
+                                        misCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    fmData.MissionCount = misCount == 0 ? 1 : misCount;
+                }
+            }
+            catch
+            {
+                fmData.MissionCount = null;
+            }
+
+            if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
+            {
+                // Early return for perf if we're not scanning anything else
+                return new ScannedFMDataAndError { ScannedFMData = fmData };
+            }
+        }
 
         string darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
         string readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
@@ -711,6 +792,103 @@ public sealed partial class Scanner : IDisposable
                 return -1;
             }
         }
+    }
+
+    private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
+    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries)
+    {
+        ZipArchiveFast? ret;
+
+        try
+        {
+            ret = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer), zipContext, allowUnsupportedEntries: false);
+
+            // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
+            // thrown while loading them. If this passes, we're definitely good.
+            int entriesCount = ret.Entries.Count;
+            if (checkForZeroEntries && entriesCount == 0)
+            {
+                Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
+                return (false, UnsupportedZip(fm.Path, null, null, ""), null);
+            }
+        }
+        catch (Exception ex)
+        {
+            #region Notes about semi-broken zips
+            /*
+            Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+
+            Known semi-broken files:
+            Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+            1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+            Both files are byte-identical but just with different names.
+
+            Note that my version of the second file (same name) is not broken, I got it from
+            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+            scanner with.
+
+            These files throw with "The archive entry was compressed using an unsupported compression method."
+            They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+            The compression method for each file in the archive is:
+
+            MISS15.MIS:                6
+            UGUEST.TXT:                6
+            INTRFACE/NEWGAME.STR:      1
+            INTRFACE/UGUEST/GOALS.STR: 1
+            STRINGS/MISSFLAG.STR:      1
+            STRINGS/TITLES.STR:        6
+
+            1 = Shrink
+            6 = Implode
+
+            (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+           .NET zip (all versions AFAIK) only supports Deflate.
+
+            There also seem to be other errors, involving "headers" and "data past the end of archive".
+            I don't really know enough about the zip format to understand these that much.
+
+            7z.exe can handle these files, so we could use that as a fallback, but:
+
+            7z.exe reports:
+
+            ERRORS:
+            Headers Error
+
+            WARNINGS:
+            There are data after the end of archive
+
+            And it considers the error to be "fatal" even though it succeeds in this case (the
+            extracted dir diffs identical with the extracted dir of the working one).
+            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+            not result in intact files on disk) error. If we just match by "Headers error" and/or
+            "data past end" who knows if sometimes those might actually result in bad output and not
+            others. I don't know. So we're going to continue to fail in this case, but at least tell
+            the user what's wrong and give them an actionable suggestion.
+            */
+            #endregion
+            if (ex is ZipCompressionMethodException zipEx)
+            {
+                Log(fm.Path + ": fm is zip.\r\n" +
+                    "UNSUPPORTED COMPRESSION METHOD\r\n" +
+                    "Zip contains one or more files compressed with an unsupported method. " +
+                    "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
+                    "Returning 'Unknown' game type.", zipEx);
+                return (false, UnknownZip(fm.Path, null, zipEx, ""), null);
+            }
+            else
+            {
+                Log(fm.Path + ": fm is zip, exception in " +
+                    nameof(ZipArchiveFast) +
+                    " construction or entries getting. Returning 'Unsupported' game type.", ex);
+                return (false, UnsupportedZip(fm.Path, null, ex, ""), null);
+            }
+        }
+
+        return (true, null, ret);
     }
 
     private void GetAuthor(ScannedFMData fmData, List<string> titles)
@@ -1020,92 +1198,14 @@ public sealed partial class Scanner : IDisposable
         {
             Debug.WriteLine("----------" + fm.Path);
 
-            try
+            var zipResult = ConstructZipArchive(fm, fm.Path, ZipContext, checkForZeroEntries: true);
+            if (zipResult.Success)
             {
-                _archive = new ZipArchiveFast(GetReadModeFileStreamWithCachedBuffer(fm.Path, ZipContext.FileStreamBuffer), ZipContext, allowUnsupportedEntries: false);
-
-                // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
-                // thrown while loading them. If this passes, we're definitely good.
-                if (_archive.Entries.Count == 0)
-                {
-                    Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                    return UnsupportedZip(fm.Path, null, null, "");
-                }
+                _archive = zipResult.Archive!;
             }
-            catch (Exception ex)
+            else if (zipResult.ScannedFMDataAndError != null)
             {
-                #region Notes about semi-broken zips
-                /*
-                Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
-
-                Known semi-broken files:
-                Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
-                1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
-
-                Both files are byte-identical but just with different names.
-
-                Note that my version of the second file (same name) is not broken, I got it from
-                http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-                scanner with.
-
-                These files throw with "The archive entry was compressed using an unsupported compression method."
-                They throw on both ZipArchiveFast() and regular built-in ZipArchive().
-
-                The compression method for each file in the archive is:
-
-                MISS15.MIS:                6
-                UGUEST.TXT:                6
-                INTRFACE/NEWGAME.STR:      1
-                INTRFACE/UGUEST/GOALS.STR: 1
-                STRINGS/MISSFLAG.STR:      1
-                STRINGS/TITLES.STR:        6
-
-                1 = Shrink
-                6 = Implode
-
-                (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-
-               .NET zip (all versions AFAIK) only supports Deflate.
-
-                There also seem to be other errors, involving "headers" and "data past the end of archive".
-                I don't really know enough about the zip format to understand these that much.
-
-                7z.exe can handle these files, so we could use that as a fallback, but:
-
-                7z.exe reports:
-
-                ERRORS:
-                Headers Error
-
-                WARNINGS:
-                There are data after the end of archive
-
-                And it considers the error to be "fatal" even though it succeeds in this case (the
-                extracted dir diffs identical with the extracted dir of the working one).
-                But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-                dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-                not result in intact files on disk) error. If we just match by "Headers error" and/or
-                "data past end" who knows if sometimes those might actually result in bad output and not
-                others. I don't know. So we're going to continue to fail in this case, but at least tell
-                the user what's wrong and give them an actionable suggestion.
-                */
-                #endregion
-                if (ex is ZipCompressionMethodException zipEx)
-                {
-                    Log(fm.Path + ": fm is zip.\r\n" +
-                        "UNSUPPORTED COMPRESSION METHOD\r\n" +
-                        "Zip contains one or more files compressed with an unsupported method. " +
-                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
-                        "Returning 'Unknown' game type.", zipEx);
-                    return UnknownZip(fm.Path, null, zipEx, "");
-                }
-                else
-                {
-                    Log(fm.Path + ": fm is zip, exception in " +
-                        nameof(ZipArchiveFast) +
-                        " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                    return UnsupportedZip(fm.Path, null, ex, "");
-                }
+                return zipResult.ScannedFMDataAndError;
             }
         }
         else
