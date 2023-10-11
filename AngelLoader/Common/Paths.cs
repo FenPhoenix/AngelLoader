@@ -261,8 +261,9 @@ internal static class Paths
     internal const string NewDarkLoaderIni = "NewDarkLoader.ini";
     internal const string FMSelIni = "fmsel.ini";
 
-    // A dir that goes in the installed FMs dir and isn't an FM, so we have to ignore it when finding FMs
+    // Dirs that go in the installed FMs dir and aren't FMs, so we have to ignore them when finding FMs
     internal const string FMSelCache = ".fmsel.cache";
+    internal const string TDMMissionShots = "_missionshots";
 
     #endregion
 

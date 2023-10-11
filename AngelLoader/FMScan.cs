@@ -159,7 +159,7 @@ internal static class FMScan
                             path: fmArchivePath,
                             forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                             cachePath: fm.Archive.ExtIs7z()
-                                ? Path.Combine(Paths.FMsCache, fm.InstalledDir)
+                                ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                 : "",
                             isTDM: fm.Game == Game.TDM,
                             displayName: fm.Archive
@@ -173,10 +173,10 @@ internal static class FMScan
                             fmsToScanFiltered.Add(fm);
                             fms.Add(new FMScanner.FMToScan
                             (
-                                path: Path.Combine(fmInstalledPath, fm.InstalledDir),
+                                path: Path.Combine(fmInstalledPath, fm.RealInstalledDir),
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                                 isTDM: fm.Game == Game.TDM,
-                                displayName: fm.InstalledDir
+                                displayName: fm.RealInstalledDir
                             ));
                         }
                     }
@@ -309,7 +309,8 @@ internal static class FMScan
                         {
                             Log("(one) scanned FM was null. FM was:\r\n" +
                                 "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
-                                "InstalledDir: " + fmsToScanFiltered[0].InstalledDir);
+                                "InstalledDir: " + fmsToScanFiltered[0].InstalledDir + "\r\n" +
+                                "TDMInstalledDir (if applicable): " + fmsToScanFiltered[0].TDMInstalledDir);
                             return false;
                         }
                         continue;

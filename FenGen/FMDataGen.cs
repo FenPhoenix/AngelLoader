@@ -574,13 +574,13 @@ internal static class FMData
 
         w.WLs(new[]
         {
-            "private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
+            "private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)",
             "{",
             "var sb = new StringBuilder();",
             "",
-            "foreach (FanMission " + obj + " in fmDataList)",
+            "static void AddFMToSB(FanMission fm, StringBuilder sb)",
             "{",
-            "sb.AppendLine(\"[FM]\");",
+            "sb.AppendLine(fm.Game == Game.TDM ? \"[TDMFM]\" : \"[FM]\");",
             ""
         });
 
@@ -761,7 +761,17 @@ internal static class FMData
             }
         }
 
-        // for
+        // AddFMToSB
+        w.WL("}");
+        w.WL();
+        w.WL("foreach (FanMission fm in fmDataList)");
+        w.WL("{");
+        w.WL("AddFMToSB(fm, sb);");
+        w.WL("}");
+        w.WL();
+        w.WL("foreach (FanMission fm in fmDataListTDM)");
+        w.WL("{");
+        w.WL("AddFMToSB(fm, sb);");
         w.WL("}");
 
         w.WL();

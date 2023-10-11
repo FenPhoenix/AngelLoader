@@ -472,7 +472,7 @@ internal static class Core
                     FanMission fm = FMsViewList[i];
                     if (fm.Game == Game.TDM)
                     {
-                        fm.Installed = fm.InstalledDir == fmName;
+                        fm.Installed = fm.TDMInstalledDir == fmName;
                         if (fm.Installed)
                         {
                             Trace.WriteLine("Updated TDM installed FM. FM is now: " + fm.GetId());
@@ -1658,7 +1658,7 @@ internal static class Core
         try
         {
             List<string> dmlFiles = FastIO.GetFilesTopOnly(
-                Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir), "*.dml",
+                Path.Combine(Config.GetFMInstallPath(gameIndex), fm.RealInstalledDir), "*.dml",
                 returnFullPaths: false);
             return (true, dmlFiles);
         }

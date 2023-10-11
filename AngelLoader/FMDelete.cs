@@ -15,6 +15,12 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
+/*
+@TDM: Things to be done for FM deletion:
+-Don't uninstall, or mention anything about uninstalling
+-When deleting an FM from disk, we have to delete its folder AND its entry in missions.tdminfo (presumably?!)
+*/
+
 internal static class FMDelete
 {
     #region Fields

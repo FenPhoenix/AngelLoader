@@ -55,6 +55,13 @@ internal static partial class Ini
         fm.InstalledDir = val;
     }
 
+    private static void FMData_TDMInstalledDir_Set(FanMission fm, string val, int eqIndex)
+    {
+        val = val.Substring(eqIndex + 1);
+        val = val.Trim();
+        fm.TDMInstalledDir = val;
+    }
+
     private static void FMData_Title_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Substring(eqIndex + 1);
@@ -352,6 +359,7 @@ internal static partial class Ini
         { "Pinned", new FMData_DelegatePointerWrapper(&FMData_Pinned_Set) },
         { "Archive", new FMData_DelegatePointerWrapper(&FMData_Archive_Set) },
         { "InstalledDir", new FMData_DelegatePointerWrapper(&FMData_InstalledDir_Set) },
+        { "TDMInstalledDir", new FMData_DelegatePointerWrapper(&FMData_TDMInstalledDir_Set) },
         { "Title", new FMData_DelegatePointerWrapper(&FMData_Title_Set) },
         { "AltTitles", new FMData_DelegatePointerWrapper(&FMData_AltTitles_Set) },
         { "Author", new FMData_DelegatePointerWrapper(&FMData_Author_Set) },
@@ -401,13 +409,13 @@ internal static partial class Ini
 
     #region Generated code for writer
 
-    private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)
+    private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)
     {
         var sb = new StringBuilder();
 
-        foreach (FanMission fm in fmDataList)
+        static void AddFMToSB(FanMission fm, StringBuilder sb)
         {
-            sb.AppendLine("[FM]");
+            sb.AppendLine(fm.Game == Game.TDM ? "[TDMFM]" : "[FM]");
 
             if (fm.NoArchive)
             {
@@ -430,6 +438,11 @@ internal static partial class Ini
             {
                 sb.Append("InstalledDir").Append('=');
                 sb.AppendLine(fm.InstalledDir);
+            }
+            if (!string.IsNullOrEmpty(fm.TDMInstalledDir))
+            {
+                sb.Append("TDMInstalledDir").Append('=');
+                sb.AppendLine(fm.TDMInstalledDir);
             }
             if (!string.IsNullOrEmpty(fm.Title))
             {
@@ -636,6 +649,16 @@ internal static partial class Ini
                 sb.Append("MisCount").Append('=');
                 sb.AppendLine(fm.MisCount.ToString());
             }
+        }
+
+        foreach (FanMission fm in fmDataList)
+        {
+            AddFMToSB(fm, sb);
+        }
+
+        foreach (FanMission fm in fmDataListTDM)
+        {
+            AddFMToSB(fm, sb);
         }
 
         using var sw = new StreamWriter(fileName, false, Encoding.UTF8);

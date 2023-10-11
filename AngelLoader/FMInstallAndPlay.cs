@@ -96,7 +96,7 @@ internal static class FMInstallAndPlay
             string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
             if (deselect) fm.Installed = false;
             using var sw = new StreamWriter(currentFMFile);
-            sw.WriteLine(!deselect ? fm.InstalledDir : "");
+            sw.WriteLine(!deselect ? fm.TDMInstalledDir : "");
             Core.View.RefreshAllSelectedFMs_UpdateInstallState();
         }
         catch
@@ -283,7 +283,7 @@ internal static class FMInstallAndPlay
 
         string args =
             // We set it to current manually beforehand anyway, but let's do this too just to be explicit I guess
-            gameIndex == GameIndex.TDM ? "+set fs_currentfm " + fm.InstalledDir :
+            gameIndex == GameIndex.TDM ? "+set fs_currentfm " + fm.TDMInstalledDir :
             !steamArgs.IsEmpty() ? steamArgs :
             "-fm";
 

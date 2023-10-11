@@ -166,7 +166,7 @@ internal static partial class Ini
                         Log(ErrorText.ExCopy + "'" + Paths.FMDataIni + "' to '" + file + "'", ex);
                     }
                 }
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                WriteFMDataIni(FMDataIniList, FMDataIniListTDM, Paths.FMDataIni);
 #if DateAccTest
             WriteDateAccuracyFile();
 #endif
@@ -241,13 +241,16 @@ internal static partial class Ini
         }
     }
 
-    internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList)
+    internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
+        fmsListTDM.Clear();
 
         using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(fileName), new StreamReaderCustom());
 
         bool fmsListIsEmpty = true;
+
+        bool currentFMIsTDM = false;
 
         while (sr.Reader.ReadLine() is { } line)
         {
@@ -255,10 +258,26 @@ internal static partial class Ini
 
             if (lineTS.Length > 0 && lineTS[0] == '[')
             {
-                if (lineTS.Length >= 4 && lineTS[1] == 'F' && lineTS[2] == 'M' && lineTS[3] == ']')
+                if (lineTS.Length >= 4 &&
+                    lineTS[1] == 'F' &&
+                    lineTS[2] == 'M' &&
+                    lineTS[3] == ']')
                 {
                     fmsList.Add(new FanMission());
                     fmsListIsEmpty = false;
+                    currentFMIsTDM = false;
+                }
+                else if (lineTS.Length >= 7 &&
+                          lineTS[1] == 'T' &&
+                          lineTS[2] == 'D' &&
+                          lineTS[3] == 'M' &&
+                          lineTS[4] == 'F' &&
+                          lineTS[5] == 'M' &&
+                          lineTS[6] == ']')
+                {
+                    fmsListTDM.Add(new FanMission());
+                    fmsListIsEmpty = false;
+                    currentFMIsTDM = true;
                 }
 
                 continue;
@@ -277,7 +296,8 @@ internal static partial class Ini
                     // the string so the value part can go in the FM field. But if the value is a knowable
                     // type, then we don't need to split the string, we can just parse the value section.
                     // This slashes our allocation count WAY down.
-                    result.Action(fmsList[fmsList.Count - 1], lineTS, eqIndex);
+                    List<FanMission> list = currentFMIsTDM ? fmsListTDM : fmsList;
+                    result.Action(list[list.Count - 1], lineTS, eqIndex);
                 }
             }
         }

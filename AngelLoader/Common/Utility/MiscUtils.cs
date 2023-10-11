@@ -56,7 +56,7 @@ public static partial class Utils
 
         string instPath = Config.GetFMInstallPath(gameIndex);
         return !instPath.IsEmpty() &&
-               TryCombineDirectoryPathAndCheckExistence(instPath, fm.InstalledDir, out fmInstalledPath);
+               TryCombineDirectoryPathAndCheckExistence(instPath, fm.RealInstalledDir, out fmInstalledPath);
     }
 
     #endregion
@@ -192,6 +192,7 @@ public static partial class Utils
             "fm." + nameof(fm.Game) + ": " + fm.Game + "\r\n" +
             "fm." + nameof(fm.Archive) + ": " + fm.Archive + "\r\n" +
             "fm." + nameof(fm.InstalledDir) + ": " + fm.InstalledDir + "\r\n" +
+            "fm." + nameof(fm.TDMInstalledDir) + " (if applicable): " + fm.TDMInstalledDir + "\r\n" +
             "fm." + nameof(fm.Installed) + ": " + fm.Installed + "\r\n" +
             (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
                 ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)

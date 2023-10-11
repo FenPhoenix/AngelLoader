@@ -21,6 +21,7 @@ internal static class Global
     // Init to 0 capacity so they don't allocate a 4-byte backing array or whatever, cause we're going to
     // reallocate them right away anyway.
     internal static readonly List<FanMission> FMDataIniList = new(0);
+    internal static readonly List<FanMission> FMDataIniListTDM = new(0);
     internal static readonly List<FanMission> FMsViewList = new(0);
 #else
     internal static bool ThreadLocked;

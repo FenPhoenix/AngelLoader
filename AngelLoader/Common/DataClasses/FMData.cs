@@ -48,6 +48,10 @@ public sealed class FanMission
 
     internal string Archive = "";
     internal string InstalledDir = "";
+    internal string TDMInstalledDir = "";
+
+    [FenGenIgnore]
+    internal string RealInstalledDir => Game == Game.TDM ? TDMInstalledDir : InstalledDir;
 
     internal string Title = "";
     [FenGenListType("MultipleLines")]

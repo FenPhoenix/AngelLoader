@@ -271,12 +271,15 @@ internal static class FindFMs
         // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
         // up with a blank or incomplete list and then glibly save it out later.
         FanMission[] backupList = new FanMission[FMDataIniList.Count];
+        FanMission[] backupListTDM = new FanMission[FMDataIniListTDM.Count];
         FMDataIniList.CopyTo(backupList);
+        FMDataIniListTDM.CopyTo(backupListTDM);
 
         FanMission[] viewBackupList = new FanMission[FMsViewList.Count];
         FMsViewList.CopyTo(viewBackupList);
 
         FMDataIniList.Clear();
+        FMDataIniListTDM.Clear();
         FMsViewList.Clear();
 
         bool fmDataIniExists = File.Exists(Paths.FMDataIni);
@@ -285,7 +288,7 @@ internal static class FindFMs
         {
             try
             {
-                Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
+                Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList, FMDataIniListTDM);
             }
             catch (Exception ex)
             {
@@ -297,6 +300,7 @@ internal static class FindFMs
                 else
                 {
                     FMDataIniList.ClearAndAdd_Large(backupList);
+                    FMDataIniListTDM.ClearAndAdd_Large(backupListTDM);
                     FMsViewList.ClearAndAdd_Large(viewBackupList);
                     return new List<FanMission>();
                 }
@@ -319,6 +323,7 @@ internal static class FindFMs
         for (int gi = 0; gi < SupportedGameCount; gi++)
         {
             GameIndex gameIndex = (GameIndex)gi;
+            if (gameIndex == GameIndex.TDM) continue;
 
             perGameInstFMDirsItems[gi] = new DictionaryI<InstDirValueData>();
 
@@ -331,31 +336,15 @@ internal static class FindFMs
                     for (int di = 0; di < files.Count; di++)
                     {
                         string d = files[di];
-                        if (gameIndex == GameIndex.TDM)
+                        if (!d.EqualsI(Paths.FMSelCache))
                         {
-                            if (!d.EqualsI("_missionshots"))
+                            var fm = new FanMission
                             {
-                                var fm = new FanMission
-                                {
-                                    InstalledDir = d,
-                                    Game = Game.TDM,
-                                    Installed = false
-                                };
-                                perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
-                            }
-                        }
-                        else
-                        {
-                            if (!d.EqualsI(Paths.FMSelCache))
-                            {
-                                var fm = new FanMission
-                                {
-                                    InstalledDir = d,
-                                    Game = GameIndexToGame(gameIndex),
-                                    Installed = true
-                                };
-                                perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
-                            }
+                                InstalledDir = d,
+                                Game = GameIndexToGame(gameIndex),
+                                Installed = true
+                            };
+                            perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
                         }
                     }
                 }
@@ -424,6 +413,9 @@ internal static class FindFMs
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
+            GameIndex gameIndex = (GameIndex)i;
+            if (gameIndex == GameIndex.TDM) continue;
+
             var curGameInstFMsList = perGameInstFMDirsItems[i];
             if (curGameInstFMsList.Count > 0)
             {
@@ -439,6 +431,8 @@ internal static class FindFMs
 
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
         var fmsViewListUnscanned = new List<FanMission>(FMDataIniList.Count);
+
+        AddTdmFMs(files, dateTimes);
 
         BuildViewList(fmArchivesAndDatesDict, perGameInstFMDirsItems, fmsViewListUnscanned);
 
@@ -457,6 +451,81 @@ internal static class FindFMs
         note down for the future.
         2022-07-25: The code is way less crazy-go-nuts now, maybe we should try to find this thing again.
         */
+    }
+
+    private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
+    {
+        var fmDataIniListTDM_Hash = new HashSetI(FMDataIniListTDM.Count);
+        foreach (FanMission fm in FMDataIniListTDM)
+        {
+            fmDataIniListTDM_Hash.Add(fm.TDMInstalledDir);
+        }
+
+        string instPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (Directory.Exists(instPath))
+        {
+            try
+            {
+                FastIO.GetDirsTopOnly_FMs(instPath, "*", files, dateTimes);
+                for (int di = 0; di < files.Count; di++)
+                {
+                    string d = files[di];
+                    if (!d.EqualsI(Paths.TDMMissionShots))
+                    {
+                        var fm = new FanMission
+                        {
+                            Game = GameIndexToGame(GameIndex.TDM),
+                            InstalledDir = d,
+                            TDMInstalledDir = d,
+                            Installed = false
+                        };
+                        if (fmDataIniListTDM_Hash.Add(fm.InstalledDir))
+                        {
+                            FMDataIniListTDM.Add(fm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.ExGet + "directories in " + instPath, ex);
+            }
+        }
+
+        #region Ensure unique installed dir
+
+        // We use an FM's installed dir as a unique tag, so it must still be unique among all FMs for all games.
+        // We use the TDM-specific installed dir for actual TDM FM installed dir stuff.
+        // If I'd have known I'd do TDM, I'd have planned for it better...
+        // This is really, really janky and easy to make a mistake with the wrong installed dir version, meh.
+
+        var fmDataIniList_Hash = new HashSetI(FMDataIniList.Count);
+        foreach (FanMission fm in FMDataIniList)
+        {
+            fmDataIniList_Hash.Add(fm.InstalledDir);
+        }
+
+        foreach (FanMission fm in FMDataIniListTDM)
+        {
+            if (fmDataIniList_Hash.Contains(fm.InstalledDir))
+            {
+                for (int j = 0; ; j++)
+                {
+                    // Yeah, this'll never happen, but hey
+                    // If it overflowed, oh well. You get what you deserve in that case.
+                    if (j > 999) return;
+
+                    // Conform to FMSel's numbering format
+                    string append = "(" + (j + 2).ToStrInv() + ")";
+
+                    fm.InstalledDir += append;
+
+                    if (!fmDataIniList_Hash.Contains(fm.InstalledDir)) break;
+                }
+            }
+        }
+
+        #endregion
     }
 
     #region Set names
@@ -487,8 +556,6 @@ internal static class FindFMs
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
-
-            if (fm.Game == Game.TDM) continue;
 
             if (fm.Archive.IsEmpty())
             {
@@ -540,8 +607,6 @@ internal static class FindFMs
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (fm.Game == Game.TDM) continue;
-
             if (!hash.Contains(fm.InstalledDir))
             {
                 hash.Add(fm.InstalledDir);
@@ -584,8 +649,6 @@ internal static class FindFMs
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (fm.Game == Game.TDM) continue;
-
             if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
             {
                 fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
@@ -655,23 +718,9 @@ internal static class FindFMs
 
             if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
             {
-                if ((gFM.Game != Game.TDM && fm.Game != Game.TDM) ||
-                    (gFM.Game == Game.TDM && fm.Game == Game.TDM))
-                {
-                    fm.Game = gFM.Game;
-                    fm.Installed = gFM.Game != Game.TDM;
-                    fm.DateAdded ??= item.Value.DateTime.DateTime;
-                }
-                else if (gFM.Game != Game.TDM && fm.Game == Game.TDM)
-                {
-                    FMDataIniList.Add(new FanMission
-                    {
-                        InstalledDir = gFM.InstalledDir,
-                        Game = Game.TDM,
-                        Installed = false,
-                        DateAdded = item.Value.DateTime.DateTime
-                    });
-                }
+                fm.Game = gFM.Game;
+                fm.Installed = true;
+                fm.DateAdded ??= item.Value.DateTime.DateTime;
             }
             else
             {
@@ -679,7 +728,7 @@ internal static class FindFMs
                 {
                     InstalledDir = gFM.InstalledDir,
                     Game = gFM.Game,
-                    Installed = gFM.Game != Game.TDM,
+                    Installed = true,
                     DateAdded = item.Value.DateTime.DateTime
                 });
             }
@@ -795,7 +844,7 @@ internal static class FindFMs
         DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
         List<FanMission> fmsViewListUnscanned)
     {
-        FMsViewList.Capacity = FMDataIniList.Count;
+        FMsViewList.Capacity = FMDataIniList.Count + FMDataIniListTDM.Count;
 
         bool?[] boolsList = new bool?[SupportedGameCount];
 
@@ -819,45 +868,42 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniList[i];
 
-            if (fm.Game != Game.TDM)
+            #region Checks
+
+            // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
+            // then I guess why not
+            for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
+
+            if (fm.Installed &&
+                NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))
             {
-                #region Checks
+                fm.Installed = false;
+            }
 
-                // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
-                // then I guess why not
-                for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
-
-                if (fm.Installed &&
-                    NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))
+            if (!fm.Installed ||
+                NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
+            {
+                if (!fmArchivesDict.ContainsKey(fm.Archive))
                 {
-                    fm.Installed = false;
+                    fm.MarkedUnavailable = true;
                 }
+            }
 
-                if (!fm.Installed ||
-                     NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
+            #endregion
+
+            // Fix: we can have duplicate archive names if the installed dir is different, so cull them
+            // out of the view list at least.
+            // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
+            // We shouldn't have duplicate archives, but importing might add different installed dirs...
+            if (!fm.Archive.IsEmpty())
+            {
+                if (!viewListHash.Contains(fm.Archive))
                 {
-                    if (!fmArchivesDict.ContainsKey(fm.Archive))
-                    {
-                        fm.MarkedUnavailable = true;
-                    }
+                    viewListHash.Add(fm.Archive);
                 }
-
-                #endregion
-
-                // Fix: we can have duplicate archive names if the installed dir is different, so cull them
-                // out of the view list at least.
-                // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
-                // We shouldn't have duplicate archives, but importing might add different installed dirs...
-                if (!fm.Archive.IsEmpty())
+                else
                 {
-                    if (!viewListHash.Contains(fm.Archive))
-                    {
-                        viewListHash.Add(fm.Archive);
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    continue;
                 }
             }
 
@@ -875,7 +921,29 @@ internal static class FindFMs
             FMsViewList.Add(fm);
         }
 
+        for (int i = 0; i < FMDataIniListTDM.Count; i++)
+        {
+            FanMission fm = FMDataIniListTDM[i];
+
+            // Perf so we don't have to iterate the list again later
+            if (fm.NeedsScan())
+            {
+                fmsViewListUnscanned.Add(fm);
+            }
+
+            fm.Title =
+                !fm.Title.IsEmpty() ? fm.Title :
+                !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
+                fm.InstalledDir;
+            fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
+
+            FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+
+            FMsViewList.Add(fm);
+        }
+
         FMDataIniList.TrimExcess();
+        FMDataIniListTDM.TrimExcess();
         FMsViewList.TrimExcess();
 
 #if DateAccTest
