@@ -80,20 +80,20 @@ internal static class FMInstallAndPlay
         }
     }
 
-    private static void SelectTdmFM(FanMission fm)
+    private static bool SelectTdmFM(FanMission fm)
     {
         try
         {
             string gameExe = Config.GetGameExe(GameIndex.TDM);
-            if (gameExe.IsEmpty()) return;
+            if (gameExe.IsEmpty()) return false;
             if (GameIsRunning(gameExe))
             {
                 Core.Dialogs.ShowAlert(LText.AlertMessages.SelectFM_DarkMod_GameIsRunning, LText.AlertMessages.Alert);
-                return;
+                return false;
             }
 
             string gamePath = Config.GetGamePath(GameIndex.TDM);
-            if (gamePath.IsEmpty()) return;
+            if (gamePath.IsEmpty()) return false;
 
             string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
             using var sw = new StreamWriter(currentFMFile);
@@ -102,7 +102,10 @@ internal static class FMInstallAndPlay
         catch
         {
             Core.Dialogs.ShowAlert(LText.AlertMessages.SelectFM_DarkMod_UnableToSelect, LText.AlertMessages.Alert);
+            return false;
         }
+
+        return true;
     }
 
     internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
@@ -149,7 +152,9 @@ internal static class FMInstallAndPlay
             Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
         }
 
-        if (fm.Installed || await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm))
+        if (fm.Installed ||
+            (fm.Game == Game.TDM && SelectTdmFM(fm)) ||
+            await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm))
         {
             if (playMP && gameIndex == GameIndex.Thief2 && Core.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
@@ -165,6 +170,7 @@ internal static class FMInstallAndPlay
 
                 if (PlayFM(fm, gameIndex, playMP))
                 {
+                    // @TDM: We should only use the last played value from the file where TDM writes it to
                     fm.LastPlayed.DateTime = DateTime.Now;
                     Core.View.RefreshFM(fm);
                     Ini.WriteFullFMDataIni();
@@ -275,16 +281,23 @@ internal static class FMInstallAndPlay
         works and one that doesn't, so I can test both paths.
         */
 
-#if !ReleaseBeta && !ReleasePublic
-        string args = !steamArgs.IsEmpty() ? steamArgs : Config.ForceWindowed ? "force_windowed=1 -fm" : "-fm";
-#else
-        string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
-#endif
+        string args =
+            // We set it to current manually beforehand anyway, but let's do this too just to be explicit I guess
+            gameIndex == GameIndex.TDM ? "+set fs_currentfm " + fm.InstalledDir :
+            !steamArgs.IsEmpty() ? steamArgs :
+            "-fm";
 
         if (GameIsDark(fm.Game))
         {
             MissFlagError missFlagError = GenerateMissFlagFileIfRequired(fm, errorOnCantPlay: true);
             if (missFlagError != MissFlagError.None) return false;
+
+#if !ReleaseBeta && !ReleasePublic
+            if (Config.ForceWindowed)
+            {
+                args += " force_windowed=1";
+            }
+#endif
 
             // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
             // .mis file when detecting OldDark (if there is no missflag.str)!
@@ -451,6 +464,8 @@ internal static class FMInstallAndPlay
     [MustUseReturnValue]
     private static bool WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
     {
+        if (fm?.Game == Game.TDM) return true;
+
         string sLanguage = "";
         bool? bForceLanguage = null;
 
