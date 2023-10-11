@@ -652,6 +652,7 @@ public sealed partial class Scanner : IDisposable
     private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
         /*
+        @TDM(Scanner todos)
         (done) Detect/read darkmod.txt for title and author
         (done) Detect/read readme.txt for parseable release date
          (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
