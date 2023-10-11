@@ -42,6 +42,18 @@ public sealed partial class Scanner : IDisposable
 
     #region Private fields
 
+    private static byte[] InitRomanToDecimalTable()
+    {
+        byte[] ret = new byte['X' + 1];
+        ret['I'] = 1;
+        ret['V'] = 5;
+        ret['X'] = 10;
+        return ret;
+    }
+
+    private byte[]? _romanNumeralToDecimalTable;
+    private byte[] RomanNumeralToDecimalTable => _romanNumeralToDecimalTable ??= InitRomanToDecimalTable();
+
     #region Disposable
 
     private ZipArchiveFast _archive = null!;
@@ -3955,9 +3967,11 @@ public sealed partial class Scanner : IDisposable
 
         _titleAcronymChars.ClearFast();
 
+        byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
+
         bool titleAcronymSuccess =
             Utility.AnyConsecutiveAsciiUppercaseChars(mainTitle) &&
-            Utility.GetAcronym(mainTitle, _titleAcronymChars);
+            Utility.GetAcronym(mainTitle, _titleAcronymChars, romanNumeralToDecimalTable);
 
         if (titleAcronymSuccess)
         {
@@ -3971,9 +3985,9 @@ public sealed partial class Scanner : IDisposable
                 _altTitleRomanToDecimalAcronymChars.ClearFast();
 
                 bool acronymNormalSuccess =
-                    Utility.GetAcronym(altTitle, _altTitleAcronymChars);
+                    Utility.GetAcronym(altTitle, _altTitleAcronymChars, romanNumeralToDecimalTable);
                 bool acronymRomanToDecimalSuccess =
-                    Utility.GetAcronym(altTitle, _altTitleRomanToDecimalAcronymChars, convertRomanToDecimal: true);
+                    Utility.GetAcronym(altTitle, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable, convertRomanToDecimal: true);
 
                 if (acronymNormalSuccess &&
                     acronymRomanToDecimalSuccess &&

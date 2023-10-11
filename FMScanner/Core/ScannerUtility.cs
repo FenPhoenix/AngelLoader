@@ -557,29 +557,18 @@ internal static class Utility
         return false;
     }
 
-    private static byte[] InitRomanToDecimalTable()
-    {
-        byte[] ret = new byte['X' + 1];
-        ret['I'] = 1;
-        ret['V'] = 5;
-        ret['X'] = 10;
-        return ret;
-    }
-
     // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
     // being interpreted as a roman numeral
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
 
-    private static readonly byte[] _romanNumeralToDecimalTable = InitRomanToDecimalTable();
-
-    private static byte RomanToInteger(ListFast<char> value)
+    private static byte RomanToInteger(ListFast<char> value, byte[] romanNumeralToDecimalTable)
     {
         byte number = 0;
         for (int i = 0; i < value.Count; i++)
         {
-            byte current = _romanNumeralToDecimalTable[value[i]];
-            if (i < value.Count - 1 && current < _romanNumeralToDecimalTable[value[i + 1]])
+            byte current = romanNumeralToDecimalTable[value[i]];
+            if (i < value.Count - 1 && current < romanNumeralToDecimalTable[value[i + 1]])
             {
                 number -= current;
             }
@@ -591,7 +580,7 @@ internal static class Utility
         return number;
     }
 
-    internal static bool GetAcronym(string title, ListFast<char> acronymChars, bool convertRomanToDecimal = false)
+    internal static bool GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
         ListFast<char>? romanNumeralRun = null;
 
@@ -614,7 +603,7 @@ internal static class Utility
                         break;
                     }
                 }
-                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars))
+                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars,romanNumeralToDecimalTable))
                 {
                     return false;
                 }
@@ -628,9 +617,9 @@ internal static class Utility
 
         return true;
 
-        static bool AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars)
+        static bool AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
         {
-            byte number = RomanToInteger(romanNumeralRun);
+            byte number = RomanToInteger(romanNumeralRun, romanNumeralToDecimalTable);
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
             for (int digitIndex = 0; digitIndex < digits; digitIndex++)
             {
