@@ -76,6 +76,7 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
         }
     }
 
+    // @TDM: Do we want to change the icon on this button too?
     internal void SetSayInstall(bool value)
     {
         if (_constructed)
