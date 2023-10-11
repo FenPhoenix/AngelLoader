@@ -4421,7 +4421,8 @@ public sealed partial class MainForm : DarkFormBase,
             allAreAvailable,
             noneAreAvailable,
             playShouldBeEnabled,
-            installShouldBeEnabled;
+            installShouldBeEnabled,
+            anyAreTDM;
         bool installShouldBeVisible;
 
         bool multiplePinnedStates = false;
@@ -4533,6 +4534,7 @@ public sealed partial class MainForm : DarkFormBase,
                                      ((gameIsTDMCount == 1 && !multiSelected && !allAreInstalled) ||
                                      ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable));
             installShouldBeVisible = gameIsTDMCount == 0 || (gameIsTDMCount == 1 && !multiSelected);
+            anyAreTDM = gameIsTDMCount > 0;
         }
 
         // Exactly this order or we get the top-right tabs not being in a properly refreshed state
@@ -4572,7 +4574,7 @@ public sealed partial class MainForm : DarkFormBase,
         FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(
             (multiSelected && !noneAreAvailable) || allAreAvailable
         );
-        FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(!noneAreAvailable);
+        FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(!noneAreAvailable && !anyAreTDM);
         FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
 
         FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemVisible(noneAreAvailable);

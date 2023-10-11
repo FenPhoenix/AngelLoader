@@ -925,8 +925,12 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniListTDM[i];
 
-            // Perf so we don't have to iterate the list again later
-            if (fm.NeedsScan())
+            string fmInstDir = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fm.TDMInstalledDir);
+            if (!Directory.Exists(fmInstDir))
+            {
+                fm.MarkedUnavailable = true;
+            }
+            else if (fm.NeedsScan())
             {
                 fmsViewListUnscanned.Add(fm);
             }

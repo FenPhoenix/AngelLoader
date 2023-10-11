@@ -59,6 +59,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private ToolStripMenuItemCustom PinToTopMenuItem = null!;
     private ToolStripMenuItemCustom ExplicitPinToTopMenuItem = null!;
     private ToolStripMenuItemCustom ExplicitUnpinFromTopMenuItem = null!;
+    private ToolStripSeparator DeleteSep = null!;
     private ToolStripMenuItemCustom DeleteFMMenuItem = null!;
     private ToolStripMenuItemCustom DeleteFromDBMenuItem = null!;
     private ToolStripSeparator OpenInDromEdSep = null!;
@@ -171,7 +172,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             PinToTopMenuItem = new ToolStripMenuItemCustom(),
             ExplicitPinToTopMenuItem = new ToolStripMenuItemCustom { Visible = false },
             ExplicitUnpinFromTopMenuItem = new ToolStripMenuItemCustom { Visible = false },
-            new ToolStripSeparator(),
+            DeleteSep = new ToolStripSeparator(),
             DeleteFMMenuItem = new ToolStripMenuItemCustom(),
             DeleteFromDBMenuItem = new ToolStripMenuItemCustom(),
             OpenInDromEdSep = new ToolStripSeparator(),
@@ -296,6 +297,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         _constructed = true;
 
         // These must come after the constructed bool gets set to true
+        ShowOrHideDeleteSeparator();
         SetImages();
         SetPinItemsMode(_multiplePinnedStates);
         UpdateRatingList(Config.RatingDisplayStyle);
@@ -513,6 +515,12 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
+    private void ShowOrHideDeleteSeparator()
+    {
+        if (!_constructed) return;
+        DeleteSep.Visible = DeleteFMMenuItem.Visible || DeleteFromDBMenuItem.Visible;
+    }
+
     internal void SetDeleteFMMenuItemVisible(bool value)
     {
         if (_constructed)
@@ -523,6 +531,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             _deleteFMMenuItemVisible = value;
         }
+
+        ShowOrHideDeleteSeparator();
     }
 
     internal void SetDeleteFMMenuItemText(bool multiSelected)
@@ -544,6 +554,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             _deleteFromDBMenuItemVisible = value;
         }
+
+        ShowOrHideDeleteSeparator();
     }
 
     internal void SetDeleteFromDBMenuItemText(bool multiSelected)

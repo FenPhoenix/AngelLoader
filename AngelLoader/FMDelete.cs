@@ -10,6 +10,7 @@ using AngelLoader.DataClasses;
 using Microsoft.VisualBasic.FileIO;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
@@ -37,13 +38,23 @@ internal static class FMDelete
         if (fms.Count == 0) return VoidTask;
 
         bool allAreUnavailable = true;
+        bool anyAreTDM = false;
         for (int i = 0; i < fms.Count; i++)
         {
-            if (!fms[i].MarkedUnavailable)
+            FanMission fm = fms[i];
+            if (!fm.MarkedUnavailable)
             {
                 allAreUnavailable = false;
-                break;
             }
+            if (fm.Game == Game.TDM)
+            {
+                anyAreTDM = true;
+            }
+        }
+
+        if (!allAreUnavailable && anyAreTDM)
+        {
+            return VoidTask;
         }
 
         return allAreUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms);
