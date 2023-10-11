@@ -481,6 +481,11 @@ internal static class Core
                 }
             }
 
+            if (View != null!)
+            {
+                View.QueueRefresh();
+            }
+
             static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
             {
                 try
@@ -508,6 +513,11 @@ internal static class Core
                 {
                     fm.Installed = false;
                 }
+            }
+
+            if (View != null!)
+            {
+                View.QueueRefresh();
             }
         }
     }

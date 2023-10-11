@@ -2989,6 +2989,33 @@ public sealed partial class MainForm : DarkFormBase,
         RefreshAllSelectedFMs_Full();
     }
 
+    private bool _refreshIsQueued;
+
+    public void QueueRefresh()
+    {
+        _refreshIsQueued = true;
+        Invoke(() =>
+        {
+            if (UIEnabled && !ViewBlocked)
+            {
+                RefreshIfQueued();
+            }
+        });
+    }
+
+    private void RefreshIfQueued()
+    {
+        if (_refreshIsQueued)
+        {
+            _refreshIsQueued = false;
+            RefreshFMsListRowsOnlyKeepSelection();
+            if (_displayedFM != null)
+            {
+                UpdateUIControlsForMultiSelectState(_displayedFM);
+            }
+        }
+    }
+
     public void RefreshFMsListRowsOnlyKeepSelection() => FMsDGV.Refresh();
 
     /// <summary>
@@ -4852,7 +4879,11 @@ public sealed partial class MainForm : DarkFormBase,
         {
             EverythingPanel.ResumeDrawing();
 
-            if (!block) Cursor = Cursors.Default;
+            if (!block)
+            {
+                Cursor = Cursors.Default;
+                RefreshIfQueued();
+            }
         }
     });
 
@@ -5179,6 +5210,11 @@ public sealed partial class MainForm : DarkFormBase,
             // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
             FMsDGV.Focus();
             FMsDGV.SelectProperly();
+
+            if (value)
+            {
+                RefreshIfQueued();
+            }
         }
     }
 
