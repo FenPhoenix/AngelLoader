@@ -3349,21 +3349,22 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < lines.Count; i++)
                 {
                     string lineT = lines[i].Trim();
-                    if (!lineT.EqualsI_Local("Author") && !lineT.EqualsI_Local("Author:")) continue;
+                    if (!lineT.EqualsI_Local("Author") &&
+                        !lineT.EqualsI_Local("Author:") &&
+                        !lineT.EqualsI_Local("Authors") &&
+                        !lineT.EqualsI_Local("Authors:"))
+                    {
+                        continue;
+                    }
 
                     if (i < lines.Count - 2)
                     {
                         string lineAfterNext = lines[i + 2].Trim();
                         int lanLen = lineAfterNext.Length;
                         if ((lanLen > 0 &&
-                             /*
-                             @TDM: Training Mission still fails due to this:
-
-                             Authors:
-                              Bikerdude, Flanders, SneaksieDave, HappyCheeze, Fidcal, Komag, Grayman & The DarkMod Team
-                             .
-                             */
-                             lineAfterNext.Contains(':') &&
+                             (lineAfterNext.Contains(':') ||
+                              // Overly-specific hack for the Dark Mod training mission
+                              lineAfterNext == ".") &&
                              lanLen <= 50) ||
                             lineAfterNext.IsWhiteSpace())
                         {
