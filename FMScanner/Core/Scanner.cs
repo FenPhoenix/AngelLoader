@@ -661,15 +661,26 @@ public sealed partial class Scanner : IDisposable
         (done) Detect mission count - find out how
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
 
-        Mission count:
-        tdm_mapsequence.txt in the root of the pk4
-        Syntax (using nhat3 as an example):
+        missions.tdminfo
+        A typical entry:
+        
+        tdm_missioninfo beleaguered_fence
+        {
+	        "downloaded_version"	"2"
+	        "last_play_date"	"2014-09-23"
+        	"mission_completed_2"	"1"
+	        "mission_loot_collected_2"	"4322"
+        }
 
-        Mission 1: politics
-        Mission 2: anoott
-        Mission 3: forest
+        "mission_completed_0" = Normal
+        "mission_completed_1" = Hard
+        "mission_completed_2" = Expert
 
-        We could probably just read this file and be done with it, count them up and there you go.
+        Note the last play date is day granularity only, whereas ours is instant granularity (we take a timestamp).
+        So that mismatch could pose an issue.
+
+        Do we want to watch for changes to this file? It could get unboundedly large and we'd have to linear
+        search the whole thing every time.
         */
 
         ScannedFMData fmData = new()
