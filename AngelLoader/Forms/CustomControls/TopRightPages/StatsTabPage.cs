@@ -53,6 +53,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
         _page.CustomResourcesLabel.Text =
             selFM == null ? LText.StatisticsTab.CustomResources :
             selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
+            selFM.Game == Game.TDM ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM :
             selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
             LText.StatisticsTab.CustomResourcesNotScanned;
 
@@ -78,7 +79,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
         if (fm != null)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
+            bool gameSupported = GameSupportsResourceDetection(fm.Game);
 
             EnableStatsPanelLabels(_page, true);
 
@@ -86,9 +87,13 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
             _page.StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
-            if (fmIsT3)
+            if (!gameSupported)
             {
-                BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                BlankStatsPanelWithMessage(
+                    _page,
+                    fm.Game == Game.TDM
+                        ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM
+                        : LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
             }
             else if (!fm.ResourcesScanned)
             {

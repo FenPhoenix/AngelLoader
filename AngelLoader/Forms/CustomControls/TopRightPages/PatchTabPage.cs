@@ -88,13 +88,9 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
         if (fm != null)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
+            bool gameSupported = GameSupportsMods(fm.Game);
 
-            if (fmIsT3)
-            {
-                DisablePatchNonDMLSection();
-            }
-            else
+            if (gameSupported)
             {
                 foreach (Control c in _page.Controls)
                 {
@@ -108,10 +104,14 @@ public sealed class PatchTabPage : Lazy_TabsBase
                 _page.Patch_PostProc_CheckBox.SetFromNullableBool(fm.PostProc);
                 _page.Patch_NDSubs_CheckBox.SetFromNullableBool(fm.NDSubs);
             }
+            else
+            {
+                DisablePatchNonDMLSection();
+            }
 
             _page.PatchMainPanel.Enabled = true;
 
-            if (fm.Installed && !fmIsT3)
+            if (fm.Installed && gameSupported)
             {
                 ShowPatchInstalledOnlySection(enable: true);
             }

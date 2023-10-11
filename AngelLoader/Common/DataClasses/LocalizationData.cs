@@ -502,6 +502,7 @@ internal sealed class LText_Class
         internal readonly string CustomResourcesNotScanned = "Custom resources not scanned.";
         // @GENGAMES (Localization - Custom resource detection not supported): Begin
         internal readonly string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
+        internal readonly string CustomResourcesNotSupportedForTDM = "Custom resource detection is not supported for Dark Mod FMs.";
         // @GENGAMES (Localization - Custom resource detection not supported): End
         internal readonly string NoFMSelected = "No FM selected.";
         [FenGenBlankLine]
@@ -608,6 +609,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         // @GENGAMES (Localization - ModsTab_Class)
         internal readonly string Thief3_ModsNotSupported = "Mod management is not supported for Thief: Deadly Shadows.";
+        internal readonly string TDM_ModsNotSupported = "Mod management is not supported for The Dark Mod.";
     }
 
     internal sealed class ReadmeArea_Class

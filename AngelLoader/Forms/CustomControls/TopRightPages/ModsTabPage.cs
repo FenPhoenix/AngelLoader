@@ -57,7 +57,16 @@ public sealed class ModsTabPage : Lazy_TabsBase
         _page.MainModsControl.Localize(LText.ModsTab.Header);
         _page.MainModsControl.RefreshCautionLabelText(LText.ModsTab.ImportantModsCaution);
 
-        ModsTabNotSupportedMessageLabel.Text = LText.ModsTab.Thief3_ModsNotSupported;
+        FanMission? fm = _owner.GetMainSelectedFMOrNull();
+        UpdateNotSupportedMessage(fm);
+    }
+
+    private void UpdateNotSupportedMessage(FanMission? fm)
+    {
+        ModsTabNotSupportedMessageLabel.Text =
+            fm?.Game == Game.TDM
+                ? LText.ModsTab.TDM_ModsNotSupported
+                : LText.ModsTab.Thief3_ModsNotSupported;
     }
 
     public override void UpdatePage()
@@ -68,23 +77,23 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
         if (fm != null)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
+            bool gameSupported = GameSupportsMods(fm.Game);
 
             _page.MainModsControl.Enabled = true;
 
-            if (fmIsT3)
-            {
-                _page.MainModsControl.Visible = false;
-                ModsTabNotSupportedMessageLabel.Visible = true;
-
-                _page.MainModsControl.SoftClearList();
-            }
-            else
+            if (gameSupported)
             {
                 _page.MainModsControl.Visible = true;
                 ModsTabNotSupportedMessageLabel.Visible = false;
 
                 _page.MainModsControl.Set(fm.Game, fm.DisabledMods);
+            }
+            else
+            {
+                _page.MainModsControl.Visible = false;
+                ModsTabNotSupportedMessageLabel.Visible = true;
+
+                _page.MainModsControl.SoftClearList();
             }
         }
         else
@@ -94,6 +103,8 @@ public sealed class ModsTabPage : Lazy_TabsBase
             _page.MainModsControl.Enabled = false;
             _page.MainModsControl.Visible = true;
         }
+
+        UpdateNotSupportedMessage(fm);
     }
 
     #endregion

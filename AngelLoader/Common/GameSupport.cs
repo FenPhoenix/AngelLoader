@@ -178,5 +178,9 @@ public static partial class GameSupport
     };
 
     #endregion
+
+    internal static bool GameSupportsLanguages(Game game) => GameIsDark(game);
+
+    internal static bool GameSupportsResourceDetection(Game game) => GameIsDark(game);
 }
 // @GENGAMES (GameSupport): End

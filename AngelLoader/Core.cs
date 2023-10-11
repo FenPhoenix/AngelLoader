@@ -2702,7 +2702,7 @@ internal static class Core
     {
         #region Languages
 
-        if (GameIsDark(fm.Game))
+        if (GameSupportsLanguages(fm.Game))
         {
             if (!fm.LangsScanned)
             {
@@ -2710,7 +2710,7 @@ internal static class Core
                 Ini.WriteFullFMDataIni();
             }
         }
-        else if (fm.Game == Game.Thief3)
+        else
         {
             fm.Langs = Language.Default;
             fm.SelectedLang = Language.Default;

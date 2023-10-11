@@ -168,26 +168,26 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
         if (fm != null)
         {
-            bool fmIsT3 = fm.Game == Game.Thief3;
+            bool gameSupported = GameSupportsLanguages(fm.Game);
 
             void SetLanguageEnabledState()
             {
-                _page.EditFMLanguageLabel.Enabled = !fmIsT3;
-                _page.EditFMLanguageComboBox.Enabled = !fmIsT3;
+                _page.EditFMLanguageLabel.Enabled = gameSupported;
+                _page.EditFMLanguageComboBox.Enabled = gameSupported;
             }
 
             // Adding/removing items from the combobox while disabled and in dark mode appears to be the
             // cause of the white flickering, so always make sure we're in an enabled state when setting
             // the items.
-            if (fmIsT3)
+            if (gameSupported)
             {
-                FillLanguagesListAndSelectLanguage();
                 SetLanguageEnabledState();
+                FillLanguagesListAndSelectLanguage();
             }
             else
             {
-                SetLanguageEnabledState();
                 FillLanguagesListAndSelectLanguage();
+                SetLanguageEnabledState();
             }
 
             foreach (Control c in _page.Controls)
@@ -202,7 +202,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             _page.EditFMScanTitleButton.Enabled = !fm.MarkedUnavailable;
             _page.EditFMScanAuthorButton.Enabled = !fm.MarkedUnavailable;
             _page.EditFMScanReleaseDateButton.Enabled = !fm.MarkedUnavailable;
-            _page.EditFMScanLanguagesButton.Enabled = !fmIsT3 && !fm.MarkedUnavailable;
+            _page.EditFMScanLanguagesButton.Enabled = gameSupported && !fm.MarkedUnavailable;
             _page.EditFMScanForReadmesButton.Enabled = !fm.MarkedUnavailable;
 
             _page.EditFMTitleTextBox.Text = fm.Title;
@@ -439,7 +439,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
             _page.EditFMLanguageComboBox.ClearAllBeyondFirstItem();
 
-            if (GameIsDark(fm.Game))
+            if (GameSupportsLanguages(fm.Game))
             {
                 Lazy_LangDetectError.SetVisible(!fm.LangsScanned);
 
