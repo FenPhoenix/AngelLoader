@@ -819,42 +819,45 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniList[i];
 
-            #region Checks
-
-            // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
-            // then I guess why not
-            for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
-
-            if (fm.Installed &&
-                NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))
+            if (fm.Game != Game.TDM)
             {
-                fm.Installed = false;
-            }
+                #region Checks
 
-            if (!fm.Installed ||
-                NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
-            {
-                if (!fmArchivesDict.ContainsKey(fm.Archive))
+                // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
+                // then I guess why not
+                for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
+
+                if (fm.Installed &&
+                    NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))
                 {
-                    fm.MarkedUnavailable = true;
+                    fm.Installed = false;
                 }
-            }
 
-            #endregion
-
-            // Fix: we can have duplicate archive names if the installed dir is different, so cull them
-            // out of the view list at least.
-            // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
-            // We shouldn't have duplicate archives, but importing might add different installed dirs...
-            if (!fm.Archive.IsEmpty())
-            {
-                if (!viewListHash.Contains(fm.Archive))
+                if (!fm.Installed ||
+                     NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: true))
                 {
-                    viewListHash.Add(fm.Archive);
+                    if (!fmArchivesDict.ContainsKey(fm.Archive))
+                    {
+                        fm.MarkedUnavailable = true;
+                    }
                 }
-                else
+
+                #endregion
+
+                // Fix: we can have duplicate archive names if the installed dir is different, so cull them
+                // out of the view list at least.
+                // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
+                // We shouldn't have duplicate archives, but importing might add different installed dirs...
+                if (!fm.Archive.IsEmpty())
                 {
-                    continue;
+                    if (!viewListHash.Contains(fm.Archive))
+                    {
+                        viewListHash.Add(fm.Archive);
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
             }
 

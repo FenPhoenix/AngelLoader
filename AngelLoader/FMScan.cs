@@ -201,6 +201,7 @@ internal static class FMScan
                     if (_scanCts.IsCancellationRequested) return false;
 
                     using var scanner = new FMScanner.Scanner(Paths.SevenZipPath, Paths.SevenZipExe, GetDefaultScanOptions());
+                    scanner.TdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                 }
                 catch (OperationCanceledException)

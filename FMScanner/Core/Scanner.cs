@@ -123,6 +123,10 @@ public sealed partial class Scanner : IDisposable
     private ListFast<char>? _title2_TempNonWhitespaceChars;
     private ListFast<char> Title2_TempNonWhitespaceChars => _title2_TempNonWhitespaceChars ??= new ListFast<char>(50);
 
+    private readonly ListFast<char> _titleAcronymChars = new(10);
+    private readonly ListFast<char> _altTitleAcronymChars = new(10);
+    private readonly ListFast<char> _altTitleRomanToDecimalAcronymChars = new(10);
+
     private readonly List<NameAndIndex> _baseDirFiles = new(20);
     private readonly List<NameAndIndex> _misFiles = new(20);
     private readonly List<NameAndIndex> _usedMisFiles = new(20);
@@ -242,6 +246,11 @@ public sealed partial class Scanner : IDisposable
 #endif
     }
 
+    #region Constructors
+
+    // @TDM: Integrate this into the ctors eventually, just quick n dirty for now
+    public string TdmFMsPath = "";
+
 #if FMScanner_FullCode
     [PublicAPI]
     public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions())
@@ -305,6 +314,8 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
     }
+
+    #endregion
 
     #region Scan synchronous
 
@@ -519,7 +530,7 @@ public sealed partial class Scanner : IDisposable
                         FMToScan? fm = missions[i];
                         scannedFMAndError =
                             fm.IsTDM
-                                ? ScanCurrentDarkModFM(fm, cancellationToken)
+                                ? ScanCurrentDarkModFM()
                                 : ScanCurrentFM(fm, tempPath, cancellationToken);
                     }
                     catch (OperationCanceledException)
@@ -559,13 +570,159 @@ public sealed partial class Scanner : IDisposable
         return scannedFMDataList;
     }
 
-    private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm, CancellationToken cancellationToken)
+    private void SetOrAddTitle(List<string> titles, string value)
+    {
+        value = CleanupTitle(value).Trim();
+
+        if (value.IsEmpty()) return;
+
+        if (!titles.ContainsI(value))
+        {
+            titles.Add(value);
+        }
+    }
+
+    private void SetFMTitles(ScannedFMData fmData, List<string> titles)
+    {
+        OrderTitlesOptimally(titles);
+        if (titles.Count > 0)
+        {
+            fmData.Title = titles[0];
+            if (titles.Count > 1)
+            {
+                fmData.AlternateTitles = new string[titles.Count - 1];
+                for (int i = 1; i < titles.Count; i++)
+                {
+                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
+                }
+            }
+        }
+    }
+
+    private ScannedFMDataAndError ScanCurrentDarkModFM()
     {
         /*
-        -Detect/read darkmod.txt for title and author
-        -Detect/read readme.txt for parseable release date (that's the only thing we need from there)
+        (done) Detect/read darkmod.txt for title and author
+        -Detect/read readme.txt for parseable release date
+         (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
         -Detect/read fms\missions.tdminfo for last played/finished-on
+        -Detect mission count - find out how
+        -No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
         */
+
+        ScannedFMData fmData = new()
+        {
+            ArchiveName = FMWorkingPathDirName,
+            Game = Game.TDM
+        };
+
+        string darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
+        string readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
+
+        int darkModTxtIndex = AddReadme(darkModTxt);
+        int readmeTxtIndex = AddReadme(readmeTxt);
+
+        List<string> titles = new();
+
+        /*
+        The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
+        That's _TERRIBLE_ but we want to match behavior.
+        */
+        if (darkModTxtIndex > -1)
+        {
+            ReadmeInternal readme = _readmeFiles[darkModTxtIndex];
+
+            MatchCollection matches = Regex.Matches(readme.Text, "(Title:|Author:|Description:|Version:|Required TDM Version:)");
+            int plus = 0;
+            foreach (Match match in matches)
+            {
+                if (match.Index > 0)
+                {
+                    char c = readme.Text[match.Index - 1];
+                    if (c == '\r' ||
+                        c == '\n' ||
+                        !char.IsWhiteSpace(c))
+                    {
+                        readme.Text = readme.Text.Insert(match.Index + plus, "\r\n");
+                        plus += 2;
+                    }
+                }
+            }
+
+            if (plus > 0)
+            {
+                readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+            }
+        }
+
+        if (darkModTxtIndex > -1 && readmeTxtIndex > -1)
+        {
+            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: darkModTxtIndex));
+            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: readmeTxtIndex));
+        }
+        else
+        {
+            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
+        }
+        List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
+        if (topOfReadmeTitles?.Count > 0)
+        {
+            for (int i = 0; i < topOfReadmeTitles.Count; i++)
+            {
+                SetOrAddTitle(titles, topOfReadmeTitles[i]);
+            }
+        }
+
+        SetFMTitles(fmData, titles);
+
+        GetAuthor(fmData, titles);
+
+        return new ScannedFMDataAndError { ScannedFMData = fmData };
+
+        int AddReadme(string readmeFileOnDisk)
+        {
+            try
+            {
+                FileInfo readmeFI = new(readmeFileOnDisk);
+                DateTime date = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
+                ReadmeInternal readme = new(isGlml: false, date, scan: true, useForDateDetect: true);
+                using (var readmeStream = GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer))
+                {
+                    readme.Text = ReadAllTextDetectEncoding(readmeStream);
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                }
+                _readmeFiles.Add(readme);
+                return _readmeFiles.Count - 1;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+    }
+
+    private void GetAuthor(ScannedFMData fmData, List<string> titles)
+    {
+        if (fmData.Author.IsEmpty())
+        {
+            List<string>? passTitles = titles.Count > 0 ? titles : null;
+            string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, passTitles);
+            fmData.Author = CleanupValue(author).Trim();
+        }
+
+        if (!fmData.Author.IsEmpty())
+        {
+            Match match = AuthorEmailRegex.Match(fmData.Author);
+            if (match.Success)
+            {
+                fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
+            }
+
+            if (fmData.Author.StartsWithI_Local("By "))
+            {
+                fmData.Author = fmData.Author.Substring(2).Trim();
+            }
+        }
     }
 
     private ScannedFMDataAndError
@@ -1056,19 +1213,6 @@ public sealed partial class Scanner : IDisposable
 
         List<string> titles = new();
 
-        void SetOrAddTitle(string value)
-        {
-            value = CleanupTitle(value).Trim();
-
-            if (value.IsEmpty()) return;
-
-            if (!titles.ContainsI(value))
-            {
-                titles.Add(value);
-            }
-
-        }
-
         bool fmIsSS2 = false;
 
         if (!fmIsT3)
@@ -1122,7 +1266,7 @@ public sealed partial class Scanner : IDisposable
                             , version
 #endif
                             , releaseDate) = ReadFMInfoXml(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
                         {
                             fmData.Author = author;
@@ -1148,7 +1292,7 @@ public sealed partial class Scanner : IDisposable
                             , description
 #endif
                             , lastUpdateDate, tags) = ReadFMIni(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
@@ -1172,7 +1316,7 @@ public sealed partial class Scanner : IDisposable
                     if (f.Name.EqualsI_Local(FMFiles.ModIni))
                     {
                         var (title, author) = ReadModIni(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
@@ -1238,8 +1382,8 @@ public sealed partial class Scanner : IDisposable
                     = GetMissionNames();
                 if (_scanOptions.ScanTitle)
                 {
-                    SetOrAddTitle(titleFrom0);
-                    SetOrAddTitle(titleFromN);
+                    SetOrAddTitle(titles, titleFrom0);
+                    SetOrAddTitle(titles, titleFromN);
                 }
 #if FMScanner_FullCode
                 if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
@@ -1253,32 +1397,19 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle)
         {
-            SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
+            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
 
-            if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile());
+            if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
 
             List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
             if (topOfReadmeTitles?.Count > 0)
             {
-                for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
+                for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(titles, topOfReadmeTitles[i]);
             }
 
             if (!scanTitleForAuthorPurposesOnly)
             {
-                OrderTitlesOptimally(titles);
-
-                if (titles.Count > 0)
-                {
-                    fmData.Title = titles[0];
-                    if (titles.Count > 1)
-                    {
-                        fmData.AlternateTitles = new string[titles.Count - 1];
-                        for (int i = 1; i < titles.Count; i++)
-                        {
-                            fmData.AlternateTitles[i - 1] = titles[i].Trim();
-                        }
-                    }
-                }
+                SetFMTitles(fmData, titles);
             }
             else
             {
@@ -1292,28 +1423,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanAuthor || _scanOptions.ScanTags)
         {
-            if (fmData.Author.IsEmpty())
-            {
-                List<string>? passTitles = titles.Count > 0 ? titles : null;
-
-                string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, passTitles);
-
-                fmData.Author = CleanupValue(author).Trim();
-            }
-
-            if (!fmData.Author.IsEmpty())
-            {
-                Match match = AuthorEmailRegex.Match(fmData.Author);
-                if (match.Success)
-                {
-                    fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
-                }
-
-                if (fmData.Author.StartsWithI_Local("By "))
-                {
-                    fmData.Author = fmData.Author.Substring(2).Trim();
-                }
-            }
+            GetAuthor(fmData, titles);
         }
 
         #endregion
@@ -1394,45 +1504,55 @@ public sealed partial class Scanner : IDisposable
 #endif
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
-
-        #region Local functions
-
-        static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Unsupported,
-                MissionCount = 0
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
-        static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Null,
-                MissionCount = 0
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
-        static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-        {
-            ScannedFMData = null,
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo
-        };
-
-        #endregion
     }
+
+    #region Fail return functions
+
+    private static ScannedFMDataAndError UnknownTDM(Exception? ex, string errorInfo) => new()
+    {
+        ScannedFMData = new ScannedFMData
+        {
+            Game = Game.TDM
+        },
+        Exception = ex,
+        ErrorInfo = errorInfo
+    };
+
+    private static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+    {
+        ScannedFMData = new ScannedFMData
+        {
+            ArchiveName = Path.GetFileName(archivePath),
+            Game = Game.Unsupported,
+            MissionCount = 0
+        },
+        Fen7zResult = fen7zResult,
+        Exception = ex,
+        ErrorInfo = errorInfo
+    };
+
+    private static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+    {
+        ScannedFMData = new ScannedFMData
+        {
+            ArchiveName = Path.GetFileName(archivePath),
+            Game = Game.Null,
+            MissionCount = 0
+        },
+        Fen7zResult = fen7zResult,
+        Exception = ex,
+        ErrorInfo = errorInfo
+    };
+
+    private static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+    {
+        ScannedFMData = null,
+        Fen7zResult = fen7zResult,
+        Exception = ex,
+        ErrorInfo = errorInfo
+    };
+
+    #endregion
 
     private void CopySevenZipReadmesToCacheDir(FMToScan fm)
     {
@@ -2986,12 +3106,16 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null)
+    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null, int readmeIndex = -1)
     {
         string ret = "";
 
-        foreach (ReadmeInternal file in _readmeFiles)
+        for (int ri = 0; ri < _readmeFiles.Count; ri++)
         {
+            ReadmeInternal file = _readmeFiles[ri];
+            // @TDM: Make this less janky, and have it only check once and do it once
+            if (readmeIndex > -1 && readmeIndex != ri) continue;
+
             if (!file.Scan) continue;
 
             if (specialLogic == SpecialLogic.Author)
@@ -3065,7 +3189,16 @@ public sealed partial class Scanner : IDisposable
                     {
                         string lineAfterNext = lines[i + 2].Trim();
                         int lanLen = lineAfterNext.Length;
-                        if ((lanLen > 0 && lineAfterNext[lanLen - 1] == ':' && lanLen <= 50) ||
+                        if ((lanLen > 0 &&
+                             /*
+                             @TDM: Training Mission still fails due to this:
+
+                             Authors:
+                              Bikerdude, Flanders, SneaksieDave, HappyCheeze, Fidcal, Komag, Grayman & The DarkMod Team
+                             .
+                             */
+                             lineAfterNext.Contains(':') &&
+                             lanLen <= 50) ||
                             lineAfterNext.IsWhiteSpace())
                         {
                             return lines[i + 1].Trim();
@@ -3665,10 +3798,15 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
+        if (value.CharAppearsExactlyOnce('.') && value[value.Length - 1] == '.')
+        {
+            value = value.Substring(0, value.Length - 1);
+        }
+
         return CleanupValue(value).Trim();
     }
 
-    private unsafe void OrderTitlesOptimally(List<string> titles)
+    private void OrderTitlesOptimally(List<string> titles)
     {
         if (titles.Count < 2) return;
 
@@ -3676,13 +3814,11 @@ public sealed partial class Scanner : IDisposable
 
         if (mainTitle.IsEmpty()) return;
 
-        char* titleAcronymChars = stackalloc char[10];
-        char* altTitleAcronymChars = stackalloc char[10];
-        int titleAcronymCharsLength = 0;
+        _titleAcronymChars.ClearFast();
 
         bool titleAcronymSuccess =
             Utility.AnyConsecutiveAsciiUppercaseChars(mainTitle) &&
-            Utility.GetAcronym(mainTitle, titleAcronymChars, ref titleAcronymCharsLength);
+            Utility.GetAcronym(mainTitle, _titleAcronymChars);
 
         if (titleAcronymSuccess)
         {
@@ -3692,18 +3828,23 @@ public sealed partial class Scanner : IDisposable
             for (int i = 1; i < titles.Count; i++)
             {
                 string altTitle = titles[i];
-                int altTitleAcronymLength = 0;
+                _altTitleAcronymChars.ClearFast();
+                _altTitleRomanToDecimalAcronymChars.ClearFast();
 
-                bool acronymSuccess =
-                    Utility.GetAcronym(altTitle, altTitleAcronymChars, ref altTitleAcronymLength);
+                bool acronymNormalSuccess =
+                    Utility.GetAcronym(altTitle, _altTitleAcronymChars);
+                bool acronymRomanToDecimalSuccess =
+                    Utility.GetAcronym(altTitle, _altTitleRomanToDecimalAcronymChars, convertRomanToDecimal: true);
 
-                if (acronymSuccess &&
+                if (acronymNormalSuccess &&
+                    acronymRomanToDecimalSuccess &&
                     !mainTitle.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
-                    Utility.SequenceEqual_CharPtr(
-                        titleAcronymChars,
-                        altTitleAcronymChars,
-                        titleAcronymCharsLength,
-                        altTitleAcronymLength))
+                    (Utility.SequenceEqual(
+                        _titleAcronymChars,
+                        _altTitleAcronymChars) ||
+                     Utility.SequenceEqual(
+                         _titleAcronymChars,
+                         _altTitleRomanToDecimalAcronymChars)))
                 {
                     (titles[0], titles[i]) = (titles[i], titles[0]);
                     break;

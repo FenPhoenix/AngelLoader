@@ -557,22 +557,90 @@ internal static class Utility
         return false;
     }
 
-    internal static unsafe bool GetAcronym(string title, char* acronymChars, ref int acronymLength)
+    private static byte[] InitRomanToDecimalTable()
     {
-        for (int i = 0; i < title.Length; i++)
+        byte[] ret = new byte['X' + 1];
+        ret['I'] = 1;
+        ret['V'] = 5;
+        ret['X'] = 10;
+        return ret;
+    }
+
+    // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
+    // being interpreted as a roman numeral
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
+
+    private static readonly byte[] _romanNumeralToDecimalTable = InitRomanToDecimalTable();
+
+    private static byte RomanToInteger(ListFast<char> value)
+    {
+        byte number = 0;
+        for (int i = 0; i < value.Count; i++)
         {
-            char c = title[i];
-            if (c.IsAsciiNumeric() || c.IsAsciiUpper())
+            byte current = _romanNumeralToDecimalTable[value[i]];
+            if (i < value.Count - 1 && current < _romanNumeralToDecimalTable[value[i + 1]])
             {
-                acronymChars[acronymLength++] = c;
-                if (acronymLength >= 10)
+                number -= current;
+            }
+            else
+            {
+                number += current;
+            }
+        }
+        return number;
+    }
+
+    internal static bool GetAcronym(string title, ListFast<char> acronymChars, bool convertRomanToDecimal = false)
+    {
+        ListFast<char>? romanNumeralRun = null;
+
+        for (int titleIndex = 0; titleIndex < title.Length; titleIndex++)
+        {
+            char c = title[titleIndex];
+            if (convertRomanToDecimal && CharacterIsSupportedRomanNumeral(c))
+            {
+                romanNumeralRun ??= new ListFast<char>(10);
+                int romanNumeralIndex;
+                for (romanNumeralIndex = titleIndex; romanNumeralIndex < title.Length; romanNumeralIndex++)
+                {
+                    c = title[romanNumeralIndex];
+                    if (CharacterIsSupportedRomanNumeral(c))
+                    {
+                        romanNumeralRun.Add(c);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars))
                 {
                     return false;
                 }
+                titleIndex = romanNumeralIndex - 1;
+            }
+            else if (c.IsAsciiNumeric() || c.IsAsciiUpper())
+            {
+                acronymChars.Add(c);
             }
         }
 
         return true;
+
+        static bool AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars)
+        {
+            byte number = RomanToInteger(romanNumeralRun);
+            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
+            for (int digitIndex = 0; digitIndex < digits; digitIndex++)
+            {
+                char thing = (char)((number % 10) + '0');
+                acronymChars.Add(thing);
+                number /= 10;
+            }
+
+            return true;
+        }
     }
 
     /*
@@ -604,11 +672,11 @@ internal static class Utility
         return false;
     }
 
-    internal static unsafe bool SequenceEqual_CharPtr(char* first, char* second, int firstLength, int secondLength)
+    internal static bool SequenceEqual(ListFast<char> first, ListFast<char> second)
     {
-        if (firstLength != secondLength) return false;
+        if (first.Count != second.Count) return false;
 
-        for (int i = 0; i < firstLength; i++)
+        for (int i = 0; i < first.Count; i++)
         {
             if (first[i] != second[i]) return false;
         }
