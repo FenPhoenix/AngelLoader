@@ -618,36 +618,6 @@ public sealed partial class Scanner : IDisposable
         Mission 3: forest
 
         We could probably just read this file and be done with it, count them up and there you go.
-
-        --- MISSION COUNT COMPLICATIONS! ---
-
-        -We need to make sure our lines aren't inside a block comment
-        -We need to support multiple map files on one line, which appears to just be space delineated
-
-        From https://wiki.thedarkmod.com/index.php?title=Tdm_mapsequence.txt
-
-        the number X defines the mission, starting with the number 1. After the mandatory colon the name of one or more map files need to be listed without extensions.
-           
-        Note: while the file format supports more than one mission to be defined in each mission line, this is not fully supported yet in TDM's game code. 
-
-        / **
-           * This file defines the mission order for this campaign
-           *
-           * The syntax is:
-           * Mission <N>: <mapname> [<mapname> ...]
-           *
-           * N is the mission number, with the first mission carrying the number 1.
-           *
-           * It's possible to define more than one map filename for a mission,
-           * in case there are loading zones in it, but usually you won't need that.
-           *
-           * Line comments can be initiated with the double forward slash // 
-           * Block comments (like this one) are possible too.
-           * / 
-           Mission 1: red
-           Mission 2: blue
-           Mission 3: green
-        * /
         */
 
         ScannedFMData fmData = new()
@@ -673,21 +643,55 @@ public sealed partial class Scanner : IDisposable
                     for (int i = 0; i < entries.Count; i++)
                     {
                         ZipArchiveFastEntry entry = entries[i];
-                        if (entry.FullName == "tdm_mapsequence.txt")
+                        if (entry.FullName != "tdm_mapsequence.txt") continue;
+
+                        using Stream es = _archive.OpenEntry(entry);
+                        // Stupid micro-optimization: Don't call Dispose() method on stream twice
+                        using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+
+                        bool inBlockComment = false;
+                        while (sr.Reader.ReadLine() is { } line)
                         {
-                            using (Stream es = _archive.OpenEntry(entry))
+                            string lineT = line.Trim();
+
+                            if (inBlockComment)
                             {
-                                // Stupid micro-optimization: Don't call Dispose() method on stream twice
-                                using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false,
-                                    _streamReaderCustom, disposeStream: false);
-                                while (sr.Reader.ReadLine() is { } line)
+                                if (lineT.EndsWithO("*/"))
                                 {
-                                    string lineT = line.Trim();
-                                    if (Regex.Match(lineT, @"Mission [0123456789]+\:\s*.+").Success)
-                                    {
-                                        misCount++;
-                                    }
+                                    inBlockComment = false;
                                 }
+                            }
+                            else if (lineT.StartsWithO("/*"))
+                            {
+                                inBlockComment = true;
+                            }
+                            else if (lineT.StartsWithO("//"))
+                            {
+                                continue;
+                            }
+                            /*
+                            From https://wiki.thedarkmod.com/index.php?title=Tdm_mapsequence.txt:
+
+                            --- snip ---
+
+                            The syntax is:
+                            Mission <N>: <mapname> [<mapname> ...]
+                            
+                            N is the mission number, with the first mission carrying the number 1.
+                            
+                            It's possible to define more than one map filename for a mission,
+                            in case there are loading zones in it, but usually you won't need that.
+
+                            --- snip ---
+
+                            The way it's phrased makes it sound like multiple "maps" should still be considered
+                            part of the same "mission" if they're used like this. So we're going to consider one
+                            "Mission" line to be one mission, and if it has multiple maps then it's one mission
+                            with loading zones.
+                            */
+                            if (Regex.Match(lineT, @"^Mission [0123456789]+\:\s*(?<Maps>.+)").Success)
+                            {
+                                misCount++;
                             }
                         }
                     }
