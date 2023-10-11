@@ -127,7 +127,7 @@ internal static class FMInstallAndPlay
         bool askingConfirmation = askConfIfRequired && Config.ConfirmPlayOnDCOrEnter;
         if (askingConfirmation)
         {
-            string message = fm.Installed
+            string message = fm.Installed || fm.Game == Game.TDM
                 ? LText.AlertMessages.Play_ConfirmMessage
                 : LText.AlertMessages.Play_InstallAndPlayConfirmMessage;
 
