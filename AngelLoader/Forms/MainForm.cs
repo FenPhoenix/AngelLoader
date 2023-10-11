@@ -3801,9 +3801,10 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.Archive:
+                string value = fm.Game == Game.TDM ? fm.TDMInstalledDir : fm.Archive;
                 e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
-                    ? pinChar + fm.Archive
-                    : fm.Archive;
+                    ? pinChar + value
+                    : value;
                 break;
 
             case Column.Author:
@@ -4585,7 +4586,7 @@ public sealed partial class MainForm : DarkFormBase,
                                                 && Config.GetGameEditorDetected(gameIndex));
         FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-        FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && fm.Installed);
+        FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && (fm.Game == Game.TDM || fm.Installed));
 
         FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
         FMsDGV_FM_LLMenu.SetScanFMText(multiSelected);
