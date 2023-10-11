@@ -4532,7 +4532,7 @@ public sealed partial class MainForm : DarkFormBase,
             installShouldBeEnabled = allSelectedAreSameInstalledState &&
                                      ((gameIsTDMCount == 1 && !multiSelected && !allAreInstalled) ||
                                      ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable));
-            installShouldBeVisible = gameIsTDMCount == 0 || (gameIsTDMCount == 1 && !multiSelected && !fm.Installed);
+            installShouldBeVisible = gameIsTDMCount == 0 || (gameIsTDMCount == 1 && !multiSelected);
         }
 
         // Exactly this order or we get the top-right tabs not being in a properly refreshed state

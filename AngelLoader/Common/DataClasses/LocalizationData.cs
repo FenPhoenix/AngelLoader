@@ -125,6 +125,7 @@ internal sealed class LText_Class
         internal readonly string UninstallFM = "Uninstall FM";
         internal readonly string UninstallFMs = "Uninstall FMs";
         internal readonly string SelectFM_DarkMod = "Select FM";
+        internal readonly string DeselectFM_DarkMod = "Deselect FM";
         [FenGenBlankLine]
         internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
     }
@@ -628,8 +629,10 @@ internal sealed class LText_Class
         internal readonly string Thief2_PlayOriginal = "Play Thief 2 without FM";
         internal readonly string Thief3_PlayOriginal = "Play Thief 3 without FM";
         internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 without FM";
-        [FenGenDoNotWrite] // Dummy to keep the game count the same
-        internal readonly string TheDarkMod_PlayOriginal = "";
+        [FenGenComment(
+            "The Dark Mod doesn't really have such a thing as \"no FM\", so choosing to play it \"without FM\"",
+            "will simply start it with whatever FM it has set, or none if it has none set.")]
+        internal readonly string TheDarkMod_PlayOriginal = "Play The Dark Mod";
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
         internal readonly string Mods_TDMNotSupported = "AngelLoader does not support managing settings for The Dark Mod.";

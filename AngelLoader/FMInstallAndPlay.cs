@@ -62,25 +62,23 @@ internal static class FMInstallAndPlay
     {
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
         FanMission firstFM = fms[0];
-        if (firstFM.Installed)
+
+        if (firstFM.Game == Game.TDM)
+        {
+            SelectTdmFM(firstFM, deselect: firstFM.Installed);
+        }
+        else if (firstFM.Installed)
         {
             await Uninstall(fms);
             Core.View.SetAvailableAndFinishedFMCount();
         }
         else
         {
-            if (firstFM.Game == Game.TDM)
-            {
-                SelectTdmFM(firstFM);
-            }
-            else
-            {
-                await Install(fms);
-            }
+            await Install(fms);
         }
     }
 
-    private static bool SelectTdmFM(FanMission fm)
+    private static bool SelectTdmFM(FanMission fm, bool deselect = false)
     {
         try
         {
@@ -96,8 +94,9 @@ internal static class FMInstallAndPlay
             if (gamePath.IsEmpty()) return false;
 
             string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
+            if (deselect) fm.Installed = false;
             using var sw = new StreamWriter(currentFMFile);
-            sw.WriteLine(fm.InstalledDir);
+            sw.WriteLine(!deselect ? fm.InstalledDir : "");
         }
         catch
         {
