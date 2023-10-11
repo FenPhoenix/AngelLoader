@@ -20,6 +20,8 @@ namespace AngelLoader;
 @TDM: Things to be done for FM deletion:
 -Don't uninstall, or mention anything about uninstalling
 -When deleting an FM from disk, we have to delete its folder AND its entry in missions.tdminfo (presumably?!)
+-We disable disk deletion entirely for now (TDM also has no way to do it, surprisingly).
+ We could allow disk deletion and be heroes, but meh to it for now.
 */
 
 internal static class FMDelete

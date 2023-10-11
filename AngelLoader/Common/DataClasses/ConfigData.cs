@@ -147,9 +147,8 @@ public sealed class ConfigData
      worry about it but then slapping them with a "hey, go set this!" message as soon as they try to
      install or uninstall something might be the more annoying thing.
 
-    @TDM(BackupPath): TDM doesn't require the backup path, so we should revisit having it be a required field.
-    If the user ONLY wanted to use TDM, it makes no sense at all to require the backup path.
-    Maybe we only make it an error if any requiring game's exe is specified.
+    2023/10/11:
+    Backup path is now only required if you've specified one or more games that require it (TDM doesn't).
     */
     private string _fmsBackupPath = "";
     internal string FMsBackupPath

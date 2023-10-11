@@ -10,7 +10,9 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 // @GENGAMES(T2MP) (Play original game controls - lazy loaded)
 internal sealed class Lazy_PlayOriginalControls : IDarkable
 {
-    // @TDM: We need to get rid of the "play without FM" button for TDM, because there is no such as "without FM"
+    // @TDM: We need to get rid of the "play without FM" button for TDM, because there is no such thing as "without FM"
+    // I mean it works kinda okay, it plays the game with whatever FM it last had, but do we want to keep it?
+    // Would it be more confusing to remove the button, or to keep it without a real point?
 
     private bool _constructedSingle;
     private bool _constructedMulti;

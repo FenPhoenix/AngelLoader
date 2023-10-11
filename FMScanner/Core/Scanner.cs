@@ -684,7 +684,6 @@ public sealed partial class Scanner : IDisposable
 
             try
             {
-                // @TDM: Extract out the normal zip construction code so we get all the error handling here too
                 string zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
                 var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
                 if (zipResult.Success)

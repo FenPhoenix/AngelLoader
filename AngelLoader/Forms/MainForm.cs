@@ -4531,6 +4531,7 @@ public sealed partial class MainForm : DarkFormBase,
             multiSelected = selRowsCount > 1;
             playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
             installShouldBeEnabled = allSelectedAreSameInstalledState &&
+                                     gameIsTDMCount < 2 &&
                                      ((gameIsTDMCount == 1 && !multiSelected && !allAreInstalled) ||
                                      ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable));
             installShouldBeVisible = gameIsTDMCount == 0 || (gameIsTDMCount == 1 && !multiSelected);
@@ -4558,8 +4559,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
         FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
-
-        // @TDM: Still have to handle the Install/Uninstall button
 
         FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemVisible(installShouldBeVisible);
         FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
