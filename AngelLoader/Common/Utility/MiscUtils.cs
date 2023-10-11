@@ -44,7 +44,12 @@ public static partial class Utils
     {
         fmInstalledPath = "";
 
-        if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) || !fm.Installed)
+        if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        {
+            return false;
+        }
+
+        if (gameIndex != GameIndex.TDM && !fm.Installed)
         {
             return false;
         }
