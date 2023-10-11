@@ -603,11 +603,21 @@ public sealed partial class Scanner : IDisposable
     {
         /*
         (done) Detect/read darkmod.txt for title and author
-        -Detect/read readme.txt for parseable release date
+        (done) Detect/read readme.txt for parseable release date
          (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
         -Detect/read fms\missions.tdminfo for last played/finished-on
         -Detect mission count - find out how
         -No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
+
+        Mission count:
+        tdm_mapsequence.txt in the root of the pk4
+        Syntax (using nhat3 as an example):
+
+        Mission 1: politics
+        Mission 2: anoott
+        Mission 3: forest
+
+        We could probably just read this file and be done with it, count them up and there you go.
         */
 
         ScannedFMData fmData = new()
@@ -676,6 +686,8 @@ public sealed partial class Scanner : IDisposable
         SetFMTitles(fmData, titles);
 
         GetAuthor(fmData, titles);
+
+        fmData.LastUpdateDate = GetReleaseDate();
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
 
