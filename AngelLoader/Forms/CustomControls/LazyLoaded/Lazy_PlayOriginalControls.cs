@@ -10,6 +10,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 // @GENGAMES(T2MP) (Play original game controls - lazy loaded)
 internal sealed class Lazy_PlayOriginalControls : IDarkable
 {
+    // @TDM: We need to get rid of the "play without FM" button for TDM, because there is no such as "without FM"
+
     private bool _constructedSingle;
     private bool _constructedMulti;
 
