@@ -19,6 +19,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private bool _playFMInMPMenuItemVisible;
     private bool _playFMInMPMenuItemEnabled;
     private bool _installUninstallMenuItemEnabled;
+    private bool _installUninstallMenuItemVisible;
     private bool _deleteFMMenuItemEnabled;
     private bool _deleteFMMenuItemVisible;
     private bool _deleteFromDBMenuItemVisible;
@@ -255,6 +256,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         PlayFMInMPMenuItem.Enabled = _playFMInMPMenuItemEnabled;
 
         InstallUninstallMenuItem.Enabled = _installUninstallMenuItemEnabled;
+        InstallUninstallMenuItem.Visible = _installUninstallMenuItemVisible;
 
         DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
         DeleteFMMenuItem.Visible = _deleteFMMenuItemVisible;
@@ -326,7 +328,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #endregion
 
-        SetInstallUninstallMenuItemText(sayInstall, multiSelected);
+        SetInstallUninstallMenuItemText(sayInstall, multiSelected, selFM?.Game ?? Game.Null);
 
         SetPinOrUnpinMenuItemState(sayPin);
         ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
@@ -445,12 +447,27 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    internal void SetInstallUninstallMenuItemText(bool sayInstall, bool multiSelected)
+    internal void SetInstallUninstallMenuItemVisible(bool value)
+    {
+        if (_constructed)
+        {
+            InstallUninstallMenuItem.Visible = value;
+        }
+        else
+        {
+            _installUninstallMenuItemVisible = value;
+        }
+    }
+
+    internal void SetInstallUninstallMenuItemText(bool sayInstall, bool multiSelected, Game game)
     {
         if (!_constructed) return;
 
-        InstallUninstallMenuItem.Text =
-            sayInstall
+        InstallUninstallMenuItem.Text = game == Game.TDM
+            ? sayInstall && !multiSelected
+                ? LText.Global.SelectFM_DarkMod
+                : ""
+            : sayInstall
                 ? multiSelected
                     ? LText.Global.InstallFMs
                     : LText.Global.InstallFM

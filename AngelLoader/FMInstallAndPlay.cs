@@ -61,14 +61,47 @@ internal static class FMInstallAndPlay
     internal static async Task InstallOrUninstall(FanMission[] fms)
     {
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
-        if (fms[0].Installed)
+        FanMission firstFM = fms[0];
+        if (firstFM.Installed)
         {
             await Uninstall(fms);
             Core.View.SetAvailableAndFinishedFMCount();
         }
         else
         {
-            await Install(fms);
+            if (firstFM.Game == Game.TDM)
+            {
+                SelectTdmFM(firstFM);
+            }
+            else
+            {
+                await Install(fms);
+            }
+        }
+    }
+
+    private static void SelectTdmFM(FanMission fm)
+    {
+        try
+        {
+            string gameExe = Config.GetGameExe(GameIndex.TDM);
+            if (gameExe.IsEmpty()) return;
+            if (GameIsRunning(gameExe))
+            {
+                Core.Dialogs.ShowAlert(LText.AlertMessages.SelectFM_DarkMod_GameIsRunning, LText.AlertMessages.Alert);
+                return;
+            }
+
+            string gamePath = Config.GetGamePath(GameIndex.TDM);
+            if (gamePath.IsEmpty()) return;
+
+            string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
+            using var sw = new StreamWriter(currentFMFile);
+            sw.WriteLine(fm.InstalledDir);
+        }
+        catch
+        {
+            Core.Dialogs.ShowAlert(LText.AlertMessages.SelectFM_DarkMod_UnableToSelect, LText.AlertMessages.Alert);
         }
     }
 

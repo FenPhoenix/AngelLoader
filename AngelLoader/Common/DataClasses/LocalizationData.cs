@@ -124,6 +124,7 @@ internal sealed class LText_Class
         internal readonly string InstallFMs = "Install FMs";
         internal readonly string UninstallFM = "Uninstall FM";
         internal readonly string UninstallFMs = "Uninstall FMs";
+        internal readonly string SelectFM_DarkMod = "Select FM";
         [FenGenBlankLine]
         internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
     }
@@ -193,6 +194,10 @@ internal sealed class LText_Class
             "\"C:\\ProgramData\\Thief 3 Sneaky Upgrade\\Installed FMs\" for Thief 3.")]
         internal readonly string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install FM.";
         internal readonly string Install_GameIsRunning = "Game is running; unable to install FM. Please exit the game and then try again.";
+        // @TDM: Make sure the wording is clear (will people know what "select" means here?)
+        // @TDM: Maybe we should call it "to make current". "Make current FM", "Select as the current FM", "Set as current FM"
+        internal readonly string SelectFM_DarkMod_GameIsRunning = "The Dark Mod is running. Unable to select this FM.";
+        internal readonly string SelectFM_DarkMod_UnableToSelect = "This FM couldn't be selected. Unable to write to currentfm.txt.";
         internal readonly string OneOrMoreGamesAreRunning = "One or more supported games are running. Please exit them first.";
         [FenGenBlankLine]
         internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";

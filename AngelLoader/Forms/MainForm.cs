@@ -4422,12 +4422,14 @@ public sealed partial class MainForm : DarkFormBase,
             noneAreAvailable,
             playShouldBeEnabled,
             installShouldBeEnabled;
+        bool installShouldBeVisible;
 
         bool multiplePinnedStates = false;
         {
             int installedCount = 0,
                 markedUnavailableCount = 0,
                 gameIsDarkCount = 0,
+                gameIsTDMCount = 0,
                 knownAndSupportedCount = 0;
 
             bool atLeastOnePinned = false;
@@ -4458,6 +4460,7 @@ public sealed partial class MainForm : DarkFormBase,
                     if (sFM.Installed) installedCount++;
                     if (sFM.MarkedUnavailable) markedUnavailableCount++;
                     if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                    if (sFM.Game == Game.TDM) gameIsTDMCount++;
                     if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
 
                     if (!multiplePinnedStates)
@@ -4493,6 +4496,7 @@ public sealed partial class MainForm : DarkFormBase,
                     if (sFM.Installed) installedCount++;
                     if (sFM.MarkedUnavailable) markedUnavailableCount++;
                     if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                    if (sFM.Game == Game.TDM) gameIsTDMCount++;
                     if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
 
                     if (!multiplePinnedStates)
@@ -4526,7 +4530,9 @@ public sealed partial class MainForm : DarkFormBase,
             multiSelected = selRowsCount > 1;
             playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
             installShouldBeEnabled = allSelectedAreSameInstalledState &&
-                                     ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable);
+                                     ((gameIsTDMCount == 1 && !multiSelected && !allAreInstalled) ||
+                                     ((multiSelected && !noneAreAvailable && allAreKnownAndSupported) || allAreSupportedAndAvailable));
+            installShouldBeVisible = gameIsTDMCount == 0 || (gameIsTDMCount == 1 && !multiSelected && !fm.Installed);
         }
 
         // Exactly this order or we get the top-right tabs not being in a properly refreshed state
@@ -4551,10 +4557,13 @@ public sealed partial class MainForm : DarkFormBase,
         FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
         FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
+        // @TDM: Still have to handle the Install/Uninstall button
+
+        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemVisible(installShouldBeVisible);
         FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
         InstallUninstallFMLLButton.SetEnabled(installShouldBeEnabled);
 
-        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected);
+        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected, fm.Game);
         InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
         FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
