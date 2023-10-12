@@ -415,7 +415,7 @@ internal static partial class Ini
 
         static void AddFMToSB(FanMission fm, StringBuilder sb)
         {
-            sb.AppendLine(fm.Game == Game.TDM ? "[TDMFM]" : "[FM]");
+            sb.AppendLine("[FM]");
 
             if (fm.NoArchive)
             {

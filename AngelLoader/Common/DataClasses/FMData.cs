@@ -47,7 +47,21 @@ public sealed class FanMission
     internal bool MarkedUnavailable;
 
     internal string Archive = "";
+    /*
+    InstalledDir doubles as a unique identifier for an FM, but that use requires us to be able to change it in
+    case of a naming clash. But for TDM, FMs are always in folders to begin with, so we can't change the name or
+    we wouldn't be able to find our folder. So we add the TDMInstalledDir field for TDM FMs which is the real
+    folder name, and then InstalledDir is either the same or a number-appended version if there was a clash.
+    For TDM FMs, we use InstalledDir only as a unique id and nothing else, so it can be whatever.
+    Janky, but we're stuck with it for backward compatibility.
+    */
+    /// <summary>
+    /// For TDM FMs, a unique identifier only. For other games, also the actual installed folder name.
+    /// </summary>
     internal string InstalledDir = "";
+    /// <summary>
+    /// For TDM FMs, the actual installed folder name. For other games, blank and not used.
+    /// </summary>
     internal string TDMInstalledDir = "";
 
     [FenGenIgnore]

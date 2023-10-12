@@ -246,59 +246,38 @@ internal static partial class Ini
         fmsList.Clear();
         fmsListTDM.Clear();
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(fileName), new StreamReaderCustom());
+        var lines = File_ReadAllLines_List(fileName);
 
-        bool fmsListIsEmpty = true;
-
-        bool currentFMIsTDM = false;
-
-        while (sr.Reader.ReadLine() is { } line)
+        int linesLength = lines.Count;
+        for (int i = 0; i < linesLength; i++)
         {
-            string lineTS = line.TrimStart();
-
-            if (lineTS.Length > 0 && lineTS[0] == '[')
+            string lineT = lines[i].Trim();
+            if (lineT == "[FM]")
             {
-                if (lineTS.Length >= 4 &&
-                    lineTS[1] == 'F' &&
-                    lineTS[2] == 'M' &&
-                    lineTS[3] == ']')
+                FanMission fm = new();
+                while (i < linesLength - 1)
                 {
-                    fmsList.Add(new FanMission());
-                    fmsListIsEmpty = false;
-                    currentFMIsTDM = false;
+                    string lineTS = lines[i + 1].TrimStart();
+                    int eqIndex = lineTS.IndexOf('=');
+                    if (eqIndex > -1 && lineTS[0] != ';')
+                    {
+                        if (_actionDict_FMData.TryGetValue(lineTS, out var result))
+                        {
+                            // If the value is an arbitrary string or other unknowable type, then we need to split
+                            // the string so the value part can go in the FM field. But if the value is a knowable
+                            // type, then we don't need to split the string, we can just parse the value section.
+                            // This slashes our allocation count WAY down.
+                            result.Action(fm, lineTS, eqIndex);
+                        }
+                    }
+                    else if (lineTS.Length > 0 && lineTS[0] == '[')
+                    {
+                        break;
+                    }
+                    i++;
                 }
-                else if (lineTS.Length >= 7 &&
-                          lineTS[1] == 'T' &&
-                          lineTS[2] == 'D' &&
-                          lineTS[3] == 'M' &&
-                          lineTS[4] == 'F' &&
-                          lineTS[5] == 'M' &&
-                          lineTS[6] == ']')
-                {
-                    fmsListTDM.Add(new FanMission());
-                    fmsListIsEmpty = false;
-                    currentFMIsTDM = true;
-                }
-
-                continue;
-            }
-
-            if (fmsListIsEmpty) continue;
-
-            if (lineTS.Length == 0 || lineTS[0] == ';') continue;
-
-            int eqIndex = lineTS.IndexOf('=');
-            if (eqIndex > -1)
-            {
-                if (_actionDict_FMData.TryGetValue(lineTS, out var result))
-                {
-                    // If the value is an arbitrary string or other unknowable type, then we need to split
-                    // the string so the value part can go in the FM field. But if the value is a knowable
-                    // type, then we don't need to split the string, we can just parse the value section.
-                    // This slashes our allocation count WAY down.
-                    List<FanMission> list = currentFMIsTDM ? fmsListTDM : fmsList;
-                    result.Action(list[list.Count - 1], lineTS, eqIndex);
-                }
+                List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
+                list.Add(fm);
             }
         }
     }
