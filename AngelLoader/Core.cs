@@ -473,10 +473,6 @@ internal static class Core
                     if (fm.Game == Game.TDM)
                     {
                         fm.Installed = fm.TDMInstalledDir == fmName;
-                        if (fm.Installed)
-                        {
-                            Trace.WriteLine("Updated TDM installed FM. FM is now: " + fm.GetId());
-                        }
                     }
                 }
             }
