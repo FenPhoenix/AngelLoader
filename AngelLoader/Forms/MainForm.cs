@@ -4416,23 +4416,23 @@ public sealed partial class MainForm : DarkFormBase,
 
         int selRowsCount = 0;
 
-        bool multiSelected,
-            noneAreInstalled,
-            noneAreDark,
-            allAreAvailable,
-            noneAreAvailable,
-            playShouldBeEnabled,
-            installShouldBeEnabled,
-            anyAreTDM;
+        bool multiSelected;
+        bool noneAreInstalled;
+        bool noneAreDark;
+        bool allAreAvailable;
+        bool noneAreAvailable;
+        bool playShouldBeEnabled;
+        bool installShouldBeEnabled;
+        bool anyAreTDM;
         bool installShouldBeVisible;
 
         bool multiplePinnedStates = false;
         {
-            int installedCount = 0,
-                markedUnavailableCount = 0,
-                gameIsDarkCount = 0,
-                gameIsTDMCount = 0,
-                knownAndSupportedCount = 0;
+            int installedCount = 0;
+            int markedUnavailableCount = 0;
+            int gameIsDarkCount = 0;
+            int gameIsTDMCount = 0;
+            int knownAndSupportedCount = 0;
 
             bool atLeastOnePinned = false;
             bool atLeastOneUnpinned = false;

@@ -455,10 +455,10 @@ internal static class FindFMs
 
     private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
     {
-        var fmDataIniListTDM_Hash = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
+        var fmDataIniListTDM_Dict = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {
-            fmDataIniListTDM_Hash.Add(fm.TDMInstalledDir, fm);
+            fmDataIniListTDM_Dict.Add(fm.TDMInstalledDir, fm);
         }
 
         string instPath = Config.GetFMInstallPath(GameIndex.TDM);
@@ -469,24 +469,23 @@ internal static class FindFMs
                 FastIO.GetDirsTopOnly_FMs(instPath, "*", files, dateTimes);
                 for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
                 {
-                    string d = files[fileIndex];
-                    if (!d.EqualsI(Paths.TDMMissionShots))
+                    string fmDir = files[fileIndex];
+                    if (!fmDir.EqualsI(Paths.TDMMissionShots))
                     {
-                        var fm = new FanMission
-                        {
-                            Game = Game.TDM,
-                            InstalledDir = d,
-                            TDMInstalledDir = d,
-                            Installed = false,
-                        };
-                        if (fmDataIniListTDM_Hash.TryGetValue(fm.InstalledDir, out FanMission dictFM))
+                        if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
                         {
                             dictFM.DateAdded ??= dateTimes[fileIndex].DateTime;
                         }
                         else
                         {
-                            fm.DateAdded ??= dateTimes[fileIndex].DateTime;
-                            FMDataIniListTDM.Add(fm);
+                            FMDataIniListTDM.Add(new FanMission
+                            {
+                                Game = Game.TDM,
+                                InstalledDir = fmDir,
+                                TDMInstalledDir = fmDir,
+                                Installed = false,
+                                DateAdded = dateTimes[fileIndex].DateTime
+                            });
                         }
                     }
                 }
