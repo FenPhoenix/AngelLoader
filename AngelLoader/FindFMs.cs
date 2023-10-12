@@ -455,10 +455,10 @@ internal static class FindFMs
 
     private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
     {
-        var fmDataIniListTDM_Hash = new HashSetI(FMDataIniListTDM.Count);
+        var fmDataIniListTDM_Hash = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {
-            fmDataIniListTDM_Hash.Add(fm.TDMInstalledDir);
+            fmDataIniListTDM_Hash.Add(fm.TDMInstalledDir, fm);
         }
 
         string instPath = Config.GetFMInstallPath(GameIndex.TDM);
@@ -467,20 +467,25 @@ internal static class FindFMs
             try
             {
                 FastIO.GetDirsTopOnly_FMs(instPath, "*", files, dateTimes);
-                for (int di = 0; di < files.Count; di++)
+                for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
                 {
-                    string d = files[di];
+                    string d = files[fileIndex];
                     if (!d.EqualsI(Paths.TDMMissionShots))
                     {
                         var fm = new FanMission
                         {
-                            Game = GameIndexToGame(GameIndex.TDM),
+                            Game = Game.TDM,
                             InstalledDir = d,
                             TDMInstalledDir = d,
-                            Installed = false
+                            Installed = false,
                         };
-                        if (fmDataIniListTDM_Hash.Add(fm.InstalledDir))
+                        if (fmDataIniListTDM_Hash.TryGetValue(fm.InstalledDir, out FanMission dictFM))
                         {
+                            dictFM.DateAdded ??= dateTimes[fileIndex].DateTime;
+                        }
+                        else
+                        {
+                            fm.DateAdded ??= dateTimes[fileIndex].DateTime;
                             FMDataIniListTDM.Add(fm);
                         }
                     }
