@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -14,7 +15,8 @@ internal static class FastIO
     private enum FileType
     {
         Files,
-        Directories
+        Directories,
+        FilesAndDirectories
     }
 
     // This is meant to be industrial-strength, so just call the params nullable and check them.
@@ -109,6 +111,19 @@ internal static class FastIO
             dateTimes);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsFile(WIN32_FIND_DATAW findData)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsDirectory(WIN32_FIND_DATAW findData, bool ignoreReparsePoints)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
+               (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
+    }
+
     // ~2.4x faster than GetFiles() - huge boost to cold startup time
     private static void GetFilesTopOnlyInternal(
         string path,
@@ -152,13 +167,16 @@ internal static class FastIO
         }
         do
         {
-            if (((fileType == FileType.Files &&
-                  (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY) ||
-                 (fileType == FileType.Directories &&
-                  (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
-                  (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT))) &&
-                findData.cFileName != "." && findData.cFileName != ".." &&
-                !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName)))
+            if ((
+                    (fileType == FileType.Files && IsFile(findData)) ||
+                    (fileType == FileType.Directories && IsDirectory(findData, ignoreReparsePoints)) ||
+                    (fileType == FileType.FilesAndDirectories && (IsFile(findData) || IsDirectory(findData, ignoreReparsePoints)))
+                ) &&
+                (
+                    findData.cFileName != "." && findData.cFileName != ".." &&
+                    !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName))
+                )
+               )
             {
                 string fullName = returnFullPaths
                     // Exception could occur here
