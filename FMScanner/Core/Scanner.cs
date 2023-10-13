@@ -746,6 +746,7 @@ public sealed partial class Scanner : IDisposable
                             }
                             else if (lineT.StartsWithO("//"))
                             {
+                                // ReSharper disable once RedundantJumpStatement
                                 continue;
                             }
                             /*
@@ -768,7 +769,7 @@ public sealed partial class Scanner : IDisposable
                             "Mission" line to be one mission, and if it has multiple maps then it's one mission
                             with loading zones.
                             */
-                            if (Regex.Match(lineT, @"^Mission [0123456789]+\:\s*.+").Success)
+                            else if (Regex.Match(lineT, @"^Mission [0123456789]+\:\s*.+").Success)
                             {
                                 misCount++;
                             }
