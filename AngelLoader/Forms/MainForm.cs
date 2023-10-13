@@ -4380,6 +4380,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowWebSearchButton(bool enabled) => Lazy_WebSearchButton.SetVisible(enabled);
 
+    /*
+    @TDM(Web search): Ideas:
+    -We could add a separate URL field, because people probably will want to find TDM FMs on the TDM site, not TTLG
+    -Maybe on Thieves' Guild too? Is this a good time to consider ability to download ratings etc.?
+    */
     internal void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetMainSelectedFM().Title);
 
     #endregion
