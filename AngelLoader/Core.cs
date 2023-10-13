@@ -429,7 +429,11 @@ internal static class Core
     {
         UpdateTDMInstalledFMStatus(e.FullPath);
     }
-
+    /*
+    @TDM: We should auto-refresh-from-disk our list when new FMs are added in-game!
+    Otherwise, we won't be able to keep the "current" state in sync, and anyway, it would be poor/confusing UX
+    too.
+    */
     private static void UpdateTDMInstalledFMStatus(string? file = null)
     {
         lock (_tdmFMChangeLock)
