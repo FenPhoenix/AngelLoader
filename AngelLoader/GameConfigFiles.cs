@@ -1097,6 +1097,8 @@ internal static class GameConfigFiles
         return false;
     }
 
+    // @TDM: If a user puts a file in manually, should we just ask them to manually refresh AL's list?
+    // Refreshing every time the fms folder changes might be overbearing. Or not. Not sure.
     internal static bool TdmFMSetChanged()
     {
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
@@ -1113,20 +1115,37 @@ internal static class GameConfigFiles
                 }
             }
 
-            List<string> fileTdmFMIds = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
-            for (int i = 0; i < fileTdmFMIds.Count; i++)
+            List<string> fileTdmFMIds_Dirs = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
+            List<string> fileTdmFMIds_PK4s = FastIO.GetFilesTopOnly(fmsPath, "*.pk4", returnFullPaths: false);
+            HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
+
+            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count);
+
+            finalFilesList.AddRange(fileTdmFMIds_Dirs);
+
+            for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
             {
-                if (fileTdmFMIds[i].EqualsI(Paths.TDMMissionShots))
+                string pk4 = fileTdmFMIds_PK4s[i];
+                string nameWithoutExt = pk4.RemoveExtension();
+                if (dirsHash.Add(nameWithoutExt))
                 {
-                    fileTdmFMIds.RemoveAt(i);
+                    finalFilesList.Add(nameWithoutExt);
+                }
+            }
+
+            for (int i = 0; i < finalFilesList.Count; i++)
+            {
+                if (finalFilesList[i].EqualsI(Paths.TDMMissionShots))
+                {
+                    finalFilesList.RemoveAt(i);
                     break;
                 }
             }
 
             internalTdmFMIds.Sort();
-            fileTdmFMIds.Sort();
+            fileTdmFMIds_Dirs.Sort();
 
-            return !internalTdmFMIds.SequenceEqual(fileTdmFMIds);
+            return !internalTdmFMIds.SequenceEqual(fileTdmFMIds_Dirs);
         }
         catch
         {
