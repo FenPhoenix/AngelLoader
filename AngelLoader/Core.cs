@@ -54,9 +54,6 @@ internal static class Core
     private static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
-    private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
-    private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
-
     /*
     We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
     so just put it here and never dispose... meh.
@@ -78,13 +75,7 @@ internal static class Core
         ViewEnv = viewEnv;
         Dialogs = ViewEnv.GetDialogs();
 
-        TDMSelectedFMWatcher.Changed += TDMSelectedFMWatcher_Changed;
-        TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
-        TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
-
-        TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
-        TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
-        TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
+        TDMWatchers.Init();
 
         bool openSettings = false;
         bool cleanStart = false;
@@ -329,7 +320,7 @@ internal static class Core
                 // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
-                    lock (_tdmFMChangeLock)
+                    lock (TDMWatchers.TdmFMChangeLock)
                     {
                         for (int i = 0; i < SupportedGameCount; i++)
                         {
@@ -362,7 +353,7 @@ internal static class Core
 
                 // IMPORTANT: End no-splash-screen-call zone
 
-                UpdateTDMInstalledFMStatus();
+                TDMWatchers.UpdateTDMInstalledFMStatus();
 
                 if (ex != null)
                 {
@@ -396,113 +387,7 @@ internal static class Core
             }
         }
 
-        DeferredWatchersEnable(enableTDMWatchers);
-    }
-
-    private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e)
-    {
-        lock (_tdmFMChangeLock)
-        {
-            if (GameConfigFiles.TdmFMSetChanged())
-            {
-                View.QueueRefreshFromDisk();
-            }
-        }
-    }
-
-    private static readonly object _tdmFMChangeLock = new();
-
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
-    {
-        UpdateTDMInstalledFMStatus(e.FullPath);
-    }
-
-    private static void UpdateTDMInstalledFMStatus(string? file = null)
-    {
-        lock (_tdmFMChangeLock)
-        {
-            if (file == null)
-            {
-                string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
-                if (fmInstallPath.IsEmpty()) return;
-                try
-                {
-                    file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
-                }
-                catch
-                {
-                    return;
-                }
-            }
-
-            if (!File.Exists(file)) return;
-
-            List<string>? lines = null;
-            for (int tryIndex = 0; tryIndex < 3; tryIndex++)
-            {
-                if (TryGetLines(file, out lines))
-                {
-                    break;
-                }
-            }
-
-            if (lines == null)
-            {
-                return;
-            }
-
-            if (lines.Count > 0)
-            {
-                string fmName = lines[0];
-                for (int i = 0; i < FMsViewList.Count; i++)
-                {
-                    FanMission fm = FMsViewList[i];
-                    if (fm.Game == Game.TDM)
-                    {
-                        fm.Installed = fm.TDMInstalledDir == fmName;
-                    }
-                }
-            }
-
-            if (View != null!)
-            {
-                View.QueueRefreshListOnly();
-            }
-
-            static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
-            {
-                try
-                {
-                    lines = File_ReadAllLines_List(file);
-                    return true;
-                }
-                catch
-                {
-                    lines = null;
-                    return false;
-                }
-            }
-        }
-    }
-
-    private static void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
-    {
-        lock (_tdmFMChangeLock)
-        {
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FanMission fm = FMsViewList[i];
-                if (fm.Game == Game.TDM)
-                {
-                    fm.Installed = false;
-                }
-            }
-
-            if (View != null!)
-            {
-                View.QueueRefreshListOnly();
-            }
-        }
+        TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
     }
 
     private static void ThrowDialogIfSneakyOptionsIniNotFound(Error[] errors)
@@ -845,78 +730,12 @@ internal static class Core
             View.RefreshMods();
         }
 
-        UpdateTDMInstalledFMStatus();
+        TDMWatchers.UpdateTDMInstalledFMStatus();
+        TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
 
         Ini.WriteConfigIni();
 
-        DeferredWatchersEnable(enableTDMWatchers);
-
         return true;
-    }
-
-    private static void DeferredWatchersEnable(bool enableTDMWatchers)
-    {
-        string gamePath = Config.GetGamePath(GameIndex.TDM);
-        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
-        if (enableTDMWatchers && !gamePath.IsEmpty() && !fmsPath.IsEmpty())
-        {
-            try
-            {
-                TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                TDMSelectedFMWatcher.Path = gamePath;
-                TDMSelectedFMWatcher.Filter = Paths.TDMCurrentFMFile;
-                TDMSelectedFMWatcher.NotifyFilter =
-                    NotifyFilters.LastWrite |
-                    NotifyFilters.CreationTime;
-                TDMSelectedFMWatcher.EnableRaisingEvents = true;
-
-            }
-            catch
-            {
-                try
-                {
-                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-
-            try
-            {
-                TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-                TdmFMsListChangedWatcher.Path = fmsPath;
-                TdmFMsListChangedWatcher.Filter = Paths.MissionsTdmInfo;
-                TdmFMsListChangedWatcher.NotifyFilter =
-                    NotifyFilters.LastWrite |
-                    NotifyFilters.CreationTime;
-                TdmFMsListChangedWatcher.EnableRaisingEvents = true;
-            }
-            catch
-            {
-                try
-                {
-                    TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-        }
-        else
-        {
-            try
-            {
-                TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-            }
-            catch
-            {
-                // ignore
-            }
-        }
     }
 
     /// <summary>
