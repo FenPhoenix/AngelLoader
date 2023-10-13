@@ -331,6 +331,8 @@ internal static class Paths
 
     #region Game config files
 
+    #region NewDark
+
     internal const string DarkCfg = "dark.cfg";
 
     internal const string CamCfg = "cam.cfg";
@@ -341,7 +343,9 @@ internal static class Paths
     internal const string UserBnd = "user.bnd";
 #endif
 
-    internal const string TDMCurrentFMFile = "currentfm.txt";
+    #endregion
+
+    #region Thief 3
 
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
     // First release version to support portable is 1.1.11, but there was a 1.1.10.519 beta that supported it too
@@ -494,6 +498,15 @@ internal static class Paths
 
         return "";
     }
+
+    #endregion
+
+    #region Dark Mod
+
+    internal const string TDMCurrentFMFile = "currentfm.txt";
+    internal const string MissionsTdmInfo = "missions.tdminfo";
+
+    #endregion
 
     #endregion
 

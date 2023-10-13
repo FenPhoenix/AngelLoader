@@ -564,6 +564,10 @@ public sealed partial class MainForm : DarkFormBase,
         */
         #region Manual control construct + init
 
+        QueueRefreshFromDiskEvent += MainForm_QueueRefreshFromDiskEvent;
+        QueueRefreshListOnlyEvent += MainForm_QueueRefreshListOnlyEvent;
+        RefreshIfQueuedEvent += MainForm_RefreshIfQueuedEvent;
+
         #region Lazy-loaded controls
 
         _lazyLoadedControls = new IDarkable[]
@@ -2989,32 +2993,68 @@ public sealed partial class MainForm : DarkFormBase,
         RefreshAllSelectedFMs_Full();
     }
 
+    #region Refresh queueing
+
+    private bool _refreshFromDiskIsQueued;
     private bool _refreshListOnlyIsQueued;
 
-    public void QueueRefreshListOnly()
+    // Massive hack with using event handlers so we can avoid the "async all the way down"
+
+    private event EventHandler? QueueRefreshFromDiskEvent;
+    private event EventHandler? QueueRefreshListOnlyEvent;
+    private event EventHandler? RefreshIfQueuedEvent;
+
+    private void RefreshImmediatelyIfPossible()
     {
-        _refreshListOnlyIsQueued = true;
         Invoke(() =>
         {
             if (UIEnabled && !ViewBlocked)
             {
-                RefreshListOnlyIfQueued();
+                RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
             }
         });
     }
 
-    private void RefreshListOnlyIfQueued()
+    private void MainForm_QueueRefreshListOnlyEvent(object sender, EventArgs e)
     {
-        if (_refreshListOnlyIsQueued)
-        {
-            _refreshListOnlyIsQueued = false;
-            RefreshFMsListRowsOnlyKeepSelection();
-            if (_displayedFM != null)
-            {
-                UpdateUIControlsForMultiSelectState(_displayedFM);
-            }
-        }
+        _refreshListOnlyIsQueued = true;
+        RefreshImmediatelyIfPossible();
     }
+
+    private void MainForm_QueueRefreshFromDiskEvent(object sender, EventArgs e)
+    {
+        _refreshFromDiskIsQueued = true;
+        RefreshImmediatelyIfPossible();
+    }
+
+    private void MainForm_RefreshIfQueuedEvent(object sender, EventArgs e)
+    {
+        Invoke(() =>
+        {
+            if (_refreshFromDiskIsQueued)
+            {
+                _refreshFromDiskIsQueued = false;
+                _refreshListOnlyIsQueued = false;
+                return Core.RefreshFMsListFromDisk();
+            }
+            else if (_refreshListOnlyIsQueued)
+            {
+                _refreshListOnlyIsQueued = false;
+                RefreshFMsListRowsOnlyKeepSelection();
+                if (_displayedFM != null)
+                {
+                    UpdateUIControlsForMultiSelectState(_displayedFM);
+                }
+            }
+            return VoidTask;
+        });
+    }
+
+    public void QueueRefreshListOnly() => QueueRefreshListOnlyEvent.InvokeHack();
+
+    public void QueueRefreshFromDisk() => QueueRefreshFromDiskEvent.InvokeHack();
+
+    #endregion
 
     public void RefreshFMsListRowsOnlyKeepSelection() => FMsDGV.Refresh();
 
@@ -4893,7 +4933,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                RefreshListOnlyIfQueued();
+                RefreshIfQueuedEvent.InvokeHack();
             }
         }
     });
@@ -5224,7 +5264,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (value)
             {
-                RefreshListOnlyIfQueued();
+                RefreshIfQueuedEvent.InvokeHack();
             }
         }
     }

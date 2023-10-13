@@ -55,6 +55,7 @@ internal static class Core
     internal static IDialogs Dialogs = null!;
 
     private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
+    private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
 
     /*
     We can't put this locally in a using statement because of "Access to disposed closure" blah blah whatever,
@@ -80,6 +81,10 @@ internal static class Core
         TDMSelectedFMWatcher.Changed += TDMSelectedFMWatcher_Changed;
         TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
         TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
+
+        TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
+        TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
+        TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
 
         bool openSettings = false;
         bool cleanStart = false;
@@ -109,6 +114,7 @@ internal static class Core
         Config.VisualTheme = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
+        bool enableTDMWatchers = false;
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
         using Task startupWorkTask = Task.Run(() =>
@@ -166,7 +172,8 @@ internal static class Core
                         string gameExe = Config.GetGameExe(gameIndex);
                         if (!gameExe.IsEmpty() && File.Exists(gameExe))
                         {
-                            (gameDataErrors[i], perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                            (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                            if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
                         }
                     }
                 }
@@ -315,27 +322,6 @@ internal static class Core
 #pragma warning restore IDE0002
 #endif
 
-                bool watcherWasEnabled;
-                try
-                {
-                    watcherWasEnabled = TDMSelectedFMWatcher.EnableRaisingEvents;
-                }
-                catch
-                {
-                    watcherWasEnabled = false;
-                }
-                if (watcherWasEnabled)
-                {
-                    try
-                    {
-                        TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
-                }
-
                 Exception? ex = null;
                 // IMPORTANT: Begin no-splash-screen-call zone
                 // The FM finder will update the splash screen from another thread (accessing only the graphics
@@ -378,18 +364,6 @@ internal static class Core
 
                 UpdateTDMInstalledFMStatus();
 
-                if (watcherWasEnabled)
-                {
-                    try
-                    {
-                        TDMSelectedFMWatcher.EnableRaisingEvents = true;
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
-                }
-
                 if (ex != null)
                 {
                     splashScreen.Hide();
@@ -419,6 +393,19 @@ internal static class Core
             {
                 splashScreen.Show(Config.VisualTheme);
                 await DoParallelLoad();
+            }
+        }
+
+        DeferredWatchersEnable(enableTDMWatchers);
+    }
+
+    private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e)
+    {
+        lock (_tdmFMChangeLock)
+        {
+            if (GameConfigFiles.TdmFMSetChanged())
+            {
+                View.QueueRefreshFromDisk();
             }
         }
     }
@@ -640,6 +627,7 @@ internal static class Core
 
         // Game paths should have been checked and verified before OK was clicked, so assume they're good here
         Error[] setGameDataErrors = new Error[SupportedGameCount];
+        bool enableTDMWatchers = false;
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
@@ -648,7 +636,8 @@ internal static class Core
             Config.SetGameExe(gameIndex, outConfig.GetGameExe(gameIndex));
 
             // Set it regardless of game existing, because we want to blank the data
-            (setGameDataErrors[i], _) = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+            (setGameDataErrors[i], bool _enableTDMWatchers, _) = SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+            if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTDMWatchers;
 
             Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
         }
@@ -864,7 +853,74 @@ internal static class Core
 
         Ini.WriteConfigIni();
 
+        DeferredWatchersEnable(enableTDMWatchers);
+
         return true;
+    }
+
+    private static void DeferredWatchersEnable(bool enableTDMWatchers)
+    {
+        string gamePath = Config.GetGamePath(GameIndex.TDM);
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (enableTDMWatchers && !gamePath.IsEmpty() && !fmsPath.IsEmpty())
+        {
+            try
+            {
+                TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                TDMSelectedFMWatcher.Path = gamePath;
+                TDMSelectedFMWatcher.Filter = Paths.TDMCurrentFMFile;
+                TDMSelectedFMWatcher.NotifyFilter =
+                    NotifyFilters.LastWrite |
+                    NotifyFilters.CreationTime;
+                TDMSelectedFMWatcher.EnableRaisingEvents = true;
+
+            }
+            catch
+            {
+                try
+                {
+                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+
+            try
+            {
+                TdmFMsListChangedWatcher.EnableRaisingEvents = false;
+                TdmFMsListChangedWatcher.Path = fmsPath;
+                TdmFMsListChangedWatcher.Filter = Paths.MissionsTdmInfo;
+                TdmFMsListChangedWatcher.NotifyFilter =
+                    NotifyFilters.LastWrite |
+                    NotifyFilters.CreationTime;
+                TdmFMsListChangedWatcher.EnableRaisingEvents = true;
+            }
+            catch
+            {
+                try
+                {
+                    TdmFMsListChangedWatcher.EnableRaisingEvents = false;
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                TDMSelectedFMWatcher.EnableRaisingEvents = false;
+                TdmFMsListChangedWatcher.EnableRaisingEvents = false;
+            }
+            catch
+            {
+                // ignore
+            }
+        }
     }
 
     /// <summary>
@@ -873,10 +929,11 @@ internal static class Core
     /// </summary>
     /// <param name="gameIndex"></param>
     /// <param name="storeConfigInfo"></param>
-    private static (Error Error, List<string>? CamModIniLines)
+    private static (Error Error, bool EnableTDMWatchers, List<string>? CamModIniLines)
     SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
     {
         Error error = Error.None;
+        bool enableTDMWatchers = false;
         List<string>? camModIniLines = null;
         string gameExe = Config.GetGameExe(gameIndex);
         bool gameExeSpecified = !gameExe.IsWhiteSpace();
@@ -979,45 +1036,15 @@ internal static class Core
         }
         else if (gameIndex == GameIndex.TDM)
         {
-            Config.SetFMInstallPath(GameIndex.TDM,
-                gameExeSpecified && !gamePath.IsEmpty() ? Path.Combine(gamePath, "fms") : "");
-
-            if (gameExeSpecified)
+            if (gameExeSpecified && !gamePath.IsEmpty())
             {
-                try
-                {
-                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                    TDMSelectedFMWatcher.Path = gamePath;
-                    TDMSelectedFMWatcher.Filter = Paths.TDMCurrentFMFile;
-                    TDMSelectedFMWatcher.NotifyFilter =
-                        NotifyFilters.LastWrite |
-                        NotifyFilters.CreationTime;
-                    TDMSelectedFMWatcher.EnableRaisingEvents = true;
-                }
-                catch (ArgumentException)
-                {
-                    try
-                    {
-                        TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                        TDMSelectedFMWatcher.Path = "";
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
-                }
+                Config.SetFMInstallPath(GameIndex.TDM, Path.Combine(gamePath, "fms"));
+                enableTDMWatchers = true;
             }
             else
             {
-                try
-                {
-                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                    TDMSelectedFMWatcher.Path = "";
-                }
-                catch
-                {
-                    // ignore
-                }
+                Config.SetFMInstallPath(GameIndex.TDM, "");
+                enableTDMWatchers = false;
             }
         }
         else
@@ -1060,7 +1087,7 @@ internal static class Core
             // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
         }
 
-        return (error, camModIniLines);
+        return (error, enableTDMWatchers, camModIniLines);
     }
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)

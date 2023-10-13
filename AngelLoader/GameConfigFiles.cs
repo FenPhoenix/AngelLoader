@@ -1097,6 +1097,43 @@ internal static class GameConfigFiles
         return false;
     }
 
+    internal static bool TdmFMSetChanged()
+    {
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (fmsPath.IsEmpty()) return false;
+
+        try
+        {
+            List<string> internalTdmFMIds = new(FMDataIniListTDM.Count);
+            foreach (FanMission fm in FMDataIniListTDM)
+            {
+                if (!fm.MarkedUnavailable)
+                {
+                    internalTdmFMIds.Add(fm.TDMInstalledDir);
+                }
+            }
+
+            List<string> fileTdmFMIds = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
+            for (int i = 0; i < fileTdmFMIds.Count; i++)
+            {
+                if (fileTdmFMIds[i].EqualsI(Paths.TDMMissionShots))
+                {
+                    fileTdmFMIds.RemoveAt(i);
+                    break;
+                }
+            }
+
+            internalTdmFMIds.Sort();
+            fileTdmFMIds.Sort();
+
+            return !internalTdmFMIds.SequenceEqual(fileTdmFMIds);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
 #if !ReleaseBeta && !ReleasePublic
 
     private static void RemoveKeyLine(string key, List<string> lines)
