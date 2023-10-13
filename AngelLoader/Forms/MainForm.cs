@@ -1067,15 +1067,15 @@ public sealed partial class MainForm : DarkFormBase,
         // Set this explicitly AFTER the FMs list is populated
         SetAvailableAndFinishedFMCount();
 
-        // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
-        // Find() to have been run first.
-        SortFMsDGV(Config.SortedColumn, Config.SortDirection);
-
         if (fmsViewListUnscanned?.Count > 0)
         {
             if (!Visible) Show();
             await FMScan.ScanNewFMs(fmsViewListUnscanned);
         }
+
+        // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
+        // Find() to have been run first.
+        SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
         if (!Config.AskedToScanForMisCounts)
         {

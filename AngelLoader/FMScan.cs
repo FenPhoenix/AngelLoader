@@ -147,11 +147,12 @@ internal static class FMScan
 
                     if (fm.MarkedUnavailable) continue;
 
-                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
+                    string fmArchivePath;
 
                     if (_scanCts.IsCancellationRequested) return false;
 
-                    if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
+                    if (!fm.Archive.IsEmpty() &&
+                        !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths)).IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);
                         fms.Add(new FMScanner.FMToScan

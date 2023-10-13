@@ -466,15 +466,41 @@ internal static class FindFMs
         {
             try
             {
-                FastIO.GetDirsTopOnly_FMs(instPath, "*", files, dateTimes);
-                for (int fileIndex = 0; fileIndex < files.Count; fileIndex++)
+                List<string> dirs = files;
+
+                var filesPK4 = new List<string>();
+                var dateTimesPK4 = new List<ExpandableDate_FromTicks>();
+
+                FastIO.GetDirsTopOnly_FMs(instPath, "*", dirs, dateTimes);
+                FastIO.GetFilesTopOnly_FMs(instPath, "*.pk4", filesPK4, dateTimesPK4);
+
+                HashSetI dirsHash = dirs.ToHashSetI();
+
+                var finalFilesList = new List<string>(dirs.Count + filesPK4.Count);
+                var finalDateTimesList = new List<ExpandableDate_FromTicks>(dateTimes.Count + dateTimesPK4.Count);
+
+                finalFilesList.AddRange(dirs);
+                finalDateTimesList.AddRange(dateTimes);
+
+                for (int i = 0; i < filesPK4.Count; i++)
                 {
-                    string fmDir = files[fileIndex];
+                    string pk4 = filesPK4[i];
+                    string nameWithoutExt = pk4.RemoveExtension();
+                    if (dirsHash.Add(nameWithoutExt))
+                    {
+                        finalFilesList.Add(nameWithoutExt);
+                        finalDateTimesList.Add(dateTimesPK4[i]);
+                    }
+                }
+
+                for (int fileIndex = 0; fileIndex < finalFilesList.Count; fileIndex++)
+                {
+                    string fmDir = finalFilesList[fileIndex];
                     if (!fmDir.EqualsI(Paths.TDMMissionShots))
                     {
                         if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
                         {
-                            dictFM.DateAdded ??= dateTimes[fileIndex].DateTime;
+                            dictFM.DateAdded ??= finalDateTimesList[fileIndex].DateTime;
                         }
                         else
                         {
@@ -484,7 +510,7 @@ internal static class FindFMs
                                 InstalledDir = fmDir,
                                 TDMInstalledDir = fmDir,
                                 Installed = false,
-                                DateAdded = dateTimes[fileIndex].DateTime
+                                DateAdded = finalDateTimesList[fileIndex].DateTime
                             });
                         }
                     }
@@ -930,7 +956,7 @@ internal static class FindFMs
             FanMission fm = FMDataIniListTDM[i];
 
             string fmInstDir = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fm.TDMInstalledDir);
-            if (!Directory.Exists(fmInstDir))
+            if (!Directory.Exists(fmInstDir) && !File.Exists(fmInstDir.TrimEnd(CA_BS_FS) + ".pk4"))
             {
                 fm.MarkedUnavailable = true;
             }

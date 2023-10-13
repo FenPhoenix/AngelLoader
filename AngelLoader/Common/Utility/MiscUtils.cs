@@ -49,12 +49,18 @@ public static partial class Utils
             return false;
         }
 
-        if (gameIndex != GameIndex.TDM && !fm.Installed)
+        string instPath = Config.GetFMInstallPath(gameIndex);
+        if (gameIndex == GameIndex.TDM)
+        {
+            return !instPath.IsEmpty() &&
+                   TryCombineDirectoryPathAndCheckExistence(instPath, fm.TDMInstalledDir, out fmInstalledPath);
+        }
+
+        if (!fm.Installed)
         {
             return false;
         }
 
-        string instPath = Config.GetFMInstallPath(gameIndex);
         return !instPath.IsEmpty() &&
                TryCombineDirectoryPathAndCheckExistence(instPath, fm.RealInstalledDir, out fmInstalledPath);
     }

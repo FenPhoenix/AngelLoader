@@ -707,14 +707,36 @@ public sealed partial class Scanner : IDisposable
             Game = Game.TDM
         };
 
+        string fmAsPK4File = fm.Path.TrimEnd(CA_BS_FS) + ".pk4";
+
+        string zipPath;
+        bool fmIsPK4;
+        if (!Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File))
+        {
+            fmIsPK4 = true;
+            zipPath = fmAsPK4File;
+            var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
+            if (zipResult.Success)
+            {
+                _archive = zipResult.Archive!;
+            }
+            else if (zipResult.ScannedFMDataAndError != null)
+            {
+                return zipResult.ScannedFMDataAndError;
+            }
+        }
+        else
+        {
+            fmIsPK4 = false;
+            zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+        }
+
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
-        string? zipPath = null;
         if (_scanOptions.ScanSize)
         {
             try
             {
-                zipPath ??= Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
                 FileInfo fi = new(zipPath);
                 fmData.Size = (ulong)fi.Length;
             }
@@ -730,12 +752,21 @@ public sealed partial class Scanner : IDisposable
 
             try
             {
-                zipPath ??= Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
-                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
-                if (zipResult.Success)
+                bool zipSuccess = true;
+                if (!fmIsPK4)
                 {
-                    _archive = zipResult.Archive!;
-
+                    var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
+                    if (zipResult.Success)
+                    {
+                        _archive = zipResult.Archive!;
+                    }
+                    else
+                    {
+                        zipSuccess = false;
+                    }
+                }
+                if (zipSuccess)
+                {
                     ListFast<ZipArchiveFastEntry> entries = _archive.Entries;
                     for (int i = 0; i < entries.Count; i++)
                     {
@@ -774,9 +805,9 @@ public sealed partial class Scanner : IDisposable
 
                             The syntax is:
                             Mission <N>: <mapname> [<mapname> ...]
-                            
+
                             N is the mission number, with the first mission carrying the number 1.
-                            
+
                             It's possible to define more than one map filename for a mission,
                             in case there are loading zones in it, but usually you won't need that.
 
@@ -811,11 +842,23 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
-            string darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
-            string readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
-
-            int darkModTxtIndex = AddReadme(darkModTxt);
-            int readmeTxtIndex = AddReadme(readmeTxt);
+            string darkModTxt;
+            string readmeTxt;
+            int darkModTxtIndex;
+            int readmeTxtIndex;
+            if (fmIsPK4)
+            {
+                darkModTxt = "darkmod.txt";
+                readmeTxt = "readme.txt";
+                (darkModTxtIndex, readmeTxtIndex) = AddReadmeFromPK4(_archive, darkModTxt, readmeTxt);
+            }
+            else
+            {
+                darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
+                readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
+                darkModTxtIndex = AddReadmeFromDisk(darkModTxt);
+                readmeTxtIndex = AddReadmeFromDisk(readmeTxt);
+            }
 
             List<string> titles = new();
 
@@ -876,13 +919,18 @@ public sealed partial class Scanner : IDisposable
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
 
-        int AddReadme(string readmeFileOnDisk)
+        int AddReadmeFromDisk(string readmeFileOnDisk)
         {
             try
             {
                 FileInfo readmeFI = new(readmeFileOnDisk);
                 DateTime date = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
-                ReadmeInternal readme = new(isGlml: false, date, scan: true, useForDateDetect: true);
+                ReadmeInternal readme = new(
+                    isGlml: false,
+                    lastModifiedDate: date,
+                    scan: true,
+                    useForDateDetect: true
+                );
                 using (var readmeStream = GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer))
                 {
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
@@ -894,6 +942,67 @@ public sealed partial class Scanner : IDisposable
             catch
             {
                 return -1;
+            }
+        }
+
+        (int DarkModTxtIndex, int ReadmeTxtIndex)
+        AddReadmeFromPK4(ZipArchiveFast archive, string readme1, string readme2)
+        {
+            ZipArchiveFastEntry? readme1entry = null;
+            ZipArchiveFastEntry? readme2entry = null;
+            ListFast<ZipArchiveFastEntry> entries = archive.Entries;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                ZipArchiveFastEntry entry = entries[i];
+                if (entry.FullName.EqualsI(readme1))
+                {
+                    readme1entry = entry;
+                }
+                else if (entry.FullName.EqualsI(readme2))
+                {
+                    readme2entry = entry;
+                }
+
+                if (readme1entry != null && readme2entry != null)
+                {
+                    break;
+                }
+            }
+
+            int readme1Index = -1;
+            int readme2Index = -1;
+
+            if (readme1entry != null)
+            {
+                CreateReadme(readme1entry, out readme1Index);
+            }
+
+            if (readme2entry != null)
+            {
+                CreateReadme(readme2entry, out readme2Index);
+            }
+
+            return (readme1Index, readme2Index);
+
+            void CreateReadme(ZipArchiveFastEntry entry, out int index)
+            {
+                try
+                {
+                    ReadmeInternal readme = new(
+                        isGlml: false,
+                        lastModifiedDateRaw: entry.LastWriteTime,
+                        scan: true,
+                        useForDateDetect: true);
+                    Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
+                    readme.Text = ReadAllTextDetectEncoding(readmeStream);
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    _readmeFiles.Add(readme);
+                    index = _readmeFiles.Count - 1;
+                }
+                catch
+                {
+                    index = -1;
+                }
             }
         }
     }
@@ -3272,21 +3381,9 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
-                    Stream stream;
-
-                    if (_fmFormat == FMFormat.Zip)
-                    {
-                        _generalMemoryStream.SetLength(readmeFileLen);
-                        _generalMemoryStream.Position = 0;
-                        using var es = _archive.OpenEntry(readmeEntry!);
-                        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
-                        _generalMemoryStream.Position = 0;
-                        stream = _generalMemoryStream;
-                    }
-                    else
-                    {
-                        stream = readmeStream;
-                    }
+                    Stream stream = _fmFormat == FMFormat.Zip
+                        ? CreateSeekableStreamFromZipEntry(readmeEntry!, readmeFileLen)
+                        : readmeStream;
 
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
@@ -3299,6 +3396,16 @@ public sealed partial class Scanner : IDisposable
                 readmeStream?.Dispose();
             }
         }
+    }
+
+    private Stream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
+    {
+        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.Position = 0;
+        using var es = _archive.OpenEntry(readmeEntry!);
+        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        _generalMemoryStream.Position = 0;
+        return _generalMemoryStream;
     }
 
     private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null, int readmeIndex = -1)

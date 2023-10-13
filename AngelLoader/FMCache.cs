@@ -54,8 +54,6 @@ internal static class FMCache
 
     internal static void ClearCacheDir(FanMission fm, bool deleteCacheDirItself = false)
     {
-        if (fm.Game == Game.TDM) return;
-
         string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
         if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
         {
@@ -152,45 +150,58 @@ internal static class FMCache
                 readmes.Clear();
                 ClearCacheDir(fm);
 
-                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, FMArchives.GetFMArchivePaths());
+                string fmArchivePath;
+                if (fm.Game == Game.TDM)
+                {
+                    string fmInstallPath = Config.GetFMInstallPath(GameIndex.TDM);
+                    if (fmInstallPath.IsEmpty()) return new CacheData();
+                    fmArchivePath = Path.Combine(fmInstallPath, fm.TDMInstalledDir + ".pk4");
+                }
+                else
+                {
+                    fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, FMArchives.GetFMArchivePaths());
+                }
 
                 // In weird situations this could be true, so just say none and at least don't crash
                 if (fmArchivePath.IsEmpty()) return new CacheData();
 
-                if (fm.Archive.ExtIsZip())
+                if ((fm.Game == Game.TDM && fmArchivePath.EndsWithI(".pk4")) || fm.Archive.ExtIsZip())
                 {
                     byte[] zipExtractTempBuffer = new byte[StreamCopyBufferSize];
                     byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-                    ZipExtract(fmArchivePath, fmCachePath, readmes, zipExtractTempBuffer, fileStreamBuffer);
+                    ZipExtract(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, zipExtractTempBuffer, fileStreamBuffer);
 
-                    // @HTMLRefExtraction(FMCache):
-                    // TODO: Support HTML ref extraction for .7z files too
-                    // Will require full extract for the same reason scan does - we need to scan files to
-                    // know what other files to scan, etc. and a full extract is with 99.9999% certainty
-                    // going to be faster than chugging through the whole thing over and over and over for
-                    // each new file we find we need
-
-                    // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-                    bool htmlReadmeExists = false;
-                    for (int i = 0; i < readmes.Count; i++)
+                    if (fm.Game != Game.TDM)
                     {
-                        if (readmes[i].ExtIsHtml())
-                        {
-                            htmlReadmeExists = true;
-                            break;
-                        }
-                    }
+                        // @HTMLRefExtraction(FMCache):
+                        // TODO: Support HTML ref extraction for .7z files too
+                        // Will require full extract for the same reason scan does - we need to scan files to
+                        // know what other files to scan, etc. and a full extract is with 99.9999% certainty
+                        // going to be faster than chugging through the whole thing over and over and over for
+                        // each new file we find we need
 
-                    if (htmlReadmeExists && Directory.Exists(fmCachePath))
-                    {
-                        try
+                        // Guard check so we don't do useless HTML work if we don't have any HTML readmes
+                        bool htmlReadmeExists = false;
+                        for (int i = 0; i < readmes.Count; i++)
                         {
-                            ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
+                            if (readmes[i].ExtIsHtml())
+                            {
+                                htmlReadmeExists = true;
+                                break;
+                            }
                         }
-                        catch (Exception ex)
+
+                        if (htmlReadmeExists && Directory.Exists(fmCachePath))
                         {
-                            Log(ex: ex);
+                            try
+                            {
+                                ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log(ex: ex);
+                            }
                         }
                     }
                 }
@@ -302,7 +313,7 @@ internal static class FMCache
     // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
     // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
     // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         try
         {
@@ -312,28 +323,39 @@ internal static class FMCache
             {
                 ZipArchiveEntry entry = archive.Entries[i];
                 string fn = entry.FullName;
-                if (!fn.IsValidReadme() || entry.Length == 0) continue;
-
                 string? t3ReadmeDir = null;
-                int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
-                if (dirSeps == 1)
+
+                if (isTDM)
                 {
-                    if (fn.PathStartsWithI(_t3ReadmeDir1S))
-                    {
-                        t3ReadmeDir = _t3ReadmeDir1;
-                    }
-                    else if (fn.PathStartsWithI(_t3ReadmeDir2S))
-                    {
-                        t3ReadmeDir = _t3ReadmeDir2;
-                    }
-                    else
+                    if (entry.Length == 0 || (!fn.EqualsI("darkmod.txt") && !fn.EqualsI("readme.txt")))
                     {
                         continue;
                     }
                 }
-                else if (dirSeps > 1)
+                else
                 {
-                    continue;
+                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
+
+                    int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
+                    if (dirSeps == 1)
+                    {
+                        if (fn.PathStartsWithI(_t3ReadmeDir1S))
+                        {
+                            t3ReadmeDir = _t3ReadmeDir1;
+                        }
+                        else if (fn.PathStartsWithI(_t3ReadmeDir2S))
+                        {
+                            t3ReadmeDir = _t3ReadmeDir2;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else if (dirSeps > 1)
+                    {
+                        continue;
+                    }
                 }
 
                 Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
