@@ -777,6 +777,13 @@ public sealed partial class Scanner
     private readonly Regex MultipleWhiteSpaceRegex =
         new Regex(@"\s{2,}", RegexOptions.Compiled);
 
+    private readonly Regex DarkMod_TDM_MapSequence_MissionLine_Regex =
+        new Regex(@"^Mission [0123456789]+\:\s*.+", RegexOptions.Compiled);
+
+    private readonly Regex DarkModTxtFieldsRegex =
+        new Regex("(Title:|Author:|Description:|Version:|Required TDM Version:)",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
     #endregion
 
     /// <summary>

@@ -660,6 +660,7 @@ public sealed partial class Scanner : IDisposable
         (done) Scan size! Do we just ignore the savegames folder, or do we ignore everything but the pk4?
         (done) Detect mission count - find out how
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
+        -Download all available TDM FMs and check for scanned accuracy!
 
         missions.tdminfo
         A typical entry:
@@ -769,7 +770,7 @@ public sealed partial class Scanner : IDisposable
                             "Mission" line to be one mission, and if it has multiple maps then it's one mission
                             with loading zones.
                             */
-                            else if (Regex.Match(lineT, @"^Mission [0123456789]+\:\s*.+").Success)
+                            else if (DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
                             {
                                 misCount++;
                             }
@@ -809,16 +810,14 @@ public sealed partial class Scanner : IDisposable
             {
                 ReadmeInternal readme = _readmeFiles[darkModTxtIndex];
 
-                MatchCollection matches = Regex.Matches(readme.Text, "(Title:|Author:|Description:|Version:|Required TDM Version:)");
+                MatchCollection matches = DarkModTxtFieldsRegex.Matches(readme.Text);
                 int plus = 0;
                 foreach (Match match in matches)
                 {
                     if (match.Index > 0)
                     {
-                        char c = readme.Text[match.Index - 1];
-                        if (c == '\r' ||
-                            c == '\n' ||
-                            !char.IsWhiteSpace(c))
+                        char c = readme.Text[(match.Index + plus) - 1];
+                        if (c is not '\r' and not '\n')
                         {
                             readme.Text = readme.Text.Insert(match.Index + plus, "\r\n");
                             plus += 2;
