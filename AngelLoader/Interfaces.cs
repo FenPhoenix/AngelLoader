@@ -348,5 +348,5 @@ public interface IView : ISettingsChangeableView
 
     void SetAvailableAndFinishedFMCount(bool forceRefresh = false);
     void RefreshMods();
-    void QueueRefresh();
+    void QueueRefreshListOnly();
 }

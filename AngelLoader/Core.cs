@@ -479,7 +479,7 @@ internal static class Core
 
             if (View != null!)
             {
-                View.QueueRefresh();
+                View.QueueRefreshListOnly();
             }
 
             static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
@@ -513,7 +513,7 @@ internal static class Core
 
             if (View != null!)
             {
-                View.QueueRefresh();
+                View.QueueRefreshListOnly();
             }
         }
     }

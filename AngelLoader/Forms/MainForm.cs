@@ -2989,25 +2989,25 @@ public sealed partial class MainForm : DarkFormBase,
         RefreshAllSelectedFMs_Full();
     }
 
-    private bool _refreshIsQueued;
+    private bool _refreshListOnlyIsQueued;
 
-    public void QueueRefresh()
+    public void QueueRefreshListOnly()
     {
-        _refreshIsQueued = true;
+        _refreshListOnlyIsQueued = true;
         Invoke(() =>
         {
             if (UIEnabled && !ViewBlocked)
             {
-                RefreshIfQueued();
+                RefreshListOnlyIfQueued();
             }
         });
     }
 
-    private void RefreshIfQueued()
+    private void RefreshListOnlyIfQueued()
     {
-        if (_refreshIsQueued)
+        if (_refreshListOnlyIsQueued)
         {
-            _refreshIsQueued = false;
+            _refreshListOnlyIsQueued = false;
             RefreshFMsListRowsOnlyKeepSelection();
             if (_displayedFM != null)
             {
@@ -4893,7 +4893,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                RefreshIfQueued();
+                RefreshListOnlyIfQueued();
             }
         }
     });
@@ -5224,7 +5224,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (value)
             {
-                RefreshIfQueued();
+                RefreshListOnlyIfQueued();
             }
         }
     }
