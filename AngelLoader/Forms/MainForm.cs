@@ -3006,25 +3006,28 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void RefreshImmediatelyIfPossible()
     {
-        Invoke(() =>
+        if (UIEnabled && !ViewBlocked)
         {
-            if (UIEnabled && !ViewBlocked)
-            {
-                RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
-            }
-        });
+            RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void MainForm_QueueRefreshListOnlyEvent(object sender, EventArgs e)
     {
-        _refreshListOnlyIsQueued = true;
-        RefreshImmediatelyIfPossible();
+        Invoke(() =>
+        {
+            _refreshListOnlyIsQueued = true;
+            RefreshImmediatelyIfPossible();
+        });
     }
 
     private void MainForm_QueueRefreshFromDiskEvent(object sender, EventArgs e)
     {
-        _refreshFromDiskIsQueued = true;
-        RefreshImmediatelyIfPossible();
+        Invoke(() =>
+        {
+            _refreshFromDiskIsQueued = true;
+            RefreshImmediatelyIfPossible();
+        });
     }
 
     private void MainForm_RefreshIfQueuedEvent(object sender, EventArgs e)

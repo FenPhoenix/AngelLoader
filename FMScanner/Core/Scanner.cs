@@ -661,6 +661,23 @@ public sealed partial class Scanner : IDisposable
         (done) Detect mission count - find out how
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
         -Download all available TDM FMs and check for scanned accuracy!
+        
+        @TDM(manually downloaded FMs):
+
+        From https://wiki.thedarkmod.com/index.php?title=Installing_and_Running_Fan_Missions:
+        
+        "Each FM is contained in a PK4 file, which contains all the files necessary to run the mission. Download
+        the mission on thedarkmod.com/missions and drop the PK4 file into the fms/ folder, e.g. C:\Games\darkmod\fms\.
+                                   
+        When launching The Dark Mod, the game will detect the new mission package in the fms/ folder and will add
+        it to the list of available missions (note: the PK4 file will be automatically moved into a subfolder,
+        this is normal operation)."
+
+        So we need to support pk4s in the fms dir as if they were folders already, in case someone puts one there
+        manually. This also means missions.tdminfo will NOT be updated and thus will not trigger an auto-refresh-
+        from-disk. We should put another watch on the folder for pk4 files only.
+
+        ---
 
         missions.tdminfo
         A typical entry:
