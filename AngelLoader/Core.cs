@@ -1933,26 +1933,10 @@ internal static class Core
         }
     }
 
-    internal static void OpenWebSearchUrl(string fmTitle, GameIndex gameIndex)
+    internal static void OpenWebSearchUrl()
     {
-        static bool CheckUrl(string url)
-        {
-            if (url.IsWhiteSpace())
-            {
-                Log(nameof(url) + " consists only of whitespace.");
-                Dialogs.ShowError("Web search URL (as set in the Settings window) is empty or consists only of whitespace. Unable to create a valid link.");
-                return false;
-            }
-
-            if (url.Length > 32766)
-            {
-                Log(nameof(url) + " is too long (>32766 chars).");
-                Dialogs.ShowError("Web search URL (as set in the Settings window) is too long. Unable to create a valid link.");
-                return false;
-            }
-
-            return true;
-        }
+        FanMission? fm = View.GetMainSelectedFMOrNull();
+        if (fm == null || !fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)) return;
 
         string url = Config.GetWebSearchUrl(gameIndex);
 
@@ -1972,13 +1956,34 @@ internal static class Core
         {
             string finalUrl = index == -1
                 ? url
-                : url.Substring(0, index) + Uri.EscapeDataString(fmTitle) + url.Substring(index + "$TITLE$".Length);
+                : url.Substring(0, index) + Uri.EscapeDataString(fm.Title) + url.Substring(index + "$TITLE$".Length);
             ProcessStart_UseShellExecute(finalUrl);
         }
         catch (Exception ex)
         {
             Log(ErrorText.ExOpen + "web search URL", ex);
             Dialogs.ShowError(LText.AlertMessages.WebSearchURL_ProblemOpening);
+        }
+
+        return;
+
+        static bool CheckUrl(string url)
+        {
+            if (url.IsWhiteSpace())
+            {
+                Log(nameof(url) + " consists only of whitespace.");
+                Dialogs.ShowError("Web search URL (as set in the Settings window) is empty or consists only of whitespace. Unable to create a valid link.");
+                return false;
+            }
+
+            if (url.Length > 32766)
+            {
+                Log(nameof(url) + " is too long (>32766 chars).");
+                Dialogs.ShowError("Web search URL (as set in the Settings window) is too long. Unable to create a valid link.");
+                return false;
+            }
+
+            return true;
         }
     }
 
