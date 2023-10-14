@@ -611,7 +611,7 @@ internal static class Core
         Config.BackupFMData = outConfig.BackupFMData;
         Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
 
-        Config.WebSearchUrl = outConfig.WebSearchUrl;
+        Array.Copy(outConfig.WebSearchUrls, Config.WebSearchUrls, SupportedGameCount);
 
         Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
 
@@ -1933,7 +1933,7 @@ internal static class Core
         }
     }
 
-    internal static void OpenWebSearchUrl(string fmTitle)
+    internal static void OpenWebSearchUrl(string fmTitle, GameIndex gameIndex)
     {
         static bool CheckUrl(string url)
         {
@@ -1954,7 +1954,7 @@ internal static class Core
             return true;
         }
 
-        string url = Config.WebSearchUrl;
+        string url = Config.GetWebSearchUrl(gameIndex);
 
         if (!CheckUrl(url)) return;
 

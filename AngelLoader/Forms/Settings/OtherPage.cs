@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
@@ -21,7 +22,7 @@ public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
 
     private void WebSearchUrlResetButton_Paint(object sender, PaintEventArgs e)
     {
-        Rectangle cr = WebSearchUrlResetButton.ClientRectangle;
+        Rectangle cr = ((DarkButton)sender).ClientRectangle;
         Images.PaintBitmapButton(e,
             Images.Refresh,
             scaledRect: new RectangleF(

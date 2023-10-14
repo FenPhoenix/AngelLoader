@@ -909,7 +909,14 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
     }
 
-    private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(_owner.FMsDGV.GetMainSelectedFM().Title);
+    private void WebSearchMenuItem_Click(object sender, EventArgs e)
+    {
+        FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
+        if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        {
+            Core.OpenWebSearchUrl(fm.Title, gameIndex);
+        }
+    }
 
     #endregion
 }

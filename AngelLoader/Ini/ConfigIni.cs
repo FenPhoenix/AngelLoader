@@ -299,7 +299,7 @@ internal static partial class Ini
 
     private static void Config_WebSearchUrl_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.WebSearchUrl = valRaw;
+        config.SetWebSearchUrl(gameIndex, valRaw);
     }
 
     private static void Config_ConfirmPlayOnDCOrEnter_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -1212,7 +1212,11 @@ internal static partial class Ini
         sb.Append("BackupFMData").Append('=').Append(config.BackupFMData).AppendLine();
         sb.Append("BackupAlwaysAsk").Append('=').Append(config.BackupAlwaysAsk).AppendLine();
         sb.Append("Language").Append('=').AppendLine(config.Language);
-        sb.Append("WebSearchUrl").Append('=').AppendLine(config.WebSearchUrl);
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            sb.Append(GetGamePrefix(gameIndex)).Append("WebSearchUrl").Append('=').Append(config.GetWebSearchUrl(gameIndex)).AppendLine();
+        }
         sb.Append("ConfirmPlayOnDCOrEnter").Append('=').Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
 
         sb.Append("RunThiefBuddyOnFMPlay").Append('=').Append(config.RunThiefBuddyOnFMPlay).AppendLine();

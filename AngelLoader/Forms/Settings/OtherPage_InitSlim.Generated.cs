@@ -18,9 +18,22 @@ sealed partial class OtherPage
         this.PlayFMOnDCOrEnterGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.ConfirmPlayOnDCOrEnterCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.WebSearchGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.TDMWebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.SS2WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.T3WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.T2WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.T1WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.TDMWebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SS2WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.T3WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.T2WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.T1WebSearchUrlResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.WebSearchTitleExplanationLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.TDMWebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.SS2WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.T3WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.T2WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.T1WebSearchUrlTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.WebSearchUrlLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.UninstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.ConfirmUninstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -53,7 +66,7 @@ sealed partial class OtherPage
         this.PagePanel.Controls.Add(this.FMSettingsGroupBox);
         this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 692);
+        this.PagePanel.Size = new System.Drawing.Size(440, 897);
         this.PagePanel.TabIndex = 0;
         // 
         // FilteringGroupBox
@@ -61,7 +74,7 @@ sealed partial class OtherPage
         this.FilteringGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.FilteringGroupBox.Controls.Add(this.EnableFuzzySearchCheckBox);
-        this.FilteringGroupBox.Location = new System.Drawing.Point(8, 624);
+        this.FilteringGroupBox.Location = new System.Drawing.Point(8, 808);
         this.FilteringGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.FilteringGroupBox.Size = new System.Drawing.Size(424, 56);
         this.FilteringGroupBox.TabIndex = 5;
@@ -119,7 +132,7 @@ sealed partial class OtherPage
         this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-        this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 556);
+        this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 740);
         this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
         this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -136,36 +149,138 @@ sealed partial class OtherPage
         // 
         this.WebSearchGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlResetButton);
+        this.WebSearchGroupBox.Controls.Add(this.TDMWebSearchUrlLabel);
+        this.WebSearchGroupBox.Controls.Add(this.SS2WebSearchUrlLabel);
+        this.WebSearchGroupBox.Controls.Add(this.T3WebSearchUrlLabel);
+        this.WebSearchGroupBox.Controls.Add(this.T2WebSearchUrlLabel);
+        this.WebSearchGroupBox.Controls.Add(this.T1WebSearchUrlLabel);
+        this.WebSearchGroupBox.Controls.Add(this.TDMWebSearchUrlResetButton);
+        this.WebSearchGroupBox.Controls.Add(this.SS2WebSearchUrlResetButton);
+        this.WebSearchGroupBox.Controls.Add(this.T3WebSearchUrlResetButton);
+        this.WebSearchGroupBox.Controls.Add(this.T2WebSearchUrlResetButton);
+        this.WebSearchGroupBox.Controls.Add(this.T1WebSearchUrlResetButton);
         this.WebSearchGroupBox.Controls.Add(this.WebSearchTitleExplanationLabel);
-        this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
+        this.WebSearchGroupBox.Controls.Add(this.TDMWebSearchUrlTextBox);
+        this.WebSearchGroupBox.Controls.Add(this.SS2WebSearchUrlTextBox);
+        this.WebSearchGroupBox.Controls.Add(this.T3WebSearchUrlTextBox);
+        this.WebSearchGroupBox.Controls.Add(this.T2WebSearchUrlTextBox);
+        this.WebSearchGroupBox.Controls.Add(this.T1WebSearchUrlTextBox);
         this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
         this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 436);
         this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
+        this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 292);
         this.WebSearchGroupBox.TabIndex = 3;
         this.WebSearchGroupBox.TabStop = false;
         // 
-        // WebSearchUrlResetButton
+        // TDMWebSearchUrlLabel
         // 
-        this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 47);
-        this.WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
-        this.WebSearchUrlResetButton.TabIndex = 2;
-        this.WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
+        this.TDMWebSearchUrlLabel.AutoSize = true;
+        this.TDMWebSearchUrlLabel.Location = new System.Drawing.Point(16, 216);
+        // 
+        // SS2WebSearchUrlLabel
+        // 
+        this.SS2WebSearchUrlLabel.AutoSize = true;
+        this.SS2WebSearchUrlLabel.Location = new System.Drawing.Point(16, 176);
+        // 
+        // T3WebSearchUrlLabel
+        // 
+        this.T3WebSearchUrlLabel.AutoSize = true;
+        this.T3WebSearchUrlLabel.Location = new System.Drawing.Point(16, 136);
+        // 
+        // T2WebSearchUrlLabel
+        // 
+        this.T2WebSearchUrlLabel.AutoSize = true;
+        this.T2WebSearchUrlLabel.Location = new System.Drawing.Point(16, 96);
+        // 
+        // T1WebSearchUrlLabel
+        // 
+        this.T1WebSearchUrlLabel.AutoSize = true;
+        this.T1WebSearchUrlLabel.Location = new System.Drawing.Point(16, 56);
+        // 
+        // TDMWebSearchUrlResetButton
+        // 
+        this.TDMWebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.TDMWebSearchUrlResetButton.Location = new System.Drawing.Point(393, 231);
+        this.TDMWebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
+        this.TDMWebSearchUrlResetButton.TabIndex = 15;
+        this.TDMWebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
+        // 
+        // SS2WebSearchUrlResetButton
+        // 
+        this.SS2WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.SS2WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 191);
+        this.SS2WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
+        this.SS2WebSearchUrlResetButton.TabIndex = 12;
+        this.SS2WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
+        // 
+        // T3WebSearchUrlResetButton
+        // 
+        this.T3WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.T3WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 151);
+        this.T3WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
+        this.T3WebSearchUrlResetButton.TabIndex = 9;
+        this.T3WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
+        // 
+        // T2WebSearchUrlResetButton
+        // 
+        this.T2WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.T2WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 111);
+        this.T2WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
+        this.T2WebSearchUrlResetButton.TabIndex = 6;
+        this.T2WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
+        // 
+        // T1WebSearchUrlResetButton
+        // 
+        this.T1WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.T1WebSearchUrlResetButton.Location = new System.Drawing.Point(393, 71);
+        this.T1WebSearchUrlResetButton.Size = new System.Drawing.Size(22, 22);
+        this.T1WebSearchUrlResetButton.TabIndex = 3;
+        this.T1WebSearchUrlResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.WebSearchUrlResetButton_Paint);
         // 
         // WebSearchTitleExplanationLabel
         // 
         this.WebSearchTitleExplanationLabel.AutoSize = true;
-        this.WebSearchTitleExplanationLabel.Location = new System.Drawing.Point(16, 78);
+        this.WebSearchTitleExplanationLabel.Location = new System.Drawing.Point(16, 264);
         // 
-        // WebSearchUrlTextBox
+        // TDMWebSearchUrlTextBox
         // 
-        this.WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.TDMWebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 48);
-        this.WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
-        this.WebSearchUrlTextBox.TabIndex = 1;
+        this.TDMWebSearchUrlTextBox.Location = new System.Drawing.Point(16, 232);
+        this.TDMWebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
+        this.TDMWebSearchUrlTextBox.TabIndex = 14;
+        // 
+        // SS2WebSearchUrlTextBox
+        // 
+        this.SS2WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.SS2WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 192);
+        this.SS2WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
+        this.SS2WebSearchUrlTextBox.TabIndex = 11;
+        // 
+        // T3WebSearchUrlTextBox
+        // 
+        this.T3WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.T3WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 152);
+        this.T3WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
+        this.T3WebSearchUrlTextBox.TabIndex = 8;
+        // 
+        // T2WebSearchUrlTextBox
+        // 
+        this.T2WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.T2WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 112);
+        this.T2WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
+        this.T2WebSearchUrlTextBox.TabIndex = 5;
+        // 
+        // T1WebSearchUrlTextBox
+        // 
+        this.T1WebSearchUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.T1WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 72);
+        this.T1WebSearchUrlTextBox.Size = new System.Drawing.Size(376, 20);
+        this.T1WebSearchUrlTextBox.TabIndex = 2;
         // 
         // WebSearchUrlLabel
         // 
@@ -271,7 +386,7 @@ sealed partial class OtherPage
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 692);
+        this.Size = new System.Drawing.Size(440, 897);
         this.PagePanel.ResumeLayout(false);
         this.FilteringGroupBox.ResumeLayout(false);
         this.InstallingFMsGroupBox.ResumeLayout(false);

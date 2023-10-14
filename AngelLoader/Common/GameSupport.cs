@@ -12,7 +12,6 @@ namespace AngelLoader;
 public static partial class GameSupport
 {
     internal static readonly string[] SupportedGameNames = Enum.GetNames(typeof(GameIndex));
-    internal static readonly int SupportedGameCount = SupportedGameNames.Length;
 
     // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
     // the code that need updating.

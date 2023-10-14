@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
 
 namespace AngelLoader;
 
@@ -170,7 +171,15 @@ public static partial class Misc
         internal const string DateCustomSeparator3 = "";
         internal const string DateCustomFormat4 = "";
 
-        internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
+        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+        internal static readonly ReadOnlyCollection<string> WebSearchUrls = new(new string[SupportedGameCount]
+        {
+            "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com",
+            "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com",
+            "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com",
+            "https://www.google.com/search?q=\"$TITLE$\" site:systemshock.org",
+            "https://www.google.com/search?q=\"$TITLE$\" site:thedarkmod.com"
+        });
 
         internal const uint DaysRecent = 15;
         internal const uint MaxDaysRecent = 99999;

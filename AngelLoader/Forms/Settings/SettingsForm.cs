@@ -64,6 +64,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly StandardButton[] GameExeBrowseButtons;
     private readonly DarkCheckBox[] GameUseSteamCheckBoxes;
 
+    private readonly DarkLabel[] GameWebSearchUrlLabels;
+    private readonly DarkTextBox[] GameWebSearchUrlTextBoxes;
+    private readonly DarkButton[] GameWebSearchUrlResetButtons;
+
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
     // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
     private readonly DateTime _exampleDate = new(DateTime.Now.Year, 8, 4);
@@ -177,6 +181,31 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief3UseSteamCheckBox,
             PathsPage.SS2UseSteamCheckBox,
             new DarkCheckBox() // Dummy
+        };
+
+        GameWebSearchUrlLabels = new[]
+        {
+            OtherPage.T1WebSearchUrlLabel,
+            OtherPage.T2WebSearchUrlLabel,
+            OtherPage.T3WebSearchUrlLabel,
+            OtherPage.SS2WebSearchUrlLabel,
+            OtherPage.TDMWebSearchUrlLabel
+        };
+        GameWebSearchUrlTextBoxes = new[]
+        {
+            OtherPage.T1WebSearchUrlTextBox,
+            OtherPage.T2WebSearchUrlTextBox,
+            OtherPage.T3WebSearchUrlTextBox,
+            OtherPage.SS2WebSearchUrlTextBox,
+            OtherPage.TDMWebSearchUrlTextBox
+        };
+        GameWebSearchUrlResetButtons = new[]
+        {
+            OtherPage.T1WebSearchUrlResetButton,
+            OtherPage.T2WebSearchUrlResetButton,
+            OtherPage.T3WebSearchUrlResetButton,
+            OtherPage.SS2WebSearchUrlResetButton,
+            OtherPage.TDMWebSearchUrlResetButton
         };
 
         // @GENGAMES (Settings): We've traded one form of jank for another
@@ -547,7 +576,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            OtherPage.WebSearchUrlTextBox.Text = config.WebSearchUrl;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameWebSearchUrlTextBoxes[i].Text = config.WebSearchUrls[i];
+            }
 
             OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
 
@@ -649,7 +681,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Other page
 
-            OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameWebSearchUrlResetButtons[i].Click += WebSearchURLResetButtons_Click;
+            }
 
             #endregion
 
@@ -870,7 +905,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 OtherPage.WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
                 OtherPage.WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
                 OtherPage.WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
-                MainToolTip.SetToolTip(OtherPage.WebSearchUrlResetButton, LText.SettingsWindow.Other_WebSearchResetToolTip);
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameWebSearchUrlLabels[i].Text = GetLocalizedGameNameColon((GameIndex)i);
+                    MainToolTip.SetToolTip(GameWebSearchUrlResetButtons[i], LText.SettingsWindow.Other_WebSearchResetToolTip);
+                }
 
                 OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
                 OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
@@ -1180,7 +1220,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            OutConfig.WebSearchUrl = OtherPage.WebSearchUrlTextBox.Text;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                OutConfig.WebSearchUrls[i] = GameWebSearchUrlTextBoxes[i].Text;
+            }
 
             OutConfig.ConfirmPlayOnDCOrEnter = OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked;
 
@@ -1695,7 +1738,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Other page
 
-    private void WebSearchURLResetButton_Click(object sender, EventArgs e) => OtherPage.WebSearchUrlTextBox.Text = Defaults.WebSearchUrl;
+    private void WebSearchURLResetButtons_Click(object sender, EventArgs e)
+    {
+        int index = Array.FindIndex(GameWebSearchUrlResetButtons, x => x == sender);
+        GameWebSearchUrlTextBoxes[index].Text = Defaults.WebSearchUrls[index];
+    }
 
     #endregion
 
