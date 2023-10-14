@@ -253,18 +253,30 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private void Test3Button_Click(object sender, EventArgs e)
+    private async void Test3Button_Click(object sender, EventArgs e)
     {
-        if (TDM_Downloader.TryGetMissionsFromServer(out List<TDM_Downloader.TdmFmInfo>? fmsList))
+        try
         {
-            foreach (TDM_Downloader.TdmFmInfo? item in fmsList)
+            ShowProgressBox_Single("Downloading TDM FM data using stupid not-quick-to-test async crap...",
+                progressType: ProgressType.Indeterminate);
+
+            var result = await TDM_Downloader.TryGetMissionsFromServer();
+
+            if (result.Success)
             {
-                Trace.WriteLine(item);
+                foreach (TDM_Downloader.TdmFmInfo? item in result.FMsList)
+                {
+                    Trace.WriteLine(item);
+                }
+            }
+            else
+            {
+                Trace.WriteLine("Failed. Exception: " + (result.Ex?.ToString() ?? "none"));
             }
         }
-        else
+        finally
         {
-            Trace.WriteLine("Failed");
+            HideProgressBox();
         }
     }
 

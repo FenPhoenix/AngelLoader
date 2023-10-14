@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Xml;
+using static AL_Common.Common;
 
 namespace AngelLoader;
 
@@ -73,34 +73,36 @@ internal static class TDM_Downloader
         }
     }
 
-    internal static bool TryGetMissionsFromServer([NotNullWhen(true)] out List<TdmFmInfo>? fmsList)
+    internal static async Task<(bool Success, Exception? Ex, List<TdmFmInfo> FMsList)>
+    TryGetMissionsFromServer()
     {
-        fmsList = null;
-
         try
         {
-            using var wc = new WebClient();
-            byte[] data = wc.DownloadData("http://missions.thedarkmod.com/get_available_missions.php");
-            using var dataStream = new MemoryStream(data);
+            var fail = (false, (Exception?)null, new List<TdmFmInfo>());
+
+            HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_available_missions.php");
+            request.EnsureSuccessStatusCode();
+
+            using var dataStream = await request.Content.ReadAsStreamAsync();
 
             var xmlDoc = new XmlDocument();
 
             xmlDoc.Load(dataStream);
 
             XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
-            if (tdmNodes?.Count != 1) return false;
+            if (tdmNodes?.Count != 1) return fail;
 
             XmlNode tdmNode = tdmNodes[0];
 
             XmlNodeList availableMissionsNodes = tdmNode.ChildNodes;
-            if (availableMissionsNodes.Count != 1) return false;
+            if (availableMissionsNodes.Count != 1) return fail;
 
             XmlNode availableMissionsNode = availableMissionsNodes[0];
-            if (availableMissionsNode.Name != "availableMissions") return false;
+            if (availableMissionsNode.Name != "availableMissions") return fail;
 
             XmlNodeList missionNodes = availableMissionsNode.ChildNodes;
 
-            fmsList = new List<TdmFmInfo>();
+            var fmsList = new List<TdmFmInfo>();
 
             foreach (XmlNode mn in missionNodes)
             {
@@ -144,12 +146,11 @@ internal static class TDM_Downloader
                 }
             }
 
-            return true;
+            return (true, null, fmsList);
         }
-        catch
+        catch (Exception ex)
         {
-            fmsList = null;
-            return false;
+            return (false, ex, new List<TdmFmInfo>());
         }
     }
 }
