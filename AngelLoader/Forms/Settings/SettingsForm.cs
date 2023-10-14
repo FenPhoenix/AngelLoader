@@ -56,6 +56,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly (DarkRadioButtonCustom Button, ISettingsPage Page)[] PageControls;
     private readonly int?[] _pageVScrollValues = new int?[SettingsTabCount];
 
+    // @TDM(Settings/Paths page organization):
+    // It's high time we rearrange this page. We should put FM Archives up near the games that need it, and change
+    // Other to Backup Path and put that with the games that need it too (or even just have it as fields in the
+    // requiring games group), and maybe put TDM separate even.
+
     private readonly DarkTextBox[] ExePathTextBoxes;
     private readonly Control[] ErrorableControls;
 
