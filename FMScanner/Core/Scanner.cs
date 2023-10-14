@@ -725,6 +725,16 @@ public sealed partial class Scanner : IDisposable
 
         Do we want to watch for changes to this file? It could get unboundedly large and we'd have to linear
         search the whole thing every time.
+
+        @TDM(missing "downloaded_version" in some missions.tdminfo entries)
+        Note some of them don't have "downloaded_version". Presumably this is if you put them in manually or they
+        came with TDM (A New Job, Tears of Saint Lucia). We need code to handle this case.
+
+        @TDM(manual install filenames)
+        If you go to an FM's download page, the pk4 is the identifying name plus an underscore and then some hash
+        code?! And the game doesn't strip the hash code or anything. So that could happen too...
+        Guess we just have to treat those FMs as normal and if there's a dupe with a non-hashcode-appended name
+        then we treat it as a separate mission. Meh.
         */
 
         ScannedFMData fmData = new()

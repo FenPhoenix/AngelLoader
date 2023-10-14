@@ -74,6 +74,7 @@ public static partial class Common
     public static readonly char[] CA_BS_FS = { '\\', '/' };
     public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
     public static readonly char[] CA_Plus = { '+' };
+    public static readonly char[] CA_DoubleQuote = { '\"' };
 
     #endregion
 

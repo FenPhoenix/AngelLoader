@@ -137,7 +137,6 @@ public sealed partial class Scanner
     private readonly char[] CA_Period = { '.' };
     private readonly char[] CA_Asterisk = { '*' };
     private readonly char[] CA_Hyphen = { '-' };
-    private readonly char[] CA_DoubleQuote = { '\"' };
     private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
     private readonly char[] CA_Parens = { '(', ')' };

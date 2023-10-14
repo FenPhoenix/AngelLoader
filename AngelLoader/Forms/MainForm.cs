@@ -255,6 +255,14 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
+        List<TDMParser.MissionInfoEntry> list = TDMParser.ParseMissionsInfoFile();
+        foreach (TDMParser.MissionInfoEntry? item in list)
+        {
+            Trace.WriteLine(item);
+        }
+
+        return;
+
         try
         {
             ShowProgressBox_Single("Downloading TDM FM data using stupid not-quick-to-test async crap...",
