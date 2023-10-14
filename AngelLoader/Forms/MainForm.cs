@@ -39,6 +39,7 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -254,6 +255,17 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
+        if (TDM_Downloader.TryGetMissionsFromServer(out List<TDM_Downloader.TdmFmInfo>? fmsList))
+        {
+            foreach (TDM_Downloader.TdmFmInfo? item in fmsList)
+            {
+                Trace.WriteLine(item);
+            }
+        }
+        else
+        {
+            Trace.WriteLine("Failed");
+        }
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
