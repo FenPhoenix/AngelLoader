@@ -662,6 +662,32 @@ public sealed partial class Scanner : IDisposable
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
         -Download all available TDM FMs and check for scanned accuracy!
         
+        @TDM(missions info xml download):
+        TDM gets its available missions list from here:
+        http://missions.thedarkmod.com/available_missions.xml
+
+        Typical entry:
+
+        <mission title="Accountant 1: Thieves and Heirs" releaseDate="2017-11-08" size="233.9" version="3" internalName="ac1" type="single" author="Goldwell" id="0">
+           <downloadLocation language="English" weight="0.01" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://missions.thedarkmod.com/ac1_082473b05d5c8b14.pk4"/>
+           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://darkmod.taaaki.za.net/fmsv2/ac1_082473b05d5c8b14.pk4"/>
+           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://darkmod-alt02.taaaki.za.net/fms/ac1_082473b05d5c8b14.pk4"/>
+           <downloadLocation language="English" weight="2" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://tdm.frydrych.org/missions/ac1_082473b05d5c8b14.pk4"/>
+           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://mirror.mstrmnds.me/missions/ac1_082473b05d5c8b14.pk4"/>
+        </mission>
+
+        We can parse this out and then cross-check an FM's "downloaded_version" from missions.tdminfo, and if
+        they match we can take the release date and author, and take the title as one in the list. We want the
+        title as only one in the list because sometimes the titles here are acronyms but may be spelled out in
+        full in the readme, so we can still lean on our title selector for those cases.
+
+        If the versions don't match then we're forced to rely on a local scan, because that xml file doesn't
+        contain info for previous versions. Though maybe we can still take the title and author, but not the
+        release date, because that will definitely be wrong if the versions don't match.
+
+        We could also store the versions in FMData.ini and then when missions.tdminfo changes, we can check if
+        the versions there have changed, and re-scan any FMs whose versions have changed.
+
         @TDM(manually downloaded FMs):
 
         From https://wiki.thedarkmod.com/index.php?title=Installing_and_Running_Fan_Missions:
@@ -677,7 +703,7 @@ public sealed partial class Scanner : IDisposable
         manually. This also means missions.tdminfo will NOT be updated and thus will not trigger an auto-refresh-
         from-disk. We should put another watch on the folder for pk4 files only.
 
-        ---
+        @TDM(finished on/last played):
 
         missions.tdminfo
         A typical entry:
