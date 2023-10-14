@@ -1,9 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Test offline so as not to hit the server more than is necessary
+// #define ENABLE_ONLINE
+
+#if ENABLE_ONLINE
 using System.Net.Http;
+using static AL_Common.Common;
+#endif
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
-using static AL_Common.Common;
 
 namespace AngelLoader;
 
@@ -73,6 +79,17 @@ internal static class TDM_Downloader
         }
     }
 
+    private static async Task<Stream> GetAvailableMissionsStream()
+    {
+#if ENABLE_ONLINE
+        HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_available_missions.php");
+        request.EnsureSuccessStatusCode();
+        return await request.Content.ReadAsStreamAsync();
+#else
+        return await Task.FromResult(File.OpenRead(@"C:\_altdm__available_missions.xml"));
+#endif
+    }
+
     internal static async Task<(bool Success, Exception? Ex, List<TdmFmInfo> FMsList)>
     TryGetMissionsFromServer()
     {
@@ -80,10 +97,7 @@ internal static class TDM_Downloader
         {
             var fail = (false, (Exception?)null, new List<TdmFmInfo>());
 
-            HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_available_missions.php");
-            request.EnsureSuccessStatusCode();
-
-            using var dataStream = await request.Content.ReadAsStreamAsync();
+            using var dataStream = await GetAvailableMissionsStream();
 
             var xmlDoc = new XmlDocument();
 
