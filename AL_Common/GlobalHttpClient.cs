@@ -6,8 +6,8 @@ public static partial class Common
 {
     /*
     @TDM(Http):
-    Apparently on new .NETs there's a System.Net.Http.SocketsHttpHandler that apparently results in "a significant
-    performance improvement" compared to HttpClientHandler which Framework uses.
+    On new .NETs there's a System.Net.Http.SocketsHttpHandler that apparently results in "a significant performance
+    improvement" compared to HttpClientHandler which Framework uses.
     It's only in new .NETs, but there's a backport here: https://github.com/TalAloni/StandardSocketsHttpHandler
     We can test this out later once we know what we're doing and see if we get better perf.
     */
