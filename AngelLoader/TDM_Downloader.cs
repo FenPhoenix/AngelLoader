@@ -21,6 +21,7 @@ internal static class TDM_Downloader
         internal string Title = "";
 
         // DateTime
+        // This is always in the format yyyy-mm-dd
         internal string ReleaseDate = "";
 
         // float, or double for safety?
@@ -116,7 +117,7 @@ internal static class TDM_Downloader
 
             XmlNodeList missionNodes = availableMissionsNode.ChildNodes;
 
-            var fmsList = new List<TdmFmInfo>();
+            var fmsList = new List<TdmFmInfo>(missionNodes.Count);
 
             foreach (XmlNode mn in missionNodes)
             {
