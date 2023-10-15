@@ -1,5 +1,5 @@
 ﻿// Test offline so as not to hit the server more than is necessary
-// #define ENABLE_ONLINE
+//#define ENABLE_ONLINE
 
 #if ENABLE_ONLINE
 using System.Net.Http;
@@ -8,6 +8,7 @@ using static AL_Common.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -30,41 +31,19 @@ internal static class TDM_Downloader
         // probably int
         internal string Version = "";
 
+        // string
         internal string InternalName = "";
 
+        // string
         // Type is either "single" or "multi", but we scan for exact mission count, so we won't use this normally.
         // But if we have a downloader, we could display it there, as the closest thing to mission count we have.
         internal string Type = "";
 
+        // string
         internal string Author = "";
 
         // probably int
         internal string Id = "";
-
-        public TdmFmInfo()
-        {
-
-        }
-
-        public TdmFmInfo(
-            string title,
-            string releaseDate,
-            string size,
-            string version,
-            string internalName,
-            string type,
-            string author,
-            string id)
-        {
-            Title = title;
-            ReleaseDate = releaseDate;
-            Size = size;
-            Version = version;
-            InternalName = internalName;
-            Type = type;
-            Author = author;
-            Id = id;
-        }
 
         public override string ToString()
         {
@@ -80,6 +59,107 @@ internal static class TDM_Downloader
         }
     }
 
+    internal sealed class TdmFmDownloadLocation
+    {
+        // Not part of the xml item, but we store it for convenience
+        internal readonly string FMInternalName;
+
+        // probably string (could be mapped to enum or something?)
+        internal string Language = "";
+
+        // float/double
+        internal string Weight = "";
+
+        // string
+        internal string SHA256 = "";
+
+        // string
+        internal string Url = "";
+
+        public TdmFmDownloadLocation(string fmInternalName)
+        {
+            FMInternalName = fmInternalName;
+        }
+
+        public override string ToString()
+        {
+            return
+                FMInternalName + " Download Location:" + Environment.NewLine +
+                "\t\t" + nameof(Language) + ": " + Language + Environment.NewLine +
+                "\t\t" + nameof(Weight) + ": " + Weight + Environment.NewLine +
+                "\t\t" + nameof(SHA256) + ": " + SHA256 + Environment.NewLine +
+                "\t\t" + nameof(Url) + ": " + Url + Environment.NewLine;
+        }
+    }
+
+    internal sealed class TdmFmDetails
+    {
+        // probably int
+        internal string Id = "";
+
+        // Change these to their appropriate types later
+        internal string Title = "";
+
+        // DateTime
+        // This is always in the format yyyy-mm-dd
+        internal string ReleaseDate = "";
+
+        // float, or double for safety?
+        internal string Size = "";
+
+        // probably int
+        internal string Version = "";
+
+        // string
+        internal string InternalName = "";
+
+        // string
+        // Type is either "single" or "multi", but we scan for exact mission count, so we won't use this normally.
+        // But if we have a downloader, we could display it there, as the closest thing to mission count we have.
+        internal string Type = "";
+
+        // string
+        internal string Author = "";
+
+        // string
+        internal string Description = "";
+
+        internal List<TdmFmDownloadLocation> DownloadLocations = new();
+
+        internal List<string> Screenshots = new();
+
+        public override string ToString()
+        {
+            string ret =
+                "\t" + nameof(Id) + ": " + Id + Environment.NewLine +
+                "\t" + nameof(Title) + ": " + Title + Environment.NewLine +
+                "\t" + nameof(ReleaseDate) + ": " + ReleaseDate + Environment.NewLine +
+                "\t" + nameof(Size) + ": " + Size + Environment.NewLine +
+                "\t" + nameof(Version) + ": " + Version + Environment.NewLine +
+                "\t" + nameof(InternalName) + ": " + InternalName + Environment.NewLine +
+                "\t" + nameof(Type) + ": " + Type + Environment.NewLine +
+                "\t" + nameof(Author) + ": " + Author + Environment.NewLine +
+                "\t" + nameof(Description) + ": " + Description + Environment.NewLine +
+                "\t" + nameof(DownloadLocations) + ":" + Environment.NewLine;
+
+            for (int i = 0; i < DownloadLocations.Count; i++)
+            {
+                ret += "\t" + DownloadLocations[i] + Environment.NewLine;
+            }
+
+            ret += "\t" + nameof(Screenshots) + ":" + Environment.NewLine;
+            for (int i = 0; i < Screenshots.Count; i++)
+            {
+                ret += "\t\t" + Screenshots[i] + Environment.NewLine;
+            }
+
+            return ret;
+        }
+    }
+
+    private const string _testingPath = @"C:\_al_tdm_testing";
+    private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
+
     private static async Task<Stream> GetAvailableMissionsStream()
     {
 #if ENABLE_ONLINE
@@ -87,7 +167,7 @@ internal static class TDM_Downloader
         request.EnsureSuccessStatusCode();
         return await request.Content.ReadAsStreamAsync();
 #else
-        return await Task.FromResult(File.OpenRead(@"C:\_altdm__available_missions.xml"));
+        return await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
 #endif
     }
 
@@ -98,7 +178,7 @@ internal static class TDM_Downloader
         {
             var fail = (false, (Exception?)null, new List<TdmFmInfo>());
 
-            using var dataStream = await GetAvailableMissionsStream();
+            using Stream dataStream = await GetAvailableMissionsStream();
 
             var xmlDoc = new XmlDocument();
 
@@ -168,4 +248,149 @@ internal static class TDM_Downloader
             return (false, ex, new List<TdmFmInfo>());
         }
     }
+
+    private static async Task<Stream> GetMissionDetailsStream(TdmFmInfo info)
+    {
+#if ENABLE_ONLINE
+        HttpResponseMessage request =
+
+        await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + info.Id);
+        request.EnsureSuccessStatusCode();
+        return await request.Content.ReadAsStreamAsync();
+#else
+        return await Task.FromResult(File.OpenRead(Path.Combine(_detailsPath,
+            info.InternalName + "_id=" + info.Id + ".xml")));
+#endif
+    }
+
+    internal static async Task<(bool Success, Exception? Ex, TdmFmDetails FmDetails)>
+    GetMissionDetails(TdmFmInfo info)
+    {
+        try
+        {
+            var fail = (false, (Exception?)null, new TdmFmDetails());
+
+            using Stream dataStream = await GetMissionDetailsStream(info);
+
+            var xmlDoc = new XmlDocument();
+
+            xmlDoc.Load(dataStream);
+
+            XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
+            if (tdmNodes?.Count != 1) return fail;
+
+            XmlNode tdmNode = tdmNodes[0];
+
+            XmlNodeList missionNodes = tdmNode.ChildNodes;
+            if (missionNodes.Count != 1) return fail;
+
+            XmlNode missionNode = missionNodes[0];
+            if (missionNode.Name != "mission") return fail;
+
+            TdmFmDetails details = new();
+            XmlNodeList detailsNodes = missionNode.ChildNodes;
+            foreach (XmlNode dn in detailsNodes)
+            {
+                switch (dn.Name)
+                {
+                    case "id":
+                        details.Id = dn.InnerText;
+                        break;
+                    case "title":
+                        details.Title = dn.InnerText;
+                        break;
+                    case "releaseDate":
+                        details.ReleaseDate = dn.InnerText;
+                        break;
+                    case "size":
+                        details.Size = dn.InnerText;
+                        break;
+                    case "version":
+                        details.Version = dn.InnerText;
+                        break;
+                    case "internalName":
+                        details.InternalName = dn.InnerText;
+                        break;
+                    case "type":
+                        details.Type = dn.InnerText;
+                        break;
+                    case "author":
+                        details.Author = dn.InnerText;
+                        break;
+                    case "description":
+                        details.Description = WebUtility.HtmlDecode(dn.InnerText);
+                        break;
+                    case "downloadLocations":
+                    {
+                        foreach (XmlNode dlNode in dn.ChildNodes)
+                        {
+                            if (dlNode.Name != "downloadLocation") continue;
+                            if (dlNode.Attributes == null) continue;
+
+                            TdmFmDownloadLocation downloadLocation = new(details.InternalName);
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                switch (attr.Name)
+                                {
+                                    case "language":
+                                        downloadLocation.Language = attr.Value;
+                                        break;
+                                    case "weight":
+                                        downloadLocation.Weight = attr.Value;
+                                        break;
+                                    case "sha256":
+                                        downloadLocation.SHA256 = attr.Value;
+                                        break;
+                                    case "url":
+                                        downloadLocation.Url = attr.Value;
+                                        break;
+                                }
+                            }
+                            details.DownloadLocations.Add(downloadLocation);
+                        }
+                        break;
+                    }
+                    case "screenshots":
+                    {
+                        foreach (XmlNode dlNode in dn.ChildNodes)
+                        {
+                            if (dlNode.Name != "screenshot") continue;
+                            if (dlNode.Attributes == null) continue;
+
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                if (attr.Name == "path")
+                                {
+                                    details.Screenshots.Add(attr.Value);
+                                    break;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return (true, null, details);
+        }
+        catch (Exception ex)
+        {
+            return (false, ex, new TdmFmDetails());
+        }
+    }
+
+
+#if false
+    internal static async Task SaveAllMissionDetailsXmlFiles(List<TdmFmInfo> infos)
+    {
+        foreach (TdmFmInfo info in infos)
+        {
+            HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + info.Id);
+            request.EnsureSuccessStatusCode();
+            byte[] bytes = await request.Content.ReadAsByteArrayAsync();
+            File.WriteAllBytes(Path.Combine(_detailsPath, info.InternalName + "_id=" + info.Id + ".xml"), bytes);
+        }
+    }
+#endif
 }

@@ -255,13 +255,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        List<TDMParser.MissionInfoEntry> list = TDMParser.ParseMissionsInfoFile();
-        foreach (TDMParser.MissionInfoEntry? item in list)
-        {
-            Trace.WriteLine(item);
-        }
+        //List<TDMParser.MissionInfoEntry> list = TDMParser.ParseMissionsInfoFile();
+        //foreach (TDMParser.MissionInfoEntry? item in list)
+        //{
+        //    Trace.WriteLine(item);
+        //}
 
-        return;
+        //return;
 
         try
         {
@@ -272,9 +272,24 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (result.Success)
             {
-                foreach (TDM_Downloader.TdmFmInfo? item in result.FMsList)
+                //await TDM_Downloader.SaveAllMissionDetailsXmlFiles(result.FMsList);
+
+                //foreach (TDM_Downloader.TdmFmInfo item in result.FMsList)
+                //{
+                //    Trace.WriteLine(item);
+                //}
+
+                foreach (TDM_Downloader.TdmFmInfo fmInfo in result.FMsList)
                 {
-                    Trace.WriteLine(item);
+                    var detailsResult = await TDM_Downloader.GetMissionDetails(fmInfo);
+                    if (detailsResult.Success)
+                    {
+                        Trace.WriteLine(detailsResult.FmDetails);
+                    }
+                    else
+                    {
+                        Trace.WriteLine(nameof(TDM_Downloader.GetMissionDetails) + " failed. Exception: " + (result.Ex?.ToString() ?? "none"));
+                    }
                 }
             }
             else
