@@ -15,6 +15,10 @@ using AL_Common;
 
 namespace AngelLoader;
 
+/*
+@TDM: We don't want to download the info every time we scan, or too often in any case. We need a caching scheme.
+@TDM: We shouldn't be downloading the entire list of FM details for the scan, only fetching the ones we actually need on the fly.
+*/
 internal static class TDM_Downloader
 {
     private const string _testingPath = @"C:\_al_tdm_testing";
