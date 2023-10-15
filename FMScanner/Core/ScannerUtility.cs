@@ -603,7 +603,7 @@ internal static class Utility
                         break;
                     }
                 }
-                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars,romanNumeralToDecimalTable))
+                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars, romanNumeralToDecimalTable))
                 {
                     return false;
                 }
@@ -630,35 +630,6 @@ internal static class Utility
 
             return true;
         }
-    }
-
-    /*
-    @vNext(AnyConsecutiveAsciiUppercaseChars):
-    Catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just be a
-    perf tweak, as everything works out fine as is in terms of accuracy.
-    */
-    internal static bool AnyConsecutiveAsciiUppercaseChars(string value)
-    {
-        int consecutiveAsciiUpperCharCount = 0;
-        for (int i = 0; i < value.Length; i++)
-        {
-            char c = value[i];
-
-            if (c.IsAsciiUpper())
-            {
-                consecutiveAsciiUpperCharCount++;
-                if (consecutiveAsciiUpperCharCount > 1)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                consecutiveAsciiUpperCharCount = 0;
-            }
-        }
-
-        return false;
     }
 
     internal static bool SequenceEqual(ListFast<char> first, ListFast<char> second)

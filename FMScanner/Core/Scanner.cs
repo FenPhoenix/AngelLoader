@@ -158,6 +158,18 @@ public sealed partial class Scanner : IDisposable
 
     #region Private classes
 
+    private sealed class DetectedTitle
+    {
+        internal readonly string Value;
+        internal bool Temporary;
+
+        public DetectedTitle(string value, bool temporary)
+        {
+            Value = value;
+            Temporary = temporary;
+        }
+    }
+
     private sealed class FileInfoCustom
     {
         internal readonly string FullName;
@@ -4160,21 +4172,37 @@ public sealed partial class Scanner : IDisposable
         return CleanupValue(value).Trim();
     }
 
-    private void OrderTitlesOptimally(List<string> titles)
+    private void OrderTitlesOptimally(List<string> originalTitles)
     {
+        if (originalTitles.Count == 0) return;
+
+        List<DetectedTitle> titles = new();
+        foreach (string title in originalTitles)
+        {
+            titles.Add(new DetectedTitle(title, temporary: false));
+        }
+        // Ultimate final attack against stubborn titles that just won't be caught
+        foreach (ReadmeInternal readme in _readmeFiles)
+        {
+            if (readme.Lines.Count >= 2 && readme.Lines[1].IsWhiteSpace())
+            {
+                titles.Add(new DetectedTitle(readme.Lines[0], temporary: true));
+            }
+        }
+
         if (titles.Count < 2) return;
 
-        string mainTitle = titles[0];
+        DetectedTitle mainTitle = titles[0];
 
-        if (mainTitle.IsEmpty()) return;
+        if (mainTitle.Value.IsEmpty()) return;
 
         _titleAcronymChars.ClearFast();
 
         byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
 
         bool titleAcronymSuccess =
-            Utility.AnyConsecutiveAsciiUppercaseChars(mainTitle) &&
-            Utility.GetAcronym(mainTitle, _titleAcronymChars, romanNumeralToDecimalTable);
+            AcronymRegex.Match(mainTitle.Value).Success &&
+            Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
 
         if (titleAcronymSuccess)
         {
@@ -4183,18 +4211,18 @@ public sealed partial class Scanner : IDisposable
 
             for (int i = 1; i < titles.Count; i++)
             {
-                string altTitle = titles[i];
+                DetectedTitle altTitle = titles[i];
                 _altTitleAcronymChars.ClearFast();
                 _altTitleRomanToDecimalAcronymChars.ClearFast();
 
                 bool acronymNormalSuccess =
-                    Utility.GetAcronym(altTitle, _altTitleAcronymChars, romanNumeralToDecimalTable);
+                    Utility.GetAcronym(altTitle.Value, _altTitleAcronymChars, romanNumeralToDecimalTable);
                 bool acronymRomanToDecimalSuccess =
-                    Utility.GetAcronym(altTitle, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable, convertRomanToDecimal: true);
+                    Utility.GetAcronym(altTitle.Value, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable, convertRomanToDecimal: true);
 
                 if (acronymNormalSuccess &&
                     acronymRomanToDecimalSuccess &&
-                    !mainTitle.EqualsIgnoreCaseAndWhiteSpace(altTitle, tempChars1, tempChars2) &&
+                    !mainTitle.Value.EqualsIgnoreCaseAndWhiteSpace(altTitle.Value, tempChars1, tempChars2) &&
                     (Utility.SequenceEqual(
                         _titleAcronymChars,
                         _altTitleAcronymChars) ||
@@ -4203,6 +4231,7 @@ public sealed partial class Scanner : IDisposable
                          _altTitleRomanToDecimalAcronymChars)))
                 {
                     (titles[0], titles[i]) = (titles[i], titles[0]);
+                    titles[0].Temporary = false;
                     break;
                 }
             }
@@ -4210,18 +4239,29 @@ public sealed partial class Scanner : IDisposable
             mainTitle = titles[0];
         }
 
-        if (!mainTitle.ContainsWhiteSpace() && mainTitle.ContainsMultipleWords())
+        if (!mainTitle.Value.ContainsWhiteSpace() && mainTitle.Value.ContainsMultipleWords())
         {
             for (int i = 1; i < titles.Count; i++)
             {
-                string altTitle = titles[i];
-                if (altTitle.ContainsWhiteSpace() &&
-                    !(altTitle.Length >= 2 && altTitle[altTitle.Length - 1].IsAsciiUpper() &&
-                      !altTitle[altTitle.Length - 2].IsAsciiAlphanumeric()))
+                DetectedTitle altTitle = titles[i];
+                if (altTitle.Value.ContainsWhiteSpace() &&
+                    !(altTitle.Value.Length >= 2 && altTitle.Value[altTitle.Value.Length - 1].IsAsciiUpper() &&
+                      !altTitle.Value[altTitle.Value.Length - 2].IsAsciiAlphanumeric()))
                 {
                     (titles[0], titles[i]) = (titles[i], titles[0]);
+                    titles[0].Temporary = false;
                     break;
                 }
+            }
+        }
+
+        originalTitles.Clear();
+        for (int i = 0; i < titles.Count; i++)
+        {
+            DetectedTitle title = titles[i];
+            if (i == 0 || !title.Temporary)
+            {
+                originalTitles.Add(title.Value);
             }
         }
     }
