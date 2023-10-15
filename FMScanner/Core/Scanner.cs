@@ -629,9 +629,9 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private void SetFMTitles(ScannedFMData fmData, List<string> titles)
+    private void SetFMTitles(ScannedFMData fmData, List<string> titles, string? serverTitle = null)
     {
-        OrderTitlesOptimally(titles);
+        OrderTitlesOptimally(titles, serverTitle);
         if (titles.Count > 0)
         {
             fmData.Title = titles[0];
@@ -663,7 +663,7 @@ public sealed partial class Scanner : IDisposable
 
     private void EndTitleScan(
         bool scanTitleForAuthorPurposesOnly,
-        ScannedFMData fmData, List<string> titles)
+        ScannedFMData fmData, List<string> titles, string? serverTitle = null)
     {
         List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
         if (topOfReadmeTitles?.Count > 0)
@@ -676,7 +676,7 @@ public sealed partial class Scanner : IDisposable
 
         if (!scanTitleForAuthorPurposesOnly)
         {
-            SetFMTitles(fmData, titles);
+            SetFMTitles(fmData, titles, serverTitle);
         }
         else
         {
@@ -996,7 +996,7 @@ public sealed partial class Scanner : IDisposable
                     SetOrAddTitle(titles, infoFromServer.Title);
                 }
 
-                EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
+                EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles, infoFromServer?.Title);
             }
 
             if (_scanOptions.ScanAuthor)
@@ -4227,9 +4227,8 @@ public sealed partial class Scanner : IDisposable
     /*
     @TDM: We could prefer titles with : in them?
     eg. "The Beleaguered Fence" vs. "Thomas Porter 2: Beleaguered Fence"
-    @TDM: "William Steele 2: Home again" doesn't get caught because of the lowercase "a" in "again"
     */
-    private void OrderTitlesOptimally(List<string> originalTitles)
+    private void OrderTitlesOptimally(List<string> originalTitles, string? serverTitle = null)
     {
         if (originalTitles.Count == 0) return;
 
@@ -4257,9 +4256,10 @@ public sealed partial class Scanner : IDisposable
 
         byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
 
-        bool titleAcronymSuccess =
-            AcronymRegex.Match(mainTitle.Value).Success &&
-            Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
+        bool titleAcronymSuccess = AcronymRegex.Match(mainTitle.Value).Success;
+        Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
+
+        bool swapDone = false;
 
         if (titleAcronymSuccess)
         {
@@ -4272,23 +4272,14 @@ public sealed partial class Scanner : IDisposable
                 _altTitleAcronymChars.ClearFast();
                 _altTitleRomanToDecimalAcronymChars.ClearFast();
 
-                bool acronymNormalSuccess =
-                    Utility.GetAcronym(altTitle.Value, _altTitleAcronymChars, romanNumeralToDecimalTable);
-                bool acronymRomanToDecimalSuccess =
-                    Utility.GetAcronym(altTitle.Value, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable, convertRomanToDecimal: true);
+                Utility.GetAcronym(altTitle.Value, _altTitleAcronymChars, romanNumeralToDecimalTable);
+                Utility.GetAcronym(altTitle.Value, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable, convertRomanToDecimal: true);
 
-                if (acronymNormalSuccess &&
-                    acronymRomanToDecimalSuccess &&
-                    !mainTitle.Value.EqualsIgnoreCaseAndWhiteSpace(altTitle.Value, tempChars1, tempChars2) &&
-                    (Utility.SequenceEqual(
-                        _titleAcronymChars,
-                        _altTitleAcronymChars) ||
-                     Utility.SequenceEqual(
-                         _titleAcronymChars,
-                         _altTitleRomanToDecimalAcronymChars)))
+                if (!mainTitle.Value.EqualsIgnoreCaseAndWhiteSpace(altTitle.Value, tempChars1, tempChars2) &&
+                    (Utility.SequenceEqual(_titleAcronymChars, _altTitleAcronymChars) ||
+                     Utility.SequenceEqual(_titleAcronymChars, _altTitleRomanToDecimalAcronymChars)))
                 {
-                    (titles[0], titles[i]) = (titles[i], titles[0]);
-                    titles[0].Temporary = false;
+                    swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
                     break;
                 }
             }
@@ -4305,8 +4296,22 @@ public sealed partial class Scanner : IDisposable
                     !(altTitle.Value.Length >= 2 && altTitle.Value[altTitle.Value.Length - 1].IsAsciiUpper() &&
                       !altTitle.Value[altTitle.Value.Length - 2].IsAsciiAlphanumeric()))
                 {
-                    (titles[0], titles[i]) = (titles[i], titles[0]);
-                    titles[0].Temporary = false;
+                    swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
+                    break;
+                }
+            }
+        }
+
+        if (titleAcronymSuccess &&
+            !swapDone &&
+            !serverTitle.IsEmpty() &&
+            !AcronymRegex.Match(serverTitle).Success)
+        {
+            for (int i = 1; i < titles.Count; i++)
+            {
+                if (titles[i].Value == serverTitle)
+                {
+                    swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
                     break;
                 }
             }
@@ -4320,6 +4325,15 @@ public sealed partial class Scanner : IDisposable
             {
                 originalTitles.Add(title.Value);
             }
+        }
+
+        return;
+
+        static bool SwapMainTitleWithTitleAtIndex(List<DetectedTitle> titles, int index)
+        {
+            (titles[0], titles[index]) = (titles[index], titles[0]);
+            titles[0].Temporary = false;
+            return true;
         }
     }
 

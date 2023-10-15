@@ -580,7 +580,7 @@ internal static class Utility
         return number;
     }
 
-    internal static bool GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
+    internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
         ListFast<char>? romanNumeralRun = null;
 
@@ -603,10 +603,7 @@ internal static class Utility
                         break;
                     }
                 }
-                if (!AddRomanConvertedChar(romanNumeralRun, acronymChars, romanNumeralToDecimalTable))
-                {
-                    return false;
-                }
+                AddRomanConvertedChar(romanNumeralRun, acronymChars, romanNumeralToDecimalTable);
                 titleIndex = romanNumeralIndex - 1;
             }
             else if (c.IsAsciiNumeric() || c.IsAsciiUpper())
@@ -615,9 +612,9 @@ internal static class Utility
             }
         }
 
-        return true;
+        return;
 
-        static bool AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
+        static void AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
         {
             byte number = RomanToInteger(romanNumeralRun, romanNumeralToDecimalTable);
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
@@ -627,8 +624,6 @@ internal static class Utility
                 acronymChars.Add(thing);
                 number /= 10;
             }
-
-            return true;
         }
     }
 
