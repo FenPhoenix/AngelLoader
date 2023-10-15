@@ -784,7 +784,7 @@ public sealed partial class Scanner
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     /*
-    Catches stuff like "PD" but also "Cos"
+    Catches stuff like "PD" but also "CoS"
     @vNext(AnyConsecutiveAsciiUppercaseChars):
     Also catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just
     be a perf tweak, as everything works out fine as is in terms of accuracy.
