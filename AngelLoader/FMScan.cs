@@ -141,6 +141,8 @@ internal static class FMScan
                 // Safety net to guarantee that the in and out lists will have the same count and order
                 var fmsToScanFiltered = new List<FanMission>(fmsToScan.Count);
 
+                bool tdmDataRequired = false;
+
                 for (int i = 0; i < fmsToScan.Count; i++)
                 {
                     FanMission fm = fmsToScan[i];
@@ -165,6 +167,7 @@ internal static class FMScan
                             isTDM: fm.Game == Game.TDM,
                             displayName: fm.Archive
                         ));
+                        if (fm.Game == Game.TDM) tdmDataRequired = true;
                     }
                     else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                     {
@@ -179,6 +182,7 @@ internal static class FMScan
                                 isTDM: fm.Game == Game.TDM,
                                 displayName: fm.RealInstalledDir
                             ));
+                            if (fm.Game == Game.TDM) tdmDataRequired = true;
                         }
                     }
 
@@ -202,7 +206,15 @@ internal static class FMScan
                     if (_scanCts.IsCancellationRequested) return false;
 
                     using var scanner = new FMScanner.Scanner(Paths.SevenZipPath, Paths.SevenZipExe, GetDefaultScanOptions());
-                    scanner.TdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
+                    if (tdmDataRequired)
+                    {
+                        var tdmDownloadResult = await TDM_Downloader.TryGetMissionsFromServer();
+                        List<MissionInfoEntry> tdmMissionInfos = TDMParser.ParseMissionsInfoFile();
+                        if (tdmDownloadResult.Success)
+                        {
+                            scanner.SetFMDetails(tdmDownloadResult.FMsList, tdmMissionInfos);
+                        }
+                    }
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                 }
                 catch (OperationCanceledException)

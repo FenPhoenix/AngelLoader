@@ -272,8 +272,31 @@ public sealed partial class Scanner : IDisposable
 
     #region Constructors
 
-    // @TDM: Integrate this into the ctors eventually, just quick n dirty for now
-    public string TdmFMsPath = "";
+    #region Temporary way to pass in stuff
+
+    /*
+    @TDM: Integrate these into the ctors eventually, just quick n dirty for now
+
+    @TDM(Case-sensitivity in filenames):
+    Since TDM also has a Linux version, there may be a question of how it treats casing of fm names. Do we need
+    case-sensitivity here (and everywhere else) or should we do case-insensitive since we're Windows?
+    */
+    private readonly Dictionary<string, MissionInfoEntry> _tdmMissionInfos = new();
+
+    private readonly Dictionary<string, TdmFmInfo> _tdmFMDetailsDict = new();
+    public void SetFMDetails(List<TdmFmInfo> details, List<MissionInfoEntry> missionInfos)
+    {
+        foreach (TdmFmInfo item in details)
+        {
+            _tdmFMDetailsDict[item.InternalName] = item;
+        }
+        foreach (MissionInfoEntry item in missionInfos)
+        {
+            _tdmMissionInfos[item.InternalName] = item;
+        }
+    }
+
+    #endregion
 
 #if FMScanner_FullCode
     [PublicAPI]
@@ -752,7 +775,19 @@ public sealed partial class Scanner : IDisposable
         Tested the game's behavior in this case. It simply considers the hash-appended name to be the name,
         doesn't find it in the server's list, and so doesn't note the server version as being an update of the
         installed one, even if it is. So, that's simple and we can do the same.
+
+        @TDM(Dates from readmes): Sometimes the extracted readmes have different dates than the ones in the pk4
+        So we should only get dates from the pk4 readmes if we're forced to scan locally only!
+        Maybe even just pull the readmes from the pk4 always, just in case? Seems no harm in it.
         */
+
+        TdmFmInfo? infoFromServer = null;
+        if (_tdmFMDetailsDict.TryGetValue(FMWorkingPathDirName, out TdmFmInfo tdmFmInfo) &&
+            _tdmMissionInfos.TryGetValue(FMWorkingPathDirName, out MissionInfoEntry misInfo) &&
+            tdmFmInfo.Version == misInfo.DownloadedVersion)
+        {
+            infoFromServer = tdmFmInfo;
+        }
 
         ScannedFMData fmData = new()
         {
@@ -956,17 +991,41 @@ public sealed partial class Scanner : IDisposable
                     SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
                 }
 
+                if (infoFromServer != null)
+                {
+                    SetOrAddTitle(titles, infoFromServer.Title);
+                }
+
                 EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
             }
 
             if (_scanOptions.ScanAuthor)
             {
-                GetAuthor(fmData, titles);
+                if (infoFromServer != null)
+                {
+                    // @TDM: We're not running author cleanup on these, we're expecting them to be sane...
+                    fmData.Author = infoFromServer.Author;
+                }
+                else
+                {
+                    GetAuthor(fmData, titles);
+                }
             }
 
             if (_scanOptions.ScanReleaseDate)
             {
-                fmData.LastUpdateDate = GetReleaseDate();
+                if (infoFromServer != null)
+                {
+                    if (DateTime.TryParseExact(infoFromServer.ReleaseDate, "yyyy-M-d",
+                            DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime serverDate))
+                    {
+                        fmData.LastUpdateDate = new DateTimeOffset(serverDate).DateTime;
+                    }
+                }
+                else
+                {
+                    fmData.LastUpdateDate = GetReleaseDate();
+                }
             }
         }
 
@@ -4165,6 +4224,11 @@ public sealed partial class Scanner : IDisposable
         return CleanupValue(value).Trim();
     }
 
+    /*
+    @TDM: We could prefer titles with : in them?
+    eg. "The Beleaguered Fence" vs. "Thomas Porter 2: Beleaguered Fence"
+    @TDM: "William Steele 2: Home again" doesn't get caught because of the lowercase "a" in "again"
+    */
     private void OrderTitlesOptimally(List<string> originalTitles)
     {
         if (originalTitles.Count == 0) return;

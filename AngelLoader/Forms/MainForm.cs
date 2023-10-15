@@ -279,7 +279,7 @@ public sealed partial class MainForm : DarkFormBase,
                 //    Trace.WriteLine(item);
                 //}
 
-                foreach (TDM_Downloader.TdmFmInfo fmInfo in result.FMsList)
+                foreach (TdmFmInfo fmInfo in result.FMsList)
                 {
                     var detailsResult = await TDM_Downloader.GetMissionDetails(fmInfo);
                     if (detailsResult.Success)
