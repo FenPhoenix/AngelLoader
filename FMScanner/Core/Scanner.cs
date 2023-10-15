@@ -735,6 +735,11 @@ public sealed partial class Scanner : IDisposable
         code?! And the game doesn't strip the hash code or anything. So that could happen too...
         Guess we just have to treat those FMs as normal and if there's a dupe with a non-hashcode-appended name
         then we treat it as a separate mission. Meh.
+
+        2023-10-14:
+        Tested the game's behavior in this case. It simply considers the hash-appended name to be the name,
+        doesn't find it in the server's list, and so doesn't note the server version as being an update of the
+        installed one, even if it is. So, that's simple and we can do the same.
         */
 
         ScannedFMData fmData = new()
