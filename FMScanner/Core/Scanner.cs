@@ -740,6 +740,13 @@ public sealed partial class Scanner : IDisposable
         Tested the game's behavior in this case. It simply considers the hash-appended name to be the name,
         doesn't find it in the server's list, and so doesn't note the server version as being an update of the
         installed one, even if it is. So, that's simple and we can do the same.
+
+        @TDM(Chronicles of Skulduggery series):
+        These missions get "CoS" title naming, but they have like "Chronicles of Skulduggery 1: Pearls and Swine"
+        as the first line of their readmes. We don't currently catch this, because there's no author line under
+        it. We shouldn't just take the first line as a title always, BUT we can take it and compare it acronym-
+        wise to the rest, and take it if the acronyms match. That would allow us to catch first-line titles
+        without side effects.
         */
 
         ScannedFMData fmData = new()
