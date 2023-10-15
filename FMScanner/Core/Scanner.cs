@@ -4227,6 +4227,7 @@ public sealed partial class Scanner : IDisposable
     /*
     @TDM: We could prefer titles with : in them?
     eg. "The Beleaguered Fence" vs. "Thomas Porter 2: Beleaguered Fence"
+    We've fixed that one now, but for non-TDM the fix isn't active, so still a thought.
     */
     private void OrderTitlesOptimally(List<string> originalTitles, string? serverTitle = null)
     {
@@ -4256,12 +4257,12 @@ public sealed partial class Scanner : IDisposable
 
         byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
 
-        bool titleAcronymSuccess = AcronymRegex.Match(mainTitle.Value).Success;
+        bool titleContainsAcronym = AcronymRegex.Match(mainTitle.Value).Success;
         Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
 
         bool swapDone = false;
 
-        if (titleAcronymSuccess)
+        if (titleContainsAcronym)
         {
             ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
             ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
@@ -4302,19 +4303,12 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        if (titleAcronymSuccess &&
-            !swapDone &&
+        if (!swapDone &&
             !serverTitle.IsEmpty() &&
-            !AcronymRegex.Match(serverTitle).Success)
+            !AcronymRegex.Match(serverTitle).Success &&
+            (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
-            for (int i = 1; i < titles.Count; i++)
-            {
-                if (titles[i].Value == serverTitle)
-                {
-                    swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
-                    break;
-                }
-            }
+            DoServerTitleSwap(titles, serverTitle);
         }
 
         originalTitles.Clear();
@@ -4334,6 +4328,18 @@ public sealed partial class Scanner : IDisposable
             (titles[0], titles[index]) = (titles[index], titles[0]);
             titles[0].Temporary = false;
             return true;
+        }
+
+        static void DoServerTitleSwap(List<DetectedTitle> titles, string serverTitle)
+        {
+            for (int i = 1; i < titles.Count; i++)
+            {
+                if (titles[i].Value == serverTitle)
+                {
+                    SwapMainTitleWithTitleAtIndex(titles, i);
+                    return;
+                }
+            }
         }
     }
 
