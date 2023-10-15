@@ -781,6 +781,40 @@ public sealed partial class Scanner : IDisposable
         Maybe even just pull the readmes from the pk4 always, just in case? Seems no harm in it.
         */
 
+        string zipPath;
+
+        List<ZipArchiveFastEntry>? __zipEntries = null;
+        List<ZipArchiveFastEntry> GetZipBaseDirEntries()
+        {
+            if (__zipEntries == null)
+            {
+                _archive?.Dispose();
+                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
+                if (zipResult.Success)
+                {
+                    _archive = zipResult.Archive!;
+                    __zipEntries = new List<ZipArchiveFastEntry>();
+                    var entries = _archive.Entries;
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        ZipArchiveFastEntry entry = entries[i];
+                        if (!entry.FullName.Rel_ContainsDirSep())
+                        {
+                            __zipEntries.Add(entry);
+                        }
+                    }
+                }
+                else
+                {
+                    //return zipResult.ScannedFMDataAndError;
+                    __zipEntries = null;
+                    throw zipResult.ScannedFMDataAndError?.Exception ?? new Exception("Zip reading failed");
+                }
+            }
+
+            return __zipEntries;
+        }
+
         TdmFmInfo? infoFromServer = null;
         if (_tdmFMDetailsDict.TryGetValue(FMWorkingPathDirName, out TdmFmInfo tdmFmInfo) &&
             _tdmMissionInfos.TryGetValue(FMWorkingPathDirName, out MissionInfoEntry misInfo) &&
@@ -797,27 +831,9 @@ public sealed partial class Scanner : IDisposable
 
         string fmAsPK4File = fm.Path.TrimEnd(CA_BS_FS) + ".pk4";
 
-        string zipPath;
-        bool fmIsPK4;
-        if (!Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File))
-        {
-            fmIsPK4 = true;
-            zipPath = fmAsPK4File;
-            var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
-            if (zipResult.Success)
-            {
-                _archive = zipResult.Archive!;
-            }
-            else if (zipResult.ScannedFMDataAndError != null)
-            {
-                return zipResult.ScannedFMDataAndError;
-            }
-        }
-        else
-        {
-            fmIsPK4 = false;
-            zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
-        }
+        zipPath = !Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File)
+            ? fmAsPK4File
+            : Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
 
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
@@ -840,81 +856,65 @@ public sealed partial class Scanner : IDisposable
 
             try
             {
-                bool zipSuccess = true;
-                if (!fmIsPK4)
+                List<ZipArchiveFastEntry> entries = GetZipBaseDirEntries();
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
-                    if (zipResult.Success)
-                    {
-                        _archive = zipResult.Archive!;
-                    }
-                    else
-                    {
-                        zipSuccess = false;
-                    }
-                }
-                if (zipSuccess)
-                {
-                    ListFast<ZipArchiveFastEntry> entries = _archive.Entries;
-                    for (int i = 0; i < entries.Count; i++)
-                    {
-                        ZipArchiveFastEntry entry = entries[i];
-                        if (entry.FullName != "tdm_mapsequence.txt") continue;
+                    ZipArchiveFastEntry entry = entries[i];
+                    if (entry.FullName != "tdm_mapsequence.txt") continue;
 
-                        using Stream es = _archive.OpenEntry(entry);
-                        // Stupid micro-optimization: Don't call Dispose() method on stream twice
-                        using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+                    using Stream es = _archive.OpenEntry(entry);
+                    // Stupid micro-optimization: Don't call Dispose() method on stream twice
+                    using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
 
-                        bool inBlockComment = false;
-                        while (sr.Reader.ReadLine() is { } line)
+                    bool inBlockComment = false;
+                    while (sr.Reader.ReadLine() is { } line)
+                    {
+                        string lineT = line.Trim();
+
+                        if (inBlockComment)
                         {
-                            string lineT = line.Trim();
-
-                            if (inBlockComment)
+                            if (lineT.EndsWithO("*/"))
                             {
-                                if (lineT.EndsWithO("*/"))
-                                {
-                                    inBlockComment = false;
-                                }
-                            }
-                            else if (lineT.StartsWithO("/*"))
-                            {
-                                inBlockComment = true;
-                            }
-                            else if (lineT.StartsWithO("//"))
-                            {
-                                // ReSharper disable once RedundantJumpStatement
-                                continue;
-                            }
-                            /*
-                            From https://wiki.thedarkmod.com/index.php?title=Tdm_mapsequence.txt:
-
-                            --- snip ---
-
-                            The syntax is:
-                            Mission <N>: <mapname> [<mapname> ...]
-
-                            N is the mission number, with the first mission carrying the number 1.
-
-                            It's possible to define more than one map filename for a mission,
-                            in case there are loading zones in it, but usually you won't need that.
-
-                            --- snip ---
-
-                            The way it's phrased makes it sound like multiple "maps" should still be considered
-                            part of the same "mission" if they're used like this. So we're going to consider one
-                            "Mission" line to be one mission, and if it has multiple maps then it's one mission
-                            with loading zones.
-                            */
-                            else if (DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
-                            {
-                                misCount++;
+                                inBlockComment = false;
                             }
                         }
-                    }
+                        else if (lineT.StartsWithO("/*"))
+                        {
+                            inBlockComment = true;
+                        }
+                        else if (lineT.StartsWithO("//"))
+                        {
+                            // ReSharper disable once RedundantJumpStatement
+                            continue;
+                        }
+                        /*
+                        From https://wiki.thedarkmod.com/index.php?title=Tdm_mapsequence.txt:
 
-                    fmData.MissionCount = misCount == 0 ? 1 : misCount;
+                        --- snip ---
+
+                        The syntax is:
+                        Mission <N>: <mapname> [<mapname> ...]
+
+                        N is the mission number, with the first mission carrying the number 1.
+
+                        It's possible to define more than one map filename for a mission,
+                        in case there are loading zones in it, but usually you won't need that.
+
+                        --- snip ---
+
+                        The way it's phrased makes it sound like multiple "maps" should still be considered
+                        part of the same "mission" if they're used like this. So we're going to consider one
+                        "Mission" line to be one mission, and if it has multiple maps then it's one mission
+                        with loading zones.
+                        */
+                        else if (DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
+                        {
+                            misCount++;
+                        }
+                    }
                 }
+
+                fmData.MissionCount = misCount == 0 ? 1 : misCount;
             }
             catch
             {
@@ -930,23 +930,13 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
-            string darkModTxt;
-            string readmeTxt;
-            int darkModTxtIndex;
-            int readmeTxtIndex;
-            if (fmIsPK4)
-            {
-                darkModTxt = "darkmod.txt";
-                readmeTxt = "readme.txt";
-                (darkModTxtIndex, readmeTxtIndex) = AddReadmeFromPK4(_archive, darkModTxt, readmeTxt);
-            }
-            else
-            {
-                darkModTxt = Path.Combine(_fmWorkingPath, "darkmod.txt");
-                readmeTxt = Path.Combine(_fmWorkingPath, "readme.txt");
-                darkModTxtIndex = AddReadmeFromDisk(darkModTxt);
-                readmeTxtIndex = AddReadmeFromDisk(readmeTxt);
-            }
+            // @TDM(readme text & dates):
+            // For best perf, I guess we would get dates from the pk4 but text from disk.
+            // Still, these files are generally extremely small, so it probably doesn't matter.
+            const string darkModTxt = "darkmod.txt";
+            const string readmeTxt = "readme.txt";
+            (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
+                AddReadmeFromPK4(GetZipBaseDirEntries(), darkModTxt, readmeTxt);
 
             List<string> titles = new();
 
@@ -954,20 +944,18 @@ public sealed partial class Scanner : IDisposable
             The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
             That's _TERRIBLE_ but we want to match behavior.
             */
-            if (darkModTxtIndex > -1)
+            if (darkModTxtReadme != null)
             {
-                ReadmeInternal readme = _readmeFiles[darkModTxtIndex];
-
-                MatchCollection matches = DarkModTxtFieldsRegex.Matches(readme.Text);
+                MatchCollection matches = DarkModTxtFieldsRegex.Matches(darkModTxtReadme.Text);
                 int plus = 0;
                 foreach (Match match in matches)
                 {
                     if (match.Index > 0)
                     {
-                        char c = readme.Text[(match.Index + plus) - 1];
+                        char c = darkModTxtReadme.Text[(match.Index + plus) - 1];
                         if (c is not '\r' and not '\n')
                         {
-                            readme.Text = readme.Text.Insert(match.Index + plus, "\r\n");
+                            darkModTxtReadme.Text = darkModTxtReadme.Text.Insert(match.Index + plus, "\r\n");
                             plus += 2;
                         }
                     }
@@ -975,16 +963,16 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
 
             if (_scanOptions.ScanTitle)
             {
-                if (darkModTxtIndex > -1 && readmeTxtIndex > -1)
+                if (darkModTxtReadme != null && readmeTxtReadme != null)
                 {
-                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: darkModTxtIndex));
-                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, readmeIndex: readmeTxtIndex));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, singleReadme: darkModTxtReadme));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, singleReadme: readmeTxtReadme));
                 }
                 else
                 {
@@ -1057,20 +1045,19 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        (int DarkModTxtIndex, int ReadmeTxtIndex)
-        AddReadmeFromPK4(ZipArchiveFast archive, string readme1, string readme2)
+        (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
+        AddReadmeFromPK4(List<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
         {
             ZipArchiveFastEntry? readme1entry = null;
             ZipArchiveFastEntry? readme2entry = null;
-            ListFast<ZipArchiveFastEntry> entries = archive.Entries;
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = 0; i < baseDirEntries.Count; i++)
             {
-                ZipArchiveFastEntry entry = entries[i];
-                if (entry.FullName.EqualsI(readme1))
+                ZipArchiveFastEntry entry = baseDirEntries[i];
+                if (entry.FullName.EqualsI(readme1Name))
                 {
                     readme1entry = entry;
                 }
-                else if (entry.FullName.EqualsI(readme2))
+                else if (entry.FullName.EqualsI(readme2Name))
                 {
                     readme2entry = entry;
                 }
@@ -1081,26 +1068,26 @@ public sealed partial class Scanner : IDisposable
                 }
             }
 
-            int readme1Index = -1;
-            int readme2Index = -1;
+            ReadmeInternal? readmeInternal1 = null;
+            ReadmeInternal? readmeInternal2 = null;
 
             if (readme1entry != null)
             {
-                CreateReadme(readme1entry, out readme1Index);
+                CreateReadme(readme1entry, out readmeInternal1);
             }
 
             if (readme2entry != null)
             {
-                CreateReadme(readme2entry, out readme2Index);
+                CreateReadme(readme2entry, out readmeInternal2);
             }
 
-            return (readme1Index, readme2Index);
+            return (readmeInternal1, readmeInternal2);
 
-            void CreateReadme(ZipArchiveFastEntry entry, out int index)
+            void CreateReadme(ZipArchiveFastEntry entry, out ReadmeInternal? readme)
             {
                 try
                 {
-                    ReadmeInternal readme = new(
+                    readme = new ReadmeInternal(
                         isGlml: false,
                         lastModifiedDateRaw: entry.LastWriteTime,
                         scan: true,
@@ -1109,11 +1096,10 @@ public sealed partial class Scanner : IDisposable
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
                     readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                     _readmeFiles.Add(readme);
-                    index = _readmeFiles.Count - 1;
                 }
                 catch
                 {
-                    index = -1;
+                    readme = null;
                 }
             }
         }
@@ -3520,7 +3506,7 @@ public sealed partial class Scanner : IDisposable
         return _generalMemoryStream;
     }
 
-    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null, int readmeIndex = -1)
+    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null, ReadmeInternal? singleReadme = null)
     {
         string ret = "";
 
@@ -3528,7 +3514,7 @@ public sealed partial class Scanner : IDisposable
         {
             ReadmeInternal file = _readmeFiles[ri];
             // @TDM: Make this less janky, and have it only check once and do it once
-            if (readmeIndex > -1 && readmeIndex != ri) continue;
+            if (singleReadme != null && singleReadme != file) continue;
 
             if (!file.Scan) continue;
 
