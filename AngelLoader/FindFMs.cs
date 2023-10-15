@@ -458,7 +458,7 @@ internal static class FindFMs
         var fmDataIniListTDM_Dict = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {
-            fmDataIniListTDM_Dict.Add(fm.TDMInstalledDir, fm);
+            fmDataIniListTDM_Dict[fm.TDMInstalledDir] = fm;
         }
 
         string instPath = Config.GetFMInstallPath(GameIndex.TDM);
