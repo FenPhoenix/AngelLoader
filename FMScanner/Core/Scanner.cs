@@ -775,10 +775,6 @@ public sealed partial class Scanner : IDisposable
         Tested the game's behavior in this case. It simply considers the hash-appended name to be the name,
         doesn't find it in the server's list, and so doesn't note the server version as being an update of the
         installed one, even if it is. So, that's simple and we can do the same.
-
-        @TDM(Dates from readmes): Sometimes the extracted readmes have different dates than the ones in the pk4
-        So we should only get dates from the pk4 readmes if we're forced to scan locally only!
-        Maybe even just pull the readmes from the pk4 always, just in case? Seems no harm in it.
         */
 
         string zipPath;
@@ -935,6 +931,9 @@ public sealed partial class Scanner : IDisposable
             // Still, these files are generally extremely small, so it probably doesn't matter.
             const string darkModTxt = "darkmod.txt";
             const string readmeTxt = "readme.txt";
+            // Sometimes the extracted readmes have different dates than the ones in the pk4.
+            // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
+            // copying or who knows what with the on-disk ones.
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
                 AddReadmeFromPK4(GetZipBaseDirEntries(), darkModTxt, readmeTxt);
 
