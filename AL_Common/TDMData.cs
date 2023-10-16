@@ -176,3 +176,35 @@ public sealed class MissionInfoEntry
             "\t" + nameof(MissionLootCollected2) + ": " + MissionLootCollected2 + Environment.NewLine;
     }
 }
+
+public sealed class ScannerTDMContext
+{
+    /*
+    @TDM(Case-sensitivity in filenames):
+    Since TDM also has a Linux version, there may be a question of how it treats casing of fm names. Do we need
+    case-sensitivity here (and everywhere else) or should we do case-insensitive since we're Windows?
+    */
+    public readonly Dictionary<string, MissionInfoEntry> MissionInfoEntries;
+    public readonly Dictionary<string, TdmFmInfo> FMInfos;
+
+    public ScannerTDMContext(List<MissionInfoEntry> missionInfoEntries, List<TdmFmInfo> fmInfos)
+    {
+        MissionInfoEntries = new Dictionary<string, MissionInfoEntry>();
+        FMInfos = new Dictionary<string, TdmFmInfo>();
+
+        foreach (MissionInfoEntry item in missionInfoEntries)
+        {
+            MissionInfoEntries[item.InternalName] = item;
+        }
+        foreach (TdmFmInfo item in fmInfos)
+        {
+            FMInfos[item.InternalName] = item;
+        }
+    }
+
+    public ScannerTDMContext()
+    {
+        MissionInfoEntries = new Dictionary<string, MissionInfoEntry>();
+        FMInfos = new Dictionary<string, TdmFmInfo>();
+    }
+}

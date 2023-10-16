@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AL_Common;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -134,5 +135,14 @@ internal static class TDMParser
                 }
             }
         }
+    }
+
+    internal static async Task<ScannerTDMContext> GetScannerTDMContext()
+    {
+        List<MissionInfoEntry> tdmMissionInfos = ParseMissionsInfoFile();
+        (bool success, _, List<TdmFmInfo> fMsList) = await TDM_Downloader.TryGetMissionsFromServer();
+        return success
+            ? new ScannerTDMContext(tdmMissionInfos, fMsList)
+            : new ScannerTDMContext();
     }
 }

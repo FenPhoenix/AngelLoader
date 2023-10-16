@@ -154,6 +154,8 @@ public sealed partial class Scanner : IDisposable
     private List<NameAndIndex>? _t3GmpFiles;
     private List<NameAndIndex> T3GmpFiles => _t3GmpFiles ??= new List<NameAndIndex>(20);
 
+    private readonly ScannerTDMContext _tdmContext;
+
     #endregion
 
     #region Private classes
@@ -272,46 +274,24 @@ public sealed partial class Scanner : IDisposable
 
     #region Constructors
 
-    #region Temporary way to pass in stuff
-
-    /*
-    @TDM: Integrate these into the ctors eventually, just quick n dirty for now
-
-    @TDM(Case-sensitivity in filenames):
-    Since TDM also has a Linux version, there may be a question of how it treats casing of fm names. Do we need
-    case-sensitivity here (and everywhere else) or should we do case-insensitive since we're Windows?
-    */
-    private readonly Dictionary<string, MissionInfoEntry> _tdmMissionInfos = new();
-
-    private readonly Dictionary<string, TdmFmInfo> _tdmFMDetailsDict = new();
-    public void SetFMDetails(List<TdmFmInfo> details, List<MissionInfoEntry> missionInfos)
-    {
-        foreach (TdmFmInfo item in details)
-        {
-            _tdmFMDetailsDict[item.InternalName] = item;
-        }
-        foreach (MissionInfoEntry item in missionInfos)
-        {
-            _tdmMissionInfos[item.InternalName] = item;
-        }
-    }
-
-    #endregion
-
 #if FMScanner_FullCode
     [PublicAPI]
-    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions())
+    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions(), new ScannerTDMContext())
     {
     }
 
     [PublicAPI]
-    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions())
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions(), new ScannerTDMContext())
     {
     }
 #endif
 
     [PublicAPI]
-    public Scanner(string sevenZipWorkingPath, string sevenZipExePath, ScanOptions fullScanOptions)
+    public Scanner(
+        string sevenZipWorkingPath,
+        string sevenZipExePath,
+        ScanOptions fullScanOptions,
+        ScannerTDMContext tdmContext)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -321,6 +301,8 @@ public sealed partial class Scanner : IDisposable
 
         _sevenZipWorkingPath = sevenZipWorkingPath;
         _sevenZipExePath = sevenZipExePath;
+
+        _tdmContext = tdmContext;
 
         #region Array construction
 
@@ -373,7 +355,7 @@ public sealed partial class Scanner : IDisposable
     Scan(string mission, string tempPath, bool forceFullIfNew, string name)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false) },
             tempPath, _scanOptions, null, CancellationToken.None)[0];
     }
 
@@ -382,7 +364,7 @@ public sealed partial class Scanner : IDisposable
     Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, name) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false) },
             tempPath, scanOptions, null, CancellationToken.None)[0];
     }
 
@@ -812,8 +794,8 @@ public sealed partial class Scanner : IDisposable
         }
 
         TdmFmInfo? infoFromServer = null;
-        if (_tdmFMDetailsDict.TryGetValue(FMWorkingPathDirName, out TdmFmInfo tdmFmInfo) &&
-            _tdmMissionInfos.TryGetValue(FMWorkingPathDirName, out MissionInfoEntry misInfo) &&
+        if (_tdmContext.FMInfos.TryGetValue(FMWorkingPathDirName, out TdmFmInfo tdmFmInfo) &&
+            _tdmContext.MissionInfoEntries.TryGetValue(FMWorkingPathDirName, out MissionInfoEntry misInfo) &&
             tdmFmInfo.Version == misInfo.DownloadedVersion)
         {
             infoFromServer = tdmFmInfo;

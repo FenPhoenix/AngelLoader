@@ -205,17 +205,23 @@ internal static class FMScan
 
                     if (_scanCts.IsCancellationRequested) return false;
 
-                    using var scanner = new FMScanner.Scanner(Paths.SevenZipPath, Paths.SevenZipExe, GetDefaultScanOptions());
-                    if (tdmDataRequired)
-                    {
-                        var tdmDownloadResult = await TDM_Downloader.TryGetMissionsFromServer();
-                        List<MissionInfoEntry> tdmMissionInfos = TDMParser.ParseMissionsInfoFile();
-                        if (tdmDownloadResult.Success)
-                        {
-                            scanner.SetFMDetails(tdmDownloadResult.FMsList, tdmMissionInfos);
-                        }
-                    }
-                    fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
+                    // @TDM: Test this when no TDM FMs are in the list and TDM is not specified
+                    ScannerTDMContext tdmContext = tdmDataRequired
+                        ? await TDMParser.GetScannerTDMContext()
+                        : new ScannerTDMContext();
+
+                    using var scanner = new FMScanner.Scanner(
+                        sevenZipWorkingPath: Paths.SevenZipPath,
+                        sevenZipExePath: Paths.SevenZipExe,
+                        fullScanOptions: GetDefaultScanOptions(),
+                        tdmContext: tdmContext);
+
+                    fmDataList = await scanner.ScanAsync(
+                        missions: fms,
+                        tempPath: Paths.FMScannerTemp,
+                        scanOptions: scanOptions,
+                        progress: progress,
+                        cancellationToken: _scanCts.Token);
                 }
                 catch (OperationCanceledException)
                 {
