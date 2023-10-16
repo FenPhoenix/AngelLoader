@@ -36,7 +36,7 @@ internal static class TDMWatchers
     {
         lock (TdmFMChangeLock)
         {
-            if (Core.View != null!)
+            if (Core.View != null! && GameConfigFiles.TdmFMSetChanged())
             {
                 Core.View.QueueRefreshFromDisk();
             }
