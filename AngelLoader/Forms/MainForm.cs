@@ -255,6 +255,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
+        using var f = new TDMDownloadForm();
+        f.ShowDialogDark(this);
+    }
+
+    private async Task TDMDownloaderTest()
+    {
         try
         {
             ShowProgressBox_Single("Downloading TDM FM data using stupid not-quick-to-test async crap...",
