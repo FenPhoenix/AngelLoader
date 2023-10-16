@@ -455,6 +455,15 @@ internal static class FindFMs
 
     private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
     {
+        /*
+        @TDM(Case-sensitivity/FindFMs): We're using DictionaryI for installed dirs here at the moment.
+        This is the right thing on Windows, but we need to think about what this would mean on Linux.
+        Is it even possible to have both scenarios play nice with the list? Probably not...
+        On Windows if we renamed the dir "iris" to "iriS" we'd still get a match and not add "iriS" to the list
+        if "iris" already existed, but on Linux "iriS" could exist as an actual separate dir, so we would have
+        to add it. But then our FMs list is not portable between Linux and Windows - if you took it back and forth,
+        it would change/get screwed up.
+        */
         var fmDataIniListTDM_Dict = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {

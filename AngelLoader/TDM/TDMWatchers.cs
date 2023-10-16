@@ -108,6 +108,9 @@ internal static class TDMWatchers
                     FanMission fm = FMsViewList[i];
                     if (fm.Game == Game.TDM)
                     {
+                        // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                        // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+                        // list.
                         fm.Installed = fm.TDMInstalledDir == fmName;
                     }
                 }

@@ -32,6 +32,14 @@ internal static class TDMParser
             for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
+                /*
+                @TDM(Case-sensitivity/ParseMissionsInfoFile())
+                TDM is case-sensitive with these. If you rename say "iris" to "iriS", it will add another
+                entry for "iriS" even if "iris" already exists, and "iriS" will be empty to start with.
+                And when it reads the file, it's case-sensitive too, so if the dir "iriS" exists and "iriS"
+                exists in the file, it will take that entry and not display the "iris" stats. Otherwise if
+                the "iris" dir exists then it will skip "iriS" in the file and take "iris".
+                */
                 if (!lineT.StartsWithPlusWhiteSpace(missionInfoId)) continue;
 
                 string fmName = lineT.Substring(missionInfoId.Length).Trim();
