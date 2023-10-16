@@ -255,14 +255,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        //List<TDMParser.MissionInfoEntry> list = TDMParser.ParseMissionsInfoFile();
-        //foreach (TDMParser.MissionInfoEntry? item in list)
-        //{
-        //    Trace.WriteLine(item);
-        //}
-
-        //return;
-
         try
         {
             ShowProgressBox_Single("Downloading TDM FM data using stupid not-quick-to-test async crap...",
@@ -272,14 +264,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (result.Success)
             {
-                //await TDM_Downloader.SaveAllMissionDetailsXmlFiles(result.FMsList);
-
-                //foreach (TDM_Downloader.TdmFmInfo item in result.FMsList)
-                //{
-                //    Trace.WriteLine(item);
-                //}
-
-                foreach (TdmFmInfo fmInfo in result.FMsList)
+                foreach (TDM_ServerFMData fmInfo in result.FMsList)
                 {
                     var detailsResult = await TDM_Downloader.GetMissionDetails(fmInfo);
                     if (detailsResult.Success)

@@ -40,12 +40,12 @@ internal static class TDM_Downloader
 #endif
     }
 
-    internal static async Task<(bool Success, Exception? Ex, List<TdmFmInfo> FMsList)>
+    internal static async Task<(bool Success, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer()
     {
         try
         {
-            var fail = (false, (Exception?)null, new List<TdmFmInfo>());
+            var fail = (false, (Exception?)null, new List<TDM_ServerFMData>());
 
             using Stream dataStream = await GetAvailableMissionsStream();
 
@@ -66,7 +66,7 @@ internal static class TDM_Downloader
 
             XmlNodeList missionNodes = availableMissionsNode.ChildNodes;
 
-            var fmsList = new List<TdmFmInfo>(missionNodes.Count);
+            var fmsList = new List<TDM_ServerFMData>(missionNodes.Count);
 
             foreach (XmlNode mn in missionNodes)
             {
@@ -74,38 +74,38 @@ internal static class TDM_Downloader
                 {
                     if (mn.Attributes != null)
                     {
-                        TdmFmInfo fmInfo = new();
+                        TDM_ServerFMData serverFMData = new();
                         foreach (XmlAttribute attr in mn.Attributes)
                         {
                             switch (attr.Name)
                             {
                                 case "title":
-                                    fmInfo.Title = attr.Value;
+                                    serverFMData.Title = attr.Value;
                                     break;
                                 case "releaseDate":
-                                    fmInfo.ReleaseDate = attr.Value;
+                                    serverFMData.ReleaseDate = attr.Value;
                                     break;
                                 case "size":
-                                    fmInfo.Size = attr.Value;
+                                    serverFMData.Size = attr.Value;
                                     break;
                                 case "version":
-                                    fmInfo.Version = attr.Value;
+                                    serverFMData.Version = attr.Value;
                                     break;
                                 case "internalName":
-                                    fmInfo.InternalName = attr.Value;
+                                    serverFMData.InternalName = attr.Value;
                                     break;
                                 case "type":
-                                    fmInfo.Type = attr.Value;
+                                    serverFMData.Type = attr.Value;
                                     break;
                                 case "author":
-                                    fmInfo.Author = attr.Value;
+                                    serverFMData.Author = attr.Value;
                                     break;
                                 case "id":
-                                    fmInfo.Id = attr.Value;
+                                    serverFMData.Id = attr.Value;
                                     break;
                             }
                         }
-                        fmsList.Add(fmInfo);
+                        fmsList.Add(serverFMData);
                     }
                 }
             }
@@ -114,32 +114,32 @@ internal static class TDM_Downloader
         }
         catch (Exception ex)
         {
-            return (false, ex, new List<TdmFmInfo>());
+            return (false, ex, new List<TDM_ServerFMData>());
         }
     }
 
-    private static async Task<Stream> GetMissionDetailsStream(TdmFmInfo info)
+    private static async Task<Stream> GetMissionDetailsStream(TDM_ServerFMData serverFMData)
     {
 #if ENABLE_ONLINE
         HttpResponseMessage request =
 
-        await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + info.Id);
+        await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id);
         request.EnsureSuccessStatusCode();
         return await request.Content.ReadAsStreamAsync();
 #else
         return await Task.FromResult(File.OpenRead(Path.Combine(_detailsPath,
-            info.InternalName + "_id=" + info.Id + ".xml")));
+            serverFMData.InternalName + "_id=" + serverFMData.Id + ".xml")));
 #endif
     }
 
     internal static async Task<(bool Success, Exception? Ex, TdmFmDetails FmDetails)>
-    GetMissionDetails(TdmFmInfo info)
+    GetMissionDetails(TDM_ServerFMData serverFMData)
     {
         try
         {
             var fail = (false, (Exception?)null, new TdmFmDetails());
 
-            using Stream dataStream = await GetMissionDetailsStream(info);
+            using Stream dataStream = await GetMissionDetailsStream(serverFMData);
 
             var xmlDoc = new XmlDocument();
 
@@ -258,10 +258,10 @@ internal static class TDM_Downloader
     private static string GetPlainInnerText(this XmlNode node) => WebUtility.HtmlDecode(node.InnerText);
 
 
-#if false
-    internal static async Task SaveAllMissionDetailsXmlFiles(List<TdmFmInfo> infos)
+#if ENABLE_ONLINE
+    internal static async Task SaveAllMissionDetailsXmlFiles(List<TDM_ServerFMData> infos)
     {
-        foreach (TdmFmInfo info in infos)
+        foreach (TDM_ServerFMData info in infos)
         {
             HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + info.Id);
             request.EnsureSuccessStatusCode();

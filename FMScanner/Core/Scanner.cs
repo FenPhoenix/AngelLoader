@@ -793,12 +793,12 @@ public sealed partial class Scanner : IDisposable
             return __zipEntries;
         }
 
-        TdmFmInfo? infoFromServer = null;
-        if (_tdmContext.FMInfos.TryGetValue(FMWorkingPathDirName, out TdmFmInfo tdmFmInfo) &&
-            _tdmContext.MissionInfoEntries.TryGetValue(FMWorkingPathDirName, out MissionInfoEntry misInfo) &&
-            tdmFmInfo.Version == misInfo.DownloadedVersion)
+        TDM_ServerFMData? infoFromServer = null;
+        if (_tdmContext.ServerFMData.TryGetValue(FMWorkingPathDirName, out TDM_ServerFMData serverFMData) &&
+            _tdmContext.LocalFMData.TryGetValue(FMWorkingPathDirName, out TDM_LocalFMData localFMData) &&
+            serverFMData.Version == localFMData.DownloadedVersion)
         {
-            infoFromServer = tdmFmInfo;
+            infoFromServer = serverFMData;
         }
 
         ScannedFMData fmData = new()

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace AL_Common;
 
-public sealed class TdmFmInfo
+public sealed class TDM_ServerFMData
 {
-    // Change these to their appropriate types later
+    // string
     public string Title = "";
 
     // DateTime
@@ -144,11 +144,11 @@ public sealed class TdmFmDetails
     }
 }
 
-public sealed class MissionInfoEntry
+public sealed class TDM_LocalFMData
 {
     public readonly string InternalName;
 
-    public MissionInfoEntry(string internalName)
+    public TDM_LocalFMData(string internalName)
     {
         InternalName = internalName;
     }
@@ -184,27 +184,27 @@ public sealed class ScannerTDMContext
     Since TDM also has a Linux version, there may be a question of how it treats casing of fm names. Do we need
     case-sensitivity here (and everywhere else) or should we do case-insensitive since we're Windows?
     */
-    public readonly Dictionary<string, MissionInfoEntry> MissionInfoEntries;
-    public readonly Dictionary<string, TdmFmInfo> FMInfos;
+    public readonly Dictionary<string, TDM_LocalFMData> LocalFMData;
+    public readonly Dictionary<string, TDM_ServerFMData> ServerFMData;
 
-    public ScannerTDMContext(List<MissionInfoEntry> missionInfoEntries, List<TdmFmInfo> fmInfos)
+    public ScannerTDMContext(List<TDM_LocalFMData> localFMData, List<TDM_ServerFMData> serverFMData)
     {
-        MissionInfoEntries = new Dictionary<string, MissionInfoEntry>();
-        FMInfos = new Dictionary<string, TdmFmInfo>();
+        LocalFMData = new Dictionary<string, TDM_LocalFMData>();
+        ServerFMData = new Dictionary<string, TDM_ServerFMData>();
 
-        foreach (MissionInfoEntry item in missionInfoEntries)
+        foreach (TDM_LocalFMData item in localFMData)
         {
-            MissionInfoEntries[item.InternalName] = item;
+            LocalFMData[item.InternalName] = item;
         }
-        foreach (TdmFmInfo item in fmInfos)
+        foreach (TDM_ServerFMData item in serverFMData)
         {
-            FMInfos[item.InternalName] = item;
+            ServerFMData[item.InternalName] = item;
         }
     }
 
     public ScannerTDMContext()
     {
-        MissionInfoEntries = new Dictionary<string, MissionInfoEntry>();
-        FMInfos = new Dictionary<string, TdmFmInfo>();
+        LocalFMData = new Dictionary<string, TDM_LocalFMData>();
+        ServerFMData = new Dictionary<string, TDM_ServerFMData>();
     }
 }
