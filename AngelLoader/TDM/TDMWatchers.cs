@@ -12,6 +12,8 @@ internal static class TDMWatchers
 {
     private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
+
+    private static readonly System.Timers.Timer _pk4Timer = new(1000) { Enabled = false, AutoReset = false };
     private static readonly FileSystemWatcher TDM_PK4_Watcher = new();
 
     internal static readonly object TdmFMChangeLock = new();
@@ -22,17 +24,26 @@ internal static class TDMWatchers
         TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
         TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
 
+        // @TDM: Make these aggregated too!
         TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
 
         TDM_PK4_Watcher.Changed += TDM_PK4_Watcher_Changed;
         TDM_PK4_Watcher.Created += TDM_PK4_Watcher_Changed;
+
+        _pk4Timer.Elapsed += PK4Timer_Elapsed;
+    }
+
+    private static void Reset(this System.Timers.Timer timer)
+    {
+        timer.Stop();
+        timer.Start();
     }
 
     #region Event handlers
 
-    private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e)
+    private static void PK4Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         lock (TdmFMChangeLock)
         {
@@ -42,6 +53,8 @@ internal static class TDMWatchers
             }
         }
     }
+
+    private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e) => _pk4Timer.Reset();
 
     private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
