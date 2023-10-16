@@ -116,6 +116,7 @@ sealed partial class TDMDownloadForm
             this.MoreDetailsButton.TabIndex = 5;
             this.MoreDetailsButton.Text = "More...";
             this.MoreDetailsButton.Visible = false;
+            this.MoreDetailsButton.Click += new System.EventHandler(this.MoreDetailsButton_Click);
             // 
             // TDMDownloadForm
             // 

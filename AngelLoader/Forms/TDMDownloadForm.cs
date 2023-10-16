@@ -168,4 +168,17 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             ShowMissionInfo(true);
         }
     }
+
+    /*
+    @TDM(Screenshot display):
+    Screenshots are cached locally in fms\_missionshots with the name previewshot_[screenshotname]
+    So for example, for "screenshots/0_ac1_0.jpg" it would be "previewshot_0_ac1_0.jpg"
+    We should use the cached version if it exists, to save time and bandwidth (the game does this).
+    @TDM(More details): We could use Settings-like swapping of panels
+    Click "More..." and it swaps to the details panel, and it has a "Back" button that swaps back
+    */
+    private void MoreDetailsButton_Click(object sender, EventArgs e)
+    {
+
+    }
 }
