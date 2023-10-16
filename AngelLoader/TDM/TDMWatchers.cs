@@ -10,7 +10,10 @@ namespace AngelLoader;
 
 internal static class TDMWatchers
 {
+    // Don't put this one on an aggregate timer, because we want it the marked-selected FM to change instantly
     private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
+
+    private static readonly System.Timers.Timer _MissionInfoFileTimer = new(1000) { Enabled = false, AutoReset = false };
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
 
     private static readonly System.Timers.Timer _pk4Timer = new(1000) { Enabled = false, AutoReset = false };
@@ -24,7 +27,6 @@ internal static class TDMWatchers
         TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
         TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
 
-        // @TDM: Make these aggregated too!
         TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
@@ -32,7 +34,8 @@ internal static class TDMWatchers
         TDM_PK4_Watcher.Changed += TDM_PK4_Watcher_Changed;
         TDM_PK4_Watcher.Created += TDM_PK4_Watcher_Changed;
 
-        _pk4Timer.Elapsed += PK4Timer_Elapsed;
+        _pk4Timer.Elapsed += FileWatcherTimers_Elapsed;
+        _MissionInfoFileTimer.Elapsed += FileWatcherTimers_Elapsed;
     }
 
     private static void Reset(this System.Timers.Timer timer)
@@ -43,7 +46,7 @@ internal static class TDMWatchers
 
     #region Event handlers
 
-    private static void PK4Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private static void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         lock (TdmFMChangeLock)
         {
@@ -56,21 +59,9 @@ internal static class TDMWatchers
 
     private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e) => _pk4Timer.Reset();
 
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
-    {
-        UpdateTDMInstalledFMStatus(e.FullPath);
-    }
+    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatus(e.FullPath);
 
-    private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e)
-    {
-        lock (TdmFMChangeLock)
-        {
-            if (Core.View != null! && GameConfigFiles.TdmFMSetChanged())
-            {
-                Core.View.QueueRefreshFromDisk();
-            }
-        }
-    }
+    private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
     private static void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
     {
