@@ -10,7 +10,7 @@ namespace AngelLoader;
 
 internal static class TDMWatchers
 {
-    // Don't put this one on an aggregate timer, because we want it the marked-selected FM to change instantly
+    // Don't put this one on an aggregate timer, because we want the marked-selected FM to change instantly
     private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
 
     private static readonly System.Timers.Timer _MissionInfoFileTimer = new(1000) { Enabled = false, AutoReset = false };
