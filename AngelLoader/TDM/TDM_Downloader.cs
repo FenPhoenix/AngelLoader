@@ -18,7 +18,6 @@ namespace AngelLoader;
 
 /*
 @TDM: We don't want to download the info every time we scan, or too often in any case. We need a caching scheme.
-@TDM: We shouldn't be downloading the entire list of FM details for the scan, only fetching the ones we actually need on the fly.
 
 Note about XML:
 InnerText (ie. <tag>Some text</tag>) needs manual unescaping, but Value (ie. <tag thing="Some text"/>)
@@ -132,12 +131,12 @@ internal static class TDM_Downloader
 #endif
     }
 
-    internal static async Task<(bool Success, Exception? Ex, TdmFmDetails FmDetails)>
+    internal static async Task<(bool Success, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
     GetMissionDetails(TDM_ServerFMData serverFMData)
     {
         try
         {
-            var fail = (false, (Exception?)null, new TdmFmDetails());
+            var fail = (false, (Exception?)null, new TDM_ServerFMDetails());
 
             using Stream dataStream = await GetMissionDetailsStream(serverFMData);
 
@@ -156,7 +155,7 @@ internal static class TDM_Downloader
             XmlNode missionNode = missionNodes[0];
             if (missionNode.Name != "mission") return fail;
 
-            TdmFmDetails details = new();
+            TDM_ServerFMDetails details = new();
             XmlNodeList detailsNodes = missionNode.ChildNodes;
             foreach (XmlNode dn in detailsNodes)
             {
@@ -196,7 +195,7 @@ internal static class TDM_Downloader
                             if (dlNode.Name != "downloadLocation") continue;
                             if (dlNode.Attributes == null) continue;
 
-                            TdmFmDownloadLocation downloadLocation = new(details.InternalName);
+                            TDM_FMDownloadLocation downloadLocation = new(details.InternalName);
                             foreach (XmlAttribute attr in dlNode.Attributes)
                             {
                                 switch (attr.Name)
@@ -245,7 +244,7 @@ internal static class TDM_Downloader
         }
         catch (Exception ex)
         {
-            return (false, ex, new TdmFmDetails());
+            return (false, ex, new TDM_ServerFMDetails());
         }
     }
 

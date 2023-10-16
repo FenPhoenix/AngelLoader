@@ -269,7 +269,7 @@ public sealed partial class MainForm : DarkFormBase,
                     var detailsResult = await TDM_Downloader.GetMissionDetails(fmInfo);
                     if (detailsResult.Success)
                     {
-                        Trace.WriteLine(detailsResult.FmDetails);
+                        Trace.WriteLine(detailsResult.ServerFMDetails);
                     }
                     else
                     {

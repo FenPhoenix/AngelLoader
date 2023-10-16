@@ -46,7 +46,7 @@ public sealed class TDM_ServerFMData
     }
 }
 
-public sealed class TdmFmDownloadLocation
+public sealed class TDM_FMDownloadLocation
 {
     // Not part of the xml item, but we store it for convenience
     public readonly string FMInternalName;
@@ -63,7 +63,7 @@ public sealed class TdmFmDownloadLocation
     // string
     public string Url = "";
 
-    public TdmFmDownloadLocation(string fmInternalName)
+    public TDM_FMDownloadLocation(string fmInternalName)
     {
         FMInternalName = fmInternalName;
     }
@@ -79,7 +79,7 @@ public sealed class TdmFmDownloadLocation
     }
 }
 
-public sealed class TdmFmDetails
+public sealed class TDM_ServerFMDetails
 {
     // probably int
     public string Id = "";
@@ -111,7 +111,7 @@ public sealed class TdmFmDetails
     // string
     public string Description = "";
 
-    public List<TdmFmDownloadLocation> DownloadLocations = new();
+    public List<TDM_FMDownloadLocation> DownloadLocations = new();
 
     public List<string> Screenshots = new();
 
