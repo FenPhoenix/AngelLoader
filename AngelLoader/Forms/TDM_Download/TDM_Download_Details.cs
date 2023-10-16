@@ -6,6 +6,10 @@ public sealed partial class TDM_Download_Details : UserControl
 {
     public TDM_Download_Details()
     {
+#if DEBUG
         InitializeComponent();
+#else
+        InitSlim();
+#endif
     }
 }
