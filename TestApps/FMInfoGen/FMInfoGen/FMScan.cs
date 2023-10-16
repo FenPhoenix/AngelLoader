@@ -82,9 +82,9 @@ internal static class FMScan
     {
         var fmsList = (zips
                 ? Core.View.GetFMArchives()
-                    .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false, f))
+                    .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false, cachePath: "", isTDM: false, displayName: f))
                 : Directory.GetDirectories(Paths.CurrentExtractedDir, "*", SearchOption.TopDirectoryOnly)
-                    .Select(static f => new FMToScan(path: f, false, f)))
+                    .Select(static f => new FMToScan(path: f, forceFullScan: false, cachePath: "", isTDM: false, displayName: f)))
             .ToList();
 
         string yamlPath = GetYamlPath(zips);
