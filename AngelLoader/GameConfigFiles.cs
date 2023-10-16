@@ -1097,8 +1097,6 @@ internal static class GameConfigFiles
         return false;
     }
 
-    // @TDM: If a user puts a file in manually, should we just ask them to manually refresh AL's list?
-    // Refreshing every time the fms folder changes might be overbearing. Or not. Not sure.
     internal static bool TdmFMSetChanged()
     {
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
