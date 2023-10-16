@@ -26,6 +26,8 @@ namespace AngelLoader.Forms;
 
 public sealed partial class TDMDownloadForm : DarkFormBase
 {
+    private List<TDM_ServerFMData> _serverFMDataList = new();
+
     public TDMDownloadForm()
     {
 #if DEBUG
@@ -37,19 +39,30 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         SetThemeBase(Config.VisualTheme);
 
         Localize();
+
+        ShowMissionInfo(false);
     }
 
     private void Localize()
     {
         // implement
+        // @TDM: Add localized strings
+        CloseButton.Text = "Close";
+        DownloadButton.Text = "Download";
+        MoreDetailsButton.Text = "More...";
+    }
+
+    private void ShowMissionInfo(bool visible)
+    {
+        MissionBasicInfoKeysLabel.Visible = visible;
+        MissionBasicInfoValuesLabel.Visible = visible;
+        MoreDetailsButton.Visible = visible;
     }
 
     private void TDMDownloadForm_Load(object sender, EventArgs e)
     {
 
     }
-
-    private List<TDM_ServerFMData> _serverFMDataList = new();
 
     private async void TDMDownloadForm_Shown(object sender, EventArgs e)
     {
@@ -121,6 +134,38 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                     }
                 }
             }
+        }
+    }
+
+    private void ServerListBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (ServerListBox.SelectedIndex == -1)
+        {
+            ShowMissionInfo(false);
+        }
+        else
+        {
+            TDM_ServerFMData item = _serverFMDataList[ServerListBox.SelectedIndex];
+
+            // @TDM(Download): Localizable text here
+            MissionBasicInfoKeysLabel.Text =
+                "Title: " + "\r\n" +
+                "Author: " + "\r\n" +
+                "Release date: " + "\r\n" +
+                "Size: ";
+
+            MissionBasicInfoValuesLabel.Text =
+                item.Title + "\r\n" +
+                item.Author + "\r\n" +
+                item.ReleaseDate + "\r\n" +
+                item.Size + " " + LText.Global.MegabyteShort;
+
+            MissionBasicInfoValuesLabel.Location = MissionBasicInfoValuesLabel.Location with
+            {
+                X = MissionBasicInfoKeysLabel.Right + 16
+            };
+
+            ShowMissionInfo(true);
         }
     }
 }

@@ -36,6 +36,9 @@ sealed partial class TDMDownloadForm
             this.DownloadListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
             this.ServerListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
             this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.MissionBasicInfoKeysLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MissionBasicInfoValuesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MoreDetailsButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.SuspendLayout();
             // 
             // CloseButton
@@ -74,6 +77,7 @@ sealed partial class TDMDownloadForm
             this.ServerListBox.Name = "ServerListBox";
             this.ServerListBox.Size = new System.Drawing.Size(352, 400);
             this.ServerListBox.TabIndex = 1;
+            this.ServerListBox.SelectedIndexChanged += new System.EventHandler(this.ServerListBox_SelectedIndexChanged);
             // 
             // SelectForDownloadButton
             // 
@@ -83,17 +87,51 @@ sealed partial class TDMDownloadForm
             this.SelectForDownloadButton.TabIndex = 0;
             this.SelectForDownloadButton.Click += new System.EventHandler(this.SelectForDownloadButton_Click);
             // 
+            // MissionBasicInfoKeysLabel
+            // 
+            this.MissionBasicInfoKeysLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MissionBasicInfoKeysLabel.AutoSize = true;
+            this.MissionBasicInfoKeysLabel.Location = new System.Drawing.Point(32, 448);
+            this.MissionBasicInfoKeysLabel.Name = "MissionBasicInfoKeysLabel";
+            this.MissionBasicInfoKeysLabel.Size = new System.Drawing.Size(67, 13);
+            this.MissionBasicInfoKeysLabel.TabIndex = 4;
+            this.MissionBasicInfoKeysLabel.Text = "[mission info]";
+            // 
+            // MissionBasicInfoValuesLabel
+            // 
+            this.MissionBasicInfoValuesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MissionBasicInfoValuesLabel.AutoSize = true;
+            this.MissionBasicInfoValuesLabel.Location = new System.Drawing.Point(104, 448);
+            this.MissionBasicInfoValuesLabel.Name = "MissionBasicInfoValuesLabel";
+            this.MissionBasicInfoValuesLabel.Size = new System.Drawing.Size(67, 13);
+            this.MissionBasicInfoValuesLabel.TabIndex = 4;
+            this.MissionBasicInfoValuesLabel.Text = "[mission info]";
+            // 
+            // MoreDetailsButton
+            // 
+            this.MoreDetailsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MoreDetailsButton.Location = new System.Drawing.Point(32, 504);
+            this.MoreDetailsButton.Name = "MoreDetailsButton";
+            this.MoreDetailsButton.Size = new System.Drawing.Size(75, 23);
+            this.MoreDetailsButton.TabIndex = 5;
+            this.MoreDetailsButton.Text = "More...";
+            this.MoreDetailsButton.Visible = false;
+            // 
             // TDMDownloadForm
             // 
             this.AcceptButton = this.CloseButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(830, 535);
+            this.Controls.Add(this.MoreDetailsButton);
+            this.Controls.Add(this.MissionBasicInfoValuesLabel);
+            this.Controls.Add(this.MissionBasicInfoKeysLabel);
             this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.DownloadButton);
             this.Controls.Add(this.DownloadListBox);
             this.Controls.Add(this.ServerListBox);
             this.Controls.Add(this.SelectForDownloadButton);
+            this.MinimumSize = new System.Drawing.Size(846, 574);
             this.Name = "TDMDownloadForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Dark Mod Downloader";
@@ -112,4 +150,7 @@ sealed partial class TDMDownloadForm
     private CustomControls.DarkListBoxWithBackingItems DownloadListBox;
     private CustomControls.DarkButton DownloadButton;
     private CustomControls.StandardButton CloseButton;
+    private CustomControls.DarkLabel MissionBasicInfoKeysLabel;
+    private CustomControls.DarkLabel MissionBasicInfoValuesLabel;
+    private CustomControls.DarkButton MoreDetailsButton;
 }
