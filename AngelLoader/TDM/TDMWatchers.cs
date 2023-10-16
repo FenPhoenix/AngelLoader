@@ -12,6 +12,7 @@ internal static class TDMWatchers
 {
     private static readonly FileSystemWatcher TDMSelectedFMWatcher = new();
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
+    private static readonly FileSystemWatcher TDM_PK4_Watcher = new();
 
     internal static readonly object TdmFMChangeLock = new();
 
@@ -24,9 +25,23 @@ internal static class TDMWatchers
         TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
+
+        TDM_PK4_Watcher.Changed += TDM_PK4_Watcher_Changed;
+        TDM_PK4_Watcher.Created += TDM_PK4_Watcher_Changed;
     }
 
     #region Event handlers
+
+    private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e)
+    {
+        lock (TdmFMChangeLock)
+        {
+            if (Core.View != null!)
+            {
+                Core.View.QueueRefreshFromDisk();
+            }
+        }
+    }
 
     private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
@@ -72,7 +87,7 @@ internal static class TDMWatchers
         {
             if (file == null)
             {
-                string fmInstallPath = Global.Config.GetGamePath(GameIndex.TDM);
+                string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
                 if (fmInstallPath.IsEmpty()) return;
                 try
                 {
@@ -143,50 +158,9 @@ internal static class TDMWatchers
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
         if (enableTDMWatchers && !gamePath.IsEmpty() && !fmsPath.IsEmpty())
         {
-            try
-            {
-                TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                TDMSelectedFMWatcher.Path = gamePath;
-                TDMSelectedFMWatcher.Filter = Paths.TDMCurrentFMFile;
-                TDMSelectedFMWatcher.NotifyFilter =
-                    NotifyFilters.LastWrite |
-                    NotifyFilters.CreationTime;
-                TDMSelectedFMWatcher.EnableRaisingEvents = true;
-
-            }
-            catch
-            {
-                try
-                {
-                    TDMSelectedFMWatcher.EnableRaisingEvents = false;
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-
-            try
-            {
-                TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-                TdmFMsListChangedWatcher.Path = fmsPath;
-                TdmFMsListChangedWatcher.Filter = Paths.MissionsTdmInfo;
-                TdmFMsListChangedWatcher.NotifyFilter =
-                    NotifyFilters.LastWrite |
-                    NotifyFilters.CreationTime;
-                TdmFMsListChangedWatcher.EnableRaisingEvents = true;
-            }
-            catch
-            {
-                try
-                {
-                    TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
+            SetWatcher(TDMSelectedFMWatcher, gamePath, Paths.TDMCurrentFMFile);
+            SetWatcher(TdmFMsListChangedWatcher, fmsPath, Paths.MissionsTdmInfo);
+            SetWatcher(TDM_PK4_Watcher, fmsPath, "*.pk4");
         }
         else
         {
@@ -194,10 +168,38 @@ internal static class TDMWatchers
             {
                 TDMSelectedFMWatcher.EnableRaisingEvents = false;
                 TdmFMsListChangedWatcher.EnableRaisingEvents = false;
+                TDM_PK4_Watcher.EnableRaisingEvents = false;
             }
             catch
             {
                 // ignore
+            }
+        }
+
+        return;
+
+        static void SetWatcher(FileSystemWatcher watcher, string path, string filter)
+        {
+            try
+            {
+                watcher.EnableRaisingEvents = false;
+                watcher.Path = path;
+                watcher.Filter = filter;
+                watcher.NotifyFilter =
+                    NotifyFilters.LastWrite |
+                    NotifyFilters.CreationTime;
+                watcher.EnableRaisingEvents = true;
+            }
+            catch
+            {
+                try
+                {
+                    watcher.EnableRaisingEvents = false;
+                }
+                catch
+                {
+                    // ignore
+                }
             }
         }
     }
