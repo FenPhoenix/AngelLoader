@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common;
@@ -158,31 +159,31 @@ internal static class TDM_Downloader
                 switch (dn.Name)
                 {
                     case "id":
-                        details.Id = dn.InnerText;
+                        details.Id = dn.GetPlainInnerText();
                         break;
                     case "title":
-                        details.Title = dn.InnerText;
+                        details.Title = dn.GetPlainInnerText();
                         break;
                     case "releaseDate":
-                        details.ReleaseDate = dn.InnerText;
+                        details.ReleaseDate = dn.GetPlainInnerText();
                         break;
                     case "size":
-                        details.Size = dn.InnerText;
+                        details.Size = dn.GetPlainInnerText();
                         break;
                     case "version":
-                        details.Version = dn.InnerText;
+                        details.Version = dn.GetPlainInnerText();
                         break;
                     case "internalName":
-                        details.InternalName = dn.InnerText;
+                        details.InternalName = dn.GetPlainInnerText();
                         break;
                     case "type":
-                        details.Type = dn.InnerText;
+                        details.Type = dn.GetPlainInnerText();
                         break;
                     case "author":
-                        details.Author = dn.InnerText;
+                        details.Author = dn.GetPlainInnerText();
                         break;
                     case "description":
-                        details.Description = WebUtility.HtmlDecode(dn.InnerText);
+                        details.Description = dn.GetPlainInnerText();
                         break;
                     case "downloadLocations":
                     {
@@ -243,6 +244,14 @@ internal static class TDM_Downloader
             return (false, ex, new TdmFmDetails());
         }
     }
+
+    /// <summary>
+    /// Gets the unescaped InnerText.
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetPlainInnerText(this XmlNode node) => WebUtility.HtmlDecode(node.InnerText);
 
 
 #if false
