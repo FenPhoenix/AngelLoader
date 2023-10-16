@@ -10,14 +10,9 @@ internal name). If it doesn't match, we'll reload the list, re-match the ids and
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.Remoting.MetadataServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using static AngelLoader.Global;
@@ -28,6 +23,15 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 {
     private List<TDM_ServerFMData> _serverFMDataList = new();
 
+    private readonly TDM_Download_Main MainPage;
+    private readonly TDM_Download_Details DetailsPage;
+
+    private enum Page
+    {
+        Main,
+        Details
+    }
+
     public TDMDownloadForm()
     {
 #if DEBUG
@@ -36,11 +40,33 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         InitSlim();
 #endif
 
-        SetThemeBase(Config.VisualTheme);
+        MainPage = new TDM_Download_Main { Visible = false };
+        DetailsPage = new TDM_Download_Details { Visible = false };
+
+        for (int i = 0; i < 2; i++)
+        {
+            UserControl page = i == 0 ? MainPage : DetailsPage;
+
+            page.Location = Point.Empty;
+            page.Size = new Size(ClientSize.Width, ClientSize.Height - 32);
+            page.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
+            Controls.Add(page);
+        }
+
+        MainPage.Show();
+
+        if (Config.DarkMode)
+        {
+            SetThemeBase(Config.VisualTheme);
+        }
 
         Localize();
 
         ShowMissionInfo(false);
+
+        MainPage.ServerListBox.SelectedIndexChanged += ServerListBox_SelectedIndexChanged;
+        MainPage.SelectForDownloadButton.Click += SelectForDownloadButton_Click;
+        MainPage.DownloadButton.Click += DownloadButton_Click;
     }
 
     private void Localize()
@@ -48,14 +74,31 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         // implement
         // @TDM: Add localized strings
         CloseButton.Text = "Close";
-        DownloadButton.Text = "Download";
+        MainPage.DownloadButton.Text = "Download";
         MoreDetailsButton.Text = "More...";
+    }
+
+    // @TDM(Download): Localizable text in here
+    private void SwapPage()
+    {
+        if (MainPage.Visible)
+        {
+            MoreDetailsButton.Text = "Back";
+            DetailsPage.Show();
+            MainPage.Hide();
+        }
+        else
+        {
+            MainPage.Show();
+            DetailsPage.Hide();
+            MoreDetailsButton.Text = "More...";
+        }
     }
 
     private void ShowMissionInfo(bool visible)
     {
-        MissionBasicInfoKeysLabel.Visible = visible;
-        MissionBasicInfoValuesLabel.Visible = visible;
+        MainPage.MissionBasicInfoKeysLabel.Visible = visible;
+        MainPage.MissionBasicInfoValuesLabel.Visible = visible;
         MoreDetailsButton.Visible = visible;
     }
 
@@ -71,29 +114,29 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         {
             try
             {
-                ServerListBox.BeginUpdate();
+                MainPage.ServerListBox.BeginUpdate();
                 foreach (TDM_ServerFMData item in _serverFMDataList)
                 {
-                    ServerListBox.AddFullItem(item.Id, item.Title);
+                    MainPage.ServerListBox.AddFullItem(item.Id, item.Title);
                 }
             }
             finally
             {
-                ServerListBox.EndUpdate();
+                MainPage.ServerListBox.EndUpdate();
             }
         }
     }
 
     private void SelectForDownloadButton_Click(object sender, EventArgs e)
     {
-        ListView.SelectedIndexCollection selectedIndices = ServerListBox.SelectedIndices;
-        string[] items = ServerListBox.ItemsAsStrings;
+        ListView.SelectedIndexCollection selectedIndices = MainPage.ServerListBox.SelectedIndices;
+        string[] items = MainPage.ServerListBox.ItemsAsStrings;
 
-        using (new UpdateRegion(ServerListBox))
+        using (new UpdateRegion(MainPage.ServerListBox))
         {
             foreach (int index in selectedIndices)
             {
-                DownloadListBox.AddFullItem(ServerListBox.BackingItems[index], items[index]);
+                MainPage.DownloadListBox.AddFullItem(MainPage.ServerListBox.BackingItems[index], items[index]);
             }
         }
     }
@@ -114,10 +157,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             return;
         }
 
-        int downloadsCount = DownloadListBox.Items.Count;
+        int downloadsCount = MainPage.DownloadListBox.Items.Count;
         for (int i = 0; i < downloadsCount; i++)
         {
-            string id = DownloadListBox.BackingItems[i];
+            string id = MainPage.DownloadListBox.BackingItems[i];
             if (serverFMDataDict.TryGetValue(id, out TDM_ServerFMData data))
             {
                 var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data);
@@ -139,30 +182,30 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
     private void ServerListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (ServerListBox.SelectedIndex == -1)
+        if (MainPage.ServerListBox.SelectedIndex == -1)
         {
             ShowMissionInfo(false);
         }
         else
         {
-            TDM_ServerFMData item = _serverFMDataList[ServerListBox.SelectedIndex];
+            TDM_ServerFMData item = _serverFMDataList[MainPage.ServerListBox.SelectedIndex];
 
             // @TDM(Download): Localizable text here
-            MissionBasicInfoKeysLabel.Text =
+            MainPage.MissionBasicInfoKeysLabel.Text =
                 "Title: " + "\r\n" +
                 "Author: " + "\r\n" +
                 "Release date: " + "\r\n" +
                 "Size: ";
 
-            MissionBasicInfoValuesLabel.Text =
+            MainPage.MissionBasicInfoValuesLabel.Text =
                 item.Title + "\r\n" +
                 item.Author + "\r\n" +
                 item.ReleaseDate + "\r\n" +
                 item.Size + " " + LText.Global.MegabyteShort;
 
-            MissionBasicInfoValuesLabel.Location = MissionBasicInfoValuesLabel.Location with
+            MainPage.MissionBasicInfoValuesLabel.Location = MainPage.MissionBasicInfoValuesLabel.Location with
             {
-                X = MissionBasicInfoKeysLabel.Right + 16
+                X = MainPage.MissionBasicInfoKeysLabel.Right + 16
             };
 
             ShowMissionInfo(true);
@@ -179,6 +222,6 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     */
     private void MoreDetailsButton_Click(object sender, EventArgs e)
     {
-
+        SwapPage();
     }
 }
