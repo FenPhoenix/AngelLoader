@@ -280,6 +280,11 @@ public static partial class Utils
     // @TDM: See if we want to move this to a TDM utils class or whatever we end up with
     internal static bool IsValidTdmFM(string fileOrDirName)
     {
+        /*
+        The Dark Mod Wiki also mentions _i18n.pk4 files, but the game (as of v2.11 anyway) doesn't seem to do
+        anything with these, not putting them automatically into the matching game dir or anything. So it could
+        be these are deprecated file names, but regardless, it looks like we can ignore them.
+        */
         return !fileOrDirName.EqualsI(Paths.TDMMissionShots) &&
                !fileOrDirName.EndsWithI("_l10n") &&
                !fileOrDirName.EndsWithI("_l10n.pk4");
