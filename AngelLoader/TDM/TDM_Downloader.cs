@@ -1,5 +1,5 @@
 ﻿// Test offline so as not to hit the server more than is necessary
-//#define ENABLE_ONLINE
+#define ENABLE_ONLINE
 
 #if ENABLE_ONLINE
 using System.Net.Http;
@@ -307,7 +307,7 @@ internal static class TDM_Downloader
     private static string GetPlainInnerText(this XmlNode node) => WebUtility.HtmlDecode(node.InnerText);
 
 
-#if ENABLE_ONLINE
+#if false
     internal static async Task SaveAllMissionDetailsXmlFiles(List<TDM_ServerFMData> infos)
     {
         foreach (TDM_ServerFMData info in infos)
