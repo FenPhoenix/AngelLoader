@@ -188,6 +188,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                         @TDM(Download): We should match the TDM code here
                         Match the weighting to decide which one to use, and also whatever is done with the sha256
                         and language and whatever else.
+
+                        MissionManager.cpp
+
+                        Search "//stgatilov #5349: shuffle the URL lists according to weights"
                         */
                         Trace.WriteLine(item.Url);
                     }
