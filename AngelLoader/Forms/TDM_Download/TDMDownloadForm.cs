@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using AL_Common;
 using static AngelLoader.Global;
@@ -26,6 +27,10 @@ namespace AngelLoader.Forms;
 public sealed partial class TDMDownloadForm : DarkFormBase
 {
     private List<TDM_ServerFMData> _serverFMDataList = new();
+
+    private CancellationTokenSource _serverFMDataCTS = new();
+    private CancellationTokenSource _serverFMDetailsCTS = new();
+    private CancellationTokenSource _screenshotCTS = new();
 
     private readonly TDM_Download_Main MainPage;
     private readonly TDM_Download_Details DetailsPage;
@@ -113,7 +118,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
     private async void TDMDownloadForm_Shown(object sender, EventArgs e)
     {
-        (bool success, _, _serverFMDataList) = await TDM_Downloader.TryGetMissionsFromServer();
+        _serverFMDataCTS = _serverFMDataCTS.Recreate();
+        (bool success, _, _, _serverFMDataList) = await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
         if (success)
         {
             try
@@ -128,6 +134,11 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             {
                 MainPage.ServerListBox.EndUpdate();
             }
+        }
+        else
+        {
+            // @TDM: Put this on an error label or whatever
+            Trace.WriteLine("Unable to fetch missions list from the server");
         }
     }
 
@@ -167,7 +178,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             string id = MainPage.DownloadListBox.BackingItems[i];
             if (serverFMDataDict.TryGetValue(id, out TDM_ServerFMData data))
             {
-                var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data);
+                _serverFMDetailsCTS = _serverFMDetailsCTS.Recreate();
+                var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
                 if (fmDetailsResult.Success)
                 {
                     foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
@@ -179,6 +191,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                         */
                         Trace.WriteLine(item.Url);
                     }
+                }
+                else
+                {
+                    Trace.WriteLine("Failed to download " + MainPage.DownloadListBox.Items[i] + " (id " + id + ")");
                 }
             }
         }

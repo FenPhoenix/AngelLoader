@@ -140,7 +140,7 @@ internal static class TDMParser
     internal static async Task<ScannerTDMContext> GetScannerTDMContext()
     {
         List<TDM_LocalFMData> localFMData = ParseMissionsInfoFile();
-        (bool success, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer();
+        (bool success, _, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer();
         return success
             ? new ScannerTDMContext(localFMData, serverFMData)
             : new ScannerTDMContext();

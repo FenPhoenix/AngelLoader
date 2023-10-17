@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common;
@@ -28,10 +29,12 @@ internal static class TDM_Downloader
     private const string _testingPath = @"C:\_al_tdm_testing";
     private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
 
-    private static async Task<Stream> GetAvailableMissionsStream()
+    private static async Task<Stream> GetAvailableMissionsStream(CancellationToken cancellationToken)
     {
 #if ENABLE_ONLINE
-        HttpResponseMessage request = await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_available_missions.php");
+        HttpResponseMessage request = await GlobalHttpClient.GetAsync(
+            "http://missions.thedarkmod.com/get_available_missions.php",
+            cancellationToken);
         request.EnsureSuccessStatusCode();
         return await request.Content.ReadAsStreamAsync();
 #else
@@ -39,14 +42,20 @@ internal static class TDM_Downloader
 #endif
     }
 
-    internal static async Task<(bool Success, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    internal static Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer()
+    {
+        return TryGetMissionsFromServer(CancellationToken.None);
+    }
+
+    internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    TryGetMissionsFromServer(CancellationToken cancellationToken)
     {
         try
         {
-            var fail = (false, (Exception?)null, new List<TDM_ServerFMData>());
+            var fail = (false, false, (Exception?)null, new List<TDM_ServerFMData>());
 
-            using Stream dataStream = await GetAvailableMissionsStream();
+            using Stream dataStream = await GetAvailableMissionsStream(cancellationToken);
 
             var xmlDoc = new XmlDocument();
 
@@ -109,20 +118,24 @@ internal static class TDM_Downloader
                 }
             }
 
-            return (true, null, fmsList);
+            return (true, false, null, fmsList);
+        }
+        catch (OperationCanceledException)
+        {
+            return (false, true, null, new List<TDM_ServerFMData>());
         }
         catch (Exception ex)
         {
-            return (false, ex, new List<TDM_ServerFMData>());
+            return (false, false, ex, new List<TDM_ServerFMData>());
         }
     }
 
-    private static async Task<Stream> GetMissionDetailsStream(TDM_ServerFMData serverFMData)
+    private static async Task<Stream> GetMissionDetailsStream(TDM_ServerFMData serverFMData, CancellationToken cancellationToken)
     {
 #if ENABLE_ONLINE
-        HttpResponseMessage request =
-
-        await GlobalHttpClient.GetAsync("http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id);
+        HttpResponseMessage request = await GlobalHttpClient.GetAsync(
+            "http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id,
+            cancellationToken);
         request.EnsureSuccessStatusCode();
         return await request.Content.ReadAsStreamAsync();
 #else
@@ -131,14 +144,20 @@ internal static class TDM_Downloader
 #endif
     }
 
-    internal static async Task<(bool Success, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
+    internal static Task<(bool Success, bool Canceled, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
     GetMissionDetails(TDM_ServerFMData serverFMData)
+    {
+        return GetMissionDetails(serverFMData, CancellationToken.None);
+    }
+
+    internal static async Task<(bool Success, bool Canceled, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
+    GetMissionDetails(TDM_ServerFMData serverFMData, CancellationToken cancellationToken)
     {
         try
         {
-            var fail = (false, (Exception?)null, new TDM_ServerFMDetails());
+            var fail = (false, false, (Exception?)null, new TDM_ServerFMDetails());
 
-            using Stream dataStream = await GetMissionDetailsStream(serverFMData);
+            using Stream dataStream = await GetMissionDetailsStream(serverFMData, cancellationToken);
 
             var xmlDoc = new XmlDocument();
 
@@ -240,11 +259,15 @@ internal static class TDM_Downloader
                 }
             }
 
-            return (true, null, details);
+            return (true, false, null, details);
+        }
+        catch (OperationCanceledException)
+        {
+            return (false, true, null, new TDM_ServerFMDetails());
         }
         catch (Exception ex)
         {
-            return (false, ex, new TDM_ServerFMDetails());
+            return (false, false, ex, new TDM_ServerFMDetails());
         }
     }
 
