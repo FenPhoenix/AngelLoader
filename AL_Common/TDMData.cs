@@ -1,7 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AL_Common;
+
+public static partial class Common
+{
+    /*
+    @TDM(internalName validation and conversion-to-valid):
+    TDM does some checking and processing on internalNames from the server, to wit:
+    -Converts it to lowercase if not already
+    -Strips trailing .pk4 if it exists
+    -Converts to underscores any chars that are NOT:
+     -ASCII alphabetical; or
+     -ASCII numeric; or
+     -"Western European high-ascii chars" (0xC0 to 0xFF in Win1252 / ISO 8859-1 - both encodings are the same in
+      that char range)
+    
+    There don't appear to be any nonconforming internalNames on the server as of 2023-10-16. I suspect they're
+    also doing the conversion server-side in the first place. Should we match the game on this?
+    Converting names would lead to all manner of nasty potential corner cases.
+
+    @TDM: Eventually remove this test and add the actual conversion code with this logic (if we decide to).
+    */
+    public static void Test_ValidateInternalName(string value)
+    {
+        bool error = false;
+
+        foreach (char c in value)
+        {
+            if (c.IsAsciiAlpha() || c.IsAsciiNumeric() || (c >= 0xC0 && c <= 0xFF))
+            {
+                continue;
+            }
+            if (c != '_')
+            {
+                error = true;
+                break;
+            }
+        }
+        if (value.EndsWith(".pk4", StringComparison.OrdinalIgnoreCase))
+        {
+            error = true;
+        }
+
+        foreach (char c in value)
+        {
+            if (char.IsUpper(c))
+            {
+                error = true;
+                break;
+            }
+        }
+
+        if (error)
+        {
+            Trace.WriteLine("************************* Bad internalName: " + value);
+        }
+    }
+}
 
 public sealed class TDM_ServerFMData
 {
@@ -19,7 +76,16 @@ public sealed class TDM_ServerFMData
     public string Version = "";
 
     // string
-    public string InternalName = "";
+    private string _internalName = "";
+    public string InternalName
+    {
+        get => _internalName;
+        set
+        {
+            Common.Test_ValidateInternalName(value);
+            _internalName = value;
+        }
+    }
 
     // string
     // Type is either "single" or "multi", but we scan for exact mission count, so we won't use this normally.
@@ -137,7 +203,16 @@ public sealed class TDM_ServerFMDetails
     public string Version = "";
 
     // string
-    public string InternalName = "";
+    private string _internalName = "";
+    public string InternalName
+    {
+        get => _internalName;
+        set
+        {
+            Common.Test_ValidateInternalName(value);
+            _internalName = value;
+        }
+    }
 
     // string
     // Type is either "single" or "multi", but we scan for exact mission count, so we won't use this normally.
