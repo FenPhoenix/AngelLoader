@@ -1133,7 +1133,7 @@ internal static class GameConfigFiles
 
             for (int i = 0; i < finalFilesList.Count; i++)
             {
-                if (finalFilesList[i].EqualsI(Paths.TDMMissionShots))
+                if (!IsValidTdmFM(finalFilesList[i]))
                 {
                     finalFilesList.RemoveAt(i);
                     break;

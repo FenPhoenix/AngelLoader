@@ -277,6 +277,14 @@ public static partial class Utils
         return false;
     }
 
+    // @TDM: See if we want to move this to a TDM utils class or whatever we end up with
+    internal static bool IsValidTdmFM(string fileOrDirName)
+    {
+        return !fileOrDirName.EqualsI(Paths.TDMMissionShots) &&
+               !fileOrDirName.EndsWithI("_l10n") &&
+               !fileOrDirName.EndsWithI("_l10n.pk4");
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
