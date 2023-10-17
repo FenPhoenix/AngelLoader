@@ -172,6 +172,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             return;
         }
 
+        Random random = new();
+
         int downloadsCount = MainPage.DownloadListBox.Items.Count;
         for (int i = 0; i < downloadsCount; i++)
         {
@@ -182,17 +184,18 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
                 if (fmDetailsResult.Success)
                 {
+                    Trace.WriteLine("Original download location order:");
                     foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
                     {
-                        /*
-                        @TDM(Download): We should match the TDM code here
-                        Match the weighting to decide which one to use, and also whatever is done with the sha256
-                        and language and whatever else.
+                        Trace.WriteLine(item.Url);
+                    }
 
-                        MissionManager.cpp
+                    // @TDM: We probably want to make a copy of this and leave the original as-is
+                    ShuffleUrlsByWeights(fmDetailsResult.ServerFMDetails.DownloadLocations, random);
 
-                        Search "//stgatilov #5349: shuffle the URL lists according to weights"
-                        */
+                    Trace.WriteLine("Shuffled-by-weight download location order:");
+                    foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
+                    {
                         Trace.WriteLine(item.Url);
                     }
                 }
@@ -204,10 +207,16 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         }
     }
 
-    private void ShuffleUrlsByWeights(List<IWeighted> urls, Random random)
+    private static void ShuffleUrlsByWeights<T>(List<T> urls, Random random) where T : IWeighted
     {
-        // This is the algo the game uses to choose a download location.
-        // Let's match it to prevent any problems.
+        /*
+        This is the algo the game uses to choose a download location.
+        Let's match it to prevent any problems.
+        
+        Dark Mod source code reference:
+        MissionManager.cpp
+        Search "//stgatilov #5349: shuffle the URL lists according to weights"
+        */
         int urlsCount = urls.Count;
         for (int i = 0; i < urlsCount; i++)
         {
