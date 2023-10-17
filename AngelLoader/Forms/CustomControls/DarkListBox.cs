@@ -228,6 +228,15 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
         Invalidate();
     }
 
+    protected override void OnSizeChanged(EventArgs e)
+    {
+        if (_darkModeEnabled)
+        {
+            Invalidate();
+        }
+        base.OnSizeChanged(e);
+    }
+
     protected override void OnDrawItem(DrawListViewItemEventArgs e)
     {
         base.OnDrawItem(e);
