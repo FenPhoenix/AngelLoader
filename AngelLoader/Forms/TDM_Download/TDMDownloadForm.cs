@@ -6,6 +6,10 @@ Given that id order seems to match alphabetical order of FMs, presumably the ids
 added to the server list.
 While unlikely, we'll need to verify the FM we're about to download is the one we actually wanted (check
 internal name). If it doesn't match, we'll reload the list, re-match the ids and so on and try again.
+
+@TDM(Downloader): We need to make sure all asynchronous server loads are cancelable and play nice with form closing etc.
+And like if we're loading a screenshot on the details page and then we click Back and select another mission before
+the screenshot is done, etc. etc. argh
 */
 
 using System;
