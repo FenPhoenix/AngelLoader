@@ -151,7 +151,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         {
             foreach (int index in selectedIndices)
             {
-                MainPage.DownloadListBox.AddFullItem(MainPage.ServerListBox.BackingItems[index], items[index]);
+                if (!MainPage.DownloadListBox.BackingItems.Contains(MainPage.ServerListBox.BackingItems[index]))
+                {
+                    MainPage.DownloadListBox.AddFullItem(MainPage.ServerListBox.BackingItems[index], items[index]);
+                }
             }
         }
     }
