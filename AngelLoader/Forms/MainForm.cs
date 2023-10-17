@@ -257,6 +257,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         using var f = new TDMDownloadForm();
         f.ShowDialogDark(this);
+        RefreshIfQueuedEvent.InvokeHack();
     }
 
     private async Task TDMDownloaderTest()
@@ -3048,7 +3049,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void RefreshImmediatelyIfPossible()
     {
-        if (UIEnabled && !ViewBlocked)
+        if (UIEnabled && !ViewBlocked && CanFocus)
         {
             RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
         }

@@ -95,6 +95,9 @@ internal static class Paths
     // -Also keep this immediately-loaded for the above reason
     private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
+    private static string? _tdmDownloadTemp;
+    internal static string TDMDownloadTemp => _tdmDownloadTemp ??= PathCombineFast_NoChecks(_baseTemp, "TDM");
+
     #region Help
 
     private static string? _helpTemp;

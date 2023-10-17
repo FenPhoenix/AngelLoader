@@ -10,17 +10,26 @@ internal name). If it doesn't match, we'll reload the list, re-match the ids and
 @TDM(Downloader): We need to make sure all asynchronous server loads are cancelable and play nice with form closing etc.
 And like if we're loading a screenshot on the details page and then we click Back and select another mission before
 the screenshot is done, etc. etc. argh
+
+@TDM(Downloader): Disallow download when game is running
 */
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
+using static AL_Common.Common;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms;
 
@@ -73,6 +82,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
         ShowMissionInfo(false);
 
+        MainPage.ProgressLabel.Text = "";
+
         MainPage.ServerListBox.SelectedIndexChanged += ServerListBox_SelectedIndexChanged;
         MainPage.SelectForDownloadButton.Click += SelectForDownloadButton_Click;
         MainPage.DownloadButton.Click += DownloadButton_Click;
@@ -122,6 +133,11 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         (bool success, _, _, _serverFMDataList) = await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
         if (success)
         {
+            var comparer = Comparers.TDMServerFMTitle;
+            comparer.SortDirection = SortDirection.Ascending;
+
+            _serverFMDataList.Sort(comparer);
+
             try
             {
                 MainPage.ServerListBox.BeginUpdate();
@@ -177,6 +193,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
         Random random = new();
 
+        byte[] buffer = new byte[FileStreamBufferSize];
+
         int downloadsCount = MainPage.DownloadListBox.Items.Count;
         for (int i = 0; i < downloadsCount; i++)
         {
@@ -187,7 +205,11 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
                 if (fmDetailsResult.Success)
                 {
-                    Trace.WriteLine("Checksums valid: " + CheckSumsValid(fmDetailsResult.ServerFMDetails.DownloadLocations));
+                    bool checksumsValid = CheckSumsValid(fmDetailsResult.ServerFMDetails.DownloadLocations);
+
+                    Trace.WriteLine("Checksums valid: " + checksumsValid);
+
+                    if (!checksumsValid) continue;
 
                     Trace.WriteLine("Original download location order:");
                     foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
@@ -203,12 +225,104 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                     {
                         Trace.WriteLine(item.Url);
                     }
+
+                    try
+                    {
+                        await DownloadMission(
+                            fmDetailsResult.ServerFMDetails.InternalName,
+                            fmDetailsResult.ServerFMDetails.DownloadLocations[0].Url,
+                            buffer);
+
+                        Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
+
+                        MainPage.ProgressLabel.Text = "";
+                    }
+                    catch (Exception ex)
+                    {
+                        Core.Dialogs.ShowAlert("Download failed.", "Download", MBoxIcon.Error);
+                    }
                 }
                 else
                 {
                     Trace.WriteLine("Failed to download " + MainPage.DownloadListBox.Items[i] + " (id " + id + ")");
                 }
             }
+        }
+    }
+
+    private sealed class DownloadProgress
+    {
+        public float Percent;
+    }
+
+    private static async Task StreamCopyToAsync_Progress(
+        Stream source,
+        long sourceLength,
+        Stream destination,
+        byte[] buffer,
+        CancellationToken cancellationToken,
+        IProgress<DownloadProgress> progress)
+    {
+        var progressReport = new DownloadProgress();
+
+        int bytesRead;
+        long totalBytesRead = 0;
+        float previousPercent = 0;
+        while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
+        {
+            await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+
+            totalBytesRead += bytesRead;
+
+            float percent = (float)Math.Round(GetPercentFromValue_Float(totalBytesRead, sourceLength), 1);
+
+            // Only report if the percent has changed by an amount that can be displayed, to keep report frequency
+            // from going crazy.
+            if (Math.Abs(percent - previousPercent) > 0.1)
+            {
+                previousPercent = percent;
+                progressReport.Percent = percent;
+                progress.Report(progressReport);
+            }
+        }
+        progressReport.Percent = 100f;
+        progress.Report(progressReport);
+    }
+
+    // @TDM(DownloadMission): Robustify this
+    private async Task DownloadMission(string internalName, string url, byte[] buffer)
+    {
+        var progress = new Progress<DownloadProgress>(ReportProgress);
+
+        string tempPath = Paths.TDMDownloadTemp;
+        Paths.CreateOrClearTempPath(tempPath);
+        string fileName = internalName + ".pk4";
+        string filePathInTemp = Path.Combine(tempPath, fileName);
+
+        var request = await GlobalHttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+        using (Stream stream = await GlobalHttpClient.GetStreamAsync(url))
+        using (FileStream fs = File.Create(filePathInTemp))
+        {
+            await StreamCopyToAsync_Progress(
+                stream,
+                request.Content.Headers.ContentLength ?? 0,
+                fs,
+                buffer,
+                CancellationToken.None,
+                progress
+            );
+        }
+
+        string finalPath = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fileName);
+        File.Copy(filePathInTemp, finalPath, overwrite: true);
+        File.Delete(filePathInTemp);
+
+        return;
+
+        void ReportProgress(DownloadProgress pr)
+        {
+            MainPage.ProgressLabel.Text = pr.Percent.ToString("F1", CultureInfo.CurrentCulture) + "%";
         }
     }
 

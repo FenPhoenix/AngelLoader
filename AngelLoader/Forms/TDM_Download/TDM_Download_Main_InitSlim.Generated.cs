@@ -13,6 +13,7 @@ sealed partial class TDM_Download_Main
         this.DownloadListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
         this.ServerListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
         this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.ProgressLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.SuspendLayout();
         // 
         // MissionBasicInfoValuesLabel
@@ -58,10 +59,16 @@ sealed partial class TDM_Download_Main
         this.SelectForDownloadButton.Size = new System.Drawing.Size(48, 23);
         this.SelectForDownloadButton.TabIndex = 6;
         // 
+        // ProgressLabel
+        // 
+        this.ProgressLabel.AutoSize = true;
+        this.ProgressLabel.Location = new System.Drawing.Point(448, 448);
+        // 
         // TDM_Download_Main
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.Controls.Add(this.ProgressLabel);
         this.Controls.Add(this.MissionBasicInfoValuesLabel);
         this.Controls.Add(this.MissionBasicInfoKeysLabel);
         this.Controls.Add(this.DownloadButton);
