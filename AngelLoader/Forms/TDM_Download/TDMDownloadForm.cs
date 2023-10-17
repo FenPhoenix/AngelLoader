@@ -204,6 +204,33 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         }
     }
 
+    private void ShuffleUrlsByWeights(List<IWeighted> urls, Random random)
+    {
+        // This is the algo the game uses to choose a download location.
+        // Let's match it to prevent any problems.
+        int urlsCount = urls.Count;
+        for (int i = 0; i < urlsCount; i++)
+        {
+            double sum = 0.0d;
+            for (int j = i; j < urlsCount; j++)
+            {
+                sum += urls[j].Weight;
+            }
+            double value = random.NextDouble() * sum;
+            int choice = i;
+            for (int j = i; j < urlsCount; j++)
+            {
+                value -= urls[j].Weight;
+                if (value < 0.0d)
+                {
+                    choice = j;
+                    break;
+                }
+            }
+            (urls[choice], urls[i]) = (urls[i], urls[choice]);
+        }
+    }
+
     private void ServerListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (MainPage.ServerListBox.SelectedIndex == -1)

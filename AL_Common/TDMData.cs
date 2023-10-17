@@ -46,7 +46,12 @@ public sealed class TDM_ServerFMData
     }
 }
 
-public sealed class TDM_FMDownloadLocation
+public interface IWeighted
+{
+    float Weight { get; }
+}
+
+public sealed class TDM_FMDownloadLocation : IWeighted
 {
     // Not part of the xml item, but we store it for convenience
     public readonly string FMInternalName;
@@ -55,7 +60,7 @@ public sealed class TDM_FMDownloadLocation
     public string Language = "";
 
     // float/double
-    public string Weight = "";
+    public float Weight { get; set; }
 
     // string
     public string SHA256 = "";
@@ -73,6 +78,35 @@ public sealed class TDM_FMDownloadLocation
         return
             FMInternalName + " Download Location:" + Environment.NewLine +
             "\t\t" + nameof(Language) + ": " + Language + Environment.NewLine +
+            "\t\t" + nameof(Weight) + ": " + Weight + Environment.NewLine +
+            "\t\t" + nameof(SHA256) + ": " + SHA256 + Environment.NewLine +
+            "\t\t" + nameof(Url) + ": " + Url + Environment.NewLine;
+    }
+}
+
+public sealed class TDM_FMLocalizationPack : IWeighted
+{
+    // Not part of the xml item, but we store it for convenience
+    public readonly string FMInternalName;
+
+    // float/double
+    public float Weight { get; set; }
+
+    // string
+    public string SHA256 = "";
+
+    // string
+    public string Url = "";
+
+    public TDM_FMLocalizationPack(string fmInternalName)
+    {
+        FMInternalName = fmInternalName;
+    }
+
+    public override string ToString()
+    {
+        return
+            FMInternalName + " Localization Pack:" + Environment.NewLine +
             "\t\t" + nameof(Weight) + ": " + Weight + Environment.NewLine +
             "\t\t" + nameof(SHA256) + ": " + SHA256 + Environment.NewLine +
             "\t\t" + nameof(Url) + ": " + Url + Environment.NewLine;
@@ -112,6 +146,7 @@ public sealed class TDM_ServerFMDetails
     public string Description = "";
 
     public List<TDM_FMDownloadLocation> DownloadLocations = new();
+    public List<TDM_FMLocalizationPack> LocalizationPacks = new();
 
     public List<string> Screenshots = new();
 
@@ -132,6 +167,12 @@ public sealed class TDM_ServerFMDetails
         for (int i = 0; i < DownloadLocations.Count; i++)
         {
             ret += "\t" + DownloadLocations[i] + Environment.NewLine;
+        }
+
+        ret += "\t" + nameof(LocalizationPacks) + ":" + Environment.NewLine;
+        for (int i = 0; i < LocalizationPacks.Count; i++)
+        {
+            ret += "\t" + LocalizationPacks[i] + Environment.NewLine;
         }
 
         ret += "\t" + nameof(Screenshots) + ":" + Environment.NewLine;

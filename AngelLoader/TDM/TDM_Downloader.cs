@@ -211,29 +211,56 @@ internal static class TDM_Downloader
                     {
                         foreach (XmlNode dlNode in dn.ChildNodes)
                         {
-                            if (dlNode.Name != "downloadLocation") continue;
                             if (dlNode.Attributes == null) continue;
-
-                            TDM_FMDownloadLocation downloadLocation = new(details.InternalName);
-                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            if (dlNode.Name == "downloadLocation")
                             {
-                                switch (attr.Name)
+                                TDM_FMDownloadLocation downloadLocation = new(details.InternalName);
+                                foreach (XmlAttribute attr in dlNode.Attributes)
                                 {
-                                    case "language":
-                                        downloadLocation.Language = attr.Value;
-                                        break;
-                                    case "weight":
-                                        downloadLocation.Weight = attr.Value;
-                                        break;
-                                    case "sha256":
-                                        downloadLocation.SHA256 = attr.Value;
-                                        break;
-                                    case "url":
-                                        downloadLocation.Url = attr.Value;
-                                        break;
+                                    switch (attr.Name)
+                                    {
+                                        case "language":
+                                            downloadLocation.Language = attr.Value;
+                                            break;
+                                        case "weight":
+                                            if (float.TryParse(attr.Value, out float weight))
+                                            {
+                                                downloadLocation.Weight = weight;
+                                            }
+                                            break;
+                                        case "sha256":
+                                            downloadLocation.SHA256 = attr.Value;
+                                            break;
+                                        case "url":
+                                            downloadLocation.Url = attr.Value;
+                                            break;
+                                    }
                                 }
+                                details.DownloadLocations.Add(downloadLocation);
                             }
-                            details.DownloadLocations.Add(downloadLocation);
+                            else if (dlNode.Name == "localisationPack")
+                            {
+                                TDM_FMLocalizationPack l10nPack = new(details.InternalName);
+                                foreach (XmlAttribute attr in dlNode.Attributes)
+                                {
+                                    switch (attr.Name)
+                                    {
+                                        case "weight":
+                                            if (float.TryParse(attr.Value, out float weight))
+                                            {
+                                                l10nPack.Weight = weight;
+                                            }
+                                            break;
+                                        case "sha256":
+                                            l10nPack.SHA256 = attr.Value;
+                                            break;
+                                        case "url":
+                                            l10nPack.Url = attr.Value;
+                                            break;
+                                    }
+                                }
+                                details.LocalizationPacks.Add(l10nPack);
+                            }
                         }
                         break;
                     }
