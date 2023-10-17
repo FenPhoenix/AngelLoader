@@ -21,6 +21,13 @@ public static partial class Common
     also doing the conversion server-side in the first place. Should we match the game on this?
     Converting names would lead to all manner of nasty potential corner cases.
 
+    The wiki doesn't appear to say anything specifically about this, it just says you should make your FM's
+    internal name conform to this logic (lowercase, ascii letters and numbers) and make sure it doesn't conflict
+    with any other. It states that FMs are uploaded manually by a staff member, and so that's where the trail
+    ends. I don't know if the server automatically processes/disambiguates/corrects the internal names.
+
+    We should probably just do what the game does, and if we have any problems then so will the game, so meh.
+
     @TDM: Eventually remove this test and add the actual conversion code with this logic (if we decide to).
     */
     public static void Test_ValidateInternalName(string value)
