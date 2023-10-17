@@ -184,6 +184,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
                 if (fmDetailsResult.Success)
                 {
+                    Trace.WriteLine("Checksums valid: " + CheckSumsValid(fmDetailsResult.ServerFMDetails.DownloadLocations));
+
                     Trace.WriteLine("Original download location order:");
                     foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
                     {
@@ -205,6 +207,32 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 }
             }
         }
+    }
+
+    private static bool CheckSumsValid<T>(List<T> urls) where T : IChecksum
+    {
+        int urlsCount = urls.Count;
+        if (urlsCount == 0) return true;
+
+        for (int i = 0; i < urlsCount; i++)
+        {
+            string sha256 = urls[i].SHA256;
+
+            foreach (char c in sha256)
+            {
+                if (!c.IsAsciiNumeric() && !c.IsAsciiLower())
+                {
+                    return false;
+                }
+            }
+
+            if (sha256 != urls[0].SHA256)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void ShuffleUrlsByWeights<T>(List<T> urls, Random random) where T : IWeighted

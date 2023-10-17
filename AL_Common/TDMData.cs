@@ -51,7 +51,12 @@ public interface IWeighted
     float Weight { get; }
 }
 
-public sealed class TDM_FMDownloadLocation : IWeighted
+public interface IChecksum
+{
+    string SHA256 { get; }
+}
+
+public sealed class TDM_FMDownloadLocation : IWeighted, IChecksum
 {
     // Not part of the xml item, but we store it for convenience
     public readonly string FMInternalName;
@@ -63,7 +68,7 @@ public sealed class TDM_FMDownloadLocation : IWeighted
     public float Weight { get; set; }
 
     // string
-    public string SHA256 = "";
+    public string SHA256 { get; set; } = "";
 
     // string
     public string Url = "";
@@ -84,7 +89,7 @@ public sealed class TDM_FMDownloadLocation : IWeighted
     }
 }
 
-public sealed class TDM_FMLocalizationPack : IWeighted
+public sealed class TDM_FMLocalizationPack : IWeighted, IChecksum
 {
     // Not part of the xml item, but we store it for convenience
     public readonly string FMInternalName;
@@ -93,7 +98,7 @@ public sealed class TDM_FMLocalizationPack : IWeighted
     public float Weight { get; set; }
 
     // string
-    public string SHA256 = "";
+    public string SHA256 { get; set; } = "";
 
     // string
     public string Url = "";
