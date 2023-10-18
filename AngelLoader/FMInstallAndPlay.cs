@@ -282,8 +282,13 @@ internal static class FMInstallAndPlay
         */
 
         string args =
-            // We set it to current manually beforehand anyway, but let's do this too just to be explicit I guess
-            gameIndex == GameIndex.TDM ? "+set fs_currentfm " + fm.TDMInstalledDir :
+            /*
+            We set it in currentfm.txt beforehand. The reason we DON'T pass it as an arg is because then if you
+            deselect the FM in-game, when it restarts, the FM will be selected again. Probably it passes the
+            arguments it was started with to the next instance. This is probably not what the user wants, so
+            let's avoid it.
+            */
+            gameIndex == GameIndex.TDM ? "" :
             !steamArgs.IsEmpty() ? steamArgs :
             "-fm";
 
