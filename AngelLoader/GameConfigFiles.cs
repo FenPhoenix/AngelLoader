@@ -1141,9 +1141,9 @@ internal static class GameConfigFiles
             }
 
             internalTdmFMIds.Sort();
-            fileTdmFMIds_Dirs.Sort();
+            finalFilesList.Sort();
 
-            return !internalTdmFMIds.SequenceEqual(fileTdmFMIds_Dirs);
+            return !internalTdmFMIds.SequenceEqual(finalFilesList);
         }
         catch
         {

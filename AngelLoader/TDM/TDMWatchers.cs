@@ -59,7 +59,7 @@ internal static class TDMWatchers
 
     private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e) => _pk4Timer.Reset();
 
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatus(e.FullPath);
+    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatusWithLock(e.FullPath);
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
@@ -85,53 +85,73 @@ internal static class TDMWatchers
 
     #endregion
 
-    internal static void UpdateTDMInstalledFMStatus(string? file = null)
+    internal static void UpdateTDMInstalledFMStatusWithLock(string? file = null)
     {
         lock (TdmFMChangeLock)
         {
-            if (file == null)
+            UpdateTDMInstalledFMStatus(file);
+        }
+    }
+
+    internal static bool UpdateTDMInstalledFMStatus(string? file = null)
+    {
+        if (file == null)
+        {
+            string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
+            if (fmInstallPath.IsEmpty()) return UpdateFMsList(null);
+            try
             {
-                string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
-                if (fmInstallPath.IsEmpty()) return;
-                try
-                {
-                    file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
-                }
-                catch
-                {
-                    return;
-                }
+                file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
             }
-
-            if (!File.Exists(file)) return;
-
-            List<string>? lines = null;
-            for (int tryIndex = 0; tryIndex < 3; tryIndex++)
+            catch
             {
-                if (TryGetLines(file, out lines))
-                {
-                    break;
-                }
+                return UpdateFMsList(null);
             }
+        }
 
-            if (lines == null)
+        if (!File.Exists(file)) return UpdateFMsList(null);
+
+        List<string>? lines = null;
+        for (int tryIndex = 0; tryIndex < 3; tryIndex++)
+        {
+            if (TryGetLines(file, out lines))
             {
-                return;
+                break;
             }
+        }
 
-            if (lines.Count > 0)
+        if (lines?.Count > 0)
+        {
+            return UpdateFMsList(lines[0]);
+        }
+
+        return UpdateFMsList(null);
+
+        static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
+        {
+            try
             {
-                string fmName = lines[0];
-                for (int i = 0; i < FMsViewList.Count; i++)
+                lines = File_ReadAllLines_List(file);
+                return true;
+            }
+            catch
+            {
+                lines = null;
+                return false;
+            }
+        }
+
+        static bool UpdateFMsList(string? fmName)
+        {
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FanMission fm = FMsViewList[i];
+                if (fm.Game == Game.TDM)
                 {
-                    FanMission fm = FMsViewList[i];
-                    if (fm.Game == Game.TDM)
-                    {
-                        // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                        // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                        // list.
-                        fm.Installed = fm.TDMInstalledDir == fmName;
-                    }
+                    // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                    // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+                    // list.
+                    fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
                 }
             }
 
@@ -140,19 +160,7 @@ internal static class TDMWatchers
                 Core.View.QueueRefreshListOnly();
             }
 
-            static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
-            {
-                try
-                {
-                    lines = File_ReadAllLines_List(file);
-                    return true;
-                }
-                catch
-                {
-                    lines = null;
-                    return false;
-                }
-            }
+            return true;
         }
     }
 

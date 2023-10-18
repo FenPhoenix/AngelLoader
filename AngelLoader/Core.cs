@@ -353,7 +353,7 @@ internal static class Core
 
                 // IMPORTANT: End no-splash-screen-call zone
 
-                TDMWatchers.UpdateTDMInstalledFMStatus();
+                TDMWatchers.UpdateTDMInstalledFMStatusWithLock();
 
                 if (ex != null)
                 {
@@ -730,7 +730,7 @@ internal static class Core
             View.RefreshMods();
         }
 
-        TDMWatchers.UpdateTDMInstalledFMStatus();
+        TDMWatchers.UpdateTDMInstalledFMStatusWithLock();
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
 
         Ini.WriteConfigIni();
@@ -987,6 +987,7 @@ internal static class Core
             View.SetWaitCursor(true);
 
             List<FanMission> fmsViewListUnscanned = FindFMs.Find();
+            TDMWatchers.UpdateTDMInstalledFMStatus();
             if (fmsViewListUnscanned.Count > 0)
             {
                 View.SetWaitCursor(false);
