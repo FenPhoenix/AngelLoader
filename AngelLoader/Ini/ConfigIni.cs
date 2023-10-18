@@ -1279,7 +1279,7 @@ internal static partial class Ini
         sb.Append("ShowUnavailableFMs").Append('=').Append(config.ShowUnavailableFMs).AppendLine();
         sb.Append("FMsListFontSizeInPoints").Append('=').AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
-        foreach (ColumnData col in config.Columns)
+        foreach (ColumnData<Column> col in config.Columns)
         {
             sb.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
         }

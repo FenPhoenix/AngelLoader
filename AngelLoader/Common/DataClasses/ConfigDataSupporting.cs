@@ -14,12 +14,19 @@ namespace AngelLoader.DataClasses;
 
 #region Columns
 
-internal sealed class ColumnData
+internal sealed class ColumnData<T> where T : Enum
 {
-    internal Column Id;
+    internal readonly T Id;
+    private readonly int _columnCount;
+
+    public ColumnData(T id, int columnCount)
+    {
+        Id = id;
+        _columnCount = columnCount;
+    }
 
     private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, _columnCount - 1); }
 
     private int _width = Defaults.ColumnWidth;
     internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }

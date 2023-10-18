@@ -646,7 +646,7 @@ internal static partial class Ini
         if (value.Contains(',') &&
             (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
         {
-            var col = new ColumnData { Id = columnType };
+            var col = new ColumnData<Column>(columnType, ColumnCount);
             for (int i = 0; i < cProps.Length; i++)
             {
                 switch (i)

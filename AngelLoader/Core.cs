@@ -2397,7 +2397,7 @@ internal static class Core
         Point mainWindowLocation,
         float mainSplitterPercent,
         float topSplitterPercent,
-        ColumnData[] columns,
+        ColumnData<Column>[] columns,
         Column sortedColumn,
         SortDirection sortDirection,
         float fmsListFontSizeInPoints,

@@ -57,10 +57,10 @@ public sealed class ConfigData
         }
 
         // Must set the display indexes, otherwise we crash!
-        Columns = new ColumnData[ColumnCount];
+        Columns = new ColumnData<Column>[ColumnCount];
         for (int i = 0; i < ColumnCount; i++)
         {
-            Columns[i] = new ColumnData { Id = (Column)i, DisplayIndex = i };
+            Columns[i] = new ColumnData<Column>((Column)i, ColumnCount) { DisplayIndex = i };
         }
     }
 
@@ -270,7 +270,7 @@ public sealed class ConfigData
 
     #region Columns and sorting
 
-    internal readonly ColumnData[] Columns;
+    internal readonly ColumnData<Column>[] Columns;
     internal Column SortedColumn = Column.Title;
     internal SortDirection SortDirection = SortDirection.Ascending;
 

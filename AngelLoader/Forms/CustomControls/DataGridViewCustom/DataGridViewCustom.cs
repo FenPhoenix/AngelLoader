@@ -178,16 +178,15 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
 
     #region Get and set columns
 
-    internal ColumnData[] GetColumnData()
+    internal ColumnData<Column>[] GetColumnData()
     {
-        var columns = new ColumnData[Columns.Count];
+        var columns = new ColumnData<Column>[Columns.Count];
 
         for (int i = 0; i < Columns.Count; i++)
         {
             DataGridViewColumn col = Columns[i];
-            columns[i] = new ColumnData
+            columns[i] = new ColumnData<Column>((Column)col.Index, ColumnCount)
             {
-                Id = (Column)col.Index,
                 DisplayIndex = col.DisplayIndex,
                 Visible = col.Visible,
                 Width = col.Width
@@ -197,7 +196,7 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
         return columns.OrderBy(static x => x.Id).ToArray();
     }
 
-    internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnData)
+    internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData<Column>[] columnData)
     {
         if (columnData.Length == 0) return;
 
@@ -215,11 +214,11 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
         // Right:
         // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-        ColumnData[] columnDataSorted = columnData.OrderBy(static x => x.DisplayIndex).ToArray();
+        ColumnData<Column>[] columnDataSorted = columnData.OrderBy(static x => x.DisplayIndex).ToArray();
 
         #endregion
 
-        foreach (ColumnData colData in columnDataSorted)
+        foreach (ColumnData<Column> colData in columnDataSorted)
         {
             DataGridViewColumn col = Columns[(int)colData.Id];
 
