@@ -320,21 +320,18 @@ internal static class Core
                 // race conditions.
                 using Task findFMsTask = Task.Run(() =>
                 {
-                    lock (TDMWatchers.TdmFMChangeLock)
+                    for (int i = 0; i < SupportedGameCount; i++)
                     {
-                        for (int i = 0; i < SupportedGameCount; i++)
+                        List<string>? camModIniLines = perGameCamModIniLines[i];
+                        if (camModIniLines != null)
                         {
-                            List<string>? camModIniLines = perGameCamModIniLines[i];
-                            if (camModIniLines != null)
-                            {
-                                GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
-                            }
+                            GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
                         }
-                        (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
-                        if (ex == null)
-                        {
-                            ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
-                        }
+                    }
+                    (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                    if (ex == null)
+                    {
+                        ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
                     }
                 });
 

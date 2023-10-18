@@ -509,6 +509,7 @@ internal static class FindFMs
                     {
                         if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
                         {
+                            dictFM.Installed = false;
                             dictFM.DateAdded ??= finalDateTimesList[fileIndex].DateTime;
                         }
                         else

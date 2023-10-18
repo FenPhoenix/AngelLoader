@@ -1097,60 +1097,6 @@ internal static class GameConfigFiles
         return false;
     }
 
-    internal static bool TdmFMSetChanged()
-    {
-        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
-        if (fmsPath.IsEmpty()) return false;
-
-        try
-        {
-            List<string> internalTdmFMIds = new(FMDataIniListTDM.Count);
-            foreach (FanMission fm in FMDataIniListTDM)
-            {
-                if (!fm.MarkedUnavailable)
-                {
-                    internalTdmFMIds.Add(fm.TDMInstalledDir);
-                }
-            }
-
-            List<string> fileTdmFMIds_Dirs = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
-            List<string> fileTdmFMIds_PK4s = FastIO.GetFilesTopOnly(fmsPath, "*.pk4", returnFullPaths: false);
-            HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
-
-            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count);
-
-            finalFilesList.AddRange(fileTdmFMIds_Dirs);
-
-            for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
-            {
-                string pk4 = fileTdmFMIds_PK4s[i];
-                string nameWithoutExt = pk4.RemoveExtension();
-                if (dirsHash.Add(nameWithoutExt))
-                {
-                    finalFilesList.Add(nameWithoutExt);
-                }
-            }
-
-            for (int i = 0; i < finalFilesList.Count; i++)
-            {
-                if (!IsValidTdmFM(finalFilesList[i]))
-                {
-                    finalFilesList.RemoveAt(i);
-                    break;
-                }
-            }
-
-            internalTdmFMIds.Sort();
-            finalFilesList.Sort();
-
-            return !internalTdmFMIds.SequenceEqual(finalFilesList);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
 #if !ReleaseBeta && !ReleasePublic
 
     private static void RemoveKeyLine(string key, List<string> lines)
