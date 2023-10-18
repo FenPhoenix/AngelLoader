@@ -1,5 +1,5 @@
 ﻿// Test offline so as not to hit the server more than is necessary
-#define ENABLE_ONLINE
+//#define ENABLE_ONLINE
 
 #if ENABLE_ONLINE
 using System.Net.Http;
