@@ -4059,6 +4059,11 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    private void FMsDGV_MainSelectedRowChanged(object sender, EventArgs e)
+    {
+        UpdateUIControlsForMultiSelectState(FMsDGV.GetMainSelectedFM());
+    }
+
     #endregion
 
     #endregion
@@ -4499,7 +4504,7 @@ public sealed partial class MainForm : DarkFormBase,
     @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
     (blink tab somehow to let the user know if the tab is already shown)
     */
-    internal void UpdateUIControlsForMultiSelectState(FanMission fm)
+    private void UpdateUIControlsForMultiSelectState(FanMission fm)
     {
         #region Get attributes that apply to all items
 

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed partial class DataGridViewCustom
+public partial class DataGridViewCustomBase
 {
     #region Private fields
 

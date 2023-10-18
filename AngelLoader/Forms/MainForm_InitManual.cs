@@ -318,6 +318,7 @@ public sealed partial class MainForm
         FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
         FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
         FMsDGV.KeyDown += FMsDGV_KeyDown;
+        FMsDGV.MainSelectedRowChanged += FMsDGV_MainSelectedRowChanged;
         FMsDGV.MouseDown += FMsDGV_MouseDown;
         // 
         // SizeColumn

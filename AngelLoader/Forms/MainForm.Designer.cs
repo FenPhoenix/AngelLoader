@@ -408,6 +408,7 @@ sealed partial class MainForm
         this.FMsDGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FMsDGV_ColumnHeaderMouseClick);
         this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
         this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
+        this.FMsDGV.MainSelectedRowChanged += new System.EventHandler(this.FMsDGV_MainSelectedRowChanged);
         this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
         // 
         // GameTypeColumn
