@@ -604,6 +604,56 @@ internal static partial class Ini
 
     #endregion
 
+    private static void Config_TDMSortedColumn_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(TDMColumn).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.TDMSortedColumn = (TDMColumn)field.GetValue(null);
+        }
+    }
+    private static void Config_TDMSortDirection_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(SortDirection).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.TDMSortDirection = (SortDirection)field.GetValue(null);
+        }
+    }
+
+    #region TDM Columns
+
+    private static void Config_TDMColumnUpdate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.Update);
+    }
+    private static void Config_TDMColumnLanguagePack_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.LanguagePack);
+    }
+    private static void Config_TDMColumnVersion_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.Version);
+    }
+    private static void Config_TDMColumnTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.Title);
+    }
+    private static void Config_TDMColumnAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.Author);
+    }
+    private static void Config_TDMColumnSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.Size);
+    }
+    private static void Config_TDMColumnReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddTDMColumn(config, valTrimmed, TDMColumn.ReleaseDate);
+    }
+
+    #endregion
+
     private static void Config_SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         GetSelectedFM(config, gameIndex, ignoreGameIndex).InstalledName = valTrimmed;
@@ -918,6 +968,21 @@ internal static partial class Ini
         { "ColumnDateAdded", new Config_DelegatePointerWrapper(&Config_ColumnDateAdded_Set) },
         { "ColumnDisabledMods", new Config_DelegatePointerWrapper(&Config_ColumnDisabledMods_Set) },
         { "ColumnComment", new Config_DelegatePointerWrapper(&Config_ColumnComment_Set) },
+
+        #endregion
+
+        { "TDMSortedColumn", new Config_DelegatePointerWrapper(&Config_TDMSortedColumn_Set) },
+        { "TDMSortDirection", new Config_DelegatePointerWrapper(&Config_TDMSortDirection_Set) },
+
+        #region TDM Columns
+
+        { "TDMColumnUpdate", new Config_DelegatePointerWrapper(&Config_TDMColumnUpdate_Set) },
+        { "TDMColumnLanguagePack", new Config_DelegatePointerWrapper(&Config_TDMColumnLanguagePack_Set) },
+        { "TDMColumnVersion", new Config_DelegatePointerWrapper(&Config_TDMColumnVersion_Set) },
+        { "TDMColumnTitle", new Config_DelegatePointerWrapper(&Config_TDMColumnTitle_Set) },
+        { "TDMColumnAuthor", new Config_DelegatePointerWrapper(&Config_TDMColumnAuthor_Set) },
+        { "TDMColumnSize", new Config_DelegatePointerWrapper(&Config_TDMColumnSize_Set) },
+        { "TDMColumnReleaseDate", new Config_DelegatePointerWrapper(&Config_TDMColumnReleaseDate_Set) },
 
         #endregion
 
@@ -1282,6 +1347,14 @@ internal static partial class Ini
         foreach (ColumnData<Column> col in config.Columns)
         {
             sb.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
+        }
+
+        sb.Append("TDMSortedColumn").Append('=').Append(config.TDMSortedColumn).AppendLine();
+        sb.Append("TDMSortDirection").Append('=').Append(config.TDMSortDirection).AppendLine();
+
+        foreach (ColumnData<TDMColumn> col in config.TDMColumns)
+        {
+            sb.Append("TDMColumn").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
         }
 
         #endregion

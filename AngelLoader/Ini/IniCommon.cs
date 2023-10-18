@@ -666,6 +666,33 @@ internal static partial class Ini
         }
     }
 
+    private static void AddTDMColumn(ConfigData config, string valTrimmed, TDMColumn columnType)
+    {
+        string value = valTrimmed.Trim(CA_Comma);
+        string[] cProps;
+        if (value.Contains(',') &&
+            (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
+        {
+            var col = new ColumnData<TDMColumn>(columnType, TDMColumnCount);
+            for (int i = 0; i < cProps.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0 when Int_TryParseInv(cProps[i], out int di):
+                        col.DisplayIndex = di;
+                        break;
+                    case 1 when Int_TryParseInv(cProps[i], out int width):
+                        col.Width = width;
+                        break;
+                    case 2:
+                        col.Visible = cProps[i].EqualsTrue();
+                        break;
+                }
+            }
+            config.TDMColumns[(int)col.Id] = col;
+        }
+    }
+
     private static void ReadFilterTags(string tagsToAdd, FMCategoriesCollection existingTags)
     {
         if (tagsToAdd.IsWhiteSpace()) return;

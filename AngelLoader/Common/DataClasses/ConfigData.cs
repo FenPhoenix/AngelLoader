@@ -62,6 +62,12 @@ public sealed class ConfigData
         {
             Columns[i] = new ColumnData<Column>((Column)i, ColumnCount) { DisplayIndex = i };
         }
+
+        TDMColumns = new ColumnData<TDMColumn>[TDMColumnCount];
+        for (int i = 0; i < TDMColumnCount; i++)
+        {
+            TDMColumns[i] = new ColumnData<TDMColumn>((TDMColumn)i, TDMColumnCount) { DisplayIndex = i };
+        }
     }
 
     //internal int Version = 1;
@@ -273,6 +279,10 @@ public sealed class ConfigData
     internal readonly ColumnData<Column>[] Columns;
     internal Column SortedColumn = Column.Title;
     internal SortDirection SortDirection = SortDirection.Ascending;
+
+    internal readonly ColumnData<TDMColumn>[] TDMColumns;
+    internal TDMColumn TDMSortedColumn = TDMColumn.ReleaseDate;
+    internal SortDirection TDMSortDirection = SortDirection.Descending;
 
     private float _fmsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
     internal float FMsListFontSizeInPoints
