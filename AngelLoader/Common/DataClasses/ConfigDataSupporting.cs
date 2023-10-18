@@ -56,6 +56,18 @@ public enum Column
     Comment
 }
 
+[FenGenEnumCount]
+public enum TDMColumn
+{
+    Update,
+    LanguagePack,
+    Version,
+    Title,
+    Author,
+    Size,
+    ReleaseDate
+}
+
 #endregion
 
 [FenGenEnumCount]
