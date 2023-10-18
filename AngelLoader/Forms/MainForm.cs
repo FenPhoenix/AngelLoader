@@ -183,6 +183,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
+    private readonly Lazy_TDMDataGridView Lazy_TDMDataGridView;
 
     #endregion
 
@@ -629,7 +630,8 @@ public sealed partial class MainForm : DarkFormBase,
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
-            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
+            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
+            Lazy_TDMDataGridView = new Lazy_TDMDataGridView(this)
         };
 
         #endregion
@@ -1911,6 +1913,8 @@ public sealed partial class MainForm : DarkFormBase,
             ExitLLButton.Localize();
 
             #endregion
+
+            Lazy_TDMDataGridView.Localize();
         }
         finally
         {
@@ -3803,15 +3807,6 @@ public sealed partial class MainForm : DarkFormBase,
         if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
         FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
-
-        // PERF: ~0.14ms per FM for en-US Long Date format
-        // @PERF_TODO: Test with custom - dt.ToString() might be slow?
-        static string FormatDate(DateTime dt) => Config.DateFormat switch
-        {
-            DateFormat.CurrentCultureShort => dt.ToShortDateString(),
-            DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-            _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture)
-        };
 
         static string FormatSize(ulong size) =>
             size == 0

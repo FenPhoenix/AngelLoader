@@ -290,6 +290,15 @@ public static partial class Utils
                !fileOrDirName.EndsWithI("_l10n.pk4");
     }
 
+    // PERF: ~0.14ms per FM for en-US Long Date format
+    // @PERF_TODO: Test with custom - dt.ToString() might be slow?
+    internal static string FormatDate(DateTime dt) => Config.DateFormat switch
+    {
+        DateFormat.CurrentCultureShort => dt.ToShortDateString(),
+        DateFormat.CurrentCultureLong => dt.ToLongDateString(),
+        _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture)
+    };
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {

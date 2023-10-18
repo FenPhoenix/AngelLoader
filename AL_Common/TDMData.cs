@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace AL_Common;
 
@@ -75,6 +76,23 @@ public sealed class TDM_ServerFMData
     // DateTime
     // This is always in the format yyyy-mm-dd
     public string ReleaseDate = "";
+
+    private DateTime? _releaseDateDT;
+    public DateTime? ReleaseDateDT
+    {
+        get
+        {
+            if (_releaseDateDT == null)
+            {
+                if (DateTime.TryParseExact(ReleaseDate, "yyyy-M-d",
+                        DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result))
+                {
+                    _releaseDateDT = result;
+                }
+            }
+            return _releaseDateDT;
+        }
+    }
 
     // float, or double for safety?
     public string Size = "";
