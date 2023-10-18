@@ -229,11 +229,14 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                     try
                     {
                         await DownloadMission(
+                            listIndex: i,
                             fmDetailsResult.ServerFMDetails.InternalName,
                             fmDetailsResult.ServerFMDetails.DownloadLocations[0].Url,
                             buffer);
 
-                        Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
+                        // @TDM: This doesn't work for some reason
+                        //MainPage.DownloadListBox.RemoveFullItemAtIndex(0);
+                        //i--;
 
                         MainPage.ProgressLabel.Text = "";
                     }
@@ -248,14 +251,19 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 }
             }
         }
+        Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
     }
 
     private sealed class DownloadProgress
     {
+        public string TitleText = "";
+        public int ListIndex;
         public float Percent;
     }
 
     private static async Task StreamCopyToAsync_Progress(
+        string titleText,
+        int listIndex,
         Stream source,
         long sourceLength,
         Stream destination,
@@ -263,7 +271,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         CancellationToken cancellationToken,
         IProgress<DownloadProgress> progress)
     {
-        var progressReport = new DownloadProgress();
+        var progressReport = new DownloadProgress { TitleText = titleText, ListIndex = listIndex };
 
         int bytesRead;
         long totalBytesRead = 0;
@@ -290,7 +298,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     }
 
     // @TDM(DownloadMission): Robustify this
-    private async Task DownloadMission(string internalName, string url, byte[] buffer)
+    private async Task DownloadMission(int listIndex, string internalName, string url, byte[] buffer)
     {
         var progress = new Progress<DownloadProgress>(ReportProgress);
 
@@ -305,6 +313,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         using (FileStream fs = File.Create(filePathInTemp))
         {
             await StreamCopyToAsync_Progress(
+                MainPage.DownloadListBox.Items[listIndex].Text,
+                listIndex,
                 stream,
                 request.Content.Headers.ContentLength ?? 0,
                 fs,
@@ -322,7 +332,13 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
         void ReportProgress(DownloadProgress pr)
         {
-            MainPage.ProgressLabel.Text = pr.Percent.ToString("F1", CultureInfo.CurrentCulture) + "%";
+            // @TDM(ListView text length):
+            // "The text of the ListViewItem should not exceed 259 characters or unexpected behavior could occur."
+            // ARGH. This thing sucks. We need something altogether better...
+            // Could we maybe really truly shoehorn the downloader into the main list? That'd be glorious.
+            MainPage.DownloadListBox.Items[pr.ListIndex].Text =
+                pr.TitleText + " " +
+                pr.Percent.ToString("F1", CultureInfo.CurrentCulture) + "%";
         }
     }
 
