@@ -256,9 +256,25 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        using var f = new TDMDownloadForm();
-        f.ShowDialogDark(this);
-        RefreshIfQueuedEvent.InvokeHack();
+        SwapDGVs();
+
+        //using var f = new TDMDownloadForm();
+        //f.ShowDialogDark(this);
+        //RefreshIfQueuedEvent.InvokeHack();
+    }
+
+    private void SwapDGVs()
+    {
+        if (FMsDGV.Visible)
+        {
+            Lazy_TDMDataGridView.Show(true);
+            FMsDGV.Hide();
+        }
+        else
+        {
+            FMsDGV.Show();
+            Lazy_TDMDataGridView.Show(false);
+        }
     }
 
     private async Task TDMDownloaderTest()

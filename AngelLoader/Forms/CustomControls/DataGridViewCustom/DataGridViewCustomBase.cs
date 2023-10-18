@@ -25,7 +25,6 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
 
     #region Sort
 
-    internal Column CurrentSortedColumn;
     internal SortDirection CurrentSortDirection = SortDirection.Ascending;
 
     #endregion
@@ -278,7 +277,7 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
         e.Handled = true;
     }
 
-    private protected void DrawColumnHeaders(DataGridViewCellPaintingEventArgs e)
+    private protected void DrawColumnHeaders(DataGridViewCellPaintingEventArgs e, int currentSortedColumnIndex)
     {
         /*
         @DarkModeNote(DGV headers):
@@ -360,7 +359,7 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
                 textFormatFlags
             ).Width;
 
-            if (e.ColumnIndex == (int)CurrentSortedColumn &&
+            if (e.ColumnIndex == currentSortedColumnIndex &&
                 textLength < e.CellBounds.Width - 24)
             {
                 Direction direction = CurrentSortDirection == SortDirection.Ascending

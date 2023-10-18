@@ -971,18 +971,18 @@ internal static partial class Ini
 
         #endregion
 
-        { "TDMSortedColumn", new Config_DelegatePointerWrapper(&Config_TDMSortedColumn_Set) },
-        { "TDMSortDirection", new Config_DelegatePointerWrapper(&Config_TDMSortDirection_Set) },
+        { "DL_TDM_SortedColumn", new Config_DelegatePointerWrapper(&Config_TDMSortedColumn_Set) },
+        { "DL_TDM_SortDirection", new Config_DelegatePointerWrapper(&Config_TDMSortDirection_Set) },
 
         #region TDM Columns
 
-        { "TDMColumnUpdate", new Config_DelegatePointerWrapper(&Config_TDMColumnUpdate_Set) },
-        { "TDMColumnLanguagePack", new Config_DelegatePointerWrapper(&Config_TDMColumnLanguagePack_Set) },
-        { "TDMColumnVersion", new Config_DelegatePointerWrapper(&Config_TDMColumnVersion_Set) },
-        { "TDMColumnTitle", new Config_DelegatePointerWrapper(&Config_TDMColumnTitle_Set) },
-        { "TDMColumnAuthor", new Config_DelegatePointerWrapper(&Config_TDMColumnAuthor_Set) },
-        { "TDMColumnSize", new Config_DelegatePointerWrapper(&Config_TDMColumnSize_Set) },
-        { "TDMColumnReleaseDate", new Config_DelegatePointerWrapper(&Config_TDMColumnReleaseDate_Set) },
+        { "DL_TDM_ColumnUpdate", new Config_DelegatePointerWrapper(&Config_TDMColumnUpdate_Set) },
+        { "DL_TDM_ColumnLanguagePack", new Config_DelegatePointerWrapper(&Config_TDMColumnLanguagePack_Set) },
+        { "DL_TDM_ColumnVersion", new Config_DelegatePointerWrapper(&Config_TDMColumnVersion_Set) },
+        { "DL_TDM_ColumnTitle", new Config_DelegatePointerWrapper(&Config_TDMColumnTitle_Set) },
+        { "DL_TDM_ColumnAuthor", new Config_DelegatePointerWrapper(&Config_TDMColumnAuthor_Set) },
+        { "DL_TDM_ColumnSize", new Config_DelegatePointerWrapper(&Config_TDMColumnSize_Set) },
+        { "DL_TDM_ColumnReleaseDate", new Config_DelegatePointerWrapper(&Config_TDMColumnReleaseDate_Set) },
 
         #endregion
 
@@ -1349,12 +1349,12 @@ internal static partial class Ini
             sb.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
         }
 
-        sb.Append("TDMSortedColumn").Append('=').Append(config.TDMSortedColumn).AppendLine();
-        sb.Append("TDMSortDirection").Append('=').Append(config.TDMSortDirection).AppendLine();
+        sb.Append("DL_TDM_SortedColumn").Append('=').Append(config.TDMSortedColumn).AppendLine();
+        sb.Append("DL_TDM_SortDirection").Append('=').Append(config.TDMSortDirection).AppendLine();
 
         foreach (ColumnData<TDMColumn> col in config.TDMColumns)
         {
-            sb.Append("TDMColumn").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
+            sb.Append("DL_TDM_Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
         }
 
         #endregion

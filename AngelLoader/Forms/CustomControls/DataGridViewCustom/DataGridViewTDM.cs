@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -15,7 +16,7 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
 
         if (e.RowIndex == -1)
         {
-            DrawColumnHeaders(e);
+            DrawColumnHeaders(e, (int)CurrentSortedColumn);
         }
         else if (e.RowIndex > -1)
         {
@@ -77,5 +78,33 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
         }
 
         return columns.OrderBy(static x => x.Id).ToArray();
+    }
+
+    internal TDMColumn CurrentSortedColumn;
+
+    internal void SortDGV(TDMColumn column, SortDirection sortDirection)
+    {
+        CurrentSortedColumn = column;
+        CurrentSortDirection = sortDirection;
+
+        //Core.SortFMsViewList(column, sortDirection);
+        // @TDM: Sort actual items here
+
+        int intCol = (int)column;
+        for (int i = 0; i < Columns.Count; i++)
+        {
+            DataGridViewColumn c = Columns[i];
+            if (i == intCol)
+            {
+                c.HeaderCell.SortGlyphDirection =
+                    CurrentSortDirection == SortDirection.Ascending
+                        ? SortOrder.Ascending
+                        : SortOrder.Descending;
+            }
+            else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
+            {
+                c.HeaderCell.SortGlyphDirection = SortOrder.None;
+            }
+        }
     }
 }

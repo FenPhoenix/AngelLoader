@@ -123,13 +123,44 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _constructed = true;
 
         Localize();
+
+        _dgv.SetColumnData(Config.TDMColumns);
+        _owner.TopSplitContainer.Panel1.Controls.Add(_dgv);
+        _dgv.BringToFront();
+
+        _dgv.DarkModeEnabled = _darkModeEnabled;
+
+        _dgv.SortDGV(Config.TDMSortedColumn, Config.TDMSortDirection);
     }
 
     internal void Localize()
     {
         if (!_constructed) return;
 
+        UpdateColumn.HeaderText = "Update";
+        LanguagePackColumn.HeaderText = "Language Pack";
+        VersionColumn.HeaderText = "Version";
+        TitleColumn.HeaderText = "Title";
+        AuthorColumn.HeaderText = "Author";
+        SizeColumn.HeaderText = "Size";
+        ReleaseDateColumn.HeaderText = "Release Date";
+
         // @TDM(DGV Localize): implement
+    }
+
+    internal void Show(bool value)
+    {
+        if (value)
+        {
+            DGV.Show();
+        }
+        else
+        {
+            if (_constructed)
+            {
+                _dgv.Hide();
+            }
+        }
     }
 
     private void CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)

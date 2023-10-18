@@ -18,6 +18,8 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
 
     internal readonly GameTabsState GameTabsState = new();
 
+    internal Column CurrentSortedColumn;
+
     #region Filter
 
     internal readonly Filter Filter = new();
@@ -272,7 +274,7 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
 
         if (e.RowIndex == -1)
         {
-            DrawColumnHeaders(e);
+            DrawColumnHeaders(e, (int)CurrentSortedColumn);
         }
         else if (e.RowIndex > -1)
         {
