@@ -163,7 +163,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         ListView.SelectedIndexCollection selectedIndices = MainPage.ServerListBox.SelectedIndices;
         string[] items = MainPage.ServerListBox.ItemsAsStrings;
 
-        using (new UpdateRegion(MainPage.ServerListBox))
+        using (new UpdateRegion(MainPage.DownloadListBox))
         {
             foreach (int index in selectedIndices)
             {
