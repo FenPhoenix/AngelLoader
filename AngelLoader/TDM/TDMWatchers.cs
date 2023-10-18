@@ -58,7 +58,7 @@ internal static class TDMWatchers
 
     private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e) => _pk4Timer.Reset();
 
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatusWithLock(e.FullPath);
+    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatus(e.FullPath);
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
@@ -83,8 +83,6 @@ internal static class TDMWatchers
     }
 
     #endregion
-
-    internal static void UpdateTDMInstalledFMStatusWithLock(string? file = null) => UpdateTDMInstalledFMStatus(file);
 
     internal static void UpdateTDMInstalledFMStatus(string? file = null)
     {

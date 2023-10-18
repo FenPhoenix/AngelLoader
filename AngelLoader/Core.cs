@@ -350,7 +350,7 @@ internal static class Core
 
                 // IMPORTANT: End no-splash-screen-call zone
 
-                TDMWatchers.UpdateTDMInstalledFMStatusWithLock();
+                TDMWatchers.UpdateTDMInstalledFMStatus();
 
                 if (ex != null)
                 {
@@ -727,7 +727,7 @@ internal static class Core
             View.RefreshMods();
         }
 
-        TDMWatchers.UpdateTDMInstalledFMStatusWithLock();
+        TDMWatchers.UpdateTDMInstalledFMStatus();
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
 
         Ini.WriteConfigIni();
