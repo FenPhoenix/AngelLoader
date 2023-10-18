@@ -90,21 +90,6 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
         //Core.SortFMsViewList(column, sortDirection);
         // @TDM: Sort actual items here
 
-        int intCol = (int)column;
-        for (int i = 0; i < Columns.Count; i++)
-        {
-            DataGridViewColumn c = Columns[i];
-            if (i == intCol)
-            {
-                c.HeaderCell.SortGlyphDirection =
-                    CurrentSortDirection == SortDirection.Ascending
-                        ? SortOrder.Ascending
-                        : SortOrder.Descending;
-            }
-            else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
-            {
-                c.HeaderCell.SortGlyphDirection = SortOrder.None;
-            }
-        }
+        SetSortGlyph((int)column);
     }
 }

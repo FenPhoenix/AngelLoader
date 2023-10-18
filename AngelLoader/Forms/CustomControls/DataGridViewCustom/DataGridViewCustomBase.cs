@@ -512,4 +512,23 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
             column.Width++;
         }
     }
+
+    internal void SetSortGlyph(int columnIndex)
+    {
+        for (int i = 0; i < Columns.Count; i++)
+        {
+            DataGridViewColumn c = Columns[i];
+            if (i == columnIndex)
+            {
+                c.HeaderCell.SortGlyphDirection =
+                    CurrentSortDirection == SortDirection.Ascending
+                        ? SortOrder.Ascending
+                        : SortOrder.Descending;
+            }
+            else if (i != columnIndex && c.HeaderCell.SortGlyphDirection != SortOrder.None)
+            {
+                c.HeaderCell.SortGlyphDirection = SortOrder.None;
+            }
+        }
+    }
 }

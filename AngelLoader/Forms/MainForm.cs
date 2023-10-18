@@ -3575,22 +3575,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         Core.SortFMsViewList(column, sortDirection);
 
-        int intCol = (int)column;
-        for (int i = 0; i < FMsDGV.Columns.Count; i++)
-        {
-            DataGridViewColumn c = FMsDGV.Columns[i];
-            if (i == intCol)
-            {
-                c.HeaderCell.SortGlyphDirection =
-                    FMsDGV.CurrentSortDirection == SortDirection.Ascending
-                        ? SortOrder.Ascending
-                        : SortOrder.Descending;
-            }
-            else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
-            {
-                c.HeaderCell.SortGlyphDirection = SortOrder.None;
-            }
-        }
+        FMsDGV.SetSortGlyph((int)column);
     }
 
     /// <summary>
