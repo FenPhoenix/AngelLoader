@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -12,6 +15,8 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
 internal sealed class Lazy_TDMDataGridView : IDarkable
 {
+    // @TDM(DGV): Add all relevant FMsDGV features (match zoom to FMsDGV, multisel+key hacks, etc.)
+
     #region Backing fields
 
     private bool _constructed;
@@ -38,7 +43,10 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         }
     }
 
-    private readonly List<TDM_ServerFMData> _tdmServerDataList = new();
+    private List<TDM_ServerFMData> _serverFMDataList = new();
+    private CancellationTokenSource _serverFMDataCTS = new();
+    private CancellationTokenSource _serverFMDetailsCTS = new();
+    private CancellationTokenSource _screenshotCTS = new();
 
     private readonly MainForm _owner;
 
@@ -89,7 +97,8 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _dgv.BackgroundColor = SystemColors.ControlDark;
         _dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
         _dgv.Location = new Point(1, 26);
-        _dgv.MultiSelect = true;
+        // @TDM: Enable this again when we can support it fully
+        //_dgv.MultiSelect = true;
         _dgv.ReadOnly = true;
         _dgv.RowHeadersVisible = false;
         _dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -107,6 +116,8 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _dgv.MainSelectedRowChanged += _dgv_MainSelectedRowChanged;
         _dgv.MouseDown += _dgv_MouseDown;
         */
+
+        _dgv.SetOwner(_owner);
 
         SizeColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
@@ -150,11 +161,12 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         // @TDM(DGV Localize): implement
     }
 
-    internal void Show(bool value)
+    internal async Task Show(bool value)
     {
         if (value)
         {
             DGV.Show();
+            await LoadData();
         }
         else
         {
@@ -165,11 +177,15 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         }
     }
 
+    private bool CellValueNeededDisabled;
+
     private void CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
     {
-        if (_tdmServerDataList.Count == 0) return;
+        if (CellValueNeededDisabled) return;
 
-        TDM_ServerFMData data = _tdmServerDataList[e.RowIndex];
+        if (_serverFMDataList.Count == 0) return;
+
+        TDM_ServerFMData data = _serverFMDataList[e.RowIndex];
 
         switch ((TDMColumn)e.ColumnIndex)
         {
@@ -260,6 +276,67 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         else
         {
             Array.Copy(columnData, _columnData, TDMColumnCount);
+        }
+    }
+
+    private void CancelServerFMBasicDataLoad() => _serverFMDataCTS.CancelIfNotDisposed();
+
+    private async Task LoadData()
+    {
+        if (!_constructed) return;
+
+        try
+        {
+            _owner.ShowProgressBox_Single(
+                message1: "Loading Dark Mod FMs...",
+                progressType: ProgressType.Indeterminate,
+                cancelMessage: LText.Global.Cancel,
+                cancelAction: CancelServerFMBasicDataLoad
+            );
+
+            _serverFMDataCTS = _serverFMDataCTS.Recreate();
+            (bool success, bool canceled, _, _serverFMDataList) =
+                await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
+
+            if (success)
+            {
+                var comparer = Comparers.TDMServerFMTitle;
+                comparer.SortDirection = SortDirection.Ascending;
+
+                _serverFMDataList.Sort(comparer);
+
+                try
+                {
+                    _dgv.SuppressSelectionEvent = true;
+                    _dgv.SuspendDrawing();
+                    CellValueNeededDisabled = true;
+                    _dgv.Rows.Clear();
+                    _dgv.RowCount = _serverFMDataList.Count;
+                }
+                finally
+                {
+                    CellValueNeededDisabled = false;
+                    _dgv.SuppressSelectionEvent = false;
+                    _dgv.ResumeDrawing();
+                }
+            }
+            else
+            {
+                _dgv.Rows.Clear();
+                if (canceled)
+                {
+                    // @TDM: implement canceled message
+                }
+                else
+                {
+                    // @TDM: Put this on an error label or whatever
+                    Trace.WriteLine("Unable to fetch missions list from the server");
+                }
+            }
+        }
+        finally
+        {
+            _owner.HideProgressBox();
         }
     }
 }

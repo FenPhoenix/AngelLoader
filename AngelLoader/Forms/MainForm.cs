@@ -256,24 +256,24 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        SwapDGVs();
+        await SwapDGVs();
 
         //using var f = new TDMDownloadForm();
         //f.ShowDialogDark(this);
         //RefreshIfQueuedEvent.InvokeHack();
     }
 
-    private void SwapDGVs()
+    private async Task SwapDGVs()
     {
         if (FMsDGV.Visible)
         {
-            Lazy_TDMDataGridView.Show(true);
+            await Lazy_TDMDataGridView.Show(true);
             FMsDGV.Hide();
         }
         else
         {
             FMsDGV.Show();
-            Lazy_TDMDataGridView.Show(false);
+            await Lazy_TDMDataGridView.Show(false);
         }
     }
 
