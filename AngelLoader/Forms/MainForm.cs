@@ -271,9 +271,16 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly StoredReadmeState _storedReadmeState = new();
 
-    // @TDM(Downloader mode): Hide or disable anything not relevant to downloader mode
-    // And make sure to disable anything that would affect something from normal mode. Install/play buttons, etc.
-    // Maybe have a more concrete concept of "modes" instead of this all-over-the-place thing.
+    /*
+    @TDM(Downloader mode): Hide or disable anything not relevant to downloader mode
+    And make sure to disable anything that would affect something from normal mode. Install/play buttons, etc.
+    Maybe have a more concrete concept of "modes" instead of this all-over-the-place thing.
+
+    @TDM(Top-right area):
+    We could use this space for details maybe? Or we could use the readme space. Is vertical or horizontal better?
+    If we're not going to use the top-right space, let's just hide it completely, not even collapse, but totally
+    hide.
+    */
     private async Task SwapDGVs()
     {
         if (FMsDGV.Visible)
