@@ -271,19 +271,37 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly StoredReadmeState _storedReadmeState = new();
 
+    // @TDM(Downloader mode): Hide or disable anything not relevant to downloader mode
+    // And make sure to disable anything that would affect something from normal mode. Install/play buttons, etc.
+    // Maybe have a more concrete concept of "modes" instead of this all-over-the-place thing.
     private async Task SwapDGVs()
     {
         if (FMsDGV.Visible)
         {
+            FilterBarFLP.Hide();
+            RefreshFiltersButton.Visible = false;
+            RefreshFromDiskButton.Visible = false;
+            ClearFiltersButton.Visible = false;
+
             SetReadmeState(ReadmeState.TDMDownloader);
+
             await Lazy_TDMDataGridView.Show(true);
+
             FMsDGV.Hide();
         }
         else
         {
             FMsDGV.Show();
+
             await Lazy_TDMDataGridView.Show(false);
+
             SetReadmeState(_storedReadmeState.State, _storedReadmeState.ReadmeFiles);
+
+            FilterBarFLP.Show();
+            RefreshFiltersButton.Visible = true;
+            RefreshFromDiskButton.Visible = true;
+            ClearFiltersButton.Visible = true;
+
             RefreshIfQueuedEvent.InvokeHack();
         }
     }
@@ -1101,8 +1119,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
         if (Config.TopRightPanelCollapsed)
         {
-            TopSplitContainer.SetFullScreen(true, suspendResume: false);
-            SetTopRightCollapsedState(true);
+            SetTopRightCollapsedState(collapsed: true, suspendResume: false);
         }
 
         #endregion
@@ -3296,12 +3313,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopRightCollapseButton_Click(object sender, EventArgs e)
     {
-        TopSplitContainer.ToggleFullScreen();
-        SetTopRightCollapsedState(TopSplitContainer.FullScreen);
+        SetTopRightCollapsedState(collapsed: !TopSplitContainer.FullScreen);
     }
 
-    private void SetTopRightCollapsedState(bool collapsed)
+    private void SetTopRightCollapsedState(bool collapsed, bool suspendResume = true)
     {
+        TopSplitContainer.SetFullScreen(collapsed, suspendResume);
+
         if (collapsed)
         {
             TopRightCollapseButton.ArrowDirection = Direction.Left;
