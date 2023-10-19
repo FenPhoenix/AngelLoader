@@ -43,11 +43,6 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         }
     }
 
-    private List<TDM_ServerFMData> _serverFMDataList = new();
-    private CancellationTokenSource _serverFMDataCTS = new();
-    private CancellationTokenSource _serverFMDetailsCTS = new();
-    private CancellationTokenSource _screenshotCTS = new();
-
     private readonly MainForm _owner;
 
     internal Lazy_TDMDataGridView(MainForm owner) => _owner = owner;
@@ -108,7 +103,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _dgv.VirtualMode = true;
         // @TDM: Implement these commented-out ones
         //_dgv.CellDoubleClick += _dgv_CellDoubleClick;
-        _dgv.CellValueNeeded += CellValueNeeded;
+        _dgv.CellValueNeeded += _dgv.DGV_CellValueNeeded;
         /*
         _dgv.ColumnHeaderMouseClick += _dgv_ColumnHeaderMouseClick;
         _dgv.SelectionChanged += _dgv_SelectionChanged;
@@ -168,7 +163,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         if (value)
         {
             DGV.Show();
-            await LoadData();
+            await _dgv.LoadData();
         }
         else
         {
@@ -176,50 +171,6 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
             {
                 _dgv.Hide();
             }
-        }
-    }
-
-    private bool CellValueNeededDisabled;
-
-    private void CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
-    {
-        if (CellValueNeededDisabled) return;
-
-        if (_serverFMDataList.Count == 0) return;
-
-        TDM_ServerFMData data = _serverFMDataList[e.RowIndex];
-
-        switch ((TDMColumn)e.ColumnIndex)
-        {
-            /*
-            @TDM: Make images for these. Actually maybe just have one column
-            I think the game notifies you of the updates in order, like if it's an update then it'll say *
-            but then once you update if there's still a lang pack, then it'll say #. I did some testing but
-            kind of forgot the exact details. Double-check this.
-            */
-            case TDMColumn.Update:
-                e.Value = Images.Blank;
-                break;
-            case TDMColumn.LanguagePack:
-                e.Value = Images.Blank;
-                break;
-
-            case TDMColumn.Version:
-                e.Value = data.Version;
-                break;
-            case TDMColumn.Title:
-                e.Value = data.Title;
-                break;
-            case TDMColumn.Author:
-                e.Value = data.Author;
-                break;
-            case TDMColumn.Size:
-                e.Value = data.Size + " " + LText.Global.MegabyteShort;
-                break;
-            case TDMColumn.ReleaseDate:
-                DateTime? releaseDate = data.ReleaseDateDT;
-                e.Value = releaseDate != null ? FormatDate((DateTime)releaseDate) : data.ReleaseDate;
-                break;
         }
     }
 
@@ -278,67 +229,6 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         else
         {
             Array.Copy(columnData, _columnData, TDMColumnCount);
-        }
-    }
-
-    private void CancelServerFMBasicDataLoad() => _serverFMDataCTS.CancelIfNotDisposed();
-
-    private async Task LoadData()
-    {
-        if (!_constructed) return;
-
-        try
-        {
-            _owner.ShowProgressBox_Single(
-                message1: "Loading Dark Mod FMs...",
-                progressType: ProgressType.Indeterminate,
-                cancelMessage: LText.Global.Cancel,
-                cancelAction: CancelServerFMBasicDataLoad
-            );
-
-            _serverFMDataCTS = _serverFMDataCTS.Recreate();
-            (bool success, bool canceled, _, _serverFMDataList) =
-                await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
-
-            if (success)
-            {
-                var comparer = Comparers.TDMServerFMTitle;
-                comparer.SortDirection = SortDirection.Ascending;
-
-                _serverFMDataList.Sort(comparer);
-
-                try
-                {
-                    _dgv.SuppressSelectionEvent = true;
-                    _dgv.SuspendDrawing();
-                    CellValueNeededDisabled = true;
-                    _dgv.Rows.Clear();
-                    _dgv.RowCount = _serverFMDataList.Count;
-                }
-                finally
-                {
-                    CellValueNeededDisabled = false;
-                    _dgv.SuppressSelectionEvent = false;
-                    _dgv.ResumeDrawing();
-                }
-            }
-            else
-            {
-                _dgv.Rows.Clear();
-                if (canceled)
-                {
-                    // @TDM: implement canceled message
-                }
-                else
-                {
-                    // @TDM: Put this on an error label or whatever
-                    Trace.WriteLine("Unable to fetch missions list from the server");
-                }
-            }
-        }
-        finally
-        {
-            _owner.HideProgressBox();
         }
     }
 }

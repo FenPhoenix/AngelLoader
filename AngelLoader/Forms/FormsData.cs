@@ -5,6 +5,8 @@ internal static class FormsData
     internal const int ZoomTypesCount = 3;
 }
 
+internal enum KeepSel { False, True, TrueNearest }
+
 /// <summary>
 /// Set a control's tag to this to tell the darkable control dictionary filler to ignore it.
 /// </summary>

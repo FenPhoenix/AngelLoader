@@ -23,7 +23,6 @@ public sealed class DataGridViewCustom : DataGridViewCustomBase
     #region Filter
 
     internal readonly Filter Filter = new();
-    internal readonly List<int> FilterShownIndexList = new();
 
     #endregion
 

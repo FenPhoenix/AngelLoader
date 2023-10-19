@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
@@ -20,6 +21,8 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
     private protected readonly Color DefaultRowBackColor = SystemColors.Window;
 
     internal bool SuppressSelectionEvent;
+
+    internal readonly List<int> FilterShownIndexList = new();
 
     public DataGridViewCustomBase() => base.DoubleBuffered = true;
 
