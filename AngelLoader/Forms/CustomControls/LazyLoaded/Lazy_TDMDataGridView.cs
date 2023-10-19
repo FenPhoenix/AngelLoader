@@ -161,6 +161,8 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         // @TDM(DGV Localize): implement
     }
 
+    internal bool Visible => _constructed && _dgv.Visible;
+
     internal async Task Show(bool value)
     {
         if (value)

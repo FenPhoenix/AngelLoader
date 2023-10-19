@@ -80,7 +80,15 @@ public static partial class Misc
     */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
-    public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }
+    public enum ReadmeState
+    {
+        HTML,
+        PlainText,
+        OtherSupported,
+        LoadError,
+        InitialReadmeChooser,
+        TDMDownloader
+    }
 
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 

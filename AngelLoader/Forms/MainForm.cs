@@ -263,10 +263,13 @@ public sealed partial class MainForm : DarkFormBase,
         //RefreshIfQueuedEvent.InvokeHack();
     }
 
+    private ReadmeState _storedReadmeState;
+
     private async Task SwapDGVs()
     {
         if (FMsDGV.Visible)
         {
+            SetReadmeState(ReadmeState.TDMDownloader);
             await Lazy_TDMDataGridView.Show(true);
             FMsDGV.Hide();
         }
@@ -274,6 +277,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             FMsDGV.Show();
             await Lazy_TDMDataGridView.Show(false);
+            SetReadmeState(_storedReadmeState);
         }
     }
 
@@ -4769,6 +4773,11 @@ public sealed partial class MainForm : DarkFormBase,
                 // In case the cursor is over the scroll bar area
                 if (CursorOverReadmeArea()) ShowReadmeControls(true);
                 break;
+            case ReadmeState.TDMDownloader:
+                SetReadmeVisible(false);
+                ViewHTMLReadmeLLButton.Hide();
+                ShowReadmeControls(false);
+                break;
             case ReadmeState.PlainText:
             case ReadmeState.OtherSupported:
                 SetReadmeVisible(true);
@@ -4789,6 +4798,11 @@ public sealed partial class MainForm : DarkFormBase,
                 ShowReadmeControls(false);
                 ChooseReadmeLLPanel.ShowPanel(true);
                 break;
+        }
+
+        if (state != ReadmeState.TDMDownloader)
+        {
+            _storedReadmeState = state;
         }
     }
 
@@ -5316,9 +5330,17 @@ public sealed partial class MainForm : DarkFormBase,
 
             // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
             // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
-            // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
-            FMsDGV.Focus();
-            FMsDGV.SelectProperly();
+            // control here. One is as good as the next, but the FMs list seems like a sensible choice.
+            if (Lazy_TDMDataGridView.Visible)
+            {
+                Lazy_TDMDataGridView.DGV.Focus();
+                Lazy_TDMDataGridView.DGV.SelectProperly();
+            }
+            else
+            {
+                FMsDGV.Focus();
+                FMsDGV.SelectProperly();
+            }
 
             if (value)
             {
