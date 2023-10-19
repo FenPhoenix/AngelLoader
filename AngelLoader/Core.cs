@@ -2400,6 +2400,9 @@ internal static class Core
         ColumnData<Column>[] columns,
         Column sortedColumn,
         SortDirection sortDirection,
+        ColumnData<TDMColumn>[] tdmColumns,
+        TDMColumn tdmSortedColumn,
+        SortDirection tdmSortDirection,
         float fmsListFontSizeInPoints,
         Filter filter,
         bool[] gameFilterControlVisibilities,
@@ -2428,11 +2431,20 @@ internal static class Core
         Config.SortedColumn = sortedColumn;
         Config.SortDirection = sortDirection;
 
+        #endregion
+
+        #region TDM Downloads
+
+        Array.Copy(tdmColumns, Config.TDMColumns, TDMColumnCount);
+
+        Config.TDMSortedColumn = tdmSortedColumn;
+        Config.TDMSortDirection = tdmSortDirection;
+
+        #endregion
+
         Config.ShowRecentAtTop = View.GetShowRecentAtTop();
 
         Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
-
-        #endregion
 
         Array.Copy(gameFilterControlVisibilities, Config.GameFilterControlVisibilities, SupportedGameCount);
         Array.Copy(filterControlVisibilities, Config.FilterControlVisibilities, HideableFilterControlsCount);

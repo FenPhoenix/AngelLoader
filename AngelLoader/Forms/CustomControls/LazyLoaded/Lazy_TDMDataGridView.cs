@@ -26,6 +26,8 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
     internal DataGridViewTextBoxColumn SizeColumn = null!;
     internal DataGridViewTextBoxColumn ReleaseDateColumn = null!;
 
+    private readonly ColumnData<TDMColumn>[] _columnData = new ColumnData<TDMColumn>[TDMColumnCount];
+
     private DataGridViewTDM _dgv = null!;
     internal DataGridViewTDM DGV
     {
@@ -124,7 +126,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
 
         Localize();
 
-        _dgv.SetColumnData(Config.TDMColumns);
+        _dgv.SetColumnData(_columnData);
         _owner.TopSplitContainer.Panel1.Controls.Add(_dgv);
         _dgv.BringToFront();
 
@@ -200,6 +202,64 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
                 DateTime? releaseDate = data.ReleaseDateDT;
                 e.Value = releaseDate != null ? FormatDate((DateTime)releaseDate) : data.ReleaseDate;
                 break;
+        }
+    }
+
+    private TDMColumn _currentSortedColumn;
+    internal TDMColumn CurrentSortedColumn
+    {
+        get => _constructed ? _dgv.CurrentSortedColumn : _currentSortedColumn;
+        set
+        {
+            if (_constructed)
+            {
+                _dgv.CurrentSortedColumn = value;
+            }
+            else
+            {
+                _currentSortedColumn = value;
+            }
+        }
+    }
+
+    private SortDirection _currentSortDirection;
+    internal SortDirection CurrentSortDirection
+    {
+        get => _constructed ? _dgv.CurrentSortDirection : _currentSortDirection;
+        set
+        {
+            if (_constructed)
+            {
+                _dgv.CurrentSortDirection = value;
+            }
+            else
+            {
+                _currentSortDirection = value;
+            }
+        }
+    }
+
+    internal ColumnData<TDMColumn>[] GetColumnData()
+    {
+        if (_constructed)
+        {
+            return _dgv.GetColumnData();
+        }
+        else
+        {
+            return _columnData;
+        }
+    }
+
+    internal void SetColumnData(ColumnData<TDMColumn>[] columnData)
+    {
+        if (_constructed)
+        {
+            _dgv.SetColumnData(columnData);
+        }
+        else
+        {
+            Array.Copy(columnData, _columnData, TDMColumnCount);
         }
     }
 }

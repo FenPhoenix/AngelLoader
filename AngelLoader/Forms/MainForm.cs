@@ -1015,6 +1015,9 @@ public sealed partial class MainForm : DarkFormBase,
         UpdateRatingListsAndColumn(Config.RatingDisplayStyle, startup: true);
 
         FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, Config.Columns);
+        Lazy_TDMDataGridView.SetColumnData(Config.TDMColumns);
+        Lazy_TDMDataGridView.CurrentSortedColumn = Config.TDMSortedColumn;
+        Lazy_TDMDataGridView.CurrentSortDirection = Config.TDMSortDirection;
 
         #endregion
 
@@ -5039,6 +5042,9 @@ public sealed partial class MainForm : DarkFormBase,
             FMsDGV.GetColumnData(),
             FMsDGV.CurrentSortedColumn,
             FMsDGV.CurrentSortDirection,
+            Lazy_TDMDataGridView.GetColumnData(),
+            Lazy_TDMDataGridView.CurrentSortedColumn,
+            Lazy_TDMDataGridView.CurrentSortDirection,
             FMsDGV.DefaultCellStyle.Font.SizeInPoints,
             FMsDGV.Filter,
             GameFilterControlsLLMenu.GetCheckedStates(),
