@@ -263,7 +263,13 @@ public sealed partial class MainForm : DarkFormBase,
         //RefreshIfQueuedEvent.InvokeHack();
     }
 
-    private ReadmeState _storedReadmeState;
+    private sealed class StoredReadmeState
+    {
+        internal ReadmeState State;
+        internal List<string>? ReadmeFiles;
+    }
+
+    private readonly StoredReadmeState _storedReadmeState = new();
 
     private async Task SwapDGVs()
     {
@@ -277,7 +283,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             FMsDGV.Show();
             await Lazy_TDMDataGridView.Show(false);
-            SetReadmeState(_storedReadmeState);
+            SetReadmeState(_storedReadmeState.State, _storedReadmeState.ReadmeFiles);
             RefreshIfQueuedEvent.InvokeHack();
         }
     }
@@ -4778,6 +4784,7 @@ public sealed partial class MainForm : DarkFormBase,
                 SetReadmeVisible(false);
                 ViewHTMLReadmeLLButton.Hide();
                 ShowReadmeControls(false);
+                ChooseReadmeLLPanel.ShowPanel(false);
                 break;
             case ReadmeState.PlainText:
             case ReadmeState.OtherSupported:
@@ -4803,7 +4810,8 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (state != ReadmeState.TDMDownloader)
         {
-            _storedReadmeState = state;
+            _storedReadmeState.State = state;
+            _storedReadmeState.ReadmeFiles = readmeFilesForChooser;
         }
     }
 
