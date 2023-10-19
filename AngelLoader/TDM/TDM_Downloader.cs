@@ -80,9 +80,9 @@ internal static class TDM_Downloader
             {
                 if (mn.Name == "mission")
                 {
+                    TDM_ServerFMData serverFMData = new();
                     if (mn.Attributes != null)
                     {
-                        TDM_ServerFMData serverFMData = new();
                         foreach (XmlAttribute attr in mn.Attributes)
                         {
                             switch (attr.Name)
@@ -114,6 +114,59 @@ internal static class TDM_Downloader
                             }
                         }
                         fmsList.Add(serverFMData);
+                    }
+                    foreach (XmlNode dlNode in mn.ChildNodes)
+                    {
+                        if (dlNode.Attributes == null) continue;
+                        if (dlNode.Name == "downloadLocation")
+                        {
+                            TDM_FMDownloadLocation downloadLocation = new(serverFMData.InternalName);
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                switch (attr.Name)
+                                {
+                                    case "language":
+                                        downloadLocation.Language = attr.Value;
+                                        break;
+                                    case "weight":
+                                        if (float.TryParse(attr.Value, out float weight))
+                                        {
+                                            downloadLocation.Weight = weight;
+                                        }
+                                        break;
+                                    case "sha256":
+                                        downloadLocation.SHA256 = attr.Value;
+                                        break;
+                                    case "url":
+                                        downloadLocation.Url = attr.Value;
+                                        break;
+                                }
+                            }
+                            serverFMData.DownloadLocations.Add(downloadLocation);
+                        }
+                        else if (dlNode.Name == "localisationPack")
+                        {
+                            TDM_FMLocalizationPack l10nPack = new(serverFMData.InternalName);
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                switch (attr.Name)
+                                {
+                                    case "weight":
+                                        if (float.TryParse(attr.Value, out float weight))
+                                        {
+                                            l10nPack.Weight = weight;
+                                        }
+                                        break;
+                                    case "sha256":
+                                        l10nPack.SHA256 = attr.Value;
+                                        break;
+                                    case "url":
+                                        l10nPack.Url = attr.Value;
+                                        break;
+                                }
+                            }
+                            serverFMData.LocalizationPacks.Add(l10nPack);
+                        }
                     }
                 }
             }
