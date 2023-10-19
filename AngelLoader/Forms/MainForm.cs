@@ -278,6 +278,7 @@ public sealed partial class MainForm : DarkFormBase,
             FMsDGV.Show();
             await Lazy_TDMDataGridView.Show(false);
             SetReadmeState(_storedReadmeState);
+            RefreshIfQueuedEvent.InvokeHack();
         }
     }
 
@@ -3076,7 +3077,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void RefreshImmediatelyIfPossible()
     {
-        if (UIEnabled && !ViewBlocked && CanFocus)
+        if (UIEnabled && !ViewBlocked && !Lazy_TDMDataGridView.Visible && CanFocus)
         {
             RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
         }
@@ -5340,12 +5341,13 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 FMsDGV.Focus();
                 FMsDGV.SelectProperly();
+
+                if (value)
+                {
+                    RefreshIfQueuedEvent.InvokeHack();
+                }
             }
 
-            if (value)
-            {
-                RefreshIfQueuedEvent.InvokeHack();
-            }
         }
     }
 
