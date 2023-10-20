@@ -181,7 +181,8 @@ public sealed partial class MainForm : DarkFormBase,
     internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
-    private readonly Lazy_TDMDataGridView Lazy_TDMDataGridView;
+    internal readonly Lazy_TDMDataGridView Lazy_TDMDataGridView;
+    internal readonly Lazy_TDM_FMMenu Lazy_TDM_FMMenu;
 
     #endregion
 
@@ -255,10 +256,6 @@ public sealed partial class MainForm : DarkFormBase,
     private async void Test3Button_Click(object sender, EventArgs e)
     {
         await SwapDGVs();
-
-        //using var f = new TDMDownloadForm();
-        //f.ShowDialogDark(this);
-        //RefreshIfQueuedEvent.InvokeHack();
     }
 
     private sealed class StoredReadmeState
@@ -360,6 +357,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test4Button_Click(object sender, EventArgs e)
     {
+        using var f = new TDMDownloadForm();
+        f.ShowDialogDark(this);
+        RefreshIfQueuedEvent.InvokeHack();
     }
 
 #if DateAccTest
@@ -616,6 +616,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                 bool mainMenuWasOpen = MainLLMenu.Visible;
 
+                // @TDM: Add any new TDM help sections to here
                 string section =
                     !EverythingPanel.Enabled ? HelpSections.MainWindow :
                     mainMenuWasOpen ? HelpSections.MainMenu :
@@ -693,7 +694,8 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
-            Lazy_TDMDataGridView = new Lazy_TDMDataGridView(this)
+            Lazy_TDMDataGridView = new Lazy_TDMDataGridView(this),
+            Lazy_TDM_FMMenu = new Lazy_TDM_FMMenu(this)
         };
 
         #endregion

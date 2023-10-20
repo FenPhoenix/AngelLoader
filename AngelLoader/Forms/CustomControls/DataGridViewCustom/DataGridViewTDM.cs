@@ -399,6 +399,11 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
             but then once you update if there's still a lang pack, then it'll say #. I did some testing but
             kind of forgot the exact details. Double-check this.
             */
+            case TDMColumn.MarkedForDownload:
+                e.Value = data.MarkedForDownload
+                    ? Images.GreenCheckCircle
+                    : Images.Blank;
+                break;
             case TDMColumn.Update:
                 e.Value = data.IsUpdate
                     ? Images.GreenCheckCircle
@@ -496,6 +501,11 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
         }
     }
 
+    internal async Task DownloadMarked()
+    {
+
+    }
+
     internal TDM_ServerFMData? GetMainSelectedFMOrNull() => RowSelected() ? GetMainSelectedFM() : null;
 
     protected override void SetMenu(MenuType menuType)
@@ -506,7 +516,7 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
                 ContextMenuStrip = null;
                 break;
             case MenuType.ListItem:
-                // @TDM: implement context menu
+                ContextMenuStrip = _owner.Lazy_TDM_FMMenu.Menu;
                 break;
         }
     }

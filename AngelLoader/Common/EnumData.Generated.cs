@@ -8,7 +8,7 @@ namespace AngelLoader;
 public static partial class Misc
 {
     public const int ColumnCount = 14;
-    public const int TDMColumnCount = 7;
+    public const int TDMColumnCount = 8;
     public const int HideableFilterControlsCount = 10;
     public const int SettingsTabCount = 4;
     public static readonly string[] CustomResourcesNames =

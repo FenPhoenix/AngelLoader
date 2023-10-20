@@ -126,9 +126,10 @@ public sealed class TDM_ServerFMData
     public List<TDM_FMDownloadLocation> DownloadLocations = new();
     public List<TDM_FMLocalizationPack> LocalizationPacks = new();
 
-    // @TDM: Populate these... requires some local file reading and compares and blah...
     public bool IsUpdate;
     public bool HasAvailableLanguagePack;
+
+    public bool MarkedForDownload;
 
     public override string ToString()
     {

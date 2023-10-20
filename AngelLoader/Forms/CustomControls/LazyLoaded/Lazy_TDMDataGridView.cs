@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
@@ -23,6 +18,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
 
     #endregion
 
+    internal DataGridViewImageColumn MarkedForDownloadColumn = null!;
     internal DataGridViewImageColumn UpdateColumn = null!;
     internal DataGridViewImageColumn LanguagePackColumn = null!;
     internal DataGridViewTextBoxColumn VersionColumn = null!;
@@ -65,6 +61,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
     {
         if (_constructed) return;
 
+        MarkedForDownloadColumn = new DataGridViewImageColumn();
         UpdateColumn = new DataGridViewImageColumn();
         LanguagePackColumn = new DataGridViewImageColumn();
         VersionColumn = new DataGridViewTextBoxColumn();
@@ -82,6 +79,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _dgv.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
         _dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         _dgv.Columns.AddRange(
+            MarkedForDownloadColumn,
             UpdateColumn,
             LanguagePackColumn,
             VersionColumn,
@@ -144,6 +142,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
     {
         if (!_constructed) return;
 
+        MarkedForDownloadColumn.HeaderText = "Marked for download";
         UpdateColumn.HeaderText = "Update";
         LanguagePackColumn.HeaderText = "Language Pack";
         VersionColumn.HeaderText = "Version";

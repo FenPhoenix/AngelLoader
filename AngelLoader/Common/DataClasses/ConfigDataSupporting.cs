@@ -59,6 +59,7 @@ public enum Column
 [FenGenEnumCount]
 public enum TDMColumn
 {
+    MarkedForDownload,
     Update,
     LanguagePack,
     Version,
