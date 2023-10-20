@@ -385,10 +385,14 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase, IEventDisabler, IZ
             kind of forgot the exact details. Double-check this.
             */
             case TDMColumn.Update:
-                e.Value = Images.Blank;
+                e.Value = data.IsUpdate
+                    ? Images.GreenCheckCircle
+                    : Images.Blank;
                 break;
             case TDMColumn.LanguagePack:
-                e.Value = Images.Blank;
+                e.Value = data.HasAvailableLanguagePack
+                    ? Images.GreenCheckCircle
+                    : Images.Blank;
                 break;
 
             case TDMColumn.Version:
@@ -425,7 +429,7 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase, IEventDisabler, IZ
 
             _serverFMDataCTS = _serverFMDataCTS.Recreate();
             (bool success, bool canceled, _, _serverFMDataList) =
-                await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
+                await TDM_Downloader.TryGetServerDataWithUpdateInfo(_serverFMDataCTS.Token);
 
             if (success)
             {
