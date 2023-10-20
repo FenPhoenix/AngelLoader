@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader;
 
@@ -23,7 +24,7 @@ internal static class TDMParser
 
         try
         {
-            string fmsPath = Global.Config.GetFMInstallPath(GameIndex.TDM);
+            string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
             string missionsFile = Path.Combine(fmsPath, Paths.MissionsTdmInfo);
 
             List<TDM_LocalFMData> ret = new();

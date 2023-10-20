@@ -553,6 +553,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                 bool mainMenuWasOpen = MainLLMenu.Visible;
 
+                // @TDM: Add any new TDM help sections to here
                 string section =
                     !EverythingPanel.Enabled ? HelpSections.MainWindow :
                     mainMenuWasOpen ? HelpSections.MainMenu :
@@ -1069,8 +1070,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
         if (Config.TopRightPanelCollapsed)
         {
-            TopSplitContainer.SetFullScreen(true, suspendResume: false);
-            SetTopRightCollapsedState(true);
+            SetTopRightCollapsedState(collapsed: true, suspendResume: false);
         }
 
         #endregion
@@ -3262,12 +3262,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopRightCollapseButton_Click(object sender, EventArgs e)
     {
-        TopSplitContainer.ToggleFullScreen();
-        SetTopRightCollapsedState(TopSplitContainer.FullScreen);
+        SetTopRightCollapsedState(collapsed: !TopSplitContainer.FullScreen);
     }
 
-    private void SetTopRightCollapsedState(bool collapsed)
+    private void SetTopRightCollapsedState(bool collapsed, bool suspendResume = true)
     {
+        TopSplitContainer.SetFullScreen(collapsed, suspendResume);
+
         if (collapsed)
         {
             TopRightCollapseButton.ArrowDirection = Direction.Left;

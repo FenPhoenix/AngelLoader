@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace AL_Common;
 
@@ -76,6 +77,23 @@ public sealed class TDM_ServerFMData
     // This is always in the format yyyy-mm-dd
     public string ReleaseDate = "";
 
+    private DateTime? _releaseDateDT;
+    public DateTime? ReleaseDateDT
+    {
+        get
+        {
+            if (_releaseDateDT == null)
+            {
+                if (DateTime.TryParseExact(ReleaseDate, "yyyy-M-d",
+                        DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result))
+                {
+                    _releaseDateDT = result;
+                }
+            }
+            return _releaseDateDT;
+        }
+    }
+
     // float, or double for safety?
     public string Size = "";
 
@@ -105,9 +123,17 @@ public sealed class TDM_ServerFMData
     // probably int
     public string Id = "";
 
+    public List<TDM_FMDownloadLocation> DownloadLocations = new();
+    public List<TDM_FMLocalizationPack> LocalizationPacks = new();
+
+    public bool IsUpdate;
+    public bool HasAvailableLanguagePack;
+
+    public bool MarkedForDownload;
+
     public override string ToString()
     {
-        return
+        string ret =
             nameof(InternalName) + ": " + InternalName + Environment.NewLine +
             "\t" + nameof(Title) + ": " + Title + Environment.NewLine +
             "\t" + nameof(ReleaseDate) + ": " + ReleaseDate + Environment.NewLine +
@@ -116,6 +142,20 @@ public sealed class TDM_ServerFMData
             "\t" + nameof(Type) + ": " + Type + Environment.NewLine +
             "\t" + nameof(Author) + ": " + Author + Environment.NewLine +
             "\t" + nameof(Id) + ": " + Id + Environment.NewLine;
+
+        ret += "\t" + nameof(DownloadLocations) + ":" + Environment.NewLine;
+        for (int i = 0; i < DownloadLocations.Count; i++)
+        {
+            ret += "\t" + DownloadLocations[i] + Environment.NewLine;
+        }
+
+        ret += "\t" + nameof(LocalizationPacks) + ":" + Environment.NewLine;
+        for (int i = 0; i < LocalizationPacks.Count; i++)
+        {
+            ret += "\t" + LocalizationPacks[i] + Environment.NewLine;
+        }
+
+        return ret;
     }
 }
 
