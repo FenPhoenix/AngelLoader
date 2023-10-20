@@ -166,7 +166,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly Lazy_ReadmeEncodingsMenu Lazy_ReadmeEncodingsMenu;
     private readonly ExitLLButton ExitLLButton;
     private readonly FilterControlsLLMenu FilterControlsLLMenu;
-    private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
+    internal readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
     internal readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
     private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
     private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
@@ -4015,31 +4015,6 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 _displayedFM = await Core.DisplayFM();
             }
-        }
-    }
-
-    private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
-    {
-        if (e.Button != MouseButtons.Right) return;
-
-        DataGridView.HitTestInfo ht = FMsDGV.HitTest(e.X, e.Y);
-
-        if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
-        {
-            FMsDGV.ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.Menu;
-        }
-        else if (ht.Type == DataGridViewHitTestType.Cell && (ht.ColumnIndex | ht.RowIndex) > -1)
-        {
-            FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
-            if (!FMsDGV.Rows[ht.RowIndex].Selected)
-            {
-                FMsDGV.SelectSingle(ht.RowIndex);
-            }
-            // We don't need to call SelectProperly() here because the mousedown will select it properly
-        }
-        else
-        {
-            FMsDGV.ContextMenuStrip = null;
         }
     }
 

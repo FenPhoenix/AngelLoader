@@ -13,6 +13,19 @@ namespace AngelLoader.Forms.CustomControls;
 
 public sealed class DataGridViewCustom : DataGridViewCustomBase
 {
+    protected override void SetMenu(MenuType menuType)
+    {
+        switch (menuType)
+        {
+            case MenuType.ColumnHeader:
+                ContextMenuStrip = _owner.FMsDGV_ColumnHeaderLLMenu.Menu;
+                break;
+            case MenuType.ListItem:
+                ContextMenuStrip = _owner.FMsDGV_FM_LLMenu.Menu;
+                break;
+        }
+    }
+
     internal override bool MainFMIsDifferentFromDisplayedFM(bool nullVersion)
     {
         return nullVersion

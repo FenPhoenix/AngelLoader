@@ -498,6 +498,19 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
 
     internal TDM_ServerFMData? GetMainSelectedFMOrNull() => RowSelected() ? GetMainSelectedFM() : null;
 
+    protected override void SetMenu(MenuType menuType)
+    {
+        switch (menuType)
+        {
+            case MenuType.ColumnHeader:
+                ContextMenuStrip = null;
+                break;
+            case MenuType.ListItem:
+                // @TDM: implement context menu
+                break;
+        }
+    }
+
     internal override bool MainFMIsDifferentFromDisplayedFM(bool nullVersion)
     {
         return nullVersion

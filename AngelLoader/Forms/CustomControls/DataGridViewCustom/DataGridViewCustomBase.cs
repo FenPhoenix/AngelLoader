@@ -450,11 +450,22 @@ public partial class DataGridViewCustomBase : DataGridView, IEventDisabler, IZer
         }
     }
 
+    protected enum MenuType
+    {
+        ListItem,
+        ColumnHeader
+    }
+
+    protected virtual void SetMenu(MenuType menuType)
+    {
+    }
+
     protected override void OnMouseDown(MouseEventArgs e)
     {
+        HitTestInfo ht;
         if (e.Button == MouseButtons.Left)
         {
-            HitTestInfo ht = HitTest(e.X, e.Y);
+            ht = HitTest(e.X, e.Y);
             if (ht.Type == DataGridViewHitTestType.ColumnHeader)
             {
                 _mouseDownOnHeader = ht.ColumnIndex;
@@ -463,6 +474,28 @@ public partial class DataGridViewCustomBase : DataGridView, IEventDisabler, IZer
 
         if (!StartColumnResize(e)) return;
         base.OnMouseDown(e);
+
+        if (e.Button != MouseButtons.Right) return;
+
+        ht = HitTest(e.X, e.Y);
+
+        if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
+        {
+            SetMenu(MenuType.ColumnHeader);
+        }
+        else if (ht.Type == DataGridViewHitTestType.Cell && (ht.ColumnIndex | ht.RowIndex) > -1)
+        {
+            SetMenu(MenuType.ListItem);
+            if (!Rows[ht.RowIndex].Selected)
+            {
+                SelectSingle(ht.RowIndex);
+            }
+            // We don't need to call SelectProperly() here because the mousedown will select it properly
+        }
+        else
+        {
+            ContextMenuStrip = null;
+        }
     }
 
     protected override void OnMouseUp(MouseEventArgs e)
