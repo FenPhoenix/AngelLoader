@@ -87,6 +87,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         MainPage.ServerListBox.SelectedIndexChanged += ServerListBox_SelectedIndexChanged;
         MainPage.SelectForDownloadButton.Click += SelectForDownloadButton_Click;
         MainPage.DownloadButton.Click += DownloadButton_Click;
+        MainPage.UnselectForDownloadButton.Click += UnselectForDownloadButton_Click;
     }
 
     private void Localize()
@@ -252,6 +253,12 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             }
         }
         Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
+    }
+
+    private void UnselectForDownloadButton_Click(object sender, EventArgs e)
+    {
+        if (MainPage.DownloadListBox.SelectedItems.Count == 0) return;
+        MainPage.DownloadListBox.RemoveAndSelectNearest();
     }
 
     private sealed class DownloadProgress

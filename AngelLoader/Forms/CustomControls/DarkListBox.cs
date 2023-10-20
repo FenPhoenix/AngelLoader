@@ -136,7 +136,14 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
 
         int oldSelectedIndex = SelectedIndex;
 
-        Items.RemoveAt(SelectedIndex);
+        if (this is DarkListBoxWithBackingItems listBoxWithBackingItems)
+        {
+            listBoxWithBackingItems.RemoveFullItemAtIndex(SelectedIndex);
+        }
+        else
+        {
+            Items.RemoveAt(SelectedIndex);
+        }
 
         if (oldSelectedIndex < Items.Count && Items.Count > 1)
         {

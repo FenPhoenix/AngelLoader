@@ -12,8 +12,9 @@ sealed partial class TDM_Download_Main
         this.DownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.DownloadListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
         this.ServerListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
-        this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ProgressLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.UnselectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.SuspendLayout();
         // 
         // MissionBasicInfoValuesLabel
@@ -55,6 +56,7 @@ sealed partial class TDM_Download_Main
         // 
         // SelectForDownloadButton
         // 
+        this.SelectForDownloadButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
         this.SelectForDownloadButton.Location = new System.Drawing.Point(392, 216);
         this.SelectForDownloadButton.Size = new System.Drawing.Size(48, 23);
         this.SelectForDownloadButton.TabIndex = 6;
@@ -63,6 +65,13 @@ sealed partial class TDM_Download_Main
         // 
         this.ProgressLabel.AutoSize = true;
         this.ProgressLabel.Location = new System.Drawing.Point(448, 448);
+        // 
+        // UnselectForDownloadButton
+        // 
+        this.UnselectForDownloadButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
+        this.UnselectForDownloadButton.Location = new System.Drawing.Point(392, 240);
+        this.UnselectForDownloadButton.Size = new System.Drawing.Size(48, 23);
+        this.UnselectForDownloadButton.TabIndex = 6;
         // 
         // TDM_Download_Main
         // 
@@ -74,6 +83,7 @@ sealed partial class TDM_Download_Main
         this.Controls.Add(this.DownloadButton);
         this.Controls.Add(this.DownloadListBox);
         this.Controls.Add(this.ServerListBox);
+        this.Controls.Add(this.UnselectForDownloadButton);
         this.Controls.Add(this.SelectForDownloadButton);
         this.Size = new System.Drawing.Size(830, 512);
         this.ResumeLayout(false);

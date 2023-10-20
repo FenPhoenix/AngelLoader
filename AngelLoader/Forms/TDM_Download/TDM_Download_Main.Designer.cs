@@ -36,8 +36,9 @@ sealed partial class TDM_Download_Main
             this.DownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.DownloadListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
             this.ServerListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
-            this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ProgressLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.UnselectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.SuspendLayout();
             // 
             // MissionBasicInfoValuesLabel
@@ -89,6 +90,7 @@ sealed partial class TDM_Download_Main
             // 
             // SelectForDownloadButton
             // 
+            this.SelectForDownloadButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
             this.SelectForDownloadButton.Location = new System.Drawing.Point(392, 216);
             this.SelectForDownloadButton.Name = "SelectForDownloadButton";
             this.SelectForDownloadButton.Size = new System.Drawing.Size(48, 23);
@@ -103,6 +105,14 @@ sealed partial class TDM_Download_Main
             this.ProgressLabel.TabIndex = 13;
             this.ProgressLabel.Text = "[progress]";
             // 
+            // UnselectForDownloadButton
+            // 
+            this.UnselectForDownloadButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
+            this.UnselectForDownloadButton.Location = new System.Drawing.Point(392, 240);
+            this.UnselectForDownloadButton.Name = "UnselectForDownloadButton";
+            this.UnselectForDownloadButton.Size = new System.Drawing.Size(48, 23);
+            this.UnselectForDownloadButton.TabIndex = 6;
+            // 
             // TDM_Download_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -113,6 +123,7 @@ sealed partial class TDM_Download_Main
             this.Controls.Add(this.DownloadButton);
             this.Controls.Add(this.DownloadListBox);
             this.Controls.Add(this.ServerListBox);
+            this.Controls.Add(this.UnselectForDownloadButton);
             this.Controls.Add(this.SelectForDownloadButton);
             this.Name = "TDM_Download_Main";
             this.Size = new System.Drawing.Size(830, 512);
@@ -128,6 +139,7 @@ sealed partial class TDM_Download_Main
     internal Forms.CustomControls.DarkButton DownloadButton;
     internal Forms.CustomControls.DarkListBoxWithBackingItems DownloadListBox;
     internal Forms.CustomControls.DarkListBoxWithBackingItems ServerListBox;
-    internal Forms.CustomControls.DarkButton SelectForDownloadButton;
+    internal Forms.CustomControls.DarkArrowButton SelectForDownloadButton;
     internal CustomControls.DarkLabel ProgressLabel;
+    internal CustomControls.DarkArrowButton UnselectForDownloadButton;
 }
