@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -11,8 +12,16 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public partial class DataGridViewCustomBase : DataGridView, IDarkable
+public partial class DataGridViewCustomBase : DataGridView, IEventDisabler, IZeroSelectCodeDisabler, IDarkable
 {
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int EventsDisabled { get; set; }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int ZeroSelectCodeDisabled { get; set; }
+
     private bool _mouseHere;
     private int _mouseDownOnHeader = -1;
 
@@ -533,5 +542,19 @@ public partial class DataGridViewCustomBase : DataGridView, IDarkable
                 c.HeaderCell.SortGlyphDirection = SortOrder.None;
             }
         }
+    }
+
+    internal virtual bool MainFMIsDifferentFromDisplayedFM(bool nullVersion)
+    {
+        return false;
+    }
+
+    internal virtual async Task HandleHomeOrEnd_FMIsDifferentWork(bool fmsDifferent)
+    {
+    }
+
+    internal virtual void UpdateUIDataForMultiFMs()
+    {
+
     }
 }

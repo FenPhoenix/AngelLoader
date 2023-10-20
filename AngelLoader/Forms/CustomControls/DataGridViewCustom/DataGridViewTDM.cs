@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -15,15 +14,9 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class DataGridViewTDM : DataGridViewCustomBase, IEventDisabler, IZeroSelectCodeDisabler
+public sealed class DataGridViewTDM : DataGridViewCustomBase
 {
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabled { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int ZeroSelectCodeDisabled { get; set; }
+    internal TDM_ServerFMData? _displayedFM;
 
     internal List<TDM_ServerFMData> _serverFMDataList = new();
     private CancellationTokenSource _serverFMDataCTS = new();
@@ -473,4 +466,27 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase, IEventDisabler, IZ
         }
     }
 
+    internal TDM_ServerFMData? GetMainSelectedFMOrNull() => RowSelected() ? GetMainSelectedFM() : null;
+
+    internal override bool MainFMIsDifferentFromDisplayedFM(bool nullVersion)
+    {
+        return nullVersion
+            ? GetMainSelectedFMOrNull() != _displayedFM
+            : GetMainSelectedFM() != _displayedFM;
+    }
+
+    internal override async Task HandleHomeOrEnd_FMIsDifferentWork(bool fmsDifferent)
+    {
+        if (fmsDifferent)
+        {
+            DisplayFMData(GetMainSelectedFM());
+        }
+    }
+
+    internal override void UpdateUIDataForMultiFMs()
+    {
+        // @TDM: Do the equivalent of the below here
+        // _owner.SetTopRightBlockerVisible();
+        // _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+    }
 }

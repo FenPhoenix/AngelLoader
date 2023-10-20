@@ -92,8 +92,7 @@ internal sealed class Lazy_TDMDataGridView : IDarkable
         _dgv.BackgroundColor = SystemColors.ControlDark;
         _dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
         _dgv.Location = new Point(1, 26);
-        // @TDM: Enable this again when we can support it fully
-        //_dgv.MultiSelect = true;
+        _dgv.MultiSelect = true;
         _dgv.ReadOnly = true;
         _dgv.RowHeadersVisible = false;
         _dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;

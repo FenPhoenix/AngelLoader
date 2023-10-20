@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -12,6 +13,28 @@ namespace AngelLoader.Forms.CustomControls;
 
 public sealed class DataGridViewCustom : DataGridViewCustomBase
 {
+    internal override bool MainFMIsDifferentFromDisplayedFM(bool nullVersion)
+    {
+        return nullVersion
+            ? _owner.GetMainSelectedFMOrNull() != _owner._displayedFM
+            : GetMainSelectedFM() != _owner._displayedFM;
+    }
+
+    internal override async Task HandleHomeOrEnd_FMIsDifferentWork(bool fmsDifferent)
+    {
+        if (fmsDifferent)
+        {
+            _owner._displayedFM = await Core.DisplayFM();
+        }
+        _owner.SetTopRightBlockerVisible();
+    }
+
+    internal override void UpdateUIDataForMultiFMs()
+    {
+        _owner.SetTopRightBlockerVisible();
+        _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+    }
+
     #region Public fields
 
     internal readonly SelectedFM CurrentSelFM = new();

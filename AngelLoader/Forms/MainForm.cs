@@ -269,6 +269,14 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly StoredReadmeState _storedReadmeState = new();
 
+    private enum FMsListMode
+    {
+        Main,
+        TDM
+    }
+
+    private FMsListMode _fmsListMode = FMsListMode.Main;
+
     /*
     @TDM(Downloader mode): Hide or disable anything not relevant to downloader mode
     And make sure to disable anything that would affect something from normal mode. Install/play buttons, etc.
@@ -281,7 +289,7 @@ public sealed partial class MainForm : DarkFormBase,
     */
     private async Task SwapDGVs()
     {
-        if (FMsDGV.Visible)
+        if (_fmsListMode == FMsListMode.Main)
         {
             FilterBarFLP.Hide();
             RefreshFiltersButton.Visible = false;
@@ -293,6 +301,8 @@ public sealed partial class MainForm : DarkFormBase,
             await Lazy_TDMDataGridView.Show(true);
 
             FMsDGV.Hide();
+
+            _fmsListMode = FMsListMode.TDM;
         }
         else
         {
@@ -308,6 +318,8 @@ public sealed partial class MainForm : DarkFormBase,
             ClearFiltersButton.Visible = true;
 
             RefreshIfQueuedEvent.InvokeHack();
+
+            _fmsListMode = FMsListMode.Main;
         }
     }
 
@@ -1402,6 +1414,11 @@ public sealed partial class MainForm : DarkFormBase,
         base.OnLocationChanged(e);
     }
 
+    private DataGridViewCustomBase GetDGVForCurrentMode()
+    {
+        return _fmsListMode == FMsListMode.Main ? FMsDGV : Lazy_TDMDataGridView.DGV;
+    }
+
     private async void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -1460,6 +1477,8 @@ public sealed partial class MainForm : DarkFormBase,
             return;
         }
 
+        DataGridViewCustomBase modeDGV = GetDGVForCurrentMode();
+
         #region FMsDGV nav
 
         // NIGHTMARE REALM
@@ -1472,11 +1491,11 @@ public sealed partial class MainForm : DarkFormBase,
                 if (suspendResume) EverythingPanel.SuspendDrawing();
 
                 // @SEL_SYNC_HACK
-                FMsDGV.MultiSelect = false;
-                FMsDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
-                FMsDGV.SelectProperly(suspendResume: !suspendResume);
-                FMsDGV.MultiSelect = true;
-                FMsDGV.SelectSingle(index);
+                modeDGV.MultiSelect = false;
+                modeDGV.SelectSingle(index, suppressSelectionChangedEvent: true);
+                modeDGV.SelectProperly(suspendResume: !suspendResume);
+                modeDGV.MultiSelect = true;
+                modeDGV.SelectSingle(index);
             }
             finally
             {
@@ -1486,7 +1505,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         void SelectAndSuppress(int index, bool singleSelect = false, bool selectionSyncHack = false)
         {
-            bool fmsDifferent = GetMainSelectedFMOrNull() != _displayedFM;
+            bool fmsDifferent = modeDGV.MainFMIsDifferentFromDisplayedFM(nullVersion: true);
 
             if (singleSelect)
             {
@@ -1496,31 +1515,31 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    FMsDGV.SelectSingle(index);
+                    modeDGV.SelectSingle(index);
                 }
             }
             else
             {
-                FMsDGV.Rows[index].Selected = true;
+                modeDGV.Rows[index].Selected = true;
             }
-            FMsDGV.SelectProperly();
+            modeDGV.SelectProperly();
             e.SuppressKeyPress = true;
         }
 
         async Task HandleHomeOrEnd(bool home, bool selectionSyncHack = true)
         {
-            if (!FMsDGV.RowSelected() || (!FMsDGV.Focused && !CursorOverControl(FMsDGV))) return;
+            if (!modeDGV.RowSelected() || (!modeDGV.Focused && !CursorOverControl(modeDGV))) return;
 
-            DataGridViewRow edgeRow = FMsDGV.Rows[home ? 0 : FMsDGV.RowCount - 1];
+            DataGridViewRow edgeRow = modeDGV.Rows[home ? 0 : modeDGV.RowCount - 1];
             try
             {
-                FMsDGV.FirstDisplayedScrollingRowIndex = edgeRow.Index;
+                modeDGV.FirstDisplayedScrollingRowIndex = edgeRow.Index;
             }
             catch
             {
                 // no room is available to display rows
             }
-            if (FMsDGV.MainSelectedRow == edgeRow)
+            if (modeDGV.MainSelectedRow == edgeRow)
             {
                 e.SuppressKeyPress = true;
                 if (!e.Shift)
@@ -1528,23 +1547,19 @@ public sealed partial class MainForm : DarkFormBase,
                     try
                     {
                         DisableEvents.Open(this);
-                        for (int i = 0; i < FMsDGV.RowCount; i++)
+                        for (int i = 0; i < modeDGV.RowCount; i++)
                         {
-                            DataGridViewRow row = FMsDGV.Rows[i];
+                            DataGridViewRow row = modeDGV.Rows[i];
                             if (row == edgeRow) continue;
-                            FMsDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
+                            modeDGV.SetRowSelected(row.Index, selected: false, suppressEvent: true);
                         }
                     }
                     finally
                     {
                         DisableEvents.Close(this);
                     }
-                    bool fmsDifferent = FMsDGV.GetMainSelectedFM() != _displayedFM;
-                    if (fmsDifferent)
-                    {
-                        _displayedFM = await Core.DisplayFM();
-                    }
-                    SetTopRightBlockerVisible();
+                    bool fmsDifferent = modeDGV.MainFMIsDifferentFromDisplayedFM(nullVersion: false);
+                    await modeDGV.HandleHomeOrEnd_FMIsDifferentWork(fmsDifferent);
 
                     if (selectionSyncHack)
                     {
@@ -1567,29 +1582,29 @@ public sealed partial class MainForm : DarkFormBase,
                     DisableEvents.Open(this);
                     if (e.Shift)
                     {
-                        int mainSelectedRowIndex = FMsDGV.MainSelectedRow!.Index;
+                        int mainSelectedRowIndex = modeDGV.MainSelectedRow!.Index;
                         // We can set CurrentCell here because we've already scrolled the row into view, so
                         // the fact that setting CurrentCell force-scrolls it into view is irrelevant
                         try
                         {
-                            FMsDGV.CurrentCell = edgeRow.Cells[FMsDGV.FirstDisplayedCell?.ColumnIndex ?? 0];
+                            modeDGV.CurrentCell = edgeRow.Cells[modeDGV.FirstDisplayedCell?.ColumnIndex ?? 0];
                         }
                         catch
                         {
                             // ignore
                         }
-                        for (int i = 0; i < FMsDGV.RowCount; i++)
+                        for (int i = 0; i < modeDGV.RowCount; i++)
                         {
-                            DataGridViewRow row = FMsDGV.Rows[i];
+                            DataGridViewRow row = modeDGV.Rows[i];
                             bool sel = home
                                 ? row.Index <= mainSelectedRowIndex
                                 : row.Index >= mainSelectedRowIndex;
-                            FMsDGV.SetRowSelected(row.Index, selected: sel, suppressEvent: true);
+                            modeDGV.SetRowSelected(row.Index, selected: sel, suppressEvent: true);
                         }
                     }
                     else
                     {
-                        FMsDGV.ClearSelection();
+                        modeDGV.ClearSelection();
                     }
                 }
                 finally
@@ -1597,13 +1612,12 @@ public sealed partial class MainForm : DarkFormBase,
                     DisableEvents.Close(this);
                 }
                 SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, selectionSyncHack: true);
-                // Have to do these manually because we're suppressing the normal chain of selection logic
-                SetTopRightBlockerVisible();
-                UpdateUIControlsForMultiSelectState(FMsDGV.GetMainSelectedFM());
+                // Have to do this manually because we're suppressing the normal chain of selection logic
+                modeDGV.UpdateUIDataForMultiFMs();
             }
         }
 
-        // NOTE(FMsDGV nav): wontfix: Shift-selecting "backwards" (so items deselect back toward main selection)
+        // NOTE(DGV nav): wontfix: Shift-selecting "backwards" (so items deselect back toward main selection)
         // doesn't work with Home/End (but now works with arrows/page keys)
         if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
         {
@@ -1616,12 +1630,12 @@ public sealed partial class MainForm : DarkFormBase,
         // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
         else if (e.KeyCode is Keys.PageUp or Keys.Up)
         {
-            if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+            if (modeDGV.RowSelected() && (modeDGV.Focused || CursorOverControl(modeDGV)))
             {
-                DataGridViewRow firstRow = FMsDGV.Rows[0];
+                DataGridViewRow firstRow = modeDGV.Rows[0];
                 if (firstRow.Selected)
                 {
-                    if (FMsDGV.MainSelectedRow != firstRow)
+                    if (modeDGV.MainSelectedRow != firstRow)
                     {
                         try
                         {
@@ -1637,24 +1651,24 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    FMsDGV.SendKeyDown(e);
+                    modeDGV.SendKeyDown(e);
                     e.SuppressKeyPress = true;
                 }
             }
         }
         else if (e.KeyCode is Keys.PageDown or Keys.Down)
         {
-            if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+            if (modeDGV.RowSelected() && (modeDGV.Focused || CursorOverControl(modeDGV)))
             {
-                DataGridViewRow lastRow = FMsDGV.Rows[FMsDGV.RowCount - 1];
+                DataGridViewRow lastRow = modeDGV.Rows[modeDGV.RowCount - 1];
                 if (lastRow.Selected)
                 {
-                    if (FMsDGV.MainSelectedRow != lastRow)
+                    if (modeDGV.MainSelectedRow != lastRow)
                     {
                         try
                         {
                             DisableEvents.Open(this, !e.Shift);
-                            SelectAndSuppress(FMsDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
+                            SelectAndSuppress(modeDGV.RowCount - 1, singleSelect: !e.Shift, selectionSyncHack: !e.Shift);
                         }
                         finally
                         {
@@ -1665,7 +1679,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    FMsDGV.SendKeyDown(e);
+                    modeDGV.SendKeyDown(e);
                     e.SuppressKeyPress = true;
                 }
             }
@@ -3105,7 +3119,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void RefreshImmediatelyIfPossible()
     {
-        if (UIEnabled && !ViewBlocked && !Lazy_TDMDataGridView.Visible && CanFocus)
+        if (_fmsListMode == FMsListMode.Main && UIEnabled && !ViewBlocked && CanFocus)
         {
             RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
         }
@@ -3366,7 +3380,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopRightTabControl.ShowTab(tab, s.Checked);
     }
 
-    private void SetTopRightBlockerVisible()
+    internal void SetTopRightBlockerVisible()
     {
         // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
         if (FMsDGV.MultipleFMsSelected())
@@ -4537,7 +4551,7 @@ public sealed partial class MainForm : DarkFormBase,
     @FM_CFG: Idea: Put a "Set FM option overrides..." thing in the menu that goes to the tab
     (blink tab somehow to let the user know if the tab is already shown)
     */
-    private void UpdateUIControlsForMultiSelectState(FanMission fm)
+    internal void UpdateUIControlsForMultiSelectState(FanMission fm)
     {
         #region Get attributes that apply to all items
 
