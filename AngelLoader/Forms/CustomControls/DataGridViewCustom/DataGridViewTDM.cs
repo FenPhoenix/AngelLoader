@@ -125,16 +125,29 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
 
         SortDGV((TDMColumn)e.ColumnIndex, newSortDirection);
 
-        //Core.SetFilter();
+        SetTDMFilter();
         if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest, fromColumnClick: true))
         {
             if (selFM != null && RowSelected() &&
                 selFM.InstalledName != GetMainSelectedFM().InternalName)
             {
-                //_displayedFM = await Core.DisplayFM();
-                DisplayFMData(GetMainSelectedFM());
+                _displayedFM = DisplayFMData();
             }
         }
+    }
+
+    internal (TDM_ServerFMData? TitleExactMatch, TDM_ServerFMData? AuthorExactMatch)
+    SetTDMFilter()
+    {
+        FilterShownIndexList.Clear();
+
+        for (int i = 0; i < _serverFMDataList.Count; i++)
+        {
+            TDM_ServerFMData fm = _serverFMDataList[i];
+            FilterShownIndexList.Add(i);
+        }
+
+        return (null, null);
     }
 
     private void ClearShownData()
@@ -142,9 +155,18 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
 
     }
 
-    private void DisplayFMData(TDM_ServerFMData data)
+    private TDM_ServerFMData? DisplayFMData()
     {
-        Trace.WriteLine("Basic data: " + data.Title + " etc.");
+        TDM_ServerFMData? fm = GetMainSelectedFMOrNull();
+        if (fm != null)
+        {
+            Trace.WriteLine("Basic data: " + fm.Title + " etc.");
+        }
+        else
+        {
+            Trace.WriteLine("No FM selected.");
+        }
+        return fm;
     }
 
     private bool RefreshFMsList(
@@ -445,6 +467,8 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
                     SuppressSelectionEvent = false;
                     this.ResumeDrawing();
                 }
+
+                SortDGV(Config.TDMSortedColumn, Config.TDMSortDirection);
             }
             else
             {
@@ -463,6 +487,12 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
         finally
         {
             _owner.HideProgressBox();
+
+            SetTDMFilter();
+            if (RefreshFMsList(new SelectedFM(), startup: true, keepSelection: KeepSel.TrueNearest))
+            {
+                _displayedFM = DisplayFMData();
+            }
         }
     }
 
@@ -479,7 +509,7 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
     {
         if (fmsDifferent)
         {
-            DisplayFMData(GetMainSelectedFM());
+            _displayedFM = DisplayFMData();
         }
     }
 
@@ -488,5 +518,55 @@ public sealed class DataGridViewTDM : DataGridViewCustomBase
         // @TDM: Do the equivalent of the below here
         // _owner.SetTopRightBlockerVisible();
         // _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+    }
+
+    // @TDM: We can dedupe this by generalizing the display and clear calls
+    protected override void OnSelectionChanged(EventArgs e)
+    {
+        base.OnSelectionChanged(e);
+
+        if (SuppressSelectionEvent) return;
+
+        if (EventsDisabled > 0) return;
+
+        // Don't run selection logic for extra selected rows, to prevent a possible cascade of heavy operations
+        // from being run during multi-select (scanning, caching, who knows what)
+        if (MultipleFMsSelected()) return;
+
+        int index = MainSelectedRow?.Index ?? -1;
+
+        if (index > -1 && _displayedFM == GetFMFromIndex(index))
+        {
+            return;
+        }
+
+        if (!RowSelected())
+        {
+            ClearShownData();
+        }
+        else
+        {
+            // @SEL_SYNC_HACK
+            // Stupid hack to attempt to prevent multiselect-set-popping-back-to-starting-at-list-top
+            if (index > -1)
+            {
+                try
+                {
+                    DisableEvents.Open(this);
+                    SelectSingle(index);
+                    SelectProperly();
+                }
+                finally
+                {
+                    DisableEvents.Close(this);
+                }
+            }
+            else
+            {
+                SelectProperly();
+            }
+
+            _displayedFM = DisplayFMData();
+        }
     }
 }
