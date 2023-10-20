@@ -88,12 +88,22 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         MainPage.SelectForDownloadButton.Click += SelectForDownloadButton_Click;
         MainPage.DownloadButton.Click += DownloadButton_Click;
         MainPage.UnselectForDownloadButton.Click += UnselectForDownloadButton_Click;
+        MainPage.SortByDateCheckBox.CheckedChanged += SortCheckBoxes_CheckedChanged;
+        MainPage.SortByTitleCheckBox.CheckedChanged += SortCheckBoxes_CheckedChanged;
     }
 
     private void Localize()
     {
         // implement
         // @TDM: Add localized strings
+
+        MainPage.DownloadableMissionsLabel.Text = "Downloadable missions:";
+        MainPage.SelectedForDownloadLabel.Text = "Selected for download:";
+
+        MainPage.SortByLabel.Text = "Sort by:";
+        MainPage.SortByDateCheckBox.Text = "Date";
+        MainPage.SortByTitleCheckBox.Text = "Title";
+
         CloseButton.Text = "Close";
         MainPage.DownloadButton.Text = "Download";
         MoreDetailsButton.Text = "More...";
@@ -130,32 +140,48 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
     private async void TDMDownloadForm_Shown(object sender, EventArgs e)
     {
+        await FillServerListBox();
+    }
+
+    private async Task FillServerListBox()
+    {
         _serverFMDataCTS = _serverFMDataCTS.Recreate();
         (bool success, _, _, _serverFMDataList) = await TDM_Downloader.TryGetMissionsFromServer(_serverFMDataCTS.Token);
         if (success)
         {
-            var comparer = Comparers.TDMServerFMTitle;
-            comparer.SortDirection = SortDirection.Ascending;
-
-            _serverFMDataList.Sort(comparer);
-
-            try
-            {
-                MainPage.ServerListBox.BeginUpdate();
-                foreach (TDM_ServerFMData item in _serverFMDataList)
-                {
-                    MainPage.ServerListBox.AddFullItem(item.Id, item.Title);
-                }
-            }
-            finally
-            {
-                MainPage.ServerListBox.EndUpdate();
-            }
+            SortAndRefreshServerListBox();
         }
         else
         {
             // @TDM: Put this on an error label or whatever
             Trace.WriteLine("Unable to fetch missions list from the server");
+        }
+    }
+
+    private Comparers.IDirectionalSortTdmFMComparer _comparer = Comparers.TDMServerFMReleaseDate;
+
+    // @TDM(DarkListBox): This thing isn't designed for large amounts of items, we need virtualized DGVs
+    // ListView (DarkListBox) supports virtualization but it's a little different and more complicated.
+    // We could try it out though if we think DGVs are too much of a pain in the ass.
+    private void SortAndRefreshServerListBox()
+    {
+        _comparer.SortDirection = SortDirection.Ascending;
+
+        _serverFMDataList.Sort(_comparer);
+
+        try
+        {
+            MainPage.ServerListBox.BeginUpdate();
+            MainPage.ServerListBox.ClearFullItems();
+            foreach (TDM_ServerFMData item in _serverFMDataList)
+            {
+                string finalTitle = ControlUtils.GetFinalTitle(item.Title);
+                MainPage.ServerListBox.AddFullItem(item.Id, finalTitle);
+            }
+        }
+        finally
+        {
+            MainPage.ServerListBox.EndUpdate();
         }
     }
 
@@ -451,5 +477,14 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     private void MoreDetailsButton_Click(object sender, EventArgs e)
     {
         SwapPage();
+    }
+
+    private void SortCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    {
+        _comparer = sender == MainPage.SortByDateCheckBox
+            ? Comparers.TDMServerFMReleaseDate
+            : Comparers.TDMServerFMTitle;
+
+        SortAndRefreshServerListBox();
     }
 }

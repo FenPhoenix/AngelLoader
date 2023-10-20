@@ -3857,26 +3857,7 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.Title:
-                string finalTitle;
-                if (Config.EnableArticles && Config.MoveArticlesToEnd)
-                {
-                    string title = fm.Title;
-                    for (int i = 0; i < Config.Articles.Count; i++)
-                    {
-                        string a = Config.Articles[i];
-                        if (fm.Title.StartsWithI(a + " "))
-                        {
-                            // Take the actual article from the name so as to preserve casing
-                            title = fm.Title.Substring(a.Length + 1) + ", " + fm.Title.Substring(0, a.Length);
-                            break;
-                        }
-                    }
-                    finalTitle = title;
-                }
-                else
-                {
-                    finalTitle = fm.Title;
-                }
+                string finalTitle = ControlUtils.GetFinalTitle(fm.Title);
 
                 if (TitleColumn.Visible && fmShouldBePinned)
                 {

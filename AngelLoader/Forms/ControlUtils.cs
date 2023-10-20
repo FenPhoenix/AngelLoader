@@ -883,4 +883,33 @@ internal static class ControlUtils
     /// </summary>
     /// <param name="eventHandler"></param>
     internal static void InvokeHack(this EventHandler? eventHandler) => eventHandler?.Invoke(eventHandler, EventArgs.Empty);
+
+    /// <summary>
+    /// Returns a title with its leading article(s) (if any) moved to the end, if the config option is enabled.
+    /// </summary>
+    /// <param name="title"></param>
+    /// <returns></returns>
+    // @vNext: This isn't really a control util but whatever
+    internal static string GetFinalTitle(string title)
+    {
+        if (Config.EnableArticles && Config.MoveArticlesToEnd)
+        {
+            string finalTitle = title;
+            for (int i = 0; i < Config.Articles.Count; i++)
+            {
+                string a = Config.Articles[i];
+                if (title.StartsWithI(a + " "))
+                {
+                    // Take the actual article from the name so as to preserve casing
+                    finalTitle = title.Substring(a.Length + 1) + ", " + title.Substring(0, a.Length);
+                    break;
+                }
+            }
+            return finalTitle;
+        }
+        else
+        {
+            return title;
+        }
+    }
 }
