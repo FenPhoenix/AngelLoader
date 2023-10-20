@@ -40,6 +40,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     private CancellationTokenSource _serverFMDataCTS = new();
     private CancellationTokenSource _serverFMDetailsCTS = new();
     private CancellationTokenSource _screenshotCTS = new();
+    private CancellationTokenSource _downloadCTS = new();
 
     private readonly TDM_Download_Main MainPage;
     private readonly TDM_Download_Details DetailsPage;
@@ -81,8 +82,6 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         Localize();
 
         ShowMissionInfo(false);
-
-        MainPage.ProgressLabel.Text = "";
 
         MainPage.ServerListBox.SelectedIndexChanged += ServerListBox_SelectedIndexChanged;
         MainPage.SelectForDownloadButton.Click += SelectForDownloadButton_Click;
@@ -204,81 +203,122 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
     private async void DownloadButton_Click(object sender, EventArgs e)
     {
-        Dictionary<string, TDM_ServerFMData> serverFMDataDict;
+        if (_inDownloadingState)
+        {
+            _downloadCTS.CancelIfNotDisposed();
+        }
+        else
+        {
+            await DownloadFMs();
+        }
+    }
+
+    private void SetDownloadingState(bool value)
+    {
+        if (value)
+        {
+            // @TDM: Localizable text
+            MainPage.DownloadButton.Text = "Stop downloads";
+            _inDownloadingState = true;
+        }
+        else
+        {
+            MainPage.DownloadButton.Text = "Download";
+            _inDownloadingState = false;
+        }
+    }
+
+    private bool _inDownloadingState;
+
+    private async Task DownloadFMs()
+    {
         try
         {
-            serverFMDataDict = _serverFMDataList.ToDictionary(static x => x.Id, static x => x);
-        }
-        catch (ArgumentException ex)
-        {
-            Trace.WriteLine("Duplicate ids?!");
-            Core.Dialogs.ShowAlert(
-                "There were duplicate ids in the server list. That's not supposed to happen?!",
-                LText.AlertMessages.Alert);
-            return;
-        }
+            SetDownloadingState(true);
 
-        Random random = new();
-
-        byte[] buffer = new byte[FileStreamBufferSize];
-
-        int downloadsCount = MainPage.DownloadListBox.Items.Count;
-        for (int i = 0; i < downloadsCount; i++)
-        {
-            string id = MainPage.DownloadListBox.BackingItems[i];
-            if (serverFMDataDict.TryGetValue(id, out TDM_ServerFMData data))
+            Dictionary<string, TDM_ServerFMData> serverFMDataDict;
+            try
             {
-                _serverFMDetailsCTS = _serverFMDetailsCTS.Recreate();
-                var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
-                if (fmDetailsResult.Success)
+                serverFMDataDict = _serverFMDataList.ToDictionary(static x => x.Id, static x => x);
+            }
+            catch (ArgumentException ex)
+            {
+                Trace.WriteLine("Duplicate ids?!");
+                Core.Dialogs.ShowAlert(
+                    "There were duplicate ids in the server list. That's not supposed to happen?!",
+                    LText.AlertMessages.Alert);
+                return;
+            }
+
+            Random random = new();
+
+            byte[] buffer = new byte[FileStreamBufferSize];
+
+            _downloadCTS = _downloadCTS.Recreate();
+
+            int downloadsCount = MainPage.DownloadListBox.Items.Count;
+            for (int i = 0; i < downloadsCount; i++)
+            {
+                string id = MainPage.DownloadListBox.BackingItems[i];
+                if (serverFMDataDict.TryGetValue(id, out TDM_ServerFMData data))
                 {
-                    bool checksumsValid = CheckSumsValid(fmDetailsResult.ServerFMDetails.DownloadLocations);
-
-                    Trace.WriteLine("Checksums valid: " + checksumsValid);
-
-                    if (!checksumsValid) continue;
-
-                    Trace.WriteLine("Original download location order:");
-                    foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
+                    _serverFMDetailsCTS = _serverFMDetailsCTS.Recreate();
+                    var fmDetailsResult = await TDM_Downloader.GetMissionDetails(data, _serverFMDetailsCTS.Token);
+                    if (fmDetailsResult.Success)
                     {
-                        Trace.WriteLine(item.Url);
+                        bool checksumsValid = CheckSumsValid(fmDetailsResult.ServerFMDetails.DownloadLocations);
+
+                        Trace.WriteLine("Checksums valid: " + checksumsValid);
+
+                        if (!checksumsValid) continue;
+
+                        Trace.WriteLine("Original download location order:");
+                        foreach (TDM_FMDownloadLocation item in
+                                 fmDetailsResult.ServerFMDetails.DownloadLocations)
+                        {
+                            Trace.WriteLine(item.Url);
+                        }
+
+                        // @TDM: We probably want to make a copy of this and leave the original as-is
+                        ShuffleUrlsByWeights(fmDetailsResult.ServerFMDetails.DownloadLocations, random);
+
+                        Trace.WriteLine("Shuffled-by-weight download location order:");
+                        foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
+                        {
+                            Trace.WriteLine(item.Url);
+                        }
+
+                        try
+                        {
+                            await DownloadMission(
+                                listIndex: i,
+                                fmDetailsResult.ServerFMDetails.InternalName,
+                                fmDetailsResult.ServerFMDetails.DownloadLocations[0].Url,
+                                buffer,
+                                _downloadCTS.Token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            Paths.CreateOrClearTempPath(Paths.TDMDownloadTemp);
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Core.Dialogs.ShowAlert("Download failed.", "Download", MBoxIcon.Error);
+                        }
                     }
-
-                    // @TDM: We probably want to make a copy of this and leave the original as-is
-                    ShuffleUrlsByWeights(fmDetailsResult.ServerFMDetails.DownloadLocations, random);
-
-                    Trace.WriteLine("Shuffled-by-weight download location order:");
-                    foreach (TDM_FMDownloadLocation item in fmDetailsResult.ServerFMDetails.DownloadLocations)
+                    else
                     {
-                        Trace.WriteLine(item.Url);
+                        Trace.WriteLine("Failed to download " + MainPage.DownloadListBox.Items[i] + " (id " + id + ")");
                     }
-
-                    try
-                    {
-                        await DownloadMission(
-                            listIndex: i,
-                            fmDetailsResult.ServerFMDetails.InternalName,
-                            fmDetailsResult.ServerFMDetails.DownloadLocations[0].Url,
-                            buffer);
-
-                        // @TDM: This doesn't work for some reason
-                        //MainPage.DownloadListBox.RemoveFullItemAtIndex(0);
-                        //i--;
-
-                        MainPage.ProgressLabel.Text = "";
-                    }
-                    catch (Exception ex)
-                    {
-                        Core.Dialogs.ShowAlert("Download failed.", "Download", MBoxIcon.Error);
-                    }
-                }
-                else
-                {
-                    Trace.WriteLine("Failed to download " + MainPage.DownloadListBox.Items[i] + " (id " + id + ")");
                 }
             }
+            Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
         }
-        Core.Dialogs.ShowAlert("Done!", "Download", MBoxIcon.Information);
+        finally
+        {
+            SetDownloadingState(false);
+        }
     }
 
     private void UnselectForDownloadButton_Click(object sender, EventArgs e)
@@ -311,7 +351,11 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         float previousPercent = 0;
         while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             totalBytesRead += bytesRead;
 
@@ -319,7 +363,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
             // Only report if the percent has changed by an amount that can be displayed, to keep report frequency
             // from going crazy.
-            if (Math.Abs(percent - previousPercent) > 0.1)
+            // Note: If we change the listbox text, we need to go 1.0 instead of 0.1 or it slams the UI again
+            if (Math.Abs(percent - previousPercent) > 1.0)
             {
                 previousPercent = percent;
                 progressReport.Percent = percent;
@@ -331,7 +376,7 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     }
 
     // @TDM(DownloadMission): Robustify this
-    private async Task DownloadMission(int listIndex, string internalName, string url, byte[] buffer)
+    private async Task DownloadMission(int listIndex, string internalName, string url, byte[] buffer, CancellationToken cancellationToken)
     {
         var progress = new Progress<DownloadProgress>(ReportProgress);
 
@@ -340,7 +385,9 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         string fileName = internalName + ".pk4";
         string filePathInTemp = Path.Combine(tempPath, fileName);
 
-        var request = await GlobalHttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+        using var request = await GlobalHttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         using (Stream stream = await GlobalHttpClient.GetStreamAsync(url))
         using (FileStream fs = File.Create(filePathInTemp))
@@ -352,14 +399,21 @@ public sealed partial class TDMDownloadForm : DarkFormBase
                 request.Content.Headers.ContentLength ?? 0,
                 fs,
                 buffer,
-                CancellationToken.None,
+                cancellationToken,
                 progress
             );
         }
 
-        string finalPath = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fileName);
-        File.Copy(filePathInTemp, finalPath, overwrite: true);
-        File.Delete(filePathInTemp);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        await Task.Run(() =>
+        {
+            string finalPath = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fileName);
+            File.Copy(filePathInTemp, finalPath, overwrite: true);
+            cancellationToken.ThrowIfCancellationRequested();
+            File.Delete(filePathInTemp);
+            cancellationToken.ThrowIfCancellationRequested();
+        }, cancellationToken);
 
         return;
 
@@ -369,9 +423,12 @@ public sealed partial class TDMDownloadForm : DarkFormBase
             // "The text of the ListViewItem should not exceed 259 characters or unexpected behavior could occur."
             // ARGH. This thing sucks. We need something altogether better...
             // Could we maybe really truly shoehorn the downloader into the main list? That'd be glorious.
-            MainPage.DownloadListBox.Items[pr.ListIndex].Text =
-                pr.TitleText + " " +
-                pr.Percent.ToString("F1", CultureInfo.CurrentCulture) + "%";
+            BeginInvoke(() =>
+            {
+                MainPage.DownloadListBox.Items[pr.ListIndex].Text =
+                    pr.TitleText + " " +
+                    pr.Percent.ToString("F1", CultureInfo.CurrentCulture) + "%";
+            });
         }
     }
 

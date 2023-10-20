@@ -31,22 +31,43 @@ sealed partial class TDM_Download_Main
     /// </summary>
     private void InitializeComponent()
     {
+            this.darkFlowLayoutPanel2 = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+            this.DownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.darkFlowLayoutPanel1 = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
             this.SortByLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.SortByTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.SortByDateCheckBox = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.SortByTitleCheckBox = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.SelectedForDownloadLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.DownloadableMissionsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ProgressLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.MissionBasicInfoValuesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.MissionBasicInfoKeysLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.DownloadButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.DownloadListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
             this.ServerListBox = new AngelLoader.Forms.CustomControls.DarkListBoxWithBackingItems();
             this.UnselectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.SelectForDownloadButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+            this.darkFlowLayoutPanel2.SuspendLayout();
             this.darkFlowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // darkFlowLayoutPanel2
+            // 
+            this.darkFlowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.darkFlowLayoutPanel2.Controls.Add(this.DownloadButton);
+            this.darkFlowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.darkFlowLayoutPanel2.Location = new System.Drawing.Point(448, 504);
+            this.darkFlowLayoutPanel2.Name = "darkFlowLayoutPanel2";
+            this.darkFlowLayoutPanel2.Size = new System.Drawing.Size(353, 24);
+            this.darkFlowLayoutPanel2.TabIndex = 17;
+            // 
+            // DownloadButton
+            // 
+            this.DownloadButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DownloadButton.Location = new System.Drawing.Point(278, 0);
+            this.DownloadButton.Margin = new System.Windows.Forms.Padding(0);
+            this.DownloadButton.Name = "DownloadButton";
+            this.DownloadButton.Size = new System.Drawing.Size(75, 23);
+            this.DownloadButton.TabIndex = 9;
+            this.DownloadButton.Text = "Download";
             // 
             // darkFlowLayoutPanel1
             // 
@@ -68,15 +89,6 @@ sealed partial class TDM_Download_Main
             this.SortByLabel.TabIndex = 1;
             this.SortByLabel.Text = "Sort by:";
             // 
-            // SortByTitleCheckBox
-            // 
-            this.SortByTitleCheckBox.AutoSize = true;
-            this.SortByTitleCheckBox.Location = new System.Drawing.Point(106, 3);
-            this.SortByTitleCheckBox.Name = "SortByTitleCheckBox";
-            this.SortByTitleCheckBox.Size = new System.Drawing.Size(45, 17);
-            this.SortByTitleCheckBox.TabIndex = 0;
-            this.SortByTitleCheckBox.Text = "Title";
-            // 
             // SortByDateCheckBox
             // 
             this.SortByDateCheckBox.AutoSize = true;
@@ -87,6 +99,15 @@ sealed partial class TDM_Download_Main
             this.SortByDateCheckBox.TabIndex = 0;
             this.SortByDateCheckBox.TabStop = true;
             this.SortByDateCheckBox.Text = "Date";
+            // 
+            // SortByTitleCheckBox
+            // 
+            this.SortByTitleCheckBox.AutoSize = true;
+            this.SortByTitleCheckBox.Location = new System.Drawing.Point(106, 3);
+            this.SortByTitleCheckBox.Name = "SortByTitleCheckBox";
+            this.SortByTitleCheckBox.Size = new System.Drawing.Size(45, 17);
+            this.SortByTitleCheckBox.TabIndex = 0;
+            this.SortByTitleCheckBox.Text = "Title";
             // 
             // SelectedForDownloadLabel
             // 
@@ -105,16 +126,6 @@ sealed partial class TDM_Download_Main
             this.DownloadableMissionsLabel.Size = new System.Drawing.Size(120, 13);
             this.DownloadableMissionsLabel.TabIndex = 15;
             this.DownloadableMissionsLabel.Text = "Downloadable missions:";
-            // 
-            // ProgressLabel
-            // 
-            this.ProgressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgressLabel.AutoSize = true;
-            this.ProgressLabel.Location = new System.Drawing.Point(448, 504);
-            this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(53, 13);
-            this.ProgressLabel.TabIndex = 13;
-            this.ProgressLabel.Text = "[progress]";
             // 
             // MissionBasicInfoValuesLabel
             // 
@@ -135,15 +146,6 @@ sealed partial class TDM_Download_Main
             this.MissionBasicInfoKeysLabel.Size = new System.Drawing.Size(67, 13);
             this.MissionBasicInfoKeysLabel.TabIndex = 12;
             this.MissionBasicInfoKeysLabel.Text = "[mission info]";
-            // 
-            // DownloadButton
-            // 
-            this.DownloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.DownloadButton.Location = new System.Drawing.Point(726, 504);
-            this.DownloadButton.Name = "DownloadButton";
-            this.DownloadButton.Size = new System.Drawing.Size(75, 23);
-            this.DownloadButton.TabIndex = 9;
-            this.DownloadButton.Text = "Download";
             // 
             // DownloadListBox
             // 
@@ -185,19 +187,19 @@ sealed partial class TDM_Download_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.Controls.Add(this.darkFlowLayoutPanel2);
             this.Controls.Add(this.darkFlowLayoutPanel1);
             this.Controls.Add(this.SelectedForDownloadLabel);
             this.Controls.Add(this.DownloadableMissionsLabel);
-            this.Controls.Add(this.ProgressLabel);
             this.Controls.Add(this.MissionBasicInfoValuesLabel);
             this.Controls.Add(this.MissionBasicInfoKeysLabel);
-            this.Controls.Add(this.DownloadButton);
             this.Controls.Add(this.DownloadListBox);
             this.Controls.Add(this.ServerListBox);
             this.Controls.Add(this.UnselectForDownloadButton);
             this.Controls.Add(this.SelectForDownloadButton);
             this.Name = "TDM_Download_Main";
             this.Size = new System.Drawing.Size(830, 566);
+            this.darkFlowLayoutPanel2.ResumeLayout(false);
             this.darkFlowLayoutPanel1.ResumeLayout(false);
             this.darkFlowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -213,7 +215,6 @@ sealed partial class TDM_Download_Main
     internal Forms.CustomControls.DarkListBoxWithBackingItems DownloadListBox;
     internal Forms.CustomControls.DarkListBoxWithBackingItems ServerListBox;
     internal Forms.CustomControls.DarkArrowButton SelectForDownloadButton;
-    internal CustomControls.DarkLabel ProgressLabel;
     internal CustomControls.DarkArrowButton UnselectForDownloadButton;
     internal CustomControls.DarkRadioButton SortByDateCheckBox;
     internal CustomControls.DarkRadioButton SortByTitleCheckBox;
@@ -221,4 +222,5 @@ sealed partial class TDM_Download_Main
     private CustomControls.DarkFlowLayoutPanel darkFlowLayoutPanel1;
     internal CustomControls.DarkLabel DownloadableMissionsLabel;
     internal CustomControls.DarkLabel SelectedForDownloadLabel;
+    private CustomControls.DarkFlowLayoutPanel darkFlowLayoutPanel2;
 }
