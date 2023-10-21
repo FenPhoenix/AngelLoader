@@ -30,19 +30,6 @@ internal static class TDM_Downloader
     private const string _testingPath = @"C:\_al_tdm_testing";
     private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
 
-    private static async Task<Stream> GetAvailableMissionsStream(CancellationToken cancellationToken)
-    {
-#if ENABLE_ONLINE
-        HttpResponseMessage request = await GlobalHttpClient.GetAsync(
-            "http://missions.thedarkmod.com/get_available_missions.php",
-            cancellationToken);
-        request.EnsureSuccessStatusCode();
-        return await request.Content.ReadAsStreamAsync();
-#else
-        return await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
-#endif
-    }
-
     internal static Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer()
     {
@@ -56,7 +43,15 @@ internal static class TDM_Downloader
         {
             var fail = (false, false, (Exception?)null, new List<TDM_ServerFMData>());
 
-            using Stream dataStream = await GetAvailableMissionsStream(cancellationToken);
+#if ENABLE_ONLINE
+            using HttpResponseMessage request = await GlobalHttpClient.GetAsync(
+                "http://missions.thedarkmod.com/get_available_missions.php",
+                cancellationToken);
+            request.EnsureSuccessStatusCode();
+            using Stream dataStream = await request.Content.ReadAsStreamAsync();
+#else
+            using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
+#endif
 
             var xmlDoc = new XmlDocument();
 
@@ -184,20 +179,6 @@ internal static class TDM_Downloader
         }
     }
 
-    private static async Task<Stream> GetMissionDetailsStream(TDM_ServerFMData serverFMData, CancellationToken cancellationToken)
-    {
-#if ENABLE_ONLINE
-        HttpResponseMessage request = await GlobalHttpClient.GetAsync(
-            "http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id,
-            cancellationToken);
-        request.EnsureSuccessStatusCode();
-        return await request.Content.ReadAsStreamAsync();
-#else
-        return await Task.FromResult(File.OpenRead(Path.Combine(_detailsPath,
-            serverFMData.InternalName + "_id=" + serverFMData.Id + ".xml")));
-#endif
-    }
-
     internal static Task<(bool Success, bool Canceled, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
     GetMissionDetails(TDM_ServerFMData serverFMData)
     {
@@ -211,7 +192,16 @@ internal static class TDM_Downloader
         {
             var fail = (false, false, (Exception?)null, new TDM_ServerFMDetails());
 
-            using Stream dataStream = await GetMissionDetailsStream(serverFMData, cancellationToken);
+#if ENABLE_ONLINE
+            using HttpResponseMessage request = await GlobalHttpClient.GetAsync(
+                "http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id,
+                cancellationToken);
+            request.EnsureSuccessStatusCode();
+            using Stream dataStream = await request.Content.ReadAsStreamAsync();
+#else
+            using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_detailsPath,
+                serverFMData.InternalName + "_id=" + serverFMData.Id + ".xml")));
+#endif
 
             var xmlDoc = new XmlDocument();
 
