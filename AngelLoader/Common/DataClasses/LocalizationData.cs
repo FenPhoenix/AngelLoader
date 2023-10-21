@@ -631,10 +631,7 @@ internal sealed class LText_Class
         internal readonly string Thief2_PlayOriginal = "Play Thief 2 without FM";
         internal readonly string Thief3_PlayOriginal = "Play Thief 3 without FM";
         internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 without FM";
-        [FenGenComment(
-            "The Dark Mod doesn't really have such a thing as \"no FM\", so choosing to play it \"without FM\"",
-            "will simply start it with whatever FM it has set, or none if it has none set.")]
-        internal readonly string TheDarkMod_PlayOriginal = "Play The Dark Mod";
+        internal readonly string TheDarkMod_PlayOriginal = "Play The Dark Mod without FM";
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
         internal readonly string Mods_TDMNotSupported = "AngelLoader does not support managing settings for The Dark Mod.";
