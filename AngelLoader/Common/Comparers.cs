@@ -204,9 +204,12 @@ internal static class Comparers
     {
         public int Compare(FanMission x, FanMission y)
         {
+            string xArchive = x.Game == Game.TDM ? x.TDMInstalledDir : x.Archive;
+            string yArchive = y.Game == Game.TDM ? y.TDMInstalledDir : y.Archive;
+
             int ret =
-                x.Archive == y.Archive ? TitleCompare(x, y) :
-                    string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+                xArchive == yArchive ? TitleCompare(x, y) :
+                    string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
