@@ -36,6 +36,7 @@ sealed partial class TDM_Download_Main
         // 
         // DownloadButton
         // 
+        this.DownloadButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.DownloadButton.Margin = new System.Windows.Forms.Padding(0);
         this.DownloadButton.Size = new System.Drawing.Size(75, 23);
         this.DownloadButton.TabIndex = 9;

@@ -534,7 +534,8 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompareTDM(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            // Sort reverse for newest-on-top
+            return SortDirection == SortDirection.Ascending ? -ret : ret;
         }
     }
 
