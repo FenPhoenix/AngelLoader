@@ -205,7 +205,6 @@ internal static class FMScan
 
                     if (_scanCts.IsCancellationRequested) return false;
 
-                    // @TDM: Test this when no TDM FMs are in the list and TDM is not specified
                     ScannerTDMContext tdmContext = tdmDataRequired
                         ? await TDMParser.GetScannerTDMContext()
                         : new ScannerTDMContext();

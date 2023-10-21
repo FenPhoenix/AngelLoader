@@ -171,7 +171,6 @@ internal static class FMInstallAndPlay
 
                 if (PlayFM(fm, gameIndex, playMP))
                 {
-                    // @TDM: We should only use the last played value from the file where TDM writes it to
                     fm.LastPlayed.DateTime = DateTime.Now;
                     Core.View.RefreshFM(fm);
                     Ini.WriteFullFMDataIni();

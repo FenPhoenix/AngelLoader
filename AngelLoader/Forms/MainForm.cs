@@ -39,7 +39,6 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -253,46 +252,8 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private async void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object sender, EventArgs e)
     {
-        using var f = new TDMDownloadForm();
-        f.ShowDialogDark(this);
-        RefreshIfQueuedEvent.InvokeHack();
-    }
-
-    private async Task TDMDownloaderTest()
-    {
-        try
-        {
-            ShowProgressBox_Single("Downloading TDM FM data using stupid not-quick-to-test async crap...",
-                progressType: ProgressType.Indeterminate);
-
-            var result = await TDM_Downloader.TryGetMissionsFromServer();
-
-            if (result.Success)
-            {
-                foreach (TDM_ServerFMData fmInfo in result.FMsList)
-                {
-                    var detailsResult = await TDM_Downloader.GetMissionDetails(fmInfo);
-                    if (detailsResult.Success)
-                    {
-                        Trace.WriteLine(detailsResult.ServerFMDetails);
-                    }
-                    else
-                    {
-                        Trace.WriteLine(nameof(TDM_Downloader.GetMissionDetails) + " failed. Exception: " + (result.Ex?.ToString() ?? "none"));
-                    }
-                }
-            }
-            else
-            {
-                Trace.WriteLine("Failed. Exception: " + (result.Ex?.ToString() ?? "none"));
-            }
-        }
-        finally
-        {
-            HideProgressBox();
-        }
     }
 
     private void Test4Button_Click(object sender, EventArgs e)

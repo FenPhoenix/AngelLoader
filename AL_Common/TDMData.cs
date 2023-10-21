@@ -346,11 +346,6 @@ public sealed class TDM_LocalFMData
 
 public sealed class ScannerTDMContext
 {
-    /*
-    @TDM(Case-sensitivity in filenames):
-    Since TDM also has a Linux version, there may be a question of how it treats casing of fm names. Do we need
-    case-sensitivity here (and everywhere else) or should we do case-insensitive since we're Windows?
-    */
     public readonly Dictionary<string, TDM_LocalFMData> LocalFMData;
     public readonly Dictionary<string, TDM_ServerFMData> ServerFMData;
 

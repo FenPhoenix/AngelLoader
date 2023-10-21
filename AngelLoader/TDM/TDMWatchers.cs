@@ -285,6 +285,18 @@ internal static class TDMWatchers
         }
     }
 
+    /*
+    @TDM(TdmFMSetChanged): We need to detect updates - the folders won't change, but we still need a refresh!
+
+    @TDM(Version update scan - Do we re-scan newly downloaded versions with the same name? Check this!):
+    Previous text:
+    "We could also store the versions in FMData.ini and then when missions.tdminfo changes, we can check if
+    the versions there have changed, and re-scan any FMs whose versions have changed."
+       
+    @TDM(missing "downloaded_version" in some missions.tdminfo entries)
+    Note some of them don't have "downloaded_version". Presumably this is if you put them in manually or they
+    came with TDM (A New Job, Tears of Saint Lucia). We need code to handle this case.
+    */
     private static bool TdmFMSetChanged()
     {
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);

@@ -673,80 +673,12 @@ public sealed partial class Scanner : IDisposable
         (done) Detect/read darkmod.txt for title and author
         (done) Detect/read readme.txt for parseable release date
          (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
-        -Detect/read fms\missions.tdminfo for last played/finished-on
+        (done) Detect/read fms\missions.tdminfo for last played/finished-on
         (done) Scan size! Do we just ignore the savegames folder, or do we ignore everything but the pk4?
         (done) Detect mission count - find out how
         (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
         -Download all available TDM FMs and check for scanned accuracy!
         
-        @TDM(missions info xml download):
-        TDM gets its available missions list from here:
-        http://missions.thedarkmod.com/available_missions.xml
-
-        Typical entry:
-
-        <mission title="Accountant 1: Thieves and Heirs" releaseDate="2017-11-08" size="233.9" version="3" internalName="ac1" type="single" author="Goldwell" id="0">
-           <downloadLocation language="English" weight="0.01" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://missions.thedarkmod.com/ac1_082473b05d5c8b14.pk4"/>
-           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://darkmod.taaaki.za.net/fmsv2/ac1_082473b05d5c8b14.pk4"/>
-           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://darkmod-alt02.taaaki.za.net/fms/ac1_082473b05d5c8b14.pk4"/>
-           <downloadLocation language="English" weight="2" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://tdm.frydrych.org/missions/ac1_082473b05d5c8b14.pk4"/>
-           <downloadLocation language="English" weight="1.0" sha256="082473b05d5c8b1496860fd0f61999664b19800421034ba67575bd80ec06d143" url="http://mirror.mstrmnds.me/missions/ac1_082473b05d5c8b14.pk4"/>
-        </mission>
-
-        We can parse this out and then cross-check an FM's "downloaded_version" from missions.tdminfo, and if
-        they match we can take the release date and author, and take the title as one in the list. We want the
-        title as only one in the list because sometimes the titles here are acronyms but may be spelled out in
-        full in the readme, so we can still lean on our title selector for those cases.
-
-        If the versions don't match then we're forced to rely on a local scan, because that xml file doesn't
-        contain info for previous versions. Though maybe we can still take the title and author, but not the
-        release date, because that will definitely be wrong if the versions don't match.
-
-        We could also store the versions in FMData.ini and then when missions.tdminfo changes, we can check if
-        the versions there have changed, and re-scan any FMs whose versions have changed.
-
-        @TDM(manually downloaded FMs):
-
-        From https://wiki.thedarkmod.com/index.php?title=Installing_and_Running_Fan_Missions:
-        
-        "Each FM is contained in a PK4 file, which contains all the files necessary to run the mission. Download
-        the mission on thedarkmod.com/missions and drop the PK4 file into the fms/ folder, e.g. C:\Games\darkmod\fms\.
-                                   
-        When launching The Dark Mod, the game will detect the new mission package in the fms/ folder and will add
-        it to the list of available missions (note: the PK4 file will be automatically moved into a subfolder,
-        this is normal operation)."
-
-        So we need to support pk4s in the fms dir as if they were folders already, in case someone puts one there
-        manually. This also means missions.tdminfo will NOT be updated and thus will not trigger an auto-refresh-
-        from-disk. We should put another watch on the folder for pk4 files only.
-
-        @TDM(finished on/last played):
-
-        missions.tdminfo
-        A typical entry:
-        
-        tdm_missioninfo beleaguered_fence
-        {
-	        "downloaded_version"	"2"
-	        "last_play_date"	"2014-09-23"
-        	"mission_completed_2"	"1"
-	        "mission_loot_collected_2"	"4322"
-        }
-
-        "mission_completed_0" = Normal
-        "mission_completed_1" = Hard
-        "mission_completed_2" = Expert
-
-        Note the last play date is day granularity only, whereas ours is instant granularity (we take a timestamp).
-        So that mismatch could pose an issue.
-
-        Do we want to watch for changes to this file? It could get unboundedly large and we'd have to linear
-        search the whole thing every time.
-
-        @TDM(missing "downloaded_version" in some missions.tdminfo entries)
-        Note some of them don't have "downloaded_version". Presumably this is if you put them in manually or they
-        came with TDM (A New Job, Tears of Saint Lucia). We need code to handle this case.
-
         @TDM(manual install filenames)
         If you go to an FM's download page, the pk4 is the identifying name plus an underscore and then some hash
         code?! And the game doesn't strip the hash code or anything. So that could happen too...
@@ -985,9 +917,9 @@ public sealed partial class Scanner : IDisposable
             {
                 if (infoFromServer != null)
                 {
-                    if (TryParseTDMDate(infoFromServer.ReleaseDate, out DateTime serverDate))
+                    if (infoFromServer.ReleaseDateDT != null)
                     {
-                        fmData.LastUpdateDate = new DateTimeOffset(serverDate).DateTime;
+                        fmData.LastUpdateDate = new DateTimeOffset((DateTime)infoFromServer.ReleaseDateDT).DateTime;
                     }
                 }
                 else

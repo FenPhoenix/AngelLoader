@@ -48,8 +48,6 @@ internal static class Comparers
     private static FileNameNoExtComparer? _fileNameNoExtComparer;
     internal static FileNameNoExtComparer FileNameNoExt => _fileNameNoExtComparer ??= new FileNameNoExtComparer();
 
-    internal static TDMServerFMTitleComparer TDMServerFMTitle = new();
-
     #endregion
 
     #endregion
@@ -439,69 +437,6 @@ internal static class Comparers
                 Path.GetFileNameWithoutExtension(x),
                 Path.GetFileNameWithoutExtension(y),
                 StringComparison.OrdinalIgnoreCase);
-    }
-
-    internal sealed class TDMServerFMTitleComparer : ColumnComparer, IComparer<TDM_ServerFMData>
-    {
-        private static int TitleCompareTDM(TDM_ServerFMData x, TDM_ServerFMData y)
-        {
-            static int TitleOrFallback(
-                string title1,
-                string title2,
-                TDM_ServerFMData fm1,
-                TDM_ServerFMData fm2,
-                bool compareTitles = true,
-                int xStart = 0,
-                int yStart = 0)
-            {
-                if (compareTitles)
-                {
-                    int ret = string.Compare(title1, xStart, title2, yStart, Math.Max(title1.Length, title2.Length),
-                        StringComparison.InvariantCultureIgnoreCase);
-                    if (ret != 0) return ret;
-                }
-
-                return string.Compare(fm1.InternalName, fm2.InternalName, StringComparison.InvariantCultureIgnoreCase);
-            }
-
-            if (x.Title == y.Title) return TitleOrFallback(x.Title, y.Title, x, y, compareTitles: false);
-            if (x.Title.IsEmpty()) return -1;
-            if (y.Title.IsEmpty()) return 1;
-
-            int xStart = 0;
-            int yStart = 0;
-
-            // @TDM: Do we want to follow the config values for server list title sorting, or have our own?
-            if (Config.EnableArticles)
-            {
-                bool xArticleSet = false;
-                bool yArticleSet = false;
-
-                foreach (string article in Config.Articles)
-                {
-                    int aLen = article.Length;
-
-                    if (!xArticleSet && x.Title.StartsWithIPlusWhiteSpace(article, aLen))
-                    {
-                        xStart = aLen + 1;
-                        xArticleSet = true;
-                    }
-                    if (!yArticleSet && y.Title.StartsWithIPlusWhiteSpace(article, aLen))
-                    {
-                        yStart = aLen + 1;
-                        yArticleSet = true;
-                    }
-                }
-            }
-
-            return TitleOrFallback(x.Title, y.Title, x, y, xStart: xStart, yStart: yStart);
-        }
-
-        public int Compare(TDM_ServerFMData x, TDM_ServerFMData y)
-        {
-            int ret = TitleCompareTDM(x, y);
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
-        }
     }
 
     #endregion
