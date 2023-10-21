@@ -168,6 +168,8 @@ public sealed partial class TDMDownloadForm : DarkFormBase
 
         _serverFMDataList.Sort(_comparer);
 
+        bool itemWasSelected = MainPage.ServerListBox.SelectedIndex >= 0;
+
         try
         {
             MainPage.ServerListBox.BeginUpdate();
@@ -180,6 +182,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
         }
         finally
         {
+            if (itemWasSelected && MainPage.ServerListBox.Items.Count > 0)
+            {
+                MainPage.ServerListBox.SelectedIndex = 0;
+            }
             MainPage.ServerListBox.EndUpdate();
         }
     }
