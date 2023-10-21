@@ -20,12 +20,6 @@ public sealed class DarkListBoxWithBackingItems : DarkListBox, IListControlWithB
 
     public string SelectedBackingItem() => BackingItems[SelectedIndex];
 
-    public void RemoveFullItemAtIndex(int index)
-    {
-        BackingItems.RemoveAt(index);
-        Items.RemoveAt(index);
-    }
-
     #region Disabled until needed
 
 #if false

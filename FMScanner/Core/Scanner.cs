@@ -931,32 +931,6 @@ public sealed partial class Scanner : IDisposable
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
 
-        int AddReadmeFromDisk(string readmeFileOnDisk)
-        {
-            try
-            {
-                FileInfo readmeFI = new(readmeFileOnDisk);
-                DateTime date = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
-                ReadmeInternal readme = new(
-                    isGlml: false,
-                    lastModifiedDate: date,
-                    scan: true,
-                    useForDateDetect: true
-                );
-                using (var readmeStream = GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer))
-                {
-                    readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
-                }
-                _readmeFiles.Add(readme);
-                return _readmeFiles.Count - 1;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
         (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
         AddReadmeFromPK4(List<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
         {
@@ -1821,16 +1795,6 @@ public sealed partial class Scanner : IDisposable
     }
 
     #region Fail return functions
-
-    private static ScannedFMDataAndError UnknownTDM(Exception? ex, string errorInfo) => new()
-    {
-        ScannedFMData = new ScannedFMData
-        {
-            Game = Game.TDM
-        },
-        Exception = ex,
-        ErrorInfo = errorInfo
-    };
 
     private static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
     {
@@ -3412,7 +3376,7 @@ public sealed partial class Scanner : IDisposable
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
-        using var es = _archive.OpenEntry(readmeEntry!);
+        using var es = _archive.OpenEntry(readmeEntry);
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;

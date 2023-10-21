@@ -248,6 +248,7 @@ internal static class TDMWatchers
         List<TDM_LocalFMData> localFMDataList = TDMParser.ParseMissionsInfoFile();
         // @TDM: Case sensitive dictionary
         var fmsViewListDict = new Dictionary<string, FanMission>();
+        // ReSharper disable once InconsistentlySynchronizedField
         foreach (FanMission fm in FMsViewList)
         {
             if (fm.Game == Game.TDM)

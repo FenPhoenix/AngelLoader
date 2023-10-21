@@ -18,9 +18,6 @@ internal static class TDMParser
         const string mission_completed_0 = "\"mission_completed_0\"";
         const string mission_completed_1 = "\"mission_completed_1\"";
         const string mission_completed_2 = "\"mission_completed_2\"";
-        const string mission_loot_collected_0 = "\"mission_loot_collected_0\"";
-        const string mission_loot_collected_1 = "\"mission_loot_collected_1\"";
-        const string mission_loot_collected_2 = "\"mission_loot_collected_2\"";
 
         try
         {
