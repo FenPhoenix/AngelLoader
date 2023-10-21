@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common;
+using static AngelLoader.GameSupport;
 
 namespace AngelLoader;
 
@@ -75,9 +76,9 @@ internal static class TDM_Downloader
             {
                 if (mn.Name == "mission")
                 {
+                    TDM_ServerFMData serverFMData = new();
                     if (mn.Attributes != null)
                     {
-                        TDM_ServerFMData serverFMData = new();
                         foreach (XmlAttribute attr in mn.Attributes)
                         {
                             switch (attr.Name)
@@ -109,6 +110,59 @@ internal static class TDM_Downloader
                             }
                         }
                         fmsList.Add(serverFMData);
+                    }
+                    foreach (XmlNode dlNode in mn.ChildNodes)
+                    {
+                        if (dlNode.Attributes == null) continue;
+                        if (dlNode.Name == "downloadLocation")
+                        {
+                            TDM_FMDownloadLocation downloadLocation = new(serverFMData.InternalName);
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                switch (attr.Name)
+                                {
+                                    case "language":
+                                        downloadLocation.Language = attr.Value;
+                                        break;
+                                    case "weight":
+                                        if (float.TryParse(attr.Value, out float weight))
+                                        {
+                                            downloadLocation.Weight = weight;
+                                        }
+                                        break;
+                                    case "sha256":
+                                        downloadLocation.SHA256 = attr.Value;
+                                        break;
+                                    case "url":
+                                        downloadLocation.Url = attr.Value;
+                                        break;
+                                }
+                            }
+                            serverFMData.DownloadLocations.Add(downloadLocation);
+                        }
+                        else if (dlNode.Name == "localisationPack")
+                        {
+                            TDM_FMLocalizationPack l10nPack = new(serverFMData.InternalName);
+                            foreach (XmlAttribute attr in dlNode.Attributes)
+                            {
+                                switch (attr.Name)
+                                {
+                                    case "weight":
+                                        if (float.TryParse(attr.Value, out float weight))
+                                        {
+                                            l10nPack.Weight = weight;
+                                        }
+                                        break;
+                                    case "sha256":
+                                        l10nPack.SHA256 = attr.Value;
+                                        break;
+                                    case "url":
+                                        l10nPack.Url = attr.Value;
+                                        break;
+                                }
+                            }
+                            serverFMData.LocalizationPacks.Add(l10nPack);
+                        }
                     }
                 }
             }
@@ -295,6 +349,92 @@ internal static class TDM_Downloader
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string GetPlainInnerText(this XmlNode node) => WebUtility.HtmlDecode(node.InnerText);
+    internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    TryGetServerDataWithUpdateInfo(CancellationToken cancellationToken)
+    {
+        var fail = (false, false, (Exception?)null, new List<TDM_ServerFMData>());
+
+        try
+        {
+            string baseFMsPath = Global.Config.GetFMInstallPath(GameIndex.TDM);
+            List<string> fmDirs = FastIO.GetDirsTopOnly(baseFMsPath, "*", returnFullPaths: false);
+            var fmDirsDict = new Dictionary<string, string>();
+            for (int i = 0; i < fmDirs.Count; i++)
+            {
+                string fmDir = fmDirs[i];
+                if (fmDir != Paths.TDMMissionShots)
+                {
+                    fmDirsDict[fmDir] = Path.Combine(baseFMsPath, fmDir);
+                }
+            }
+
+            // @TDM: Pass dicts along where needed, rather than recreate them all the time in different places
+
+            (bool success, bool canceled, _, List<TDM_ServerFMData> serverDataList) =
+                await TryGetMissionsFromServer(cancellationToken);
+            if (success)
+            {
+                List<TDM_LocalFMData> localDataList = TDMParser.ParseMissionsInfoFile();
+                var serverDataDict = new Dictionary<string, TDM_ServerFMData>();
+                foreach (TDM_ServerFMData item in serverDataList)
+                {
+                    serverDataDict[item.InternalName] = item;
+                }
+
+                foreach (TDM_LocalFMData localData in localDataList)
+                {
+                    if (serverDataDict.TryGetValue(localData.InternalName, out TDM_ServerFMData serverData))
+                    {
+                        if (int.TryParse(serverData.Version, out int serverVersionInt) &&
+                            int.TryParse(localData.DownloadedVersion, out int localVersionInt) &&
+                            // @TDM: Should we compare higher only?
+                            serverVersionInt != localVersionInt)
+                        {
+                            serverData.IsUpdate = true;
+                        }
+
+                        if (serverData.LocalizationPacks.Count > 0)
+                        {
+                            string pk4File = serverData.InternalName + ".pk4";
+                            string pk4L10nFile = serverData.InternalName + "_l10n.pk4";
+
+                            if (fmDirsDict.TryGetValue(serverData.InternalName, out string fmPath))
+                            {
+                                if (File.Exists(Path.Combine(fmPath, pk4L10nFile)) ||
+                                    !File.Exists(Path.Combine(baseFMsPath, pk4L10nFile)))
+                                {
+                                    serverData.HasAvailableLanguagePack = true;
+                                }
+                            }
+                            else if (File.Exists(Path.Combine(baseFMsPath, pk4File)) &&
+                                     !File.Exists(Path.Combine(baseFMsPath, pk4L10nFile)))
+                            {
+                                serverData.HasAvailableLanguagePack = true;
+                            }
+                        }
+                    }
+                }
+
+                return (true, false, null, serverDataList);
+            }
+            else if (canceled)
+            {
+                return (false, true, null, new List<TDM_ServerFMData>());
+            }
+            else
+            {
+                return fail;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return (false, true, null, new List<TDM_ServerFMData>());
+        }
+        catch (Exception ex)
+        {
+            return (false, false, ex, new List<TDM_ServerFMData>());
+        }
+    }
 
 
 #if false
