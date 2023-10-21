@@ -495,7 +495,10 @@ public sealed partial class TDMDownloadForm : DarkFormBase
     {
         if (MainPage.ServerListBox.SelectedIndex == -1)
         {
-            ShowMissionInfo(false);
+            if (MainPage.ServerListBox.Items.Count == 0)
+            {
+                ShowMissionInfo(false);
+            }
         }
         else
         {
