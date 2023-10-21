@@ -985,8 +985,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (infoFromServer != null)
                 {
-                    if (DateTime.TryParseExact(infoFromServer.ReleaseDate, "yyyy-M-d",
-                            DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime serverDate))
+                    if (TryParseTDMDate(infoFromServer.ReleaseDate, out DateTime serverDate))
                     {
                         fmData.LastUpdateDate = new DateTimeOffset(serverDate).DateTime;
                     }

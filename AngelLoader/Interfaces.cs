@@ -352,5 +352,7 @@ public interface IView : ISettingsChangeableView
 
     void QueueRefreshFromDisk();
 
+    void QueueRefreshAllUIData();
+
     void QueueRefreshListOnly();
 }

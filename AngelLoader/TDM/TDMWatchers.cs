@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -50,9 +52,26 @@ internal static class TDMWatchers
 
     private static void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
-        if (Core.View != null! && TdmFMSetChanged())
+        if (Core.View != null!)
         {
-            Core.View.QueueRefreshFromDisk();
+            bool fmSetChanged;
+            lock (_tdmFMChangeLock)
+            {
+                fmSetChanged = TdmFMSetChanged();
+                if (!fmSetChanged)
+                {
+                    SetTDMMissionInfoData();
+                }
+            }
+
+            if (fmSetChanged)
+            {
+                Core.View.QueueRefreshFromDisk();
+            }
+            else
+            {
+                Core.View.QueueRefreshAllUIData();
+            }
         }
     }
 
@@ -84,7 +103,13 @@ internal static class TDMWatchers
 
     #endregion
 
-    internal static void UpdateTDMInstalledFMStatus(string? file = null)
+    internal static void UpdateTDMDataFromDisk()
+    {
+        SetTDMMissionInfoData();
+        UpdateTDMInstalledFMStatus();
+    }
+
+    private static void UpdateTDMInstalledFMStatus(string? file = null)
     {
         lock (_tdmFMChangeLock)
         {
@@ -218,61 +243,100 @@ internal static class TDMWatchers
         }
     }
 
+    private static void SetTDMMissionInfoData()
+    {
+        List<TDM_LocalFMData> localFMDataList = TDMParser.ParseMissionsInfoFile();
+        // @TDM: Case sensitive dictionary
+        var fmsViewListDict = new Dictionary<string, FanMission>();
+        foreach (FanMission fm in FMsViewList)
+        {
+            if (fm.Game == Game.TDM)
+            {
+                fmsViewListDict[fm.TDMInstalledDir] = fm;
+            }
+        }
+
+        foreach (TDM_LocalFMData localData in localFMDataList)
+        {
+            if (fmsViewListDict.TryGetValue(localData.InternalName, out FanMission fm))
+            {
+                // Only add, don't remove any the user has set manually
+                if (localData.MissionCompleted0 == "1")
+                {
+                    fm.FinishedOn |= (int)Difficulty.Normal;
+                }
+                if (localData.MissionCompleted1 == "1")
+                {
+                    fm.FinishedOn |= (int)Difficulty.Hard;
+                }
+                if (localData.MissionCompleted2 == "1")
+                {
+                    fm.FinishedOn |= (int)Difficulty.Expert;
+                }
+
+                // Only add last played date if there is none (we set date on play, and ours is more granular)
+                if (!localData.LastPlayDate.IsEmpty() &&
+                    fm.LastPlayed.DateTime == null &&
+                    TryParseTDMDate(localData.LastPlayDate, out DateTime result))
+                {
+                    fm.LastPlayed.DateTime = result;
+                }
+            }
+        }
+    }
+
     private static bool TdmFMSetChanged()
     {
-        lock (_tdmFMChangeLock)
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (fmsPath.IsEmpty()) return false;
+
+        try
         {
-            string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
-            if (fmsPath.IsEmpty()) return false;
-
-            try
+            List<string> internalTdmFMIds = new(FMDataIniListTDM.Count);
+            foreach (FanMission fm in FMDataIniListTDM)
             {
-                List<string> internalTdmFMIds = new(FMDataIniListTDM.Count);
-                foreach (FanMission fm in FMDataIniListTDM)
+                if (!fm.MarkedUnavailable)
                 {
-                    if (!fm.MarkedUnavailable)
-                    {
-                        internalTdmFMIds.Add(fm.TDMInstalledDir);
-                    }
+                    internalTdmFMIds.Add(fm.TDMInstalledDir);
                 }
-
-                List<string> fileTdmFMIds_Dirs = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
-                List<string> fileTdmFMIds_PK4s = FastIO.GetFilesTopOnly(fmsPath, "*.pk4", returnFullPaths: false);
-                HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
-
-                var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count);
-
-                finalFilesList.AddRange(fileTdmFMIds_Dirs);
-
-                for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
-                {
-                    string pk4 = fileTdmFMIds_PK4s[i];
-                    string nameWithoutExt = pk4.RemoveExtension();
-                    if (dirsHash.Add(nameWithoutExt))
-                    {
-                        finalFilesList.Add(nameWithoutExt);
-                    }
-                }
-
-                for (int i = 0; i < finalFilesList.Count; i++)
-                {
-                    if (!IsValidTdmFM(finalFilesList[i]))
-                    {
-                        finalFilesList.RemoveAt(i);
-                        break;
-                    }
-                }
-
-                internalTdmFMIds.Sort();
-                finalFilesList.Sort();
-
-                // @TDM: Case sensitive comparison
-                return !internalTdmFMIds.SequenceEqual(finalFilesList);
             }
-            catch
+
+            List<string> fileTdmFMIds_Dirs = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
+            List<string> fileTdmFMIds_PK4s = FastIO.GetFilesTopOnly(fmsPath, "*.pk4", returnFullPaths: false);
+            HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
+
+            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count);
+
+            finalFilesList.AddRange(fileTdmFMIds_Dirs);
+
+            for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
             {
-                return false;
+                string pk4 = fileTdmFMIds_PK4s[i];
+                string nameWithoutExt = pk4.RemoveExtension();
+                if (dirsHash.Add(nameWithoutExt))
+                {
+                    finalFilesList.Add(nameWithoutExt);
+                }
             }
+
+            for (int i = 0; i < finalFilesList.Count; i++)
+            {
+                if (!IsValidTdmFM(finalFilesList[i]))
+                {
+                    finalFilesList.RemoveAt(i);
+                    break;
+                }
+            }
+
+            internalTdmFMIds.Sort();
+            finalFilesList.Sort();
+
+            // @TDM: Case sensitive comparison
+            return !internalTdmFMIds.SequenceEqual(finalFilesList);
+        }
+        catch
+        {
+            return false;
         }
     }
 }

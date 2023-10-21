@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
+using static AL_Common.Common;
 
 namespace AL_Common;
 
@@ -84,8 +84,7 @@ public sealed class TDM_ServerFMData
         {
             if (_releaseDateDT == null)
             {
-                if (DateTime.TryParseExact(ReleaseDate, "yyyy-M-d",
-                        DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result))
+                if (TryParseTDMDate(ReleaseDate, out DateTime result))
                 {
                     _releaseDateDT = result;
                 }
@@ -107,7 +106,7 @@ public sealed class TDM_ServerFMData
         get => _internalName;
         set
         {
-            Common.Test_ValidateInternalName(value);
+            Test_ValidateInternalName(value);
             _internalName = value;
         }
     }
@@ -256,7 +255,7 @@ public sealed class TDM_ServerFMDetails
         get => _internalName;
         set
         {
-            Common.Test_ValidateInternalName(value);
+            Test_ValidateInternalName(value);
             _internalName = value;
         }
     }

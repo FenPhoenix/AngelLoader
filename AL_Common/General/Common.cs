@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -114,6 +115,16 @@ public static partial class Common
     public static string ToStrInv(this int value) => value.ToString(CultureInfo.InvariantCulture);
 
     public static string ToStrInv(this bool value) => value.ToString(CultureInfo.InvariantCulture);
+
+    public static bool TryParseTDMDate(string dateString, out DateTime dateTime)
+    {
+        return DateTime.TryParseExact(
+            dateString,
+            "yyyy-M-d",
+            DateTimeFormatInfo.InvariantInfo,
+            DateTimeStyles.None,
+            out dateTime);
+    }
 
     #endregion
 }

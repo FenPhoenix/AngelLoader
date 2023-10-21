@@ -604,6 +604,7 @@ public sealed partial class MainForm : DarkFormBase,
         #region Manual control construct + init
 
         QueueRefreshFromDiskEvent += MainForm_QueueRefreshFromDiskEvent;
+        QueueRefreshAllUIDataEvent += MainForm_QueueRefreshAllUIDataEvent;
         QueueRefreshListOnlyEvent += MainForm_QueueRefreshListOnlyEvent;
         RefreshIfQueuedEvent += MainForm_RefreshIfQueuedEvent;
 
@@ -3038,12 +3039,25 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Refresh queueing
 
-    private bool _refreshFromDiskIsQueued;
-    private bool _refreshListOnlyIsQueued;
+    private enum QueuedRefresh
+    {
+        None,
+        FromDisk,
+        AllUIData,
+        ListOnly
+    }
+
+    private QueuedRefresh _queuedRefresh;
+
+    private void EnsureQueuedRefresh(QueuedRefresh queuedRefresh)
+    {
+        if (queuedRefresh > _queuedRefresh) _queuedRefresh = queuedRefresh;
+    }
 
     // Massive hack with using event handlers so we can avoid the "async all the way down"
 
     private event EventHandler? QueueRefreshFromDiskEvent;
+    private event EventHandler? QueueRefreshAllUIDataEvent;
     private event EventHandler? QueueRefreshListOnlyEvent;
     private event EventHandler? RefreshIfQueuedEvent;
 
@@ -3055,20 +3069,29 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void MainForm_QueueRefreshListOnlyEvent(object sender, EventArgs e)
-    {
-        Invoke(() =>
-        {
-            _refreshListOnlyIsQueued = true;
-            RefreshImmediatelyIfPossible();
-        });
-    }
-
     private void MainForm_QueueRefreshFromDiskEvent(object sender, EventArgs e)
     {
         Invoke(() =>
         {
-            _refreshFromDiskIsQueued = true;
+            EnsureQueuedRefresh(QueuedRefresh.FromDisk);
+            RefreshImmediatelyIfPossible();
+        });
+    }
+
+    private void MainForm_QueueRefreshAllUIDataEvent(object sender, EventArgs e)
+    {
+        Invoke(() =>
+        {
+            EnsureQueuedRefresh(QueuedRefresh.AllUIData);
+            RefreshImmediatelyIfPossible();
+        });
+    }
+
+    private void MainForm_QueueRefreshListOnlyEvent(object sender, EventArgs e)
+    {
+        Invoke(() =>
+        {
+            EnsureQueuedRefresh(QueuedRefresh.ListOnly);
             RefreshImmediatelyIfPossible();
         });
     }
@@ -3077,15 +3100,22 @@ public sealed partial class MainForm : DarkFormBase,
     {
         Invoke(() =>
         {
-            if (_refreshFromDiskIsQueued)
+            QueuedRefresh refresh = _queuedRefresh;
+            _queuedRefresh = QueuedRefresh.None;
+            if (refresh == QueuedRefresh.FromDisk)
             {
-                _refreshFromDiskIsQueued = false;
-                _refreshListOnlyIsQueued = false;
                 return Core.RefreshFMsListFromDisk();
             }
-            else if (_refreshListOnlyIsQueued)
+            else if (refresh == QueuedRefresh.AllUIData)
             {
-                _refreshListOnlyIsQueued = false;
+                RefreshFMsListRowsOnlyKeepSelection();
+                if (_displayedFM != null)
+                {
+                    UpdateAllFMUIDataExceptReadme(_displayedFM);
+                }
+            }
+            else if (refresh == QueuedRefresh.ListOnly)
+            {
                 RefreshFMsListRowsOnlyKeepSelection();
                 if (_displayedFM != null)
                 {
@@ -3096,9 +3126,11 @@ public sealed partial class MainForm : DarkFormBase,
         });
     }
 
-    public void QueueRefreshListOnly() => QueueRefreshListOnlyEvent.InvokeHack();
-
     public void QueueRefreshFromDisk() => QueueRefreshFromDiskEvent.InvokeHack();
+
+    public void QueueRefreshAllUIData() => QueueRefreshAllUIDataEvent.InvokeHack();
+
+    public void QueueRefreshListOnly() => QueueRefreshListOnlyEvent.InvokeHack();
 
     #endregion
 
