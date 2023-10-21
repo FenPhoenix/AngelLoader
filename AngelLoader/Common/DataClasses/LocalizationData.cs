@@ -710,7 +710,6 @@ internal sealed class LText_Class
         internal readonly string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
         [FenGenBlankLine]
         internal readonly string Paths_Other = "Other";
-        // @TDM: How do we convey this succinctly and clearly...?
         internal readonly string Paths_BackupPath = "Backup path (not required for The Dark Mod):";
         internal readonly string Paths_FMArchivePaths = "FM archive paths";
         [FenGenComment(

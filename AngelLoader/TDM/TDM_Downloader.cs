@@ -16,8 +16,6 @@ using AL_Common;
 namespace AngelLoader;
 
 /*
-@TDM: We don't want to download the info every time we scan, or too often in any case. We need a caching scheme.
-
 Note about XML:
 InnerText (ie. <tag>Some text</tag>) needs manual unescaping, but Value (ie. <tag thing="Some text"/>)
 doesn't. It gets automatically handled somehow.
