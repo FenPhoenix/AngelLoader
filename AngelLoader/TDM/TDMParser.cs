@@ -80,19 +80,6 @@ internal static class TDMParser
                         localFMData.MissionCompleted2 = GetValueForKey(entryLineT, mission_completed_2);
                     }
 
-                    else if (entryLineT.StartsWithO(mission_loot_collected_0))
-                    {
-                        localFMData.MissionLootCollected0 = GetValueForKey(entryLineT, mission_loot_collected_0);
-                    }
-                    else if (entryLineT.StartsWithO(mission_loot_collected_1))
-                    {
-                        localFMData.MissionLootCollected1 = GetValueForKey(entryLineT, mission_loot_collected_1);
-                    }
-                    else if (entryLineT.StartsWithO(mission_loot_collected_2))
-                    {
-                        localFMData.MissionLootCollected2 = GetValueForKey(entryLineT, mission_loot_collected_2);
-                    }
-
                     else if (entryLineT == "}")
                     {
                         break;

@@ -8,8 +8,6 @@ using static AL_Common.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -26,8 +24,10 @@ doesn't. It gets automatically handled somehow.
 */
 internal static class TDM_Downloader
 {
+#if !ENABLE_ONLINE
     private const string _testingPath = @"C:\_al_tdm_testing";
     private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
+#endif
 
     internal static Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer()
@@ -35,7 +35,7 @@ internal static class TDM_Downloader
         return TryGetMissionsFromServer(CancellationToken.None);
     }
 
-    internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    private static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer(CancellationToken cancellationToken)
     {
         try
@@ -88,80 +88,18 @@ internal static class TDM_Downloader
                                 case "releaseDate":
                                     serverFMData.ReleaseDate = attr.Value;
                                     break;
-                                case "size":
-                                    serverFMData.Size = attr.Value;
-                                    break;
                                 case "version":
                                     serverFMData.Version = attr.Value;
                                     break;
                                 case "internalName":
                                     serverFMData.InternalName = attr.Value;
                                     break;
-                                case "type":
-                                    serverFMData.Type = attr.Value;
-                                    break;
                                 case "author":
                                     serverFMData.Author = attr.Value;
-                                    break;
-                                case "id":
-                                    serverFMData.Id = attr.Value;
                                     break;
                             }
                         }
                         fmsList.Add(serverFMData);
-                    }
-                    foreach (XmlNode dlNode in mn.ChildNodes)
-                    {
-                        if (dlNode.Attributes == null) continue;
-                        if (dlNode.Name == "downloadLocation")
-                        {
-                            TDM_FMDownloadLocation downloadLocation = new(serverFMData.InternalName);
-                            foreach (XmlAttribute attr in dlNode.Attributes)
-                            {
-                                switch (attr.Name)
-                                {
-                                    case "language":
-                                        downloadLocation.Language = attr.Value;
-                                        break;
-                                    case "weight":
-                                        if (float.TryParse(attr.Value, out float weight))
-                                        {
-                                            downloadLocation.Weight = weight;
-                                        }
-                                        break;
-                                    case "sha256":
-                                        downloadLocation.SHA256 = attr.Value;
-                                        break;
-                                    case "url":
-                                        downloadLocation.Url = attr.Value;
-                                        break;
-                                }
-                            }
-                            serverFMData.DownloadLocations.Add(downloadLocation);
-                        }
-                        else if (dlNode.Name == "localisationPack")
-                        {
-                            TDM_FMLocalizationPack l10nPack = new(serverFMData.InternalName);
-                            foreach (XmlAttribute attr in dlNode.Attributes)
-                            {
-                                switch (attr.Name)
-                                {
-                                    case "weight":
-                                        if (float.TryParse(attr.Value, out float weight))
-                                        {
-                                            l10nPack.Weight = weight;
-                                        }
-                                        break;
-                                    case "sha256":
-                                        l10nPack.SHA256 = attr.Value;
-                                        break;
-                                    case "url":
-                                        l10nPack.Url = attr.Value;
-                                        break;
-                                }
-                            }
-                            serverFMData.LocalizationPacks.Add(l10nPack);
-                        }
                     }
                 }
             }
@@ -177,175 +115,4 @@ internal static class TDM_Downloader
             return (false, false, ex, new List<TDM_ServerFMData>());
         }
     }
-
-    internal static Task<(bool Success, bool Canceled, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
-    GetMissionDetails(TDM_ServerFMData serverFMData)
-    {
-        return GetMissionDetails(serverFMData, CancellationToken.None);
-    }
-
-    internal static async Task<(bool Success, bool Canceled, Exception? Ex, TDM_ServerFMDetails ServerFMDetails)>
-    GetMissionDetails(TDM_ServerFMData serverFMData, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var fail = (false, false, (Exception?)null, new TDM_ServerFMDetails());
-
-#if ENABLE_ONLINE
-            using HttpResponseMessage request = await GlobalHttpClient.GetAsync(
-                "http://missions.thedarkmod.com/get_mission_details.php?id=" + serverFMData.Id,
-                cancellationToken);
-            request.EnsureSuccessStatusCode();
-            using Stream dataStream = await request.Content.ReadAsStreamAsync();
-#else
-            using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_detailsPath,
-                serverFMData.InternalName + "_id=" + serverFMData.Id + ".xml")));
-#endif
-
-            var xmlDoc = new XmlDocument();
-
-            xmlDoc.Load(dataStream);
-
-            XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
-            if (tdmNodes?.Count != 1) return fail;
-
-            XmlNode tdmNode = tdmNodes[0];
-
-            XmlNodeList missionNodes = tdmNode.ChildNodes;
-            if (missionNodes.Count != 1) return fail;
-
-            XmlNode missionNode = missionNodes[0];
-            if (missionNode.Name != "mission") return fail;
-
-            TDM_ServerFMDetails details = new();
-            XmlNodeList detailsNodes = missionNode.ChildNodes;
-            foreach (XmlNode dn in detailsNodes)
-            {
-                switch (dn.Name)
-                {
-                    case "id":
-                        details.Id = dn.GetPlainInnerText();
-                        break;
-                    case "title":
-                        details.Title = dn.GetPlainInnerText();
-                        break;
-                    case "releaseDate":
-                        details.ReleaseDate = dn.GetPlainInnerText();
-                        break;
-                    case "size":
-                        details.Size = dn.GetPlainInnerText();
-                        break;
-                    case "version":
-                        details.Version = dn.GetPlainInnerText();
-                        break;
-                    case "internalName":
-                        details.InternalName = dn.GetPlainInnerText();
-                        break;
-                    case "type":
-                        details.Type = dn.GetPlainInnerText();
-                        break;
-                    case "author":
-                        details.Author = dn.GetPlainInnerText();
-                        break;
-                    case "description":
-                        details.Description = dn.GetPlainInnerText();
-                        break;
-                    case "downloadLocations":
-                    {
-                        foreach (XmlNode dlNode in dn.ChildNodes)
-                        {
-                            if (dlNode.Attributes == null) continue;
-                            if (dlNode.Name == "downloadLocation")
-                            {
-                                TDM_FMDownloadLocation downloadLocation = new(details.InternalName);
-                                foreach (XmlAttribute attr in dlNode.Attributes)
-                                {
-                                    switch (attr.Name)
-                                    {
-                                        case "language":
-                                            downloadLocation.Language = attr.Value;
-                                            break;
-                                        case "weight":
-                                            if (float.TryParse(attr.Value, out float weight))
-                                            {
-                                                downloadLocation.Weight = weight;
-                                            }
-                                            break;
-                                        case "sha256":
-                                            downloadLocation.SHA256 = attr.Value;
-                                            break;
-                                        case "url":
-                                            downloadLocation.Url = attr.Value;
-                                            break;
-                                    }
-                                }
-                                details.DownloadLocations.Add(downloadLocation);
-                            }
-                            else if (dlNode.Name == "localisationPack")
-                            {
-                                TDM_FMLocalizationPack l10nPack = new(details.InternalName);
-                                foreach (XmlAttribute attr in dlNode.Attributes)
-                                {
-                                    switch (attr.Name)
-                                    {
-                                        case "weight":
-                                            if (float.TryParse(attr.Value, out float weight))
-                                            {
-                                                l10nPack.Weight = weight;
-                                            }
-                                            break;
-                                        case "sha256":
-                                            l10nPack.SHA256 = attr.Value;
-                                            break;
-                                        case "url":
-                                            l10nPack.Url = attr.Value;
-                                            break;
-                                    }
-                                }
-                                details.LocalizationPacks.Add(l10nPack);
-                            }
-                        }
-                        break;
-                    }
-                    case "screenshots":
-                    {
-                        foreach (XmlNode dlNode in dn.ChildNodes)
-                        {
-                            if (dlNode.Name != "screenshot") continue;
-                            if (dlNode.Attributes == null) continue;
-
-                            foreach (XmlAttribute attr in dlNode.Attributes)
-                            {
-                                if (attr.Name == "path")
-                                {
-                                    details.Screenshots.Add(attr.Value);
-                                    break;
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            return (true, false, null, details);
-        }
-        catch (OperationCanceledException)
-        {
-            return (false, true, null, new TDM_ServerFMDetails());
-        }
-        catch (Exception ex)
-        {
-            return (false, false, ex, new TDM_ServerFMDetails());
-        }
-    }
-
-    /// <summary>
-    /// Gets the unescaped InnerText.
-    /// </summary>
-    /// <param name="node"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static string GetPlainInnerText(this XmlNode node) => WebUtility.HtmlDecode(node.InnerText);
 }
