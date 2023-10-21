@@ -78,7 +78,7 @@ internal static class FMInstallAndPlay
         }
     }
 
-    private static bool SelectTdmFM(FanMission fm, bool deselect = false)
+    private static bool SelectTdmFM(FanMission? fm, bool deselect = false)
     {
         try
         {
@@ -94,10 +94,10 @@ internal static class FMInstallAndPlay
             if (gamePath.IsEmpty()) return false;
 
             string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
-            if (deselect) fm.Installed = false;
+            if (deselect && fm != null) fm.Installed = false;
             using var sw = new StreamWriter(currentFMFile);
             // TDM doesn't write a newline, so let's match it
-            sw.Write(!deselect ? fm.TDMInstalledDir : "");
+            sw.Write(!deselect && fm != null ? fm.TDMInstalledDir : "");
             Core.View.RefreshAllSelectedFMs_UpdateInstallState();
         }
         catch
@@ -232,6 +232,11 @@ internal static class FMInstallAndPlay
                     origDisabledMods: Config.GetDisabledMods(gameIndex)))
             {
                 return false;
+            }
+
+            if (gameIndex == GameIndex.TDM)
+            {
+                SelectTdmFM(null, deselect: true);
             }
 
             if (!StartExe(gameExe, workingPath, args)) return false;
