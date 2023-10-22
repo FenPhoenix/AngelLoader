@@ -668,29 +668,6 @@ public sealed partial class Scanner : IDisposable
 
     private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
-        /*
-        @TDM(Scanner todos)
-        (done) Detect/read darkmod.txt for title and author
-        (done) Detect/read readme.txt for parseable release date
-         (done) Also if we don't find title / author in darkmod.txt, look for them in readme.txt
-        (done) Detect/read fms\missions.tdminfo for last played/finished-on
-        (done) Scan size! Do we just ignore the savegames folder, or do we ignore everything but the pk4?
-        (done) Detect mission count - find out how
-        (done) No Honour Among Thieves (nhat3) - says it's a campaign, we can use this to see how to detect mission count
-        -Download all available TDM FMs and check for scanned accuracy!
-        
-        @TDM(manual install filenames)
-        If you go to an FM's download page, the pk4 is the identifying name plus an underscore and then some hash
-        code?! And the game doesn't strip the hash code or anything. So that could happen too...
-        Guess we just have to treat those FMs as normal and if there's a dupe with a non-hashcode-appended name
-        then we treat it as a separate mission. Meh.
-
-        2023-10-14:
-        Tested the game's behavior in this case. It simply considers the hash-appended name to be the name,
-        doesn't find it in the server's list, and so doesn't note the server version as being an update of the
-        installed one, even if it is. So, that's simple and we can do the same.
-        */
-
         string zipPath;
 
         List<ZipArchiveFastEntry>? __zipEntries = null;
