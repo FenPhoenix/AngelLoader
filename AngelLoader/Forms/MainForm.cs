@@ -3059,31 +3059,30 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void MainForm_RefreshIfQueuedEvent(object sender, EventArgs e)
     {
-        Invoke(() =>
+        Invoke(async () =>
         {
             QueuedRefresh refresh = _queuedRefresh;
             _queuedRefresh = QueuedRefresh.None;
             if (refresh == QueuedRefresh.FromDisk)
             {
-                return Core.RefreshFMsListFromDisk();
+                await Core.RefreshFMsListFromDisk();
+
+                RefreshFMsListRowsOnlyKeepSelection();
+                if (_displayedFM != null)
+                {
+                    UpdateAllFMUIDataExceptReadme(_displayedFM);
+                }
+                SetAvailableAndFinishedFMCount();
             }
-            else if (refresh == QueuedRefresh.AllUIData)
+            else if (refresh is QueuedRefresh.AllUIData or QueuedRefresh.ListOnly)
             {
                 RefreshFMsListRowsOnlyKeepSelection();
                 if (_displayedFM != null)
                 {
                     UpdateAllFMUIDataExceptReadme(_displayedFM);
                 }
+                SetAvailableAndFinishedFMCount();
             }
-            else if (refresh == QueuedRefresh.ListOnly)
-            {
-                RefreshFMsListRowsOnlyKeepSelection();
-                if (_displayedFM != null)
-                {
-                    UpdateUIControlsForMultiSelectState(_displayedFM);
-                }
-            }
-            return VoidTask;
         });
     }
 
