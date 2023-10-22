@@ -67,6 +67,9 @@ public sealed class FanMission
     [FenGenIgnore]
     internal string RealInstalledDir => Game == Game.TDM ? TDMInstalledDir : InstalledDir;
 
+    [FenGenNumericEmpty(0)]
+    internal int TDMVersion;
+
     internal string Title = "";
     [FenGenListType("MultipleLines")]
     internal readonly List<string> AltTitles = new();

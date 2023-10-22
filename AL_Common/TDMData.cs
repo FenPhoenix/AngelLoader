@@ -30,9 +30,14 @@ public static partial class Common
     We should probably just do what the game does, and if we have any problems then so will the game, so meh.
 
     @TDM: The game also does this when reading from disk...
+    But from testing it doesn't seem to consider for example "bakery_job" and "bakery;job" equivalent, even though
+    it should be replacing that ';' with a '_'. It also writes out "bakery;job" to missions.tdminfo, so it clearly
+    isn't using the converted name everywhere. We should refrain from doing the name conversion on disk FMs since
+    we're not sure how and when it works, and FMs downloaded with TDM will be in the right naming format at the
+    end of the day anyway... And as for manually installed FMs, all bets are off as we know.
     */
 
-    internal static bool IsValidTDMInternalNameChar(char c)
+    private static bool IsValidTDMInternalNameChar(char c)
     {
         return
             c.IsAsciiAlpha() || c.IsAsciiNumeric() ||

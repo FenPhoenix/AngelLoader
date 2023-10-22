@@ -20,9 +20,6 @@ internal static class TDMWatchers
     private static readonly System.Timers.Timer _MissionInfoFileTimer = new(1000) { Enabled = false, AutoReset = false };
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
 
-    private static readonly System.Timers.Timer _pk4Timer = new(1000) { Enabled = false, AutoReset = false };
-    private static readonly FileSystemWatcher TDM_PK4_Watcher = new();
-
     private static readonly object _tdmFMChangeLock = new();
 
     internal static void Init()
@@ -35,10 +32,6 @@ internal static class TDMWatchers
         TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Deleted += TdmFMsListChangedWatcher_Changed;
 
-        TDM_PK4_Watcher.Changed += TDM_PK4_Watcher_Changed;
-        TDM_PK4_Watcher.Created += TDM_PK4_Watcher_Changed;
-
-        _pk4Timer.Elapsed += FileWatcherTimers_Elapsed;
         _MissionInfoFileTimer.Elapsed += FileWatcherTimers_Elapsed;
     }
 
@@ -74,8 +67,6 @@ internal static class TDMWatchers
             }
         }
     }
-
-    private static void TDM_PK4_Watcher_Changed(object sender, FileSystemEventArgs e) => _pk4Timer.Reset();
 
     private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatus(e.FullPath);
 
@@ -199,7 +190,6 @@ internal static class TDMWatchers
         {
             SetWatcher(TDMSelectedFMWatcher, gamePath, Paths.TDMCurrentFMFile);
             SetWatcher(TdmFMsListChangedWatcher, fmsPath, Paths.MissionsTdmInfo);
-            SetWatcher(TDM_PK4_Watcher, fmsPath, "*.pk4");
         }
         else
         {
@@ -207,7 +197,6 @@ internal static class TDMWatchers
             {
                 TDMSelectedFMWatcher.EnableRaisingEvents = false;
                 TdmFMsListChangedWatcher.EnableRaisingEvents = false;
-                TDM_PK4_Watcher.EnableRaisingEvents = false;
             }
             catch
             {
@@ -282,22 +271,15 @@ internal static class TDMWatchers
                 {
                     fm.LastPlayed.DateTime = result;
                 }
+
+                if (int.TryParse(localData.DownloadedVersion, out int version))
+                {
+                    fm.TDMVersion = version;
+                }
             }
         }
     }
 
-    /*
-    @TDM(TdmFMSetChanged): We need to detect updates - the folders won't change, but we still need a refresh!
-
-    @TDM(Version update scan - Do we re-scan newly downloaded versions with the same name? Check this!)
-    Previous text:
-    "We could also store the versions in FMData.ini and then when missions.tdminfo changes, we can check if
-    the versions there have changed, and re-scan any FMs whose versions have changed."
-       
-    @TDM(missing "downloaded_version" in some missions.tdminfo entries)
-    Note some of them don't have "downloaded_version". Presumably this is if you put them in manually or they
-    came with TDM (A New Job, Tears of Saint Lucia). We need code to handle this case.
-    */
     private static bool TdmFMSetChanged()
     {
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
@@ -345,7 +327,32 @@ internal static class TDMWatchers
             finalFilesList.Sort();
 
             // @TDM: Case sensitive comparison
-            return !internalTdmFMIds.SequenceEqual(finalFilesList);
+            if (!internalTdmFMIds.SequenceEqual(finalFilesList))
+            {
+                return true;
+            }
+
+            List<TDM_LocalFMData> localDataList = TDMParser.ParseMissionsInfoFile();
+            var internalTDMDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
+            foreach (FanMission fm in FMDataIniListTDM)
+            {
+                if (!fm.MarkedUnavailable)
+                {
+                    internalTDMDict[fm.TDMInstalledDir] = fm;
+                }
+            }
+
+            foreach (TDM_LocalFMData localData in localDataList)
+            {
+                if (internalTDMDict.TryGetValue(localData.InternalName, out FanMission fm) &&
+                    int.TryParse(localData.DownloadedVersion, out int version) &&
+                    fm.TDMVersion != version)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         catch
         {

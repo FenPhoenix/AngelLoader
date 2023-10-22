@@ -62,6 +62,14 @@ internal static partial class Ini
         fm.TDMInstalledDir = val;
     }
 
+    private static void FMData_TDMVersion_Set(FanMission fm, string val, int eqIndex)
+    {
+        val = val.Substring(eqIndex + 1);
+        val = val.Trim();
+        int.TryParse(val, out int result);
+        fm.TDMVersion = result;
+    }
+
     private static void FMData_Title_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Substring(eqIndex + 1);
@@ -360,6 +368,7 @@ internal static partial class Ini
         { "Archive", new FMData_DelegatePointerWrapper(&FMData_Archive_Set) },
         { "InstalledDir", new FMData_DelegatePointerWrapper(&FMData_InstalledDir_Set) },
         { "TDMInstalledDir", new FMData_DelegatePointerWrapper(&FMData_TDMInstalledDir_Set) },
+        { "TDMVersion", new FMData_DelegatePointerWrapper(&FMData_TDMVersion_Set) },
         { "Title", new FMData_DelegatePointerWrapper(&FMData_Title_Set) },
         { "AltTitles", new FMData_DelegatePointerWrapper(&FMData_AltTitles_Set) },
         { "Author", new FMData_DelegatePointerWrapper(&FMData_Author_Set) },
@@ -443,6 +452,11 @@ internal static partial class Ini
             {
                 sb.Append("TDMInstalledDir").Append('=');
                 sb.AppendLine(fm.TDMInstalledDir);
+            }
+            if (fm.TDMVersion != 0)
+            {
+                sb.Append("TDMVersion").Append('=');
+                sb.AppendLine(fm.TDMVersion.ToString());
             }
             if (!string.IsNullOrEmpty(fm.Title))
             {
