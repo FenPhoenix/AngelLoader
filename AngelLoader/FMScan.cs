@@ -372,7 +372,9 @@ internal static class FMScan
                     {
                         #region This exact setup is needed to get identical results to the old method. Don't change.
                         // We don't scan custom resources for Thief 3, so they should never be set in that case.
-                        if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
+                        if (gameSup &&
+                            scannedFM.Game != FMScanner.Game.Thief3 &&
+                            scannedFM.Game != FMScanner.Game.TDM)
                         {
                             sel.SetResource(CustomResources.Map, scannedFM.HasMap == true);
                             sel.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);

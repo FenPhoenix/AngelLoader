@@ -159,7 +159,7 @@ public sealed class FanMission
     /// </summary>
     internal bool DisableAllMods
     {
-        get => Game != Game.Thief3 && _disableAllMods;
+        get => GameSupportsMods(Game) && _disableAllMods;
         set => _disableAllMods = value;
     }
 
