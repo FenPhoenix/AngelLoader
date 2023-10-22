@@ -204,8 +204,8 @@ internal static class Comparers
     {
         public int Compare(FanMission x, FanMission y)
         {
-            string xArchive = x.Game == Game.TDM ? x.TDMInstalledDir : x.Archive;
-            string yArchive = y.Game == Game.TDM ? y.TDMInstalledDir : y.Archive;
+            string xArchive = x.DisplayArchive;
+            string yArchive = y.DisplayArchive;
 
             int ret =
                 xArchive == yArchive ? TitleCompare(x, y) :

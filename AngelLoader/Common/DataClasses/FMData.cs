@@ -47,6 +47,14 @@ public sealed class FanMission
     internal bool MarkedUnavailable;
 
     internal string Archive = "";
+
+    [FenGenIgnore]
+    internal string DisplayArchive
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Game == Game.TDM ? TDMInstalledDir : Archive;
+    }
+
     /*
     InstalledDir doubles as a unique identifier for an FM, but that use requires us to be able to change it in
     case of a naming clash. But for TDM, FMs are always in folders to begin with, so we can't change the name or
@@ -65,7 +73,11 @@ public sealed class FanMission
     internal string TDMInstalledDir = "";
 
     [FenGenIgnore]
-    internal string RealInstalledDir => Game == Game.TDM ? TDMInstalledDir : InstalledDir;
+    internal string RealInstalledDir
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Game == Game.TDM ? TDMInstalledDir : InstalledDir;
+    }
 
     [FenGenNumericEmpty(0)]
     internal int TDMVersion;

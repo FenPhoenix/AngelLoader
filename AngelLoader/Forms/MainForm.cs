@@ -3880,7 +3880,7 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.Archive:
-                string value = fm.Game == Game.TDM ? fm.TDMInstalledDir : fm.Archive;
+                string value = fm.DisplayArchive;
                 e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
                     ? pinChar + value
                     : value;
