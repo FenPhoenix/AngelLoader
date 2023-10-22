@@ -94,6 +94,10 @@ public sealed partial class Scanner
 
         // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
         internal const string EntryGmp = "Entry.gmp";
+
+        internal const string TDM_DarkModTxt = "darkmod.txt";
+        internal const string TDM_ReadmeTxt = "readme.txt";
+        internal const string TDM_MapSequence = "tdm_mapsequence.txt";
     }
 
     #region Non-const FM Files

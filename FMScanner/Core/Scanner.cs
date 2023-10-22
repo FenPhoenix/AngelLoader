@@ -716,7 +716,6 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
-                    //return zipResult.ScannedFMDataAndError;
                     __zipEntries = null;
                     throw zipResult.ScannedFMDataAndError?.Exception ?? new Exception("Zip reading failed");
                 }
@@ -770,7 +769,7 @@ public sealed partial class Scanner : IDisposable
                 for (int i = 0; i < entries.Count; i++)
                 {
                     ZipArchiveFastEntry entry = entries[i];
-                    if (entry.FullName != "tdm_mapsequence.txt") continue;
+                    if (entry.FullName != FMFiles.TDM_MapSequence) continue;
 
                     using Stream es = _archive.OpenEntry(entry);
                     // Stupid micro-optimization: Don't call Dispose() method on stream twice
@@ -843,13 +842,12 @@ public sealed partial class Scanner : IDisposable
             // @TDM(readme text & dates):
             // For best perf, I guess we would get dates from the pk4 but text from disk.
             // Still, these files are generally extremely small, so it probably doesn't matter.
-            const string darkModTxt = "darkmod.txt";
-            const string readmeTxt = "readme.txt";
+
             // Sometimes the extracted readmes have different dates than the ones in the pk4.
             // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
             // copying or who knows what with the on-disk ones.
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
-                AddReadmeFromPK4(GetZipBaseDirEntries(), darkModTxt, readmeTxt);
+                AddReadmeFromPK4(GetZipBaseDirEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
 
             List<string> titles = new();
 
