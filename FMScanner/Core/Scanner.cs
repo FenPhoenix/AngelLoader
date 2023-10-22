@@ -3664,6 +3664,8 @@ public sealed partial class Scanner : IDisposable
             value = value.Substring(0, value.Length - 1);
         }
 
+        value = value.Trim(CA_Asterisk);
+
         return value;
     }
 
@@ -4357,7 +4359,7 @@ public sealed partial class Scanner : IDisposable
                     break;
                 }
 
-                string lineT = line.Trim(CA_Asterisk).Trim(CA_Hyphen).Trim();
+                string lineT = line.Trim(CA_AsteriskHyphen).Trim();
                 if (lineT.EqualsI_Local("Copyright Information") || lineT.EqualsI_Local("Copyright"))
                 {
                     inCopyrightSection = true;

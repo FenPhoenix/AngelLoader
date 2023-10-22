@@ -140,7 +140,7 @@ public sealed partial class Scanner
     // Perf, for passing to params[]-taking methods so we don't allocate all the time
     private readonly char[] CA_Period = { '.' };
     private readonly char[] CA_Asterisk = { '*' };
-    private readonly char[] CA_Hyphen = { '-' };
+    private readonly char[] CA_AsteriskHyphen = { '*', '-' };
     private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
     private readonly char[] CA_Parens = { '(', ')' };
