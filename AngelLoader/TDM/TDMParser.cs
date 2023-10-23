@@ -10,6 +10,8 @@ namespace AngelLoader;
 
 internal static class TDMParser
 {
+    // @TDM: Test with a fresh install of TDM where no FMs dir exists, or no missions.tdminfo exists, etc.
+
     internal static List<TDM_LocalFMData> ParseMissionsInfoFile()
     {
         const string missionInfoId = "tdm_missioninfo";
@@ -22,11 +24,17 @@ internal static class TDMParser
         try
         {
             string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+
+            if (fmsPath.IsEmpty())
+            {
+                return new List<TDM_LocalFMData>();
+            }
+
             string missionsFile = Path.Combine(fmsPath, Paths.MissionsTdmInfo);
 
-            List<TDM_LocalFMData> ret = new();
-
             List<string> lines = File_ReadAllLines_List(missionsFile);
+
+            List<TDM_LocalFMData> ret = new();
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -66,15 +74,15 @@ internal static class TDMParser
 
                     else if (entryLineT.StartsWithO(mission_completed_0))
                     {
-                        localFMData.MissionCompleted0 = GetValueForKey(entryLineT, mission_completed_0);
+                        localFMData.MissionCompletedOnNormal = GetValueForKey(entryLineT, mission_completed_0) == "1";
                     }
                     else if (entryLineT.StartsWithO(mission_completed_1))
                     {
-                        localFMData.MissionCompleted1 = GetValueForKey(entryLineT, mission_completed_1);
+                        localFMData.MissionCompletedOnHard = GetValueForKey(entryLineT, mission_completed_1) == "1";
                     }
                     else if (entryLineT.StartsWithO(mission_completed_2))
                     {
-                        localFMData.MissionCompleted2 = GetValueForKey(entryLineT, mission_completed_2);
+                        localFMData.MissionCompletedOnExpert = GetValueForKey(entryLineT, mission_completed_2) == "1";
                     }
 
                     else if (entryLineT == "}")

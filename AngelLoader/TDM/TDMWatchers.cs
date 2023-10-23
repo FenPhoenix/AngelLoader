@@ -251,19 +251,16 @@ internal static class TDMWatchers
             if (fmsViewListDict.TryGetValue(localData.InternalName, out FanMission fm))
             {
                 // Only add, don't remove any the user has set manually
-                if (localData.MissionCompleted0 == "1")
+                if (localData.MissionCompletedOnNormal)
                 {
-                    fm.FinishedOnUnknown = false;
                     fm.FinishedOn |= (int)Difficulty.Normal;
                 }
-                if (localData.MissionCompleted1 == "1")
+                if (localData.MissionCompletedOnHard)
                 {
-                    fm.FinishedOnUnknown = false;
                     fm.FinishedOn |= (int)Difficulty.Hard;
                 }
-                if (localData.MissionCompleted2 == "1")
+                if (localData.MissionCompletedOnExpert)
                 {
-                    fm.FinishedOnUnknown = false;
                     fm.FinishedOn |= (int)Difficulty.Expert;
                 }
 

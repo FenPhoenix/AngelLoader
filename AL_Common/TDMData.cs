@@ -148,9 +148,9 @@ public sealed class TDM_LocalFMData
 
     public string DownloadedVersion = "";
     public string LastPlayDate = "";
-    public string MissionCompleted0 = "";
-    public string MissionCompleted1 = "";
-    public string MissionCompleted2 = "";
+    public bool MissionCompletedOnNormal;
+    public bool MissionCompletedOnHard;
+    public bool MissionCompletedOnExpert;
 }
 
 public sealed class ScannerTDMContext

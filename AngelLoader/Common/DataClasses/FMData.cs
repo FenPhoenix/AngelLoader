@@ -131,13 +131,33 @@ public sealed class FanMission
     */
     internal DateTime? DateAdded = null;
 
+    // IMPORTANT: FinishedOnUnknown MUST come AFTER FinishedOn to maintain its override priority!
+
     [FenGenIgnore]
-    // ReSharper disable once RedundantDefaultMemberInitializer
-    private uint _finishedOn = 0;
+    private uint _finishedOn;
     [FenGenNumericEmpty(0)]
     [FenGenMaxDigits(2)]
-    internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }
-    internal bool FinishedOnUnknown;
+    internal uint FinishedOn
+    {
+        get => _finishedOn;
+        set
+        {
+            _finishedOn = value.Clamp(0u, 15u);
+            if (_finishedOn > 0) _finishedOnUnknown = false;
+        }
+    }
+
+    [FenGenIgnore]
+    private bool _finishedOnUnknown;
+    internal bool FinishedOnUnknown
+    {
+        get => _finishedOnUnknown;
+        set
+        {
+            _finishedOnUnknown = value;
+            if (_finishedOnUnknown) _finishedOn = 0;
+        }
+    }
 
     [FenGenIgnore]
     internal string CommentSingleLine = "";
