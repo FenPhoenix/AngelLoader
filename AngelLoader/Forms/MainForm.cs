@@ -879,7 +879,7 @@ public sealed partial class MainForm : DarkFormBase,
         const string betaVer = "4";
         string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
 #else
-        string title = "AngelLoader " + Application.ProductVersion + " (TDM beta 10)";
+        string title = "AngelLoader " + Application.ProductVersion + " (TDM beta 11)";
 #endif
 #if X64
         title += " (64-bit)";
