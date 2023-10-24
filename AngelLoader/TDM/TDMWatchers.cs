@@ -240,6 +240,8 @@ internal static class TDMWatchers
 
     private static void SetTDMMissionInfoData()
     {
+        if (Config.GetFMInstallPath(GameIndex.TDM).IsEmpty()) return;
+
         List<TDM_LocalFMData> localFMDataList = TDMParser.ParseMissionsInfoFile();
         // @TDM: Case sensitive dictionary
         var fmsViewListDict = new Dictionary<string, FanMission>();
