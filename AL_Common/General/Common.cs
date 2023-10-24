@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Xml;
 using JetBrains.Annotations;
 
 namespace AL_Common;
@@ -125,6 +127,9 @@ public static partial class Common
             DateTimeStyles.None,
             out dateTime);
     }
+
+    public static string GetPlainInnerText(this XmlNode? node) =>
+        node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
     #endregion
 }

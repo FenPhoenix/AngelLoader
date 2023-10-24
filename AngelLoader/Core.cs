@@ -1063,6 +1063,7 @@ internal static class Core
                 ? titleContains
                 : extIsArchive
                     ? (fm.Archive.IndexOf(title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1, true)
+                    : fm.Game == Game.TDM ? (fm.DisplayArchive.IndexOf(title, 0, StringComparison.OrdinalIgnoreCase) > -1, true)
                     : (false, false);
         }
     }

@@ -2903,27 +2903,27 @@ public sealed partial class Scanner : IDisposable
         if (_scanOptions.ScanTitle)
         {
             XmlNodeList xTitle = fmInfoXml.GetElementsByTagName("title");
-            if (xTitle.Count > 0) title = xTitle[0]?.InnerText ?? "";
+            if (xTitle.Count > 0) title = xTitle[0].GetPlainInnerText();
         }
 
         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
         {
             XmlNodeList xAuthor = fmInfoXml.GetElementsByTagName("author");
-            if (xAuthor.Count > 0) author = xAuthor[0]?.InnerText ?? "";
+            if (xAuthor.Count > 0) author = xAuthor[0].GetPlainInnerText();
         }
 
 #if FMScanner_FullCode
         if (_scanOptions.ScanVersion)
         {
             XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
-            if (xVersion.Count > 0) version = xVersion[0]?.InnerText ?? "";
+            if (xVersion.Count > 0) version = xVersion[0].GetPlainInnerText();
         }
 #endif
 
         XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
         if (xReleaseDate.Count > 0)
         {
-            string rdString = xReleaseDate[0]?.InnerText ?? "";
+            string rdString = xReleaseDate[0].GetPlainInnerText();
             if (!rdString.IsEmpty()) releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
         }
 
