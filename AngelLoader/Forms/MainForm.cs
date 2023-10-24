@@ -3012,6 +3012,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void EnsureQueuedRefresh(QueuedRefresh queuedRefresh)
     {
+        // If we queue before we've shown, then our refresh value doesn't get set back to None, and we miss our
+        // first refresh if it's higher than whatever startup set it to.
+        if (!_firstShowDone) return;
         if (queuedRefresh > _queuedRefresh) _queuedRefresh = queuedRefresh;
     }
 
