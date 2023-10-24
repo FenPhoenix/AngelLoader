@@ -135,7 +135,7 @@ internal static class FMInstallAndPlay
             if (Core.View.GetMainSelectedFMOrNull() != fm)
             {
                 message += "\r\n\r\n" +
-                           fm.Archive + "\r\n" +
+                           fm.DisplayArchive + "\r\n" +
                            fm.Title + "\r\n" +
                            fm.Author + "\r\n";
             }

@@ -329,7 +329,7 @@ internal static class FMScan
                         if (scanningOne)
                         {
                             Log("(one) scanned FM was null. FM was:\r\n" +
-                                "Archive: " + fmsToScanFiltered[0].Archive + "\r\n" +
+                                "Archive: " + fmsToScanFiltered[0].DisplayArchive + "\r\n" +
                                 "InstalledDir: " + fmsToScanFiltered[0].InstalledDir + "\r\n" +
                                 "TDMInstalledDir (if applicable): " + fmsToScanFiltered[0].TDMInstalledDir);
                             return false;
