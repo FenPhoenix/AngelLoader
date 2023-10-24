@@ -22,8 +22,6 @@ doesn't. It gets automatically handled somehow.
 
 If we have no internet connection, we fail immediately (thrown exception) and thus fall back to a local-only scan,
 so no worries about a too-long timeout.
-BUT:
-@TDM: Should we put up a progress box for TDM scans so the user can cancel if it's taking too long (timeout is 100s by default)?
 */
 internal static class TDM_Downloader
 {
