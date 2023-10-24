@@ -139,7 +139,7 @@ public sealed class ConfigData
      a dialog telling the user they need to specify a backup path first, and let them click a button to go
      to the Settings window backup path field.
     -DarkLoader import needs to know the backup path (when importing saves). We'd have to ask the user here
-     too.
+     too. (2023-10-24: We do this now.)
     -Due to backup/restore FM being a dead-common operation and one of the main purposes of AngelLoader
      even, allowing the backup path to be optional seems of questionable utility. However, we do allow
      all other fields to be optional even though leaving them ALL blank is basically nonsensical, and
