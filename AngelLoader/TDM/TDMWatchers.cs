@@ -68,7 +68,13 @@ internal static class TDMWatchers
         }
     }
 
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e) => UpdateTDMInstalledFMStatus(e.FullPath);
+    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
+    {
+        lock (_tdmFMChangeLock)
+        {
+            UpdateTDMInstalledFMStatus(e.FullPath);
+        }
+    }
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
@@ -96,67 +102,67 @@ internal static class TDMWatchers
 
     internal static void UpdateTDMDataFromDisk()
     {
-        SetTDMMissionInfoData();
-        UpdateTDMInstalledFMStatus();
+        lock (_tdmFMChangeLock)
+        {
+            SetTDMMissionInfoData();
+            UpdateTDMInstalledFMStatus();
+        }
     }
 
     private static void UpdateTDMInstalledFMStatus(string? file = null)
     {
-        lock (_tdmFMChangeLock)
+        string? fmName = null;
+        if (file == null)
         {
-            string? fmName = null;
-            if (file == null)
+            string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
+            if (!fmInstallPath.IsEmpty())
             {
-                string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
-                if (!fmInstallPath.IsEmpty())
+                try
                 {
-                    try
-                    {
-                        file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
-                    }
-                    catch
-                    {
-                        file = "";
-                        fmName = null;
-                    }
+                    file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
                 }
-                else
+                catch
                 {
                     file = "";
                     fmName = null;
                 }
             }
-
-            if (!file.IsEmpty())
+            else
             {
-                if (File.Exists(file))
-                {
-                    List<string>? lines = null;
-                    for (int tryIndex = 0; tryIndex < 3; tryIndex++)
-                    {
-                        if (TryGetLines(file, out lines))
-                        {
-                            break;
-                        }
-                    }
+                file = "";
+                fmName = null;
+            }
+        }
 
-                    if (lines?.Count > 0)
+        if (!file.IsEmpty())
+        {
+            if (File.Exists(file))
+            {
+                List<string>? lines = null;
+                for (int tryIndex = 0; tryIndex < 3; tryIndex++)
+                {
+                    if (TryGetLines(file, out lines))
                     {
-                        fmName = lines[0];
+                        break;
                     }
+                }
+
+                if (lines?.Count > 0)
+                {
+                    fmName = lines[0];
                 }
             }
+        }
 
-            for (int i = 0; i < FMsViewList.Count; i++)
+        for (int i = 0; i < FMsViewList.Count; i++)
+        {
+            FanMission fm = FMsViewList[i];
+            if (fm.Game == Game.TDM)
             {
-                FanMission fm = FMsViewList[i];
-                if (fm.Game == Game.TDM)
-                {
-                    // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                    // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                    // list.
-                    fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
-                }
+                // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+                // list.
+                fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
             }
         }
 
