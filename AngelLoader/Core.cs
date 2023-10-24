@@ -618,9 +618,8 @@ internal static class Core
 
         #endregion
 
-        // These ones MUST NOT be set on startup, because the source values won't be valid
-        Config.SortedColumn = View.GetCurrentSortedColumnIndex();
-        Config.SortDirection = View.GetCurrentSortDirection();
+        // This MUST NOT be set on startup, because the source values won't be valid
+        View.UpdateConfig();
 
         #endregion
 

@@ -379,4 +379,6 @@ public interface IView : ISettingsChangeableView
     void QueueRefreshAllUIData();
 
     void QueueRefreshListOnly();
+
+    void UpdateConfig();
 }

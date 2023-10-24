@@ -4981,7 +4981,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     });
 
-    private void UpdateConfig()
+    public void UpdateConfig()
     {
         GameIndex gameTab = GameIndex.Thief1;
         if (Config.GameOrganization == GameOrganization.ByTab && GamesTabControl.SelectedTab is DarkTabPageCustom darkTabPageCustom)
