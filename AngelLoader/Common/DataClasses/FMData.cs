@@ -237,5 +237,7 @@ public sealed class FanMission
     internal bool NeedsScan() => !MarkedUnavailable && (Game == Game.Null ||
         (Game != Game.Unsupported && !MarkedScanned));
 
+    internal bool IsFastToScan() => Game != Game.TDM && !Archive.ExtIs7z();
+
     #endregion
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using static AL_Common.Common;
@@ -130,10 +131,10 @@ internal static class TDMParser
         }
     }
 
-    internal static async Task<ScannerTDMContext> GetScannerTDMContext()
+    internal static async Task<ScannerTDMContext> GetScannerTDMContext(CancellationToken cancellationToken)
     {
         List<TDM_LocalFMData> localFMData = ParseMissionsInfoFile();
-        (bool success, _, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer();
+        (bool success, _, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer(cancellationToken);
         return success
             ? new ScannerTDMContext(localFMData, serverFMData)
             : new ScannerTDMContext();

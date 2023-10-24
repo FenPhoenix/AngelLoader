@@ -2675,8 +2675,8 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     FanMission fm = FMsDGV.GetMainSelectedFM();
 
-                    // .7z FMs will have a progress box instead
-                    if (!fm.Archive.ExtIs7z())
+                    // Slow-scanning FMs will have a progress box instead
+                    if (fm.IsFastToScan())
                     {
                         Cursor = Cursors.WaitCursor;
                     }
@@ -2690,7 +2690,7 @@ public sealed partial class MainForm : DarkFormBase,
                         _ => FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true)
                     };
 
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
+                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, suppressSingleFMProgressBoxIfFast: true))
                     {
                         RefreshFM(fm);
                     }

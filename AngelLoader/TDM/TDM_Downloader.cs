@@ -32,13 +32,7 @@ internal static class TDM_Downloader
     private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
 #endif
 
-    internal static Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
-    TryGetMissionsFromServer()
-    {
-        return TryGetMissionsFromServer(CancellationToken.None);
-    }
-
-    private static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer(CancellationToken cancellationToken)
     {
         try

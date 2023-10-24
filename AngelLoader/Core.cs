@@ -2344,7 +2344,7 @@ internal static class Core
 
         if (fm.NeedsScan())
         {
-            if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
+            if (await FMScan.ScanFMs(new List<FanMission> { fm }, suppressSingleFMProgressBoxIfFast: true))
             {
                 View.RefreshFM(fm, rowOnly: true);
             }

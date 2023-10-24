@@ -31,7 +31,10 @@ internal static class FMScan
     /// <param name="fmsToScan"></param>
     /// <param name="scanOptions">Pass null for default scan options.</param>
     /// <param name="scanFullIfNew"></param>
-    /// <param name="hideBoxIfZip"></param>
+    /// <param name="suppressSingleFMProgressBoxIfFast">
+    /// Suppresses showing the progress box for a single-FM scan
+    /// if the FM scan is of a type deemed "fast" (will complete reliably quickly).
+    /// </param>
     /// <param name="setForceReCacheReadmes"></param>
     /// <param name="scanMessage"></param>
     /// <returns></returns>
@@ -39,7 +42,7 @@ internal static class FMScan
         List<FanMission> fmsToScan,
         FMScanner.ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
-        bool hideBoxIfZip = false,
+        bool suppressSingleFMProgressBoxIfFast = false,
         bool setForceReCacheReadmes = false,
         string? scanMessage = null)
     {
@@ -96,12 +99,12 @@ internal static class FMScan
                     );
                 }
 
-                if (hideBoxIfZip && scanningOne)
+                if (suppressSingleFMProgressBoxIfFast && scanningOne)
                 {
                     // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
                     // nice as the timer method, but that can cause race conditions I don't know how to fix, so
                     // whatever.
-                    if (fmsToScan[0].Archive.ExtIs7z())
+                    if (!fmsToScan[0].IsFastToScan())
                     {
                         ShowProgressBox(suppressShow: false);
                     }
@@ -206,7 +209,7 @@ internal static class FMScan
                     if (_scanCts.IsCancellationRequested) return false;
 
                     ScannerTDMContext tdmContext = tdmDataRequired
-                        ? await TDMParser.GetScannerTDMContext()
+                        ? await TDMParser.GetScannerTDMContext(_scanCts.Token)
                         : new ScannerTDMContext();
 
                     using var scanner = new FMScanner.Scanner(
@@ -509,7 +512,7 @@ internal static class FMScan
         List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
         if (fms.Count == 1)
         {
-            if (await ScanFMs(fms, hideBoxIfZip: true, setForceReCacheReadmes: true))
+            if (await ScanFMs(fms, suppressSingleFMProgressBoxIfFast: true, setForceReCacheReadmes: true))
             {
                 Core.View.RefreshFM(fms[0]);
             }
