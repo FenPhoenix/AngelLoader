@@ -19,6 +19,8 @@ sealed partial class ImportFromDarkLoaderForm
         this.ImportFMDataCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ImportSavesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ImportControls = new AngelLoader.Forms.User_DL_ImportControls();
+        this.BackupPathRequiredLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.SetBackupPathLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -36,11 +38,12 @@ sealed partial class ImportFromDarkLoaderForm
         // 
         // BottomFLP
         // 
-        this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.BottomFLP.Controls.Add(this.Cancel_Button);
         this.BottomFLP.Controls.Add(this.OKButton);
         this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-        this.BottomFLP.Location = new System.Drawing.Point(0, 245);
+        this.BottomFLP.Location = new System.Drawing.Point(0, 285);
         this.BottomFLP.Size = new System.Drawing.Size(547, 40);
         this.BottomFLP.TabIndex = 0;
         // 
@@ -103,9 +106,24 @@ sealed partial class ImportFromDarkLoaderForm
         // 
         // ImportControls
         // 
+        this.ImportControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.ImportControls.Location = new System.Drawing.Point(8, 8);
-        this.ImportControls.Size = new System.Drawing.Size(545, 88);
+        this.ImportControls.Size = new System.Drawing.Size(536, 88);
         this.ImportControls.TabIndex = 1;
+        // 
+        // BackupPathRequiredLabel
+        // 
+        this.BackupPathRequiredLabel.AutoSize = true;
+        this.BackupPathRequiredLabel.Location = new System.Drawing.Point(32, 244);
+        // 
+        // SetBackupPathLinkLabel
+        // 
+        this.SetBackupPathLinkLabel.AutoSize = true;
+        this.SetBackupPathLinkLabel.Location = new System.Drawing.Point(32, 260);
+        this.SetBackupPathLinkLabel.TabIndex = 1;
+        this.SetBackupPathLinkLabel.TabStop = true;
+        this.SetBackupPathLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.SetBackupPathLinkLabel_LinkClicked);
         // 
         // ImportFromDarkLoaderForm
         // 
@@ -113,7 +131,9 @@ sealed partial class ImportFromDarkLoaderForm
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.CancelButton = this.Cancel_Button;
-        this.ClientSize = new System.Drawing.Size(547, 285);
+        this.ClientSize = new System.Drawing.Size(547, 325);
+        this.Controls.Add(this.BackupPathRequiredLabel);
+        this.Controls.Add(this.SetBackupPathLinkLabel);
         this.Controls.Add(this.ImportFinishedOnCheckBox);
         this.Controls.Add(this.ImportLastPlayedCheckBox);
         this.Controls.Add(this.ImportReleaseDateCheckBox);

@@ -41,6 +41,7 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.SettingsWindowData;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -78,7 +79,7 @@ internal static class Core
         TDMWatchers.Init();
 
         bool openSettings = false;
-        bool cleanStart = false;
+        SettingsWindowState settingsWindowState = SettingsWindowState.Startup;
 
         List<FanMission>? fmsViewListUnscanned = null;
 
@@ -171,7 +172,7 @@ internal static class Core
                 else
                 {
                     openSettings = true;
-                    cleanStart = true;
+                    settingsWindowState = SettingsWindowState.StartupClean;
 
                     // Ditto the above
                     try
@@ -377,7 +378,7 @@ internal static class Core
         else
         {
             splashScreen.Hide();
-            if (await OpenSettings(startup: true, cleanStart: cleanStart))
+            if (await OpenSettings(settingsWindowState))
             {
                 splashScreen.Show(Config.VisualTheme);
                 await DoParallelLoad();
@@ -399,14 +400,15 @@ internal static class Core
     /// <summary>
     /// Opens the Settings dialog and performs any required changes and updates.
     /// </summary>
-    /// <param name="startup"></param>
-    /// <param name="cleanStart"></param>
+    /// <param name="state"></param>
     /// <returns><see langword="true"/> if changes were accepted, <see langword="false"/> if canceled.</returns>
     public static async Task<bool>
-    OpenSettings(bool startup = false, bool cleanStart = false)
+    OpenSettings(SettingsWindowState state = SettingsWindowState.Normal)
     {
+        bool startup = state.IsStartup();
+
         (bool accepted, ConfigData outConfig) =
-            ViewEnv.ShowSettingsWindow(startup ? null : View, Config, startup, cleanStart);
+            ViewEnv.ShowSettingsWindow(startup ? null : View, Config, state);
 
         #region Save window state
 

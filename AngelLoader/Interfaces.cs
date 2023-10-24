@@ -42,7 +42,7 @@ public interface IViewEnvironment
     ISplashScreen GetSplashScreen();
     IView GetView();
     void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
-    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, bool startup, bool cleanStart);
+    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
 }
 
 public interface IDialogs
@@ -320,9 +320,33 @@ public interface IView : ISettingsChangeableView
 
     (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected) ShowScanAllFMsWindow(bool selected);
 
-    (bool Accepted, string IniFile, bool ImportFMData, bool ImportTitle, bool ImportSize, bool ImportComment, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportFinishedOn, bool ImportSaves) ShowDarkLoaderImportWindow();
+    (bool Accepted,
+        string IniFile,
+        bool ImportFMData,
+        bool ImportTitle,
+        bool ImportSize,
+        bool ImportComment,
+        bool ImportReleaseDate,
+        bool ImportLastPlayed,
+        bool ImportFinishedOn,
+        bool ImportSaves,
+        bool BackupPathSetRequested)
+        ShowDarkLoaderImportWindow();
 
-    (bool Accepted, List<string> IniFiles, bool ImportTitle, bool ImportReleaseDate, bool ImportLastPlayed, bool ImportComment, bool ImportRating, bool ImportDisabledMods, bool ImportTags, bool ImportSelectedReadme, bool ImportFinishedOn, bool ImportSize) ShowImportFromMultipleInisForm(ImportType importType);
+    (bool Accepted,
+        List<string> IniFiles,
+        bool ImportTitle,
+        bool ImportReleaseDate,
+        bool ImportLastPlayed,
+        bool
+        ImportComment,
+        bool ImportRating,
+        bool ImportDisabledMods,
+        bool ImportTags,
+        bool ImportSelectedReadme,
+        bool ImportFinishedOn,
+        bool ImportSize)
+        ShowImportFromMultipleInisForm(ImportType importType);
 
     #endregion
 

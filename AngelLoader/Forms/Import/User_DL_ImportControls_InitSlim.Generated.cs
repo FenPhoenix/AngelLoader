@@ -28,6 +28,8 @@ sealed partial class User_DL_ImportControls
         // 
         // DarkLoaderIniTextBox
         // 
+        this.DarkLoaderIniTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.DarkLoaderIniTextBox.Location = new System.Drawing.Point(8, 56);
         this.DarkLoaderIniTextBox.ReadOnly = true;
         this.DarkLoaderIniTextBox.Size = new System.Drawing.Size(440, 20);
@@ -35,6 +37,7 @@ sealed partial class User_DL_ImportControls
         // 
         // DarkLoaderIniBrowseButton
         // 
+        this.DarkLoaderIniBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
         this.DarkLoaderIniBrowseButton.Enabled = false;
         this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(448, 55);
         this.DarkLoaderIniBrowseButton.TabIndex = 3;

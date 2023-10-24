@@ -26,6 +26,7 @@ using static AngelLoader.Forms.Interfaces;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.SettingsWindowData;
 using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
@@ -39,8 +40,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly Timer _thiefBuddyExistenceCheckTimer;
     private bool _thiefBuddyConsideredToExist;
 
-    private readonly bool _startup;
-    private readonly bool _cleanStart;
+    private readonly SettingsWindowState _state;
 
     #region Copies of passed-in data
 
@@ -101,7 +101,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     protected override void WndProc(ref Message m)
     {
-        if (_startup && m.Msg == Native.WM_THEMECHANGED)
+        if (_state.IsStartup() && m.Msg == Native.WM_THEMECHANGED)
         {
             Win32ThemeHooks.ReloadTheme();
         }
@@ -109,7 +109,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     // @CAN_RUN_BEFORE_VIEW_INIT
-    internal SettingsForm(ISettingsChangeableView? ownerForm, ConfigData config, bool startup, bool cleanStart)
+    internal SettingsForm(ISettingsChangeableView? ownerForm, ConfigData config, SettingsWindowState state)
     {
 #if DEBUG
         InitializeComponent();
@@ -121,8 +121,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         _selfTheme = config.VisualTheme;
 
-        _startup = startup;
-        _cleanStart = cleanStart;
+        _state = state;
         _ownerForm = ownerForm;
 
         #region Init copies of passed-in data
@@ -274,7 +273,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PageControls[i].Page.Dock = DockStyle.Fill;
         }
 
-        if (startup)
+        if (_state.IsStartup())
         {
             PagePanel.Controls.Add(PathsPage);
 
@@ -300,7 +299,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // This DisableEvents block is still required because it involves non-page events
         using (new DisableEvents(this))
         {
-            if (startup)
+            if (_state.IsStartup())
             {
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
@@ -314,7 +313,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             }
             else
             {
-                PageControls[(int)config.SettingsTab].Button.Checked = true;
+                if (state == SettingsWindowState.BackupPathSet)
+                {
+                    PageControls[(int)SettingsTab.Paths].Button.Checked = true;
+                    for (int i = 0; i < PageControls.Length; i++)
+                    {
+                        if (i != (int)SettingsTab.Paths)
+                        {
+                            PageControls[i].Button.Hide();
+                        }
+                    }
+                }
+                else
+                {
+                    PageControls[(int)config.SettingsTab].Button.Checked = true;
+                }
             }
         }
 
@@ -381,7 +394,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #endregion
 
-        if (!startup)
+        if (!_state.IsStartup())
         {
             #region Appearance page
 
@@ -652,7 +665,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         LangComboBox.SelectedIndexChanged += LanguageComboBox_SelectedIndexChanged;
 
-        if (!startup)
+        if (!_state.IsStartup())
         {
             #region Appearance page
 
@@ -728,7 +741,17 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
         prior to then.
         */
-        if (_startup && !_cleanStart) CheckForErrors();
+
+        switch (_state)
+        {
+            case SettingsWindowState.BackupPathSet:
+                ShowPathError(PathsPage.BackupPathTextBox, true);
+                EnsureControlIsInView(PathsPage.PagePanel, PathsPage.BackupPathTextBox);
+                break;
+            case SettingsWindowState.Startup:
+                CheckForErrors();
+                break;
+        }
 
         base.OnLoad(e);
     }
@@ -783,14 +806,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         if (suspendResume) MainSplitContainer.SuspendDrawing();
         try
         {
-            Text = _startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
+            Text = _state.IsStartup() ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
 
             OKButton.Text = LText.Global.OK;
             Cancel_Button.Text = LText.Global.Cancel;
 
             #region Paths page
 
-            PathsRadioButton.Text = _startup
+            PathsRadioButton.Text = _state.IsStartup()
                 ? LText.SettingsWindow.InitialSettings_TabText
                 : LText.SettingsWindow.Paths_TabText;
 
@@ -830,7 +853,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            if (_startup)
+            if (_state.IsStartup())
             {
                 LangGroupBox.Text = LText.SettingsWindow.Appearance_Language;
             }
@@ -971,7 +994,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             if (pageIndex > -1)
             {
                 string section =
-                    _startup
+                    _state.IsStartup()
                         ? HelpSections.InitialSettings
                         : HelpSections.SettingsPages[pageIndex];
 
@@ -1016,7 +1039,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         if (DialogResult != DialogResult.OK)
         {
-            if (!_startup)
+            if (!_state.IsStartup())
             {
                 bool langsDifferent = !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage);
                 bool themesDifferent = _inTheme != _selfTheme;
@@ -1055,7 +1078,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #endregion
 
-        if (!_startup) FormatArticles();
+        if (!_state.IsStartup()) FormatArticles();
 
         if (CheckForErrors())
         {
@@ -1088,7 +1111,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #endregion
 
-        if (_startup)
+        if (_state.IsStartup())
         {
             OutConfig.Language = LangComboBox.SelectedBackingItem();
         }
@@ -1285,7 +1308,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (PageControls[index].Page.Visible) return;
 
-        if (_startup)
+        if (_state.IsStartup())
         {
             // Don't bother with position saving if this is the Initial Settings window
             PathsPage.Show();
@@ -1537,7 +1560,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             SetCursors(wait: true);
 
             Localize();
-            if (!_startup) _ownerForm?.Localize();
+            if (!_state.IsStartup()) _ownerForm?.Localize();
         }
         finally
         {
@@ -1794,6 +1817,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Errors
 
+    private void EnsureControlIsInView(ScrollableControl parent, Control control)
+    {
+        if (control == PathsPage.BackupPathTextBox)
+        {
+            PathsPage.PagePanel.ScrollControlIntoView(PathsPage.OtherGroupBox);
+            PathsPage.PagePanel.ScrollControlIntoView(PathsPage.BackupPathHelpLabel);
+        }
+        else
+        {
+            parent.ScrollControlIntoView(control);
+        }
+    }
+
     /// <summary>
     /// Sets or removes error visuals as necessary, and returns a bool for whether there were errors or not.
     /// </summary>
@@ -1853,7 +1889,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 if (PathErrorIsSet(control))
                 {
-                    PathsPage.PagePanel.ScrollControlIntoView(control);
+                    EnsureControlIsInView(PathsPage.PagePanel, control);
                     break;
                 }
             }

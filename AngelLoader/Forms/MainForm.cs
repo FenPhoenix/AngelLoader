@@ -5142,7 +5142,8 @@ public sealed partial class MainForm : DarkFormBase,
         bool ImportReleaseDate,
         bool ImportLastPlayed,
         bool ImportFinishedOn,
-        bool ImportSaves)
+        bool ImportSaves,
+        bool BackupPathSetRequested)
     ShowDarkLoaderImportWindow()
     {
         using var f = new ImportFromDarkLoaderForm();
@@ -5155,7 +5156,8 @@ public sealed partial class MainForm : DarkFormBase,
                 ImportReleaseDate: f.ImportReleaseDate,
                 ImportLastPlayed: f.ImportLastPlayed,
                 ImportFinishedOn: f.ImportFinishedOn,
-                ImportSaves: f.ImportSaves
+                ImportSaves: f.ImportSaves,
+                BackupPathSetRequested: f.BackupPathSetRequested
             );
     }
 

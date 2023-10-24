@@ -862,6 +862,8 @@ internal sealed class LText_Class
         internal readonly string DarkLoader_ChooseIni = "Choose DarkLoader.ini:";
         internal readonly string DarkLoader_ImportFMData = "Import FM data";
         internal readonly string DarkLoader_ImportSaves = "Import saves";
+        internal readonly string DarkLoader_BackupPathRequired = "To import saves, an FM backup path is required.";
+        internal readonly string DarkLoader_SetBackupPath = "Set FM backup path...";
         internal readonly string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
         internal readonly string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
         internal readonly string DarkLoader_NoArchiveDirsFound = "No archive directories were specified in DarkLoader.ini. Unable to import.";

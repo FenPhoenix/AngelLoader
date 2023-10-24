@@ -10,6 +10,7 @@ using FMScanner;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.SettingsWindowData;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -43,6 +44,7 @@ internal static class Import
 
         if (importType == ImportType.DarkLoader)
         {
+            reshow:
             (bool accepted,
                 string iniFile,
                 importFMData,
@@ -52,7 +54,14 @@ internal static class Import
                 bool importReleaseDate,
                 bool importLastPlayed,
                 bool importFinishedOn,
-                importSaves) = Core.View.ShowDarkLoaderImportWindow();
+                importSaves,
+                bool backupPathSetRequested) = Core.View.ShowDarkLoaderImportWindow();
+
+            if (backupPathSetRequested)
+            {
+                await Core.OpenSettings(SettingsWindowState.BackupPathSet);
+                goto reshow;
+            }
 
             if (!accepted) return;
 

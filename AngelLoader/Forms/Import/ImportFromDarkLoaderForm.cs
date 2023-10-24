@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
@@ -19,6 +20,8 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
 
     internal bool ImportSaves;
 
+    internal bool BackupPathSetRequested;
+
     internal ImportFromDarkLoaderForm()
     {
 #if DEBUG
@@ -28,6 +31,18 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
 #endif
 
         if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
+
+        if (Directory.Exists(Config.FMsBackupPath))
+        {
+            Size = new Size(Size.Width, Size.Height - 40);
+            BackupPathRequiredLabel.Hide();
+            SetBackupPathLinkLabel.Hide();
+        }
+        else
+        {
+            ImportSavesCheckBox.Checked = false;
+            ImportSavesCheckBox.Enabled = false;
+        }
     }
 
     protected override void OnLoad(EventArgs e)
@@ -54,6 +69,16 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
 
         OKButton.Text = LText.Global.OK;
         Cancel_Button.Text = LText.Global.Cancel;
+
+        BackupPathRequiredLabel.Text = LText.Importing.DarkLoader_BackupPathRequired;
+        SetBackupPathLinkLabel.Text = LText.Importing.DarkLoader_SetBackupPath;
+
+        int backupControlsWidth = Math.Max(BackupPathRequiredLabel.Right, SetBackupPathLinkLabel.Right);
+        if (backupControlsWidth > ClientSize.Width)
+        {
+            int extra = backupControlsWidth - ClientSize.Width;
+            Width += extra;
+        }
     }
 
     private void ImportFMDataCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -194,4 +219,11 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
     */
 
     #endregion
+
+    private void SetBackupPathLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        BackupPathSetRequested = true;
+        DialogResult = DialogResult.Cancel;
+        Close();
+    }
 }

@@ -35,9 +35,9 @@ public sealed class FormsViewEnvironment : IViewEnvironment
     public void ApplicationExit() => Application.Exit();
 
     public (bool Accepted, ConfigData OutConfig)
-    ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, bool startup, bool cleanStart)
+    ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state)
     {
-        using var f = new SettingsForm(view, inConfig, startup, cleanStart);
+        using var f = new SettingsForm(view, inConfig, state);
         return (f.ShowDialogDark() == DialogResult.OK, f.OutConfig);
     }
 
