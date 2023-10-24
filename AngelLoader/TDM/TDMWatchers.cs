@@ -20,7 +20,7 @@ internal static class TDMWatchers
     private static readonly System.Timers.Timer _MissionInfoFileTimer = new(1000) { Enabled = false, AutoReset = false };
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
 
-    private static readonly object _tdmFMChangeLock = new();
+    internal static readonly object _tdmFMChangeLock = new();
 
     internal static void Init()
     {
@@ -243,7 +243,6 @@ internal static class TDMWatchers
         List<TDM_LocalFMData> localFMDataList = TDMParser.ParseMissionsInfoFile();
         // @TDM: Case sensitive dictionary
         var fmsViewListDict = new Dictionary<string, FanMission>();
-        // ReSharper disable once InconsistentlySynchronizedField
         foreach (FanMission fm in FMsViewList)
         {
             if (fm.Game == Game.TDM)
