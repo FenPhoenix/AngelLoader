@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define ENABLE_TDM_SMART_NAME_APPEND
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using AngelLoader.DataClasses;
@@ -561,10 +563,33 @@ internal static class FindFMs
                     // If it overflowed, oh well. You get what you deserve in that case.
                     if (j > 999) return;
 
+                    /*
+                    This results in eg. "some_fm_name(2)(3)" if we need to append more than once.
+                    Enable the below to properly increment the number. Note that this doesn't really matter,
+                    since the only thing we use the name for is a unique id and we still end up with that.
+                    And there's no length limit on it either. So for perf we can leave it as is.
+                    */
+#if ENABLE_TDM_SMART_NAME_APPEND
+                    System.Text.RegularExpressions.Match match;
+                    System.Text.RegularExpressions.Group numberGroup;
+                    if (fm.InstalledDir.Length >= 3 &&
+                        (match = System.Text.RegularExpressions.Regex.Match(fm.InstalledDir, @"\(<?(?<Number>[0123456789]+)\)$")).Success &&
+                        UInt_TryParseInv((numberGroup = match.Groups["Number"]).Value, out uint result)
+                       )
+                    {
+                        fm.InstalledDir = fm.InstalledDir.Substring(0, numberGroup.Index - 1) + "(" + (result + 1) + ")";
+                    }
+                    else
+                    {
+                        // Conform to FMSel's numbering format
+                        string append = "(" + (j + 2).ToStrInv() + ")";
+                        fm.InstalledDir += append;
+                    }
+#else
                     // Conform to FMSel's numbering format
                     string append = "(" + (j + 2).ToStrInv() + ")";
-
                     fm.InstalledDir += append;
+#endif
 
                     if (!fmDataIniList_Hash.Contains(fm.InstalledDir)) break;
                 }
