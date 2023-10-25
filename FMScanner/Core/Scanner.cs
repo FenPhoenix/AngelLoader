@@ -670,6 +670,17 @@ public sealed partial class Scanner : IDisposable
     {
         string zipPath;
 
+        /*
+        @TDM(Scan): The game rejects pk4s that don't have darkmod.txt in the base dir. Should we do this too?
+        If we do then we have to load the zip always (although in practice we always do in normal situations anyway).
+        We would also need to have this local function return a ScannedFMDataAndError object so we can return
+        that from the main one.
+        Note: TDM uses OS case-sensitivity for darkmod.txt name.
+
+        Also, if we did this, we'd still be counting them in the set-changed comparer for auto-refresh. We really
+        don't want to open zip files for that check, way too heavy on perf. So maybe we could just say garbage in
+        the FMs folder is highly unlikely and leave it at that.
+        */
         List<ZipArchiveFastEntry>? __zipEntries = null;
         List<ZipArchiveFastEntry> GetZipBaseDirEntries()
         {
