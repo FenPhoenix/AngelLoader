@@ -986,10 +986,11 @@ internal static class Core
 
             List<FanMission> fmsViewListUnscanned = FindFMs.Find();
 
-            var tdmFMsDict = new Dictionary<string, int>();
-            foreach (FanMission fm in FMsViewList)
+            // @TDM_CASE: Case-sensitive dictionary
+            var tdmFMsDict = new Dictionary<string, int>(FMDataIniListTDM.Count);
+            foreach (FanMission fm in FMDataIniListTDM)
             {
-                if (!fm.MarkedUnavailable && fm.Game == Game.TDM)
+                if (!fm.MarkedUnavailable)
                 {
                     tdmFMsDict[fm.TDMInstalledDir] = fm.TDMVersion;
                 }
@@ -997,9 +998,9 @@ internal static class Core
 
             TDMWatchers.UpdateTDMDataFromDisk();
 
-            foreach (FanMission fm in FMsViewList)
+            foreach (FanMission fm in FMDataIniListTDM)
             {
-                if (!fm.MarkedUnavailable && fm.Game == Game.TDM)
+                if (!fm.MarkedUnavailable)
                 {
                     if (tdmFMsDict.TryGetValue(fm.TDMInstalledDir, out int version))
                     {

@@ -327,6 +327,7 @@ internal static class FMCache
 
                 if (isTDM)
                 {
+                    // @TDM_CASE("darkmod.txt", "readme.txt" constants)
                     if (entry.Length == 0 || (!fn.EqualsI("darkmod.txt") && !fn.EqualsI("readme.txt")))
                     {
                         continue;

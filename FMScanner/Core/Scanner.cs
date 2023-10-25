@@ -675,7 +675,7 @@ public sealed partial class Scanner : IDisposable
         If we do then we have to load the zip always (although in practice we always do in normal situations anyway).
         We would also need to have this local function return a ScannedFMDataAndError object so we can return
         that from the main one.
-        Note: TDM uses OS case-sensitivity for darkmod.txt name.
+        @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
 
         Also, if we did this, we'd still be counting them in the set-changed comparer for auto-refresh. We really
         don't want to open zip files for that check, way too heavy on perf. So maybe we could just say garbage in
@@ -925,6 +925,7 @@ public sealed partial class Scanner : IDisposable
             for (int i = 0; i < baseDirEntries.Count; i++)
             {
                 ZipArchiveFastEntry entry = baseDirEntries[i];
+                // @TDM_CASE("darkmod.txt", "readme.txt" constants)
                 if (entry.FullName.EqualsI(readme1Name))
                 {
                     readme1entry = entry;

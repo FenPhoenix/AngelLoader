@@ -285,6 +285,7 @@ public static partial class Utils
         anything with these, not putting them automatically into the matching game dir or anything. So it could
         be these are deprecated file names, but regardless, it looks like we can ignore them.
         */
+        // @TDM_CASE
         return !fileOrDirName.EqualsI(Paths.TDMMissionShots) &&
                !fileOrDirName.EndsWithI("_l10n") &&
                !fileOrDirName.EndsWithI("_l10n.pk4");

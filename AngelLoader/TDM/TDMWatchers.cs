@@ -82,13 +82,9 @@ internal static class TDMWatchers
     {
         lock (_tdmFMChangeLock)
         {
-            for (int i = 0; i < FMsViewList.Count; i++)
+            foreach (FanMission fm in FMDataIniListTDM)
             {
-                FanMission fm = FMsViewList[i];
-                if (fm.Game == Game.TDM)
-                {
-                    fm.Installed = false;
-                }
+                fm.Installed = false;
             }
         }
 
@@ -154,16 +150,12 @@ internal static class TDMWatchers
             }
         }
 
-        for (int i = 0; i < FMsViewList.Count; i++)
+        foreach (FanMission fm in FMDataIniListTDM)
         {
-            FanMission fm = FMsViewList[i];
-            if (fm.Game == Game.TDM)
-            {
-                // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                // list.
-                fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
-            }
+            // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+            // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+            // list.
+            fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
         }
 
         if (Core.View != null!)
@@ -243,19 +235,16 @@ internal static class TDMWatchers
         if (Config.GetFMInstallPath(GameIndex.TDM).IsEmpty()) return;
 
         List<TDM_LocalFMData> localFMDataList = TDMParser.ParseMissionsInfoFile();
-        // @TDM: Case sensitive dictionary
-        var fmsViewListDict = new Dictionary<string, FanMission>();
-        foreach (FanMission fm in FMsViewList)
+        // @TDM_CASE: Case sensitive dictionary
+        var tdmFMsDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
+        foreach (FanMission fm in FMDataIniListTDM)
         {
-            if (fm.Game == Game.TDM)
-            {
-                fmsViewListDict[fm.TDMInstalledDir] = fm;
-            }
+            tdmFMsDict[fm.TDMInstalledDir] = fm;
         }
 
         foreach (TDM_LocalFMData localData in localFMDataList)
         {
-            if (fmsViewListDict.TryGetValue(localData.InternalName, out FanMission fm))
+            if (tdmFMsDict.TryGetValue(localData.InternalName, out FanMission fm))
             {
                 // Only add, don't remove any the user has set manually
                 if (localData.MissionCompletedOnNormal)
@@ -333,13 +322,14 @@ internal static class TDMWatchers
             internalTdmFMIds.Sort();
             finalFilesList.Sort();
 
-            // @TDM: Case sensitive comparison
+            // @TDM_CASE: Case-sensitive comparison
             if (!internalTdmFMIds.SequenceEqual(finalFilesList))
             {
                 return true;
             }
 
             List<TDM_LocalFMData> localDataList = TDMParser.ParseMissionsInfoFile();
+            // @TDM: Case-sensitive dictionary
             var internalTDMDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
             foreach (FanMission fm in FMDataIniListTDM)
             {

@@ -153,6 +153,7 @@ public sealed class TDM_LocalFMData
     public bool MissionCompletedOnExpert;
 }
 
+// @TDM_CASE: Case-sensitive dictionaries
 public sealed class ScannerTDMContext
 {
     public readonly Dictionary<string, TDM_LocalFMData> LocalFMData;

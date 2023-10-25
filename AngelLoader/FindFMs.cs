@@ -464,7 +464,7 @@ internal static class FindFMs
     private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
     {
         /*
-        @TDM(Case-sensitivity/FindFMs): We're using DictionaryI for installed dirs here at the moment.
+        @TDM_CASE(FindFMs): We're using DictionaryI for installed dirs here at the moment.
         This is the right thing on Windows, but we need to think about what this would mean on Linux.
         Is it even possible to have both scenarios play nice with the list? Probably not...
         On Windows if we renamed the dir "iris" to "iriS" we'd still get a match and not add "iriS" to the list

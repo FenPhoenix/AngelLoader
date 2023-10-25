@@ -41,7 +41,7 @@ internal static class TDMParser
             {
                 string lineT = lines[i].Trim();
                 /*
-                @TDM(Case-sensitivity/ParseMissionsInfoFile())
+                @TDM_CASE(ParseMissionsInfoFile())
                 TDM is case-sensitive with these. If you rename say "iris" to "iriS", it will add another
                 entry for "iriS" even if "iris" already exists, and "iriS" will be empty to start with.
                 And when it reads the file, it's case-sensitive too, so if the dir "iriS" exists and "iriS"
