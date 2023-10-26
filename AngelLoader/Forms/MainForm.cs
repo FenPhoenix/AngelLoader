@@ -3006,39 +3006,32 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void EnsureQueuedRefresh(QueuedRefresh queuedRefresh)
     {
-        // If we queue before we've shown, then our refresh value doesn't get set back to None, and we miss our
-        // first refresh if it's higher than whatever startup set it to.
+        // If we queue before we've shown, our refresh value doesn't get set back to None, and we miss our first
+        // refresh if it's higher than whatever startup set it to.
         if (!_firstShowDone) return;
         if (queuedRefresh > _queuedRefresh) _queuedRefresh = queuedRefresh;
     }
 
-    public async Task QueueTdmMissionInfoChanged()
+    public Task QueueTdmMissionInfoChanged() => (Task)Invoke(() =>
     {
-        Invoke(async () =>
-        {
-            EnsureQueuedRefresh(QueuedRefresh.TdmMissionInfoChanged);
-            await RefreshImmediatelyIfPossible();
-        });
+        EnsureQueuedRefresh(QueuedRefresh.TdmMissionInfoChanged);
+        return RefreshImmediatelyIfPossible();
+    });
+
+    public Task QueueTdmCurrentFMChanged() => (Task)Invoke(() =>
+    {
+        EnsureQueuedRefresh(QueuedRefresh.TdmCurrentFMChanged);
+        return RefreshImmediatelyIfPossible();
+    });
+
+    internal Task RefreshImmediatelyIfPossible()
+    {
+        return UIEnabled && !ViewBlocked && CanFocus
+            ? RefreshIfQueued()
+            : VoidTask;
     }
 
-    public async Task QueueTdmCurrentFMChanged()
-    {
-        Invoke(async () =>
-        {
-            EnsureQueuedRefresh(QueuedRefresh.TdmCurrentFMChanged);
-            await RefreshImmediatelyIfPossible();
-        });
-    }
-
-    private async Task RefreshImmediatelyIfPossible()
-    {
-        if (UIEnabled && !ViewBlocked && CanFocus)
-        {
-            await RefreshIfQueued();
-        }
-    }
-
-    internal async Task RefreshIfQueued()
+    private async Task RefreshIfQueued()
     {
         if (AboutToClose) return;
 
@@ -4958,7 +4951,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                await RefreshIfQueued();
+                await RefreshImmediatelyIfPossible();
             }
         }
     });
@@ -5296,7 +5289,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (!_firstShowDone) return;
         if (EverythingPanel.Enabled)
         {
-            await RefreshIfQueued();
+            await RefreshImmediatelyIfPossible();
         }
     }
 

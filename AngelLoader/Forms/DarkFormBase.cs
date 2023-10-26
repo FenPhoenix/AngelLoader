@@ -71,7 +71,7 @@ public class DarkFormBase : Form
         {
             if (Owner is MainForm mainForm)
             {
-                await mainForm.RefreshIfQueued();
+                await mainForm.RefreshImmediatelyIfPossible();
             }
         }
         catch
