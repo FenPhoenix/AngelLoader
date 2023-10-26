@@ -60,6 +60,8 @@ internal static class Import
             if (backupPathSetRequested)
             {
                 await Core.OpenSettings(SettingsWindowState.BackupPathSet);
+                // Don't do the Settings manual refresh here, because we're still "in" the import window, and
+                // we'll auto-refresh when that closes (that is to say "for real" closes).
                 goto reshow;
             }
 

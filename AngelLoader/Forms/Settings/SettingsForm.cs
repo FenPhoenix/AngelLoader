@@ -117,16 +117,17 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         InitSlim();
 #endif
 
+        // A refresh would access Config, but we haven't yet filled out Config on close, Core.OpenSettings() will
+        // do that. So we need to refresh manually AFTER Config gets filled out there.
+        SuppressRefreshOnClose = true;
+
         // We have to set this manually for reasons involving the view environment and us potentially being shown
         // without a main form under us
         try
         {
-            if (Owner is not MainForm)
+            if (Owner is not MainForm && ownerForm is MainForm mainForm)
             {
-                if (ownerForm is MainForm mainForm)
-                {
-                    Owner = mainForm;
-                }
+                Owner = mainForm;
             }
         }
         catch

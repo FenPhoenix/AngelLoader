@@ -2612,11 +2612,11 @@ public sealed partial class MainForm : DarkFormBase,
             try
             {
                 Cursor = Cursors.WaitCursor;
-
                 await Core.OpenSettings();
             }
             finally
             {
+                await RefreshImmediatelyIfPossible();
                 Cursor = Cursors.Default;
             }
         }

@@ -96,6 +96,8 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
     {
         base.OnFormClosing(e);
 
+        if (BackupPathSetRequested) SuppressRefreshOnClose = true;
+
         if (DialogResult != DialogResult.OK) return;
 
         string file = ImportControls.DarkLoaderIniText;
