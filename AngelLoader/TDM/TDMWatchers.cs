@@ -1,10 +1,4 @@
-﻿/*
-@TDM(TDMWatchers): In here we access FM list(s) on a thread - possible race condition even with lock
-We should make the list accesses part of the queued refresh, so we can put them on the UI thread and guarantee
-they don't happen while the UI is blocked/busy or accessing the FM lists itself (which it does a lot).
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;

@@ -1,11 +1,5 @@
 ﻿/* NOTE: MainForm notes:
 
-@TDM(Run or cancel refresh):
-We need to run refresh whenever a child form closes. Try handling FormClosing in DarkFormBase and checking if
-parent is main, if so, run refresh (or cancel if it's Settings window and TDM has been removed!).
-This is because we have !CanFocus as one of the conditions for suppressing an immediate refresh.
-If we don't handle child form closing, then we'll have a stuck refresh value again.
-
 @LazyLoad: Controls that can be lazy-loaded in principle:
 -Game buttons and game tabs (one or the other will be invisible on startup)
 -Game tabs image list
