@@ -26,7 +26,7 @@ internal static class TDMWatchers
     {
         TDMSelectedFMWatcher.Changed += TDMSelectedFMWatcher_Changed;
         TDMSelectedFMWatcher.Created += TDMSelectedFMWatcher_Changed;
-        TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Deleted;
+        TDMSelectedFMWatcher.Deleted += TDMSelectedFMWatcher_Changed;
 
         TdmFMsListChangedWatcher.Changed += TdmFMsListChangedWatcher_Changed;
         TdmFMsListChangedWatcher.Created += TdmFMsListChangedWatcher_Changed;
@@ -74,12 +74,6 @@ internal static class TDMWatchers
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
     private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
-    {
-        if (Core.View == null!) return;
-        await Core.View.QueueTdmCurrentFMChanged();
-    }
-
-    private static async void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
     {
         if (Core.View == null!) return;
         await Core.View.QueueTdmCurrentFMChanged();
