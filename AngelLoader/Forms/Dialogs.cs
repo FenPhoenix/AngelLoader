@@ -173,20 +173,13 @@ internal sealed class Dialogs : IDialogs
         string title,
         MBoxIcon icon = MBoxIcon.Warning) => InvokeIfViewExists(() =>
     {
-        if (Config.DarkMode)
-        {
-            using var d = new DarkTaskDialog(
-                message: message,
-                title: title,
-                icon: GetIcon(icon),
-                yesText: LText.Global.OK,
-                defaultButton: MBoxButton.Yes);
-            d.ShowDialogDark();
-        }
-        else
-        {
-            MessageBox.Show(message, title, MessageBoxButtons.OK, GetIcon(icon));
-        }
+        using var d = new DarkTaskDialog(
+            message: message,
+            title: title,
+            icon: GetIcon(icon),
+            yesText: LText.Global.OK,
+            defaultButton: MBoxButton.Yes);
+        d.ShowDialogDark();
     });
 
     public void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon)
