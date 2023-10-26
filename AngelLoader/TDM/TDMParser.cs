@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,15 +40,22 @@ internal static class TDMParser
                 bool timedOut;
                 while (!(timedOut = cts.IsCancellationRequested))
                 {
-                    Thread.Sleep(50);
-
                     try
                     {
                         lines = File_ReadAllLines_List(missionsFile);
                         break;
                     }
+                    catch(FileNotFoundException)
+                    {
+                        return new List<TDM_LocalFMData>();
+                    }
                     catch (IOException)
                     {
+                        Thread.Sleep(50);
+                    }
+                    catch (Exception)
+                    {
+                        return new List<TDM_LocalFMData>();
                     }
                 }
 
