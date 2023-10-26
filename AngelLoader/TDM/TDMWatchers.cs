@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -136,23 +137,24 @@ internal static class TDMWatchers
             }
         }
 
-        if (!file.IsEmpty())
+        if (!file.IsEmpty() && File.Exists(file))
         {
-            if (File.Exists(file))
-            {
-                List<string>? lines = null;
-                for (int tryIndex = 0; tryIndex < 3; tryIndex++)
-                {
-                    if (TryGetLines(file, out lines))
-                    {
-                        break;
-                    }
-                }
+            using var cts = new CancellationTokenSource(5000);
 
-                if (lines?.Count > 0)
+            List<string>? lines;
+            while (!TryGetLines(file, out lines))
+            {
+                Thread.Sleep(50);
+
+                if (cts.IsCancellationRequested)
                 {
-                    fmName = lines[0];
+                    return;
                 }
+            }
+
+            if (lines.Count > 0)
+            {
+                fmName = lines[0];
             }
         }
 
