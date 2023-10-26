@@ -374,7 +374,7 @@ internal static class FMCache
         }
     }
 
-    private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+    private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
     {
         var fileNamesList = new List<string>();
         try
@@ -385,87 +385,97 @@ internal static class FMCache
             // Block the view immediately after starting another thread, because otherwise we could end
             // up allowing multiple of these to be called and all that insanity...
 
+            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
             Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
 
-            Directory.CreateDirectory(fmCachePath);
-
-            int extractorFilesCount;
-
-            using (var fs = File_OpenReadFast(fmArchivePath))
+            try
             {
-                var archive = new SevenZipArchive(fs);
-                ListFast<SevenZipArchiveEntry> entries = archive.Entries;
-                extractorFilesCount = entries.Count;
-                for (int i = 0; i < entries.Count; i++)
+                await Task.Run(() =>
                 {
-                    SevenZipArchiveEntry entry = entries[i];
+                    Directory.CreateDirectory(fmCachePath);
 
-                    if (entry.IsAnti) continue;
+                    int extractorFilesCount;
 
-                    string fn = entry.FileName;
-                    int dirSeps;
-                    if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
-                        (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                          (fn.PathStartsWithI(_t3ReadmeDir1S) ||
-                           fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                         dirSeps == 0))
+                    using (var fs = File_OpenReadFast(fmArchivePath))
                     {
-                        fileNamesList.Add(fn);
-                        readmes.Add(fn);
+                        var archive = new SevenZipArchive(fs);
+                        ListFast<SevenZipArchiveEntry> entries = archive.Entries;
+                        extractorFilesCount = entries.Count;
+                        for (int i = 0; i < entries.Count; i++)
+                        {
+                            SevenZipArchiveEntry entry = entries[i];
+
+                            if (entry.IsAnti) continue;
+
+                            string fn = entry.FileName;
+                            int dirSeps;
+                            if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
+                                (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                                  (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                                   fn.PathStartsWithI(_t3ReadmeDir2S))) ||
+                                 dirSeps == 0))
+                            {
+                                fileNamesList.Add(fn);
+                                readmes.Add(fn);
+                            }
+                        }
+                    }
+
+                    if (fileNamesList.Count == 0) return;
+
+                    Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+
+                    static void ReportProgress(Fen7z.ProgressReport pr)
+                    {
+                        // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files
+                        // but there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving
+                        // us a useless "percentage" value for this purpose.
+                        // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
+                        Core.View.SetProgressPercent(pr.PercentOfBytes);
+                    }
+
+                    var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+
+                    string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
+
+                    Fen7z.Result result = Fen7z.Extract(
+                        sevenZipWorkingPath: Paths.SevenZipPath,
+                        sevenZipPathAndExe: Paths.SevenZipExe,
+                        archivePath: fmArchivePath,
+                        outputPath: fmCachePath,
+                        entriesCount: extractorFilesCount,
+                        listFile: listFile,
+                        fileNamesList: fileNamesList,
+                        progress: progress);
+
+                    if (result.ErrorOccurred)
+                    {
+                        Log("Readme caching (7z): " + fmCachePath + ":\r\n" + result);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in 7z extract to cache", ex);
+            }
+            finally
+            {
+                foreach (string file in fileNamesList)
+                {
+                    try
+                    {
+                        // Stupid Path.Combine might in theory throw
+                        File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                    }
+                    catch
+                    {
+                        // ignore
                     }
                 }
             }
-
-            if (fileNamesList.Count == 0) return;
-
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
-
-            static void ReportProgress(Fen7z.ProgressReport pr)
-            {
-                // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files but
-                // there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving us a
-                // useless "percentage" value for this purpose.
-                // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                Core.View.SetProgressPercent(pr.PercentOfBytes);
-            }
-
-            var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
-
-            string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
-
-            Fen7z.Result result = Fen7z.Extract(
-                sevenZipWorkingPath: Paths.SevenZipPath,
-                sevenZipPathAndExe: Paths.SevenZipExe,
-                archivePath: fmArchivePath,
-                outputPath: fmCachePath,
-                entriesCount: extractorFilesCount,
-                listFile: listFile,
-                fileNamesList: fileNamesList,
-                progress: progress);
-
-            if (result.ErrorOccurred)
-            {
-                Log("Readme caching (7z): " + fmCachePath + ":\r\n" + result);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "in 7z extract to cache", ex);
         }
         finally
         {
-            foreach (string file in fileNamesList)
-            {
-                try
-                {
-                    // Stupid Path.Combine might in theory throw
-                    File_UnSetReadOnly(Path.Combine(fmCachePath, file));
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
             Core.View.HideProgressBox();
         }
     }
