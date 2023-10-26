@@ -117,6 +117,23 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         InitSlim();
 #endif
 
+        // We have to set this manually for reasons involving the view environment and us potentially being shown
+        // without a main form under us
+        try
+        {
+            if (Owner is not MainForm)
+            {
+                if (ownerForm is MainForm mainForm)
+                {
+                    Owner = mainForm;
+                }
+            }
+        }
+        catch
+        {
+            // we're already owned by the main form I guess
+        }
+
         _thiefBuddyExistenceCheckTimer = new Timer();
 
         _selfTheme = config.VisualTheme;

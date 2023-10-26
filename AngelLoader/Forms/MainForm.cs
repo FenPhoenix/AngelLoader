@@ -3072,6 +3072,9 @@ public sealed partial class MainForm : DarkFormBase,
         {
             QueuedRefresh refresh = _queuedRefresh;
             _queuedRefresh = QueuedRefresh.None;
+
+            if (Config.GetGameExe(GameIndex.TDM).IsEmpty()) return;
+
             if (refresh == QueuedRefresh.FromDisk)
             {
                 await Core.RefreshFMsListFromDisk();
@@ -3094,6 +3097,8 @@ public sealed partial class MainForm : DarkFormBase,
             }
         });
     }
+
+    internal void RefreshIfQueued() => RefreshIfQueuedEvent.InvokeHack();
 
     public void QueueRefreshFromDisk() => QueueRefreshFromDiskEvent.InvokeHack();
 

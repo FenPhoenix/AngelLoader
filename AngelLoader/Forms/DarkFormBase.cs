@@ -65,6 +65,23 @@ public class DarkFormBase : Form
 
     #region Event handling
 
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        try
+        {
+            if (Owner is MainForm mainForm)
+            {
+                mainForm.RefreshIfQueued();
+            }
+        }
+        catch
+        {
+            // No owner form
+        }
+
+        base.OnFormClosed(e);
+    }
+
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
