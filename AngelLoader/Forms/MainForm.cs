@@ -3070,6 +3070,8 @@ public sealed partial class MainForm : DarkFormBase,
     {
         Invoke(async () =>
         {
+            if (AboutToClose) return;
+
             QueuedRefresh refresh = _queuedRefresh;
             _queuedRefresh = QueuedRefresh.None;
 
