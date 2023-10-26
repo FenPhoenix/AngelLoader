@@ -65,13 +65,13 @@ public class DarkFormBase : Form
 
     #region Event handling
 
-    protected override void OnFormClosed(FormClosedEventArgs e)
+    protected override async void OnFormClosed(FormClosedEventArgs e)
     {
         try
         {
             if (Owner is MainForm mainForm)
             {
-                mainForm.RefreshIfQueued();
+                await mainForm.RefreshIfQueued();
             }
         }
         catch

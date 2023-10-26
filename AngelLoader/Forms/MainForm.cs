@@ -570,11 +570,6 @@ public sealed partial class MainForm : DarkFormBase,
         */
         #region Manual control construct + init
 
-        QueueRefreshFromDiskEvent += MainForm_QueueRefreshFromDiskEvent;
-        QueueRefreshAllUIDataEvent += MainForm_QueueRefreshAllUIDataEvent;
-        QueueRefreshListOnlyEvent += MainForm_QueueRefreshListOnlyEvent;
-        RefreshIfQueuedEvent += MainForm_RefreshIfQueuedEvent;
-
         #region Lazy-loaded controls
 
         _lazyLoadedControls = new IDarkable[]
@@ -3009,9 +3004,8 @@ public sealed partial class MainForm : DarkFormBase,
     private enum QueuedRefresh
     {
         None,
-        FromDisk,
-        AllUIData,
-        ListOnly
+        TdmMissionInfoChanged,
+        TdmCurrentFMChanged
     }
 
     private QueuedRefresh _queuedRefresh;
@@ -3024,89 +3018,67 @@ public sealed partial class MainForm : DarkFormBase,
         if (queuedRefresh > _queuedRefresh) _queuedRefresh = queuedRefresh;
     }
 
-    // Massive hack with using event handlers so we can avoid the "async all the way down"
-
-    private event EventHandler? QueueRefreshFromDiskEvent;
-    private event EventHandler? QueueRefreshAllUIDataEvent;
-    private event EventHandler? QueueRefreshListOnlyEvent;
-    private event EventHandler? RefreshIfQueuedEvent;
-
-    private void RefreshImmediatelyIfPossible()
-    {
-        if (UIEnabled && !ViewBlocked && CanFocus)
-        {
-            RefreshIfQueuedEvent?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    private void MainForm_QueueRefreshFromDiskEvent(object sender, EventArgs e)
-    {
-        Invoke(() =>
-        {
-            EnsureQueuedRefresh(QueuedRefresh.FromDisk);
-            RefreshImmediatelyIfPossible();
-        });
-    }
-
-    private void MainForm_QueueRefreshAllUIDataEvent(object sender, EventArgs e)
-    {
-        Invoke(() =>
-        {
-            EnsureQueuedRefresh(QueuedRefresh.AllUIData);
-            RefreshImmediatelyIfPossible();
-        });
-    }
-
-    private void MainForm_QueueRefreshListOnlyEvent(object sender, EventArgs e)
-    {
-        Invoke(() =>
-        {
-            EnsureQueuedRefresh(QueuedRefresh.ListOnly);
-            RefreshImmediatelyIfPossible();
-        });
-    }
-
-    private void MainForm_RefreshIfQueuedEvent(object sender, EventArgs e)
+    public async Task QueueTdmMissionInfoChanged()
     {
         Invoke(async () =>
         {
-            if (AboutToClose) return;
-
-            QueuedRefresh refresh = _queuedRefresh;
-            _queuedRefresh = QueuedRefresh.None;
-
-            if (Config.GetGameExe(GameIndex.TDM).IsEmpty()) return;
-
-            if (refresh == QueuedRefresh.FromDisk)
-            {
-                await Core.RefreshFMsListFromDisk();
-
-                RefreshFMsListRowsOnlyKeepSelection();
-                if (_displayedFM != null)
-                {
-                    UpdateAllFMUIDataExceptReadme(_displayedFM);
-                }
-                SetAvailableAndFinishedFMCount();
-            }
-            else if (refresh is QueuedRefresh.AllUIData or QueuedRefresh.ListOnly)
-            {
-                RefreshFMsListRowsOnlyKeepSelection();
-                if (_displayedFM != null)
-                {
-                    UpdateAllFMUIDataExceptReadme(_displayedFM);
-                }
-                SetAvailableAndFinishedFMCount();
-            }
+            EnsureQueuedRefresh(QueuedRefresh.TdmMissionInfoChanged);
+            await RefreshImmediatelyIfPossible();
         });
     }
 
-    internal void RefreshIfQueued() => RefreshIfQueuedEvent.InvokeHack();
+    public async Task QueueTdmCurrentFMChanged()
+    {
+        Invoke(async () =>
+        {
+            EnsureQueuedRefresh(QueuedRefresh.TdmCurrentFMChanged);
+            await RefreshImmediatelyIfPossible();
+        });
+    }
 
-    public void QueueRefreshFromDisk() => QueueRefreshFromDiskEvent.InvokeHack();
+    private async Task RefreshImmediatelyIfPossible()
+    {
+        if (UIEnabled && !ViewBlocked && CanFocus)
+        {
+            await RefreshIfQueued();
+        }
+    }
 
-    public void QueueRefreshAllUIData() => QueueRefreshAllUIDataEvent.InvokeHack();
+    internal async Task RefreshIfQueued()
+    {
+        if (AboutToClose) return;
 
-    public void QueueRefreshListOnly() => QueueRefreshListOnlyEvent.InvokeHack();
+        QueuedRefresh refresh = _queuedRefresh;
+        _queuedRefresh = QueuedRefresh.None;
+
+        if (Config.GetGameExe(GameIndex.TDM).IsEmpty()) return;
+
+        if (refresh == QueuedRefresh.TdmMissionInfoChanged)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                await TDMWatchers.DoFMDataChanged();
+                TDMWatchers.DoCurrentFMChanged();
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+        else if (refresh == QueuedRefresh.TdmCurrentFMChanged)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                TDMWatchers.DoCurrentFMChanged();
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+    }
 
     #endregion
 
@@ -4966,7 +4938,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.CancelResize();
     }
 
-    public void Block(bool block) => Invoke(() =>
+    public void Block(bool block) => Invoke(async () =>
     {
         if (ViewBlockingPanel == null)
         {
@@ -4992,7 +4964,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                RefreshIfQueued();
+                await RefreshIfQueued();
             }
         }
     });
@@ -5322,11 +5294,15 @@ public sealed partial class MainForm : DarkFormBase,
             // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
             FMsDGV.Focus();
             FMsDGV.SelectProperly();
+        }
+    }
 
-            if (value)
-            {
-                RefreshIfQueued();
-            }
+    private async void EverythingPanel_EnabledChanged(object sender, EventArgs e)
+    {
+        if (!_firstShowDone) return;
+        if (EverythingPanel.Enabled)
+        {
+            await RefreshIfQueued();
         }
     }
 

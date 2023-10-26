@@ -374,11 +374,9 @@ public interface IView : ISettingsChangeableView
 
     void RefreshMods();
 
-    void QueueRefreshFromDisk();
+    Task QueueTdmMissionInfoChanged();
 
-    void QueueRefreshAllUIData();
-
-    void QueueRefreshListOnly();
+    Task QueueTdmCurrentFMChanged();
 
     void UpdateConfig();
 }

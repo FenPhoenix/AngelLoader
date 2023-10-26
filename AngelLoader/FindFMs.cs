@@ -211,20 +211,17 @@ internal static class FindFMs
     internal static (List<FanMission> FMsViewListUnscanned, Exception? Ex)
     Find_Startup(SplashScreen splashScreen)
     {
-        lock (TDMWatchers._tdmFMChangeLock)
+        // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
+        // tasks or anything here... just return an exception and handle it on the main thread...
+        try
         {
-            // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
-            // tasks or anything here... just return an exception and handle it on the main thread...
-            try
-            {
-                List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
-                splashScreen.SetCheckAtStoredMessageWidth();
-                return (fmsViewListUnscanned, null);
-            }
-            catch (Exception ex)
-            {
-                return (new List<FanMission>(), ex);
-            }
+            List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
+            splashScreen.SetCheckAtStoredMessageWidth();
+            return (fmsViewListUnscanned, null);
+        }
+        catch (Exception ex)
+        {
+            return (new List<FanMission>(), ex);
         }
     }
 
@@ -236,12 +233,9 @@ internal static class FindFMs
     {
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
-        lock (TDMWatchers._tdmFMChangeLock)
-        {
-            List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
-            Core.View!.SetAvailableAndFinishedFMCount();
-            return fmsViewListUnscanned;
-        }
+        List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
+        Core.View!.SetAvailableAndFinishedFMCount();
+        return fmsViewListUnscanned;
     }
 
     // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()

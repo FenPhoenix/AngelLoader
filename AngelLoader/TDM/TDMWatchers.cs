@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -26,8 +27,6 @@ internal static class TDMWatchers
 
     private static readonly System.Timers.Timer _MissionInfoFileTimer = new(1000) { Enabled = false, AutoReset = false };
     private static readonly FileSystemWatcher TdmFMsListChangedWatcher = new();
-
-    internal static readonly object _tdmFMChangeLock = new();
 
     internal static void Init()
     {
@@ -48,75 +47,64 @@ internal static class TDMWatchers
         timer.Start();
     }
 
-    #region Event handlers
-
-    private static void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    internal static async Task DoFMDataChanged()
     {
-        if (Core.View != null!)
+        if (TdmFMSetChanged())
         {
-            bool fmSetChanged;
-            lock (_tdmFMChangeLock)
-            {
-                fmSetChanged = TdmFMSetChanged();
-                if (!fmSetChanged)
-                {
-                    SetTDMMissionInfoData();
-                }
-            }
-
-            if (fmSetChanged)
-            {
-                Core.View.QueueRefreshFromDisk();
-            }
-            else
-            {
-                Core.View.QueueRefreshAllUIData();
-            }
+            await Core.RefreshFMsListFromDisk();
         }
+        else
+        {
+            SetTDMMissionInfoData();
+        }
+
+        Core.View.RefreshFMsListRowsOnlyKeepSelection();
+        FanMission? fm = Core.View.GetMainSelectedFMOrNull();
+        if (fm != null)
+        {
+            Core.View.UpdateAllFMUIDataExceptReadme(fm);
+        }
+        Core.View.SetAvailableAndFinishedFMCount();
     }
 
-    private static void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
+    internal static void DoCurrentFMChanged() => UpdateTDMInstalledFMStatus();
+
+    #region Event handlers
+
+    private static async void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
-        lock (_tdmFMChangeLock)
-        {
-            UpdateTDMInstalledFMStatus(e.FullPath);
-        }
+        if (Core.View == null!) return;
+        await Core.View.QueueTdmMissionInfoChanged();
     }
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
 
-    private static void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
+    private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
-        lock (_tdmFMChangeLock)
-        {
-            foreach (FanMission fm in FMDataIniListTDM)
-            {
-                fm.Installed = false;
-            }
-        }
+        if (Core.View == null!) return;
+        await Core.View.QueueTdmCurrentFMChanged();
+    }
 
-        if (Core.View != null!)
-        {
-            Core.View.QueueRefreshListOnly();
-        }
+    private static async void TDMSelectedFMWatcher_Deleted(object sender, FileSystemEventArgs e)
+    {
+        if (Core.View == null!) return;
+        await Core.View.QueueTdmCurrentFMChanged();
     }
 
     #endregion
 
     internal static void UpdateTDMDataFromDisk()
     {
-        lock (_tdmFMChangeLock)
-        {
-            SetTDMMissionInfoData();
-            UpdateTDMInstalledFMStatus();
-        }
+        SetTDMMissionInfoData();
+        UpdateTDMInstalledFMStatus();
     }
 
-    private static void UpdateTDMInstalledFMStatus(string? file = null)
+    private static void UpdateTDMInstalledFMStatus()
     {
-        string? fmName = null;
-        if (file == null)
+        try
         {
+            string? fmName = null;
+            string file;
             string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
             if (!fmInstallPath.IsEmpty())
             {
@@ -135,40 +123,49 @@ internal static class TDMWatchers
                 file = "";
                 fmName = null;
             }
-        }
 
-        if (!file.IsEmpty() && File.Exists(file))
-        {
-            using var cts = new CancellationTokenSource(5000);
-
-            List<string>? lines;
-            while (!TryGetLines(file, out lines))
+            if (file.IsEmpty())
             {
-                Thread.Sleep(50);
-
-                if (cts.IsCancellationRequested)
+                foreach (FanMission fm in FMDataIniListTDM)
                 {
-                    return;
+                    fm.Installed = false;
                 }
             }
-
-            if (lines.Count > 0)
+            else if (File.Exists(file))
             {
-                fmName = lines[0];
+                using var cts = new CancellationTokenSource(5000);
+
+                List<string>? lines;
+                while (!TryGetLines(file, out lines))
+                {
+                    Thread.Sleep(50);
+
+                    if (cts.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                }
+
+                if (lines.Count > 0)
+                {
+                    fmName = lines[0];
+                }
+
+                foreach (FanMission fm in FMDataIniListTDM)
+                {
+                    // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                    // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+                    // list.
+                    fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
+                }
             }
         }
-
-        foreach (FanMission fm in FMDataIniListTDM)
+        finally
         {
-            // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-            // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-            // list.
-            fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
-        }
-
-        if (Core.View != null!)
-        {
-            Core.View.QueueRefreshListOnly();
+            if (Core.View != null!)
+            {
+                Core.View.RefreshFMsListRowsOnlyKeepSelection();
+            }
         }
 
         return;
