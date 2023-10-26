@@ -877,10 +877,4 @@ internal static class ControlUtils
                     ? LText.Global.UninstallFMs
                     : LText.Global.UninstallFM;
     }
-
-    /// <summary>
-    /// We don't care about the params or whatever, we're literally just using events to avoid async-all-the-way-down.
-    /// </summary>
-    /// <param name="eventHandler"></param>
-    internal static void InvokeHack(this EventHandler? eventHandler) => eventHandler?.Invoke(eventHandler, EventArgs.Empty);
 }

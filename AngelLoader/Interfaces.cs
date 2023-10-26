@@ -174,14 +174,6 @@ public interface IView : ISettingsChangeableView
 
     #endregion
 
-    #region Get column sort state
-
-    Column GetCurrentSortedColumnIndex();
-
-    SortDirection GetCurrentSortDirection();
-
-    #endregion
-
     #region Init and show
 
     /// <summary>
