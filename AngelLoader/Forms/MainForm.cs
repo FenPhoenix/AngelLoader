@@ -4992,7 +4992,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                RefreshIfQueuedEvent.InvokeHack();
+                RefreshIfQueued();
             }
         }
     });
@@ -5325,7 +5325,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (value)
             {
-                RefreshIfQueuedEvent.InvokeHack();
+                RefreshIfQueued();
             }
         }
     }
