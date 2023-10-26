@@ -207,7 +207,7 @@ internal static class FMCache
                 }
                 else
                 {
-                    await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
+                    await SevenZipExtract(fmArchivePath, fmCachePath, readmes);
                 }
 
                 fm.NoReadmes = readmes.Count == 0;
