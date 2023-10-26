@@ -33,7 +33,31 @@ internal static class TDMParser
 
             string missionsFile = Path.Combine(fmsPath, Paths.MissionsTdmInfo);
 
-            List<string> lines = File_ReadAllLines_List(missionsFile);
+            List<string>? lines = null;
+            using (var cts = new CancellationTokenSource(5000))
+            {
+                bool timedOut;
+                while (!(timedOut = cts.IsCancellationRequested))
+                {
+                    Thread.Sleep(50);
+
+                    try
+                    {
+                        lines = File_ReadAllLines_List(missionsFile);
+                        break;
+                    }
+                    catch (IOException)
+                    {
+                    }
+                }
+
+                if (timedOut)
+                {
+                    return new List<TDM_LocalFMData>();
+                }
+            }
+
+            if (lines == null) return new List<TDM_LocalFMData>();
 
             List<TDM_LocalFMData> ret = new();
 
