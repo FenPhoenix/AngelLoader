@@ -348,7 +348,7 @@ public interface IView : ISettingsChangeableView
 
     #endregion
 
-    void Block(bool block);
+    Task Block(bool block);
 
     void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
 

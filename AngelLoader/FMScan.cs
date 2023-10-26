@@ -112,7 +112,7 @@ internal static class FMScan
                     {
                         // Block user input to the form to mimic the UI thread being blocked, because we're async
                         // here
-                        Core.View.Block(true);
+                        await Core.View.Block(true);
                         // Doesn't actually show the box, but shows the meter on the taskbar I guess?
                         ShowProgressBox(suppressShow: true);
                     }
@@ -455,7 +455,7 @@ internal static class FMScan
             finally
             {
                 _scanCts.Dispose();
-                Core.View.Block(false);
+                await Core.View.Block(false);
                 Core.View.HideProgressBox();
             }
 

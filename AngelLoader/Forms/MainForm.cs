@@ -4925,7 +4925,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.CancelResize();
     }
 
-    public void Block(bool block) => Invoke(async () =>
+    public Task Block(bool block) => (Task)Invoke(async () =>
     {
         if (ViewBlockingPanel == null)
         {
