@@ -388,9 +388,9 @@ internal static class FMCache
             // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
             Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
 
-            try
+            await Task.Run(() =>
             {
-                await Task.Run(() =>
+                try
                 {
                     Directory.CreateDirectory(fmCachePath);
 
@@ -452,27 +452,27 @@ internal static class FMCache
                     {
                         Log("Readme caching (7z): " + fmCachePath + ":\r\n" + result);
                     }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.Ex + "in 7z extract to cache", ex);
-            }
-            finally
-            {
-                foreach (string file in fileNamesList)
+                }
+                catch (Exception ex)
                 {
-                    try
+                    Log(ErrorText.Ex + "in 7z extract to cache", ex);
+                }
+                finally
+                {
+                    foreach (string file in fileNamesList)
                     {
-                        // Stupid Path.Combine might in theory throw
-                        File_UnSetReadOnly(Path.Combine(fmCachePath, file));
-                    }
-                    catch
-                    {
-                        // ignore
+                        try
+                        {
+                            // Stupid Path.Combine might in theory throw
+                            File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
                     }
                 }
-            }
+            });
         }
         finally
         {
