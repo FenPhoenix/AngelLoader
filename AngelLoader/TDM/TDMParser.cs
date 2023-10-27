@@ -12,8 +12,7 @@ namespace AngelLoader;
 
 internal static class TDMParser
 {
-    // @TDM: Test with a fresh install of TDM where no FMs dir exists, or no missions.tdminfo exists, etc.
-
+    // Works fine when missions.tdminfo doesn't exist, just returns an empty list.
     internal static List<TDM_LocalFMData> ParseMissionsInfoFile()
     {
         const string missionInfoId = "tdm_missioninfo";

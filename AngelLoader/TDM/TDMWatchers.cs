@@ -179,9 +179,14 @@ internal static class TDMWatchers
         }
     }
 
-    // @TDM(Watchers): If we don't have an fms dir, all watchers are disabled. Should we be smarter?
-    // Should we try to have it auto-pick-up the fms dir if it's created and start watching, then stop if it's
-    // removed? Do we need the same currentfm.txt?
+    /*
+    @TDM(Watchers): If we don't have an fms dir, all watchers are disabled.
+    -currentfm.txt is fine, the watcher works even if there isn't one and then one is created.
+    -missions.tdminfo is also fine, if missing the watcher will pick it back up when it gets created and modified.
+    -A fresh TDM install puts the fms dir there already as it comes with a few FMs, so we can probably just
+     ignore the edge case of no fms dir. It's highly unlikely to occur, and all it results in is auto-refresh
+     shutting off until the next app run.
+    */
     internal static void DeferredWatchersEnable(bool enableTDMWatchers)
     {
         string gamePath = Config.GetGamePath(GameIndex.TDM);
