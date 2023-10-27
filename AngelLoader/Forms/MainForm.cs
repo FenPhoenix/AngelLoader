@@ -1,5 +1,11 @@
 ﻿/* NOTE: MainForm notes:
 
+@TDM(Auto-refresh control):
+I think we still have problems, if we refresh just on re-enable or form close, we'll trigger the refresh before
+the task is actually done, and we could change the list out from under the task. ARGH! How do we do this safely
+and without the error-proneness of writing a ton of enables/disables for every single thing manually?
+Maybe we should just kill queued refreshes if we're in a blocked state when they happen?
+
 @LazyLoad: Controls that can be lazy-loaded in principle:
 -Game buttons and game tabs (one or the other will be invisible on startup)
 -Game tabs image list
