@@ -317,8 +317,6 @@ internal static class FMScan
 
                     #endregion
 
-                    Core.Dialogs.ShowError("Test!");
-
                     #region Copy scanned data to FMs
 
                     StringBuilder tagsToStringSB = new(FMTags.TagsToStringSBInitialCapacity);
