@@ -45,7 +45,11 @@ internal static class TDMParser
                         lines = File_ReadAllLines_List(missionsFile);
                         break;
                     }
-                    catch(FileNotFoundException)
+                    catch (DirectoryNotFoundException)
+                    {
+                        return new List<TDM_LocalFMData>();
+                    }
+                    catch (FileNotFoundException)
                     {
                         return new List<TDM_LocalFMData>();
                     }
