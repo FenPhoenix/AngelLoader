@@ -457,6 +457,9 @@ internal static class FindFMs
 
     private static void AddTdmFMs(List<string> files, List<ExpandableDate_FromTicks> dateTimes)
     {
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (fmsPath.IsEmpty() && FMDataIniListTDM.Count == 0) return;
+
         /*
         @TDM_CASE(FindFMs): We're using DictionaryI for installed dirs here at the moment.
         This is the right thing on Windows, but we need to think about what this would mean on Linux.
@@ -472,7 +475,6 @@ internal static class FindFMs
             fmDataIniListTDM_Dict[fm.TDMInstalledDir] = fm;
         }
 
-        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
         if (Directory.Exists(fmsPath))
         {
             try
