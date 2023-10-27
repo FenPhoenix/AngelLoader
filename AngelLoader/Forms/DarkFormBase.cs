@@ -65,28 +65,6 @@ public class DarkFormBase : Form
 
     #region Event handling
 
-    private protected bool SuppressRefreshOnClose;
-
-    protected override async void OnFormClosed(FormClosedEventArgs e)
-    {
-        if (!SuppressRefreshOnClose)
-        {
-            try
-            {
-                if (Owner is MainForm mainForm)
-                {
-                    await mainForm.RefreshImmediatelyIfPossible();
-                }
-            }
-            catch
-            {
-                // No owner form
-            }
-        }
-
-        base.OnFormClosed(e);
-    }
-
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);

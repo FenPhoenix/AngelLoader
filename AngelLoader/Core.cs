@@ -351,7 +351,7 @@ internal static class Core
 
                 // IMPORTANT: End no-splash-screen-call zone
 
-                TDMWatchers.UpdateTDMDataFromDisk();
+                TDMWatchers.UpdateTDMDataFromDisk(refresh: false);
 
                 if (ex != null)
                 {
@@ -728,7 +728,7 @@ internal static class Core
             View.RefreshMods();
         }
 
-        TDMWatchers.UpdateTDMDataFromDisk();
+        TDMWatchers.UpdateTDMDataFromDisk(refresh: true);
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
 
         Ini.WriteConfigIni();
@@ -996,7 +996,7 @@ internal static class Core
                 }
             }
 
-            TDMWatchers.UpdateTDMDataFromDisk();
+            TDMWatchers.UpdateTDMDataFromDisk(refresh: false);
 
             foreach (FanMission fm in FMDataIniListTDM)
             {

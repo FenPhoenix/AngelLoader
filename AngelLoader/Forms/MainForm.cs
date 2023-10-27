@@ -2622,7 +2622,6 @@ public sealed partial class MainForm : DarkFormBase,
             }
             finally
             {
-                await RefreshImmediatelyIfPossible();
                 Cursor = Cursors.Default;
             }
         }
@@ -3001,77 +3000,47 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Refresh queueing
 
-    private enum QueuedRefresh
+    public Task RefreshIfAllowed(TDM_FileChanged refresh) => (Task)Invoke(async () =>
     {
-        None,
-        TdmMissionInfoChanged,
-        TdmCurrentFMChanged
-    }
+        bool allowed =
+            !AboutToClose &&
+            !Config.GetGameExe(GameIndex.TDM).IsEmpty() &&
+            UIEnabled &&
+            !ViewBlocked;
 
-    private QueuedRefresh _queuedRefresh;
+        if (!allowed) return;
 
-    private void EnsureQueuedRefresh(QueuedRefresh queuedRefresh)
-    {
-        // If we queue before we've shown, our refresh value doesn't get set back to None, and we miss our first
-        // refresh if it's higher than whatever startup set it to.
-        if (!_firstShowDone) return;
-        if (queuedRefresh > _queuedRefresh) _queuedRefresh = queuedRefresh;
-    }
-
-    public Task QueueTdmMissionInfoChanged() => (Task)Invoke(() =>
-    {
-        EnsureQueuedRefresh(QueuedRefresh.TdmMissionInfoChanged);
-        return RefreshImmediatelyIfPossible();
+        switch (refresh)
+        {
+            case TDM_FileChanged.MissionInfo:
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+                    await TDMWatchers.DoFMDataChanged();
+                    TDMWatchers.DoCurrentFMChanged();
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
+                }
+                break;
+            // Allow this refresh even when a dialog is up, as it's "inert" and won't cause a progress box or
+            // other dialogs.
+            case TDM_FileChanged.CurrentFM:
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+                    TDMWatchers.DoCurrentFMChanged();
+                }
+                finally
+                {
+                    Cursor = Cursors.Default;
+                }
+                break;
+        }
     });
 
-    public Task QueueTdmCurrentFMChanged() => (Task)Invoke(() =>
-    {
-        EnsureQueuedRefresh(QueuedRefresh.TdmCurrentFMChanged);
-        return RefreshImmediatelyIfPossible();
-    });
-
-    internal Task RefreshImmediatelyIfPossible()
-    {
-        return UIEnabled && !ViewBlocked && CanFocus
-            ? RefreshIfQueued()
-            : VoidTask;
-    }
-
-    private async Task RefreshIfQueued()
-    {
-        if (AboutToClose) return;
-
-        QueuedRefresh refresh = _queuedRefresh;
-        _queuedRefresh = QueuedRefresh.None;
-
-        if (Config.GetGameExe(GameIndex.TDM).IsEmpty()) return;
-
-        if (refresh == QueuedRefresh.TdmMissionInfoChanged)
-        {
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-                await TDMWatchers.DoFMDataChanged();
-                TDMWatchers.DoCurrentFMChanged();
-            }
-            finally
-            {
-                Cursor = Cursors.Default;
-            }
-        }
-        else if (refresh == QueuedRefresh.TdmCurrentFMChanged)
-        {
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-                TDMWatchers.DoCurrentFMChanged();
-            }
-            finally
-            {
-                Cursor = Cursors.Default;
-            }
-        }
-    }
+    public bool ModalDialogUp() => !CanFocus;
 
     #endregion
 
@@ -4931,7 +4900,7 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.CancelResize();
     }
 
-    public Task Block(bool block) => (Task)Invoke(async () =>
+    public void Block(bool block) => Invoke(() =>
     {
         if (ViewBlockingPanel == null)
         {
@@ -4957,7 +4926,6 @@ public sealed partial class MainForm : DarkFormBase,
             if (!block)
             {
                 Cursor = Cursors.Default;
-                await RefreshImmediatelyIfPossible();
             }
         }
     });
@@ -5287,15 +5255,6 @@ public sealed partial class MainForm : DarkFormBase,
             // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
             FMsDGV.Focus();
             FMsDGV.SelectProperly();
-        }
-    }
-
-    private async void EverythingPanel_EnabledChanged(object sender, EventArgs e)
-    {
-        if (!_firstShowDone) return;
-        if (EverythingPanel.Enabled)
-        {
-            await RefreshImmediatelyIfPossible();
         }
     }
 

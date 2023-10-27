@@ -234,7 +234,6 @@ sealed partial class MainForm
         this.EverythingPanel.TabIndex = 4;
         this.EverythingPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.EverythingPanel_DragDrop);
         this.EverythingPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.EverythingPanel_DragEnter);
-        this.EverythingPanel.EnabledChanged += new System.EventHandler(this.EverythingPanel_EnabledChanged);
         // 
         // MainSplitContainer
         // 

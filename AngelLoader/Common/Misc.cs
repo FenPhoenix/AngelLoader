@@ -16,6 +16,12 @@ public static partial class Misc
 
     #region Enums and enum-like
 
+    public enum TDM_FileChanged
+    {
+        MissionInfo,
+        CurrentFM
+    }
+
     public enum SortDirection
     {
         Ascending,

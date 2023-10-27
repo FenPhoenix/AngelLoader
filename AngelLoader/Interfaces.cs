@@ -348,7 +348,7 @@ public interface IView : ISettingsChangeableView
 
     #endregion
 
-    Task Block(bool block);
+    void Block(bool block);
 
     void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
 
@@ -366,9 +366,8 @@ public interface IView : ISettingsChangeableView
 
     void RefreshMods();
 
-    Task QueueTdmMissionInfoChanged();
-
-    Task QueueTdmCurrentFMChanged();
+    Task RefreshIfAllowed(TDM_FileChanged refresh);
 
     void UpdateConfig();
+    bool ModalDialogUp();
 }

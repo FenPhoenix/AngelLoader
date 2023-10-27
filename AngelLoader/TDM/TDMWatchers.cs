@@ -45,13 +45,21 @@ internal static class TDMWatchers
     {
         if (TdmFMSetChanged())
         {
-            await Core.RefreshFMsListFromDisk();
+            if (!Core.View.ModalDialogUp())
+            {
+                await Core.RefreshFMsListFromDisk();
+            }
         }
         else
         {
             SetTDMMissionInfoData();
         }
 
+        ViewRefreshAfterAutoUpdate();
+    }
+
+    private static void ViewRefreshAfterAutoUpdate()
+    {
         Core.View.RefreshFMsListRowsOnlyKeepSelection();
         FanMission? fm = Core.View.GetMainSelectedFMOrNull();
         if (fm != null)
@@ -61,14 +69,18 @@ internal static class TDMWatchers
         Core.View.SetAvailableAndFinishedFMCount();
     }
 
-    internal static void DoCurrentFMChanged() => UpdateTDMInstalledFMStatus();
+    internal static void DoCurrentFMChanged()
+    {
+        UpdateTDMInstalledFMStatus();
+        ViewRefreshAfterAutoUpdate();
+    }
 
     #region Event handlers
 
     private static async void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         if (Core.View == null!) return;
-        await Core.View.QueueTdmMissionInfoChanged();
+        await Core.View.RefreshIfAllowed(Misc.TDM_FileChanged.MissionInfo);
     }
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
@@ -76,83 +88,77 @@ internal static class TDMWatchers
     private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
         if (Core.View == null!) return;
-        await Core.View.QueueTdmCurrentFMChanged();
+        await Core.View.RefreshIfAllowed(Misc.TDM_FileChanged.CurrentFM);
     }
 
     #endregion
 
-    internal static void UpdateTDMDataFromDisk()
+    internal static void UpdateTDMDataFromDisk(bool refresh)
     {
         SetTDMMissionInfoData();
         UpdateTDMInstalledFMStatus();
+        if (refresh)
+        {
+            ViewRefreshAfterAutoUpdate();
+        }
     }
 
     private static void UpdateTDMInstalledFMStatus()
     {
-        try
+        string? fmName = null;
+        string file;
+        string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
+        if (!fmInstallPath.IsEmpty())
         {
-            string? fmName = null;
-            string file;
-            string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
-            if (!fmInstallPath.IsEmpty())
+            try
             {
-                try
-                {
-                    file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
-                }
-                catch
-                {
-                    file = "";
-                    fmName = null;
-                }
+                file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
             }
-            else
+            catch
             {
                 file = "";
                 fmName = null;
             }
+        }
+        else
+        {
+            file = "";
+            fmName = null;
+        }
 
-            if (file.IsEmpty())
+        if (file.IsEmpty())
+        {
+            foreach (FanMission fm in FMDataIniListTDM)
             {
-                foreach (FanMission fm in FMDataIniListTDM)
-                {
-                    fm.Installed = false;
-                }
-            }
-            else if (File.Exists(file))
-            {
-                using var cts = new CancellationTokenSource(5000);
-
-                List<string>? lines;
-                while (!TryGetLines(file, out lines))
-                {
-                    Thread.Sleep(50);
-
-                    if (cts.IsCancellationRequested)
-                    {
-                        return;
-                    }
-                }
-
-                if (lines.Count > 0)
-                {
-                    fmName = lines[0];
-                }
-
-                foreach (FanMission fm in FMDataIniListTDM)
-                {
-                    // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                    // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                    // list.
-                    fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
-                }
+                fm.Installed = false;
             }
         }
-        finally
+        else if (File.Exists(file))
         {
-            if (Core.View != null!)
+            using var cts = new CancellationTokenSource(5000);
+
+            List<string>? lines;
+            while (!TryGetLines(file, out lines))
             {
-                Core.View.RefreshFMsListRowsOnlyKeepSelection();
+                Thread.Sleep(50);
+
+                if (cts.IsCancellationRequested)
+                {
+                    return;
+                }
+            }
+
+            if (lines.Count > 0)
+            {
+                fmName = lines[0];
+            }
+
+            foreach (FanMission fm in FMDataIniListTDM)
+            {
+                // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
+                // list.
+                fm.Installed = fmName != null && fm.TDMInstalledDir == fmName;
             }
         }
 

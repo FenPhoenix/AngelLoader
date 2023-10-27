@@ -188,7 +188,6 @@ public sealed partial class MainForm
         EverythingPanel.TabIndex = 4;
         EverythingPanel.DragDrop += EverythingPanel_DragDrop;
         EverythingPanel.DragEnter += EverythingPanel_DragEnter;
-        EverythingPanel.EnabledChanged += EverythingPanel_EnabledChanged;
         // 
         // MainSplitContainer
         // 
