@@ -334,6 +334,8 @@ internal static class Core
                     {
                         ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
                     }
+
+                    TDMWatchers.UpdateTDMDataFromDisk(refresh: false);
                 });
 
                 // Construct and init the view right here, because it's a heavy operation and we want it to run
@@ -350,8 +352,6 @@ internal static class Core
 #endif
 
                 // IMPORTANT: End no-splash-screen-call zone
-
-                TDMWatchers.UpdateTDMDataFromDisk(refresh: false);
 
                 if (ex != null)
                 {
