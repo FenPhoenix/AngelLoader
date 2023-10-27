@@ -314,7 +314,7 @@ internal static class TDMWatchers
 
             for (int i = 0; i < finalFilesList.Count; i++)
             {
-                if (!IsValidTdmFM(finalFilesList[i]))
+                if (!IsValidTdmFM(fmsPath, finalFilesList[i]))
                 {
                     finalFilesList.RemoveAt(i);
                     break;

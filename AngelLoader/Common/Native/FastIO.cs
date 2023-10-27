@@ -39,9 +39,10 @@ internal static class FastIO
         string searchPattern,
         bool ignoreReparsePoints = false,
         bool pathIsKnownValid = false,
-        bool returnFullPaths = true)
+        bool returnFullPaths = true,
+        int preallocate = 16)
     {
-        var ret = new List<string>(16);
+        var ret = new List<string>(preallocate);
         GetFilesTopOnlyInternal(
             path,
             searchPattern,
@@ -58,9 +59,10 @@ internal static class FastIO
         string path,
         string searchPattern,
         bool pathIsKnownValid = false,
-        bool returnFullPaths = true)
+        bool returnFullPaths = true,
+        int preallocate = 16)
     {
-        var ret = new List<string>(16);
+        var ret = new List<string>(preallocate);
         GetFilesTopOnlyInternal(
             path,
             searchPattern,

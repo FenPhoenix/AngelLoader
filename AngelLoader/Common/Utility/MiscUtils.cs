@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -278,7 +279,7 @@ public static partial class Utils
     }
 
     // @TDM: See if we want to move this to a TDM utils class or whatever we end up with
-    internal static bool IsValidTdmFM(string fileOrDirName)
+    internal static bool IsValidTdmFM(string fmsPath, string fileOrDirName)
     {
         /*
         The Dark Mod Wiki also mentions _i18n.pk4 files, but the game (as of v2.11 anyway) doesn't seem to do
@@ -286,9 +287,31 @@ public static partial class Utils
         be these are deprecated file names, but regardless, it looks like we can ignore them.
         */
         // @TDM_CASE
-        return !fileOrDirName.EqualsI(Paths.TDMMissionShots) &&
-               !fileOrDirName.EndsWithI("_l10n") &&
-               !fileOrDirName.EndsWithI("_l10n.pk4");
+        if (fileOrDirName.EqualsI(Paths.TDMMissionShots) ||
+            fileOrDirName.EndsWithI("_l10n") ||
+            fileOrDirName.EndsWithI("_l10n.pk4"))
+        {
+            return false;
+        }
+
+        try
+        {
+            string fullDir = Path.Combine(fmsPath, fileOrDirName);
+            if (Directory.Exists(fullDir))
+            {
+                List<string> pk4Files = FastIO.GetFilesTopOnly(fullDir, "*.pk4", preallocate: 1);
+                if (pk4Files.Count == 0)
+                {
+                    return false;
+                }
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 
 #if DateAccTest

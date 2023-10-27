@@ -728,9 +728,24 @@ public sealed partial class Scanner : IDisposable
 
         string fmAsPK4File = fm.Path.TrimEnd(CA_BS_FS) + ".pk4";
 
-        zipPath = !Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File)
-            ? fmAsPK4File
-            : Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+        if (!Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File))
+        {
+            zipPath = fmAsPK4File;
+        }
+        else
+        {
+            zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
+            if (!File.Exists(zipPath))
+            {
+                return UnsupportedTDM(
+                    archivePath: fm.Path,
+                    fen7zResult: null,
+                    ex: null,
+                    errorInfo: "Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'."
+                );
+            }
+        }
+
 
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
@@ -1782,6 +1797,19 @@ public sealed partial class Scanner : IDisposable
     }
 
     #region Fail return functions
+
+    private static ScannedFMDataAndError UnsupportedTDM(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
+    {
+        ScannedFMData = new ScannedFMData
+        {
+            ArchiveName = Path.GetFileName(archivePath),
+            Game = Game.Unsupported,
+            MissionCount = 0
+        },
+        Fen7zResult = fen7zResult,
+        Exception = ex,
+        ErrorInfo = errorInfo
+    };
 
     private static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
     {

@@ -472,8 +472,8 @@ internal static class FindFMs
             fmDataIniListTDM_Dict[fm.TDMInstalledDir] = fm;
         }
 
-        string instPath = Config.GetFMInstallPath(GameIndex.TDM);
-        if (Directory.Exists(instPath))
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        if (Directory.Exists(fmsPath))
         {
             try
             {
@@ -482,8 +482,8 @@ internal static class FindFMs
                 var filesPK4 = new List<string>();
                 var dateTimesPK4 = new List<ExpandableDate_FromTicks>();
 
-                FastIO.GetDirsTopOnly_FMs(instPath, "*", dirs, dateTimes);
-                FastIO.GetFilesTopOnly_FMs(instPath, "*.pk4", filesPK4, dateTimesPK4);
+                FastIO.GetDirsTopOnly_FMs(fmsPath, "*", dirs, dateTimes);
+                FastIO.GetFilesTopOnly_FMs(fmsPath, "*.pk4", filesPK4, dateTimesPK4);
 
                 HashSetI dirsHash = dirs.ToHashSetI();
 
@@ -507,7 +507,7 @@ internal static class FindFMs
                 for (int fileIndex = 0; fileIndex < finalFilesList.Count; fileIndex++)
                 {
                     string fmDir = finalFilesList[fileIndex];
-                    if (IsValidTdmFM(fmDir))
+                    if (IsValidTdmFM(fmsPath, fmDir))
                     {
                         if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
                         {
@@ -530,7 +530,7 @@ internal static class FindFMs
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExGet + "directories in " + instPath, ex);
+                Log(ErrorText.ExGet + "directories in " + fmsPath, ex);
             }
         }
 
