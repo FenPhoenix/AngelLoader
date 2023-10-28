@@ -2994,43 +2994,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Refresh queueing
 
-    public Task RefreshIfAllowed(TDM_FileChanged refresh) => (Task)Invoke(async () =>
-    {
-        bool allowed =
-            !AboutToClose &&
-            !Config.GetGameExe(GameIndex.TDM).IsEmpty() &&
-            UIEnabled &&
-            !ViewBlocked;
-
-        if (!allowed) return;
-
-        switch (refresh)
-        {
-            case TDM_FileChanged.MissionInfo:
-                try
-                {
-                    Cursor = Cursors.WaitCursor;
-                    await TDMWatchers.DoFMDataChanged();
-                    TDMWatchers.DoCurrentFMChanged();
-                }
-                finally
-                {
-                    Cursor = Cursors.Default;
-                }
-                break;
-            case TDM_FileChanged.CurrentFM:
-                try
-                {
-                    Cursor = Cursors.WaitCursor;
-                    TDMWatchers.DoCurrentFMChanged();
-                }
-                finally
-                {
-                    Cursor = Cursors.Default;
-                }
-                break;
-        }
-    });
+    public bool RefreshAllowed() =>
+        !AboutToClose &&
+        !Config.GetGameExe(GameIndex.TDM).IsEmpty() &&
+        UIEnabled &&
+        !ViewBlocked;
 
     public bool ModalDialogUp() => !CanFocus;
 

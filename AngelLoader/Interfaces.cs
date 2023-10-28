@@ -366,8 +366,9 @@ public interface IView : ISettingsChangeableView
 
     void RefreshMods();
 
-    Task RefreshIfAllowed(TDM_FileChanged refresh);
+    bool RefreshAllowed();
+
+    bool ModalDialogUp();
 
     void UpdateConfig();
-    bool ModalDialogUp();
 }

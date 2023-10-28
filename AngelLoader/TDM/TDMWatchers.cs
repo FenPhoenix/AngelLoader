@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -27,7 +28,7 @@ internal static class TDMWatchers
         _MissionInfoFileTimer.Elapsed += FileWatcherTimers_Elapsed;
     }
 
-    internal static async Task DoFMDataChanged()
+    private static async Task DoFMDataChanged()
     {
         if (TDM.TdmFMSetChanged())
         {
@@ -44,18 +45,50 @@ internal static class TDMWatchers
         TDM.ViewRefreshAfterAutoUpdate();
     }
 
-    internal static void DoCurrentFMChanged()
+    private static void DoCurrentFMChanged()
     {
         TDM.UpdateTDMInstalledFMStatus();
         TDM.ViewRefreshAfterAutoUpdate();
     }
+
+    private static Task RefreshIfAllowed(TDM_FileChanged refresh) => (Task)Core.View.Invoke(async () =>
+    {
+        if (!Core.View.RefreshAllowed()) return;
+
+        switch (refresh)
+        {
+            case TDM_FileChanged.MissionInfo:
+                try
+                {
+                    Core.View.SetWaitCursor(true);
+                    await DoFMDataChanged();
+                    DoCurrentFMChanged();
+                }
+                finally
+                {
+                    Core.View.SetWaitCursor(false);
+                }
+                break;
+            case TDM_FileChanged.CurrentFM:
+                try
+                {
+                    Core.View.SetWaitCursor(true);
+                    DoCurrentFMChanged();
+                }
+                finally
+                {
+                    Core.View.SetWaitCursor(false);
+                }
+                break;
+        }
+    });
 
     #region Event handlers
 
     private static async void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         if (Core.View == null!) return;
-        await Core.View.RefreshIfAllowed(Misc.TDM_FileChanged.MissionInfo);
+        await RefreshIfAllowed(TDM_FileChanged.MissionInfo);
     }
 
     private static void TdmFMsListChangedWatcher_Changed(object sender, FileSystemEventArgs e) => _MissionInfoFileTimer.Reset();
@@ -63,7 +96,7 @@ internal static class TDMWatchers
     private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
         if (Core.View == null!) return;
-        await Core.View.RefreshIfAllowed(Misc.TDM_FileChanged.CurrentFM);
+        await RefreshIfAllowed(TDM_FileChanged.CurrentFM);
     }
 
     #endregion
