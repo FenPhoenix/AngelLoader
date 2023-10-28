@@ -10,7 +10,6 @@ using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -277,7 +276,7 @@ internal static class TDM
 
             foreach (FanMission fm in FMDataIniListTDM)
             {
-                // @TDM(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
+                // @TDM_CASE(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
                 // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
                 // list.
                 fm.Installed = fmName != null && !fm.MarkedUnavailable && fm.TDMInstalledDir == fmName;
@@ -399,7 +398,7 @@ internal static class TDM
             }
 
             List<TDM_LocalFMData> localDataList = TDM.ParseMissionsInfoFile();
-            // @TDM: Case-sensitive dictionary
+            // @TDM_CASE: Case-sensitive dictionary
             var internalTDMDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
             foreach (FanMission fm in FMDataIniListTDM)
             {
@@ -425,5 +424,40 @@ internal static class TDM
         {
             return false;
         }
+    }
+
+    internal static bool IsValidTdmFM(string fmsPath, string fileOrDirName)
+    {
+        /*
+        The Dark Mod Wiki also mentions _i18n.pk4 files, but the game (as of v2.11 anyway) doesn't seem to do
+        anything with these, not putting them automatically into the matching game dir or anything. So it could
+        be these are deprecated file names, but regardless, it looks like we can ignore them.
+        */
+        // @TDM_CASE
+        if (fileOrDirName.EqualsI(Paths.TDMMissionShots) ||
+            fileOrDirName.EndsWithI("_l10n") ||
+            fileOrDirName.EndsWithI("_l10n.pk4"))
+        {
+            return false;
+        }
+
+        try
+        {
+            string fullDir = Path.Combine(fmsPath, fileOrDirName);
+            if (Directory.Exists(fullDir))
+            {
+                List<string> pk4Files = FastIO.GetFilesTopOnly(fullDir, "*.pk4", preallocate: 1);
+                if (pk4Files.Count == 0)
+                {
+                    return false;
+                }
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 }

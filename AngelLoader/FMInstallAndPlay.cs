@@ -293,7 +293,7 @@ internal static class FMInstallAndPlay
             arguments it was started with to the next instance. This is probably not what the user wants, so
             let's avoid it.
 
-            @TDM: Once in a while the game starts with no FM even though there's one in currentfm.txt.
+            @TDM_NOTE: Once in a while the game starts with no FM even though there's one in currentfm.txt.
             I haven't been able to reliably reproduce this. Presumably it can't read the file for some reason.
             Passing args would bypass this file and guarantee it loads our FM, but then we get the above-described
             problem. If anyone else reports this we could go back to the arg passing, but eh...

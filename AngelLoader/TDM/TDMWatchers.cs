@@ -69,8 +69,8 @@ internal static class TDMWatchers
     #endregion
 
     /*
-    @TDM(Watchers): If we don't have an fms dir, all watchers are disabled.
-    -currentfm.txt is fine, the watcher works even if there isn't one and then one is created.
+    @TDM_NOTE(Watchers): If we don't have an fms dir, all watchers are disabled.
+    -currentfm.txt is fine, the watcher works even if there isn't a currentfm.txt and then one is created.
     -missions.tdminfo is also fine, if missing the watcher will pick it back up when it gets created and modified.
     -A fresh TDM install puts the fms dir there already as it comes with a few FMs, so we can probably just
      ignore the edge case of no fms dir. It's highly unlikely to occur, and all it results in is auto-refresh

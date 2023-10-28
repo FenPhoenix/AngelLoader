@@ -674,15 +674,12 @@ public sealed partial class Scanner : IDisposable
         string zipPath;
 
         /*
-        @TDM(Scan): The game rejects pk4s that don't have darkmod.txt in the base dir. Should we do this too?
-        If we do then we have to load the zip always (although in practice we always do in normal situations anyway).
-        We would also need to have this local function return a ScannedFMDataAndError object so we can return
-        that from the main one.
-        @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
+        @TDM_NOTE(Scan): The game rejects pk4s that don't have darkmod.txt in the base dir.
+        If we matched this here, we'd still be counting them everywhere else (find, set-changed, etc). We really
+        don't want to open zip files in all those codepaths, way too heavy on perf. So we're just going to say
+        that garbage in the FMs folder is highly unlikely and leave it at that.
 
-        Also, if we did this, we'd still be counting them in the set-changed comparer for auto-refresh. We really
-        don't want to open zip files for that check, way too heavy on perf. So maybe we could just say garbage in
-        the FMs folder is highly unlikely and leave it at that.
+        @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
         */
         List<ZipArchiveFastEntry>? __zipEntries = null;
         List<ZipArchiveFastEntry> GetZipBaseDirEntries()
@@ -868,9 +865,10 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
-            // @TDM(readme text & dates):
+            // @TDM_NOTE(readme text & dates):
             // For best perf, I guess we would get dates from the pk4 but text from disk.
-            // Still, these files are generally extremely small, so it probably doesn't matter.
+            // Still, these files are generally extremely small, and TDM scans are lightning-fast anyway, so
+            // let's just leave it.
 
             // Sometimes the extracted readmes have different dates than the ones in the pk4.
             // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
@@ -880,10 +878,8 @@ public sealed partial class Scanner : IDisposable
 
             List<string> titles = new();
 
-            /*
-            The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
-            That's _TERRIBLE_ but we want to match behavior.
-            */
+            // The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
+            // That's _TERRIBLE_ but we want to match behavior.
             if (darkModTxtReadme != null)
             {
                 MatchCollection matches = DarkModTxtFieldsRegex.Matches(darkModTxtReadme.Text);
@@ -931,7 +927,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (infoFromServer != null)
                 {
-                    // @TDM: We're not running author cleanup on these, we're expecting them to be sane...
+                    // @TDM_NOTE: We're not running author cleanup on these, we're expecting them to be sane...
                     fmData.Author = infoFromServer.Author;
                 }
                 else
@@ -2622,7 +2618,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (_baseDirFiles.Count == 0)
                 {
-                    Log(fmPath + ": 'fm is zip' or 'scanning size' codepath: No files in base dir. Returning false.", stackTrace: false);
+                    Log(fmPath + ": 'fm is archive' or 'scanning size' codepath: No files in base dir. Returning false.", stackTrace: false);
                     return false;
                 }
 
@@ -3430,7 +3426,7 @@ public sealed partial class Scanner : IDisposable
         for (int ri = 0; ri < _readmeFiles.Count; ri++)
         {
             ReadmeInternal file = _readmeFiles[ri];
-            // @TDM: Make this less janky, and have it only check once and do it once
+            // @TDM_NOTE: Janky, but it works and a null check isn't going to be our bottleneck here, so whatever
             if (singleReadme != null && singleReadme != file) continue;
 
             if (!file.Scan) continue;

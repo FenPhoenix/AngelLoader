@@ -508,7 +508,7 @@ internal static class FindFMs
                 for (int fileIndex = 0; fileIndex < finalFilesList.Count; fileIndex++)
                 {
                     string fmDir = finalFilesList[fileIndex];
-                    if (IsValidTdmFM(fmsPath, fmDir))
+                    if (TDM.IsValidTdmFM(fmsPath, fmDir))
                     {
                         if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
                         {

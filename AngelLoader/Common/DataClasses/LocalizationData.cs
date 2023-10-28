@@ -124,6 +124,11 @@ internal sealed class LText_Class
         internal readonly string InstallFMs = "Install FMs";
         internal readonly string UninstallFM = "Uninstall FM";
         internal readonly string UninstallFMs = "Uninstall FMs";
+        [FenGenComment(
+            "\"Select\" here is matching the in-game terminology. To \"select\" a Dark Mod FM means that the FM will be",
+            "displayed and ready to play when you start The Dark Mod. To \"deselect\" means that no FM will be displayed",
+            "when you start the game, and you'll have to select one in-game."
+        )]
         internal readonly string SelectFM_DarkMod = "Select FM";
         internal readonly string DeselectFM_DarkMod = "Deselect FM";
         [FenGenBlankLine]
@@ -195,8 +200,6 @@ internal sealed class LText_Class
             "\"C:\\ProgramData\\Thief 3 Sneaky Upgrade\\Installed FMs\" for Thief 3.")]
         internal readonly string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install FM.";
         internal readonly string Install_GameIsRunning = "Game is running; unable to install FM. Please exit the game and then try again.";
-        // @TDM: Make sure the wording is clear (will people know what "select" means here?)
-        // @TDM: Maybe we should call it "to make current". "Make current FM", "Select as the current FM", "Set as current FM"
         internal readonly string SelectFM_DarkMod_GameIsRunning = "The Dark Mod is running. Unable to select this FM.";
         internal readonly string SelectFM_DarkMod_UnableToSelect = "This FM couldn't be selected. Unable to write to currentfm.txt.";
         internal readonly string OneOrMoreGamesAreRunning = "One or more supported games are running. Please exit them first.";

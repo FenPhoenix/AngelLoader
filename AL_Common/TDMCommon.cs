@@ -8,14 +8,14 @@ namespace AL_Common;
 public static partial class Common
 {
     /*
-    @TDM(manual install filenames)
+    @TDM_NOTE(manual install filenames)
     If you go to an FM's download page, the pk4 is the identifying name plus an underscore and then a sha256
     hash code truncated to 16 characters. The game doesn't special-case this and doesn't strip the hash code or
     anything. The FM is just treated as having the name it has, so it will end up a separate entry. The game thus
     doesn't find it in the server's list and doesn't note the server version as being an update of the installed
     one, even if it is. So we can just ignore this whole issue and we match the game.
 
-    @TDM: FM name validation and conversion-to-valid notes:
+    @TDM_NOTE: FM name validation and conversion-to-valid notes:
     TDM does some checking and processing on FM names, to wit:
     -Converts it to lowercase if not already
     -Strips trailing .pk4 if it exists

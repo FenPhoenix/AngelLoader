@@ -1007,7 +1007,7 @@ internal static class Core
                         if (version != fm.TDMVersion)
                         {
                             /*
-                            @TDM: Re-scan only on next startup, because:
+                            @TDM_NOTE: Re-scan only on next startup, because:
                             We only get here after detecting a modification to missions.tdminfo, but the actual
                             copying in of the updated FMs may not have finished yet, so we have a race condition
                             and the scanner may not be able to find the right pk4 file.

@@ -5,7 +5,7 @@ namespace AL_Common;
 public static partial class Common
 {
     /*
-    @TDM(Http):
+    @TDM_NOTE(Http):
     On new .NETs there's a System.Net.Http.SocketsHttpHandler that apparently results in "a significant performance
     improvement" compared to HttpClientHandler which Framework uses.
     It's only in new .NETs, but there's a backport here: https://github.com/TalAloni/StandardSocketsHttpHandler
