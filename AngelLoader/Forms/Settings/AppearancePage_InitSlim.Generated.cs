@@ -48,10 +48,10 @@ sealed partial class AppearancePage
         this.ReadmeGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.ReadmeFixedWidthFontCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ShowOrHideUIElementsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.HideWebSearchButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.HideExitButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.HideFMListZoomButtonsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.HideUninstallButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.ShowWebSearchButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.ShowExitButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.ShowFMListZoomButtonsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.ShowUninstallButtonCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.VisualThemeGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.DarkThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -416,48 +416,50 @@ sealed partial class AppearancePage
         // 
         this.ShowOrHideUIElementsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideWebSearchButtonCheckBox);
-        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideExitButtonCheckBox);
-        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
-        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
+        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowWebSearchButtonCheckBox);
+        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowExitButtonCheckBox);
+        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowFMListZoomButtonsCheckBox);
+        this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowUninstallButtonCheckBox);
         this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 872);
         this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
         this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 144);
         this.ShowOrHideUIElementsGroupBox.TabIndex = 3;
         this.ShowOrHideUIElementsGroupBox.TabStop = false;
         // 
-        // HideWebSearchButtonCheckBox
+        // ShowWebSearchButtonCheckBox
         // 
-        this.HideWebSearchButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.ShowWebSearchButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.HideWebSearchButtonCheckBox.Location = new System.Drawing.Point(16, 72);
-        this.HideWebSearchButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-        this.HideWebSearchButtonCheckBox.TabIndex = 2;
+        this.ShowWebSearchButtonCheckBox.Checked = true;
+        this.ShowWebSearchButtonCheckBox.Location = new System.Drawing.Point(16, 72);
+        this.ShowWebSearchButtonCheckBox.Size = new System.Drawing.Size(456, 32);
+        this.ShowWebSearchButtonCheckBox.TabIndex = 2;
         // 
-        // HideExitButtonCheckBox
+        // ShowExitButtonCheckBox
         // 
-        this.HideExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.ShowExitButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.HideExitButtonCheckBox.Checked = true;
-        this.HideExitButtonCheckBox.Location = new System.Drawing.Point(16, 100);
-        this.HideExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-        this.HideExitButtonCheckBox.TabIndex = 3;
+        this.ShowExitButtonCheckBox.Location = new System.Drawing.Point(16, 100);
+        this.ShowExitButtonCheckBox.Size = new System.Drawing.Size(456, 32);
+        this.ShowExitButtonCheckBox.TabIndex = 3;
         // 
-        // HideFMListZoomButtonsCheckBox
+        // ShowFMListZoomButtonsCheckBox
         // 
-        this.HideFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.ShowFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 16);
-        this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
-        this.HideFMListZoomButtonsCheckBox.TabIndex = 0;
+        this.ShowFMListZoomButtonsCheckBox.Checked = true;
+        this.ShowFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 16);
+        this.ShowFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(456, 32);
+        this.ShowFMListZoomButtonsCheckBox.TabIndex = 0;
         // 
-        // HideUninstallButtonCheckBox
+        // ShowUninstallButtonCheckBox
         // 
-        this.HideUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.ShowUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 44);
-        this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
-        this.HideUninstallButtonCheckBox.TabIndex = 1;
+        this.ShowUninstallButtonCheckBox.Checked = true;
+        this.ShowUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 44);
+        this.ShowUninstallButtonCheckBox.Size = new System.Drawing.Size(456, 32);
+        this.ShowUninstallButtonCheckBox.TabIndex = 1;
         // 
         // VisualThemeGroupBox
         // 

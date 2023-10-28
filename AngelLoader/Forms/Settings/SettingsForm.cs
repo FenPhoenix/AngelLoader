@@ -536,10 +536,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Show/hide UI elements
 
-            AppearancePage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
-            AppearancePage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
-            AppearancePage.HideExitButtonCheckBox.Checked = config.HideExitButton;
-            AppearancePage.HideWebSearchButtonCheckBox.Checked = config.HideWebSearchButton;
+            AppearancePage.ShowUninstallButtonCheckBox.Checked = !config.HideUninstallButton;
+            AppearancePage.ShowFMListZoomButtonsCheckBox.Checked = !config.HideFMListZoomButtons;
+            AppearancePage.ShowExitButtonCheckBox.Checked = !config.HideExitButton;
+            AppearancePage.ShowWebSearchButtonCheckBox.Checked = !config.HideWebSearchButton;
 
             #endregion
 
@@ -907,10 +907,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 AppearancePage.RecentFMsLabel.Text = LText.SettingsWindow.Appearance_RecentFMs_MaxDays;
 
                 AppearancePage.ShowOrHideUIElementsGroupBox.Text = LText.SettingsWindow.Appearance_ShowOrHideInterfaceElements;
-                AppearancePage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideUninstallButton;
-                AppearancePage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Appearance_HideFMListZoomButtons;
-                AppearancePage.HideExitButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideExitButton;
-                AppearancePage.HideWebSearchButtonCheckBox.Text = LText.SettingsWindow.Appearance_HideWebSearchButton;
+                AppearancePage.ShowUninstallButtonCheckBox.Text = LText.SettingsWindow.Appearance_ShowUninstallButton;
+                AppearancePage.ShowFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Appearance_ShowFMListZoomButtons;
+                AppearancePage.ShowExitButtonCheckBox.Text = LText.SettingsWindow.Appearance_ShowExitButton;
+                AppearancePage.ShowWebSearchButtonCheckBox.Text = LText.SettingsWindow.Appearance_ShowWebSearchButton;
 
                 AppearancePage.ReadmeGroupBox.Text = LText.SettingsWindow.Appearance_ReadmeBox;
                 AppearancePage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Appearance_ReadmeUseFixedWidthFont;
@@ -1216,10 +1216,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Show/hide UI elements
 
-            OutConfig.HideUninstallButton = AppearancePage.HideUninstallButtonCheckBox.Checked;
-            OutConfig.HideFMListZoomButtons = AppearancePage.HideFMListZoomButtonsCheckBox.Checked;
-            OutConfig.HideExitButton = AppearancePage.HideExitButtonCheckBox.Checked;
-            OutConfig.HideWebSearchButton = AppearancePage.HideWebSearchButtonCheckBox.Checked;
+            OutConfig.HideUninstallButton = !AppearancePage.ShowUninstallButtonCheckBox.Checked;
+            OutConfig.HideFMListZoomButtons = !AppearancePage.ShowFMListZoomButtonsCheckBox.Checked;
+            OutConfig.HideExitButton = !AppearancePage.ShowExitButtonCheckBox.Checked;
+            OutConfig.HideWebSearchButton = !AppearancePage.ShowWebSearchButtonCheckBox.Checked;
 
             #endregion
 
