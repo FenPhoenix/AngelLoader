@@ -736,17 +736,39 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
-            // This one is in an fm folder so it will already be validly named
+            // Matching game behavior: pk4 files inside FM folders can be named anything and still be game-loadable
             zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
             if (!File.Exists(zipPath))
             {
-                Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
-                return UnsupportedTDM(
-                    archivePath: fm.Path,
-                    fen7zResult: null,
-                    ex: null,
-                    errorInfo: "FM directory: " + fm.Path
-                );
+                try
+                {
+                    zipPath = "";
+                    string[] pk4FilesInFMFolder = Directory.GetFiles(fm.Path, "*.pk4", SearchOption.TopDirectoryOnly);
+                    for (int i = 0; i < pk4FilesInFMFolder.Length; i++)
+                    {
+                        // @TDM_CASE(Scanner: pk4 within fm folder - _l10n check)
+                        if (!pk4FilesInFMFolder[i].EndsWith("_l10n.pk4", OrdinalIgnoreCase))
+                        {
+                            zipPath = pk4FilesInFMFolder[i];
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    zipPath = "";
+                }
+
+                if (zipPath.IsEmpty())
+                {
+                    Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
+                    return UnsupportedTDM(
+                        archivePath: fm.Path,
+                        fen7zResult: null,
+                        ex: null,
+                        errorInfo: "FM directory: " + fm.Path
+                    );
+                }
             }
         }
 

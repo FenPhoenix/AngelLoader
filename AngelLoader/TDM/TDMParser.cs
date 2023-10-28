@@ -182,6 +182,7 @@ internal static class TDMParser
         try
         {
             string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
+            // @TDM_CASE: Case-insensitive dictionary
             DictionaryI<string> pk4ConvertedNamesDict = new();
             if (!tdmFMsPath.IsEmpty())
             {

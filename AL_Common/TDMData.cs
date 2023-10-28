@@ -15,8 +15,8 @@ public static partial class Common
     doesn't find it in the server's list and doesn't note the server version as being an update of the installed
     one, even if it is. So we can just ignore this whole issue and we match the game.
 
-    @TDM(internalName validation and conversion-to-valid):
-    TDM does some checking and processing on internalNames from the server, to wit:
+    @TDM: FM name validation and conversion-to-valid notes:
+    TDM does some checking and processing on FM names, to wit:
     -Converts it to lowercase if not already
     -Strips trailing .pk4 if it exists
     -Converts to underscores any chars that are NOT:
@@ -25,23 +25,24 @@ public static partial class Common
      -"Western European high-ascii chars" (0xC0 to 0xFF in Win1252 / ISO 8859-1 - both encodings are the same in
       that char range)
     
-    There don't appear to be any nonconforming internalNames on the server as of 2023-10-16. I suspect they're
-    also doing the conversion server-side in the first place. Should we match the game on this?
-    Converting names would lead to all manner of nasty potential corner cases.
+    -There don't appear to be any nonconforming internalNames on the server as of 2023-10-16.
+     The wiki doesn't appear to say anything specifically about this, it just says you should make your FM's
+     internal name conform to this logic (lowercase, ascii letters and numbers) and make sure it doesn't conflict
+     with any other. It states that FMs are uploaded manually by a staff member, and so that's where the trail
+     ends. I don't know if the server automatically processes/disambiguates/corrects the internal names.
 
-    The wiki doesn't appear to say anything specifically about this, it just says you should make your FM's
-    internal name conform to this logic (lowercase, ascii letters and numbers) and make sure it doesn't conflict
-    with any other. It states that FMs are uploaded manually by a staff member, and so that's where the trail
-    ends. I don't know if the server automatically processes/disambiguates/corrects the internal names.
+    -These are the places the game does this conversion:
+     -On getting the names from the server
+     -On moving pk4s into directories (the directory and pk4 are converted to valid names)
 
-    We should probably just do what the game does, and if we have any problems then so will the game, so meh.
+    However, if an FM dir itself is named invalidly, it DOESN'T convert it, but treats it as a separate FM, new
+    entry in mission.tdminfo and all.
 
-    @TDM: The game also does this when reading from disk...
-    Specifically, it's for pk4s in the base fms dir, it converts the name when it moves the pk4 into its own dir.
-    However, if an fm dir is named eg. "bakery;job" ,then it leaves the name alone and writes "bakery;job" out to
-    missions.tdminfo as a separate entry from "bakery_job".
-
-    So to match it, we need to consider "bakery;job.pk4" equal to "bakery_job" when reading the on-disk FMs.
+    Also, when loading an FM, it appears to just load whatever pk4 is in the specified fm folder, no matter its
+    name. So in all the following scenarios, the game will load Bakery Job just fine:
+    -C:\darkmod\fms\bakery_job\bakery_job.pk4
+    -C:\darkmod\fms\bakery_job\bakery;job.pk4
+    -C:\darkmod\fms\bakery_job\totally_irrelevant_name.pk4
     */
 
     private static bool IsValidTDMInternalNameChar(char c)
@@ -157,6 +158,7 @@ public sealed class TDM_LocalFMData
 public sealed class ScannerTDMContext
 {
     public readonly string FMsPath;
+    // @TDM_CASE: Case-insensitive dictionary
     public readonly DictionaryI<string> BaseFMsDirPK4Files;
     public readonly Dictionary<string, TDM_LocalFMData> LocalFMData;
     public readonly Dictionary<string, TDM_ServerFMData> ServerFMData;
