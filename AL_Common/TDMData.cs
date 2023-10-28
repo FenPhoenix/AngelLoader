@@ -37,11 +37,11 @@ public static partial class Common
     We should probably just do what the game does, and if we have any problems then so will the game, so meh.
 
     @TDM: The game also does this when reading from disk...
-    But from testing it doesn't seem to consider for example "bakery_job" and "bakery;job" equivalent, even though
-    it should be replacing that ';' with a '_'. It also writes out "bakery;job" to missions.tdminfo, so it clearly
-    isn't using the converted name everywhere. We should refrain from doing the name conversion on disk FMs since
-    we're not sure how and when it works, and FMs downloaded with TDM will be in the right naming format at the
-    end of the day anyway... And as for manually installed FMs, all bets are off as we know.
+    Specifically, it's for pk4s in the base fms dir, it converts the name when it moves the pk4 into its own dir.
+    However, if an fm dir is named eg. "bakery;job" ,then it leaves the name alone and writes "bakery;job" out to
+    missions.tdminfo as a separate entry from "bakery_job".
+
+    So to match it, we need to consider "bakery;job.pk4" equal to "bakery_job" when reading the on-disk FMs.
     */
 
     private static bool IsValidTDMInternalNameChar(char c)
@@ -156,11 +156,20 @@ public sealed class TDM_LocalFMData
 // @TDM_CASE: Case-sensitive dictionaries
 public sealed class ScannerTDMContext
 {
+    public readonly string FMsPath;
+    public readonly DictionaryI<string> BaseFMsDirPK4Files;
     public readonly Dictionary<string, TDM_LocalFMData> LocalFMData;
     public readonly Dictionary<string, TDM_ServerFMData> ServerFMData;
 
-    public ScannerTDMContext(List<TDM_LocalFMData> localFMData, List<TDM_ServerFMData> serverFMData)
+    public ScannerTDMContext(
+        string fmsPath,
+        DictionaryI<string> baseFMsDirPK4Files,
+        List<TDM_LocalFMData> localFMData,
+        List<TDM_ServerFMData> serverFMData)
     {
+        FMsPath = fmsPath;
+        BaseFMsDirPK4Files = baseFMsDirPK4Files;
+
         LocalFMData = new Dictionary<string, TDM_LocalFMData>();
         ServerFMData = new Dictionary<string, TDM_ServerFMData>();
 
@@ -174,8 +183,11 @@ public sealed class ScannerTDMContext
         }
     }
 
-    public ScannerTDMContext()
+    public ScannerTDMContext(string fmsPath)
     {
+        FMsPath = fmsPath;
+        BaseFMsDirPK4Files = new DictionaryI<string>();
+
         LocalFMData = new Dictionary<string, TDM_LocalFMData>();
         ServerFMData = new Dictionary<string, TDM_ServerFMData>();
     }

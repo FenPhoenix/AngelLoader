@@ -309,8 +309,7 @@ internal static class TDMWatchers
 
             for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
             {
-                string pk4 = fileTdmFMIds_PK4s[i];
-                string nameWithoutExt = pk4.RemoveExtension();
+                string nameWithoutExt = fileTdmFMIds_PK4s[i].ConvertToValidTDMInternalName();
                 if (dirsHash.Add(nameWithoutExt))
                 {
                     finalFilesList.Add(nameWithoutExt);

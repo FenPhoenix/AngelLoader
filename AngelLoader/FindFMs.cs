@@ -497,11 +497,10 @@ internal static class FindFMs
 
                 for (int i = 0; i < filesPK4.Count; i++)
                 {
-                    string pk4 = filesPK4[i];
-                    string nameWithoutExt = pk4.RemoveExtension();
-                    if (dirsHash.Add(nameWithoutExt))
+                    string validTdmFMName = filesPK4[i].ConvertToValidTDMInternalName();
+                    if (dirsHash.Add(validTdmFMName))
                     {
-                        finalFilesList.Add(nameWithoutExt);
+                        finalFilesList.Add(validTdmFMName);
                         finalDateTimesList.Add(dateTimesPK4[i]);
                     }
                 }
@@ -988,12 +987,20 @@ internal static class FindFMs
             FMsViewList.Add(fm);
         }
 
+        string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        DictionaryI<string> pk4ConvertedNamesHash = TDMParser.GetTDMBaseFMsDirPK4sConverted();
+
         for (int i = 0; i < FMDataIniListTDM.Count; i++)
         {
             FanMission fm = FMDataIniListTDM[i];
 
-            string fmInstDir = Path.Combine(Config.GetFMInstallPath(GameIndex.TDM), fm.TDMInstalledDir);
-            if (!Directory.Exists(fmInstDir) && !File.Exists(fmInstDir.TrimEnd(CA_BS_FS) + ".pk4"))
+            string fmInstDir = !tdmFMsPath.IsEmpty()
+                ? Path.Combine(tdmFMsPath, fm.TDMInstalledDir)
+                : "";
+
+            if (fmInstDir.IsEmpty() ||
+                (!Directory.Exists(fmInstDir) &&
+                 !pk4ConvertedNamesHash.ContainsKey(fm.TDMInstalledDir)))
             {
                 fm.MarkedUnavailable = true;
             }

@@ -169,9 +169,33 @@ internal static class TDMParser
     internal static async Task<ScannerTDMContext> GetScannerTDMContext(CancellationToken cancellationToken)
     {
         List<TDM_LocalFMData> localFMData = ParseMissionsInfoFile();
+        string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
+        DictionaryI<string> pk4ConvertedNamesDict = GetTDMBaseFMsDirPK4sConverted();
         (bool success, _, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer(cancellationToken);
         return success
-            ? new ScannerTDMContext(localFMData, serverFMData)
-            : new ScannerTDMContext();
+            ? new ScannerTDMContext(fmsPath, pk4ConvertedNamesDict, localFMData, serverFMData)
+            : new ScannerTDMContext(fmsPath);
+    }
+
+    internal static DictionaryI<string> GetTDMBaseFMsDirPK4sConverted()
+    {
+        try
+        {
+            string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
+            DictionaryI<string> pk4ConvertedNamesDict = new();
+            if (!tdmFMsPath.IsEmpty())
+            {
+                List<string> pk4Files = FastIO.GetFilesTopOnly(tdmFMsPath, "*.pk4", returnFullPaths: false);
+                foreach (string pk4File in pk4Files)
+                {
+                    pk4ConvertedNamesDict[pk4File.ConvertToValidTDMInternalName()] = pk4File;
+                }
+            }
+            return pk4ConvertedNamesDict;
+        }
+        catch
+        {
+            return new DictionaryI<string>();
+        }
     }
 }

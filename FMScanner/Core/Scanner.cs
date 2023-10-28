@@ -412,9 +412,12 @@ public sealed partial class Scanner : IDisposable
 #endif
 
     [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-              IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    public Task<List<ScannedFMDataAndError>> ScanAsync(
+        List<FMToScan> missions,
+        string tempPath,
+        ScanOptions scanOptions,
+        IProgress<ProgressReport> progress,
+        CancellationToken cancellationToken)
     {
         return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
     }
@@ -726,14 +729,14 @@ public sealed partial class Scanner : IDisposable
             Game = Game.TDM
         };
 
-        string fmAsPK4File = fm.Path.TrimEnd(CA_BS_FS) + ".pk4";
-
-        if (!Directory.Exists(_fmWorkingPath) && File.Exists(fmAsPK4File))
+        if (!Directory.Exists(_fmWorkingPath) &&
+            _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string realPK4))
         {
-            zipPath = fmAsPK4File;
+            zipPath = Path.Combine(_tdmContext.FMsPath, realPK4);
         }
         else
         {
+            // This one is in an fm folder so it will already be validly named
             zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
             if (!File.Exists(zipPath))
             {

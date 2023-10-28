@@ -155,7 +155,10 @@ internal static class FMCache
                 {
                     string fmInstallPath = Config.GetFMInstallPath(GameIndex.TDM);
                     if (fmInstallPath.IsEmpty()) return new CacheData();
-                    fmArchivePath = Path.Combine(fmInstallPath, fm.TDMInstalledDir + ".pk4");
+                    DictionaryI<string> pk4FilesConverted = TDMParser.GetTDMBaseFMsDirPK4sConverted();
+                    fmArchivePath = pk4FilesConverted.TryGetValue(fm.TDMInstalledDir, out string realPk4)
+                        ? Path.Combine(fmInstallPath, realPk4)
+                        : Path.Combine(fmInstallPath, fm.TDMInstalledDir + ".pk4");
                 }
                 else
                 {

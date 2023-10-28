@@ -221,7 +221,7 @@ internal static class FMScan
                         }
                         else
                         {
-                            tdmContext = new ScannerTDMContext();
+                            tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
                         using var scanner = new FMScanner.Scanner(
