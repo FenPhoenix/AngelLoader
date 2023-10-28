@@ -10,6 +10,9 @@ public static partial class Common
     improvement" compared to HttpClientHandler which Framework uses.
     It's only in new .NETs, but there's a backport here: https://github.com/TalAloni/StandardSocketsHttpHandler
     We can test this out later once we know what we're doing and see if we get better perf.
+
+    2023-10-28: Perf was the same with the above nuget package, so we're not using it for now. If we do an in-app
+    downloader we can revisit it and test again.
     */
 
     // Only one instance is supposed to exist app-wide
