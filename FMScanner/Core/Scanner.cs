@@ -740,11 +740,12 @@ public sealed partial class Scanner : IDisposable
             zipPath = Path.Combine(fm.Path, fmData.ArchiveName + ".pk4");
             if (!File.Exists(zipPath))
             {
+                Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
                 return UnsupportedTDM(
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: null,
-                    errorInfo: "Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'."
+                    errorInfo: "FM directory: " + fm.Path
                 );
             }
         }
