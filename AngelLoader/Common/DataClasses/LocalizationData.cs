@@ -671,6 +671,7 @@ internal sealed class LText_Class
         internal readonly string ConvertingAudioFiles = "Converting audio files...";
         [FenGenBlankLine]
         internal readonly string PreparingToScanFMs = "Preparing to scan...";
+        internal readonly string RetrievingFMDataFromTDMServer = "Retrieving FM data from The Dark Mod server...";
         internal readonly string Scanning = "Scanning...";
         internal readonly string ReportScanningFirst = "Scanning ";
         internal readonly string ReportScanningBetweenNumAndTotal = " of ";

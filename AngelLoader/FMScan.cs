@@ -213,9 +213,16 @@ internal static class FMScan
 
                         if (_scanCts.IsCancellationRequested) return false;
 
-                        ScannerTDMContext tdmContext = tdmDataRequired
-                            ? await TDMParser.GetScannerTDMContext(_scanCts.Token)
-                            : new ScannerTDMContext();
+                        ScannerTDMContext tdmContext;
+                        if (tdmDataRequired)
+                        {
+                            Core.View.SetProgressBoxState_Single(message2: LText.ProgressBox.RetrievingFMDataFromTDMServer);
+                            tdmContext = await TDMParser.GetScannerTDMContext(_scanCts.Token);
+                        }
+                        else
+                        {
+                            tdmContext = new ScannerTDMContext();
+                        }
 
                         using var scanner = new FMScanner.Scanner(
                             sevenZipWorkingPath: Paths.SevenZipPath,
