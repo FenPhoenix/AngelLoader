@@ -217,7 +217,7 @@ internal static class FMScan
                         if (tdmDataRequired)
                         {
                             Core.View.SetProgressBoxState_Single(message2: LText.ProgressBox.RetrievingFMDataFromTDMServer);
-                            tdmContext = await TDMParser.GetScannerTDMContext(_scanCts.Token);
+                            tdmContext = await TDM.GetScannerTDMContext(_scanCts.Token);
                         }
                         else
                         {

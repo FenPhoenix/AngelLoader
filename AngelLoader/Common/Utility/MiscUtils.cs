@@ -314,6 +314,12 @@ public static partial class Utils
         return true;
     }
 
+    internal static void Reset(this System.Timers.Timer timer)
+    {
+        timer.Stop();
+        timer.Start();
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {

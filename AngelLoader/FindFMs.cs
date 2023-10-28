@@ -988,7 +988,7 @@ internal static class FindFMs
         }
 
         string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
-        DictionaryI<string> pk4ConvertedNamesHash = TDMParser.GetTDMBaseFMsDirPK4sConverted();
+        DictionaryI<string> pk4ConvertedNamesHash = TDM.GetTDMBaseFMsDirPK4sConverted();
 
         for (int i = 0; i < FMDataIniListTDM.Count; i++)
         {
