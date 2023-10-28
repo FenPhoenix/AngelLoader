@@ -19,6 +19,7 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 #endif
 
         BackupHelpPictureBox.Image = Images.HelpSmall;
+        BackupHelpTDMPictureBox.Image = Images.TDM_16();
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
@@ -48,16 +49,21 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 
             BackupPathHelpLabel.MaximumSize = BackupPathHelpLabel.MaximumSize with
             {
-                Width = OtherGroupBox.Width - (BackupPathHelpLabel.Left * 2)
+                Width = BackupGroupBox.Width - (BackupPathHelpLabel.Left * 2)
             };
 
-            OtherGroupBox.Height = OtherGroupBox.Padding.Vertical +
-                                   BackupPathPanel.Top +
-                                   BackupPathPanel.Padding.Vertical +
-                                   BackupPathHelpLabel.Top +
-                                   BackupPathHelpLabel.Padding.Vertical +
-                                   BackupPathHelpLabel.Height +
-                                   6;
+            BackupPathTDMHelpLabel.Location = BackupPathTDMHelpLabel.Location with { Y = BackupPathHelpLabel.Bottom + 16 };
+            BackupHelpTDMPictureBox.Location = BackupHelpTDMPictureBox.Location with { Y = BackupPathTDMHelpLabel.Location.Y };
+            BackupPathTDMHelpLabel.MaximumSize = BackupPathTDMHelpLabel.MaximumSize with
+            {
+                Width = BackupGroupBox.Width - (BackupPathTDMHelpLabel.Left * 2)
+            };
+
+            BackupGroupBox.Height = BackupGroupBox.Padding.Vertical +
+                                    BackupPathPanel.Top +
+                                    BackupPathPanel.Padding.Vertical +
+                                    BackupPathTDMHelpLabel.Bottom +
+                                    12;
 
             // Have to do this separately after, because our heights will have changed above
             int flpHeight = LayoutFLP.Padding.Vertical;

@@ -10,12 +10,12 @@ sealed partial class PathsPage
         this.PagePanel = new System.Windows.Forms.Panel();
         this.ActualPathsPanel = new System.Windows.Forms.Panel();
         this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-        this.OtherGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+        this.BackupGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.BackupPathPanel = new System.Windows.Forms.Panel();
+        this.BackupHelpTDMPictureBox = new System.Windows.Forms.PictureBox();
+        this.BackupPathTDMHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
         this.BackupPathHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.BackupPathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BackupPathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.BackupPathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -51,11 +51,13 @@ sealed partial class PathsPage
         this.Thief3ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Thief1ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+        this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
         this.PagePanel.SuspendLayout();
         this.ActualPathsPanel.SuspendLayout();
         this.LayoutFLP.SuspendLayout();
-        this.OtherGroupBox.SuspendLayout();
+        this.BackupGroupBox.SuspendLayout();
         this.BackupPathPanel.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
         this.FMArchivePathsGroupBox.SuspendLayout();
         this.SteamOptionsGroupBox.SuspendLayout();
@@ -70,7 +72,7 @@ sealed partial class PathsPage
         this.PagePanel.Controls.Add(this.ActualPathsPanel);
         this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 898);
+        this.PagePanel.Size = new System.Drawing.Size(440, 910);
         this.PagePanel.TabIndex = 3;
         // 
         // ActualPathsPanel
@@ -81,80 +83,84 @@ sealed partial class PathsPage
         this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
         this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
         this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
-        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 864);
+        this.ActualPathsPanel.Size = new System.Drawing.Size(440, 888);
         this.ActualPathsPanel.TabIndex = 4;
         // 
         // LayoutFLP
         // 
         this.LayoutFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.LayoutFLP.Controls.Add(this.OtherGroupBox);
+        this.LayoutFLP.Controls.Add(this.BackupGroupBox);
         this.LayoutFLP.Controls.Add(this.FMArchivePathsGroupBox);
         this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
         this.LayoutFLP.Location = new System.Drawing.Point(0, 485);
         this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
         this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-        this.LayoutFLP.Size = new System.Drawing.Size(440, 392);
+        this.LayoutFLP.Size = new System.Drawing.Size(440, 403);
         this.LayoutFLP.TabIndex = 4;
         this.LayoutFLP.WrapContents = false;
         this.LayoutFLP.Layout += new System.Windows.Forms.LayoutEventHandler(this.LayoutFLP_Layout);
         // 
-        // DummyAutoScrollPanel
+        // BackupGroupBox
         // 
-        this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 200);
-        this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-        // 
-        // OtherGroupBox
-        // 
-        this.OtherGroupBox.Controls.Add(this.BackupPathPanel);
-        this.OtherGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.OtherGroupBox.Size = new System.Drawing.Size(424, 117);
-        this.OtherGroupBox.TabIndex = 2;
-        this.OtherGroupBox.TabStop = false;
+        this.BackupGroupBox.Controls.Add(this.BackupPathPanel);
+        this.BackupGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+        this.BackupGroupBox.Size = new System.Drawing.Size(424, 109);
+        this.BackupGroupBox.TabIndex = 2;
+        this.BackupGroupBox.TabStop = false;
         // 
         // BackupPathPanel
         // 
         this.BackupPathPanel.AutoScroll = true;
+        this.BackupPathPanel.Controls.Add(this.BackupHelpTDMPictureBox);
+        this.BackupPathPanel.Controls.Add(this.BackupPathTDMHelpLabel);
         this.BackupPathPanel.Controls.Add(this.BackupHelpPictureBox);
         this.BackupPathPanel.Controls.Add(this.BackupPathHelpLabel);
-        this.BackupPathPanel.Controls.Add(this.BackupPathLabel);
         this.BackupPathPanel.Controls.Add(this.BackupPathTextBox);
         this.BackupPathPanel.Controls.Add(this.BackupPathBrowseButton);
         this.BackupPathPanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.BackupPathPanel.Margin = new System.Windows.Forms.Padding(0);
-        this.BackupPathPanel.Size = new System.Drawing.Size(418, 98);
+        this.BackupPathPanel.Size = new System.Drawing.Size(418, 90);
         this.BackupPathPanel.TabIndex = 4;
+        // 
+        // BackupHelpTDMPictureBox
+        // 
+        this.BackupHelpTDMPictureBox.Location = new System.Drawing.Point(13, 64);
+        this.BackupHelpTDMPictureBox.Size = new System.Drawing.Size(16, 16);
+        this.BackupHelpTDMPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+        // 
+        // BackupPathTDMHelpLabel
+        // 
+        this.BackupPathTDMHelpLabel.AutoSize = true;
+        this.BackupPathTDMHelpLabel.Location = new System.Drawing.Point(32, 64);
+        this.BackupPathTDMHelpLabel.MaximumSize = new System.Drawing.Size(380, 0);
+        this.BackupPathTDMHelpLabel.TextChanged += new System.EventHandler(this.BackupPathHelpLabel_TextChanged);
         // 
         // BackupHelpPictureBox
         // 
-        this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
+        this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 40);
         this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);
         this.BackupHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
         // 
         // BackupPathHelpLabel
         // 
         this.BackupPathHelpLabel.AutoSize = true;
-        this.BackupPathHelpLabel.Location = new System.Drawing.Point(32, 56);
+        this.BackupPathHelpLabel.Location = new System.Drawing.Point(32, 40);
         this.BackupPathHelpLabel.MaximumSize = new System.Drawing.Size(380, 0);
         this.BackupPathHelpLabel.TextChanged += new System.EventHandler(this.BackupPathHelpLabel_TextChanged);
-        // 
-        // BackupPathLabel
-        // 
-        this.BackupPathLabel.AutoSize = true;
-        this.BackupPathLabel.Location = new System.Drawing.Point(13, 8);
         // 
         // BackupPathTextBox
         // 
         this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
+        this.BackupPathTextBox.Location = new System.Drawing.Point(13, 8);
         this.BackupPathTextBox.Size = new System.Drawing.Size(321, 20);
         this.BackupPathTextBox.TabIndex = 1;
         // 
         // BackupPathBrowseButton
         // 
         this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
+        this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 7);
         this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
         this.BackupPathBrowseButton.TabIndex = 2;
         // 
@@ -417,18 +423,24 @@ sealed partial class PathsPage
         this.Thief1ExePathTextBox.Size = new System.Drawing.Size(320, 20);
         this.Thief1ExePathTextBox.TabIndex = 1;
         // 
+        // DummyAutoScrollPanel
+        // 
+        this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 200);
+        this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
+        // 
         // PathsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 898);
+        this.Size = new System.Drawing.Size(440, 910);
         this.PagePanel.ResumeLayout(false);
         this.ActualPathsPanel.ResumeLayout(false);
         this.LayoutFLP.ResumeLayout(false);
-        this.OtherGroupBox.ResumeLayout(false);
+        this.BackupGroupBox.ResumeLayout(false);
         this.BackupPathPanel.ResumeLayout(false);
         this.BackupPathPanel.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
         this.FMArchivePathsGroupBox.ResumeLayout(false);
         this.FMArchivePathsGroupBox.PerformLayout();

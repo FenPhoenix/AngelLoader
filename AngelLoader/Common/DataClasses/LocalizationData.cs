@@ -713,8 +713,7 @@ internal sealed class LText_Class
         internal readonly string Paths_PathToSteamExecutable = "Path to Steam executable (optional):";
         internal readonly string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
         [FenGenBlankLine]
-        internal readonly string Paths_Other = "Other";
-        internal readonly string Paths_BackupPath = "Backup path (not required for The Dark Mod):";
+        internal readonly string Paths_BackupPath = "Backup path";
         internal readonly string Paths_FMArchivePaths = "FM archive paths";
         [FenGenComment(
             "This is a checkbox in the \"FM archive paths\" section. If checked, then all subfolders of all specified",
@@ -722,7 +721,7 @@ internal sealed class LText_Class
             "paths will be searched.")]
         internal readonly string Paths_IncludeSubfolders = "Include subfolders";
         internal readonly string Paths_BackupPath_Info = "This is the directory that will be used for new backups of saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.";
-        internal readonly string Paths_BackupPath_Required = "This directory is required to exist when using Thief games or System Shock 2. It is not used or required for The Dark Mod.";
+        internal readonly string Paths_BackupPath_Required = "The backup path is not used or required for The Dark Mod.";
         [FenGenBlankLine]
         internal readonly string Paths_AddArchivePathToolTip = "Add archive path...";
         internal readonly string Paths_RemoveArchivePathToolTip = "Remove selected archive path";

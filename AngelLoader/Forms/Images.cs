@@ -865,7 +865,7 @@ public static class Images
             : _ss2_16 ??= Resources.SS2_16;
 
     private static Bitmap? _tdm_16;
-    private static Bitmap TDM_16() => _tdm_16 ??= Resources.TDM_16;
+    internal static Bitmap TDM_16() => _tdm_16 ??= Resources.TDM_16;
 
     private static Bitmap? _t1_21;
     private static Bitmap? _t1_21_Dark;

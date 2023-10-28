@@ -849,12 +849,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
 
-            PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
-            PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
+            PathsPage.BackupGroupBox.Text = LText.SettingsWindow.Paths_BackupPath;
             PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
 
-            PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info + "\r\n\r\n" +
-                                                 LText.SettingsWindow.Paths_BackupPath_Required;
+            PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
+            PathsPage.BackupPathTDMHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Required;
             // Required for the startup version where the lang box is on the same page as paths!
             PathsPage.LayoutFLP.PerformLayout();
 
@@ -1835,7 +1834,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (control == PathsPage.BackupPathTextBox)
         {
-            PathsPage.PagePanel.ScrollControlIntoView(PathsPage.OtherGroupBox);
+            PathsPage.PagePanel.ScrollControlIntoView(PathsPage.BackupGroupBox);
             PathsPage.PagePanel.ScrollControlIntoView(PathsPage.BackupPathHelpLabel);
         }
         else
