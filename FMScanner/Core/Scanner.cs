@@ -729,6 +729,10 @@ public sealed partial class Scanner : IDisposable
         if (!Directory.Exists(_fmWorkingPath) &&
             _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string realPK4))
         {
+            if (_tdmContext.FMsPath.IsEmpty())
+            {
+                throw new Exception("TDM FM encountered, but passed fms path was empty!");
+            }
             zipPath = Path.Combine(_tdmContext.FMsPath, realPK4);
         }
         else

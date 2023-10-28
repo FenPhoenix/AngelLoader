@@ -988,36 +988,39 @@ internal static class FindFMs
         }
 
         string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
-        DictionaryI<string> pk4ConvertedNamesHash = TDM.GetTDMBaseFMsDirPK4sConverted();
-
-        for (int i = 0; i < FMDataIniListTDM.Count; i++)
+        if (!tdmFMsPath.IsEmpty() || FMDataIniListTDM.Count > 0)
         {
-            FanMission fm = FMDataIniListTDM[i];
+            DictionaryI<string> pk4ConvertedNamesHash = TDM.GetTDMBaseFMsDirPK4sConverted();
 
-            string fmInstDir = !tdmFMsPath.IsEmpty()
-                ? Path.Combine(tdmFMsPath, fm.TDMInstalledDir)
-                : "";
-
-            if (fmInstDir.IsEmpty() ||
-                (!Directory.Exists(fmInstDir) &&
-                 !pk4ConvertedNamesHash.ContainsKey(fm.TDMInstalledDir)))
+            for (int i = 0; i < FMDataIniListTDM.Count; i++)
             {
-                fm.MarkedUnavailable = true;
+                FanMission fm = FMDataIniListTDM[i];
+
+                string fmInstDir = !tdmFMsPath.IsEmpty()
+                    ? Path.Combine(tdmFMsPath, fm.TDMInstalledDir)
+                    : "";
+
+                if (fmInstDir.IsEmpty() ||
+                    (!Directory.Exists(fmInstDir) &&
+                     !pk4ConvertedNamesHash.ContainsKey(fm.TDMInstalledDir)))
+                {
+                    fm.MarkedUnavailable = true;
+                }
+                else if (fm.NeedsScan())
+                {
+                    fmsViewListUnscanned.Add(fm);
+                }
+
+                fm.Title =
+                    !fm.Title.IsEmpty() ? fm.Title :
+                    !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
+                    fm.InstalledDir;
+                fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
+
+                FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+
+                FMsViewList.Add(fm);
             }
-            else if (fm.NeedsScan())
-            {
-                fmsViewListUnscanned.Add(fm);
-            }
-
-            fm.Title =
-                !fm.Title.IsEmpty() ? fm.Title :
-                !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
-                fm.InstalledDir;
-            fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
-
-            FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
-
-            FMsViewList.Add(fm);
         }
 
         FMDataIniList.TrimExcess();

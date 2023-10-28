@@ -3018,8 +3018,6 @@ public sealed partial class MainForm : DarkFormBase,
                     Cursor = Cursors.Default;
                 }
                 break;
-            // Allow this refresh even when a dialog is up, as it's "inert" and won't cause a progress box or
-            // other dialogs.
             case TDM_FileChanged.CurrentFM:
                 try
                 {
