@@ -205,12 +205,16 @@ internal static class TDM
 
     internal static void ViewRefreshAfterAutoUpdate()
     {
-        Core.View.RefreshFMsListRowsOnlyKeepSelection();
-        FanMission? fm = Core.View.GetMainSelectedFMOrNull();
-        if (fm != null)
-        {
-            Core.View.UpdateAllFMUIDataExceptReadme(fm);
-        }
+        /*
+        @TDM(currentfm.txt refresh minimal required work):
+        Technically current fm only needs the FMs list refresh and multiselect state update. We could technically
+        improve perf by just doing those for current fm change. But, we measure basically no difference whatsoever
+        between this full refresh vs. just an FMs list refresh, even with all tabs loaded and updating for real.
+        The FMs DataGridView takes like 13ms to draw the un-maximized window's worth of cells, even with no logic
+        and most cells just blank or constant strings. Doesn't seem to be anything we can do about that, so meh.
+        The rest of the time beyond that is just noise.
+        */
+        Core.View.RefreshAllSelectedFMs_Full();
         Core.View.SetAvailableAndFinishedFMCount();
     }
 
