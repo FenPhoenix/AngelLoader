@@ -2995,6 +2995,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region Refresh queueing
 
     public bool RefreshAllowed() =>
+        !IsDisposed &&
         _firstShowDone &&
         !AboutToClose &&
         !Config.GetGameExe(GameIndex.TDM).IsEmpty() &&
