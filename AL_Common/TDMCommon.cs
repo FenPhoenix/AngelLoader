@@ -43,6 +43,16 @@ public static partial class Common
     -C:\darkmod\fms\bakery_job\bakery_job.pk4
     -C:\darkmod\fms\bakery_job\bakery;job.pk4
     -C:\darkmod\fms\bakery_job\totally_irrelevant_name.pk4
+
+    @TDM(pk4/zip):
+    TDM supports zip files in the base FMs dir too, it moves them into their folder and renames them to .pk4.
+    But it does NOT support zip files in FM folders! It will fail to find/load those. So we only need to support
+    zips in the base FMs dir.
+
+    -TDM finds files in order of pk4, then zip. It only takes files that have darkmod.txt in them (problematic
+    for us - perf issue). It then moves them in order, overwriting previous ones if they exist. So, that means
+    zips take priority over pk4s, although they all end up named .pk4 once in the FM folder, the pk4 there will
+    have come from a zip if one existed.
     */
 
     private static bool IsValidTDMInternalNameChar(char c)
