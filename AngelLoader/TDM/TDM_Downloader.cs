@@ -30,18 +30,40 @@ internal static class TDM_Downloader
     private static readonly string _detailsPath = Path.Combine(_testingPath, "mission_details");
 #endif
 
+    /*
+    @TDM_NOTE(available missions urls):
+    The game tries these two in order. They both seem to work reliably and appear to lead to the same xml file.
+    But let's just match the game.
+    */
+    private static readonly string[] _availableMissionsUrls =
+    {
+        "http://missions.thedarkmod.com/get_available_missions.php",
+        "http://missions.thedarkmod.com/available_missions.xml"
+    };
+
     internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer(CancellationToken cancellationToken)
     {
+        HttpResponseMessage? request = null;
         try
         {
             var fail = (false, false, (Exception?)null, new List<TDM_ServerFMData>());
 
 #if ENABLE_ONLINE
-            using HttpResponseMessage request = await GlobalHttpClient.GetAsync(
-                "http://missions.thedarkmod.com/get_available_missions.php",
-                cancellationToken);
-            request.EnsureSuccessStatusCode();
+            bool success = false;
+            foreach (string url in _availableMissionsUrls)
+            {
+                request?.Dispose();
+                request = await GlobalHttpClient.GetAsync(url, cancellationToken);
+                if (request.IsSuccessStatusCode)
+                {
+                    success = true;
+                    break;
+                }
+            }
+
+            if (!success || request == null) return fail;
+
             using Stream dataStream = await request.Content.ReadAsStreamAsync();
 #else
             using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
@@ -108,6 +130,10 @@ internal static class TDM_Downloader
         catch (Exception ex)
         {
             return (false, false, ex, new List<TDM_ServerFMData>());
+        }
+        finally
+        {
+            request?.Dispose();
         }
     }
 }
