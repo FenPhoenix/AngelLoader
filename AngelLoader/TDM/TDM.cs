@@ -189,10 +189,17 @@ internal static class TDM
             DictionaryI<string> pk4ConvertedNamesDict = new();
             if (!tdmFMsPath.IsEmpty())
             {
+                // Matching game behavior - it supports zips in the base FMs dir, but renames them to pk4 once it
+                // moves them to a individual folders, and doesn't support zips inside those. Zips override pk4s.
                 List<string> pk4Files = FastIO.GetFilesTopOnly(tdmFMsPath, "*.pk4", returnFullPaths: false);
+                List<string> zipFiles = FastIO.GetFilesTopOnly(tdmFMsPath, "*.zip", returnFullPaths: false);
                 foreach (string pk4File in pk4Files)
                 {
-                    pk4ConvertedNamesDict[pk4File.ConvertToValidTDMInternalName()] = pk4File;
+                    pk4ConvertedNamesDict[pk4File.ConvertToValidTDMInternalName(extension: ".pk4")] = pk4File;
+                }
+                foreach (string zipFile in zipFiles)
+                {
+                    pk4ConvertedNamesDict[zipFile.ConvertToValidTDMInternalName(extension: ".zip")] = zipFile;
                 }
             }
             return pk4ConvertedNamesDict;

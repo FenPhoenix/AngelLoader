@@ -44,7 +44,7 @@ public static partial class Common
     -C:\darkmod\fms\bakery_job\bakery;job.pk4
     -C:\darkmod\fms\bakery_job\totally_irrelevant_name.pk4
 
-    @TDM(pk4/zip):
+    @TDM_NOTE(pk4/zip):
     TDM supports zip files in the base FMs dir too, it moves them into their folder and renames them to .pk4.
     But it does NOT support zip files in FM folders! It will fail to find/load those. So we only need to support
     zips in the base FMs dir.
@@ -86,13 +86,14 @@ public static partial class Common
     /// If no conversion is necessary, returns the current instance unchanged.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="extension"></param>
     /// <returns></returns>
-    public static string ConvertToValidTDMInternalName(this string value)
+    public static string ConvertToValidTDMInternalName(this string value, string extension = ".pk4")
     {
         if (value.IsValidTDMInternalName()) return value;
 
         value = value.ToLowerInvariant();
-        if (value.EndsWithO(".pk4"))
+        if (value.EndsWithO(extension))
         {
             value = value.RemoveExtension();
         }
