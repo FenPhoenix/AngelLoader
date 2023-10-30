@@ -168,7 +168,9 @@ internal static class FMCache
                 // In weird situations this could be true, so just say none and at least don't crash
                 if (fmArchivePath.IsEmpty()) return new CacheData();
 
-                if ((fm.Game == Game.TDM && fmArchivePath.EndsWithI(".pk4")) || fm.Archive.ExtIsZip())
+                if ((fm.Game == Game.TDM &&
+                     (fmArchivePath.EndsWithI(".pk4") || fmArchivePath.EndsWithI(".zip"))) ||
+                    fm.Archive.ExtIsZip())
                 {
                     byte[] zipExtractTempBuffer = new byte[StreamCopyBufferSize];
                     byte[] fileStreamBuffer = new byte[FileStreamBufferSize];

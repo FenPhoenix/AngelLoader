@@ -482,26 +482,39 @@ internal static class FindFMs
                 List<string> dirs = files;
 
                 var filesPK4 = new List<string>();
+                var filesZip = new List<string>();
                 var dateTimesPK4 = new List<ExpandableDate_FromTicks>();
+                var dateTimesZip = new List<ExpandableDate_FromTicks>();
 
                 FastIO.GetDirsTopOnly_FMs(fmsPath, "*", dirs, dateTimes);
                 FastIO.GetFilesTopOnly_FMs(fmsPath, "*.pk4", filesPK4, dateTimesPK4);
+                FastIO.GetFilesTopOnly_FMs(fmsPath, "*.zip", filesZip, dateTimesZip);
 
                 HashSetI dirsHash = dirs.ToHashSetI();
 
-                var finalFilesList = new List<string>(dirs.Count + filesPK4.Count);
-                var finalDateTimesList = new List<ExpandableDate_FromTicks>(dateTimes.Count + dateTimesPK4.Count);
+                var finalFilesList = new List<string>(dirs.Count + filesPK4.Count + filesZip.Count);
+                var finalDateTimesList = new List<ExpandableDate_FromTicks>(dateTimes.Count + dateTimesPK4.Count + dateTimesZip.Count);
 
                 finalFilesList.AddRange(dirs);
                 finalDateTimesList.AddRange(dateTimes);
 
                 for (int i = 0; i < filesPK4.Count; i++)
                 {
-                    string validTdmFMName = filesPK4[i].ConvertToValidTDMInternalName();
+                    string validTdmFMName = filesPK4[i].ConvertToValidTDMInternalName(".pk4");
                     if (dirsHash.Add(validTdmFMName))
                     {
                         finalFilesList.Add(validTdmFMName);
                         finalDateTimesList.Add(dateTimesPK4[i]);
+                    }
+                }
+
+                for (int i = 0; i < filesZip.Count; i++)
+                {
+                    string validTdmFMName = filesZip[i].ConvertToValidTDMInternalName(".zip");
+                    if (dirsHash.Add(validTdmFMName))
+                    {
+                        finalFilesList.Add(validTdmFMName);
+                        finalDateTimesList.Add(dateTimesZip[i]);
                     }
                 }
 

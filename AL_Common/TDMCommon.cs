@@ -64,7 +64,7 @@ public static partial class Common
             (c >= 0xC0 && c <= 0xFF);
     }
 
-    private static bool IsValidTDMInternalName(this string value)
+    private static bool IsValidTDMInternalName(this string value, string extension)
     {
         for (int i = 0; i < value.Length; i++)
         {
@@ -74,7 +74,7 @@ public static partial class Common
                 return false;
             }
         }
-        if (value.EndsWithO(".pk4"))
+        if (value.EndsWithO(extension))
         {
             return false;
         }
@@ -88,9 +88,9 @@ public static partial class Common
     /// <param name="value"></param>
     /// <param name="extension"></param>
     /// <returns></returns>
-    public static string ConvertToValidTDMInternalName(this string value, string extension = ".pk4")
+    public static string ConvertToValidTDMInternalName(this string value, string extension)
     {
-        if (value.IsValidTDMInternalName()) return value;
+        if (value.IsValidTDMInternalName(extension)) return value;
 
         value = value.ToLowerInvariant();
         if (value.EndsWithO(extension))
@@ -142,7 +142,7 @@ public sealed class TDM_ServerFMData
     public string InternalName
     {
         get => _internalName;
-        set => _internalName = value.ConvertToValidTDMInternalName();
+        set => _internalName = value.ConvertToValidTDMInternalName(".pk4");
     }
 
     // string

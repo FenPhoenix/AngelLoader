@@ -375,15 +375,25 @@ internal static class TDM
 
             List<string> fileTdmFMIds_Dirs = FastIO.GetDirsTopOnly(fmsPath, "*", returnFullPaths: false);
             List<string> fileTdmFMIds_PK4s = FastIO.GetFilesTopOnly(fmsPath, "*.pk4", returnFullPaths: false);
+            List<string> fileTdmFMIds_Zips = FastIO.GetFilesTopOnly(fmsPath, "*.zip", returnFullPaths: false);
             HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
 
-            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count);
+            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count + fileTdmFMIds_Zips.Count);
 
             finalFilesList.AddRange(fileTdmFMIds_Dirs);
 
             for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
             {
-                string nameWithoutExt = fileTdmFMIds_PK4s[i].ConvertToValidTDMInternalName();
+                string nameWithoutExt = fileTdmFMIds_PK4s[i].ConvertToValidTDMInternalName(".pk4");
+                if (dirsHash.Add(nameWithoutExt))
+                {
+                    finalFilesList.Add(nameWithoutExt);
+                }
+            }
+
+            for (int i = 0; i < fileTdmFMIds_Zips.Count; i++)
+            {
+                string nameWithoutExt = fileTdmFMIds_Zips[i].ConvertToValidTDMInternalName(".zip");
                 if (dirsHash.Add(nameWithoutExt))
                 {
                     finalFilesList.Add(nameWithoutExt);
