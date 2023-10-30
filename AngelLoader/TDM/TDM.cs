@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -480,5 +483,74 @@ internal static class TDM
         }
 
         return true;
+    }
+
+    /*
+    @TDM_NOTE(exe version not as consistent/reliable as you might necessarily want)
+    For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!)
+    The TDM version is like 2.0.11.0 for 2.11, but 2.0.7.0 for 2.07
+    Also, TDM <2.07 has just 1.0.0.1 as both file and product version in the exe.
+    So do some whatever heuristics and try to get something reasonable. If we can't, oh well.
+    But we can get the version from lastinstall.ini in the form of like "release211".
+    */
+    internal static string GetTDMVersion(FileVersionInfo vi, Version? version)
+    {
+        int majorPart = vi.FileMajorPart;
+        int minorPart = vi.FileMinorPart;
+        int buildPart = vi.FileBuildPart;
+        int privatePart = vi.FilePrivatePart;
+
+        string fileVersion =
+            majorPart > 0 && minorPart == 0 && privatePart == 0
+                ? majorPart.ToStrInv() + "." + (buildPart > 9 ? buildPart.ToStrInv() : ".0" + buildPart.ToStrInv())
+                : version?.ToString() ?? "";
+
+        string gamePath = Config.GetGamePath(GameIndex.TDM);
+        if (gamePath.IsEmpty()) return fileVersion;
+
+        try
+        {
+            string lastInstallIni = Path.Combine(gamePath, ".zipsync", "lastinstall.ini");
+            using var sr = new StreamReader(lastInstallIni, Encoding.UTF8);
+
+            bool inVersion = false;
+            while (sr.ReadLine() is { } line)
+            {
+                string lineT = line.Trim();
+                if (inVersion &&
+                    lineT.StartsWithFast("version="))
+                {
+                    string versionString = lineT.Substring(lineT.IndexOf('=') + 1).Trim();
+                    Match match = Regex.Match(versionString, "<?(?<VersionRaw>[0123456789]+)");
+                    if (match.Success)
+                    {
+                        string versionRaw = match.Groups["VersionRaw"].Value;
+                        if (versionRaw.Length >= 2)
+                        {
+                            versionRaw = versionRaw.Insert(1, ".");
+                            return versionRaw;
+                        }
+                    }
+                    else
+                    {
+                        return fileVersion;
+                    }
+                }
+                else if (lineT == "[Version]")
+                {
+                    inVersion = true;
+                }
+                else if (!lineT.IsEmpty() && lineT[0] == '[')
+                {
+                    inVersion = false;
+                }
+            }
+        }
+        catch
+        {
+            return fileVersion;
+        }
+
+        return fileVersion;
     }
 }
