@@ -2282,13 +2282,34 @@ internal static class Core
             version = null;
         }
 
-        // For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!) so use the Version string
-        // @TDM_NOTE: The TDM version is like 2.0.11.0 for 2.11, but 2.0.7.0 for 2.07
-        // I can see how it ended up like that, but it's nonstandard so let's not try to get clever. We'll just
-        // use the version string, which will be close enough that users will be able to figure it out.
-        string finalVersion = game == GameIndex.TDM ? version?.ToString() ?? "" : vi.ProductVersion;
+        string finalVersion = game == GameIndex.TDM ? GetTDMVersion(vi, version) : vi.ProductVersion;
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
+
+        /*
+        @TDM_NOTE(exe version not as consistent/reliable as you might necessarily want)
+        For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!)
+        The TDM version is like 2.0.11.0 for 2.11, but 2.0.7.0 for 2.07
+        Also, TDM <2.07 has just 1.0.0.1 as both file and product version in the exe.
+        So do some whatever heuristics and try to get something reasonable. If we can't, oh well.
+        */
+        static string GetTDMVersion(FileVersionInfo vi, Version? version)
+        {
+            int majorPart = vi.FileMajorPart;
+            int minorPart = vi.FileMinorPart;
+            int buildPart = vi.FileBuildPart;
+            int privatePart = vi.FilePrivatePart;
+
+            if (majorPart > 0 && minorPart == 0 && privatePart == 0)
+            {
+                string ret = majorPart.ToStrInv() + "." + (buildPart > 9 ? buildPart.ToStrInv() : ".0" + buildPart.ToStrInv());
+                return ret;
+            }
+            else
+            {
+                return version?.ToString() ?? "";
+            }
+        }
     }
 
     internal static Task PinOrUnpinFM(bool pin)
