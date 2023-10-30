@@ -318,7 +318,7 @@ internal static class TDM
     {
         if (Config.GetFMInstallPath(GameIndex.TDM).IsEmpty()) return;
 
-        List<TDM_LocalFMData> localFMDataList = TDM.ParseMissionsInfoFile();
+        List<TDM_LocalFMData> localFMDataList = ParseMissionsInfoFile();
         // @TDM_CASE: Case sensitive dictionary
         var tdmFMsDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
@@ -421,7 +421,7 @@ internal static class TDM
                 return true;
             }
 
-            List<TDM_LocalFMData> localDataList = TDM.ParseMissionsInfoFile();
+            List<TDM_LocalFMData> localDataList = ParseMissionsInfoFile();
             // @TDM_CASE: Case-sensitive dictionary
             var internalTDMDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
             foreach (FanMission fm in FMDataIniListTDM)
