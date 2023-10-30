@@ -2282,8 +2282,11 @@ internal static class Core
             version = null;
         }
 
-        // For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!) so construct it manually
-        string finalVersion = game == GameIndex.TDM ? vi.GetFileVersionManual() : vi.ProductVersion;
+        // For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!) so use the Version string
+        // @TDM_NOTE: The TDM version is like 2.0.11.0 for 2.11, but 2.0.7.0 for 2.07
+        // I can see how it ended up like that, but it's nonstandard so let's not try to get clever. We'll just
+        // use the version string, which will be close enough that users will be able to figure it out.
+        string finalVersion = game == GameIndex.TDM ? version?.ToString() ?? "" : vi.ProductVersion;
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }

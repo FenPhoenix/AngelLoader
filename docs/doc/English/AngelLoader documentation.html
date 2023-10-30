@@ -39,7 +39,7 @@ div.headerElements:before {
 <div class="content">
 
 <h1><img src="images/AngelLoader_Icon_48.png" style="vertical-align:middle" /> AngelLoader</h1>
-<h4>A fan mission loader for Thief Gold, Thief II: The Metal Age, Thief: Deadly Shadows, and System Shock 2</h4>
+<h4>A fan mission loader for Thief Gold, Thief II: The Metal Age, Thief: Deadly Shadows, System Shock 2, and The Dark Mod</h4>
 
 <h4>Official documentation</h4>
 
@@ -114,7 +114,10 @@ If other languages are available, you can choose them here. Changes will take ef
 
 <h4><a name="paths_to_game_exes" />Paths to game executables</h4>
 Here you can choose the executable files for the supported games you have installed. These fields are optional - you can set some, all, or none. You will still be able to see and manage all of your fan missions even if you haven't set their corresponding executable, but of course you won't be able to install or play any of them unless their executable is set.
-<p><b>Thief 1</b>, <b>Thief 2</b> and <b>System Shock 2</b> must be patched with NewDark in order for AngelLoader to be able to use them. <b>Thief 3</b> must be patched with the Sneaky Upgrade. Version 1.1.9.1 or above is recommended; while versions as far back as 1.1.3 may work, they haven't been tested and are not officially supported.</p>
+<p><b>Thief 1</b>, <b>Thief 2</b> and <b>System Shock 2</b> must be patched with NewDark in order for AngelLoader to be able to use them.<br>
+<b>Thief 3</b> must be patched with the Sneaky Upgrade. Version 1.1.9.1 or above is recommended; while versions as far back as 1.1.3 may work, they haven't been tested and are not officially supported.
+<br>For <b>The Dark Mod</b> it is recommended to use version 2.11 or above; older versions have not been tested.
+</p>
 
 <h4>Steam options</h4>
 If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
@@ -252,6 +255,8 @@ Settings include disabled mods and mantling mode. These settings only apply when
 
 <h4><img src="images/Install.png" style="vertical-align:bottom" /> / <img src="images/Uninstall.png" style="vertical-align:bottom" /> Install / Uninstall FM(s)</h4>
 If the currently selected FM(s) are not installed, this button will install them; otherwise, it will uninstall them.
+<p/>
+For The Dark Mod, this will become "Select FM" and "Deselect FM". These do the same thing they would in-game. That is, "selecting" an FM causes it to be displayed on the Dark Mod title screen and be ready to play, while "deselecting" removes the FM from the title screen and you must select another one.
 
 <h4><img src="images/WebSearch.png" style="vertical-align:bottom" /> Web search</h4>
 Click this button to search the web for the selected FM. You can set the search URL in the <a href="#settings_web_search">Settings window</a>. If multiple FMs are selected, this button will be disabled.
@@ -285,6 +290,7 @@ Displays an icon based on which game the mission is for. If unknown, it will be 
 <img src="images/Thief2_21.png" style="vertical-align:text-bottom" /> - Thief II<br>
 <img src="images/Thief3_21.png" style="vertical-align:text-bottom" /> - Thief: Deadly Shadows<br>
 <img src="images/Shock2_21.png" style="vertical-align:text-bottom" /> - System Shock 2<br>
+<img src="images/TDM_21.png" style="vertical-align:text-bottom" /> - The Dark Mod<br>
 <img src="images/red_circle_question_mark_21.png" style="vertical-align:bottom" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_unsupported">Show Unsupported</a> filter is enabled).</p>
 
 <h4>Installed</h4>
@@ -354,6 +360,8 @@ This item will only appear if Thief2MP.exe was found in the Thief 2 directory. C
 
 <h4>Install / Uninstall FM(s)</h4>
 If the currently selected FM(s) are not installed, this will install them; otherwise, it will uninstall them.
+</p>
+For The Dark Mod, this will become "Select FM" and "Deselect FM". These do the same thing they would in-game. That is, "selecting" an FM causes it to be displayed on the Dark Mod title screen and be ready to play, while "deselecting" removes the FM from the title screen and you must select another one.
 
 <h4>Pin to top / Unpin from top</h4>
 You can choose to pin FMs to the top of list so that they will always remain there regardless of sorting or filtering. When an FM is pinned, this option will unpin it instead. When multiple FMs are selected, there will be two separate options, Pin and Unpin.
@@ -363,7 +371,7 @@ This will allow you to delete one or more FMs. See <a href="#deleting_fms">Delet
 
 <h4>Open FM in DromEd</h4>
 This item will only appear if DromEd.exe (or ShockEd.exe for System Shock 2) was found in the game directory. Clicking it will open the currently selected FM in DromEd or ShockEd, installing it first if necessary.<br>
-<b>This option does not apply to Thief: Deadly Shadows.</b>
+<b>This option does not apply to Thief: Deadly Shadows or The Dark Mod.</b>
 
 <h4>Open FM folder</h4>
 Opens the FM's installed folder.
@@ -381,7 +389,7 @@ Here you can rate the selected FM(s). The ratings will appear as they've been se
 <h4><a name="finished_on" />Finished On submenu</h4>
 Here you can set which difficulty or difficulties you've finished the selected FM(s) on.<br>
 <b>Unknown</b> - this is mainly for compatibility with imported FMSel data, which doesn't mark difficulties for its Finished value.<br>
-For Thief 1 and Thief 2, the other difficulties are <b>Normal</b>, <b>Hard</b>, <b>Expert</b>, and <b>Extreme</b>.<br>
+For Thief 1, Thief 2, and The Dark Mod, the other difficulties are <b>Normal</b>, <b>Hard</b>, <b>Expert</b>, and <b>Extreme</b>.<br>
 For Thief: Deadly Shadows, they are <b>Easy</b>, <b>Normal</b>, <b>Hard</b>, and <b>Expert</b>.<br>
 For System Shock 2, they are <b>Easy</b>, <b>Normal</b>, <b>Hard</b>, and <b>Impossible</b>.<br>
 "<b>Extreme</b>" is not an official Thief difficulty, but is provided for compatibility with imported DarkLoader data, or to use as you see fit (to denote Ghost, etc).
@@ -457,7 +465,7 @@ Enable or disable subtitles per-FM. This only affects standard NewDark subtitles
 
 <h4><a name="dml_patches" />.dml Patches</h4>
 Some older fan missions don't quite work as they should when played with NewDark. In many cases, patches are available to fix them. If you have any .dml patch files, you can add or remove them from the FM's installed folder here. If you've enabled the <a href="#settings_backup">"All changed files" backup setting</a>, then these fixes will be backed up and restored the next time you install the FM.
-<br><b>.dml patching is not supported for Thief: Deadly Shadows.</b>
+<br><b>.dml patching is not supported for Thief: Deadly Shadows or The Dark Mod.</b>
 <h4>Open FM folder</h4>
 If you want to manually modify the FM's installed folder, you can open it here.<br>
 <a style="color:red;"><b>NOTE!</b></a> FM folders contain a special file, <code>fmsel.inf</code>, which must <a style="color:red;"><b>not</b></a> be deleted. This file contains metadata and is, due to its nature, not included in differential backups. While AngelLoader will sometimes be able to regenerate it or work without it, deleting it is asking for trouble. Don't do it.
@@ -549,19 +557,19 @@ When choosing to <a href="#show_recent_at_top">show recently added FMs at the to
 
 <h4>Show or hide interface elements</h4>
 <p><img src="images/settings_appr_hide.png" /></p>
-<b>Hide "Install / Uninstall FM" button:</b><br>
-For extra-strength misclick prevention, enable this. You will still be able to install and uninstall FMs from the <a href="#fm_context_menu">FM context menu</a>.
+<b>Show "Install / Uninstall FM" button:</b><br>
+For extra-strength misclick prevention, uncheck this. You will still be able to install and uninstall FMs from the <a href="#fm_context_menu">FM context menu</a>.
 <p/>
 
-<b>Hide FM list zoom buttons:</b><br>
+<b>Show FM list zoom buttons:</b><br>
 Since you can zoom the FMs list with the keyboard or Ctrl+mousewheel, you can hide these buttons to free up room.
 <p/>
 
-<b>Hide web search button:</b><br>
+<b>Show web search button:</b><br>
 This option is also available in the <a href="#fm_context_menu">FM context menu</a>, so you can hide the button for tidiness.
 <p/>
 
-<b>Hide exit button:</b><br>
+<b>Show exit button:</b><br>
 Allows you to show or hide an Exit button in the bottom-right corner of the main window, similar to FMSel.
 <p/>
 
@@ -583,12 +591,12 @@ NewDark introduced an improved mantling (ledge climbing) system that greatly inc
 
 <h4><a name="settings_audio_conversion" />Convert .wavs to 16 bit on install</h4>
 Depending on your setup, .wav files that are higher than 16 bit may cause audio problems when played by Dark Engine games, such as intermittent or constant static noise. Converting all .wav files to 16 bit will solve this issue, and does not result in a perceptible loss of fidelity. Therefore, this option is turned on by default.<br>
-<b>This option has no effect for Thief: Deadly Shadows.</b>
+<b>This option has no effect for Thief: Deadly Shadows or The Dark Mod.</b>
 
 <h4>Convert .oggs to .wavs on install</h4>
 Quoted from the FMSel manual:<br>
 <i>The game </i>can<i> play OGG files but it can under some circumstance cause short hiccups, on less powerful computers, performance heavy missions or with large OGG files. In such cases it might help to convert them to WAV files during installation</i>.<br>
-<b>This option has no effect for Thief: Deadly Shadows.</b>
+<b>This option has no effect for Thief: Deadly Shadows or The Dark Mod.</b>
 
 <h4>Installing FMs</h4>
 Choose whether to be prompted before installing FM(s).
@@ -600,7 +608,7 @@ If this is enabled, you will be prompted for confirmation when uninstalling FM(s
 When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
 
 <h4><a name="settings_web_search" />Web search</h4>
-Here you can edit the URL that will be used when searching for FMs on the web. The string <code>$TITLE$</code> can be placed anywhere in the URL to insert the fan mission's title into the final string. For instance, if the URL was
+Here you can edit the URLs that will be used when searching for FMs on the web. The string <code>$TITLE$</code> can be placed anywhere in a URL to insert the fan mission's title into the final string. For instance, if the URL was
 
 <p><code>https://www.google.com/search?q="$TITLE$" site:ttlg.com</code></p>
 

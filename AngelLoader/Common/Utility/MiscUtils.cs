@@ -283,41 +283,6 @@ public static partial class Utils
         timer.Start();
     }
 
-    internal static string GetFileVersionManual(this FileVersionInfo vi)
-    {
-        string ret = "";
-
-        int upTo = 4;
-        if (vi.FilePrivatePart == 0)
-        {
-            upTo = 3;
-            if (vi.FileBuildPart == 0)
-            {
-                upTo = 2;
-                if (vi.FileMinorPart == 0)
-                {
-                    upTo = 1;
-                }
-            }
-        }
-
-        ret += vi.FileMajorPart.ToStrInv();
-        if (upTo >= 2)
-        {
-            ret += "." + vi.FileMinorPart.ToStrInv();
-            if (upTo >= 3)
-            {
-                ret += "." + vi.FileBuildPart.ToStrInv();
-                if (upTo >= 4)
-                {
-                    ret += "." + vi.FilePrivatePart.ToStrInv();
-                }
-            }
-        }
-
-        return ret;
-    }
-
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {

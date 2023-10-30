@@ -4592,9 +4592,9 @@ public sealed partial class MainForm : DarkFormBase,
 
         FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
-        FMsDGV_FM_LLMenu.SetWebSearchEnabled(!multiSelected);
-
-        Lazy_WebSearchButton.SetEnabled(!multiSelected);
+        bool webSearchShouldBeEnabled = !multiSelected && GameIsKnownAndSupported(fm.Game);
+        FMsDGV_FM_LLMenu.SetWebSearchEnabled(webSearchShouldBeEnabled);
+        Lazy_WebSearchButton.SetEnabled(webSearchShouldBeEnabled);
     }
 
     private void UpdateTopRightTabs()
