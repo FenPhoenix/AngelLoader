@@ -9,7 +9,8 @@ namespace AngelLoader.Forms;
 
 public sealed partial class ImportFromMultipleInisForm : DarkFormBase
 {
-    internal readonly List<string> IniFiles = new(SupportedGameCount);
+    // @TDM(Import/SupportedGameCount - 1): Garbage quick hack, make robust like "modI" later
+    internal readonly List<string> IniFiles = new(SupportedGameCount - 1);
     internal bool ImportTitle;
     internal bool ImportReleaseDate;
     internal bool ImportLastPlayed;
@@ -75,7 +76,7 @@ public sealed partial class ImportFromMultipleInisForm : DarkFormBase
         if (DialogResult != DialogResult.OK) return;
 
         IniFiles.Clear();
-        for (int i = 0; i < SupportedGameCount; i++)
+        for (int i = 0; i < SupportedGameCount - 1; i++)
         {
             IniFiles.Add(ImportControls.GetIniFile((GameIndex)i));
         }

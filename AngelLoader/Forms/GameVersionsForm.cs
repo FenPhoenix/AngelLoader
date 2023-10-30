@@ -37,7 +37,6 @@ public sealed class GameVersionsForm : DarkFormBase
         okFLP.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         okFLP.Controls.Add(OKButton);
         okFLP.FlowDirection = FlowDirection.RightToLeft;
-        okFLP.Location = new Point(0, 106);
         okFLP.Size = new Size(438, 40);
         okFLP.TabIndex = 0;
 
@@ -47,7 +46,6 @@ public sealed class GameVersionsForm : DarkFormBase
         AutoScaleDimensions = new SizeF(6F, 13F);
         AutoScaleMode = AutoScaleMode.Font;
         CancelButton = OKButton;
-        ClientSize = new Size(438, 146);
         Controls.Add(okFLP);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         KeyPreview = true;
@@ -82,6 +80,9 @@ public sealed class GameVersionsForm : DarkFormBase
             Controls.Add(label);
             Controls.Add(textBox);
         }
+
+        ClientSize = new Size(438, GameVersionItems[SupportedGameCount - 1].TextBox.Bottom + 40);
+        okFLP.Location = new Point(0, ClientSize.Height - 40);
 
         okFLP.ResumeLayout(false);
         okFLP.PerformLayout();

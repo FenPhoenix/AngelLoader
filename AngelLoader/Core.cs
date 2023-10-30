@@ -2245,8 +2245,9 @@ internal static class Core
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
         if (!File.Exists(gameExe)) return (Error.GameExeNotFound, null, "");
 
+        bool gameIsNormal = GameIsDark(game) || game == GameIndex.TDM;
         string exeToSearch;
-        if (GameIsDark(game))
+        if (gameIsNormal)
         {
             exeToSearch = gameExe;
         }
@@ -2266,20 +2267,25 @@ internal static class Core
         }
         catch (FileNotFoundException)
         {
-            return (GameIsDark(game) ? Error.GameExeNotFound : Error.SneakyDllNotFound, null, "");
+            return (gameIsNormal ? Error.GameExeNotFound : Error.SneakyDllNotFound, null, "");
         }
 
         Version? version;
         try
         {
-            version = new Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
+            version = game == GameIndex.TDM
+                ? new Version(vi.FileMajorPart, vi.FileMinorPart, vi.FileBuildPart, vi.FilePrivatePart)
+                : new Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
         }
         catch
         {
             version = null;
         }
 
-        return vi.ProductVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, vi.ProductVersion);
+        // For some reason the TDM file version ends up being "DM_VERSION_COMPLETE" (?!) so construct it manually
+        string finalVersion = game == GameIndex.TDM ? vi.GetFileVersionManual() : vi.ProductVersion;
+
+        return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }
 
     internal static Task PinOrUnpinFM(bool pin)

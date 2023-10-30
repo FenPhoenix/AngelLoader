@@ -15,6 +15,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 {
     private ImportType _importType;
 
+    // @TDM(Import/SupportedGameCount - 1): Garbage quick hack, make robust like "modI" later
     private readonly
         (DarkGroupBox GroupBox,
         DarkCheckBox AutodetectCheckBox,
@@ -24,7 +25,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             (DarkGroupBox GroupBox,
             DarkCheckBox AutodetectCheckBox,
             DarkTextBox TextBox,
-            StandardButton BrowseButton)[SupportedGameCount];
+            StandardButton BrowseButton)[SupportedGameCount - 1];
 
     private readonly DarkLabel ChooseIniFilesLabel;
 
@@ -45,7 +46,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         Size = new Size(551, 410);
         Controls.Add(ChooseIniFilesLabel);
 
-        for (int i = 0, y = 32; i < SupportedGameCount; i++, y += 88)
+        for (int i = 0, y = 32; i < SupportedGameCount - 1; i++, y += 88)
         {
             var checkBox = new DarkCheckBox();
             var textBox = new DarkTextBox();
@@ -98,7 +99,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 
         Localize();
 
-        for (int i = 0; i < SupportedGameCount; i++)
+        for (int i = 0; i < SupportedGameCount - 1; i++)
         {
             AutodetectGameIni((GameIndex)i, GameIniItems[i].TextBox);
         }
@@ -110,7 +111,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             ? LText.Importing.ChooseNewDarkLoaderIniFiles
             : LText.Importing.ChooseFMSelIniFiles;
 
-        for (int i = 0; i < SupportedGameCount; i++)
+        for (int i = 0; i < SupportedGameCount - 1; i++)
         {
             GameIniItems[i].GroupBox.Text = GetLocalizedGameName((GameIndex)i);
             GameIniItems[i].AutodetectCheckBox.Text = LText.Global.Autodetect;
