@@ -326,7 +326,7 @@ public interface IView : ISettingsChangeableView
         ShowDarkLoaderImportWindow();
 
     (bool Accepted,
-        List<string> IniFiles,
+        string[] IniFiles,
         bool ImportTitle,
         bool ImportReleaseDate,
         bool ImportLastPlayed,

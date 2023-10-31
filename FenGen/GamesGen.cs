@@ -48,7 +48,7 @@ internal static class Games
 
                 if (gameAttr != null)
                 {
-                    const int reqArgCount = 3;
+                    const int reqArgCount = 5;
 
                     if (gameAttr.ArgumentList is not { Arguments.Count: reqArgCount })
                     {
@@ -64,10 +64,18 @@ internal static class Games
                     string editorNameArg =
                         ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[2].Expression).Token
                         .ValueText;
+                    bool supportsMods =
+                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[3].Expression).Token
+                        .Value!;
+                    bool supportsImport =
+                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[4].Expression).Token
+                        .Value!;
 
                     ret.GamePrefixes.Add(prefixArg);
                     ret.SteamIds.Add(steamIdArg);
                     ret.EditorNames.Add(editorNameArg);
+                    ret.SupportsMods.Add(supportsMods);
+                    ret.SupportsImport.Add(supportsImport);
                 }
             }
         }
@@ -108,6 +116,8 @@ internal static class Games
         w.WL();
 
         w.WL("internal const int SupportedGameCount = " + Cache.GamesEnum.GameIndexEnumNames.Count + ";");
+        w.WL("internal const int ModSupportingGameCount = " + Cache.GamesEnum.SupportsMods.Count(static x => x) + ";");
+        w.WL("internal const int ImportSupportingGameCount = " + Cache.GamesEnum.SupportsImport.Count(static x => x) + ";");
         w.WL();
 
         w.WL("public enum " + gameIndexName + " : uint");

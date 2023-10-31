@@ -5070,7 +5070,7 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     public (bool Accepted,
-        List<string> IniFiles,
+        string[] IniFiles,
         bool ImportTitle,
         bool ImportReleaseDate,
         bool ImportLastPlayed,

@@ -29,15 +29,20 @@ public static partial class GameSupport
         // IMPORTANT: Prefixes are used in Config.ini, so they must remain the same for compatibility.
         // Don't change the existing values, only add new ones!
         // Obviously the steam ids must remain the same as well.
-        [FenGenGame(prefix: "T1", steamId: "211600", editorName: "DromEd")]
+
+        [FenGenGame(prefix: "T1", steamId: "211600", editorName: "DromEd", supportsMods: true, supportsImport: true)]
         Thief1 = 1,
-        [FenGenGame(prefix: "T2", steamId: "211740", editorName: "DromEd")]
+
+        [FenGenGame(prefix: "T2", steamId: "211740", editorName: "DromEd", supportsMods: true, supportsImport: true)]
         Thief2 = 2,
-        [FenGenGame(prefix: "T3", steamId: "6980", editorName: "")]
+
+        [FenGenGame(prefix: "T3", steamId: "6980", editorName: "", supportsMods: false, supportsImport: true)]
         Thief3 = 4,
-        [FenGenGame(prefix: "SS2", steamId: "238210", editorName: "ShockEd")]
+
+        [FenGenGame(prefix: "SS2", steamId: "238210", editorName: "ShockEd", supportsMods: true, supportsImport: true)]
         SS2 = 8,
-        [FenGenGame(prefix: "TDM", steamId: "", editorName: "")]
+
+        [FenGenGame(prefix: "TDM", steamId: "", editorName: "", supportsMods: false, supportsImport: false)]
         TDM = 16,
 
         [FenGenIgnore]
@@ -183,5 +188,7 @@ public static partial class GameSupport
     internal static bool GameSupportsResourceDetection(Game game) => GameIsDark(game);
 
     internal static bool GameRequiresBackupPath(GameIndex gameIndex) => GameIsDark(gameIndex) || gameIndex == GameIndex.Thief3;
+
+    internal static bool GameSupportsImport(GameIndex gameIndex) => GameIsDark(gameIndex) || gameIndex == GameIndex.Thief3;
 }
 // @GENGAMES (GameSupport): End

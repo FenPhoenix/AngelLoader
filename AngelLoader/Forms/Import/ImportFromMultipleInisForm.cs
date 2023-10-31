@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -9,8 +8,7 @@ namespace AngelLoader.Forms;
 
 public sealed partial class ImportFromMultipleInisForm : DarkFormBase
 {
-    // @TDM(Import/SupportedGameCount - 1): Garbage quick hack, make robust like "modI" later
-    internal readonly List<string> IniFiles = new(SupportedGameCount - 1);
+    internal readonly string[] IniFiles = new string[ImportSupportingGameCount];
     internal bool ImportTitle;
     internal bool ImportReleaseDate;
     internal bool ImportLastPlayed;
@@ -75,10 +73,14 @@ public sealed partial class ImportFromMultipleInisForm : DarkFormBase
 
         if (DialogResult != DialogResult.OK) return;
 
-        IniFiles.Clear();
-        for (int i = 0; i < SupportedGameCount - 1; i++)
+        for (int i = 0, importI = 0; i < SupportedGameCount; i++)
         {
-            IniFiles.Add(ImportControls.GetIniFile((GameIndex)i));
+            GameIndex gameIndex = (GameIndex)i;
+            if (GameSupportsImport(gameIndex))
+            {
+                IniFiles[importI] = ImportControls.GetIniFile(importI);
+                importI++;
+            }
         }
 
         ImportTitle = ImportTitleCheckBox.Checked;

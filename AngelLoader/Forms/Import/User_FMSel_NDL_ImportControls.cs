@@ -15,7 +15,6 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 {
     private ImportType _importType;
 
-    // @TDM(Import/SupportedGameCount - 1): Garbage quick hack, make robust like "modI" later
     private readonly
         (DarkGroupBox GroupBox,
         DarkCheckBox AutodetectCheckBox,
@@ -25,11 +24,11 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             (DarkGroupBox GroupBox,
             DarkCheckBox AutodetectCheckBox,
             DarkTextBox TextBox,
-            StandardButton BrowseButton)[SupportedGameCount - 1];
+            StandardButton BrowseButton)[ImportSupportingGameCount];
 
     private readonly DarkLabel ChooseIniFilesLabel;
 
-    internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;
+    internal string GetIniFile(int index) => GameIniItems[index].TextBox.Text;
 
     public User_FMSel_NDL_ImportControls()
     {
@@ -46,7 +45,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         Size = new Size(551, 410);
         Controls.Add(ChooseIniFilesLabel);
 
-        for (int i = 0, y = 32; i < SupportedGameCount - 1; i++, y += 88)
+        for (int i = 0, y = 32; i < ImportSupportingGameCount; i++, y += 88)
         {
             var checkBox = new DarkCheckBox();
             var textBox = new DarkTextBox();
@@ -99,9 +98,14 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 
         Localize();
 
-        for (int i = 0; i < SupportedGameCount - 1; i++)
+        for (int i = 0, importI = 0; i < SupportedGameCount; i++)
         {
-            AutodetectGameIni((GameIndex)i, GameIniItems[i].TextBox);
+            GameIndex gameIndex = (GameIndex)i;
+            if (GameSupportsImport(gameIndex))
+            {
+                AutodetectGameIni(gameIndex, GameIniItems[importI].TextBox);
+                importI++;
+            }
         }
     }
 
@@ -111,11 +115,16 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             ? LText.Importing.ChooseNewDarkLoaderIniFiles
             : LText.Importing.ChooseFMSelIniFiles;
 
-        for (int i = 0; i < SupportedGameCount - 1; i++)
+        for (int i = 0, importI = 0; i < SupportedGameCount; i++)
         {
-            GameIniItems[i].GroupBox.Text = GetLocalizedGameName((GameIndex)i);
-            GameIniItems[i].AutodetectCheckBox.Text = LText.Global.Autodetect;
-            GameIniItems[i].BrowseButton.SetTextForTextBoxButtonCombo(GameIniItems[i].TextBox, LText.Global.BrowseEllipses);
+            GameIndex gameIndex = (GameIndex)i;
+            if (GameSupportsImport(gameIndex))
+            {
+                GameIniItems[importI].GroupBox.Text = GetLocalizedGameName(gameIndex);
+                GameIniItems[importI].AutodetectCheckBox.Text = LText.Global.Autodetect;
+                GameIniItems[importI].BrowseButton.SetTextForTextBoxButtonCombo(GameIniItems[importI].TextBox, LText.Global.BrowseEllipses);
+                importI++;
+            }
         }
     }
 

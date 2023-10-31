@@ -88,7 +88,7 @@ internal static class Import
         else
         {
             (bool accepted,
-                List<string> returnedIniFiles,
+                string[] returnedIniFiles,
                 bool importTitle,
                 bool importReleaseDate,
                 bool importLastPlayed,

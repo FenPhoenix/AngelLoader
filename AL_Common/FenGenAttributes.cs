@@ -209,7 +209,14 @@ public static class FenGenAttributes
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class FenGenGameAttribute : Attribute
     {
-        public FenGenGameAttribute(string prefix, string steamId, string editorName) { }
+        public FenGenGameAttribute(
+            string prefix,
+            string steamId,
+            string editorName,
+            bool supportsMods,
+            bool supportsImport)
+        {
+        }
     }
 
     #endregion

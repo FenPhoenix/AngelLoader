@@ -30,8 +30,7 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
 
     internal readonly ToolStripItem[] GameMenuItems = new ToolStripItem[SupportedGameCount];
 
-    // @GENGAMES(T3 doesn't support mod management) - we need to do supported mod-supporting game count
-    private readonly ToolStripItem[] ModMenuItems = new ToolStripItem[SupportedGameCount - 2];
+    private readonly ToolStripItem[] ModMenuItems = new ToolStripItem[ModSupportingGameCount];
 
     private bool _darkModeEnabled;
     [PublicAPI]

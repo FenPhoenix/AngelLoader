@@ -61,6 +61,8 @@ internal sealed class GameSourceEnum
     internal readonly List<string> GamePrefixes = new();
     internal readonly List<string> SteamIds = new();
     internal readonly List<string> EditorNames = new();
+    internal readonly List<bool> SupportsMods = new();
+    internal readonly List<bool> SupportsImport = new();
 }
 
 internal sealed class LanguageSourceEnum
