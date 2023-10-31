@@ -122,8 +122,10 @@ Here you can choose the executable files for the supported games you have instal
 <h4>Steam options</h4>
 If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
 
-<h4><a name="fm_backup_path" />FM backup path</h4>
-This is a required field. This is the directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths. AngelLoader will still be able to use your existing backup files from other loaders, but will place any new backup files in this directory.
+<h4><a name="fm_backup_path" />Backup path</h4>
+If you've specified game executables for Thief 1, Thief 2, Thief: Deadly Shadows, or System Shock 2, then this is a required field. This is the directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths. AngelLoader will still be able to use your existing backup files from other loaders, but will place any new backup files in this directory.
+<p/>
+If you've only specified a Dark Mod game executable, then this path is not used or required.
 
 <h4>FM archive paths</h4>
 Here you can set the directory or directories where your fan mission archives (.zip or .7z files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
@@ -360,7 +362,7 @@ This item will only appear if Thief2MP.exe was found in the Thief 2 directory. C
 
 <h4>Install / Uninstall FM(s)</h4>
 If the currently selected FM(s) are not installed, this will install them; otherwise, it will uninstall them.
-</p>
+<p/>
 For The Dark Mod, this will become "Select FM" and "Deselect FM". These do the same thing they would in-game. That is, "selecting" an FM causes it to be displayed on the Dark Mod title screen and be ready to play, while "deselecting" removes the FM from the title screen and you must select another one.
 
 <h4>Pin to top / Unpin from top</h4>
