@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>.NET Framework file search pattern note</title>
+</head>
+
+<style>
+.content {
+    max-width: 1000px;
+    margin: auto;
+}
+code {
+    padding: 2px 5px;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+    color: #333;
+    font-family: monospace,serif;
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+div.a {
+  text-indent: 2em;
+}
+.vertical-center {
+      vertical-align: middle;
+}
+div.headerElements:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+</style>
+
+<body style="font-family:arial,sans-serif;align:center">
+
+<div class="content">
+
+<a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.directory.enumeratefiles?view=netframework-4.7.2">This page on Directory.EnumerateFiles()</a> says the following:
+
+<p/>
+
+<hr>
+
+<div class="NOTE">
+<p>Note</p>
+<p><strong>.NET Framework only:</strong> When you use the asterisk wildcard character in <code>searchPattern</code> and you specify a three-character file extension, for example, &quot;*.txt&quot;, this method also returns files with extensions that <em>begin</em> with the specified extension. For example, the search pattern &quot;*.xls&quot; returns both &quot;book.xls&quot; and &quot;book.xlsx&quot;. This behavior only occurs if an asterisk is used in the search pattern and the file extension provided is exactly three characters. If you use the question mark wildcard character instead of the asterisk, this method returns only files that match the specified file extension exactly. The following table depicts this anomaly in .NET Framework.</p>
+<table>
+<thead>
+<tr>
+<th>Files in directory</th>
+<th>Search pattern</th>
+<th>.NET 5+ returns</th>
+<th>.NET Framework returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>file.ai, file.aif</td>
+<td>*.ai</td>
+<td>file.ai</td>
+<td>file.ai</td>
+</tr>
+<tr>
+<td>book.xls, book.xlsx</td>
+<td>*.xls</td>
+<td>book.xls</td>
+<td><strong>book.xls, book.xlsx</strong></td>
+</tr>
+<tr>
+<td>file.ai, file.aif</td>
+<td>?.ai</td>
+<td>file.ai</td>
+<td>file.ai</td>
+</tr>
+<tr>
+<td>book.xls, book.xlsx</td>
+<td>?.xls</td>
+<td>book.xls</td>
+<td>book.xls</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<hr>
+
+<p/>
+This is <b>half</b> correct. The part about .NET 5+ fixing this problem is correct, but the part about using ?.ext to fix the problem is incorrect. ? matches one character, so as you'd expect, if you have book.xls and say ?.xls, you'll match nothing. <a href="https://www.vbforums.com/showthread.php?754643-Directory-Getfiles-search-pattern&p=4618575&viewfull=1#post4618575">This post</a> claims it works on Windows 7. I haven't tested that, but I can't see any other reason why it would be there in the doc and yet be completely wrong other than it probably used to be right. Meh.
+
+</div>
+</body>
+</html>

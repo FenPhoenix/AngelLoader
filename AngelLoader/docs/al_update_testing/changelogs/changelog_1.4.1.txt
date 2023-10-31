@@ -1,0 +1,9 @@
+-Readme files are now run through a character encoding detector before being loaded, so broken characters (eg. "procurÃ©" instead of "procuré") should never - or at least extremely rarely - appear now.
+-Fixed-width font is now the default for plaintext readmes, if it isn't already set.
+-startmis.sav is now excluded from differential ("All changed files") backups, matching FMSel's behavior.
+-Both '\' and '/' path separators are now properly handled everywhere.
+
+Fixes:
+-Fixed: FM added dates wouldn't be cached in the data file.
+-Fixed: Author filter didn't take highlighted recent FMs into account.
+-Fixed: Left and right arrow images on buttons were being drawn slightly incorrectly.
