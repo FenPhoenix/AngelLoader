@@ -4446,18 +4446,17 @@ public sealed partial class MainForm : DarkFormBase,
             */
             if (FMsDGV.GetRowSelectedCount() == 1)
             {
-                var selRows = FMsDGV.SelectedRows;
+                DataGridViewSelectedRowCollection selRows = FMsDGV.SelectedRows;
                 selRowsCount = selRows.Count;
 
                 for (int i = 0; i < selRowsCount; i++)
                 {
-                    FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
-                    UpdateValues(sFM);
+                    UpdateValues(FMsDGV.GetFMFromIndex(selRows[i].Index));
                 }
             }
             else
             {
-                var rows = FMsDGV.Rows;
+                DataGridViewRowCollection rows = FMsDGV.Rows;
                 int rowCount = rows.Count;
 
                 for (int i = 0; i < rowCount; i++)
@@ -4467,23 +4466,22 @@ public sealed partial class MainForm : DarkFormBase,
 
                     selRowsCount++;
 
-                    FanMission sFM = FMsDGV.GetFMFromIndex(row.Index);
-                    UpdateValues(sFM);
+                    UpdateValues(FMsDGV.GetFMFromIndex(row.Index));
                 }
             }
 
             // No measurable perf hit from calling this non-static function in the loop, and de-dupes the code
-            void UpdateValues(FanMission sFM)
+            void UpdateValues(FanMission selectedFM)
             {
-                if (sFM.Installed) installedCount++;
-                if (sFM.MarkedUnavailable) markedUnavailableCount++;
-                if (GameIsDark(sFM.Game)) gameIsDarkCount++;
-                if (sFM.Game == Game.TDM) gameIsTDMCount++;
-                if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+                if (selectedFM.Installed) installedCount++;
+                if (selectedFM.MarkedUnavailable) markedUnavailableCount++;
+                if (GameIsDark(selectedFM.Game)) gameIsDarkCount++;
+                if (selectedFM.Game == Game.TDM) gameIsTDMCount++;
+                if (GameIsKnownAndSupported(selectedFM.Game)) knownAndSupportedCount++;
 
                 if (!multiplePinnedStates)
                 {
-                    if (sFM.Pinned)
+                    if (selectedFM.Pinned)
                     {
                         atLeastOnePinned = true;
                     }
