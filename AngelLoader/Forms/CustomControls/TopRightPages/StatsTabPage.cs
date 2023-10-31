@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -50,12 +51,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
             ? Core.CreateMisCountMessageText(selFM.MisCount)
             : LText.StatisticsTab.NoFMSelected;
 
-        _page.CustomResourcesLabel.Text =
-            selFM == null ? LText.StatisticsTab.CustomResources :
-            selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-            selFM.Game == Game.TDM ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM :
-            selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
-            LText.StatisticsTab.CustomResourcesNotScanned;
+        UpdateCustomResourcesLabel(selFM);
 
         // IMPORTANT! Fragile numeric-indexed stuff, DO NOT change the order!
         _page._checkBoxes[0].Text = LText.StatisticsTab.Map;
@@ -72,40 +68,39 @@ public sealed class StatsTabPage : Lazy_TabsBase
         _page.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
     }
 
+    private void UpdateCustomResourcesLabel(FanMission? fm)
+    {
+        // @GENGAMES(Stats tab/UpdateCustomResourcesLabel()):
+        _page.CustomResourcesLabel.Text =
+            fm == null ? LText.StatisticsTab.CustomResources :
+            fm.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
+            fm.Game == Game.TDM ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM :
+            fm.ResourcesScanned ? LText.StatisticsTab.CustomResources :
+            LText.StatisticsTab.CustomResourcesNotScanned;
+    }
+
     public override void UpdatePage()
     {
         if (!_constructed) return;
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
+        UpdateCustomResourcesLabel(fm);
+
         if (fm != null)
         {
-            bool gameSupported = GameSupportsResourceDetection(fm.Game);
-
             EnableStatsPanelLabels(_page, true);
 
             _page.Stats_MisCountLabel.Text = Core.CreateMisCountMessageText(fm.MisCount);
 
             _page.StatsScanCustomResourcesButton.Enabled = !fm.MarkedUnavailable;
 
-            if (!gameSupported)
+            if (!GameSupportsResourceDetection(fm.Game) || !fm.ResourcesScanned)
             {
-                BlankStatsPanelWithMessage(
-                    _page,
-                    !GameIsKnownAndSupported(fm.Game)
-                        ? LText.StatisticsTab.CustomResourcesNotScanned
-                        : fm.Game == Game.TDM
-                            ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM
-                            : LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
-            }
-            else if (!fm.ResourcesScanned)
-            {
-                BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResourcesNotScanned);
+                BlankStatsPanel();
             }
             else
             {
-                _page.CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
-
-                for (int i = 0, at = 1; i < Misc.CustomResourcesCount - 1; i++, at <<= 1)
+                for (int i = 0, at = 1; i < CustomResourcesCount - 1; i++, at <<= 1)
                 {
                     _page._checkBoxes[i].Checked = fm.HasResource((CustomResources)at);
                 }
@@ -117,7 +112,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
         {
             _page.Stats_MisCountLabel.Text = LText.StatisticsTab.NoFMSelected;
 
-            BlankStatsPanelWithMessage(_page, LText.StatisticsTab.CustomResources);
+            BlankStatsPanel();
             _page.StatsScanCustomResourcesButton.Enabled = false;
 
             EnableStatsPanelLabels(_page, false);
@@ -128,14 +123,13 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
     #region Page
 
-    private static void BlankStatsPanelWithMessage(Lazy_StatsPage statsPage, string message)
+    private void BlankStatsPanel()
     {
-        statsPage.CustomResourcesLabel.Text = message;
-        foreach (CheckBox cb in statsPage.StatsCheckBoxesPanel.Controls)
+        foreach (CheckBox cb in _page.StatsCheckBoxesPanel.Controls)
         {
             cb.Checked = false;
         }
-        statsPage.StatsCheckBoxesPanel.Enabled = false;
+        _page.StatsCheckBoxesPanel.Enabled = false;
     }
 
     private static void EnableStatsPanelLabels(Lazy_StatsPage statsPage, bool enabled)
