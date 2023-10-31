@@ -99,9 +99,9 @@ internal static class FMScan
 
         if (suppressSingleFMProgressBoxIfFast && scanningOne)
         {
-            // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
-            // nice as the timer method, but that can cause race conditions I don't know how to fix, so
-            // whatever.
+            // Just use a cheap check and throw up the progress box for "slow to scan" files, otherwise not.
+            // Not as nice as the timer method, but that can cause race conditions I don't know how to fix,
+            // so whatever.
             if (!fmsToScan[0].IsFastToScan())
             {
                 ShowProgressBox(suppressShow: false);

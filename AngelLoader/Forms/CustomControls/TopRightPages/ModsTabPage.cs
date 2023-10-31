@@ -63,6 +63,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
     private void UpdateNotSupportedMessage(FanMission? fm)
     {
+        // @GENGAMES(Mods tab/UpdateNotSupportedMessage())
         ModsTabNotSupportedMessageLabel.Text =
             fm != null
                 ? fm.Game switch

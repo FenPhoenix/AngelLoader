@@ -70,7 +70,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
     private void UpdateCustomResourcesLabel(FanMission? fm)
     {
-        // @GENGAMES(Stats tab/UpdateCustomResourcesLabel()):
+        // @GENGAMES(Stats tab/UpdateCustomResourcesLabel())
         _page.CustomResourcesLabel.Text =
             fm == null ? LText.StatisticsTab.CustomResources :
             fm.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
