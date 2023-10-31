@@ -4439,6 +4439,10 @@ public sealed partial class MainForm : DarkFormBase,
             will be only one long for a negligible allocation, and _way_ faster in the single-select case.
             Gets rid of lag from SortAndSetFilter() for example.
             We don't need the loop if it's just 1, but keep it in case we want to tune this number.
+            
+            @ViewBusinessLogic(Multisel state updater):
+            This whole stuff is business logic but it's the direct access of the DGV rows that prevents us from
+            extracting it out without taking a large allocation hit.
             */
             if (FMsDGV.GetRowSelectedCount() == 1)
             {
@@ -4447,38 +4451,15 @@ public sealed partial class MainForm : DarkFormBase,
 
                 for (int i = 0; i < selRowsCount; i++)
                 {
-                    // @ViewBusinessLogic(Multisel state updater):
-                    // This whole stuff is business logic but it's the direct access of the DGV rows that
-                    // prevents us from extracting it out without taking a large allocation hit
                     FanMission sFM = FMsDGV.GetFMFromIndex(selRows[i].Index);
-                    if (sFM.Installed) installedCount++;
-                    if (sFM.MarkedUnavailable) markedUnavailableCount++;
-                    if (GameIsDark(sFM.Game)) gameIsDarkCount++;
-                    if (sFM.Game == Game.TDM) gameIsTDMCount++;
-                    if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
-
-                    if (!multiplePinnedStates)
-                    {
-                        if (sFM.Pinned)
-                        {
-                            atLeastOnePinned = true;
-                        }
-                        else
-                        {
-                            atLeastOneUnpinned = true;
-                        }
-
-                        if (atLeastOnePinned && atLeastOneUnpinned)
-                        {
-                            multiplePinnedStates = true;
-                        }
-                    }
+                    UpdateValues(sFM);
                 }
             }
             else
             {
                 var rows = FMsDGV.Rows;
                 int rowCount = rows.Count;
+
                 for (int i = 0; i < rowCount; i++)
                 {
                     DataGridViewRow row = rows[i];
@@ -4487,27 +4468,33 @@ public sealed partial class MainForm : DarkFormBase,
                     selRowsCount++;
 
                     FanMission sFM = FMsDGV.GetFMFromIndex(row.Index);
-                    if (sFM.Installed) installedCount++;
-                    if (sFM.MarkedUnavailable) markedUnavailableCount++;
-                    if (GameIsDark(sFM.Game)) gameIsDarkCount++;
-                    if (sFM.Game == Game.TDM) gameIsTDMCount++;
-                    if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+                    UpdateValues(sFM);
+                }
+            }
 
-                    if (!multiplePinnedStates)
+            // No measurable perf hit from calling this non-static function in the loop, and de-dupes the code
+            void UpdateValues(FanMission sFM)
+            {
+                if (sFM.Installed) installedCount++;
+                if (sFM.MarkedUnavailable) markedUnavailableCount++;
+                if (GameIsDark(sFM.Game)) gameIsDarkCount++;
+                if (sFM.Game == Game.TDM) gameIsTDMCount++;
+                if (GameIsKnownAndSupported(sFM.Game)) knownAndSupportedCount++;
+
+                if (!multiplePinnedStates)
+                {
+                    if (sFM.Pinned)
                     {
-                        if (sFM.Pinned)
-                        {
-                            atLeastOnePinned = true;
-                        }
-                        else
-                        {
-                            atLeastOneUnpinned = true;
-                        }
+                        atLeastOnePinned = true;
+                    }
+                    else
+                    {
+                        atLeastOneUnpinned = true;
+                    }
 
-                        if (atLeastOnePinned && atLeastOneUnpinned)
-                        {
-                            multiplePinnedStates = true;
-                        }
+                    if (atLeastOnePinned && atLeastOneUnpinned)
+                    {
+                        multiplePinnedStates = true;
                     }
                 }
             }
