@@ -720,6 +720,7 @@ internal sealed class LText_Class
         // This clearly marked it as a required field. That's why in the TDM branch we originally had it say
         // "Backup path (not required for The Dark Mod)". But that's not really as clear or as good, so we should
         // figure out how to clearly - and in a way that's quick to see - mark it as "required except for The Dark Mod".
+        // @TDM(Backup path screenshot): Note! We have to redo both path page screenshots (Initial and Paths) for the doc!
         internal readonly string Paths_BackupPath = "Backup path";
         internal readonly string Paths_FMArchivePaths = "FM archive paths";
         [FenGenComment(
