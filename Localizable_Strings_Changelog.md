@@ -6,6 +6,26 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.7.6:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.7.3_1.7.6.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.7.0_1.7.6.html)
+
+New images:  
+`TDM_21.png`  
+
+Updated images:  
+`edit_fm_tab.png`  
+`filter_bar.png`  
+`fms_list_960.png`  
+`game_versions_window.png`  
+`initial_setup.png`  
+`main_window_full_960.png`  
+`settings_appr_hide.png`  
+`setup_other_tab.png`  
+`setup_paths_tab.png`  
+
 ### v1.7.5:
 
 No localizable text changes.
