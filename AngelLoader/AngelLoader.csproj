@@ -16,11 +16,11 @@
 		<AssemblyTitle>AngelLoader</AssemblyTitle>
 		<Product>AngelLoader</Product>
 		<NeutralLanguage>en-US</NeutralLanguage>
-		<Description>A standalone fan mission loader and manager for Thief Gold, Thief II, Thief: Deadly Shadows, and System Shock 2.</Description>
+		<Description>A standalone fan mission loader and manager for Thief Gold, Thief II, Thief: Deadly Shadows, System Shock 2, and The Dark Mod.</Description>
 		<Copyright>Copyright © 2018 - 2023</Copyright>
-		<Version>1.7.5</Version>
-		<AssemblyVersion>1.7.5</AssemblyVersion>
-		<FileVersion>1.7.5</FileVersion>
+		<Version>1.7.6</Version>
+		<AssemblyVersion>1.7.6</AssemblyVersion>
+		<FileVersion>1.7.6</FileVersion>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
