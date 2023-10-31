@@ -610,9 +610,12 @@ internal sealed class LText_Class
         internal readonly string DisableAllToolTip = "Disables all mods that are not marked \"important\"";
         internal readonly string DisabledMods = "Disabled mods:";
         [FenGenBlankLine]
-        // @GENGAMES (Localization - ModsTab_Class)
+        // @GENGAMES (Localization - ModsTab_Class) - Begin
         internal readonly string Thief3_ModsNotSupported = "Mod management is not supported for Thief: Deadly Shadows.";
         internal readonly string TDM_ModsNotSupported = "Mod management is not supported for The Dark Mod.";
+        [FenGenComment("This is for when the selected FM has an unknown or unsupported game type.")]
+        internal readonly string Generic_ModsNotSupported = "Mod management is not supported for unknown FMs.";
+        // @GENGAMES (Localization - ModsTab_Class) - End
     }
 
     internal sealed class ReadmeArea_Class

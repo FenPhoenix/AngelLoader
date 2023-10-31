@@ -64,9 +64,14 @@ public sealed class ModsTabPage : Lazy_TabsBase
     private void UpdateNotSupportedMessage(FanMission? fm)
     {
         ModsTabNotSupportedMessageLabel.Text =
-            fm?.Game == Game.TDM
-                ? LText.ModsTab.TDM_ModsNotSupported
-                : LText.ModsTab.Thief3_ModsNotSupported;
+            fm != null
+                ? fm.Game switch
+                {
+                    Game.TDM => LText.ModsTab.TDM_ModsNotSupported,
+                    Game.Thief3 => LText.ModsTab.Thief3_ModsNotSupported,
+                    _ => LText.ModsTab.Generic_ModsNotSupported
+                }
+                : "";
     }
 
     public override void UpdatePage()

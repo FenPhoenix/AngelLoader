@@ -91,9 +91,11 @@ public sealed class StatsTabPage : Lazy_TabsBase
             {
                 BlankStatsPanelWithMessage(
                     _page,
-                    fm.Game == Game.TDM
-                        ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM
-                        : LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                    !GameIsKnownAndSupported(fm.Game)
+                        ? LText.StatisticsTab.CustomResourcesNotScanned
+                        : fm.Game == Game.TDM
+                            ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM
+                            : LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
             }
             else if (!fm.ResourcesScanned)
             {
