@@ -28,6 +28,7 @@ internal static class Global
 
     private static readonly FMCategoriesCollection _globalTags = new(PresetTags.Count);
     private static readonly List<FanMission> _fmDataIniList = new(0);
+    private static readonly List<FanMission> _fmDataIniListTDM = new(0);
     private static readonly List<FanMission> _fmsViewList = new(0);
 
     internal static FMCategoriesCollection GlobalTags
@@ -45,6 +46,15 @@ internal static class Global
         {
             if (ThreadLocked) CheckThread(nameof(FMDataIniList));
             return _fmDataIniList;
+        }
+    }
+
+    internal static List<FanMission> FMDataIniListTDM
+    {
+        get
+        {
+            if (ThreadLocked) CheckThread(nameof(FMDataIniListTDM));
+            return _fmDataIniListTDM;
         }
     }
 
