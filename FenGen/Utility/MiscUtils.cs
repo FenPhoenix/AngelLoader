@@ -142,9 +142,9 @@ internal static partial class Misc
             if (!n.IsKind(syntaxKind)) continue;
 
             var item = (MemberDeclarationSyntax)n;
-            if (item.AttributeLists.Count > 0 && item.AttributeLists[0].Attributes.Count > 0)
+            foreach (var attrList in item.AttributeLists)
             {
-                foreach (var attr in item.AttributeLists[0].Attributes)
+                foreach (var attr in attrList.Attributes)
                 {
                     if (GetAttributeName(attr.Name.ToString(), attrName))
                     {
@@ -190,23 +190,20 @@ internal static partial class Misc
             if (!n.IsKind(syntaxKind)) continue;
 
             var item = (MemberDeclarationSyntax)n;
-            if (item.AttributeLists.Count > 0)
+            foreach (var attrList in item.AttributeLists)
             {
-                foreach (var attrList in item.AttributeLists)
+                if (attrList.Attributes.Count > 0)
                 {
-                    if (attrList.Attributes.Count > 0)
-                    {
-                        var attrMarkedItem = new AttrMarkedItem(item);
-                        ret.Add(attrMarkedItem);
+                    var attrMarkedItem = new AttrMarkedItem(item);
+                    ret.Add(attrMarkedItem);
 
-                        foreach (var attr in attrList.Attributes)
+                    foreach (var attr in attrList.Attributes)
+                    {
+                        foreach (string attrName in attrNames)
                         {
-                            foreach (string attrName in attrNames)
+                            if (GetAttributeName(attr.Name.ToString(), attrName))
                             {
-                                if (GetAttributeName(attr.Name.ToString(), attrName))
-                                {
-                                    attrMarkedItem.Attributes.Add(attr);
-                                }
+                                attrMarkedItem.Attributes.Add(attr);
                             }
                         }
                     }
