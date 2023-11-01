@@ -129,8 +129,8 @@ public sealed partial class MainForm : Form
                 for (int i = 0; i < memStreams.Length; i++)
                 {
                     rtfBox.LoadFile(memStreams[i], RichTextBoxStreamType.RichText);
-                    //string f = rtfFiles[i];
-                    //WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
+                    string f = rtfFiles[i];
+                    WritePlaintextFile(f, rtfBox.Lines, _destDirRTFBox);
                 }
 
                 sw.Stop();
@@ -203,11 +203,11 @@ public sealed partial class MainForm : Form
 
                 for (int i = 0; i < byteArrays.Length; i++)
                 {
-                    //string f = rtfFiles[i];
-                    //Trace.WriteLine(f);
+                    string f = rtfFiles[i];
+                    Trace.WriteLine(f);
                     ArrayWithLength<byte> array = byteArrays[i];
                     (_, string text) = rtfReader.Convert(array);
-                    //WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
 
                 sw.Stop();
