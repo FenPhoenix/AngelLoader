@@ -508,7 +508,7 @@ public static partial class RTFParserCommon
 // Entry 3
             new Symbol("pca", 850, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
 // Entry 59
-            new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.Pict),
             null,
 // Entry 31
             new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
@@ -882,7 +882,8 @@ public static partial class RTFParserCommon
         /// seems to work fine...
         /// </summary>
         CanBeDestOrNotDest,
-        Skip
+        Skip,
+        Pict
     }
 
     private const int _propertiesLen = 4;

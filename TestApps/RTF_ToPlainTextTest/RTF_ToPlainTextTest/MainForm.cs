@@ -175,7 +175,8 @@ public sealed partial class MainForm : Form
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-02-29_c5Summit_The__summit.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
-                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
+                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
+                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_An_Enigmatic_Treasure___TDP20AC_An_Enigmatic_Treasure_With_A_Recondite_Discovery.rtf";
                 using var fs = File.Open(file, FileMode.Open, FileAccess.Read);
                 byte[] array = new byte[fs.Length];
                 int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);

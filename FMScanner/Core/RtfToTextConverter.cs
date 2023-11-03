@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-11-02   ?           567MB/s (x86) / 663MB/s (x64)
 2023-10-05:  ?           521MB/s (x64)
 2023-10-03:  ?           512MB/s (x64)
 2023-10-03:  ?           492MB/s (x86)
@@ -1022,9 +1023,11 @@ public sealed partial class RtfToTextConverter
                 }
                 return RtfError.OK;
             case KeywordType.Destination:
-                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
-                    ? ChangeDestination((DestinationType)symbol.Index)
-                    : RtfError.OK;
+                return symbol.Index == (int)DestinationType.Pict
+                    ? HandlePict()
+                    : _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                        ? ChangeDestination((DestinationType)symbol.Index)
+                        : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
@@ -1097,6 +1100,62 @@ public sealed partial class RtfToTextConverter
             }
             default:
                 return HandleSpecialTypeFont(_ctx, specialType, param);
+        }
+
+        return RtfError.OK;
+    }
+
+    private RtfError HandlePict()
+    {
+        int pictScopeLevel = _ctx.ScopeStack.Count;
+
+        while (CurrentPos < _rtfBytes.Length)
+        {
+            char ch = (char)_rtfBytes[CurrentPos++];
+
+            switch (ch)
+            {
+                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // a second branch to check the return error code from the push/pop method.
+                case '{':
+                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
+                    _ctx.ScopeStack.DeepCopyToNext();
+                    _groupCount++;
+                    break;
+                case '}':
+                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.ScopeStack.Count;
+                    _groupCount--;
+                    if (_groupCount < pictScopeLevel)
+                    {
+                        return RtfError.OK;
+                    }
+                    break;
+                case '\\':
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                    if (_groupCount == pictScopeLevel)
+                    {
+                        /*
+                        Since plaintext hex is written as 2 chars per byte (eg. FF), we can skip two chars at a
+                        time and still be correct.
+                        Plaintext hex can be broken up with linebreaks, which is why we need to split the skip
+                        between the one increment here and the one at the top of the loop, as the loop checks
+                        for linebreaks and increments just one per.
+                        We get a HUGE speedup from this.
+                        */
+                        if (ch != '}')
+                        {
+                            ++CurrentPos;
+                        }
+                    }
+                    break;
+            }
         }
 
         return RtfError.OK;
