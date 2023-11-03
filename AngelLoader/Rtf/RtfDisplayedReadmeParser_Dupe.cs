@@ -125,7 +125,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private RtfError HandlePict()
     {
-        int pictScopeLevel = _ctx.ScopeStack.Count;
+        int pictGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
         {
@@ -133,18 +133,18 @@ public sealed partial class RtfDisplayedReadmeParser
 
             switch (ch)
             {
-                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
-                    _ctx.ScopeStack.DeepCopyToNext();
+                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroups) return RtfError.StackOverflow;
+                    _ctx.GroupStack.DeepCopyToNext();
                     _groupCount++;
                     break;
                 case '}':
-                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
-                    --_ctx.ScopeStack.Count;
+                    if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.GroupStack.Count;
                     _groupCount--;
-                    if (_groupCount < pictScopeLevel)
+                    if (_groupCount < pictGroupLevel)
                     {
                         return RtfError.OK;
                     }
@@ -157,7 +157,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 case '\n':
                     break;
                 default:
-                    if (_groupCount == pictScopeLevel)
+                    if (_groupCount == pictGroupLevel)
                     {
                         while (CurrentPos < _rtfBytes.Length)
                         {

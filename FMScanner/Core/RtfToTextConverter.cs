@@ -849,7 +849,7 @@ public sealed partial class RtfToTextConverter
     Per spec, if we see a \uN keyword whose N falls within the range of 0xF020 to 0xF0FF, we're supposed to
     subtract 0xF000 and then find the last used font whose charset is 2 (codepage 42) and use its symbol font
     to convert the char. However, when the spec says "last used" it REALLY means last used. Period. Regardless
-    of scope. Even if the font was used in a scope above us that we should have no knowledge of, it still
+    of group. Even if the font was used in a group above us that we should have no knowledge of, it still
     counts as the last used one. Also, we need the last used font WHOSE CODEPAGE IS 42, not the last used font
     period. So we have to track only the charset 2/codepage 42 ones. Globally. Truly bizarre.
     */
@@ -962,16 +962,16 @@ public sealed partial class RtfToTextConverter
 
             switch (ch)
             {
-                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
-                    _ctx.ScopeStack.DeepCopyToNext();
+                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroups) return RtfError.StackOverflow;
+                    _ctx.GroupStack.DeepCopyToNext();
                     _groupCount++;
                     break;
                 case '}':
-                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
-                    --_ctx.ScopeStack.Count;
+                    if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.GroupStack.Count;
                     _groupCount--;
                     break;
                 case '\\':
@@ -982,7 +982,7 @@ public sealed partial class RtfToTextConverter
                 case '\n':
                     break;
                 default:
-                    if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                     {
                         ParseChar(ch);
                     }
@@ -1002,7 +1002,7 @@ public sealed partial class RtfToTextConverter
             // If this is a new destination
             if (_skipDestinationIfUnknown)
             {
-                _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
             }
             _skipDestinationIfUnknown = false;
             return RtfError.OK;
@@ -1012,14 +1012,14 @@ public sealed partial class RtfToTextConverter
         switch (symbol.KeywordType)
         {
             case KeywordType.Property:
-                if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                 {
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     ChangeProperty((Property)symbol.Index, param);
                 }
                 return RtfError.OK;
             case KeywordType.Character:
-                if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                 {
                     ParseChar((char)symbol.Index);
                 }
@@ -1027,12 +1027,12 @@ public sealed partial class RtfToTextConverter
             case KeywordType.Destination:
                 return symbol.Index == (int)DestinationType.Pict
                     ? HandlePict()
-                    : _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
-                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
+                return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
                        specialType == SpecialType.Bin
                     ? DispatchSpecialKeyword(specialType, param)
                     : RtfError.OK;
@@ -1091,11 +1091,11 @@ public sealed partial class RtfToTextConverter
                 break;
             }
             case SpecialType.ColorTable:
-                _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 break;
             case SpecialType.FontTable:
             {
-                _ctx.ScopeStack.CurrentInFontTable = true;
+                _ctx.GroupStack.CurrentInFontTable = true;
                 RtfError error = HandleFontTable();
                 if (error != RtfError.OK) return error;
                 break;
@@ -1109,7 +1109,7 @@ public sealed partial class RtfToTextConverter
 
     private RtfError HandleFontTable()
     {
-        int fontTableScopeLevel = _ctx.ScopeStack.Count;
+        int fontTableGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
         {
@@ -1117,18 +1117,18 @@ public sealed partial class RtfToTextConverter
 
             switch (ch)
             {
-                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
-                    _ctx.ScopeStack.DeepCopyToNext();
+                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroups) return RtfError.StackOverflow;
+                    _ctx.GroupStack.DeepCopyToNext();
                     _groupCount++;
                     break;
                 case '}':
-                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
-                    --_ctx.ScopeStack.Count;
+                    if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.GroupStack.Count;
                     _groupCount--;
-                    if (_groupCount < fontTableScopeLevel)
+                    if (_groupCount < fontTableGroupLevel)
                     {
                         return RtfError.OK;
                     }
@@ -1141,7 +1141,7 @@ public sealed partial class RtfToTextConverter
                 case '\n':
                     break;
                 default:
-                    if (_ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                     {
                         _ctx.FontEntries.Top?.AppendNameChar(ch);
                     }
@@ -1157,7 +1157,7 @@ public sealed partial class RtfToTextConverter
     {
         if (propertyTableIndex == Property.FontNum)
         {
-            if (_ctx.ScopeStack.CurrentInFontTable)
+            if (_ctx.GroupStack.CurrentInFontTable)
             {
                 _ctx.FontEntries.Add(val);
                 return;
@@ -1173,17 +1173,17 @@ public sealed partial class RtfToTextConverter
                 // Support bare characters that are supposed to be displayed in a symbol font. We use a simple
                 // enum so that we don't have to do a dictionary lookup on every single character, but only
                 // once per font change.
-                _ctx.ScopeStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                _ctx.GroupStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
             }
             // \fN supersedes \langN
-            _ctx.ScopeStack.CurrentProperties[(int)Property.Lang] = -1;
+            _ctx.GroupStack.CurrentProperties[(int)Property.Lang] = -1;
         }
         else if (propertyTableIndex == Property.Lang)
         {
             if (val == UndefinedLanguage) return;
         }
 
-        _ctx.ScopeStack.CurrentProperties[(int)propertyTableIndex] = val;
+        _ctx.GroupStack.CurrentProperties[(int)propertyTableIndex] = val;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1197,7 +1197,7 @@ public sealed partial class RtfToTextConverter
             case DestinationType.FieldInstruction:
                 return HandleFieldInstruction();
             case DestinationType.Skip:
-                _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 return RtfError.OK;
             default:
                 return RtfError.InvalidSymbolTableEntry;
@@ -1208,25 +1208,25 @@ public sealed partial class RtfToTextConverter
     private void ParseChar(char ch)
     {
         if (ch != '\0' &&
-            _ctx.ScopeStack.CurrentProperties[(int)Property.Hidden] == 0)
+            _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
-            // We don't really have a way to set the default font num as the first scope's font num, because
+            // We don't really have a way to set the default font num as the first group's font num, because
             // the font definitions come AFTER the default font control word, so let's just do this check
-            // right here. It's fast if we have a font num for this scope, and if not, it'll only run once
+            // right here. It's fast if we have a font num for this group, and if not, it'll only run once
             // anyway, so we shouldn't take much of a speed hit.
-            if (_ctx.ScopeStack.CurrentSymbolFont == SymbolFont.None &&
-                _ctx.ScopeStack.CurrentProperties[(int)Property.FontNum] == -1 &&
+            if (_ctx.GroupStack.CurrentSymbolFont == SymbolFont.None &&
+                _ctx.GroupStack.CurrentProperties[(int)Property.FontNum] == -1 &&
                 _ctx.Header.DefaultFontNum > -1 &&
                 _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
             {
-                _ctx.ScopeStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                _ctx.GroupStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
             }
 
             // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx.ScopeStack.CurrentSymbolFont > SymbolFont.None)
+            if (_ctx.GroupStack.CurrentSymbolFont > SymbolFont.None)
             {
 #pragma warning disable 8509
-                uint[] fontTable = _ctx.ScopeStack.CurrentSymbolFont switch
+                uint[] fontTable = _ctx.GroupStack.CurrentSymbolFont switch
                 {
                     SymbolFont.Symbol => _symbolFontToUnicode,
                     SymbolFont.Wingdings => _wingdingsFontToUnicode,
@@ -1554,7 +1554,7 @@ public sealed partial class RtfToTextConverter
         to spec fully here. This is actually really fortunate, because ignoring the thorny "entire control word
         including bin and its data" thing means we get simpler and faster.
         */
-        int numToSkip = _ctx.ScopeStack.CurrentProperties[(int)Property.UnicodeCharSkipCount];
+        int numToSkip = _ctx.GroupStack.CurrentProperties[(int)Property.UnicodeCharSkipCount];
         while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
         {
             char c = (char)_rtfBytes[CurrentPos++];
@@ -1760,7 +1760,7 @@ public sealed partial class RtfToTextConverter
         if (ch != ' ') return RewindAndSkipGroup();
 
         const int maxParams = 6;
-        const int useCurrentScopeCodePage = -1;
+        const int useCurrentGroupCodePage = -1;
 
         ListFast<char> finalChars = _charGeneralBuffer;
         finalChars.Count = 0;
@@ -1815,7 +1815,7 @@ public sealed partial class RtfToTextConverter
             for the current text run."
 
             In other words:
-            If it's \\f, we use the current scope's font's codepage, and if it's \\f "FontName" then we use
+            If it's \\f, we use the current group's font's codepage, and if it's \\f "FontName" then we use
             code page 1252 and convert from FontName to Unicode using manual conversion tables, that is
             assuming FontName is "Symbol", "Wingdings" or "Webdings". We don't really want to go down the
             rabbit hole of Wingdings 2, Wingdings 3, or whatever else have you...
@@ -1834,7 +1834,7 @@ public sealed partial class RtfToTextConverter
                 }
                 else if (IsSeparatorChar(ch))
                 {
-                    finalChars = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
+                    finalChars = GetCharFromCodePage(useCurrentGroupCodePage, codePoint);
                     break;
                 }
                 else if (ch == ' ')
@@ -1845,7 +1845,7 @@ public sealed partial class RtfToTextConverter
                     }
                     else if (ch != '\"')
                     {
-                        finalChars = GetCharFromCodePage(useCurrentScopeCodePage, codePoint);
+                        finalChars = GetCharFromCodePage(useCurrentGroupCodePage, codePoint);
                         break;
                     }
 
@@ -1968,7 +1968,7 @@ public sealed partial class RtfToTextConverter
     private RtfError RewindAndSkipGroup()
     {
         CurrentPos--;
-        _ctx.ScopeStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+        _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
         return RtfError.OK;
     }
 
@@ -1984,8 +1984,8 @@ public sealed partial class RtfToTextConverter
         // need to duplicate any of the bare-char symbol font stuff here.
 
         if (!(count == 1 && ch[0] == '\0') &&
-            _ctx.ScopeStack.CurrentProperties[(int)Property.Hidden] == 0 &&
-            !_ctx.ScopeStack.CurrentInFontTable)
+            _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0 &&
+            !_ctx.GroupStack.CurrentInFontTable)
         {
             _plainText.AddRange(ch, count);
         }
@@ -2038,17 +2038,17 @@ public sealed partial class RtfToTextConverter
     private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)
     GetCurrentEncoding()
     {
-        int scopeFontNum = _ctx.ScopeStack.CurrentProperties[(int)Property.FontNum];
-        int scopeLang = _ctx.ScopeStack.CurrentProperties[(int)Property.Lang];
+        int groupFontNum = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
+        int groupLang = _ctx.GroupStack.CurrentProperties[(int)Property.Lang];
 
-        if (scopeFontNum == -1) scopeFontNum = _ctx.Header.DefaultFontNum;
+        if (groupFontNum == -1) groupFontNum = _ctx.Header.DefaultFontNum;
 
-        _ctx.FontEntries.TryGetValue(scopeFontNum, out FontEntry? fontEntry);
+        _ctx.FontEntries.TryGetValue(groupFontNum, out FontEntry? fontEntry);
 
         int codePage;
-        if (scopeLang is > -1 and <= MaxLangNumIndex)
+        if (groupLang is > -1 and <= MaxLangNumIndex)
         {
-            int translatedCodePage = LangToCodePage[scopeLang];
+            int translatedCodePage = LangToCodePage[groupLang];
             codePage = translatedCodePage > -1 ? translatedCodePage : fontEntry?.CodePage >= 0 ? fontEntry.CodePage : _ctx.Header.CodePage;
         }
         else
@@ -2193,7 +2193,7 @@ public sealed partial class RtfToTextConverter
         N = 2. This corresponds to codepage 42."
 
         Verified, this does in fact mean "find the last used font that specifically has \fcharset2" (or \cpg42).
-        And, yes, that's last used, period, regardless of scope. So we track it globally. That's the official
+        And, yes, that's last used, period, regardless of group. So we track it globally. That's the official
         behavior, don't ask me.
 
         Verified, these 0xF020-0xF0FF chars can be represented either as negatives or as >32767 positives

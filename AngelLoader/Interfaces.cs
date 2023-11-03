@@ -148,7 +148,7 @@ public interface IView : ISettingsChangeableView
     void SetProgressPercent(int percent);
 
     /// <summary>
-    /// Use this is you need to be more detailed than any of the tighter-scoped methods.
+    /// Use this if you need to be more detailed than any of the tighter-scoped methods.
     /// <para/>
     /// This method call is auto-invoked, so no need to wrap it manually.
     /// <para/>

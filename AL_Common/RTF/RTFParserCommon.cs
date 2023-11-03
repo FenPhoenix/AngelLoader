@@ -12,7 +12,7 @@ public static partial class RTFParserCommon
     public readonly struct Context
     {
         public readonly ListFast<char> Keyword;
-        public readonly ScopeStack ScopeStack;
+        public readonly GroupStack GroupStack;
         public readonly FontDictionary FontEntries;
         public readonly Header Header;
 
@@ -20,8 +20,8 @@ public static partial class RTFParserCommon
         public void Reset()
         {
             Keyword.ClearFast();
-            ScopeStack.ClearFast();
-            ScopeStack.ResetFirst();
+            GroupStack.ClearFast();
+            GroupStack.ResetFirst();
             FontEntries.Clear();
             Header.Reset();
         }
@@ -30,7 +30,7 @@ public static partial class RTFParserCommon
         {
             Keyword = new ListFast<char>(KeywordMaxLen);
 
-            ScopeStack = new ScopeStack();
+            GroupStack = new GroupStack();
 
             /*
             FMs can have 100+ of these...
@@ -205,34 +205,34 @@ public static partial class RTFParserCommon
 
     #region Classes
 
-    public sealed class ScopeStack
+    public sealed class GroupStack
     {
         // SOA and removal of bounds checking through fixed-sized buffers improves perf
 
         private unsafe struct IntArrayWrapper
         {
-            internal fixed int Array[MaxScopes];
+            internal fixed int Array[MaxGroups];
         }
 
         private unsafe struct BoolArrayWrapper
         {
-            internal fixed bool Array[MaxScopes];
+            internal fixed bool Array[MaxGroups];
         }
 
         // Highest measured was 10
-        public const int MaxScopes = 100;
+        public const int MaxGroups = 100;
 
         private IntArrayWrapper RtfDestinationStates;
         private BoolArrayWrapper InFontTables;
         private IntArrayWrapper SymbolFonts;
-        private readonly int[][] Properties = new int[MaxScopes][];
+        private readonly int[][] Properties = new int[MaxGroups][];
 
         /// <summary>Do not modify!</summary>
         public int Count;
 
-        public ScopeStack()
+        public GroupStack()
         {
-            for (int i = 0; i < MaxScopes; i++)
+            for (int i = 0; i < MaxGroups; i++)
             {
                 Properties[i] = new int[_propertiesLen];
             }
@@ -251,7 +251,7 @@ public static partial class RTFParserCommon
             ++Count;
         }
 
-        #region Current scope
+        #region Current group
 
         public unsafe RtfDestinationState CurrentRtfDestinationState
         {
@@ -283,7 +283,7 @@ public static partial class RTFParserCommon
             get => Properties[Count];
         }
 
-        // Current scope always begins at scope 0, so reset just that one
+        // Current group always begins at group 0, so reset just that one
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void ResetFirst()
         {
@@ -974,7 +974,7 @@ public static partial class RTFParserCommon
                 ctx.Header.CodePage = param >= 0 ? param : 1252;
                 break;
             case SpecialType.FontTable:
-                ctx.ScopeStack.CurrentInFontTable = true;
+                ctx.GroupStack.CurrentInFontTable = true;
                 break;
             case SpecialType.DefaultFont:
                 if (!ctx.Header.DefaultFontSet)
@@ -986,7 +986,7 @@ public static partial class RTFParserCommon
             case SpecialType.Charset:
                 // Reject negative codepage values as invalid and just use the header default in that case
                 // (which is guaranteed not to be negative)
-                if (ctx.FontEntries.Top != null && ctx.ScopeStack.CurrentInFontTable)
+                if (ctx.FontEntries.Top != null && ctx.GroupStack.CurrentInFontTable)
                 {
                     if (param is >= 0 and < _charSetToCodePageLength)
                     {
@@ -1000,7 +1000,7 @@ public static partial class RTFParserCommon
                 }
                 break;
             case SpecialType.CodePage:
-                if (ctx.FontEntries.Top != null && ctx.ScopeStack.CurrentInFontTable)
+                if (ctx.FontEntries.Top != null && ctx.GroupStack.CurrentInFontTable)
                 {
                     ctx.FontEntries.Top.CodePage = param >= 0 ? param : ctx.Header.CodePage;
                 }
