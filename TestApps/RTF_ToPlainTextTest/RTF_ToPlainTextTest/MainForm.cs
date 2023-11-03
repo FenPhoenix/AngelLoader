@@ -117,7 +117,7 @@ public sealed partial class MainForm : Form
                 for (int i = 0; i < rtfFiles.Length; i++)
                 {
                     string f = rtfFiles[i];
-                    using var fs = File.Open(f, FileMode.Open, FileAccess.Read);
+                    using var fs = File.OpenRead(f);
                     byte[] array = new byte[fs.Length];
                     fs.ReadAll(array, 0, (int)fs.Length);
                     memStreams[i] = new MemoryStream(array);
@@ -177,7 +177,8 @@ public sealed partial class MainForm : Form
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
                 //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
                 string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_An_Enigmatic_Treasure___TDP20AC_An_Enigmatic_Treasure_With_A_Recondite_Discovery.rtf";
-                using var fs = File.Open(file, FileMode.Open, FileAccess.Read);
+                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__UpsideDown__Readme.rtf";
+                using var fs = File.OpenRead(file);
                 byte[] array = new byte[fs.Length];
                 int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
                 (_, string text) = rtfreader.Convert(new ArrayWithLength<byte>(array, bytesRead));
@@ -193,7 +194,7 @@ public sealed partial class MainForm : Form
                 for (int i = 0; i < rtfFiles.Length; i++)
                 {
                     string f = rtfFiles[i];
-                    using var fs = File.Open(f, FileMode.Open, FileAccess.Read);
+                    using var fs = File.OpenRead(f);
                     byte[] array = new byte[fs.Length];
                     int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
                     byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
@@ -159,30 +160,11 @@ public sealed partial class RtfDisplayedReadmeParser
                 default:
                     if (_groupCount == pictGroupLevel)
                     {
-                        while (CurrentPos < _rtfBytes.Length)
-                        {
-                            /*
-                            Since plaintext hex is written as 2 chars per byte (eg. FF), we can skip two chars
-                            at a time and still be correct.
-                            We get a HUGE speedup from this.
-                            But plaintext hex can be broken up with linebreaks, so we need to check for those too
-                            unfortunately. This second loop that ONLY checks what needs checking for a hex run
-                            speeds us up even more.
-                            */
-                            if (ch is '\r' or '\n')
-                            {
-                                CurrentPos++;
-                            }
-                            else if (ch != '}')
-                            {
-                                CurrentPos += 2;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                            ch = (char)_rtfBytes[CurrentPos];
-                        }
+                        // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
+                        // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.
+                        int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos);
+                        if (closingBraceIndex == -1) return RtfError.EndOfFile;
+                        CurrentPos = closingBraceIndex;
                     }
                     break;
             }
