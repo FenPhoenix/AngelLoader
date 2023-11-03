@@ -31,8 +31,9 @@ Goals:
    glyphs.
 
 Non-Goals:
-1. Perfectly match RichTextBox in output. The output is not designed to be displayed to the user, so we don't
-   care about extra whitespace lines, indenting, bulleted/numbered list characters, etc.
+1. Perfectly match RichTextBox in output. The output is not meant to be displayed to the user, so we don't care
+   about extra whitespace lines, indenting, bulleted/numbered list characters, etc. We also convert certain
+   exotic characters to their ASCII equivalents (dashes, spaces etc.) to give easier data to the scanner.
 2. Extremely strict validation or enforcement of spec. We assume the stream has been checked for an rtf header
    already. We also allow for what RichTextBox allows - or has allowed - for, even if it's not quite to spec.
 3. Forward-only stream support. We used to have this, but it entailed a fairly sizable performance loss. The
