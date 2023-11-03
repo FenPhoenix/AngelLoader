@@ -159,17 +159,29 @@ public sealed partial class RtfDisplayedReadmeParser
                 default:
                     if (_groupCount == pictScopeLevel)
                     {
-                        /*
-                        Since plaintext hex is written as 2 chars per byte (eg. FF), we can skip two chars at a
-                        time and still be correct.
-                        Plaintext hex can be broken up with linebreaks, which is why we need to split the skip
-                        between the one increment here and the one at the top of the loop, as the loop checks
-                        for linebreaks and increments just one per.
-                        We get a HUGE speedup from this.
-                        */
-                        if (ch != '}')
+                        while (CurrentPos < _rtfBytes.Length)
                         {
-                            ++CurrentPos;
+                            /*
+                            Since plaintext hex is written as 2 chars per byte (eg. FF), we can skip two chars
+                            at a time and still be correct.
+                            We get a HUGE speedup from this.
+                            But plaintext hex can be broken up with linebreaks, so we need to check for those too
+                            unfortunately. This second loop that ONLY checks what needs checking for a hex run
+                            speeds us up even more.
+                            */
+                            if (ch is '\r' or '\n')
+                            {
+                                CurrentPos++;
+                            }
+                            else if (ch != '}')
+                            {
+                                CurrentPos += 2;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            ch = (char)_rtfBytes[CurrentPos];
                         }
                     }
                     break;
