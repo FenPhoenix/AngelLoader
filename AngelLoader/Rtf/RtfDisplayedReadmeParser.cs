@@ -168,9 +168,11 @@ public sealed partial class RtfDisplayedReadmeParser
                     ? ChangeProperty((Property)symbol.Index, param)
                     : RtfError.OK;
             case KeywordType.Destination:
-                return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
-                    ? ChangeDestination((DestinationType)symbol.Index)
-                    : RtfError.OK;
+                return symbol.Index == (int)DestinationType.Pict
+                    ? HandlePict()
+                    : _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                        ? ChangeDestination((DestinationType)symbol.Index)
+                        : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _ctx.ScopeStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||

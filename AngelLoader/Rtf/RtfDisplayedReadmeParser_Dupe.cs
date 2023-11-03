@@ -122,4 +122,60 @@ public sealed partial class RtfDisplayedReadmeParser
 
         return DispatchKeyword(param, hasParam);
     }
+
+    private RtfError HandlePict()
+    {
+        int pictScopeLevel = _ctx.ScopeStack.Count;
+
+        while (CurrentPos < _rtfBytes.Length)
+        {
+            char ch = (char)_rtfBytes[CurrentPos++];
+
+            switch (ch)
+            {
+                // Push/pop scopes inline to avoid having one branch to check the actual error condition and then
+                // a second branch to check the return error code from the push/pop method.
+                case '{':
+                    if (_ctx.ScopeStack.Count >= ScopeStack.MaxScopes) return RtfError.StackOverflow;
+                    _ctx.ScopeStack.DeepCopyToNext();
+                    _groupCount++;
+                    break;
+                case '}':
+                    if (_ctx.ScopeStack.Count == 0) return RtfError.StackUnderflow;
+                    --_ctx.ScopeStack.Count;
+                    _groupCount--;
+                    if (_groupCount < pictScopeLevel)
+                    {
+                        return RtfError.OK;
+                    }
+                    break;
+                case '\\':
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                    if (_groupCount == pictScopeLevel)
+                    {
+                        /*
+                        Since plaintext hex is written as 2 chars per byte (eg. FF), we can skip two chars at a
+                        time and still be correct.
+                        Plaintext hex can be broken up with linebreaks, which is why we need to split the skip
+                        between the one increment here and the one at the top of the loop, as the loop checks
+                        for linebreaks and increments just one per.
+                        We get a HUGE speedup from this.
+                        */
+                        if (ch != '}')
+                        {
+                            ++CurrentPos;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        return RtfError.OK;
+    }
 }
