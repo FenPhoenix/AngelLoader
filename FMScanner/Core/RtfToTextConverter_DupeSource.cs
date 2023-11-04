@@ -125,6 +125,8 @@ public sealed partial class RtfToTextConverter
         return DispatchKeyword(param, hasParam);
     }
 
+    // @RTF: Test pict skip when it's \binN instead of hex (I think it should work, but make sure)
+    // @RTF: Skip all other #SDATA (hex) the same way - should get more speedups!
     private RtfError HandlePict()
     {
         int pictGroupLevel = _ctx.GroupStack.Count;
