@@ -1,13 +1,14 @@
-﻿using System;
+#define FenGen_RtfDuplicateDest
+
+using System;
 using System.Runtime.CompilerServices;
-using AL_Common;
 using static AL_Common.Common;
+using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
 
 namespace AngelLoader;
 
-// @RTF: Large amount of code duplication for performance. See how much we can dedupe without losing perf.
-
+[FenGenRtfDuplicateDestClass]
 public sealed partial class RtfDisplayedReadmeParser
 {
     private readonly Context _ctx = new();

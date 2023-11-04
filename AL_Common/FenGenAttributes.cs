@@ -274,4 +274,16 @@ public static class FenGenAttributes
     public sealed class FenGenEnumDataDestClassAttribute : Attribute
     {
     }
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class FenGenRtfDuplicateSourceClassAttribute : Attribute
+    {
+    }
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class FenGenRtfDuplicateDestClassAttribute : Attribute
+    {
+    }
 }

@@ -119,6 +119,8 @@ internal static class Cache
 
     internal static readonly List<string> TypeSourceFiles = new();
 
+    internal static readonly List<string> RtfDupeDestFiles = new();
+
     internal static void Clear()
     {
         _gameSupportFile = "";
@@ -131,6 +133,8 @@ internal static class Cache
         DesignerCSFiles.Clear();
 
         TypeSourceFiles.Clear();
+
+        RtfDupeDestFiles.Clear();
     }
 }
 
@@ -197,6 +201,9 @@ internal static class GenAttributes
     internal const string FenGenEnumNames = nameof(FenGenEnumNames);
 
     internal const string FenGenEnumDataDestClass = nameof(FenGenEnumDataDestClass);
+
+    internal const string FenGenRtfDuplicateSourceClass = nameof(FenGenRtfDuplicateSourceClass);
+    internal const string FenGenRtfDuplicateDestClass = nameof(FenGenRtfDuplicateDestClass);
 }
 
 internal static class Core
@@ -214,7 +221,8 @@ internal static class Core
         RemoveBuildDate,
         GenSlimDesignerFiles,
         GenCopyright,
-        GenEnumData
+        GenEnumData,
+        RtfCodeDupe
     }
 
     private static readonly Dictionary<string, GenType>
@@ -230,7 +238,8 @@ internal static class Core
         { "-bd_r", GenType.RemoveBuildDate },
         { "-des", GenType.GenSlimDesignerFiles },
         { "-cr", GenType.GenCopyright },
-        { "-ed", GenType.GenEnumData }
+        { "-ed", GenType.GenEnumData },
+        { "-rtf_d", GenType.RtfCodeDupe },
     };
 
     // Only used for debug, so we can explicitly place test arguments into the set
@@ -263,6 +272,9 @@ internal static class Core
 
         internal const string TypeSource = "FenGen_TypeSource";
         internal const string EnumDataDest = "FenGen_EnumDataDest";
+
+        internal const string RtfDuplicateSource = "FenGen_RtfDuplicateSource";
+        internal const string RtfDuplicateDest = "FenGen_RtfDuplicateDest";
     }
 
     private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -325,7 +337,8 @@ internal static class Core
             GetArg(GenType.GenSlimDesignerFiles),
             GetArg(GenType.GameSupport),
             GetArg(GenType.GenCopyright),
-            GetArg(GenType.GenEnumData)
+            GetArg(GenType.GenEnumData),
+            GetArg(GenType.RtfCodeDupe)
         };
 #else
         string[] args = Environment.GetCommandLineArgs();
@@ -418,6 +431,11 @@ internal static class Core
             defineHeaders.Add(DefineHeaders.EnumDataDest);
         }
 
+        if (GenTaskActive(GenType.RtfCodeDupe))
+        {
+            defineHeaders.Add(DefineHeaders.RtfDuplicateSource);
+        }
+
         var taggedFilesDict = new Dictionary<string, string>(StringComparer.Ordinal);
         if (forceFindRequiredFiles || defineHeaders.Count > 0)
         {
@@ -506,6 +524,10 @@ internal static class Core
         {
             EnumDataGen.Generate(taggedFilesDict[DefineHeaders.EnumDataDest]);
         }
+        if (GenTaskActive(GenType.RtfCodeDupe))
+        {
+            RtfDupeCodeGen.Generate(taggedFilesDict[DefineHeaders.RtfDuplicateSource]);
+        }
     }
 
     [MustUseReturnValue]
@@ -547,11 +569,17 @@ internal static class Core
                         }
                         continue;
                     }
-                    if (tag == DefineHeaders.TypeSource)
+                    else if (tag == DefineHeaders.TypeSource)
                     {
                         Cache.TypeSourceFiles.Add(f);
                         continue;
                     }
+                    else if (tag == DefineHeaders.RtfDuplicateDest)
+                    {
+                        Cache.RtfDupeDestFiles.Add(f);
+                        continue;
+                    }
+
                     for (int i = 0; i < defineHeaders.Count; i++)
                     {
                         if (tag == defineHeaders[i])

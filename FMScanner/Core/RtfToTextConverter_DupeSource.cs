@@ -1,13 +1,14 @@
-﻿using System;
+﻿#define FenGen_RtfDuplicateSource
+
+using System;
 using System.Runtime.CompilerServices;
-using AL_Common;
 using static AL_Common.Common;
+using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
 
 namespace FMScanner;
 
-// @RTF: Large amount of code duplication for performance. See how much we can dedupe without losing perf.
-
+[FenGenRtfDuplicateSourceClass]
 public sealed partial class RtfToTextConverter
 {
     private readonly Context _ctx = new();

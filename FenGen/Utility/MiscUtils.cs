@@ -89,13 +89,13 @@ internal static partial class Misc
         }
 
         var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, genAttr);
-        var iniClass = (ClassDeclarationSyntax)member;
+        var targetClass = (ClassDeclarationSyntax)member;
 
-        string iniClassString = iniClass.ToString();
-        string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
+        string targetClassString = targetClass.ToString();
+        string classDeclLine = targetClassString.Substring(0, targetClassString.IndexOf('{'));
 
         code = code
-            .Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
+            .Substring(0, targetClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
             .TrimEnd() + "\r\n";
 
         return (code, fileScopedNamespace);
