@@ -387,6 +387,10 @@ public static partial class RTFParserCommon
         // For "emspace", "enspace", "qmspace", "~"
         // Just convert these to regular spaces because we're just trying to scan for strings in readmes
         // without weird crap tripping us up
+        // emspace  '\x2003'
+        // enspace  '\x2002'
+        // qmspace  '\x2005'
+        // ~        '\xa0'
 
         // For "emdash", "endash", "lquote", "rquote", "ldblquote", "rdblquote"
         // NOTE: Maybe just convert these all to ASCII equivalents as well?
