@@ -125,10 +125,9 @@ public sealed partial class RtfToTextConverter
         return DispatchKeyword(param, hasParam);
     }
 
-    // @RTF: Skip all other #SDATA (hex) the same way - should get more speedups!
-    private RtfError HandlePict()
+    private RtfError HandleSkippableHexData()
     {
-        int pictGroupLevel = _ctx.GroupStack.Count;
+        int startGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
         {
@@ -147,7 +146,7 @@ public sealed partial class RtfToTextConverter
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
-                    if (_groupCount < pictGroupLevel)
+                    if (_groupCount < startGroupLevel)
                     {
                         return RtfError.OK;
                     }
@@ -161,7 +160,7 @@ public sealed partial class RtfToTextConverter
                 case '\n':
                     break;
                 default:
-                    if (_groupCount == pictGroupLevel)
+                    if (_groupCount == startGroupLevel)
                     {
                         // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
                         // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.

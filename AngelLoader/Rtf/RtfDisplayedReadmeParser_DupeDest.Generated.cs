@@ -125,9 +125,9 @@ public sealed partial class RtfDisplayedReadmeParser
         return DispatchKeyword(param, hasParam);
     }
 
-    private RtfError HandlePict()
+    private RtfError HandleSkippableHexData()
     {
-        int pictGroupLevel = _ctx.GroupStack.Count;
+        int startGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
         {
@@ -146,12 +146,13 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
-                    if (_groupCount < pictGroupLevel)
+                    if (_groupCount < startGroupLevel)
                     {
                         return RtfError.OK;
                     }
                     break;
                 case '\\':
+                    // This implicitly also handles the case where the data is \binN instead of hex
                     RtfError ec = ParseKeyword();
                     if (ec != RtfError.OK) return ec;
                     break;
@@ -159,7 +160,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 case '\n':
                     break;
                 default:
-                    if (_groupCount == pictGroupLevel)
+                    if (_groupCount == startGroupLevel)
                     {
                         // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
                         // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.

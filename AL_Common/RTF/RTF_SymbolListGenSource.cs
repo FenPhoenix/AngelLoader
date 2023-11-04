@@ -123,7 +123,6 @@ public static partial class RTFParserCommon
         new Symbol("info", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("keywords", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("operator", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("printim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("private1", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("revtim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
@@ -134,6 +133,17 @@ public static partial class RTFParserCommon
         new Symbol("title", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+
+        #region Groups containing skippable hex data ("#SDATA")
+
+        new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("themedata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("colorschememapping", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("passwordhash", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+
+        #endregion
 
         #region Quick table hacks
 

@@ -1026,8 +1026,8 @@ public sealed partial class RtfToTextConverter
                 }
                 return RtfError.OK;
             case KeywordType.Destination:
-                return symbol.Index == (int)DestinationType.Pict
-                    ? HandlePict()
+                return symbol.Index == (int)DestinationType.SkippableHex
+                    ? HandleSkippableHexData()
                     : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
