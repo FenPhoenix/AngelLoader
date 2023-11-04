@@ -8,6 +8,7 @@ Public domain/CC0 cause who cares, there's literally nothing of novelty whatsoev
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -114,13 +115,16 @@ public sealed partial class MainForm : Form
             MemoryStream[] memStreams = new MemoryStream[rtfFiles.Length];
             try
             {
+                long totalSize = 0;
+
                 for (int i = 0; i < rtfFiles.Length; i++)
                 {
                     string f = rtfFiles[i];
                     using var fs = File.OpenRead(f);
                     byte[] array = new byte[fs.Length];
-                    fs.ReadAll(array, 0, (int)fs.Length);
+                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
                     memStreams[i] = new MemoryStream(array);
+                    totalSize += bytesRead;
                 }
 
                 var sw = new Stopwatch();
@@ -134,7 +138,9 @@ public sealed partial class MainForm : Form
                 }
 
                 sw.Stop();
-                MessageBox.Show(sw.Elapsed + "\r\n");
+                MessageBox.Show(
+                    sw.Elapsed + "\r\n" +
+                    ((totalSize / 1024) / sw.ElapsedMilliseconds).ToString(CultureInfo.CurrentCulture) + " MB/s");
             }
             finally
             {
@@ -191,6 +197,8 @@ public sealed partial class MainForm : Form
 #if true
                 ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
 
+                long totalSize = 0;
+
                 for (int i = 0; i < rtfFiles.Length; i++)
                 {
                     string f = rtfFiles[i];
@@ -198,6 +206,7 @@ public sealed partial class MainForm : Form
                     byte[] array = new byte[fs.Length];
                     int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
                     byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
+                    totalSize += byteArrays[i].Length;
                 }
 
                 var sw = new Stopwatch();
@@ -213,7 +222,9 @@ public sealed partial class MainForm : Form
                 }
 
                 sw.Stop();
-                MessageBox.Show(sw.Elapsed + "\r\n");
+                MessageBox.Show(
+                    sw.Elapsed + "\r\n" +
+                    ((totalSize / 1024) / sw.ElapsedMilliseconds).ToString(CultureInfo.CurrentCulture) + " MB/s");
 
                 return;
 #endif
