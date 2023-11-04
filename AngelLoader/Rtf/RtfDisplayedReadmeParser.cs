@@ -163,10 +163,12 @@ public sealed partial class RtfDisplayedReadmeParser
         switch (symbol.KeywordType)
         {
             case KeywordType.Property:
-                if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                return _getLangs && _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
-                    ? ChangeProperty((Property)symbol.Index, param)
-                    : RtfError.OK;
+                if (_getLangs && _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                {
+                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
+                    ChangeProperty((Property)symbol.Index, param);
+                }
+                return RtfError.OK;
             case KeywordType.Destination:
                 return symbol.Index == (int)DestinationType.Pict
                     ? HandlePict()
@@ -180,7 +182,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     ? DispatchSpecialKeyword(specialType, param)
                     : RtfError.OK;
             default:
-                //return Error.InvalidSymbolTableEntry;
+                //return RtfError.InvalidSymbolTableEntry;
                 return RtfError.OK;
         }
     }
@@ -219,14 +221,14 @@ public sealed partial class RtfDisplayedReadmeParser
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ChangeProperty(Property propertyTableIndex, int val)
+    private void ChangeProperty(Property propertyTableIndex, int val)
     {
         if (propertyTableIndex == Property.FontNum)
         {
             if (_ctx.GroupStack.CurrentInFontTable)
             {
                 _ctx.FontEntries.Add(val);
-                return RtfError.OK;
+                return;
             }
 
             // \fN supersedes \langN
@@ -267,13 +269,11 @@ public sealed partial class RtfDisplayedReadmeParser
                     }
                 }
 
-                if (val == UndefinedLanguage) return RtfError.OK;
+                if (val == UndefinedLanguage) return;
             }
         }
 
         _ctx.GroupStack.CurrentProperties[(int)propertyTableIndex] = val;
-
-        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -281,8 +281,8 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         switch (destinationType)
         {
-            // CanBeDestOrNotDest is only relevant for plaintext extraction. As we're only parsing color
-            // tables, we can just skip groups so marked.
+            // CanBeDestOrNotDest is only relevant for plaintext extraction. As we're only parsing color tables,
+            // we can just skip groups so marked.
             // TODO: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
             case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
