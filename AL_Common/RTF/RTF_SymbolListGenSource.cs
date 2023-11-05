@@ -81,7 +81,7 @@ public static partial class RTFParserCommon
 
         #endregion
 
-        new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.Bin),
+        new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
         new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
 
         // We need to do stuff with this (SYMBOL instruction)
@@ -143,8 +143,8 @@ public static partial class RTFParserCommon
         new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("blipuid", 32, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
-        new Symbol("panose", 20, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
+        new Symbol("blipuid", 32, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("panose", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
 
         #endregion
 
