@@ -11,6 +11,15 @@ namespace AngelLoader;
 [FenGenRtfDuplicateDestClass]
 public sealed partial class RtfDisplayedReadmeParser
 {
+    /*
+    The functions in here are very difficult to de-duplicate because of their call chains. Any attempt results
+    in a performance loss from extra branching at the call-site and/or passing too many params in and out or
+    something. So we auto-duplicate this code into every parser to ensure maximum possible performance.
+
+    This really is a last-resort kind of thing. It may be possible to redo the whole parser design to avoid
+    duplication and still keep perf, but for now at least this works fine.
+    */
+
     private readonly Context _ctx = new();
 
     #region Resettables
