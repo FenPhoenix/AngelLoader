@@ -88,6 +88,14 @@ public sealed partial class MainForm : Form
         }
     }
 
+    private string GetMBsString(long totalSize, long elapsedMilliseconds)
+    {
+        double megs = ((double)totalSize / 1024) / 1024;
+        double intermediate = megs / elapsedMilliseconds;
+        double finalMBs = Math.Round(intermediate * 1000, 2, MidpointRounding.AwayFromZero);
+        return finalMBs.ToString(CultureInfo.CurrentCulture) + " MB/s";
+    }
+
     private void WriteRTFToPlaintextConvertedFiles(ConversionType conversionType)
     {
         //string[] rtfFiles = File.ReadAllLines(_rtfFilesListFile);
@@ -140,7 +148,7 @@ public sealed partial class MainForm : Form
                 sw.Stop();
                 MessageBox.Show(
                     sw.Elapsed + "\r\n" +
-                    ((totalSize / 1024) / sw.ElapsedMilliseconds).ToString(CultureInfo.CurrentCulture) + " MB/s");
+                    GetMBsString(totalSize, sw.ElapsedMilliseconds));
             }
             finally
             {
@@ -224,7 +232,7 @@ public sealed partial class MainForm : Form
                 sw.Stop();
                 MessageBox.Show(
                     sw.Elapsed + "\r\n" +
-                    ((totalSize / 1024) / sw.ElapsedMilliseconds).ToString(CultureInfo.CurrentCulture) + " MB/s");
+                    GetMBsString(totalSize, sw.ElapsedMilliseconds));
 
                 return;
 #endif
