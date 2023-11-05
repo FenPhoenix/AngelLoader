@@ -347,7 +347,7 @@ public static partial class RTFParserCommon
         /* Command-line: gperf --output-file='c:\\gperfOutputFile.txt' -t 'c:\\gperfFormatFile.txt'  */
         /* Computed positions: -k'1-3,$' */
 
-        //private const int TOTAL_KEYWORDS = 80;
+        //private const int TOTAL_KEYWORDS = 81;
         //private const int MIN_WORD_LENGTH = 1;
         private const int MAX_WORD_LENGTH = 18;
         //private const int MIN_HASH_VALUE = 1;
@@ -366,7 +366,7 @@ public static partial class RTFParserCommon
             184, 184, 184, 184, 184, 184, 184, 184, 184, 184,
             184, 184, 184, 184, 184, 184, 184, 184, 184, 184,
             184, 184, 50, 184, 184, 184, 184, 0, 20, 15,
-            25, 0, 5, 80, 0, 0, 184, 0, 65, 85,
+            25, 0, 5, 80, 0, 0, 50, 0, 65, 85,
             20, 5, 0, 25, 0, 25, 10, 65, 0, 0,
             45, 0, 184, 35, 184, 30, 15, 184, 184, 184,
             184, 184, 184, 184, 184, 184, 184, 184, 184, 184,
@@ -432,7 +432,7 @@ public static partial class RTFParserCommon
             new Symbol("header", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
 // Entry 55
             new Symbol("headerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-// Entry 75
+// Entry 76
             new Symbol("row", 0, false, KeywordType.Character, '\n'),
             null, null,
 // Entry 7
@@ -516,7 +516,7 @@ public static partial class RTFParserCommon
             null,
 // Entry 49
             new Symbol("ftncn", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-// Entry 78
+// Entry 79
             new Symbol("}", 0, false, KeywordType.Character, '}'),
 // Entry 35
             new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
@@ -529,7 +529,7 @@ public static partial class RTFParserCommon
 // Entry 74
             new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
             null,
-// Entry 77
+// Entry 78
             new Symbol("{", 0, false, KeywordType.Character, '{'),
 // Entry 54
             new Symbol("headerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
@@ -539,7 +539,9 @@ public static partial class RTFParserCommon
             null, null, null,
 // Entry 38
             new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-            null, null, null, null, null,
+// Entry 75
+            new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            null, null, null, null,
 // Entry 46
             new Symbol("footerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
             null,
@@ -556,7 +558,7 @@ public static partial class RTFParserCommon
 // Entry 11
             new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
             null, null, null,
-// Entry 79
+// Entry 80
             new Symbol("\\", 0, false, KeywordType.Character, '\\'),
 // Entry 6
             new Symbol("fonttbl", 0, false, KeywordType.Special, (int)SpecialType.FontTable),
@@ -599,7 +601,7 @@ public static partial class RTFParserCommon
 // Entry 22
             new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
             null, null, null, null, null, null,
-// Entry 76
+// Entry 77
             new Symbol("cell", 0, false, KeywordType.Character, ' '),
             null, null, null, null, null, null, null, null,
 // Entry 40

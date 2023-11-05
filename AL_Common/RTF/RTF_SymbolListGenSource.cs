@@ -142,6 +142,7 @@ public static partial class RTFParserCommon
         new Symbol("passwordhash", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
 
         #endregion
 
