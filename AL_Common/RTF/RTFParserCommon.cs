@@ -472,7 +472,7 @@ public static partial class RTFParserCommon
             new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
             null,
 // Entry 77
-            new Symbol("panose", 20, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
+            new Symbol("panose", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
 // Entry 1
             new Symbol("pc", 437, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
 // Entry 15
@@ -514,7 +514,7 @@ public static partial class RTFParserCommon
 // Entry 75
             new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
 // Entry 30
-            new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.Bin),
+            new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
             null, null,
 // Entry 38
             new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
@@ -597,7 +597,7 @@ public static partial class RTFParserCommon
 // Entry 26
             new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
 // Entry 76
-            new Symbol("blipuid", 32, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
+            new Symbol("blipuid", 32, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
             null, null, null, null, null, null, null, null,
 // Entry 31
             new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
@@ -863,7 +863,7 @@ public static partial class RTFParserCommon
         CodePage,
         UnicodeChar,
         HexEncodedChar,
-        Bin,
+        SkipNumberOfBytes,
         SkipDest,
         ColorTable
     }
@@ -907,8 +907,7 @@ public static partial class RTFParserCommon
         /// </summary>
         CanBeDestOrNotDest,
         Skip,
-        SkippableHex,
-        SkipNumberOfBytes
+        SkippableHex
     }
 
     private const int _propertiesLen = 4;

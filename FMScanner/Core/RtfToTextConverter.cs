@@ -1028,42 +1028,30 @@ public sealed partial class RtfToTextConverter
                 }
                 return RtfError.OK;
             case KeywordType.Destination:
-                if (symbol.Index == (int)DestinationType.SkippableHex)
-                {
-                    return HandleSkippableHexData();
-                }
-                if (symbol.Index == (int)DestinationType.SkipNumberOfBytes)
-                {
-                    CurrentPos += symbol.DefaultParam;
-                    return RtfError.OK;
-                }
-                else
-                {
-                    return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                return symbol.Index == (int)DestinationType.SkippableHex
+                    ? HandleSkippableHexData()
+                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
-                }
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
-                       specialType == SpecialType.Bin
-                    ? DispatchSpecialKeyword(specialType, param)
+                       specialType == SpecialType.SkipNumberOfBytes
+                    ? DispatchSpecialKeyword(specialType, symbol, param)
                     : RtfError.OK;
             default:
                 return RtfError.InvalidSymbolTableEntry;
         }
     }
 
-    private RtfError DispatchSpecialKeyword(SpecialType specialType, int param)
+    private RtfError DispatchSpecialKeyword(SpecialType specialType, Symbol symbol, int param)
     {
         switch (specialType)
         {
-            case SpecialType.Bin:
-                if (param > 0)
-                {
-                    CurrentPos += param;
-                    if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
-                }
+            case SpecialType.SkipNumberOfBytes:
+                if (symbol.UseDefaultParam) param = symbol.DefaultParam;
+                CurrentPos += param;
+                if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
                 break;
             case SpecialType.HexEncodedChar:
             {
