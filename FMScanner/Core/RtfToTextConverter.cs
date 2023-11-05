@@ -1028,11 +1028,21 @@ public sealed partial class RtfToTextConverter
                 }
                 return RtfError.OK;
             case KeywordType.Destination:
-                return symbol.Index == (int)DestinationType.SkippableHex
-                    ? HandleSkippableHexData()
-                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                if (symbol.Index == (int)DestinationType.SkippableHex)
+                {
+                    return HandleSkippableHexData();
+                }
+                if (symbol.Index == (int)DestinationType.SkipNumberOfBytes)
+                {
+                    CurrentPos += symbol.DefaultParam;
+                    return RtfError.OK;
+                }
+                else
+                {
+                    return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
+                }
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||

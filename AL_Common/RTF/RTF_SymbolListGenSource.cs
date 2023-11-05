@@ -143,6 +143,8 @@ public static partial class RTFParserCommon
         new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
         new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+        new Symbol("blipuid", 32, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
+        new Symbol("panose", 20, true, KeywordType.Destination, (int)DestinationType.SkipNumberOfBytes),
 
         #endregion
 
