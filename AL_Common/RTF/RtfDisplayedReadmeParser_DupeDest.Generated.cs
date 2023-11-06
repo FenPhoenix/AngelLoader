@@ -108,12 +108,8 @@ public sealed partial class RtfDisplayedReadmeParser
                 // Parse param in real-time to avoid doing a second loop over
                 for (int i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
                 {
-                    param += ch - '0';
-                    param *= 10;
+                    param = (param * 10) + (ch - '0');
                 }
-                // Undo the last multiply just one time to avoid checking if we should do it every time through
-                // the loop
-                param /= 10;
 
                 param = BranchlessConditionalNegate(param, negateParam);
             }
