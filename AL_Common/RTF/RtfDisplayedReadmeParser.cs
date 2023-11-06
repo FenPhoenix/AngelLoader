@@ -2,12 +2,11 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AL_Common;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
-namespace AngelLoader;
+namespace AL_Common;
 
 // @DarkModeNote(RtfColorTableParser):
 // We use a full parser here because rather than simply replacing all byte sequences with another, here we
@@ -24,7 +23,7 @@ public sealed partial class RtfDisplayedReadmeParser
     private bool _getColorTable;
     private bool _getLangs;
 
-    internal sealed class LangItem
+    public sealed class LangItem
     {
         private static int GetDigitsUpTo5(int number) =>
             number <= 9 ? 1 :
@@ -33,11 +32,11 @@ public sealed partial class RtfDisplayedReadmeParser
             number <= 9999 ? 4 :
             5;
 
-        internal int Index;
-        internal readonly int CodePage;
-        internal readonly int DigitsCount;
+        public int Index;
+        public readonly int CodePage;
+        public readonly int DigitsCount;
 
-        internal LangItem(int index, int codePage)
+        public LangItem(int index, int codePage)
         {
             Index = index;
             CodePage = codePage;
@@ -52,7 +51,7 @@ public sealed partial class RtfDisplayedReadmeParser
     #region Public API
 
     [PublicAPI]
-    internal (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
+    public (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
     GetData(ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try

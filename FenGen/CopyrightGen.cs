@@ -68,12 +68,16 @@ internal static class CopyrightGen
 
     private static void GenLicenses()
     {
-        string gitSolutionLicenseFile = Path.Combine(Core.ALSolutionPath, "LICENSE");
-        string gitALProjectLicenseFile = Path.Combine(Core.ALProjectPath, "LICENSE");
+        string solutionLicenseFile = Path.Combine(Core.ALSolutionPath, "LICENSE");
+        string alProjectLicenseFile = Path.Combine(Core.ALProjectPath, "LICENSE");
+        string alCommonLicenseFile = Path.Combine(Core.ALCommonProjectPath, "LICENSE");
+        string fenGenLicenseFile = Path.Combine(Core.FenGenProjectPath, "LICENSE");
         string distLicenseFile = Path.Combine(Core.ALSolutionPath, "BinReleaseOnly", "Licenses", "AngelLoader license.txt");
 
-        File.WriteAllLines(gitSolutionLicenseFile, MitLicenseLines);
-        File.WriteAllLines(gitALProjectLicenseFile, MitLicenseLines);
+        File.WriteAllLines(solutionLicenseFile, MitLicenseLines);
+        File.WriteAllLines(alProjectLicenseFile, MitLicenseLines);
+        File.WriteAllLines(alCommonLicenseFile, MitLicenseLines);
+        File.WriteAllLines(fenGenLicenseFile, MitLicenseLines);
 
         var distLicenseLines = new List<string>();
         distLicenseLines.AddRange(LicenseTopLines);

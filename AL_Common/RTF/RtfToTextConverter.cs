@@ -67,12 +67,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AL_Common;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
-namespace FMScanner;
+namespace AL_Common;
 
 public sealed partial class RtfToTextConverter
 {
@@ -1977,7 +1976,7 @@ public sealed partial class RtfToTextConverter
     #region Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static string CreateStringFromChars(ListFast<char> chars) => new string(chars.ItemsArray, 0, chars.Count);
+    private static string CreateStringFromChars(ListFast<char> chars) => new(chars.ItemsArray, 0, chars.Count);
 
     /// <summary>
     /// If <paramref name="codePage"/> is in the cached list, returns the Encoding associated with it;

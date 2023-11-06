@@ -636,7 +636,7 @@ public static partial class RTFParserCommon
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
 // Entry 39
-            new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip)
         };
 
         // It seems like directly looking up a char in this table would be faster, but it measures the same to
@@ -689,7 +689,7 @@ public static partial class RTFParserCommon
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Symbol? LookUpControlWord(char[] keyword, int len)
+        public Symbol? LookUpControlWord(char[] keyword, int len)
         {
             // Min word length is 1, and we're guaranteed to always be at least 1, so no need to check for >= min
             if (len <= MAX_WORD_LENGTH)

@@ -48,7 +48,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\AL_Common\AL_Common.csproj" />
-    <ProjectReference Include="..\..\..\FMScanner\FMScanner.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
 
-namespace AngelLoader;
+namespace AL_Common;
 
 [FenGenRtfDuplicateDestClass]
 public sealed partial class RtfDisplayedReadmeParser

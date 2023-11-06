@@ -6,7 +6,7 @@ using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
 
-namespace FMScanner;
+namespace AL_Common;
 
 [FenGenRtfDuplicateSourceClass]
 public sealed partial class RtfToTextConverter
