@@ -1220,7 +1220,7 @@ public sealed partial class RtfToTextConverter
             }
 
             // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx.GroupStack.CurrentSymbolFont > SymbolFont.None)
+            if (_ctx.GroupStack.CurrentSymbolFont is > SymbolFont.None and < SymbolFont.Unset)
             {
 #pragma warning disable 8509
                 uint[] fontTable = _ctx.GroupStack.CurrentSymbolFont switch
