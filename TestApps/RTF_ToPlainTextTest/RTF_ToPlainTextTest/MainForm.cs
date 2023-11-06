@@ -23,9 +23,8 @@ public sealed partial class MainForm : Form
     private readonly string _destDirBase = @"C:\rtf_plaintext_test";
     private readonly string _destDirRTFBox;
     private readonly string _destDirCustom;
-    private readonly string _rtfFilesListFile;
-    //private readonly string _originalRTFSetDir;
     private readonly string _originalFullSetFromCacheDir;
+    private readonly string _originalFullSetFromCacheDir_NoImages;
     private readonly string _alCacheDir;
 
     public MainForm()
@@ -34,20 +33,17 @@ public sealed partial class MainForm : Form
 
         _destDirRTFBox = Path.Combine(_destDirBase, "RichTextBox");
         _destDirCustom = Path.Combine(_destDirBase, "Custom");
-        _rtfFilesListFile = Path.Combine(_destDirBase, "rtfFilesList.txt");
-        //_originalRTFSetDir = Path.Combine(_destDirBase, "Original_RTF_Set");
-        //_originalFullSetFromCacheDir = Path.Combine(_destDirBase, "Original_RTF_Set");
         _originalFullSetFromCacheDir = Path.Combine(_destDirBase, "Original_Full_Set_From_Cache");
+        _originalFullSetFromCacheDir_NoImages = Path.Combine(_destDirBase, "Original_Full_Set_From_Cache (no images)");
         _alCacheDir = @"C:\AngelLoader\Data\FMsCache";
 
         Directory.CreateDirectory(_destDirRTFBox);
         Directory.CreateDirectory(_destDirCustom);
     }
 
-    private enum ConversionType
+    private void MainForm_Shown(object sender, EventArgs e)
     {
-        RichTextBox,
-        Custom
+        ConvertOnlyWithCustomButton.Focus();
     }
 
     private void CopySet()
@@ -88,53 +84,67 @@ public sealed partial class MainForm : Form
         }
     }
 
-    private string GetMBsString(long totalSize, long elapsedMilliseconds)
+    private string GetOriginalSetFromCacheDir(bool write)
     {
-        double megs = ((double)totalSize / 1024) / 1024;
+        bool enabled = write ? NoImagesSet_WriteCheckBox.Checked : NoImagesSet_ConvertOnlyCheckBox.Checked;
+        return enabled ? _originalFullSetFromCacheDir_NoImages : _originalFullSetFromCacheDir;
+    }
+
+    private static string GetMBsString(long totalSize, long elapsedMilliseconds)
+    {
+        double megs = (double)totalSize / 1024 / 1024;
         double intermediate = megs / elapsedMilliseconds;
         double finalMBs = Math.Round(intermediate * 1000, 2, MidpointRounding.AwayFromZero);
         return finalMBs.ToString(CultureInfo.CurrentCulture) + " MB/s";
     }
 
-    private void WriteRTFToPlaintextConvertedFiles(ConversionType conversionType)
+    private void WritePlaintextFile(string f, string[] lines, string destDir)
     {
-        //string[] rtfFiles = File.ReadAllLines(_rtfFilesListFile);
+        string ff = f.Substring(GetOriginalSetFromCacheDir(write: true).Length).Replace("\\", "__").Replace("/", "__");
+        ff = Path.GetFileNameWithoutExtension(ff) + "_rtf_to_plaintext.txt";
+        File.WriteAllLines(Path.Combine(destDir, ff), lines);
+    }
 
-        string[] rtfFiles = Directory.GetFiles(_originalFullSetFromCacheDir);
-
-        void WritePlaintextFile(string f, string[] lines, string destDir)
+    private void ClearPlainTextDir(bool rtf)
+    {
+        string dir = rtf ? _destDirRTFBox : _destDirCustom;
+        foreach (string f in Directory.GetFiles(_destDirRTFBox, "*", SearchOption.TopDirectoryOnly))
         {
-            string ff = f.Substring(_originalFullSetFromCacheDir.Length).Replace("\\", "__").Replace("/", "__");
-            ff = Path.GetFileNameWithoutExtension(ff) + "_rtf_to_plaintext.txt";
-            //string ff = Path.GetFileNameWithoutExtension(f) + "_rtf_to_plaintext.txt";
-            File.WriteAllLines(Path.Combine(destDir, ff), lines);
-            //File.WriteAllLines(Path.Combine(destDir, ff), lines,Encoding.Unicode);
+            File.Delete(f);
         }
+    }
 
-        if (conversionType == ConversionType.RichTextBox)
+    private static void ShowPerfResults(Stopwatch sw, long totalSize)
+    {
+        MessageBox.Show(
+            sw.Elapsed + "\r\n" +
+            GetMBsString(totalSize, sw.ElapsedMilliseconds));
+    }
+
+    private void HandleAllWithRichTextBox(bool write)
+    {
+        string[] rtfFiles = Directory.GetFiles(GetOriginalSetFromCacheDir(write));
+        if (write) ClearPlainTextDir(rtf: true);
+
+        using var rtfBox = new RichTextBox();
+
+        MemoryStream[] memStreams = new MemoryStream[rtfFiles.Length];
+        try
         {
-            foreach (string f in Directory.GetFiles(_destDirRTFBox, "*", SearchOption.TopDirectoryOnly))
+            long totalSize = 0;
+
+            for (int i = 0; i < rtfFiles.Length; i++)
             {
-                File.Delete(f);
+                string f = rtfFiles[i];
+                using var fs = File.OpenRead(f);
+                byte[] array = new byte[fs.Length];
+                int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+                memStreams[i] = new MemoryStream(array);
+                totalSize += bytesRead;
             }
 
-            using var rtfBox = new RichTextBox();
-
-            MemoryStream[] memStreams = new MemoryStream[rtfFiles.Length];
-            try
+            if (write)
             {
-                long totalSize = 0;
-
-                for (int i = 0; i < rtfFiles.Length; i++)
-                {
-                    string f = rtfFiles[i];
-                    using var fs = File.OpenRead(f);
-                    byte[] array = new byte[fs.Length];
-                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-                    memStreams[i] = new MemoryStream(array);
-                    totalSize += bytesRead;
-                }
-
                 var sw = new Stopwatch();
                 sw.Start();
 
@@ -146,193 +156,152 @@ public sealed partial class MainForm : Form
                 }
 
                 sw.Stop();
-                MessageBox.Show(
-                    sw.Elapsed + "\r\n" +
-                    GetMBsString(totalSize, sw.ElapsedMilliseconds));
-            }
-            finally
-            {
-                foreach (MemoryStream ms in memStreams)
-                {
-                    ms.Dispose();
-                }
-            }
-        }
-        else
-        {
-            foreach (string f in Directory.GetFiles(_destDirCustom, "*", SearchOption.TopDirectoryOnly))
-            {
-                File.Delete(f);
-            }
-
-            //bool one = true;
-            bool one = false;
-
-            if (one)
-            {
-                var rtfreader = new RtfToTextConverter();
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_theburningbedlam__FMInfo.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-08-31_Bathory_campaign_ne__info.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2009-06-22_WickedRelicsV1_1__Wicked Relics.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-09-13_WC_SneakingthroughV__Sneaking through Venice.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-07-25_DarkMessiah_bassilu__DarkMessiah.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Hammered_EnglishV1_0__FmInfo-en.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-01-25_c4burricksheadinnv2__entry.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-04-08_King'sStory_KS__KSreadme.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__7SoM_v11__Seven Shades Readme.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2000-12-30_Uneaffaireenor__Readme.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!custom_testing.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-03-09_JourneyIntoTheUnder__A Journey Into The Underdark.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-10-17_Ack!TheresaZombiein__Game_Info.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Cave_v1__readme.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__VaultChronicles__vcse_de.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-02-29_c5Summit_The__summit.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
-                string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_An_Enigmatic_Treasure___TDP20AC_An_Enigmatic_Treasure_With_A_Recondite_Discovery.rtf";
-                //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__UpsideDown__Readme.rtf";
-                using var fs = File.OpenRead(file);
-                byte[] array = new byte[fs.Length];
-                int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-                (_, string text) = rtfreader.Convert(new ArrayWithLength<byte>(array, bytesRead));
-                WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                ShowPerfResults(sw, totalSize);
             }
             else
             {
-                var rtfReader = new RtfToTextConverter();
-
-#if true
-                ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
-
-                long totalSize = 0;
-
-                for (int i = 0; i < rtfFiles.Length; i++)
-                {
-                    string f = rtfFiles[i];
-                    using var fs = File.OpenRead(f);
-                    byte[] array = new byte[fs.Length];
-                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-                    byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
-                    totalSize += byteArrays[i].Length;
-                }
-
                 var sw = new Stopwatch();
                 sw.Start();
 
-                for (int i = 0; i < byteArrays.Length; i++)
+                for (int i = 0; i < memStreams.Length; i++)
                 {
-                    string f = rtfFiles[i];
-                    Trace.WriteLine(f);
-                    ArrayWithLength<byte> array = byteArrays[i];
-                    (_, string text) = rtfReader.Convert(array);
-                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                    rtfBox.LoadFile(memStreams[i], RichTextBoxStreamType.RichText);
+                    _ = rtfBox.Text;
                 }
 
                 sw.Stop();
-                MessageBox.Show(
-                    sw.Elapsed + "\r\n" +
-                    GetMBsString(totalSize, sw.ElapsedMilliseconds));
-
-                return;
-#endif
-                foreach (string f in rtfFiles)
-                {
-                    Trace.WriteLine(f);
-                    using var fs = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.None, 81920);
-                    byte[] array = new byte[fs.Length];
-                    int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-                    (_, string text) = rtfReader.Convert(new ArrayWithLength<byte>(array, bytesRead));
-                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
-                }
-
-                //Trace.WriteLine(rtfReader._stopwatch.Elapsed);
-                //MessageBox.Show(rtfReader._stopwatch.Elapsed.ToString());
-                //Trace.WriteLine("-----------");
-                //Trace.WriteLine(rtfReader._returnSB.Capacity);
+                ShowPerfResults(sw, totalSize);
             }
-
-            //var mono_rtfBox = new RichTextBox_Custom();
-            //foreach (string f in rtfFiles)
-            //{
-            //    mono_rtfBox.LoadFile(f, RichTextBoxStreamType.RichText);
-            //    WritePlaintextFile(f, mono_rtfBox.Lines, _destDirCustom);
-            //}
-
-            //foreach (string f in rtfFiles)
-            //{
-            //    if (f.Contains("Forgotten Tomb"))
-            //    {
-            //        Debugger.Break();
-            //    }
-            //    try
-            //    {
-            //        var ConversionText = File.ReadAllText(f);
-            //        IRtfGroup rtfStructure = RtfParserTool.Parse(ConversionText);
-            //        RtfTextConverter textConverter = new RtfTextConverter();
-            //        RtfInterpreterTool.Interpret(rtfStructure, textConverter);
-            //        //RtfInterpreterTool.Interpret("",new IRtfInterpreterListener[1]);
-            //        //textBox.Text = textConverter.PlainText;
-            //    }
-            //    catch (Exception exception)
-            //    {
-            //        Trace.WriteLine(f);
-            //        Trace.WriteLine("Error " + exception.Message);
-            //        MessageBox.Show(this, "Error " + exception.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    }
-            //}
+        }
+        finally
+        {
+            foreach (MemoryStream ms in memStreams)
+            {
+                ms.Dispose();
+            }
         }
     }
 
-    private void ConvertWithRichTextBoxButton_Click(object sender, EventArgs e) => WriteRTFToPlaintextConvertedFiles(ConversionType.RichTextBox);
-
-    private void ConvertWithCustomButton_Click(object sender, EventArgs e)
+    private void HandleAllWithCustom(bool write)
     {
-#if true
-        WriteRTFToPlaintextConvertedFiles(ConversionType.Custom);
-#else
-            var rtfReader = new RtfToTextConverter();
+        string[] rtfFiles = Directory.GetFiles(GetOriginalSetFromCacheDir(write));
+        if (write) ClearPlainTextDir(rtf: false);
 
-            string[] rtfFiles = Directory.GetFiles(_originalFullSetFromCacheDir);
-            foreach (string f in rtfFiles)
+        var rtfReader = new RtfToTextConverter();
+
+        ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
+
+        long totalSize = 0;
+
+        for (int i = 0; i < rtfFiles.Length; i++)
+        {
+            string f = rtfFiles[i];
+            using var fs = File.OpenRead(f);
+            byte[] array = new byte[fs.Length];
+            int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+            byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
+            totalSize += byteArrays[i].Length;
+        }
+
+        if (write)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < byteArrays.Length; i++)
             {
+                string f = rtfFiles[i];
                 Trace.WriteLine(f);
-                using var stream = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.None, 81920);
-                (_, _) = rtfReader.Convert(stream, stream.Length);
+                ArrayWithLength<byte> array = byteArrays[i];
+                (_, string text) = rtfReader.Convert(array);
+                WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
             }
-#endif
+
+            sw.Stop();
+            ShowPerfResults(sw, totalSize);
+        }
+        else
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < byteArrays.Length; i++)
+            {
+                _ = rtfReader.Convert(byteArrays[i]);
+            }
+
+            sw.Stop();
+            ShowPerfResults(sw, totalSize);
+        }
+    }
+
+    private void HandleOneWithCustom(bool write)
+    {
+        if (write) ClearPlainTextDir(rtf: false);
+
+        var rtfreader = new RtfToTextConverter();
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_theburningbedlam__FMInfo.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-08-31_Bathory_campaign_ne__info.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2009-06-22_WickedRelicsV1_1__Wicked Relics.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-09-13_WC_SneakingthroughV__Sneaking through Venice.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-07-25_DarkMessiah_bassilu__DarkMessiah.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Hammered_EnglishV1_0__FmInfo-en.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-01-25_c4burricksheadinnv2__entry.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-04-08_King'sStory_KS__KSreadme.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__7SoM_v11__Seven Shades Readme.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2000-12-30_Uneaffaireenor__Readme.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!custom_testing.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-03-09_JourneyIntoTheUnder__A Journey Into The Underdark.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-10-17_Ack!TheresaZombiein__Game_Info.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Cave_v1__readme.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__VaultChronicles__vcse_de.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-06-11_WhenStill_1_1__FMInfo-fr.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2004-02-29_c5Summit_The__summit.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_2.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2013-08-08_The_FavourND__The Favour - NewDark.rtf";
+        string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_An_Enigmatic_Treasure___TDP20AC_An_Enigmatic_Treasure_With_A_Recondite_Discovery.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__UpsideDown__Readme.rtf";
+        using var fs = File.OpenRead(file);
+        byte[] array = new byte[fs.Length];
+        int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
+        (_, string text) = rtfreader.Convert(new ArrayWithLength<byte>(array, bytesRead));
+        if (write)
+        {
+            WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+        }
+    }
+
+    private void ConvertAndWriteWithRichTextBoxButton_Click(object sender, EventArgs e)
+    {
+        HandleAllWithRichTextBox(write: true);
+    }
+
+    private void ConvertAndWriteWithCustomButton_Click(object sender, EventArgs e)
+    {
+        HandleAllWithCustom(write: true);
+    }
+
+    private void ConvertOnlyWithRichTextBoxButton_Click(object sender, EventArgs e)
+    {
+        HandleAllWithRichTextBox(write: false);
+    }
+
+    private void ConvertOnlyWithCustomButton_Click(object sender, EventArgs e)
+    {
+        HandleAllWithCustom(write: false);
+    }
+
+    private void WriteOneButton_Click(object sender, EventArgs e)
+    {
+        HandleOneWithCustom(write: true);
+    }
+
+    private void ConvertOneButton_Click(object sender, EventArgs e)
+    {
+        HandleOneWithCustom(write: false);
     }
 
     private void Test1Button_Click(object sender, EventArgs e)
     {
-        //CopySet();
-        return;
-
-        var dict = new Dictionary<string, bool>();
-        var files = Directory.GetFiles(_originalFullSetFromCacheDir, "*", SearchOption.TopDirectoryOnly);
-        foreach (var f in files)
-        {
-            using (var sr = new StreamReader(f, Encoding.ASCII))
-            {
-                string content = sr.ReadToEnd();
-                bool hasAnsi = content.Contains(@"\ansi");
-                dict.Add(Path.GetFileName(f), hasAnsi);
-            }
-        }
-
-        using (var sw = new StreamWriter(@"C:\rtf_has_ansi.txt", append: false))
-        {
-            foreach (var item in dict)
-            {
-                sw.WriteLine(item.Key + @": has \ansi: " + item.Value);
-            }
-        }
-
-        //var mono_rtfBox = new System_Mono.Windows.Forms.RichTextBox();
-        //{
-        //    mono_rtfBox.LoadFile(@"C:\nonexistent.rtf", System_Mono.Windows.Forms.RichTextBoxStreamType.RichText);
-        //    var text = mono_rtfBox.Text;
-        //    var lines = mono_rtfBox.Lines;
-        //}
     }
 }
