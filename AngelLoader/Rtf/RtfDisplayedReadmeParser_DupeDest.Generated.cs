@@ -71,7 +71,7 @@ public sealed partial class RtfDisplayedReadmeParser
         int negateParam = 0;
         int param = 0;
 
-        if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
+        char ch = (char)_rtfBytes[CurrentPos++];
 
         _ctx.Keyword.ClearFast();
 
@@ -89,18 +89,15 @@ public sealed partial class RtfDisplayedReadmeParser
         }
 
         int i;
-        bool eof = false;
-        for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, eof = !GetNextChar(out ch))
+        for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, ch = (char)_rtfBytes[CurrentPos++])
         {
-            if (eof) return RtfError.EndOfFile;
             _ctx.Keyword.AddFast(ch);
         }
-        if (i > KeywordMaxLen) return RtfError.KeywordTooLong;
 
         if (ch == '-')
         {
             negateParam = 1;
-            if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+            ch = (char)_rtfBytes[CurrentPos++];
         }
 
         if (ch.IsAsciiNumeric())
@@ -108,16 +105,14 @@ public sealed partial class RtfDisplayedReadmeParser
             hasParam = true;
 
             // Parse param in real-time to avoid doing a second loop over
-            for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, eof = !GetNextChar(out ch))
+            for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
             {
-                if (eof) return RtfError.EndOfFile;
                 param += ch - '0';
                 param *= 10;
             }
             // Undo the last multiply just one time to avoid checking if we should do it every time through
             // the loop
             param /= 10;
-            if (i > ParamMaxLen) return RtfError.ParameterTooLong;
 
             param = BranchlessConditionalNegate(param, negateParam);
         }
@@ -174,8 +169,7 @@ public sealed partial class RtfDisplayedReadmeParser
                         // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
                         // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.
                         int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos);
-                        if (closingBraceIndex == -1) return RtfError.EndOfFile;
-                        CurrentPos = closingBraceIndex;
+                        CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                     }
                     break;
             }

@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-11-05   ?           1185MB/s (x86) / 1525MB/s (x64)
 2023-11-04   ?           1109MB/s (x86) / 1360MB/s (x64)
 2023-11-04   ?           906MB/s (x86) / 1101MB/s (x64)
 2023-11-03   ?           828MB/s (x86) / 1012MB/s (x64)
@@ -856,7 +857,7 @@ public sealed partial class RtfToTextConverter
     counts as the last used one. Also, we need the last used font WHOSE CODEPAGE IS 42, not the last used font
     period. So we have to track only the charset 2/codepage 42 ones. Globally. Truly bizarre.
     */
-    private int _lastUsedFontWithCodePage42 = -1;
+    private int _lastUsedFontWithCodePage42 = NoFontNumber;
 
     // Highest measured was 56192
     private readonly ListFast<char> _plainText = new(ByteSize.KB * 60);
@@ -940,7 +941,7 @@ public sealed partial class RtfToTextConverter
         _fldinstSymbolNumber.ClearFast();
         _fldinstSymbolFontName.ClearFast();
 
-        _lastUsedFontWithCodePage42 = -1;
+        _lastUsedFontWithCodePage42 = NoFontNumber;
 
         #endregion
 
@@ -1012,35 +1013,45 @@ public sealed partial class RtfToTextConverter
         }
 
         _skipDestinationIfUnknown = false;
-        switch (symbol.KeywordType)
+
+        if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
         {
-            case KeywordType.Property:
-                if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
-                {
+            switch (symbol.KeywordType)
+            {
+                case KeywordType.Property:
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     ChangeProperty((Property)symbol.Index, param);
-                }
-                return RtfError.OK;
-            case KeywordType.Character:
-                if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
-                {
+                    return RtfError.OK;
+                case KeywordType.Character:
                     ParseChar((char)symbol.Index);
-                }
-                return RtfError.OK;
-            case KeywordType.Destination:
-                return symbol.Index == (int)DestinationType.SkippableHex
-                    ? HandleSkippableHexData()
-                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
-                        ? ChangeDestination((DestinationType)symbol.Index)
+                    return RtfError.OK;
+                case KeywordType.Destination:
+                    return symbol.Index == (int)DestinationType.SkippableHex
+                        ? HandleSkippableHexData()
+                        : ChangeDestination((DestinationType)symbol.Index);
+                case KeywordType.Special:
+                    var specialType = (SpecialType)symbol.Index;
+                    return DispatchSpecialKeyword(specialType, symbol, param);
+                default:
+                    return RtfError.InvalidSymbolTableEntry;
+            }
+        }
+        else
+        {
+            switch (symbol.KeywordType)
+            {
+                case KeywordType.Destination:
+                    return symbol.Index == (int)DestinationType.SkippableHex
+                        ? HandleSkippableHexData()
                         : RtfError.OK;
-            case KeywordType.Special:
-                var specialType = (SpecialType)symbol.Index;
-                return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
-                       specialType == SpecialType.SkipNumberOfBytes
-                    ? DispatchSpecialKeyword(specialType, symbol, param)
-                    : RtfError.OK;
-            default:
-                return RtfError.InvalidSymbolTableEntry;
+                case KeywordType.Special:
+                    var specialType = (SpecialType)symbol.Index;
+                    return specialType == SpecialType.SkipNumberOfBytes
+                        ? DispatchSpecialKeyword(specialType, symbol, param)
+                        : RtfError.OK;
+                default:
+                    return RtfError.OK;
+            }
         }
     }
 
@@ -1051,7 +1062,6 @@ public sealed partial class RtfToTextConverter
             case SpecialType.SkipNumberOfBytes:
                 if (symbol.UseDefaultParam) param = symbol.DefaultParam;
                 CurrentPos += param;
-                if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
                 break;
             case SpecialType.HexEncodedChar:
             {
@@ -1085,10 +1095,8 @@ public sealed partial class RtfToTextConverter
             case SpecialType.UnicodeChar:
             {
                 SkipUnicodeFallbackChars();
-                RtfError error = UnicodeBufferAdd(param);
-                if (error != RtfError.OK) return error;
-                error = HandleUnicodeRun();
-                if (error != RtfError.OK) return error;
+                UnicodeBufferAdd(param);
+                HandleUnicodeRun();
                 break;
             }
             case SpecialType.ColorTable:
@@ -1102,7 +1110,8 @@ public sealed partial class RtfToTextConverter
                 break;
             }
             default:
-                return HandleSpecialTypeFont(_ctx, specialType, param);
+                HandleSpecialTypeFont(_ctx, specialType, param);
+                return RtfError.OK;
         }
 
         return RtfError.OK;
@@ -1216,8 +1225,8 @@ public sealed partial class RtfToTextConverter
             // right here. It's fast if we have a font num for this group, and if not, it'll only run once
             // anyway, so we shouldn't take much of a speed hit.
             if (_ctx.GroupStack.CurrentSymbolFont == SymbolFont.None &&
-                _ctx.GroupStack.CurrentProperties[(int)Property.FontNum] == -1 &&
-                _ctx.Header.DefaultFontNum > -1 &&
+                _ctx.GroupStack.CurrentProperties[(int)Property.FontNum] == NoFontNumber &&
+                _ctx.Header.DefaultFontNum > NoFontNumber &&
                 _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
             {
                 _ctx.GroupStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
@@ -1293,7 +1302,7 @@ public sealed partial class RtfToTextConverter
         }
         else
         {
-            return RtfError.InvalidHex;
+            return ResetBufferAndStateAndReturn();
         }
 
         nibbleCount++;
@@ -1443,81 +1452,75 @@ public sealed partial class RtfToTextConverter
 
     #region Unicode
 
-    private RtfError HandleUnicodeRun()
+    private void HandleUnicodeRun()
     {
         int rtfLength = _rtfBytes.Length;
         while (CurrentPos < rtfLength)
         {
-            char c = (char)_rtfBytes[CurrentPos++];
-            if (c == '\\')
+            char ch = (char)_rtfBytes[CurrentPos++];
+            if (ch == '\\')
             {
                 int negateParam = 0;
-                bool eof = false;
 
-                if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                ch = (char)_rtfBytes[CurrentPos++];
 
-                if (c == 'u')
+                if (ch == 'u')
                 {
-                    if (!GetNextChar(out c)) return RtfError.EndOfFile;
-                    if (c == '-')
+                    ch = (char)_rtfBytes[CurrentPos++];
+                    if (ch == '-')
                     {
                         negateParam = 1;
-                        if (!GetNextChar(out c)) return RtfError.EndOfFile;
+                        ch = (char)_rtfBytes[CurrentPos++];
                     }
-                    if (c.IsAsciiNumeric())
+                    if (ch.IsAsciiNumeric())
                     {
                         int param = 0;
 
                         // Parse param in real-time to avoid doing a second loop over
                         int i;
-                        for (i = 0; i < ParamMaxLen && c.IsAsciiNumeric(); i++, eof = !GetNextChar(out c))
+                        for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
-                            if (eof) return RtfError.EndOfFile;
-                            param += c - '0';
+                            param += ch - '0';
                             param *= 10;
                         }
                         // Undo the last multiply just one time to avoid checking if we should do it every time through
                         // the loop
                         param /= 10;
-                        if (i > ParamMaxLen) return RtfError.ParameterTooLong;
 
                         param = BranchlessConditionalNegate(param, negateParam);
                         UnicodeBufferAdd(param);
-                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        CurrentPos += MinusOneIfNotSpace_8Bits(ch);
                         SkipUnicodeFallbackChars();
                     }
                     else
                     {
                         CurrentPos -= (3 + negateParam);
-                        CurrentPos += MinusOneIfNotSpace_8Bits(c);
+                        CurrentPos += MinusOneIfNotSpace_8Bits(ch);
                         ParseUnicode();
-                        return RtfError.OK;
+                        return;
                     }
                 }
                 else
                 {
                     CurrentPos -= 2;
                     ParseUnicode();
-                    return RtfError.OK;
+                    return;
                 }
             }
             else
             {
                 CurrentPos--;
                 ParseUnicode();
-                return RtfError.OK;
+                return;
             }
         }
-
-        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError UnicodeBufferAdd(int param)
+    private void UnicodeBufferAdd(int param)
     {
         // Make sure the code point is normalized before adding it to the buffer!
-        RtfError error = NormalizeUnicodePoint_HandleSymbolCharRange(param, out uint codePoint);
-        if (error != RtfError.OK) return error;
+        NormalizeUnicodePoint_HandleSymbolCharRange(param, out uint codePoint);
 
         // If our code point has been through a font translation table, it may be longer than 2 bytes.
         if (codePoint > char.MaxValue)
@@ -1536,8 +1539,6 @@ public sealed partial class RtfToTextConverter
         {
             _unicodeBuffer.Add((char)codePoint);
         }
-
-        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1656,7 +1657,7 @@ public sealed partial class RtfToTextConverter
 
         int param;
 
-        if (!GetNextChar(out char ch)) return RtfError.EndOfFile;
+        char ch = (char)_rtfBytes[CurrentPos++];
 
         #region Check for SYMBOL instruction
 
@@ -1664,16 +1665,14 @@ public sealed partial class RtfToTextConverter
         if (ch != 'S') return RewindAndSkipGroup();
 
         int i;
-        bool eof = false;
-        for (i = 0; i < 6; i++, eof = !GetNextChar(out ch))
+        for (i = 0; i < 6; i++, ch = (char)_rtfBytes[CurrentPos++])
         {
-            if (eof) return RtfError.EndOfFile;
             if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup();
         }
 
         #endregion
 
-        if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+        ch = (char)_rtfBytes[CurrentPos++];
 
         bool numIsHex = false;
         int negateNum = 0;
@@ -1682,7 +1681,7 @@ public sealed partial class RtfToTextConverter
 
         if (ch == '-')
         {
-            GetNextChar(out ch);
+            ch = (char)_rtfBytes[CurrentPos++];
             negateNum = 1;
         }
 
@@ -1691,10 +1690,10 @@ public sealed partial class RtfToTextConverter
         if (ch == '0' &&
             GetNextChar(out char pch) && (pch is 'x' or 'X'))
         {
-            GetNextChar(out ch);
+            ch = (char)_rtfBytes[CurrentPos++];
             if (ch == '-')
             {
-                GetNextChar(out ch);
+                ch = (char)_rtfBytes[CurrentPos++];
                 if (ch != ' ') return RewindAndSkipGroup();
                 negateNum = 1;
             }
@@ -1709,10 +1708,8 @@ public sealed partial class RtfToTextConverter
         bool alphaFound;
         for (i = 0;
              i < _fldinstSymbolNumberMaxLen && ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
-             i++, eof = !GetNextChar(out ch))
+             i++, ch = (char)_rtfBytes[CurrentPos++])
         {
-            if (eof) return RtfError.EndOfFile;
-
             if (alphaFound) alphaCharsFound = true;
 
             _fldinstSymbolNumber.Add(ch);
@@ -1755,8 +1752,7 @@ public sealed partial class RtfToTextConverter
         param = BranchlessConditionalNegate(param, negateNum);
 
         // TODO: Do we need to handle 0xF020-0xF0FF type stuff and negative values for field instructions?
-        RtfError error = NormalizeUnicodePoint(param, out uint codePoint);
-        if (error != RtfError.OK) return error;
+        NormalizeUnicodePoint(param, out uint codePoint);
 
         if (ch != ' ') return RewindAndSkipGroup();
 
@@ -1776,7 +1772,7 @@ public sealed partial class RtfToTextConverter
                 continue;
             }
 
-            if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+            ch = (char)_rtfBytes[CurrentPos++];
 
             // From the spec:
             // "Interprets text in field-argument as the value of an ANSI character."
@@ -1829,22 +1825,16 @@ public sealed partial class RtfToTextConverter
             */
             else if (ch == 'f')
             {
-                if (!GetNextChar(out ch))
-                {
-                    return RtfError.EndOfFile;
-                }
-                else if (IsSeparatorChar(ch))
+                ch = (char)_rtfBytes[CurrentPos++];
+                if (IsSeparatorChar(ch))
                 {
                     finalChars = GetCharFromCodePage(useCurrentGroupCodePage, codePoint);
                     break;
                 }
                 else if (ch == ' ')
                 {
-                    if (!GetNextChar(out ch))
-                    {
-                        return RtfError.EndOfFile;
-                    }
-                    else if (ch != '\"')
+                    ch = (char)_rtfBytes[CurrentPos++];
+                    if (ch != '\"')
                     {
                         finalChars = GetCharFromCodePage(useCurrentGroupCodePage, codePoint);
                         break;
@@ -1890,7 +1880,7 @@ public sealed partial class RtfToTextConverter
             */
             else if (ch == 'h')
             {
-                if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+                ch = (char)_rtfBytes[CurrentPos++];
                 if (IsSeparatorChar(ch)) break;
             }
             /*
@@ -1901,7 +1891,7 @@ public sealed partial class RtfToTextConverter
             */
             else if (ch == 's')
             {
-                if (!GetNextChar(out ch)) return RtfError.EndOfFile;
+                ch = (char)_rtfBytes[CurrentPos++];
                 if (ch != ' ') return RewindAndSkipGroup();
 
                 int numDigitCount = 0;
@@ -2042,7 +2032,7 @@ public sealed partial class RtfToTextConverter
         int groupFontNum = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
         int groupLang = _ctx.GroupStack.CurrentProperties[(int)Property.Lang];
 
-        if (groupFontNum == -1) groupFontNum = _ctx.Header.DefaultFontNum;
+        if (groupFontNum == NoFontNumber) groupFontNum = _ctx.Header.DefaultFontNum;
 
         _ctx.FontEntries.TryGetValue(groupFontNum, out FontEntry? fontEntry);
 
@@ -2167,7 +2157,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError NormalizeUnicodePoint_HandleSymbolCharRange(int codePoint, out uint returnCodePoint)
+    private void NormalizeUnicodePoint_HandleSymbolCharRange(int codePoint, out uint returnCodePoint)
     {
         // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
         // correct value.
@@ -2176,8 +2166,8 @@ public sealed partial class RtfToTextConverter
             codePoint += 65536;
             if (codePoint is < 0 or > ushort.MaxValue)
             {
-                returnCodePoint = 0;
-                return RtfError.InvalidUnicode;
+                returnCodePoint = _unicodeUnknown_Char;
+                return;
             }
         }
 
@@ -2205,13 +2195,13 @@ public sealed partial class RtfToTextConverter
         {
             returnCodePoint -= 0xF000;
 
-            int fontNum = _lastUsedFontWithCodePage42 > -1
+            int fontNum = _lastUsedFontWithCodePage42 > NoFontNumber
                 ? _lastUsedFontWithCodePage42
                 : _ctx.Header.DefaultFontNum;
 
             if (!_ctx.FontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
             {
-                return RtfError.OK;
+                return;
             }
 
             // We already know our code point is within bounds of the array, because the arrays also go from
@@ -2229,12 +2219,10 @@ public sealed partial class RtfToTextConverter
                     break;
             }
         }
-
-        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static RtfError NormalizeUnicodePoint(int codePoint, out uint returnCodePoint)
+    private static void NormalizeUnicodePoint(int codePoint, out uint returnCodePoint)
     {
         // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
         // correct value.
@@ -2243,14 +2231,12 @@ public sealed partial class RtfToTextConverter
             codePoint += 65536;
             if (codePoint is < 0 or > ushort.MaxValue)
             {
-                returnCodePoint = 0;
-                return RtfError.InvalidUnicode;
+                returnCodePoint = _unicodeUnknown_Char;
+                return;
             }
         }
 
         returnCodePoint = (uint)codePoint;
-
-        return RtfError.OK;
     }
 
     /// <summary>

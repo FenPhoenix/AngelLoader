@@ -52,6 +52,12 @@ public static partial class RTFParserCommon
 
     public const int UndefinedLanguage = 1024;
 
+    /// <summary>
+    /// Since font numbers can be negative, let's just use a slightly less likely value than the already unlikely
+    /// enough -1...
+    /// </summary>
+    public const int NoFontNumber = int.MinValue;
+
     #endregion
 
     #region Conversion tables
@@ -293,7 +299,7 @@ public static partial class RTFParserCommon
 
             Properties[0][(int)Property.Hidden] = 0;
             Properties[0][(int)Property.UnicodeCharSkipCount] = 1;
-            Properties[0][(int)Property.FontNum] = -1;
+            Properties[0][(int)Property.FontNum] = NoFontNumber;
             Properties[0][(int)Property.Lang] = -1;
         }
 
@@ -953,29 +959,9 @@ public static partial class RTFParserCommon
         /// </summary>
         UnmatchedBrace,
         /// <summary>
-        /// Invalid hexadecimal character found while parsing \'hh character(s).
-        /// </summary>
-        InvalidHex,
-        /// <summary>
-        /// A \uN keyword's parameter was out of range.
-        /// </summary>
-        InvalidUnicode,
-        /// <summary>
         /// A symbol table entry was malformed. Possibly one of its enum values was out of range.
         /// </summary>
         InvalidSymbolTableEntry,
-        /// <summary>
-        /// Unexpected end of file reached while reading RTF.
-        /// </summary>
-        EndOfFile,
-        /// <summary>
-        /// A keyword was found that exceeds the max keyword length.
-        /// </summary>
-        KeywordTooLong,
-        /// <summary>
-        /// A parameter was found that exceeds the max parameter length.
-        /// </summary>
-        ParameterTooLong,
         /// <summary>
         /// Internal use only.
         /// </summary>
@@ -990,7 +976,7 @@ public static partial class RTFParserCommon
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     // @RTF(in Context ctx): Test perf with in vs. without
-    public static RtfError HandleSpecialTypeFont(Context ctx, SpecialType specialType, int param)
+    public static void HandleSpecialTypeFont(Context ctx, SpecialType specialType, int param)
     {
         switch (specialType)
         {
@@ -1029,11 +1015,7 @@ public static partial class RTFParserCommon
                     ctx.FontEntries.Top.CodePage = param >= 0 ? param : ctx.Header.CodePage;
                 }
                 break;
-            default:
-                return RtfError.InvalidSymbolTableEntry;
         }
-
-        return RtfError.OK;
     }
 
     /// <summary>

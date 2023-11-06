@@ -194,7 +194,6 @@ public sealed partial class RtfDisplayedReadmeParser
             case SpecialType.SkipNumberOfBytes:
                 if (symbol.UseDefaultParam) param = symbol.DefaultParam;
                 CurrentPos += param;
-                if (CurrentPos >= _rtfBytes.Length) return RtfError.EndOfFile;
                 break;
             case SpecialType.SkipDest:
                 _skipDestinationIfUnknown = true;
@@ -237,7 +236,7 @@ public sealed partial class RtfDisplayedReadmeParser
             int currentLang = _ctx.GroupStack.CurrentProperties[(int)Property.Lang];
 
             int groupFontNum = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
-            if (groupFontNum == -1) groupFontNum = _ctx.Header.DefaultFontNum;
+            if (groupFontNum == NoFontNumber) groupFontNum = _ctx.Header.DefaultFontNum;
 
             _ctx.FontEntries.TryGetValue(groupFontNum, out FontEntry? fontEntry);
 
@@ -308,7 +307,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         while (true)
         {
-            if (!GetNextChar(out char ch)) return ClearReturnFields(RtfError.EndOfFile);
+            char ch = (char)_rtfBytes[CurrentPos++];
             if (ch == '}')
             {
                 CurrentPos--;
