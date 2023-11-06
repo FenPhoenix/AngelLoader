@@ -654,15 +654,16 @@ public static partial class RTFParserCommon
                 // but we can't do that in C#, so have something clearer/clunkier
                 switch (len)
                 {
+                    // Most common case first - we get a measurable speedup from this
+                    case > 2:
+                        key += asso_values[str.ItemsArray[2]];
+                        key += asso_values[str.ItemsArray[1]];
+                        key += asso_values[str.ItemsArray[0]];
+                        break;
                     case 1:
                         key += asso_values[str.ItemsArray[0]];
                         break;
                     case 2:
-                        key += asso_values[str.ItemsArray[1]];
-                        key += asso_values[str.ItemsArray[0]];
-                        break;
-                    default:
-                        key += asso_values[str.ItemsArray[2]];
                         key += asso_values[str.ItemsArray[1]];
                         key += asso_values[str.ItemsArray[0]];
                         break;
