@@ -213,12 +213,12 @@ public static partial class RTFParserCommon
     {
         // SOA and removal of bounds checking through fixed-sized buffers improves perf
 
-        private unsafe struct IntArrayWrapper
+        public unsafe struct IntArrayWrapper
         {
             internal fixed int Array[MaxGroups];
         }
 
-        private unsafe struct BoolArrayWrapper
+        public unsafe struct BoolArrayWrapper
         {
             internal fixed bool Array[MaxGroups];
         }
@@ -228,8 +228,8 @@ public static partial class RTFParserCommon
 
         private IntArrayWrapper RtfDestinationStates;
         private BoolArrayWrapper InFontTables;
-        private IntArrayWrapper SymbolFonts;
-        private readonly int[][] Properties = new int[MaxGroups][];
+        public IntArrayWrapper SymbolFonts;
+        public readonly int[][] Properties = new int[MaxGroups][];
 
         /// <summary>Do not modify!</summary>
         public int Count;

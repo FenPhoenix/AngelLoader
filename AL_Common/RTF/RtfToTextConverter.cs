@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-11-06   ?           1539MB/s (x86) / 1872MB/s (x64)
 2023-11-06   ?           1471MB/s (x86) / 1716MB/s (x64)
 2023-11-06   ?           1248MB/s (x86) / 1615MB/s (x64)
 2023-11-05   ?           1185MB/s (x86) / 1525MB/s (x64)
@@ -1104,7 +1105,7 @@ public sealed partial class RtfToTextConverter
         return RtfError.OK;
     }
 
-    private RtfError HandleFontTable()
+    private unsafe RtfError HandleFontTable()
     {
         int fontTableGroupLevel = _ctx.GroupStack.Count;
 
@@ -1127,6 +1128,34 @@ public sealed partial class RtfToTextConverter
                     _groupCount--;
                     if (_groupCount < fontTableGroupLevel)
                     {
+                        // We can't actually set the symbol font as soon as we see \deffN, because we won't have
+                        // any font entry objects yet. Now that we do, we can retroactively set all previous
+                        // groups' fonts as appropriate, as if they had propagated up automatically.
+                        int defaultFontNum = _ctx.Header.DefaultFontNum;
+                        if (_ctx.FontEntries.TryGetValue(defaultFontNum, out FontEntry? fontEntry))
+                        {
+                            SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                            if (symbolFont > SymbolFont.None)
+                            {
+                                // Start at 1 because the "base" group is still inside an opening { so it's
+                                // really group 1.
+                                for (int i = 1; i < _groupCount + 1; i++)
+                                {
+                                    int[] properties = _ctx.GroupStack.Properties[i];
+                                    int fontNum = properties[(int)Property.FontNum];
+                                    if (fontNum == NoFontNumber)
+                                    {
+                                        properties[(int)Property.FontNum] = defaultFontNum;
+                                        _ctx.GroupStack.SymbolFonts.Array[i] = (int)symbolFont;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         return RtfError.OK;
                     }
                     break;
@@ -1207,18 +1236,6 @@ public sealed partial class RtfToTextConverter
         if (ch != '\0' &&
             _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
-            // We don't really have a way to set the default font num as the first group's font num, because
-            // the font definitions come AFTER the default font control word, so let's just do this check
-            // right here. It's fast if we have a font num for this group, and if not, it'll only run once
-            // anyway, so we shouldn't take much of a speed hit.
-            if (_ctx.GroupStack.CurrentSymbolFont == SymbolFont.None &&
-                _ctx.GroupStack.CurrentProperties[(int)Property.FontNum] == NoFontNumber &&
-                _ctx.Header.DefaultFontNum > NoFontNumber &&
-                _ctx.FontEntries.TryGetValue(_ctx.Header.DefaultFontNum, out FontEntry? fontEntry))
-            {
-                _ctx.GroupStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-            }
-
             // Support bare characters that are supposed to be displayed in a symbol font.
             if (_ctx.GroupStack.CurrentSymbolFont is > SymbolFont.None and < SymbolFont.Unset)
             {
