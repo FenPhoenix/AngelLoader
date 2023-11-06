@@ -11,7 +11,7 @@ public static partial class RTFParserCommon
     // things in here (no mutable value types like the unicode skip counter etc.)
     public readonly struct Context
     {
-        public readonly ListFast<char> Keyword;
+        public readonly char[] Keyword;
         public readonly GroupStack GroupStack;
         public readonly FontDictionary FontEntries;
         public readonly Header Header;
@@ -19,7 +19,6 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
-            Keyword.ClearFast();
             GroupStack.ClearFast();
             GroupStack.ResetFirst();
             FontEntries.Clear();
@@ -28,8 +27,7 @@ public static partial class RTFParserCommon
 
         public Context()
         {
-            Keyword = new ListFast<char>(KeywordMaxLen);
-
+            Keyword = new char[KeywordMaxLen];
             GroupStack = new GroupStack();
 
             /*
@@ -641,10 +639,58 @@ public static partial class RTFParserCommon
             new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
         };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetValue(ListFast<char> str, [NotNullWhen(true)] out Symbol? result)
+        // It seems like directly looking up a char in this table would be faster, but it measures the same to
+        // slightly slower. My random guess is that the main table is always in cache, and this one often isn't?
+#if false
+        private static Symbol?[] InitControlSymbolArray()
         {
-            int len = str.Count;
+            Symbol?[] ret = new Symbol?[256];
+            ret['\''] = new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar);
+            ret['*'] = new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest);
+            ret['\\'] = new Symbol("\\", 0, false, KeywordType.Character, '\\');
+            ret['{'] = new Symbol("{", 0, false, KeywordType.Character, '{');
+            ret['}'] = new Symbol("}", 0, false, KeywordType.Character, '}');
+            ret['~'] = new Symbol("~", 0, false, KeywordType.Character, ' ');
+            return ret;
+        }
+
+        public readonly Symbol?[] ControlSymbols = InitControlSymbolArray();
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Symbol? LookUpControlSymbol(char ch)
+        {
+            byte val = asso_values[ch];
+            int key = 1 + val + val;
+
+            if (key <= MAX_HASH_VALUE)
+            {
+                Symbol? symbol = _symbolTable[key];
+                if (symbol == null)
+                {
+                    return null;
+                }
+
+                string seq2 = symbol.Keyword;
+                if (seq2.Length != 1)
+                {
+                    return null;
+                }
+
+                if (ch != seq2[0])
+                {
+                    return null;
+                }
+
+                return symbol;
+            }
+
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe Symbol? LookUpControlWord(char[] keyword, int len)
+        {
             // Min word length is 1, and we're guaranteed to always be at least 1, so no need to check for >= min
             if (len <= MAX_WORD_LENGTH)
             {
@@ -656,52 +702,47 @@ public static partial class RTFParserCommon
                 {
                     // Most common case first - we get a measurable speedup from this
                     case > 2:
-                        key += asso_values[str.ItemsArray[2]];
-                        key += asso_values[str.ItemsArray[1]];
-                        key += asso_values[str.ItemsArray[0]];
+                        key += asso_values[keyword[2]];
+                        key += asso_values[keyword[1]];
+                        key += asso_values[keyword[0]];
                         break;
                     case 1:
-                        key += asso_values[str.ItemsArray[0]];
+                        key += asso_values[keyword[0]];
                         break;
                     case 2:
-                        key += asso_values[str.ItemsArray[1]];
-                        key += asso_values[str.ItemsArray[0]];
+                        key += asso_values[keyword[1]];
+                        key += asso_values[keyword[0]];
                         break;
                 }
-                key += asso_values[str.ItemsArray[len - 1]];
+                key += asso_values[keyword[len - 1]];
 
                 if (key <= MAX_HASH_VALUE)
                 {
                     Symbol? symbol = _symbolTable[key];
                     if (symbol == null)
                     {
-                        result = null;
-                        return false;
+                        return null;
                     }
 
                     string seq2 = symbol.Keyword;
                     if (len != seq2.Length)
                     {
-                        result = null;
-                        return false;
+                        return null;
                     }
 
                     for (int ci = 0; ci < len; ci++)
                     {
-                        if (str.ItemsArray[ci] != seq2[ci])
+                        if (keyword[ci] != seq2[ci])
                         {
-                            result = null;
-                            return false;
+                            return null;
                         }
                     }
 
-                    result = symbol;
-                    return true;
+                    return symbol;
                 }
             }
 
-            result = null;
-            return false;
+            return null;
         }
     }
 

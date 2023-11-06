@@ -65,15 +65,16 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    private RtfError ParseKeyword()
+    private unsafe RtfError ParseKeyword()
     {
         bool hasParam = false;
         int negateParam = 0;
         int param = 0;
+        Symbol? symbol;
 
         char ch = (char)_rtfBytes[CurrentPos++];
 
-        _ctx.Keyword.ClearFast();
+        char[] keyword = _ctx.Keyword;
 
         if (!ch.IsAsciiAlpha())
         {
@@ -84,49 +85,66 @@ public sealed partial class RtfDisplayedReadmeParser
 
              So just go straight to dispatching without looking for a param and without eating the space.
             */
-            _ctx.Keyword.AddFast(ch);
-            return DispatchKeyword(0, false);
+            //symbol = Symbols.ControlSymbols[ch];
+            symbol = Symbols.LookUpControlSymbol(ch);
         }
-
-        int i;
-        for (i = 0; i < KeywordMaxLen && ch.IsAsciiAlpha(); i++, ch = (char)_rtfBytes[CurrentPos++])
+        else
         {
-            _ctx.Keyword.AddFast(ch);
-        }
-
-        if (ch == '-')
-        {
-            negateParam = 1;
-            ch = (char)_rtfBytes[CurrentPos++];
-        }
-
-        if (ch.IsAsciiNumeric())
-        {
-            hasParam = true;
-
-            // Parse param in real-time to avoid doing a second loop over
-            for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
+            int keywordCount;
+            for (keywordCount = 0; keywordCount < KeywordMaxLen && ch.IsAsciiAlpha(); keywordCount++, ch = (char)_rtfBytes[CurrentPos++])
             {
-                param += ch - '0';
-                param *= 10;
+                keyword[keywordCount] = ch;
             }
-            // Undo the last multiply just one time to avoid checking if we should do it every time through
-            // the loop
-            param /= 10;
 
-            param = BranchlessConditionalNegate(param, negateParam);
+            if (ch == '-')
+            {
+                negateParam = 1;
+                ch = (char)_rtfBytes[CurrentPos++];
+            }
+
+            if (ch.IsAsciiNumeric())
+            {
+                hasParam = true;
+
+                // Parse param in real-time to avoid doing a second loop over
+                for (int i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
+                {
+                    param += ch - '0';
+                    param *= 10;
+                }
+                // Undo the last multiply just one time to avoid checking if we should do it every time through
+                // the loop
+                param /= 10;
+
+                param = BranchlessConditionalNegate(param, negateParam);
+            }
+
+            /* From the spec:
+             "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
+             that is not counted in the characters to skip."
+             This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
+             the space from the skip-chars to count.
+            */
+            // Current position will be > 0 at this point, so a decrement is always safe
+            CurrentPos += MinusOneIfNotSpace_8Bits(ch);
+
+            symbol = Symbols.LookUpControlWord(keyword, keywordCount);
         }
 
-        /* From the spec:
-         "As with all RTF keywords, a keyword-terminating space may be present (before the ANSI characters)
-         that is not counted in the characters to skip."
-         This implements the spec for regular control words and \uN alike. Nothing extra needed for removing
-         the space from the skip-chars to count.
-        */
-        // Current position will be > 0 at this point, so a decrement is always safe
-        CurrentPos += MinusOneIfNotSpace_8Bits(ch);
+        if (symbol == null)
+        {
+            // If this is a new destination
+            if (_skipDestinationIfUnknown)
+            {
+                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+            }
+            _skipDestinationIfUnknown = false;
+            return RtfError.OK;
+        }
 
-        return DispatchKeyword(param, hasParam);
+        _skipDestinationIfUnknown = false;
+
+        return DispatchKeyword(symbol, param, hasParam);
     }
 
     private RtfError HandleSkippableHexData()

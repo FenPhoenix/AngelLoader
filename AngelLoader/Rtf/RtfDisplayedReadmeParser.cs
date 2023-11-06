@@ -146,20 +146,9 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #region Act on keywords
 
-    private RtfError DispatchKeyword(int param, bool hasParam)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError DispatchKeyword(Symbol symbol, int param, bool hasParam)
     {
-        if (!Symbols.TryGetValue(_ctx.Keyword, out Symbol? symbol))
-        {
-            // If this is a new destination
-            if (_skipDestinationIfUnknown)
-            {
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
-            }
-            _skipDestinationIfUnknown = false;
-            return RtfError.OK;
-        }
-
-        _skipDestinationIfUnknown = false;
         switch (symbol.KeywordType)
         {
             case KeywordType.Property:
