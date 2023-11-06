@@ -36,10 +36,9 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common;
-using Ude.NetStandard;
 using static AL_Common.Common;
 
-namespace FMScanner.SimpleHelpers;
+namespace Ude.NetStandard.SimpleHelpers;
 
 public sealed class FileEncoding
 {

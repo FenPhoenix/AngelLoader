@@ -367,7 +367,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
             if (encoding == null)
             {
-                var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
                 encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
                 retEncoding = encoding;
                 ms.Position = 0;
