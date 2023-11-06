@@ -344,8 +344,8 @@ public sealed partial class RtfToTextConverter
         0x23A9,
         0x23AA,
 
-        // Apple logo or unknown
-        _unicodeUnknown_Char,
+        // Apple logo. Using "RED APPLE".
+        0x1F34E,
 
         0x232A,
         0x222B,
@@ -592,10 +592,8 @@ public sealed partial class RtfToTextConverter
         0x1F5F7,
         0x1F5F9,
 
-        // Windows symbol, which is of course not in Unicode.
-        // Closest thing is SQUARED PLUS (⊞) but as you see in some fonts it's not even really that close.
-        // Going with unknown for now.
-        _unicodeUnknown_Char
+        // Windows logo. Using "WINDOW".
+        0x1FA9F
     };
 
     private readonly uint[] _webdingsFontToUnicode = new uint[224]
