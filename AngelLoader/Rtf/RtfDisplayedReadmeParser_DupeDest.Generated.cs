@@ -65,7 +65,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    private unsafe RtfError ParseKeyword()
+    private RtfError ParseKeyword()
     {
         bool hasParam = false;
         int negateParam = 0;
@@ -85,7 +85,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
              So just go straight to dispatching without looking for a param and without eating the space.
             */
-            //symbol = Symbols.ControlSymbols[ch];
             symbol = Symbols.LookUpControlSymbol(ch);
         }
         else
