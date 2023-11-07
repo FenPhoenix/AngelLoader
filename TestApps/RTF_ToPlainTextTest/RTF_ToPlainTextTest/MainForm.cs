@@ -108,7 +108,7 @@ public sealed partial class MainForm : Form
     private void ClearPlainTextDir(bool rtf)
     {
         string dir = rtf ? _destDirRTFBox : _destDirCustom;
-        foreach (string f in Directory.GetFiles(_destDirRTFBox, "*", SearchOption.TopDirectoryOnly))
+        foreach (string f in Directory.GetFiles(dir, "*", SearchOption.TopDirectoryOnly))
         {
             File.Delete(f);
         }

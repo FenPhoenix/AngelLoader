@@ -56,6 +56,10 @@ Notes and miscellaneous:
  (it's supposed to be an ellipsis - __MSG_final__FMInfo-De - Copy.rtf has an instance of it)
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
+@RTF(Every-char checks):
+-RichTextBox respects \v0 (hidden text) when it converts, but LibreOffice doesn't.
+-RichTextBox and LibreOffice both remove nulls.
+
 @RTF(RTF to plaintext converter):
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
@@ -1017,7 +1021,7 @@ public sealed partial class RtfToTextConverter
                 default:
                     if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
                     {
-                        ParseChar(ch);
+                        ParseChar_Byte(ch);
                     }
                     break;
             }
@@ -1245,6 +1249,27 @@ public sealed partial class RtfToTextConverter
                 {
                     _plainText.AddRange(result, result.Count);
                 }
+            }
+            else
+            {
+                _plainText.Add(ch);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ParseChar_Byte(char ch)
+    {
+        if (ch != '\0' &&
+            _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
+        {
+            // Support bare characters that are supposed to be displayed in a symbol font.
+            GroupStack groupStack = _ctx.GroupStack;
+            SymbolFont symbolFont = groupStack.CurrentSymbolFont;
+            if (symbolFont > SymbolFont.None)
+            {
+                GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
+                _plainText.AddRange(result, result.Count);
             }
             else
             {
