@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2023-11-07   ?           1631MB/s (x86) / 2009MB/s (x64)
 2023-11-06   ?           1539MB/s (x86) / 1872MB/s (x64)
 2023-11-06   ?           1471MB/s (x86) / 1716MB/s (x64)
 2023-11-06   ?           1248MB/s (x86) / 1615MB/s (x64)
@@ -838,6 +839,7 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
+    // From .NET 8. Maps ascii characters to hex (ie. "A" -> 0xA). 0xFF means not a hex character.
     private static readonly byte[] _charToHex =
     {
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -1353,8 +1355,15 @@ public sealed partial class RtfToTextConverter
 
         (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
 
-        // If the hex is invalid, oh well, we'll just get a junk character. No point in adding more branches
-        // to check for what's basically never going to happen.
+        /*
+        If the hex is invalid, oh well, we'll just get a junk character. No point in adding more branches
+        to check for what's basically never going to happen.
+        Other readers' behavior:
+        -RichTextBox fails the whole read on invalid hex.
+        -LibreOffice just skips invalid hex chars.
+        If we wanted to match LibreOffice, we'd just only add to the buffer if neither nibble was 0xFF.
+        Doing so makes us a little slower. Not catastrophically so, but meh.
+        */
         byte b = _rtfBytes[CurrentPos++];
         byte hexNibble1 = _charToHex[b];
         b = _rtfBytes[CurrentPos++];
