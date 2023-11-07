@@ -60,13 +60,9 @@ According to testing, for hex chars to combine, they must either not be separate
 of line breaks. But they must NOT be separated by spaces or they won't combine.
 
 @RTF(RTF to plaintext converter):
--Implement a Peek() function to make the former "un-get" sites more ergonomic/idiomatic.
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
  so statistically it's likely it may not even hit broken text even if it exists.
-
-@RTF(Font table perf): We need a separate font table parser!
-So the main one doesn't have to pay the cost of checking if every single plaintext char is part of a font name.
 */
 
 using System.Collections.Generic;
