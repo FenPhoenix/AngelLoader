@@ -55,11 +55,6 @@ Notes and miscellaneous:
  (it's supposed to be an ellipsis - __MSG_final__FMInfo-De - Copy.rtf has an instance of it)
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
-@RTF(ParseHex improvement project):
--According to testing, for hex chars to combine, they must either not be separated, OR, separated by any number
- of line breaks. But they must NOT be separated by spaces or they won't combine.
--We actually aren't handling the linebreak case! We should fix that while we're at it.
-
 @RTF(RTF to plaintext converter):
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
@@ -1084,55 +1079,24 @@ public sealed partial class RtfToTextConverter
                 CurrentPos += param;
                 break;
             case SpecialType.HexEncodedChar:
-            {
-#if true
                 HandleHexRun();
-#else
-                int nibbleCount = 0;
-                byte b = 0;
-                while (CurrentPos < _rtfBytes.Length)
-                {
-                    char c = (char)_rtfBytes[CurrentPos++];
-                    if (c is not '{' and not '}' and not '\\' and not '\r' and not '\n')
-                    {
-                        RtfError ec = ParseHex(ref nibbleCount, ref c, ref b);
-                        if (ec == RtfError.ParseHexDone)
-                        {
-                            break;
-                        }
-                        else if (ec != RtfError.OK)
-                        {
-                            return ec;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-#endif
                 break;
-            }
             case SpecialType.SkipDest:
                 _skipDestinationIfUnknown = true;
                 break;
             case SpecialType.UnicodeChar:
-            {
                 SkipUnicodeFallbackChars();
                 UnicodeBufferAdd(param);
                 HandleUnicodeRun();
                 break;
-            }
             case SpecialType.ColorTable:
                 _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 break;
             case SpecialType.FontTable:
-            {
                 _ctx.GroupStack.CurrentInFontTable = true;
                 RtfError error = HandleFontTable();
                 if (error != RtfError.OK) return error;
                 break;
-            }
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
                 return RtfError.OK;
@@ -1293,11 +1257,13 @@ public sealed partial class RtfToTextConverter
 
     #region Hex
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool CharsAreHexControlSymbol(char char1, char char2) => (char1 << 8 | char2) == (('\\' << 8) | '\'');
-
     private void AddHexBuffer(bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry)
     {
+        // If multiple hex chars are directly after another (eg. \'81\'63) then they may be representing one
+        // multibyte character (or not, they may also just be two single-byte chars in a row). To deal with
+        // this, we have to put all contiguous hex chars into a buffer and when the run ends, we just pass
+        // the buffer to the current encoding's byte-to-char decoder and get our correct result.
+
         ListFast<char> finalChars = _charGeneralBuffer;
         if (!success)
         {
@@ -1306,6 +1272,8 @@ public sealed partial class RtfToTextConverter
         }
         else
         {
+            // DON'T try to combine this byte with the next one if we're on code page 42 (symbol font translation) -
+            // then we're guaranteed to be single-byte, and combining won't give a correct result
             if (codePageWas42)
             {
                 for (int i = 0; i < _hexBuffer.Count; i++)
@@ -1385,7 +1353,8 @@ public sealed partial class RtfToTextConverter
 
         (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
 
-        // @RTF: Assumes valid hex for now. Add validity checking later.
+        // If the hex is invalid, oh well, we'll just get a junk character. No point in adding more branches
+        // to check for what's basically never going to happen.
         byte b = _rtfBytes[CurrentPos++];
         byte hexNibble1 = _charToHex[b];
         b = _rtfBytes[CurrentPos++];
@@ -1415,6 +1384,7 @@ public sealed partial class RtfToTextConverter
                     return;
                 }
             }
+            // Spaces end a hex run, but linebreaks don't.
             else if (b is not (byte)'\r' and not (byte)'\n')
             {
                 CurrentPos--;
@@ -1422,184 +1392,6 @@ public sealed partial class RtfToTextConverter
                 return;
             }
         }
-    }
-
-    private RtfError ParseHex(ref int nibbleCount, ref char ch, ref byte b)
-    {
-        #region Local functions
-
-        RtfError ResetBufferAndStateAndReturn()
-        {
-            _hexBuffer.ClearFast();
-            return RtfError.ParseHexDone;
-        }
-
-        #endregion
-
-        // If multiple hex chars are directly after another (eg. \'81\'63) then they may be representing one
-        // multibyte character (or not, they may also just be two single-byte chars in a row). To deal with
-        // this, we have to put all contiguous hex chars into a buffer and when the run ends, we just pass
-        // the buffer to the current encoding's byte-to-char decoder and get our correct result.
-
-        _hexBuffer.ClearFast();
-
-        // Quick-n-dirty goto for now.
-        restartButDontClearBuffer:
-
-        b = (byte)(b << 4);
-
-        if (ch.IsAsciiNumeric())
-        {
-            b += (byte)(ch - '0');
-        }
-        else if ((uint)(ch - 'a') <= 'f' - 'a')
-        {
-            b += (byte)((ch - 'a') + 10);
-        }
-        else if ((uint)(ch - 'A') <= 'F' - 'A')
-        {
-            b += (byte)((ch - 'A') + 10);
-        }
-        else
-        {
-            return ResetBufferAndStateAndReturn();
-        }
-
-        nibbleCount++;
-        if (nibbleCount < 2 && _hexBuffer.Count > 0)
-        {
-            if (!GetNextChar(out ch))
-            {
-                CurrentPos--;
-                return ResetBufferAndStateAndReturn();
-            }
-            goto restartButDontClearBuffer;
-        }
-
-        if (nibbleCount < 2) return RtfError.OK;
-
-        _hexBuffer.Add(b);
-
-        nibbleCount = 0;
-        b = 0;
-
-        (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
-
-        // DON'T try to combine this byte with the next one if we're on code page 42 (symbol font translation) -
-        // then we're guaranteed to be single-byte, and combining won't give a correct result
-        if (!codePageWas42)
-        {
-            bool lastCharInStream = false;
-
-            // @vNext: Fix last-char-in-stream corner case(?) - test this again now!
-            if (!GetNextChar(out char pch1))
-            {
-                CurrentPos--;
-                lastCharInStream = true;
-            }
-            if (!GetNextChar(out char pch2))
-            {
-                CurrentPos--;
-                lastCharInStream = true;
-            }
-
-            // Horrific hacks everywhere, argh... I refuse to use another goto
-            if (!lastCharInStream)
-            {
-                if (CharsAreHexControlSymbol(pch1, pch2))
-                {
-                    if (!GetNextChar(out ch))
-                    {
-                        CurrentPos -= 2;
-
-                        return ResetBufferAndStateAndReturn();
-                    }
-
-                    goto restartButDontClearBuffer;
-                }
-                else
-                {
-                    CurrentPos -= 2;
-                }
-            }
-        }
-
-        ListFast<char> finalChars = _charGeneralBuffer;
-        if (!success)
-        {
-            SetListFastToUnknownChar(finalChars);
-        }
-        else
-        {
-            if (codePageWas42 && _hexBuffer.Count == 1)
-            {
-                byte codePoint = _hexBuffer.ItemsArray[0];
-
-                if (fontEntry == null)
-                {
-                    GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)SymbolFont.Symbol], out finalChars);
-                    if (finalChars.Count == 0)
-                    {
-                        SetListFastToUnknownChar(finalChars);
-                    }
-                }
-                else
-                {
-                    SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-                    if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
-                    {
-                        GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)symbolFont], out finalChars);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            if (enc != null)
-                            {
-                                int sourceBufferCount = _hexBuffer.Count;
-                                finalChars.EnsureCapacity(sourceBufferCount);
-                                finalChars.Count = enc
-                                    .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
-                                        finalChars.ItemsArray, 0);
-                            }
-                            else
-                            {
-                                SetListFastToUnknownChar(finalChars);
-                            }
-                        }
-                        catch
-                        {
-                            SetListFastToUnknownChar(finalChars);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                try
-                {
-                    if (enc != null)
-                    {
-                        int sourceBufferCount = _hexBuffer.Count;
-                        finalChars.EnsureCapacity(sourceBufferCount);
-                        finalChars.Count = enc
-                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
-                    }
-                    else
-                    {
-                        SetListFastToUnknownChar(finalChars);
-                    }
-                }
-                catch
-                {
-                    SetListFastToUnknownChar(finalChars);
-                }
-            }
-        }
-
-        PutChars(finalChars, finalChars.Count);
-
-        return ResetBufferAndStateAndReturn();
     }
 
     #endregion
