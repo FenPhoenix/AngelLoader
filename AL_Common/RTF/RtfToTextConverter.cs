@@ -52,7 +52,12 @@ Non-Goals:
 
 Notes and miscellaneous:
 -Hex that combines into an actual valid character: \'81\'63
+ (it's supposed to be an ellipsis - __MSG_final__FMInfo-De - Copy.rtf has an instance of it)
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
+
+@RTF(ParseHex improvement project):
+According to testing, for hex chars to combine, they must either not be separated, OR, separated by any number
+of line breaks. But they must NOT be separated by spaces or they won't combine.
 
 @RTF(RTF to plaintext converter):
 -Implement a Peek() function to make the former "un-get" sites more ergonomic/idiomatic.
