@@ -263,6 +263,8 @@ public sealed partial class MainForm : Form
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__UpsideDown__Readme.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\___test___!!!TLLK_v1_1__The Last Lighthouse Keeper.rtf";
         string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_3.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!__MSG_final__FMInfo-De - Copy.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2007-03-13_DanceWithTheDead_v1__DwtD_Readme.rtf";
         using var fs = File.OpenRead(file);
         byte[] array = new byte[fs.Length];
         int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);

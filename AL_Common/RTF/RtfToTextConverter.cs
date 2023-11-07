@@ -843,6 +843,26 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
+    private static readonly byte[] _charToHex =
+    {
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+    };
+
     #endregion
 
     #region Preallocated char arrays
@@ -1065,6 +1085,9 @@ public sealed partial class RtfToTextConverter
                 break;
             case SpecialType.HexEncodedChar:
             {
+#if true
+                HandleHexRun();
+#else
                 int nibbleCount = 0;
                 byte b = 0;
                 while (CurrentPos < _rtfBytes.Length)
@@ -1087,6 +1110,7 @@ public sealed partial class RtfToTextConverter
                         break;
                     }
                 }
+#endif
                 break;
             }
             case SpecialType.SkipDest:
@@ -1271,6 +1295,134 @@ public sealed partial class RtfToTextConverter
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharsAreHexControlSymbol(char char1, char char2) => (char1 << 8 | char2) == (('\\' << 8) | '\'');
+
+    private void AddHexBuffer(bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry)
+    {
+        ListFast<char> finalChars = _charGeneralBuffer;
+        if (!success)
+        {
+            SetListFastToUnknownChar(finalChars);
+            PutChars(finalChars, finalChars.Count);
+        }
+        else
+        {
+            if (codePageWas42)
+            {
+                for (int i = 0; i < _hexBuffer.Count; i++)
+                {
+                    byte codePoint = _hexBuffer.ItemsArray[i];
+
+                    if (fontEntry == null)
+                    {
+                        GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)SymbolFont.Symbol], out finalChars);
+                        if (finalChars.Count == 0)
+                        {
+                            SetListFastToUnknownChar(finalChars);
+                        }
+                        PutChars(finalChars, finalChars.Count);
+                    }
+                    else
+                    {
+                        SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                        if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
+                        {
+                            GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)symbolFont], out finalChars);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                if (enc != null)
+                                {
+                                    int sourceBufferCount = _hexBuffer.Count;
+                                    finalChars.EnsureCapacity(sourceBufferCount);
+                                    finalChars.Count = enc
+                                        .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
+                                            finalChars.ItemsArray, 0);
+                                }
+                                else
+                                {
+                                    SetListFastToUnknownChar(finalChars);
+                                }
+                            }
+                            catch
+                            {
+                                SetListFastToUnknownChar(finalChars);
+                            }
+                        }
+                        PutChars(finalChars, finalChars.Count);
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (enc != null)
+                    {
+                        int sourceBufferCount = _hexBuffer.Count;
+                        finalChars.EnsureCapacity(sourceBufferCount);
+                        finalChars.Count = enc
+                            .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount, finalChars.ItemsArray, 0);
+                    }
+                    else
+                    {
+                        SetListFastToUnknownChar(finalChars);
+                    }
+                }
+                catch
+                {
+                    SetListFastToUnknownChar(finalChars);
+                }
+                PutChars(finalChars, finalChars.Count);
+            }
+        }
+    }
+
+    private void HandleHexRun()
+    {
+        _hexBuffer.ClearFast();
+
+        (bool success, bool codePageWas42, Encoding? enc, FontEntry? fontEntry) = GetCurrentEncoding();
+
+        // @RTF: Assumes valid hex for now. Add validity checking later.
+        byte b = _rtfBytes[CurrentPos++];
+        byte hexNibble1 = _charToHex[b];
+        b = _rtfBytes[CurrentPos++];
+        byte hexNibble2 = _charToHex[b];
+        byte finalHexByte = (byte)((hexNibble1 << 4) + hexNibble2);
+        _hexBuffer.Add(finalHexByte);
+
+        while (CurrentPos < _rtfBytes.Length)
+        {
+            b = _rtfBytes[CurrentPos++];
+            if (b == '\\')
+            {
+                b = _rtfBytes[CurrentPos++];
+                if (b == '\'')
+                {
+                    b = _rtfBytes[CurrentPos++];
+                    hexNibble1 = _charToHex[b];
+                    b = _rtfBytes[CurrentPos++];
+                    hexNibble2 = _charToHex[b];
+                    finalHexByte = (byte)((hexNibble1 << 4) + hexNibble2);
+                    _hexBuffer.Add(finalHexByte);
+                }
+                else
+                {
+                    CurrentPos -= 2;
+                    AddHexBuffer(success, codePageWas42, enc, fontEntry);
+                    return;
+                }
+            }
+            else if (b is not (byte)'\r' and not (byte)'\n')
+            {
+                CurrentPos--;
+                AddHexBuffer(success, codePageWas42, enc, fontEntry);
+                return;
+            }
+        }
+    }
 
     private RtfError ParseHex(ref int nibbleCount, ref char ch, ref byte b)
     {
