@@ -829,6 +829,16 @@ public sealed partial class RtfToTextConverter
     };
     // ReSharper restore RedundantExplicitArraySize
 
+    private readonly uint[][] _symbolFontTables;
+
+    public RtfToTextConverter()
+    {
+        _symbolFontTables = new uint[4][];
+        _symbolFontTables[(int)SymbolFont.Symbol] = _symbolFontToUnicode;
+        _symbolFontTables[(int)SymbolFont.Wingdings] = _wingdingsFontToUnicode;
+        _symbolFontTables[(int)SymbolFont.Webdings] = _webdingsFontToUnicode;
+    }
+
     #endregion
 
     #endregion
@@ -1135,23 +1145,20 @@ public sealed partial class RtfToTextConverter
                         if (_ctx.FontEntries.TryGetValue(defaultFontNum, out FontEntry? fontEntry))
                         {
                             SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-                            if (symbolFont > SymbolFont.None)
+                            // Start at 1 because the "base" group is still inside an opening { so it's
+                            // really group 1.
+                            for (int i = 1; i < _groupCount + 1; i++)
                             {
-                                // Start at 1 because the "base" group is still inside an opening { so it's
-                                // really group 1.
-                                for (int i = 1; i < _groupCount + 1; i++)
+                                int[] properties = _ctx.GroupStack.Properties[i];
+                                int fontNum = properties[(int)Property.FontNum];
+                                if (fontNum == NoFontNumber)
                                 {
-                                    int[] properties = _ctx.GroupStack.Properties[i];
-                                    int fontNum = properties[(int)Property.FontNum];
-                                    if (fontNum == NoFontNumber)
-                                    {
-                                        properties[(int)Property.FontNum] = defaultFontNum;
-                                        _ctx.GroupStack.SymbolFonts.Array[i] = (int)symbolFont;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    properties[(int)Property.FontNum] = defaultFontNum;
+                                    _ctx.GroupStack.SymbolFonts.Array[i] = (int)symbolFont;
+                                }
+                                else
+                                {
+                                    break;
                                 }
                             }
                         }
@@ -1237,16 +1244,11 @@ public sealed partial class RtfToTextConverter
             _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
             // Support bare characters that are supposed to be displayed in a symbol font.
-            if (_ctx.GroupStack.CurrentSymbolFont is > SymbolFont.None and < SymbolFont.Unset)
+            GroupStack groupStack = _ctx.GroupStack;
+            SymbolFont symbolFont = groupStack.CurrentSymbolFont;
+            if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
             {
-#pragma warning disable 8509
-                uint[] fontTable = _ctx.GroupStack.CurrentSymbolFont switch
-                {
-                    SymbolFont.Symbol => _symbolFontToUnicode,
-                    SymbolFont.Wingdings => _wingdingsFontToUnicode,
-                    SymbolFont.Webdings => _webdingsFontToUnicode
-                };
-#pragma warning restore 8509
+                uint[] fontTable = _symbolFontTables[(int)symbolFont];
                 if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
                 {
                     _plainText.AddRange(result, result.Count);
@@ -1381,7 +1383,7 @@ public sealed partial class RtfToTextConverter
 
                 if (fontEntry == null)
                 {
-                    GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
+                    GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)SymbolFont.Symbol], out finalChars);
                     if (finalChars.Count == 0)
                     {
                         SetListFastToUnknownChar(finalChars);
@@ -1389,38 +1391,32 @@ public sealed partial class RtfToTextConverter
                 }
                 else
                 {
-                    switch (GetSymbolFontTypeFromFontEntry(fontEntry))
+                    SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                    if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
                     {
-                        case SymbolFont.Wingdings:
-                            GetCharFromConversionList_Byte(codePoint, _wingdingsFontToUnicode, out finalChars);
-                            break;
-                        case SymbolFont.Webdings:
-                            GetCharFromConversionList_Byte(codePoint, _webdingsFontToUnicode, out finalChars);
-                            break;
-                        case SymbolFont.Symbol:
-                            GetCharFromConversionList_Byte(codePoint, _symbolFontToUnicode, out finalChars);
-                            break;
-                        default:
-                            try
+                        GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)symbolFont], out finalChars);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            if (enc != null)
                             {
-                                if (enc != null)
-                                {
-                                    int sourceBufferCount = _hexBuffer.Count;
-                                    finalChars.EnsureCapacity(sourceBufferCount);
-                                    finalChars.Count = enc
-                                        .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
-                                            finalChars.ItemsArray, 0);
-                                }
-                                else
-                                {
-                                    SetListFastToUnknownChar(finalChars);
-                                }
+                                int sourceBufferCount = _hexBuffer.Count;
+                                finalChars.EnsureCapacity(sourceBufferCount);
+                                finalChars.Count = enc
+                                    .GetChars(_hexBuffer.ItemsArray, 0, sourceBufferCount,
+                                        finalChars.ItemsArray, 0);
                             }
-                            catch
+                            else
                             {
                                 SetListFastToUnknownChar(finalChars);
                             }
-                            break;
+                        }
+                        catch
+                        {
+                            SetListFastToUnknownChar(finalChars);
+                        }
                     }
                 }
             }
@@ -2210,17 +2206,10 @@ public sealed partial class RtfToTextConverter
 
             // We already know our code point is within bounds of the array, because the arrays also go from
             // 0x20 - 0xFF, so no need to check.
-            switch (GetSymbolFontTypeFromFontEntry(fontEntry))
+            SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+            if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
             {
-                case SymbolFont.Wingdings:
-                    returnCodePoint = _wingdingsFontToUnicode[returnCodePoint - 0x20];
-                    break;
-                case SymbolFont.Webdings:
-                    returnCodePoint = _webdingsFontToUnicode[returnCodePoint - 0x20];
-                    break;
-                case SymbolFont.Symbol:
-                    returnCodePoint = _symbolFontToUnicode[returnCodePoint - 0x20];
-                    break;
+                returnCodePoint = _symbolFontTables[(int)symbolFont][returnCodePoint - 0x20];
             }
         }
     }
