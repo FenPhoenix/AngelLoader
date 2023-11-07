@@ -66,6 +66,7 @@ Notes and miscellaneous:
  so statistically it's likely it may not even hit broken text even if it exists.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -1096,7 +1097,8 @@ public sealed partial class RtfToTextConverter
                 HandleUnicodeRun();
                 break;
             case SpecialType.ColorTable:
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos);
+                CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                 break;
             case SpecialType.FontTable:
                 _ctx.GroupStack.CurrentInFontTable = true;
