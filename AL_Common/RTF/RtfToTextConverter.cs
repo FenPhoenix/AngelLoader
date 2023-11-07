@@ -56,8 +56,9 @@ Notes and miscellaneous:
 -Tiger face (>2 byte Unicode test): \u-9169?\u-10179?
 
 @RTF(ParseHex improvement project):
-According to testing, for hex chars to combine, they must either not be separated, OR, separated by any number
-of line breaks. But they must NOT be separated by spaces or they won't combine.
+-According to testing, for hex chars to combine, they must either not be separated, OR, separated by any number
+ of line breaks. But they must NOT be separated by spaces or they won't combine.
+-We actually aren't handling the linebreak case! We should fix that while we're at it.
 
 @RTF(RTF to plaintext converter):
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
