@@ -1,4 +1,4 @@
-﻿#define SYMBOL_PERFECT_HASH_GEN
+﻿//#define SYMBOL_PERFECT_HASH_GEN
 
 #if SYMBOL_PERFECT_HASH_GEN
 using System.Collections.Generic;
