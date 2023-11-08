@@ -88,7 +88,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private void Reset(ArrayWithLength<byte> rtfBytes)
     {
-        ResetBase();
+        ResetBase(rtfBytes);
         // Don't carry around the font entry pool for the entire app lifetime
         _ctx.FontEntries.ClearFull(0);
 
@@ -102,10 +102,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
         _colorTable = null;
         _langItems = null;
-
-        _rtfBytes = rtfBytes;
-
-        CurrentPos = 0;
     }
 
     private RtfError ParseRtf()

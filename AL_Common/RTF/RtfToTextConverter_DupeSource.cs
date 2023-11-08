@@ -1,7 +1,6 @@
 ﻿#define FenGen_RtfDuplicateSource
 
 using System;
-using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
@@ -31,39 +30,20 @@ public sealed partial class RtfToTextConverter
     // For whatever reason it's faster to have this
     private int _groupCount;
 
+    private int CurrentPos;
+
     #endregion
 
-    private void ResetBase()
+    private void ResetBase(ArrayWithLength<byte> rtfBytes)
     {
         _ctx.Reset();
 
         _groupCount = 0;
         _skipDestinationIfUnknown = false;
+
+        _rtfBytes = rtfBytes;
+        CurrentPos = 0;
     }
-
-    #region Stream
-
-    private int CurrentPos;
-
-    /// <summary>
-    /// Returns false if the end of the stream has been reached.
-    /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetNextChar(out char ch)
-    {
-        if (CurrentPos == _rtfBytes.Length)
-        {
-            ch = '\0';
-            return false;
-        }
-
-        ch = (char)_rtfBytes[CurrentPos++];
-
-        return true;
-    }
-
-    #endregion
 
     private RtfError ParseKeyword()
     {

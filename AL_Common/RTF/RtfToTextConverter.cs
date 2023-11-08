@@ -91,17 +91,6 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    #region Stream
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ResetStream(ArrayWithLength<byte> rtfBytes)
-    {
-        _rtfBytes = rtfBytes;
-        CurrentPos = 0;
-    }
-
-    #endregion
-
     #region Tables
 
     #region Font to Unicode conversion tables
@@ -967,7 +956,7 @@ public sealed partial class RtfToTextConverter
 
     private void Reset(ArrayWithLength<byte> rtfBytes)
     {
-        ResetBase();
+        ResetBase(rtfBytes);
 
         #region Fixed-size fields
 
@@ -988,8 +977,6 @@ public sealed partial class RtfToTextConverter
         if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
         // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
-
-        ResetStream(rtfBytes);
     }
 
     private RtfError ParseRtf()
@@ -1671,17 +1658,20 @@ public sealed partial class RtfToTextConverter
 
         #region Handle if the param is hex
 
-        if (ch == '0' &&
-            GetNextChar(out char pch) && (pch is 'x' or 'X'))
+        if (ch == '0')
         {
             ch = (char)_rtfBytes[CurrentPos++];
-            if (ch == '-')
+            if (ch is 'x' or 'X')
             {
                 ch = (char)_rtfBytes[CurrentPos++];
-                if (ch != ' ') return RewindAndSkipGroup();
-                negateNum = 1;
+                if (ch == '-')
+                {
+                    ch = (char)_rtfBytes[CurrentPos++];
+                    if (ch != ' ') return RewindAndSkipGroup();
+                    negateNum = 1;
+                }
+                numIsHex = true;
             }
-            numIsHex = true;
         }
 
         #endregion
@@ -1750,11 +1740,10 @@ public sealed partial class RtfToTextConverter
 
         for (i = 0; i < maxParams; i++)
         {
-            if (!GetNextChar(out pch) || pch != '\\' ||
-                !GetNextChar(out pch) || pch != '\\')
-            {
-                continue;
-            }
+            ch = (char)_rtfBytes[CurrentPos++];
+            if (ch != '\\') continue;
+            ch = (char)_rtfBytes[CurrentPos++];
+            if (ch != '\\') continue;
 
             ch = (char)_rtfBytes[CurrentPos++];
 
@@ -1826,7 +1815,7 @@ public sealed partial class RtfToTextConverter
 
                     int fontNameCharCount = 0;
 
-                    while (GetNextChar(out ch) && ch != '\"')
+                    while ((ch = (char)_rtfBytes[CurrentPos++]) != '\"')
                     {
                         if (fontNameCharCount >= _fldinstSymbolFontNameMaxLen || IsSeparatorChar(ch))
                         {
@@ -1879,7 +1868,7 @@ public sealed partial class RtfToTextConverter
                 if (ch != ' ') return RewindAndSkipGroup();
 
                 int numDigitCount = 0;
-                while (GetNextChar(out ch) && ch.IsAsciiNumeric())
+                while ((ch = (char)_rtfBytes[CurrentPos++]).IsAsciiNumeric())
                 {
                     if (numDigitCount > _fldinstSymbolNumberMaxLen) goto breakout;
                     numDigitCount++;
