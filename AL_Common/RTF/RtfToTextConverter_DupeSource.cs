@@ -68,7 +68,6 @@ public sealed partial class RtfToTextConverter
     private RtfError ParseKeyword()
     {
         bool hasParam = false;
-        int negateParam = 0;
         int param = 0;
         Symbol? symbol;
 
@@ -95,12 +94,12 @@ public sealed partial class RtfToTextConverter
                 keyword[keywordCount] = ch;
             }
 
+            int negateParam = 0;
             if (ch == '-')
             {
                 negateParam = 1;
                 ch = (char)_rtfBytes[CurrentPos++];
             }
-
             if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
@@ -110,7 +109,6 @@ public sealed partial class RtfToTextConverter
                 {
                     param = (param * 10) + (ch - '0');
                 }
-
                 param = BranchlessConditionalNegate(param, negateParam);
             }
 

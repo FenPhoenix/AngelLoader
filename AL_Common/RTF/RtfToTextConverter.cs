@@ -1449,13 +1449,13 @@ public sealed partial class RtfToTextConverter
             char ch = (char)_rtfBytes[CurrentPos++];
             if (ch == '\\')
             {
-                int negateParam = 0;
-
                 ch = (char)_rtfBytes[CurrentPos++];
 
                 if (ch == 'u')
                 {
                     ch = (char)_rtfBytes[CurrentPos++];
+
+                    int negateParam = 0;
                     if (ch == '-')
                     {
                         negateParam = 1;
@@ -1466,13 +1466,12 @@ public sealed partial class RtfToTextConverter
                         int param = 0;
 
                         // Parse param in real-time to avoid doing a second loop over
-                        int i;
-                        for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
+                        for (int i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
                             param = (param * 10) + (ch - '0');
                         }
-
                         param = BranchlessConditionalNegate(param, negateParam);
+
                         UnicodeBufferAdd(param);
                         CurrentPos += MinusOneIfNotSpace_8Bits(ch);
                         SkipUnicodeFallbackChars();
