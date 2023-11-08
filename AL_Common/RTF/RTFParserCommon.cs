@@ -1003,11 +1003,7 @@ public static partial class RTFParserCommon
         /// <summary>
         /// A symbol table entry was malformed. Possibly one of its enum values was out of range.
         /// </summary>
-        InvalidSymbolTableEntry,
-        /// <summary>
-        /// Internal use only.
-        /// </summary>
-        ParseHexDone
+        InvalidSymbolTableEntry
     }
 
     #endregion
