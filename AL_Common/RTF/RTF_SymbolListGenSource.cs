@@ -1,7 +1,8 @@
-﻿//#define SYMBOL_PERFECT_HASH_GEN
+﻿#define SYMBOL_PERFECT_HASH_GEN
 
 #if SYMBOL_PERFECT_HASH_GEN
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 #endif
@@ -176,27 +177,27 @@ public static partial class RTFParserCommon
     
     Instructions for semi-automatic perfect hash function regeneration (for updates requiring such):
 
-    1. Call ConvertSymbolListToGPerfFormat() with a filename, call it gperfFormatFile. It writes out the
-       symbols array above in gperf format to the file. Actually it only really writes out the keys and then
-       a dummy value, because rather than trying to pass the "(int)DestinationType.Whatever" stuff round-trip
-       through gperf, we're just going to use the keys to index back into the above table at a later stage to
-       get back all the table information (each line as a raw string).
-    2. Run command: gperf --output-file=[gperf output file] -t [gperfFormatFile]
-       gperf will write out the generated code to [gperf output file].
+    1. Call ConvertSymbolListToGPerfFormat().
     3. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
        Call it symbolsCodeFile.
-    4. Copy the contents of the gperf-generated table (again, just the body) to another file. Call it inputFile.
-    5. Call ConvertGPerfOutputToCSharp() with inputFile, symbolsCodeFile, and another outputFile to write the
-       final generated C# symbols array-body code to.
-    6. Copy the C# symbols array-body code out of the file and paste it into the symbols array in the main
-       file, overwriting the previous symbols array body.
+    4. Copy the contents of the gperf-generated table (again, just the body) to another file.
+       Call it inputFile.
+    5. Call ConvertGPerfOutputToCSharp().
+    6. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
+       main file, overwriting the previous symbols array body.
     7. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
        have changed).
     8. Done!
     */
 
-    public static void ConvertSymbolListToGPerfFormat(string gperfFormatFile)
+    private const string genDir = @"C:\_al_rtf_table_gen";
+
+    public static void ConvertSymbolListToGPerfFormat()
     {
+        Directory.CreateDirectory(genDir);
+
+        string gperfFormatFile = Path.Combine(genDir, "gperfFormatFile.txt");
+
         var outLines = new List<string>();
         outLines.Add("struct Symbol { char *name; int dummy; };");
         outLines.Add("%%");
@@ -207,11 +208,24 @@ public static partial class RTFParserCommon
             outLines.Add(symbol.Keyword + ", 0");
         }
         File.WriteAllLines(gperfFormatFile, outLines);
+
+        // gperf --output-file=[gperf output file] -t [gperfFormatFile]
+        using (Process.Start(
+                   @"C:\gperf\tools\gperf.exe",
+                   "--output-file=" + Path.Combine(genDir, "gperfOutputFile.txt") + " " +
+                   "-t " +
+                   gperfFormatFile))
+        {
+        }
     }
 
-    public static void ConvertGPerfOutputToCSharp(string inputFile, string outputFile, string symbolsCodeFile)
+    public static void ConvertGPerfOutputToCSharp()
     {
-        int FindIndexOfValueInSymbolList(string value)
+        string inputFile = Path.Combine(genDir, "inputFile.txt");
+        string outputFile = Path.Combine(genDir, "outputFile.txt");
+        string symbolsCodeFile = Path.Combine(genDir, "symbolsCodeFile.txt");
+
+        static int FindIndexOfValueInSymbolList(string value)
         {
             for (int i = 0; i < _symbolList.Length; i++)
             {
