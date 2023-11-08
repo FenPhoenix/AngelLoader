@@ -1469,12 +1469,8 @@ public sealed partial class RtfToTextConverter
                         int i;
                         for (i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
-                            param += ch - '0';
-                            param *= 10;
+                            param = (param * 10) + (ch - '0');
                         }
-                        // Undo the last multiply just one time to avoid checking if we should do it every time through
-                        // the loop
-                        param /= 10;
 
                         param = BranchlessConditionalNegate(param, negateParam);
                         UnicodeBufferAdd(param);
