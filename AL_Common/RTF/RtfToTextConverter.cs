@@ -927,7 +927,7 @@ public sealed partial class RtfToTextConverter
 
     [PublicAPI]
     public (bool Success, string Text)
-    Convert(ArrayWithLength<byte> rtfBytes)
+    Convert(in ArrayWithLength<byte> rtfBytes)
     {
         Reset(rtfBytes);
 
@@ -954,7 +954,7 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    private void Reset(ArrayWithLength<byte> rtfBytes)
+    private void Reset(in ArrayWithLength<byte> rtfBytes)
     {
         ResetBase(rtfBytes);
 
@@ -985,8 +985,13 @@ public sealed partial class RtfToTextConverter
         {
             char ch = (char)_rtfBytes[CurrentPos++];
 
+            // Ordered by most frequently appearing first
             switch (ch)
             {
+                case '\\':
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
+                    break;
                 // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
@@ -998,10 +1003,6 @@ public sealed partial class RtfToTextConverter
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
-                    break;
-                case '\\':
-                    RtfError ec = ParseKeyword();
-                    if (ec != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':

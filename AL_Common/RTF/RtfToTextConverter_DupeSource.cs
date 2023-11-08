@@ -34,7 +34,7 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    private void ResetBase(ArrayWithLength<byte> rtfBytes)
+    private void ResetBase(in ArrayWithLength<byte> rtfBytes)
     {
         _ctx.Reset();
 

@@ -52,7 +52,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     [PublicAPI]
     public (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
-    GetData(ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
+    GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
         {
@@ -86,7 +86,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    private void Reset(ArrayWithLength<byte> rtfBytes)
+    private void Reset(in ArrayWithLength<byte> rtfBytes)
     {
         ResetBase(rtfBytes);
         // Don't carry around the font entry pool for the entire app lifetime
@@ -112,8 +112,13 @@ public sealed partial class RtfDisplayedReadmeParser
 
             char ch = (char)_rtfBytes[CurrentPos++];
 
+            // Ordered by most frequently appearing first
             switch (ch)
             {
+                case '\\':
+                    RtfError ec = ParseKeyword();
+                    if (ec != RtfError.OK) return ec;
+                    break;
                 // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
@@ -125,10 +130,6 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
-                    break;
-                case '\\':
-                    RtfError ec = ParseKeyword();
-                    if (ec != RtfError.OK) return ec;
                     break;
                 case '\r':
                 case '\n':
