@@ -1305,12 +1305,11 @@ public sealed partial class RtfToTextConverter
             // then we're guaranteed to be single-byte, and combining won't give a correct result
             if (codePageWas42)
             {
-                for (int i = 0; i < _hexBuffer.Count; i++)
+                if (fontEntry == null)
                 {
-                    byte codePoint = _hexBuffer.ItemsArray[i];
-
-                    if (fontEntry == null)
+                    for (int i = 0; i < _hexBuffer.Count; i++)
                     {
+                        byte codePoint = _hexBuffer.ItemsArray[i];
                         GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)SymbolFont.Symbol], out finalChars);
                         if (finalChars.Count == 0)
                         {
@@ -1318,14 +1317,22 @@ public sealed partial class RtfToTextConverter
                         }
                         PutChars(finalChars, finalChars.Count);
                     }
+                }
+                else
+                {
+                    SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                    if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
+                    {
+                        for (int i = 0; i < _hexBuffer.Count; i++)
+                        {
+                            byte codePoint = _hexBuffer.ItemsArray[i];
+                            GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)symbolFont], out finalChars);
+                            PutChars(finalChars, finalChars.Count);
+                        }
+                    }
                     else
                     {
-                        SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-                        if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
-                        {
-                            GetCharFromConversionList_Byte(codePoint, _symbolFontTables[(int)symbolFont], out finalChars);
-                        }
-                        else
+                        for (int i = 0; i < _hexBuffer.Count; i++)
                         {
                             try
                             {
@@ -1346,8 +1353,8 @@ public sealed partial class RtfToTextConverter
                             {
                                 SetListFastToUnknownChar(finalChars);
                             }
+                            PutChars(finalChars, finalChars.Count);
                         }
-                        PutChars(finalChars, finalChars.Count);
                     }
                 }
             }
