@@ -902,6 +902,8 @@ public sealed partial class RtfToTextConverter
     // Highest measured was 13
     private readonly ListFast<char> _unicodeBuffer = new(20);
 
+    private bool _inHandleFontTable;
+
     #endregion
 
     #region Reusable buffers
@@ -982,6 +984,8 @@ public sealed partial class RtfToTextConverter
         if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
         // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
+
+        _inHandleFontTable = false;
     }
 
     private RtfError ParseRtf()
@@ -1108,6 +1112,11 @@ public sealed partial class RtfToTextConverter
 
     private unsafe RtfError HandleFontTable()
     {
+        // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
+        // a spec-conforming file.
+        if (_inHandleFontTable) return RtfError.StackOverflow;
+        _inHandleFontTable = true;
+
         int fontTableGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
@@ -1154,6 +1163,7 @@ public sealed partial class RtfToTextConverter
                             }
                         }
 
+                        _inHandleFontTable = false;
                         return RtfError.OK;
                     }
                     break;
@@ -1173,6 +1183,7 @@ public sealed partial class RtfToTextConverter
             }
         }
 
+        _inHandleFontTable = false;
         return RtfError.OK;
     }
 

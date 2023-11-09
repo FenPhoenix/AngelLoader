@@ -33,6 +33,8 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private int CurrentPos;
 
+    private bool _inHandleSkippableHexData;
+
     #endregion
 
     private void ResetBase(in ArrayWithLength<byte> rtfBytes)
@@ -44,6 +46,8 @@ public sealed partial class RtfDisplayedReadmeParser
 
         _rtfBytes = rtfBytes;
         CurrentPos = 0;
+
+        _inHandleSkippableHexData = false;
     }
 
     private RtfError ParseKeyword()
@@ -123,6 +127,11 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private RtfError HandleSkippableHexData()
     {
+        // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
+        // a spec-conforming file.
+        if (_inHandleSkippableHexData) return RtfError.StackOverflow;
+        _inHandleSkippableHexData = true;
+
         int startGroupLevel = _ctx.GroupStack.Count;
 
         while (CurrentPos < _rtfBytes.Length)
@@ -144,6 +153,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     _groupCount--;
                     if (_groupCount < startGroupLevel)
                     {
+                        _inHandleSkippableHexData = false;
                         return RtfError.OK;
                     }
                     break;
@@ -167,6 +177,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
         }
 
+        _inHandleSkippableHexData = false;
         return RtfError.OK;
     }
 }
