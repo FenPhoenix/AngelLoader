@@ -11,6 +11,9 @@ file static class Program
     [STAThread]
     private static void Main()
     {
+#if !NETFRAMEWORK
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new MainForm());
