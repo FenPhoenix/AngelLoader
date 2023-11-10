@@ -36,6 +36,12 @@ public static partial class Common
         // This MUST be a method (not a static field) to maintain performance!
         public static ArrayWithLength<T> Empty() => new();
 
+        /// <summary>
+        /// Manually bounds-checked past <see cref="T:Length"/>.
+        /// If you don't need bounds-checking past <see cref="T:Length"/>, access <see cref="T:Array"/> directly.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public T this[int index]
         {
             get
