@@ -60,16 +60,6 @@ Notes and miscellaneous:
 -RichTextBox respects \v0 (hidden text) when it converts, but LibreOffice doesn't.
 -RichTextBox and LibreOffice both remove nulls.
 
-@RTF(Robustness against malformed files):
-Our "functional state" could have a stack overflow if a file was specifically crafted, I think. It wouldn't for
-normal spec-conforming files, but yeah. We should keep a second "stack" count for those and exit on exceed. Or
-even just allow only one level of them and return error on any further?
-
-@RTF/IMPORTANT:(Horrific realization about bounds checking):
-Our array are inside wrappers with length variables that can be shorter than the actual arrays!
-That means we ARE NOT guaranteed to go out of bounds when we exceed the length, and we'll be into whatever data
-was in there before! So we need to put the explicit checks back in, argh.
-
 @RTF(RTF to plaintext converter):
 -Consider being extremely forgiving about errors - we want as much plaintext as we can get out of a file, and
  even imperfect text may be useful. FMScanner extracts a relatively very small portion of text from the file,
