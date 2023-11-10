@@ -74,7 +74,9 @@ public sealed partial class RtfDisplayedReadmeParser
         else
         {
             int keywordCount;
-            for (keywordCount = 0; keywordCount < KeywordMaxLen && ch.IsAsciiAlpha(); keywordCount++, ch = (char)_rtfBytes[CurrentPos++])
+            for (keywordCount = 0;
+                 keywordCount < KeywordMaxLen && ch.IsAsciiAlpha();
+                 keywordCount++, ch = (char)_rtfBytes[CurrentPos++])
             {
                 keyword[keywordCount] = ch;
             }
@@ -90,7 +92,9 @@ public sealed partial class RtfDisplayedReadmeParser
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
-                for (int i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
+                for (int i = 0;
+                     i < ParamMaxLen && ch.IsAsciiNumeric();
+                     i++, ch = (char)_rtfBytes[CurrentPos++])
                 {
                     param = (param * 10) + (ch - '0');
                 }
@@ -136,7 +140,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         while (CurrentPos < _rtfBytes.Length)
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
+            char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             switch (ch)
             {
@@ -170,7 +174,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     {
                         // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
                         // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.
-                        int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos);
+                        int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
                         CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                     }
                     break;

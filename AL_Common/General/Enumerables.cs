@@ -38,8 +38,13 @@ public static partial class Common
 
         public T this[int index]
         {
-            get => Array[index];
-            set => Array[index] = value;
+            get
+            {
+                // Very unfortunately, we have to manually bounds-check here, because our array could be longer
+                // than Length (such as when it comes from a pool).
+                if (index > Length - 1) ThrowHelper.IndexOutOfRange();
+                return Array[index];
+            }
         }
     }
 

@@ -997,7 +997,7 @@ public sealed partial class RtfToTextConverter
     {
         while (CurrentPos < _rtfBytes.Length)
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
+            char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             // Ordered by most frequently appearing first
             switch (ch)
@@ -1099,7 +1099,7 @@ public sealed partial class RtfToTextConverter
                 HandleUnicodeRun();
                 break;
             case SpecialType.ColorTable:
-                int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos);
+                int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
                 CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                 break;
             case SpecialType.FontTable:
@@ -1126,7 +1126,7 @@ public sealed partial class RtfToTextConverter
 
         while (CurrentPos < _rtfBytes.Length)
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
+            char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             switch (ch)
             {
@@ -1416,7 +1416,7 @@ public sealed partial class RtfToTextConverter
 
         while (CurrentPos < _rtfBytes.Length)
         {
-            b = _rtfBytes[CurrentPos++];
+            b = _rtfBytes.Array[CurrentPos++];
             if (b == '\\')
             {
                 b = _rtfBytes[CurrentPos++];
@@ -1455,7 +1455,7 @@ public sealed partial class RtfToTextConverter
         int rtfLength = _rtfBytes.Length;
         while (CurrentPos < rtfLength)
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
+            char ch = (char)_rtfBytes.Array[CurrentPos++];
             if (ch == '\\')
             {
                 ch = (char)_rtfBytes[CurrentPos++];
@@ -1475,7 +1475,9 @@ public sealed partial class RtfToTextConverter
                         int param = 0;
 
                         // Parse param in real-time to avoid doing a second loop over
-                        for (int i = 0; i < ParamMaxLen && ch.IsAsciiNumeric(); i++, ch = (char)_rtfBytes[CurrentPos++])
+                        for (int i = 0;
+                             i < ParamMaxLen && ch.IsAsciiNumeric();
+                             i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
                             param = (param * 10) + (ch - '0');
                         }
@@ -1552,20 +1554,20 @@ public sealed partial class RtfToTextConverter
         int numToSkip = _ctx.GroupStack.CurrentProperties[(int)Property.UnicodeCharSkipCount];
         while (numToSkip > 0 && CurrentPos < _rtfBytes.Length)
         {
-            char c = (char)_rtfBytes[CurrentPos++];
+            char c = (char)_rtfBytes.Array[CurrentPos++];
             switch (c)
             {
                 case '\\':
                     if (CurrentPos < _rtfBytes.Length - 4 &&
-                        _rtfBytes[CurrentPos] == '\'' &&
-                        _rtfBytes[CurrentPos + 1].IsAsciiHex() &&
-                        _rtfBytes[CurrentPos + 2].IsAsciiHex())
+                        _rtfBytes.Array[CurrentPos] == '\'' &&
+                        _rtfBytes.Array[CurrentPos + 1].IsAsciiHex() &&
+                        _rtfBytes.Array[CurrentPos + 2].IsAsciiHex())
                     {
                         CurrentPos += 3;
                         numToSkip--;
                     }
                     else if (CurrentPos < _rtfBytes.Length - 2 &&
-                             _rtfBytes[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
+                             _rtfBytes.Array[CurrentPos] is (byte)'{' or (byte)'}' or (byte)'\\')
                     {
                         CurrentPos++;
                         numToSkip--;

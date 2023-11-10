@@ -31,4 +31,6 @@ public static class ThrowHelper
     public static void ZipCompressionMethodException(string message) => throw new ZipCompressionMethodException(message);
     [DoesNotReturn]
     public static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
+    [DoesNotReturn]
+    public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
 }

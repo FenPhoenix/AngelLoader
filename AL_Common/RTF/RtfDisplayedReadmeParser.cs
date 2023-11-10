@@ -110,7 +110,7 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
 
-            char ch = (char)_rtfBytes[CurrentPos++];
+            char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             // Ordered by most frequently appearing first
             switch (ch)
