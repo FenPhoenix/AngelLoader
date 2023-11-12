@@ -244,17 +244,15 @@ internal static class RtfProcessing
             for (int i = 0; i < colorTable.Count; i++)
             {
                 Color currentColor = colorTable[i];
+#if !NETFRAMEWORK
                 if (i == 0 && currentColor.A == 0)
                 {
                     // We can just do the standard thing now, because with the sys color hook our default color
                     // is now our bright foreground color
-#if NETFRAMEWORK
                     colorEntriesBytesList.Add((byte)';');
                     continue;
-#else
-                    currentColor = DarkColors.Fen_DarkForeground;
-#endif
                 }
+#endif
 
                 // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
                 // white and that's a bit too bright.
