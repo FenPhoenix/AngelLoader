@@ -978,6 +978,7 @@ public sealed partial class RtfToTextConverter
         if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
         if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
         // For the font entries, we can't check a Dictionary's capacity nor set it, so... oh well.
+        // @NET5: I think .NET modern has dictionary clear methods?
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
 
         _inHandleFontTable = false;
