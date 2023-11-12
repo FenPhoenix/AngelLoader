@@ -165,6 +165,14 @@ public static partial class RTFParserCommon
         new Symbol("\\", 0, false, KeywordType.Character, '\\'),
 
         #endregion
+
+        #region Foreground color reset triggers
+
+        new Symbol("pard", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("sectd", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("plain", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+
+        #endregion
     };
 
     /*

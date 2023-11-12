@@ -83,7 +83,6 @@ public static partial class RTFParserCommon
         public readonly uint Param;
         public readonly int ParamLength;
 
-
         public UIntParamInsertItem(int index, uint param, InsertItemKind kind)
         {
             Index = index;
@@ -547,7 +546,8 @@ public static partial class RTFParserCommon
         HexEncodedChar,
         SkipNumberOfBytes,
         SkipDest,
-        ColorTable
+        ColorTable,
+        ForegroundColorReset
     }
 
     public enum KeywordType

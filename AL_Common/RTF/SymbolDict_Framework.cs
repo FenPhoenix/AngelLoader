@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if NETFRAMEWORK
+using System.Runtime.CompilerServices;
+#endif
 
 namespace AL_Common;
 

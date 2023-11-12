@@ -40,7 +40,7 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Symbol? LookUpControlSymbol(char ch)
         {
-            byte val = asso_values[ch];
+            var val = asso_values[ch];
             int key = 1 + val + val;
 
             if (key <= MAX_HASH_VALUE)

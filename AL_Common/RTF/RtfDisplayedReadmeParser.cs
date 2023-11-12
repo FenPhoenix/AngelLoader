@@ -23,7 +23,7 @@ public sealed partial class RtfDisplayedReadmeParser
     private bool _getColorTable;
     private bool _getLangs;
 
-    private List<UIntParamInsertItem>? _langItems;
+    private List<UIntParamInsertItem>? _insertItems;
 
     #endregion
 
@@ -42,19 +42,24 @@ public sealed partial class RtfDisplayedReadmeParser
             _getColorTable = getColorTable;
             _getLangs = getLangs;
 
+#if NETFRAMEWORK
             if (!getLangs && !getColorTable)
             {
-                return (false, ColorTable: _colorTable, LangItems: _langItems);
+                return (false, ColorTable: _colorTable, LangItems: _insertItems);
             }
+#endif
 
             RtfError error = ParseRtf();
+#if !NETFRAMEWORK
+            _colorTable ??= new List<Color> { Color.FromArgb(0, 0, 0, 0) };
+#endif
             return error == RtfError.OK
-                ? (true, ColorTable: _colorTable, LangItems: _langItems)
-                : (false, ColorTable: _colorTable, LangItems: _langItems);
+                ? (true, ColorTable: _colorTable, LangItems: _insertItems)
+                : (false, ColorTable: _colorTable, LangItems: _insertItems);
         }
         catch
         {
-            return (false, _colorTable, _langItems);
+            return (false, _colorTable, _insertItems);
         }
         finally
         {
@@ -80,15 +85,16 @@ public sealed partial class RtfDisplayedReadmeParser
         #endregion
 
         _colorTable = null;
-        _langItems = null;
+        _insertItems = null;
     }
 
     private RtfError ParseRtf()
     {
         while (CurrentPos < _rtfBytes.Length)
         {
+#if NETFRAMEWORK
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
-
+#endif
             char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             // Ordered by most frequently appearing first
@@ -173,6 +179,12 @@ public sealed partial class RtfDisplayedReadmeParser
                 {
                     return RtfError.OK;
                 }
+            case SpecialType.ForegroundColorReset:
+#if !NETFRAMEWORK
+                _insertItems ??= new List<UIntParamInsertItem>();
+                _insertItems.Add(new UIntParamInsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
+#endif
+                return RtfError.OK;
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
                 return RtfError.OK;
@@ -213,8 +225,8 @@ public sealed partial class RtfDisplayedReadmeParser
                     int langCodePage = LangToCodePage[val];
                     if (langCodePage == -1 && currentCodePage > -1)
                     {
-                        _langItems ??= new List<UIntParamInsertItem>();
-                        _langItems.Add(new UIntParamInsertItem(CurrentPos, (uint)currentCodePage, InsertItemKind.Lang));
+                        _insertItems ??= new List<UIntParamInsertItem>();
+                        _insertItems.Add(new UIntParamInsertItem(CurrentPos, (uint)currentCodePage, InsertItemKind.Lang));
                     }
                 }
             }
@@ -225,8 +237,8 @@ public sealed partial class RtfDisplayedReadmeParser
                     int langCodePage = LangToCodePage[val];
                     if (langCodePage > -1 && langCodePage != currentCodePage)
                     {
-                        _langItems ??= new List<UIntParamInsertItem>();
-                        _langItems.Add(new UIntParamInsertItem(CurrentPos, (uint)langCodePage, InsertItemKind.Lang));
+                        _insertItems ??= new List<UIntParamInsertItem>();
+                        _insertItems.Add(new UIntParamInsertItem(CurrentPos, (uint)langCodePage, InsertItemKind.Lang));
                     }
                 }
 
