@@ -244,7 +244,7 @@ internal static class RtfProcessing
             for (int i = 0; i < colorTable.Count; i++)
             {
                 Color currentColor = colorTable[i];
-#if !NETFRAMEWORK
+#if NETFRAMEWORK
                 if (i == 0 && currentColor.A == 0)
                 {
                     // We can just do the standard thing now, because with the sys color hook our default color
@@ -338,7 +338,9 @@ internal static class RtfProcessing
         We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
         */
 
+#if NETFRAMEWORK
         bool colorTableFound = false;
+#endif
         bool langWorkRequired = false;
 
         if (darkMode)
@@ -350,7 +352,9 @@ internal static class RtfProcessing
             preCheckForColorTableTimer.Start();
 #endif
 
+#if NETFRAMEWORK
             colorTableFound = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
+#endif
 
 #if PROCESS_README_TIME_TEST
             preCheckForColorTableTimer.Stop();
@@ -424,7 +428,11 @@ internal static class RtfProcessing
         (bool success, List<Color>? colorTable, List<UIntParamInsertItem>? insertItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
-                getColorTable: darkMode && colorTableFound,
+                getColorTable: darkMode
+#if NETFRAMEWORK
+                && colorTableFound
+#endif
+                ,
                 getLangs: langWorkRequired
 #if !NETFRAMEWORK
                 , getForegroundColorResetPoints: darkMode
@@ -448,7 +456,11 @@ internal static class RtfProcessing
 
         ListFast<byte>? colorEntriesBytesList = null;
 
-        if (success && darkMode && colorTableFound)
+        if (success && darkMode
+#if NETFRAMEWORK
+            && colorTableFound
+#endif
+            )
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
@@ -467,9 +479,15 @@ internal static class RtfProcessing
             return currentReadmeBytes;
         }
 
+        int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
         if (insertsRequired)
         {
-
+#if !NETFRAMEWORK
+            if (colorEntriesBytesList != null)
+            {
+                insertItems!.Insert(0, new UIntParamInsertItem(firstIndexPastHeader, 0, InsertItemKind.ForeColorReset));
+            }
+#endif
             for (int i = 0; i < insertItems!.Count; i++)
             {
                 UIntParamInsertItem item = insertItems[i];
@@ -491,7 +509,6 @@ internal static class RtfProcessing
             retBytes = new byte[retBytesLength];
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
-            int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
 
             int lastIndexSource = 0;
             int lastIndexDest = 0;

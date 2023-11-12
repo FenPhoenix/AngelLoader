@@ -1,12 +1,10 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
-using static AL_Common.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -75,10 +73,7 @@ internal sealed partial class RichTextBoxCustom
                 Rtf = GLMLConversion.GLMLToRTF(_currentReadmeBytes, _darkModeEnabled);
             }
         }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Un + "set dark mode to " + _darkModeEnabled, ex);
-        }
+        // Let exceptions propagate back, so we'll get the "unable to load readme" message.
         finally
         {
             SwitchOffPreloadState();
