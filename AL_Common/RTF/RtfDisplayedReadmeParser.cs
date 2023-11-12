@@ -33,7 +33,7 @@ public sealed partial class RtfDisplayedReadmeParser
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, List<UIntParamInsertItem>? LangItems)
+    public (bool Success, List<Color>? ColorTable, List<UIntParamInsertItem>? InsertItems)
     GetData(
         in ArrayWithLength<byte> rtfBytes,
         bool getColorTable,
@@ -58,7 +58,7 @@ public sealed partial class RtfDisplayedReadmeParser
 #if NETFRAMEWORK
             if (!getLangs && !getColorTable)
             {
-                return (false, ColorTable: _colorTable, LangItems: _insertItems);
+                return (false, ColorTable: _colorTable, InsertItems: _insertItems);
             }
 #endif
 
@@ -67,8 +67,8 @@ public sealed partial class RtfDisplayedReadmeParser
             _colorTable ??= new List<Color> { Color.FromArgb(0, 0, 0, 0) };
 #endif
             return error == RtfError.OK
-                ? (true, ColorTable: _colorTable, LangItems: _insertItems)
-                : (false, ColorTable: _colorTable, LangItems: _insertItems);
+                ? (true, ColorTable: _colorTable, InsertItems: _insertItems)
+                : (false, ColorTable: _colorTable, InsertItems: _insertItems);
         }
         catch
         {
