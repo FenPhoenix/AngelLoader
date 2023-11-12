@@ -58,6 +58,27 @@ public static partial class RTFParserCommon
 
     #endregion
 
+    public sealed class LangItem
+    {
+        private static int GetDigitsUpTo5(int number) =>
+            number <= 9 ? 1 :
+            number <= 99 ? 2 :
+            number <= 999 ? 3 :
+            number <= 9999 ? 4 :
+            5;
+
+        public int Index;
+        public readonly int CodePage;
+        public readonly int DigitsCount;
+
+        public LangItem(int index, int codePage)
+        {
+            Index = index;
+            CodePage = codePage;
+            DigitsCount = GetDigitsUpTo5(codePage);
+        }
+    }
+
     #region Conversion tables
 
     #region Charset to code page

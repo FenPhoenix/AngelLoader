@@ -7,7 +7,7 @@ using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
-using static AL_Common.RtfDisplayedReadmeParser;
+using static AL_Common.RTFParserCommon;
 
 namespace AngelLoader;
 
@@ -590,8 +590,8 @@ internal static class RtfProcessing
 
     private static void CopyInserts(
         List<LangItem> langItems,
-        ReadOnlySpan<byte> currentReadmeBytesSpan,
-        Span<byte> retBytesSpan,
+        ReadOnlySpan<byte> sourceBytesSpan,
+        Span<byte> destBytesSpan,
         int ansiCpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
@@ -603,15 +603,15 @@ internal static class RtfProcessing
             LangItem item = langItems[i];
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
-            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
-            bodySpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            ReadOnlySpan<byte> bodySpan = sourceBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
+            bodySpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ansiCpgSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            ansiCpgSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexDest += ansiCpgLength;
             ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
-            codePageSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            codePageSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexDest += codePageSpan.Length;
             plus += ansiCpgLength + codePageSpan.Length;
         }
