@@ -22,6 +22,9 @@ public sealed partial class RtfDisplayedReadmeParser
     private bool _foundColorTable;
     private bool _getColorTable;
     private bool _getLangs;
+#if !NETFRAMEWORK
+    private bool _getForegroundColorResetPoints;
+#endif
 
     private List<UIntParamInsertItem>? _insertItems;
 
@@ -31,7 +34,14 @@ public sealed partial class RtfDisplayedReadmeParser
 
     [PublicAPI]
     public (bool Success, List<Color>? ColorTable, List<UIntParamInsertItem>? LangItems)
-    GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
+    GetData(
+        in ArrayWithLength<byte> rtfBytes,
+        bool getColorTable,
+        bool getLangs
+#if !NETFRAMEWORK
+        , bool getForegroundColorResetPoints
+#endif
+        )
     {
         try
         {
@@ -41,6 +51,9 @@ public sealed partial class RtfDisplayedReadmeParser
 
             _getColorTable = getColorTable;
             _getLangs = getLangs;
+#if !NETFRAMEWORK
+            _getForegroundColorResetPoints = getForegroundColorResetPoints;
+#endif
 
 #if NETFRAMEWORK
             if (!getLangs && !getColorTable)
@@ -81,6 +94,9 @@ public sealed partial class RtfDisplayedReadmeParser
         _foundColorTable = false;
         _getColorTable = false;
         _getLangs = false;
+#if !NETFRAMEWORK
+        _getForegroundColorResetPoints = false;
+#endif
 
         #endregion
 
@@ -181,8 +197,11 @@ public sealed partial class RtfDisplayedReadmeParser
                 }
             case SpecialType.ForegroundColorReset:
 #if !NETFRAMEWORK
-                _insertItems ??= new List<UIntParamInsertItem>();
-                _insertItems.Add(new UIntParamInsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
+                if (_getForegroundColorResetPoints)
+                {
+                    _insertItems ??= new List<UIntParamInsertItem>();
+                    _insertItems.Add(new UIntParamInsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
+                }
 #endif
                 return RtfError.OK;
             default:

@@ -427,7 +427,11 @@ internal static class RtfProcessing
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: darkMode && colorTableFound,
-                getLangs: langWorkRequired);
+                getLangs: langWorkRequired
+#if !NETFRAMEWORK
+                , getForegroundColorResetPoints: darkMode
+#endif
+            );
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
