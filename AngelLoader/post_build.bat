@@ -79,7 +79,7 @@ if %PlatformName% == x86 (
 	del /F "%TargetDir%Licenses\EasyHook license.txt"
 )
 
-rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
+rem Exclude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
 "%system%xcopy" "%SolutionDir%docs\doc\English\*.html" "%TargetDir%doc\" /y /i
 "%system%xcopy" "%SolutionDir%docs\doc\English\images" "%TargetDir%doc\images" /y /i /e
 
