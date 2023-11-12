@@ -81,11 +81,14 @@ internal sealed class BufferedSubStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
+    // @NET5(SharpCompress): Figure out if we should get these working
+#if false
 #if !NETFRAMEWORK && !NETSTANDARD2_0
 
     public override int Read(Span<byte> buffer) => Stream.Read(buffer);
 
     public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
+#endif
 #endif
 }
