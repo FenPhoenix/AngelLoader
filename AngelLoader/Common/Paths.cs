@@ -227,12 +227,23 @@ internal static class Paths
     #endregion
 
     private static string? _sevenZipPath;
-    internal static string SevenZipPath => _sevenZipPath ??=
-        // Use a 64-bit version if possible for even more out-of-memory prevention...
-        // @X64: If we go x64-only, we can remove the 32-bit 7z and then we need to update this
-        Environment.Is64BitOperatingSystem
-            ? PathCombineFast_NoChecks(Startup, "7z64")
-            : PathCombineFast_NoChecks(Startup, "7z32");
+    // Use a 64-bit version if possible for even more out-of-memory prevention...
+    internal static string SevenZipPath
+    {
+        get
+        {
+#if !X64
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                return _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z32");
+            }
+            else
+#endif
+            {
+                return _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z64");
+            }
+        }
+    }
 
     private static string? _sevenZipExe;
     internal static string SevenZipExe => _sevenZipExe ??= PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
