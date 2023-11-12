@@ -1,23 +1,22 @@
-﻿#region .NET 5+ explanation
+﻿/*
+Here's the deal with this thing:
 
-/*
-tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something else (CoreHook works).
-HOWEVER, the GetSysColor hook crashes with an ExecutionEngineException upon return, always. All other hooks
-work.
+-On Framework, we need EasyHook.
+-On .NET modern, we need CoreHook.
+-On .NET modern, they've added the [SuppressGCTransition] attribute to the internal GetSysColor() extern function,
+ which improves performance but causes an ExecutionEngineException when hooked. Even when we use our own defined
+ p/invoke for it without the attribute, it still happens somehow. I don't know how this kind of thing works so
+ whatever.
 
--2022-11-09: I posted a bug report and they told me it's because GetSysColor() has the SuppressGCTransition
- attribute on it in newer .NETs. Nothing that can be done.
+When we can't hook GetSysColor():
+-We need to use a heavier method of setting the default rtf foreground color (inserting \cf0 control words).
+-DateTimePickers can't be themed properly, so we draw them dark but when they're being edited we have to let them
+ be drawn normally (light).
+-Text highlight color is normal blue instead of our custom blue.
 
-With Reloaded.Hooks, I think we can bring back the GetSysColorBrush() hook for 64-bit. I think, anyway. I don't
-remember for certain.
-
-GetSysColor is necessary to theme the DateTimePicker; the selection color for textboxes; and the default text
-color for the RichTextBox (though the latter CAN be worked around - clunkily - by making the default color explicit
-in the color table and then inserting \cf0 control words after every \pard, \sectd, and \plain (I think that's
-all of them...)).
+These are the small sacrifices that must be made to get the benefits of .NET modern (blazing performance and
+future possibilities like Linux support and new UIs etc.)
 */
-
-#endregion
 
 using System;
 using System.Collections.Generic;
