@@ -99,8 +99,23 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
     {
         using var gc = new Native.GraphicsContext(Handle);
 
+#if !NETFRAMEWORK
+        if (!Focused)
+        {
+            gc.G.FillRectangle(DarkColors.LightBackgroundBrush, ClientRectangle);
+        }
+#endif
+
         gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
         gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
+
+#if !NETFRAMEWORK
+        if (!Focused)
+        {
+            TextRenderer.DrawText(gc.G, Value.ToShortDateString(), Font, new Point(4, 3), DarkColors.LightText,
+                DarkColors.LightBackground);
+        }
+#endif
 
         DrawButton(gc.G);
     }
