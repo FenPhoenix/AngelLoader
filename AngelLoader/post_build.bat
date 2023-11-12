@@ -21,6 +21,7 @@ rem ---
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%TargetDir%\7z32\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%TargetDir%\7z64\" /y /i
 "%system%xcopy" "%SolutionDir%bin_dependencies\*.ttf" "%TargetDir%" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\*.dll" "%TargetDir%" /y /i
 
 rem Dumb hack to get rid of extraneous dll files because ludicrously
 rem xcopy requires you to make an entire file just to list excludes, rather than
@@ -33,8 +34,11 @@ del /F "%TargetDir%EasyLoad*.dll"
 del /F "%TargetDir%System.Text.Encoding.CodePages.dll"
 if %PlatformName% == x86 (
 del /F "%TargetDir%EasyHook64.dll"
+del /F "%TargetDir%corehook64.dll"
+del /F "%TargetDir%CoreHook.dll"
 ) else (
 del /F "%TargetDir%EasyHook32.dll"
+del /F "%TargetDir%EasyHook.dll"
 )
 del /F "%TargetDir%EasyHook32Svc.exe"
 del /F "%TargetDir%EasyHook64Svc.exe"
@@ -53,6 +57,12 @@ if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%ProjectDir%Resources\AngelLoader.ico" "%TargetDir%" /y /i
 
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%TargetDir%" /y /i /e
+
+if %PlatformName% == x86 (
+del /F "%TargetDir%Licenses\CoreHook license.txt"
+) else (
+del /F "%TargetDir%Licenses\EasyHook license.txt"
+)
 
 rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
 "%system%xcopy" "%SolutionDir%docs\doc\English\*.html" "%TargetDir%doc\" /y /i

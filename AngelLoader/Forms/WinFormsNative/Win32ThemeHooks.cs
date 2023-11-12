@@ -1,7 +1,7 @@
 ﻿#region .NET 5+ explanation
 
 /*
-tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something else (MinHook.NET works).
+tl;dr: For .NET 5+, EasyHook doesn't work and you must replace it with something else (CoreHook works).
 HOWEVER, the GetSysColor hook crashes with an ExecutionEngineException upon return, always. All other hooks
 work.
 
@@ -26,7 +26,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+#if X64
+using CoreHook;
+#else
 using EasyHook;
+#endif
 
 namespace AngelLoader.Forms.WinFormsNative;
 
@@ -38,12 +42,14 @@ internal static class Win32ThemeHooks
 
     #region GetSysColor
 
+#if NETFRAMEWORK
     private static LocalHook? _getSysColorHook;
 
     private static GetSysColorDelegate? GetSysColor_Original;
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
     private delegate int GetSysColorDelegate(int nIndex);
+#endif
 
     #endregion
 
@@ -105,16 +111,19 @@ internal static class Win32ThemeHooks
 
         try
         {
+#if NETFRAMEWORK
             (_getSysColorHook, GetSysColor_Original) = InstallHook<GetSysColorDelegate>(
                 "user32.dll",
                 "GetSysColor",
                 GetSysColor_Hooked);
+#endif
 
             // @x64 (GetSysColorBrush hook):
             // Fails with 'STATUS_NOT_SUPPORTED: Hooking near conditional jumps is not supported. (Code: 487)'
             // on x64. Sigh... Fortunately, this thing seems to only be used for the Win7 non-Aero scroll bar
             // corners...? I don't see any difference with this disabled on Win10. So... not the worst thing...
-#if !X64
+            // 2023-11-11: This seems to work with CoreHook.
+#if !NETFRAMEWORK || !X64
             (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
                 "user32.dll",
                 "GetSysColorBrush",
@@ -134,7 +143,9 @@ internal static class Win32ThemeHooks
         catch
         {
             // If we fail, oh well, just keep the classic-mode colors then... better than nothing
+#if NETFRAMEWORK
             _getSysColorHook?.Dispose();
+#endif
             _getSysColorBrushHook?.Dispose();
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
@@ -232,6 +243,7 @@ internal static class Win32ThemeHooks
             : GetThemeColor_Original!(hTheme, iPartId, iStateId, iPropId, out pColor);
     }
 
+#if NETFRAMEWORK
     private static int GetSysColor_Hooked(int nIndex)
     {
         return !_disableHookedTheming && Global.Config.DarkMode
@@ -266,6 +278,7 @@ internal static class Win32ThemeHooks
             }
             : GetSysColor_Original!(nIndex);
     }
+#endif
 
     private static IntPtr GetSysColorBrush_Hooked(int nIndex)
     {
