@@ -1,5 +1,7 @@
 ﻿//#define PROCESS_README_TIME_TEST
 
+// @NET5(Rtf default forecolor): Visually check every rtf file to make sure the forecolor matches Framework for all
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
