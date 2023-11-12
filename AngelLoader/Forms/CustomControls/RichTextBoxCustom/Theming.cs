@@ -66,6 +66,8 @@ internal sealed partial class RichTextBoxCustom
                     ? preProcessedRtf.Bytes
                     : RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
                 using var ms = new MemoryStream(bytes);
+                // @NET5: On modern .NET, RichTextBox now throws if the rtf is broken.
+                // We should handle this gracefully, with the "unable to load readme" message or whatever.
                 LoadFile(ms, RichTextBoxStreamType.RichText);
             }
             else if (_currentReadmeType == ReadmeType.GLML)
