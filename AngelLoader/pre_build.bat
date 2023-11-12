@@ -7,9 +7,11 @@ set TargetDir=%~2
 set ProjectDir=%~3
 set SolutionDir=%~4
 set PlatformName=%~5
+set TargetFramework=%~6
 
 echo SolutionDir: %SolutionDir%
 echo PlatformName: %PlatformName%
+echo TargetFramework: %TargetFramework%
 
 rem Autogenerate code
 rem ---

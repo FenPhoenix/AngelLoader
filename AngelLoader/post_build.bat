@@ -7,6 +7,7 @@ set TargetDir=%~2
 set ProjectDir=%~3
 set SolutionDir=%~4
 set PlatformName=%~5
+set TargetFramework=%~6
 
 rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
 
@@ -32,15 +33,28 @@ del /F "%TargetDir%*TestPlatform*.dll"
 del /F "%TargetDir%testhost.dll"
 del /F "%TargetDir%EasyLoad*.dll"
 del /F "%TargetDir%System.Text.Encoding.CodePages.dll"
+
 if %PlatformName% == x86 (
-del /F "%TargetDir%EasyHook64.dll"
-del /F "%TargetDir%corehook64.dll"
-del /F "%TargetDir%CoreHook.dll"
+	del /F "%TargetDir%EasyHook64.dll"
+	del /F "%TargetDir%corehook64.dll"
+	del /F "%TargetDir%CoreHook.dll"
 ) else (
-del /F "%TargetDir%EasyHook32.dll"
-del /F "%TargetDir%EasyHook.dll"
-rd /S /Q "%TargetDir%7z32"
+	del /F "%TargetDir%EasyHook32.dll"
+	del /F "%TargetDir%EasyHook.dll"
+	rd /S /Q "%TargetDir%7z32"
 )
+
+if "%TargetFramework:~0,4%"=="net4" (
+	del /F "%TargetDir%AngelLoader.dll"
+	del /F "%TargetDir%*.runtimeconfig.json"
+) else (
+	del /F "%TargetDir%*.exe.config"
+	del /F "%TargetDir%System.Buffers.dll"
+	del /F "%TargetDir%System.Memory.dll"
+	del /F "%TargetDir%System.Numerics.Vectors.dll"
+	del /F "%TargetDir%System.Runtime.CompilerServices.Unsafe.dll"
+)
+
 del /F "%TargetDir%EasyHook32Svc.exe"
 del /F "%TargetDir%EasyHook64Svc.exe"
 del /F "%TargetDir%.gitkeep"
@@ -60,9 +74,9 @@ if %ConfigurationName% == Release_Public (
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%TargetDir%" /y /i /e
 
 if %PlatformName% == x86 (
-del /F "%TargetDir%Licenses\CoreHook license.txt"
+	del /F "%TargetDir%Licenses\CoreHook license.txt"
 ) else (
-del /F "%TargetDir%Licenses\EasyHook license.txt"
+	del /F "%TargetDir%Licenses\EasyHook license.txt"
 )
 
 rem Exlude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
@@ -72,5 +86,5 @@ rem Exlude "history" dir without having to copy and delete it afterwards (it's l
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.
 if exist "%ProjectDir%post_build_fen_personal_dev.bat" (
-	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%" "%PlatformName%"
+	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%" "%PlatformName%" "%TargetFramework%"
 )

@@ -168,10 +168,10 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot;" WorkingDirectory="$(ProjectDir)" />
+		<Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot; &quot;$(TargetFramework)&quot;" WorkingDirectory="$(ProjectDir)" />
 	</Target>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot;" WorkingDirectory="$(ProjectDir)" />
+		<Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot; &quot;$(TargetFramework)&quot;" WorkingDirectory="$(ProjectDir)" />
 	</Target>
 
 </Project>
