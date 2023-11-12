@@ -168,9 +168,9 @@ public static partial class RTFParserCommon
 
         #region Foreground color reset triggers
 
-        new Symbol("pard", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
-        new Symbol("sectd", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
-        new Symbol("plain", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("pard", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
+        new Symbol("sectd", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
+        new Symbol("plain", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
 
         #endregion
     };

@@ -139,7 +139,7 @@ public static partial class RTFParserCommon
 // Entry 0
             new Symbol("ansi", 1252, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
 // Entry 84
-            new Symbol("sectd", 20, true, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
+            new Symbol("sectd", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
             null,
 // Entry 34
             new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
@@ -193,7 +193,7 @@ public static partial class RTFParserCommon
 // Entry 70
             new Symbol("themedata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
 // Entry 85
-            new Symbol("plain", 20, true, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
+            new Symbol("plain", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
 // Entry 77
             new Symbol("panose", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
 // Entry 76
@@ -272,7 +272,7 @@ public static partial class RTFParserCommon
             new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
             null, null,
 // Entry 83
-            new Symbol("pard", 20, true, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
+            new Symbol("pard", 0, false, KeywordType.Special, (int)SpecialType.ForegroundColorReset),
             null, null, null, null, null, null,
 // Entry 19
             new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
