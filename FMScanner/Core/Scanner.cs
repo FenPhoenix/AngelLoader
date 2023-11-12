@@ -276,12 +276,12 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
     [PublicAPI]
-    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions(), new ScannerTDMContext())
+    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions(), new ScannerTDMContext(""))
     {
     }
 
     [PublicAPI]
-    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions(), new ScannerTDMContext())
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions(), new ScannerTDMContext(""))
     {
     }
 #endif
