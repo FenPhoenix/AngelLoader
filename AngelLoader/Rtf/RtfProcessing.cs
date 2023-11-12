@@ -136,6 +136,15 @@ internal static class RtfProcessing
         (byte)'f'
     };
 
+    private static readonly byte[] _http =
+    {
+        (byte)'h',
+        (byte)'t',
+        (byte)'t',
+        (byte)'p',
+        (byte)':'
+    };
+
     #endregion
 
     #endregion
@@ -435,9 +444,19 @@ internal static class RtfProcessing
             {
                 UIntParamInsertItem item = insertItems[i];
                 item.Index += colorTableEntryLength;
-                int keywordLength = item.Kind == InsertItemKind.Lang ? _ansicpg.Length : _cf.Length;
-                // +1 for adding a space after the digits
-                insertsCombinedLength += keywordLength + item.ParamLength + 1;
+                int keywordLength = item.Kind switch
+                {
+                    InsertItemKind.Lang => _ansicpg.Length,
+                    InsertItemKind.Http => _http.Length,
+                    _ => _cf.Length
+                };
+
+                insertsCombinedLength += keywordLength;
+                if (item.Kind != InsertItemKind.Http)
+                {
+                    // +1 for adding a space after the digits
+                    insertsCombinedLength += item.ParamLength + 1;
+                }
             }
         }
 
@@ -574,24 +593,31 @@ internal static class RtfProcessing
         {
             UIntParamInsertItem item = insertItems[i];
 
-            ListFast<byte> paramBytes = UIntParamToBytes(item.Param, item.ParamLength);
-
             ReadOnlySpan<byte> bodySpan = sourceBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
             bodySpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ReadOnlySpan<byte> keywordSpan = (item.Kind == InsertItemKind.Lang ? _ansicpg : _cf).AsSpan();
+            ReadOnlySpan<byte> keywordSpan = (item.Kind switch
+            {
+                InsertItemKind.Lang => _ansicpg,
+                InsertItemKind.Http => _http,
+                _ => _cf
+            }).AsSpan();
             int keywordLength = keywordSpan.Length;
 
             keywordSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexDest += keywordLength;
 
-            ReadOnlySpan<byte> paramSpan = paramBytes.ItemsArray.AsSpan().Slice(0, paramBytes.Count);
-            paramSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-
-            lastIndexDest += paramSpan.Length;
-            plus += keywordLength + paramSpan.Length;
+            plus += keywordLength;
+            if (item.Kind != InsertItemKind.Http)
+            {
+                ListFast<byte> paramBytes = UIntParamToBytes(item.Param, item.ParamLength);
+                ReadOnlySpan<byte> paramSpan = paramBytes.ItemsArray.AsSpan().Slice(0, paramBytes.Count);
+                paramSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
+                lastIndexDest += paramSpan.Length;
+                plus += paramSpan.Length;
+            }
         }
 
         return;

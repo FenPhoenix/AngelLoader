@@ -61,9 +61,11 @@ public static partial class RTFParserCommon
     public enum InsertItemKind
     {
         Lang,
-        ForeColorReset
+        ForeColorReset,
+        Http
     }
 
+    // @RTF(Insert item): The logic for these is stupid, time to clean it up
     public sealed class UIntParamInsertItem
     {
         private static int GetParamLength(uint number) =>
@@ -88,7 +90,7 @@ public static partial class RTFParserCommon
             Index = index;
             Param = param;
             Kind = kind;
-            ParamLength = GetParamLength(param);
+            ParamLength = kind == InsertItemKind.Http ? 0 : GetParamLength(param);
         }
     }
 
