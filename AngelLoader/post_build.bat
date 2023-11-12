@@ -39,6 +39,7 @@ del /F "%TargetDir%CoreHook.dll"
 ) else (
 del /F "%TargetDir%EasyHook32.dll"
 del /F "%TargetDir%EasyHook.dll"
+rd /S /Q "%TargetDir%7z32"
 )
 del /F "%TargetDir%EasyHook32Svc.exe"
 del /F "%TargetDir%EasyHook64Svc.exe"
