@@ -58,24 +58,38 @@ public static partial class RTFParserCommon
 
     #endregion
 
-    public sealed class LangItem
+    public enum InsertItemKind
     {
-        private static int GetDigitsUpTo5(int number) =>
+        Lang,
+        ForeColorReset
+    }
+
+    public sealed class UIntParamInsertItem
+    {
+        private static int GetParamLength(uint number) =>
             number <= 9 ? 1 :
             number <= 99 ? 2 :
             number <= 999 ? 3 :
             number <= 9999 ? 4 :
-            5;
+            number <= 99999 ? 5 :
+            number <= 999999 ? 6 :
+            number <= 9999999 ? 7 :
+            number <= 99999999 ? 8 :
+            number <= 999999999 ? 9 :
+            10;
 
+        public readonly InsertItemKind Kind;
         public int Index;
-        public readonly int CodePage;
-        public readonly int DigitsCount;
+        public readonly uint Param;
+        public readonly int ParamLength;
 
-        public LangItem(int index, int codePage)
+
+        public UIntParamInsertItem(int index, uint param, InsertItemKind kind)
         {
             Index = index;
-            CodePage = codePage;
-            DigitsCount = GetDigitsUpTo5(codePage);
+            Param = param;
+            Kind = kind;
+            ParamLength = GetParamLength(param);
         }
     }
 

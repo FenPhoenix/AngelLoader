@@ -23,14 +23,14 @@ public sealed partial class RtfDisplayedReadmeParser
     private bool _getColorTable;
     private bool _getLangs;
 
-    private List<LangItem>? _langItems;
+    private List<UIntParamInsertItem>? _langItems;
 
     #endregion
 
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
+    public (bool Success, List<Color>? ColorTable, List<UIntParamInsertItem>? LangItems)
     GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
@@ -211,10 +211,10 @@ public sealed partial class RtfDisplayedReadmeParser
                 if (val is > -1 and <= MaxLangNumIndex)
                 {
                     int langCodePage = LangToCodePage[val];
-                    if (langCodePage == -1)
+                    if (langCodePage == -1 && currentCodePage > -1)
                     {
-                        _langItems ??= new List<LangItem>();
-                        _langItems.Add(new LangItem(CurrentPos, currentCodePage));
+                        _langItems ??= new List<UIntParamInsertItem>();
+                        _langItems.Add(new UIntParamInsertItem(CurrentPos, (uint)currentCodePage, InsertItemKind.Lang));
                     }
                 }
             }
@@ -225,8 +225,8 @@ public sealed partial class RtfDisplayedReadmeParser
                     int langCodePage = LangToCodePage[val];
                     if (langCodePage > -1 && langCodePage != currentCodePage)
                     {
-                        _langItems ??= new List<LangItem>();
-                        _langItems.Add(new LangItem(CurrentPos, langCodePage));
+                        _langItems ??= new List<UIntParamInsertItem>();
+                        _langItems.Add(new UIntParamInsertItem(CurrentPos, (uint)langCodePage, InsertItemKind.Lang));
                     }
                 }
 

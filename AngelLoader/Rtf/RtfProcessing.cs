@@ -162,8 +162,8 @@ internal static class RtfProcessing
 
     #region Langs
 
-    // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
+    // uint max digits (10) + 1 for adding a space after the digits
+    private static readonly ListFast<byte> _paramBytes = new(11);
 
     private static readonly byte[] _lang =
     {
@@ -184,6 +184,13 @@ internal static class RtfProcessing
         (byte)'c',
         (byte)'p',
         (byte)'g'
+    };
+
+    private static readonly byte[] _cf =
+    {
+        (byte)'\\',
+        (byte)'c',
+        (byte)'f'
     };
 
     #endregion
@@ -415,7 +422,7 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, List<LangItem>? langItems) =
+        (bool success, List<Color>? colorTable, List<UIntParamInsertItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: darkMode && colorTableFound,
@@ -458,10 +465,10 @@ internal static class RtfProcessing
 
             for (int i = 0; i < langItems.Count; i++)
             {
-                LangItem item = langItems[i];
+                UIntParamInsertItem item = langItems[i];
                 item.Index += colorTableEntryLength;
                 // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
+                extraAnsiCpgCombinedLength += ansiCpgLength + item.ParamLength + 1;
             }
         }
 
@@ -506,7 +513,7 @@ internal static class RtfProcessing
 
             if (success && langWorkRequired && langItems?.Count > 0)
             {
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan.Slice(lastIndexSource, (lastClosingBraceIndex - lastIndexSource));
@@ -575,7 +582,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan.Slice(lastIndexSource).CopyTo(retBytesSpan.Slice(lastIndexDest));
@@ -589,49 +596,53 @@ internal static class RtfProcessing
     }
 
     private static void CopyInserts(
-        List<LangItem> langItems,
+        List<UIntParamInsertItem> insertItems,
         ReadOnlySpan<byte> sourceBytesSpan,
         Span<byte> destBytesSpan,
-        int ansiCpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
     {
         int plus = 0;
-        ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
-        for (int i = 0; i < langItems.Count; i++)
+        for (int i = 0; i < insertItems.Count; i++)
         {
-            LangItem item = langItems[i];
-            ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
+            UIntParamInsertItem item = insertItems[i];
+
+            ListFast<byte> paramBytes = UIntParamToBytes(item.Param, item.ParamLength);
 
             ReadOnlySpan<byte> bodySpan = sourceBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
             bodySpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ansiCpgSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-            lastIndexDest += ansiCpgLength;
-            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
-            codePageSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-            lastIndexDest += codePageSpan.Length;
-            plus += ansiCpgLength + codePageSpan.Length;
+            ReadOnlySpan<byte> keywordSpan = (item.Kind == InsertItemKind.Lang ? _ansicpg : _cf).AsSpan();
+            int keywordLength = keywordSpan.Length;
+
+            keywordSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
+            lastIndexDest += keywordLength;
+
+            ReadOnlySpan<byte> paramSpan = paramBytes.ItemsArray.AsSpan().Slice(0, paramBytes.Count);
+            paramSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
+
+            lastIndexDest += paramSpan.Length;
+            plus += keywordLength + paramSpan.Length;
         }
 
         return;
 
-        static ListFast<byte> CodePageToBytes(int codePage, int digits)
+        static ListFast<byte> UIntParamToBytes(uint param, int digits)
         {
-            _codePageBytes.ClearFast();
+            _paramBytes.ClearFast();
 
             for (int i = 0; i < digits; i++)
             {
-                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
-                codePage /= 10;
+                _paramBytes.InsertAtZeroFast((byte)((param % 10) + '0'));
+                param /= 10;
             }
 
             // Use the option for control words to have a space after them, for safety
-            _codePageBytes.Add((byte)' ');
+            _paramBytes.Add((byte)' ');
 
-            return _codePageBytes;
+            return _paramBytes;
         }
     }
 }
