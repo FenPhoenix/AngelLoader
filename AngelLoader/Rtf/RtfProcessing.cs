@@ -123,34 +123,6 @@ internal static class RtfProcessing
         (byte)'g'
     };
 
-    private static readonly byte[] _ansicpg =
-    {
-        (byte)'\\',
-        (byte)'a',
-        (byte)'n',
-        (byte)'s',
-        (byte)'i',
-        (byte)'c',
-        (byte)'p',
-        (byte)'g'
-    };
-
-    private static readonly byte[] _cf =
-    {
-        (byte)'\\',
-        (byte)'c',
-        (byte)'f'
-    };
-
-    private static readonly byte[] _http =
-    {
-        (byte)'h',
-        (byte)'t',
-        (byte)'t',
-        (byte)'p',
-        (byte)':'
-    };
-
     #endregion
 
     #endregion
@@ -383,7 +355,7 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, List<UIntParamInsertItem>? insertItems) =
+        (bool success, List<Color>? colorTable, List<InsertItem>? insertItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: darkMode
@@ -448,17 +420,12 @@ internal static class RtfProcessing
 #endif
             for (int i = 0; i < insertItems!.Count; i++)
             {
-                UIntParamInsertItem item = insertItems[i];
+                InsertItem item = insertItems[i];
                 item.Index += colorTableEntryLength;
-                int keywordLength = item.Kind switch
-                {
-                    InsertItemKind.Lang => _ansicpg.Length,
-                    InsertItemKind.Http => _http.Length,
-                    _ => _cf.Length
-                };
 
-                insertsCombinedLength += keywordLength;
-                if (item.Kind != InsertItemKind.Http)
+                insertsCombinedLength += item.Bytes.Length;
+
+                if (item.IsKeyword)
                 {
                     // +1 for adding a space after the digits
                     insertsCombinedLength += item.ParamLength + 1;
@@ -588,7 +555,7 @@ internal static class RtfProcessing
     }
 
     private static void CopyInserts(
-        List<UIntParamInsertItem> insertItems,
+        List<InsertItem> insertItems,
         ReadOnlySpan<byte> sourceBytesSpan,
         Span<byte> destBytesSpan,
         ref int lastIndexSource,
@@ -597,26 +564,21 @@ internal static class RtfProcessing
         int plus = 0;
         for (int i = 0; i < insertItems.Count; i++)
         {
-            UIntParamInsertItem item = insertItems[i];
+            InsertItem item = insertItems[i];
 
             ReadOnlySpan<byte> bodySpan = sourceBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
             bodySpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ReadOnlySpan<byte> keywordSpan = (item.Kind switch
-            {
-                InsertItemKind.Lang => _ansicpg,
-                InsertItemKind.Http => _http,
-                _ => _cf
-            }).AsSpan();
-            int keywordLength = keywordSpan.Length;
+            ReadOnlySpan<byte> insertBytesSpan = item.Bytes.AsSpan();
+            int insertBytesLength = insertBytesSpan.Length;
 
-            keywordSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-            lastIndexDest += keywordLength;
+            insertBytesSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
+            lastIndexDest += insertBytesLength;
 
-            plus += keywordLength;
-            if (item.Kind != InsertItemKind.Http)
+            plus += insertBytesLength;
+            if (item.IsKeyword)
             {
                 ListFast<byte> paramBytes = UIntParamToBytes(item.Param, item.ParamLength);
                 ReadOnlySpan<byte> paramSpan = paramBytes.ItemsArray.AsSpan().Slice(0, paramBytes.Count);

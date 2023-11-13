@@ -58,6 +58,35 @@ public static partial class RTFParserCommon
 
     #endregion
 
+    private static readonly byte[][] InsertByteArrays =
+    {
+        new[]
+        {
+            (byte)'\\',
+            (byte)'a',
+            (byte)'n',
+            (byte)'s',
+            (byte)'i',
+            (byte)'c',
+            (byte)'p',
+            (byte)'g'
+        },
+        new[]
+        {
+            (byte)'\\',
+            (byte)'c',
+            (byte)'f'
+        },
+        new[]
+        {
+            (byte)'h',
+            (byte)'t',
+            (byte)'t',
+            (byte)'p',
+            (byte)':'
+        }
+    };
+
     public enum InsertItemKind
     {
         Lang,
@@ -66,7 +95,7 @@ public static partial class RTFParserCommon
     }
 
     // @RTF(Insert item): The logic for these is stupid, time to clean it up
-    public sealed class UIntParamInsertItem
+    public sealed class InsertItem
     {
         private static int GetParamLength(uint number) =>
             number <= 9 ? 1 :
@@ -80,17 +109,45 @@ public static partial class RTFParserCommon
             number <= 999999999 ? 9 :
             10;
 
+        public readonly byte[] Bytes;
+
         public readonly InsertItemKind Kind;
         public int Index;
         public readonly uint Param;
         public readonly int ParamLength;
+        public readonly bool IsKeyword;
 
-        public UIntParamInsertItem(int index, uint param, InsertItemKind kind)
+        public InsertItem(int index, uint param, InsertItemKind kind)
         {
             Index = index;
             Param = param;
             Kind = kind;
-            ParamLength = kind == InsertItemKind.Http ? 0 : GetParamLength(param);
+
+            Bytes = InsertByteArrays[(int)kind];
+
+            if (kind == InsertItemKind.Http)
+            {
+                ParamLength = 0;
+                IsKeyword = false;
+            }
+            else
+            {
+                ParamLength =  GetParamLength(param);
+                IsKeyword = true;
+            }
+        }
+
+        public InsertItem(int index, InsertItemKind kind)
+        {
+            Index = index;
+            Param = 0;
+            Kind = kind;
+
+            Bytes = InsertByteArrays[(int)kind];
+
+            ParamLength = 0;
+
+            IsKeyword = false;
         }
     }
 
