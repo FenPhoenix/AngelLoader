@@ -169,7 +169,7 @@ internal static class Native
 
     #region Reader mode
 
-    internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
+    internal delegate bool TranslateDispatchCallbackDelegate(ref MSG lpmsg);
 
     internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
 
@@ -180,6 +180,24 @@ internal static class Native
         //ZeroCursor = 0x01,
         VerticalOnly = 0x02,
         //HorizontalOnly = 0x04
+    }
+
+    /*
+    The managed Message struct may have its fields in a different order than the native one. We were getting
+    very weird reader mode behavior with the RichTextBox on .NET 7. They've apparently fixed it for .NET 8,
+    but let's use this explicit structure to guarantee no problems in the future.
+    https://github.com/dotnet/winforms/issues/8062
+    https://github.com/dotnet/winforms/pull/8063
+    */
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MSG
+    {
+        public IntPtr HWnd;
+        public uint Msg;
+        public IntPtr WParam;
+        public IntPtr LParam;
+        public uint time;
+        public Point pt;
     }
 
     [StructLayout(LayoutKind.Sequential)]
