@@ -178,6 +178,8 @@ internal sealed partial class RichTextBoxCustom
 
     #region Better reader mode
 
+    // @NET5(RichTextBox): Reader mode wasn't working correctly when I was visually checking readmes in .NET modern
+
     private readonly Timer _autoScrollTimer = new Timer { Interval = 10 };
     private int _scrollIncrementY;
     private Rectangle _cursorScrollBounds = new Rectangle(0, 0, 26, 26);
