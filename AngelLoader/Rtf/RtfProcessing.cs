@@ -1,13 +1,5 @@
 ﻿//#define PROCESS_README_TIME_TEST
 
-/*
-@NET5(Rtf default forecolor): Visually check every rtf file to make sure the forecolor matches Framework for all
-
-@NET5(RtfProcessing - tables): Tables are the fuckedest thing I've seen in my life.
-Getting their text to be dark-on-light AND not making the rest of the non-table text also dark (or vice versa)
-is the most impossible piece of flaming garbage ever conceived.
-We could try just making their backgrounds dark. Different behavior than Framework, but at least it's readable.
-*/
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,7 +7,7 @@ using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
-using static AL_Common.RTFParserCommon;
+using static AL_Common.RtfDisplayedReadmeParser;
 
 namespace AngelLoader;
 
@@ -111,8 +103,8 @@ internal static class RtfProcessing
 
     #region Langs
 
-    // uint max digits (10) + 1 for adding a space after the digits
-    private static readonly ListFast<byte> _paramBytes = new(11);
+    // +1 for adding a space after the digits
+    private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
 
     private static readonly byte[] _lang =
     {
@@ -120,6 +112,18 @@ internal static class RtfProcessing
         (byte)'l',
         (byte)'a',
         (byte)'n',
+        (byte)'g'
+    };
+
+    private static readonly byte[] _ansicpg =
+    {
+        (byte)'\\',
+        (byte)'a',
+        (byte)'n',
+        (byte)'s',
+        (byte)'i',
+        (byte)'c',
+        (byte)'p',
         (byte)'g'
     };
 
@@ -173,8 +177,8 @@ internal static class RtfProcessing
         {
             for (int i = 0; i < colorTable.Count; i++)
             {
+                Color invertedColor;
                 Color currentColor = colorTable[i];
-#if NETFRAMEWORK
                 if (i == 0 && currentColor.A == 0)
                 {
                     // We can just do the standard thing now, because with the sys color hook our default color
@@ -182,15 +186,16 @@ internal static class RtfProcessing
                     colorEntriesBytesList.Add((byte)';');
                     continue;
                 }
-#endif
-
-                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
-                // white and that's a bit too bright.
-                Color invertedColor = currentColor is { R: 0, G: 0, B: 0 }
-                    ? DarkColors.Fen_DarkForeground
-                    : ColorIsTheSameAsBackground(currentColor)
-                        ? DarkColors.Fen_DarkBackground
-                        : ColorUtils.InvertLightness(currentColor);
+                else
+                {
+                    // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                    // white and that's a bit too bright.
+                    invertedColor = currentColor is { R: 0, G: 0, B: 0 }
+                        ? DarkColors.Fen_DarkForeground
+                        : ColorIsTheSameAsBackground(currentColor)
+                            ? DarkColors.Fen_DarkBackground
+                            : ColorUtils.InvertLightness(currentColor);
+                }
 
                 colorEntriesBytesList.AddRange_Large(_redFieldBytes);
                 colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
@@ -268,9 +273,7 @@ internal static class RtfProcessing
         We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
         */
 
-#if NETFRAMEWORK
         bool colorTableFound = false;
-#endif
         bool langWorkRequired = false;
 
         if (darkMode)
@@ -282,9 +285,7 @@ internal static class RtfProcessing
             preCheckForColorTableTimer.Start();
 #endif
 
-#if NETFRAMEWORK
             colorTableFound = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
-#endif
 
 #if PROCESS_README_TIME_TEST
             preCheckForColorTableTimer.Stop();
@@ -308,7 +309,7 @@ internal static class RtfProcessing
         {
             (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
             if ((start | end) > -1 &&
-                end - (start + 5) <= MaxLangNumDigits)
+                end - (start + 5) <= RTFParserCommon.MaxLangNumDigits)
             {
                 int num = 0;
                 for (int i = start + 5; i < end; i++)
@@ -321,9 +322,9 @@ internal static class RtfProcessing
                     }
                 }
 
-                if (num <= MaxLangNumIndex)
+                if (num <= RTFParserCommon.MaxLangNumIndex)
                 {
-                    int codePage = LangToCodePage[num];
+                    int codePage = RTFParserCommon.LangToCodePage[num];
                     // The only known broken readmes only need code page 1251 to fix them, so for now let's just
                     // only support that, to exclude as many readmes as possible from an expensive full parse.
 #if true
@@ -355,19 +356,11 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, List<InsertItem>? insertItems) =
+        (bool success, List<Color>? colorTable, List<LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
-                getColorTable: darkMode
-#if NETFRAMEWORK
-                && colorTableFound
-#endif
-                ,
-                getLangs: langWorkRequired
-#if !NETFRAMEWORK
-                , getForegroundColorResetPoints: darkMode
-#endif
-            );
+                getColorTable: darkMode && colorTableFound,
+                getLangs: langWorkRequired);
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
@@ -386,50 +379,30 @@ internal static class RtfProcessing
 
         ListFast<byte>? colorEntriesBytesList = null;
 
-        if (success && darkMode
-#if NETFRAMEWORK
-            && colorTableFound
-#endif
-            )
+        if (success && darkMode && colorTableFound)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
         }
 
-        int insertsCombinedLength = 0;
+        int extraAnsiCpgCombinedLength = 0;
+        int ansiCpgLength = _ansicpg.Length;
 
-        bool insertsRequired = success
-#if NETFRAMEWORK
-                               && langWorkRequired
-#endif
-                               && insertItems?.Count > 0;
-
-        if (!insertsRequired && !darkMode)
+        if (!(success && langWorkRequired && langItems?.Count > 0) && !darkMode)
         {
             return currentReadmeBytes;
         }
 
-        int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
-        if (insertsRequired)
+        if (success && langWorkRequired && langItems?.Count > 0)
         {
-#if !NETFRAMEWORK
-            if (colorEntriesBytesList != null)
+            #region Calculate new byte array length
+
+            for (int i = 0; i < langItems.Count; i++)
             {
-                insertItems!.Insert(0, new InsertItem(firstIndexPastHeader, 0, InsertItemKind.ForeColorReset));
-            }
-#endif
-            for (int i = 0; i < insertItems!.Count; i++)
-            {
-                InsertItem item = insertItems[i];
+                LangItem item = langItems[i];
                 item.Index += colorTableEntryLength;
-
-                insertsCombinedLength += item.Bytes.Length;
-
-                if (item.IsKeyword)
-                {
-                    // +1 for adding a space after the digits
-                    insertsCombinedLength += item.ParamLength + 1;
-                }
+                // +1 for adding a space after the digits
+                extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
             }
         }
 
@@ -440,10 +413,11 @@ internal static class RtfProcessing
                 currentReadmeBytes.Length +
                 colorTableEntryLength +
                 RTF_DarkBackgroundBytes.Length +
-                insertsCombinedLength;
+                extraAnsiCpgCombinedLength;
             retBytes = new byte[retBytesLength];
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
+            int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
 
             int lastIndexSource = 0;
             int lastIndexDest = 0;
@@ -471,9 +445,9 @@ internal static class RtfProcessing
                 lastIndexDest += colorTableEntryLength;
             }
 
-            if (insertsRequired)
+            if (success && langWorkRequired && langItems?.Count > 0)
             {
-                CopyInserts(insertItems!, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan.Slice(lastIndexSource, (lastClosingBraceIndex - lastIndexSource));
@@ -532,9 +506,9 @@ internal static class RtfProcessing
         }
         else
         {
-            if (insertsRequired)
+            if (success && langWorkRequired && langItems?.Count > 0)
             {
-                retBytes = new byte[currentReadmeBytes.Length + insertsCombinedLength];
+                retBytes = new byte[currentReadmeBytes.Length + extraAnsiCpgCombinedLength];
 
                 ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
                 Span<byte> retBytesSpan = retBytes.AsSpan();
@@ -542,7 +516,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(insertItems!, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan.Slice(lastIndexSource).CopyTo(retBytesSpan.Slice(lastIndexDest));
@@ -552,58 +526,53 @@ internal static class RtfProcessing
             return currentReadmeBytes;
         }
 
+        #endregion
     }
 
     private static void CopyInserts(
-        List<InsertItem> insertItems,
-        ReadOnlySpan<byte> sourceBytesSpan,
-        Span<byte> destBytesSpan,
+        List<LangItem> langItems,
+        ReadOnlySpan<byte> currentReadmeBytesSpan,
+        Span<byte> retBytesSpan,
+        int ansiCpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
     {
         int plus = 0;
-        for (int i = 0; i < insertItems.Count; i++)
+        ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
+        for (int i = 0; i < langItems.Count; i++)
         {
-            InsertItem item = insertItems[i];
+            LangItem item = langItems[i];
+            ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
-            ReadOnlySpan<byte> bodySpan = sourceBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
-            bodySpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
+            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
+            bodySpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ReadOnlySpan<byte> insertBytesSpan = item.Bytes.AsSpan();
-            int insertBytesLength = insertBytesSpan.Length;
-
-            insertBytesSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-            lastIndexDest += insertBytesLength;
-
-            plus += insertBytesLength;
-            if (item.IsKeyword)
-            {
-                ListFast<byte> paramBytes = UIntParamToBytes(item.Param, item.ParamLength);
-                ReadOnlySpan<byte> paramSpan = paramBytes.ItemsArray.AsSpan().Slice(0, paramBytes.Count);
-                paramSpan.CopyTo(destBytesSpan.Slice(lastIndexDest));
-                lastIndexDest += paramSpan.Length;
-                plus += paramSpan.Length;
-            }
+            ansiCpgSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            lastIndexDest += ansiCpgLength;
+            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
+            codePageSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            lastIndexDest += codePageSpan.Length;
+            plus += ansiCpgLength + codePageSpan.Length;
         }
 
         return;
 
-        static ListFast<byte> UIntParamToBytes(uint param, int digits)
+        static ListFast<byte> CodePageToBytes(int codePage, int digits)
         {
-            _paramBytes.ClearFast();
+            _codePageBytes.ClearFast();
 
             for (int i = 0; i < digits; i++)
             {
-                _paramBytes.InsertAtZeroFast((byte)((param % 10) + '0'));
-                param /= 10;
+                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
+                codePage /= 10;
             }
 
             // Use the option for control words to have a space after them, for safety
-            _paramBytes.Add((byte)' ');
+            _codePageBytes.Add((byte)' ');
 
-            return _paramBytes;
+            return _codePageBytes;
         }
     }
 }

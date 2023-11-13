@@ -22,26 +22,37 @@ public sealed partial class RtfDisplayedReadmeParser
     private bool _foundColorTable;
     private bool _getColorTable;
     private bool _getLangs;
-#if !NETFRAMEWORK
-    private bool _getForegroundColorResetPoints;
-#endif
 
-    private List<InsertItem>? _insertItems;
+    public sealed class LangItem
+    {
+        private static int GetDigitsUpTo5(int number) =>
+            number <= 9 ? 1 :
+            number <= 99 ? 2 :
+            number <= 999 ? 3 :
+            number <= 9999 ? 4 :
+            5;
+
+        public int Index;
+        public readonly int CodePage;
+        public readonly int DigitsCount;
+
+        public LangItem(int index, int codePage)
+        {
+            Index = index;
+            CodePage = codePage;
+            DigitsCount = GetDigitsUpTo5(codePage);
+        }
+    }
+
+    private List<LangItem>? _langItems;
 
     #endregion
 
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, List<InsertItem>? InsertItems)
-    GetData(
-        in ArrayWithLength<byte> rtfBytes,
-        bool getColorTable,
-        bool getLangs
-#if !NETFRAMEWORK
-        , bool getForegroundColorResetPoints
-#endif
-        )
+    public (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
+    GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
         {
@@ -51,28 +62,20 @@ public sealed partial class RtfDisplayedReadmeParser
 
             _getColorTable = getColorTable;
             _getLangs = getLangs;
-#if !NETFRAMEWORK
-            _getForegroundColorResetPoints = getForegroundColorResetPoints;
-#endif
 
-#if NETFRAMEWORK
             if (!getLangs && !getColorTable)
             {
-                return (false, ColorTable: _colorTable, InsertItems: _insertItems);
+                return (false, ColorTable: _colorTable, LangItems: _langItems);
             }
-#endif
 
             RtfError error = ParseRtf();
-#if !NETFRAMEWORK
-            _colorTable ??= new List<Color> { Color.FromArgb(0, 0, 0, 0) };
-#endif
             return error == RtfError.OK
-                ? (true, ColorTable: _colorTable, InsertItems: _insertItems)
-                : (false, ColorTable: _colorTable, InsertItems: _insertItems);
+                ? (true, ColorTable: _colorTable, LangItems: _langItems)
+                : (false, ColorTable: _colorTable, LangItems: _langItems);
         }
         catch
         {
-            return (false, _colorTable, _insertItems);
+            return (false, _colorTable, _langItems);
         }
         finally
         {
@@ -94,26 +97,19 @@ public sealed partial class RtfDisplayedReadmeParser
         _foundColorTable = false;
         _getColorTable = false;
         _getLangs = false;
-#if !NETFRAMEWORK
-        _getForegroundColorResetPoints = false;
-#endif
 
         #endregion
 
         _colorTable = null;
-        _insertItems = null;
-#if !NETFRAMEWORK
-        _inFieldInstruction = false;
-#endif
+        _langItems = null;
     }
 
     private RtfError ParseRtf()
     {
         while (CurrentPos < _rtfBytes.Length)
         {
-#if NETFRAMEWORK
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
-#endif
+
             char ch = (char)_rtfBytes.Array[CurrentPos++];
 
             // Ordered by most frequently appearing first
@@ -161,7 +157,9 @@ public sealed partial class RtfDisplayedReadmeParser
             case KeywordType.Destination:
                 return symbol.Index == (int)DestinationType.SkippableHex
                     ? HandleSkippableHexData()
-                    : ChangeDestination((DestinationType)symbol.Index);
+                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                        ? ChangeDestination((DestinationType)symbol.Index)
+                        : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
                 return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
@@ -196,15 +194,6 @@ public sealed partial class RtfDisplayedReadmeParser
                 {
                     return RtfError.OK;
                 }
-            case SpecialType.ForegroundColorReset:
-#if !NETFRAMEWORK
-                if (_getForegroundColorResetPoints)
-                {
-                    _insertItems ??= new List<InsertItem>();
-                    _insertItems.Add(new InsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
-                }
-#endif
-                return RtfError.OK;
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
                 return RtfError.OK;
@@ -243,10 +232,10 @@ public sealed partial class RtfDisplayedReadmeParser
                 if (val is > -1 and <= MaxLangNumIndex)
                 {
                     int langCodePage = LangToCodePage[val];
-                    if (langCodePage == -1 && currentCodePage > -1)
+                    if (langCodePage == -1)
                     {
-                        _insertItems ??= new List<InsertItem>();
-                        _insertItems.Add(new InsertItem(CurrentPos, (uint)currentCodePage, InsertItemKind.Lang));
+                        _langItems ??= new List<LangItem>();
+                        _langItems.Add(new LangItem(CurrentPos, currentCodePage));
                     }
                 }
             }
@@ -257,8 +246,8 @@ public sealed partial class RtfDisplayedReadmeParser
                     int langCodePage = LangToCodePage[val];
                     if (langCodePage > -1 && langCodePage != currentCodePage)
                     {
-                        _insertItems ??= new List<InsertItem>();
-                        _insertItems.Add(new InsertItem(CurrentPos, (uint)langCodePage, InsertItemKind.Lang));
+                        _langItems ??= new List<LangItem>();
+                        _langItems.Add(new LangItem(CurrentPos, langCodePage));
                     }
                 }
 
@@ -281,117 +270,12 @@ public sealed partial class RtfDisplayedReadmeParser
             case DestinationType.Skip:
                 _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
                 return RtfError.OK;
-#if !NETFRAMEWORK
-            case DestinationType.FieldInstruction:
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
-                return HandleFieldInstruction();
-#endif
             default:
                 return RtfError.OK;
         }
     }
 
     #endregion
-
-#if !NETFRAMEWORK
-    private bool _inFieldInstruction;
-
-    private RtfError HandleFieldInstruction()
-    {
-        // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
-        // a spec-conforming file.
-        // Except this is a field instruction so maybe they can nest, but I'm not bloody dealing with it.
-        if (_inFieldInstruction) return RtfError.StackOverflow;
-        _inFieldInstruction = true;
-
-        int startGroupLevel = _ctx.GroupStack.Count;
-
-        while (CurrentPos < _rtfBytes.Length)
-        {
-            char ch = (char)_rtfBytes.Array[CurrentPos++];
-
-            switch (ch)
-            {
-                // Push/pop groups inline to avoid having one branch to check the actual error condition and then
-                // a second branch to check the return error code from the push/pop method.
-                case '{':
-                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroups) return RtfError.StackOverflow;
-                    _ctx.GroupStack.DeepCopyToNext();
-                    _groupCount++;
-                    break;
-                case '}':
-                    if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
-                    --_ctx.GroupStack.Count;
-                    _groupCount--;
-                    if (_groupCount < startGroupLevel)
-                    {
-                        _inFieldInstruction = false;
-                        return RtfError.OK;
-                    }
-                    break;
-                case '\\':
-                    RtfError ec = ParseKeyword();
-                    if (ec != RtfError.OK) return ec;
-                    break;
-                case '\r':
-                case '\n':
-                    break;
-                default:
-                {
-                    if (ch == 'H')
-                    {
-                        if (CurrentPos < _rtfBytes.Length - 12)
-                        {
-                            // Do the most crappiest garbage thing that works
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'Y') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'P') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'E') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'R') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'L') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'I') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'N') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != 'K') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != ' ') break;
-                            ch = (char)_rtfBytes.Array[CurrentPos++];
-                            if (ch != '\"') break;
-                            int closingQuoteIndex = System.Array.IndexOf(_rtfBytes.Array, (byte)'\"', CurrentPos, _rtfBytes.Length - CurrentPos);
-
-                            int colonIndex = System.Array.IndexOf(_rtfBytes.Array, (byte)':', CurrentPos, closingQuoteIndex - CurrentPos);
-                            if (colonIndex == -1)
-                            {
-                                int atIndex = System.Array.IndexOf(_rtfBytes.Array, (byte)'@', CurrentPos, closingQuoteIndex - CurrentPos);
-                                if (atIndex == -1)
-                                {
-                                    if (_getForegroundColorResetPoints)
-                                    {
-                                        _insertItems ??= new List<InsertItem>();
-                                        _insertItems.Add(new InsertItem(CurrentPos, 0, InsertItemKind.Http));
-
-                                        _inFieldInstruction = false;
-                                        return RtfError.OK;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            }
-        }
-
-        _inFieldInstruction = false;
-        return RtfError.OK;
-    }
-#endif
 
     // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
     private RtfError ParseAndBuildColorTable()
