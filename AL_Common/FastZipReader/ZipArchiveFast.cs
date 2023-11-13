@@ -170,39 +170,13 @@ public sealed class ZipArchiveFast : IDisposable
         return GetDataDecompressor(entry, _context.ArchiveSubReadStream);
     }
 
-#if false && NETFRAMEWORK
-    // @Deflate: Temporary
-    private static readonly byte[] _deflateStreamBuffer = new byte[8192];
-#endif
-
     private static Stream GetDataDecompressor(ZipArchiveFastEntry entry, SubReadStream compressedStreamToRead)
     {
         Stream uncompressedStream;
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
-                /*
-                @Deflate:
-                Turns out this line deep in the framework is just a regular call we can do ourselves:
-                
-                string str = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "clrcompression.dll");
-                
-                So really, we can just load that file in, and if it doesn't exist or anything fails, just fall
-                back to the built-in DeflateStream. Hallelujah.
-
-                But note!
-                In 4.7.2, it uses zlib 1.2.3, whereas in 4.8 it uses 1.2.11.
-                We need to test if we can really ask for 1.2.11 on 4.7.2 and if it will work if the user has 4.8
-                installed. We should use a VM with clean Windows 7 with only 4.7.2 installed to test this.
-
-                Or we could carry 1.2.13 with us. But then we don't get automatic updates. Not like we get those
-                with old Framework anyway, but, y'know...
-                */
-#if false && NETFRAMEWORK
-                uncompressedStream = new AL_Common.DeflateStreamCustom.DeflateStreamCustom(compressedStreamToRead, _deflateStreamBuffer);
-#else
                 uncompressedStream = new System.IO.Compression.DeflateStream(compressedStreamToRead, System.IO.Compression.CompressionMode.Decompress, leaveOpen: true);
-#endif
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode

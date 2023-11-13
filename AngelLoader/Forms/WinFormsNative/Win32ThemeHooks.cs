@@ -7,15 +7,8 @@ Here's the deal with this thing:
  which improves performance but causes an ExecutionEngineException when hooked. Even when we use our own defined
  p/invoke for it without the attribute, it still happens somehow. I don't know how this kind of thing works so
  whatever.
-
-When we can't hook GetSysColor():
--We need to use a heavier method of setting the default rtf foreground color (inserting \cf0 control words).
--DateTimePickers can't be themed properly, so we draw them dark but when they're being edited we have to let them
- be drawn normally (light).
--Text highlight color is normal blue instead of our custom blue.
-
-These are the small sacrifices that must be made to get the benefits of .NET modern (blazing performance and
-future possibilities like Linux support and new UIs etc.)
+-We include our own custom version of System.Drawing.Primitives.dll without the [SuppressGCTransition] attribute
+ on GetSysColor().
 */
 
 using System;
@@ -41,14 +34,12 @@ internal static class Win32ThemeHooks
 
     #region GetSysColor
 
-#if NETFRAMEWORK
     private static LocalHook? _getSysColorHook;
 
     private static GetSysColorDelegate? GetSysColor_Original;
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
     private delegate int GetSysColorDelegate(int nIndex);
-#endif
 
     #endregion
 
@@ -110,12 +101,10 @@ internal static class Win32ThemeHooks
 
         try
         {
-#if NETFRAMEWORK
             (_getSysColorHook, GetSysColor_Original) = InstallHook<GetSysColorDelegate>(
                 "user32.dll",
                 "GetSysColor",
                 GetSysColor_Hooked);
-#endif
 
             // @x64 (GetSysColorBrush hook):
             // Fails with 'STATUS_NOT_SUPPORTED: Hooking near conditional jumps is not supported. (Code: 487)'
@@ -142,9 +131,7 @@ internal static class Win32ThemeHooks
         catch
         {
             // If we fail, oh well, just keep the classic-mode colors then... better than nothing
-#if NETFRAMEWORK
             _getSysColorHook?.Dispose();
-#endif
             _getSysColorBrushHook?.Dispose();
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
@@ -242,7 +229,6 @@ internal static class Win32ThemeHooks
             : GetThemeColor_Original!(hTheme, iPartId, iStateId, iPropId, out pColor);
     }
 
-#if NETFRAMEWORK
     private static int GetSysColor_Hooked(int nIndex)
     {
         return !_disableHookedTheming && Global.Config.DarkMode
@@ -277,7 +263,6 @@ internal static class Win32ThemeHooks
             }
             : GetSysColor_Original!(nIndex);
     }
-#endif
 
     private static IntPtr GetSysColorBrush_Hooked(int nIndex)
     {
