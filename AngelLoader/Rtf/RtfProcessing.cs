@@ -415,7 +415,7 @@ internal static class RtfProcessing
 #if !NETFRAMEWORK
             if (colorEntriesBytesList != null)
             {
-                insertItems!.Insert(0, new UIntParamInsertItem(firstIndexPastHeader, 0, InsertItemKind.ForeColorReset));
+                insertItems!.Insert(0, new InsertItem(firstIndexPastHeader, 0, InsertItemKind.ForeColorReset));
             }
 #endif
             for (int i = 0; i < insertItems!.Count; i++)

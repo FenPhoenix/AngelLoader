@@ -200,8 +200,8 @@ public sealed partial class RtfDisplayedReadmeParser
 #if !NETFRAMEWORK
                 if (_getForegroundColorResetPoints)
                 {
-                    _insertItems ??= new List<UIntParamInsertItem>();
-                    _insertItems.Add(new UIntParamInsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
+                    _insertItems ??= new List<InsertItem>();
+                    _insertItems.Add(new InsertItem(CurrentPos, 0, InsertItemKind.ForeColorReset));
                 }
 #endif
                 return RtfError.OK;
@@ -363,7 +363,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             if (ch != ' ') break;
                             ch = (char)_rtfBytes.Array[CurrentPos++];
                             if (ch != '\"') break;
-                            int closingQuoteIndex = Array.IndexOf(_rtfBytes.Array, (byte)'\"', CurrentPos, _rtfBytes.Length - CurrentPos);
+                            int closingQuoteIndex = System.Array.IndexOf(_rtfBytes.Array, (byte)'\"', CurrentPos, _rtfBytes.Length - CurrentPos);
 
                             int colonIndex = System.Array.IndexOf(_rtfBytes.Array, (byte)':', CurrentPos, closingQuoteIndex - CurrentPos);
                             if (colonIndex == -1)
@@ -373,8 +373,8 @@ public sealed partial class RtfDisplayedReadmeParser
                                 {
                                     if (_getForegroundColorResetPoints)
                                     {
-                                        _insertItems ??= new List<UIntParamInsertItem>();
-                                        _insertItems.Add(new UIntParamInsertItem(CurrentPos, 0, InsertItemKind.Http));
+                                        _insertItems ??= new List<InsertItem>();
+                                        _insertItems.Add(new InsertItem(CurrentPos, 0, InsertItemKind.Http));
 
                                         _inFieldInstruction = false;
                                         return RtfError.OK;
