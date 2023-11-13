@@ -139,6 +139,9 @@
 	<ItemGroup>
 		<Reference Include="Microsoft.VisualBasic" />
 		<Reference Include="System.Configuration" />
+		<Reference Condition="'$(TargetFramework.StartsWith(`net4`, StringComparison.Ordinal))'!='true'" Include="System.Drawing.Primitives">
+			<HintPath>..\bin_dependencies\System.Drawing.Primitives.dll</HintPath>
+		</Reference>
 		<Reference Include="System.IO.Compression" />
 		<Reference Include="System.Net.Http" />
 	</ItemGroup>
@@ -166,6 +169,13 @@
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
+
+	<Target Condition="'$(TargetFramework.StartsWith(`net4`, StringComparison.Ordinal))'!='true'" Name="RemoveSystemDrawingPrimitives" AfterTargets="ResolveTargetingPackAssets" BeforeTargets="ResolvePackageFileConflicts">
+		<ItemGroup>
+			<ReferencesToExclude Include="@(Reference)" Condition="'%(Filename)' == 'System.Drawing.Primitives'" />
+			<Reference Remove="@(ReferencesToExclude)" />
+		</ItemGroup>
+	</Target>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot; &quot;$(TargetFramework)&quot;" WorkingDirectory="$(ProjectDir)" />
