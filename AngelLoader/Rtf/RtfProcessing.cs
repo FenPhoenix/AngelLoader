@@ -1,7 +1,13 @@
 ﻿//#define PROCESS_README_TIME_TEST
 
-// @NET5(Rtf default forecolor): Visually check every rtf file to make sure the forecolor matches Framework for all
+/*
+@NET5(Rtf default forecolor): Visually check every rtf file to make sure the forecolor matches Framework for all
 
+@NET5(RtfProcessing - tables): Tables are the fuckedest thing I've seen in my life.
+Getting their text to be dark-on-light AND not making the rest of the non-table text also dark (or vice versa)
+is the most impossible piece of flaming garbage ever conceived.
+We could try just making their backgrounds dark. Different behavior than Framework, but at least it's readable.
+*/
 using System;
 using System.Collections.Generic;
 using System.Drawing;
