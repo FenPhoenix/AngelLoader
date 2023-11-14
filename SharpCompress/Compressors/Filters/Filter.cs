@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SharpCompress.Compressors.Filters;
+namespace SharpCompress_7z.Compressors.Filters;
 
 internal abstract class Filter : Stream
 {

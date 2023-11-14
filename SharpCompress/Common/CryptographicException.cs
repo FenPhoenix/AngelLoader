@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress.Common;
+namespace SharpCompress_7z.Common;
 
 public sealed class CryptographicException : Exception
 {

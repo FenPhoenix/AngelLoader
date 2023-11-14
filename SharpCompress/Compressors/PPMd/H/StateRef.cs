@@ -1,4 +1,4 @@
-namespace SharpCompress.Compressors.PPMd.H;
+namespace SharpCompress_7z.Compressors.PPMd.H;
 
 internal sealed class StateRef
 {

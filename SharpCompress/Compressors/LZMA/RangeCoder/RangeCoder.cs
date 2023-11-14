@@ -2,7 +2,7 @@
 
 using System.IO;
 
-namespace SharpCompress.Compressors.LZMA.RangeCoder;
+namespace SharpCompress_7z.Compressors.LZMA.RangeCoder;
 
 internal sealed class Decoder
 {

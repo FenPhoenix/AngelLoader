@@ -25,7 +25,7 @@ using System.Xml;
 using AL_Common;
 using AL_Common.FastZipReader;
 using JetBrains.Annotations;
-using SharpCompress.Archives.SevenZip;
+using SharpCompress_7z.Archives.SevenZip;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;

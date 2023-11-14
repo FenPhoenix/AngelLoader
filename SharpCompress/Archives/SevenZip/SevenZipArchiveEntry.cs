@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace SharpCompress.Archives.SevenZip;
+namespace SharpCompress_7z.Archives.SevenZip;
 
 public sealed class SevenZipArchiveEntry
 {

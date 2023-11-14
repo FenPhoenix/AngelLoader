@@ -1,4 +1,4 @@
-namespace SharpCompress.Compressors.LZMA.RangeCoder;
+namespace SharpCompress_7z.Compressors.LZMA.RangeCoder;
 
 internal readonly struct BitTreeDecoder
 {

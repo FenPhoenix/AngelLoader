@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace SharpCompress.Compressors.PPMd.I1;
+namespace SharpCompress_7z.Compressors.PPMd.I1;
 
 /// <summary>
 /// PPM state.

@@ -2,9 +2,9 @@
 
 using System;
 using System.IO;
-using Decoder = SharpCompress.Compressors.LZMA.RangeCoder.Decoder;
+using Decoder = SharpCompress_7z.Compressors.LZMA.RangeCoder.Decoder;
 
-namespace SharpCompress.Compressors.PPMd.H;
+namespace SharpCompress_7z.Compressors.PPMd.H;
 
 internal sealed class ModelPpm
 {

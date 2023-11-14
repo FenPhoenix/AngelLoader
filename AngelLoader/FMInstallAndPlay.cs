@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using SharpCompress.Archives.SevenZip;
+using SharpCompress_7z.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;

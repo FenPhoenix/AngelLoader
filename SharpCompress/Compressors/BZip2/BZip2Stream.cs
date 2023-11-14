@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SharpCompress.Compressors.BZip2;
+namespace SharpCompress_7z.Compressors.BZip2;
 
 internal sealed class BZip2Stream : Stream
 {

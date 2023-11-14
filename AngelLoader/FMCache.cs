@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
-using SharpCompress.Archives.SevenZip;
+using SharpCompress_7z.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;

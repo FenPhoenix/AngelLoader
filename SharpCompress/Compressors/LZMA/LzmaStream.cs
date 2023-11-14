@@ -3,10 +3,10 @@
 using System;
 using System.Buffers.Binary;
 using System.IO;
-using SharpCompress.Archives.SevenZip;
-using SharpCompress.Compressors.LZMA.LZ;
+using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress_7z.Compressors.LZMA.LZ;
 
-namespace SharpCompress.Compressors.LZMA;
+namespace SharpCompress_7z.Compressors.LZMA;
 
 // @SharpCompress: Recycle this and all its sub-fields
 internal sealed class LzmaStream : Stream

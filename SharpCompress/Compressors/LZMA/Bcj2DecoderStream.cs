@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SharpCompress.Compressors.LZMA;
+namespace SharpCompress_7z.Compressors.LZMA;
 
 internal sealed class Bcj2DecoderStream : DecoderStream2
 {

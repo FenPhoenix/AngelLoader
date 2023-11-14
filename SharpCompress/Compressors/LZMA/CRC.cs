@@ -1,4 +1,4 @@
-﻿namespace SharpCompress.Compressors.LZMA;
+﻿namespace SharpCompress_7z.Compressors.LZMA;
 
 internal static class Crc
 {
