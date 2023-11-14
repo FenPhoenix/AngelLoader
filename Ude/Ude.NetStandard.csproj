@@ -17,6 +17,8 @@
 	<LangVersion>latest</LangVersion>
 	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	<Platforms>AnyCPU;x64</Platforms>
+
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <ItemGroup>
 	  <PackageReference Condition="'$(TargetFramework.StartsWith(`net4`, StringComparison.Ordinal))'=='true'" Include="Nullable" Version="1.3.1">
