@@ -29,6 +29,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FD8CD094-EB65-42DD-9C68-D60B6F3C8344}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		SharpCompress\SharpCompress.csproj = SharpCompress\SharpCompress.csproj
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ude.NetStandard", "Ude\Ude.NetStandard.csproj", "{592498D2-AB7B-463A-B27B-78EFC23E9F14}"
