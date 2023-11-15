@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using SharpCompress.Common.Rar.Headers;
 
 namespace SharpCompress.Common.Rar;
 
-public abstract class RarEntry : Entry
+public abstract class RarEntry
 {
     internal abstract FileHeader FileHeader { get; }
 
@@ -20,53 +21,58 @@ public abstract class RarEntry : Entry
     /// <summary>
     /// The File's 32 bit CRC Hash
     /// </summary>
-    public virtual long Crc => FileHeader.FileCrc;
+    public long Crc => FileHeader.FileCrc;
 
     /// <summary>
     /// The path of the file internal to the Rar Archive.
     /// </summary>
-    public override string Key => FileHeader.FileName;
+    public string Key => FileHeader.FileName;
 
-    public virtual string? LinkTarget => null;
+    public string? LinkTarget => null;
 
     /// <summary>
     /// The entry last modified time in the archive, if recorded
     /// </summary>
-    public virtual DateTime? LastModifiedTime => FileHeader.FileLastModifiedTime;
+    public DateTime? LastModifiedTime => FileHeader.FileLastModifiedTime;
 
     /// <summary>
     /// The entry create time in the archive, if recorded
     /// </summary>
-    public virtual DateTime? CreatedTime => FileHeader.FileCreatedTime;
+    public DateTime? CreatedTime => FileHeader.FileCreatedTime;
 
     /// <summary>
     /// The entry last accessed time in the archive, if recorded
     /// </summary>
-    public virtual DateTime? LastAccessedTime => FileHeader.FileLastAccessedTime;
+    public DateTime? LastAccessedTime => FileHeader.FileLastAccessedTime;
 
     /// <summary>
     /// The entry time whend archived, if recorded
     /// </summary>
-    public virtual DateTime? ArchivedTime => FileHeader.FileArchivedTime;
+    public DateTime? ArchivedTime => FileHeader.FileArchivedTime;
 
     /// <summary>
     /// Entry is password protected and encrypted and cannot be extracted.
     /// </summary>
-    public virtual bool IsEncrypted => FileHeader.IsEncrypted;
+    public bool IsEncrypted => FileHeader.IsEncrypted;
 
     /// <summary>
     /// Entry is password protected and encrypted and cannot be extracted.
     /// </summary>
-    public override bool IsDirectory => FileHeader.IsDirectory;
+    public bool IsDirectory => FileHeader.IsDirectory;
 
-    public virtual bool IsSplitAfter => FileHeader.IsSplitAfter;
+    public bool IsSplitAfter => FileHeader.IsSplitAfter;
 
-    public override string ToString() =>
-        string.Format(
-            "Entry Path: {0} Compressed Size: {1} Uncompressed Size: {2} CRC: {3}",
-            Key,
-            CompressedSize,
-            Size,
-            Crc
-        );
+    public bool IsSolid { get; set; }
+
+    /// <summary>
+    /// The compressed file size
+    /// </summary>
+    public abstract long CompressedSize { get; }
+
+    /// <summary>
+    /// The uncompressed file size.
+    /// </summary>
+    public virtual long Size { get; }
+
+    internal virtual IEnumerable<FilePart> Parts { get; }
 }

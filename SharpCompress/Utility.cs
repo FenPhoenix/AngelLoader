@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using SharpCompress.Common.Rar;
 using SharpCompress.Readers;
 
 namespace SharpCompress;
@@ -222,7 +223,7 @@ public static class Utility
     public static long TransferTo(
         this Stream source,
         Stream destination,
-        Common.Entry entry,
+        RarEntry entry,
         IReaderExtractionListener readerExtractionListener
     )
     {

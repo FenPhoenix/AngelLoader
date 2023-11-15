@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 using SharpCompress.IO;
 using SharpCompress.Readers;
 
@@ -66,7 +67,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
         if (!disposed)
         {
             lazyVolumes.ForEach(v => v.Dispose());
-            lazyEntries.GetLoaded().Cast<Entry>().ForEach(static _ => { });
+            lazyEntries.GetLoaded().Cast<RarEntry>().ForEach(static _ => { });
             SrcStream?.Dispose();
 
             disposed = true;

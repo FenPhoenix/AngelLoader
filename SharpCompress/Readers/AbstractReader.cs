@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 
 namespace SharpCompress.Readers;
 
@@ -10,14 +11,14 @@ namespace SharpCompress.Readers;
 /// A generic push reader that reads unseekable comrpessed streams.
 /// </summary>
 public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtractionListener
-    where TEntry : Entry
+    where TEntry : RarEntry
     where TVolume : Volume
 {
     private bool completed;
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    public event EventHandler<ReaderExtractionEventArgs<Entry>>? EntryExtractionProgress;
+    public event EventHandler<ReaderExtractionEventArgs<RarEntry>>? EntryExtractionProgress;
 
     public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
     public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
@@ -198,7 +199,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
 
     #endregion
 
-    Entry IReader.Entry => Entry;
+    RarEntry IReader.Entry => Entry;
 
     void IExtractionListener.FireCompressedBytesRead(
         long currentPartCompressedBytes,
@@ -227,13 +228,13 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
         );
 
     void IReaderExtractionListener.FireEntryExtractionProgress(
-        Entry entry,
+        RarEntry entry,
         long bytesTransferred,
         int iterations
     ) =>
         EntryExtractionProgress?.Invoke(
             this,
-            new ReaderExtractionEventArgs<Entry>(
+            new ReaderExtractionEventArgs<RarEntry>(
                 entry,
                 new ReaderProgress(entry, bytesTransferred, iterations)
             )

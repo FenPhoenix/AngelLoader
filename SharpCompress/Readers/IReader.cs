@@ -1,17 +1,18 @@
 using System;
 using System.IO;
 using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 
 namespace SharpCompress.Readers;
 
 public interface IReader : IDisposable
 {
-    event EventHandler<ReaderExtractionEventArgs<Entry>> EntryExtractionProgress;
+    event EventHandler<ReaderExtractionEventArgs<RarEntry>> EntryExtractionProgress;
 
     event EventHandler<CompressedBytesReadEventArgs> CompressedBytesRead;
     event EventHandler<FilePartExtractionBeginEventArgs> FilePartExtractionBegin;
 
-    Entry Entry { get; }
+    RarEntry Entry { get; }
 
     /// <summary>
     /// Decompresses the current entry to the stream.  This cannot be called twice for the current entry.
