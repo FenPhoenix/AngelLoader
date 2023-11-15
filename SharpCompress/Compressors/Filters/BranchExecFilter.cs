@@ -13,16 +13,6 @@ namespace SharpCompress.Compressors.Filters;
 [CLSCompliant(false)]
 public sealed class BranchExecFilter
 {
-    public enum Alignment : int
-    {
-        ARCH_x86_ALIGNMENT = 1,
-        ARCH_PowerPC_ALIGNMENT = 4,
-        ARCH_IA64_ALIGNMENT = 16,
-        ARCH_ARM_ALIGNMENT = 4,
-        ARCH_ARMTHUMB_ALIGNMENT = 2,
-        ARCH_SPARC_ALIGNMENT = 4,
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool X86TestByte(byte b)
     {

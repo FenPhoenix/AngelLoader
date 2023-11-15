@@ -84,22 +84,6 @@ internal static class ArchiveFlagsV5
     public const ushort LOCK = 0x0010;
 }
 
-internal static class HostOsV4
-{
-    public const byte MS_DOS = 0;
-    public const byte OS2 = 1;
-    public const byte WIN32 = 2;
-    public const byte UNIX = 3;
-    public const byte MAC_OS = 4;
-    public const byte BE_OS = 5;
-}
-
-internal static class HostOsV5
-{
-    public const byte WINDOWS = 0;
-    public const byte UNIX = 1;
-}
-
 internal static class FileFlagsV4
 {
     public const ushort SPLIT_BEFORE = 0x0001;
@@ -140,9 +124,4 @@ internal static class EndArchiveFlagsV4
     public const ushort DATA_CRC = 0x0002;
     public const ushort REV_SPACE = 0x0004;
     public const ushort VOLUME_NUMBER = 0x0008;
-}
-
-internal static class EndArchiveFlagsV5
-{
-    public const ushort HAS_NEXT_VOLUME = 0x0001;
 }
