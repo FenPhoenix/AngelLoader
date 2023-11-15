@@ -47,10 +47,10 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
 
     public ArchiveType Type { get; }
 
-    void IArchiveExtractionListener.FireEntryExtractionBegin(IArchiveEntry entry) =>
+    public void FireEntryExtractionBegin(IArchiveEntry entry) =>
         EntryExtractionBegin?.Invoke(this, new ArchiveExtractionEventArgs<IArchiveEntry>(entry));
 
-    void IArchiveExtractionListener.FireEntryExtractionEnd(IArchiveEntry entry) =>
+    public void FireEntryExtractionEnd(IArchiveEntry entry) =>
         EntryExtractionEnd?.Invoke(this, new ArchiveExtractionEventArgs<IArchiveEntry>(entry));
 
     private static Stream CheckStreams(Stream stream)

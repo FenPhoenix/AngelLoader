@@ -12,18 +12,6 @@ internal struct BitEncoder
 
     public void Init() => _prob = K_BIT_MODEL_TOTAL >> 1;
 
-    public void UpdateModel(uint symbol)
-    {
-        if (symbol == 0)
-        {
-            _prob += (K_BIT_MODEL_TOTAL - _prob) >> K_NUM_MOVE_BITS;
-        }
-        else
-        {
-            _prob -= (_prob) >> K_NUM_MOVE_BITS;
-        }
-    }
-
     public void Encode(Encoder encoder, uint symbol)
     {
         // encoder.EncodeBit(Prob, kNumBitModelTotalBits, symbol);

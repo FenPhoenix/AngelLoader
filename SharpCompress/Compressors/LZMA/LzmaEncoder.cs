@@ -1859,6 +1859,4 @@ internal class Encoder
     }
 
     private uint _trainSize;
-
-    public void SetTrainSize(uint trainSize) => _trainSize = trainSize;
 }

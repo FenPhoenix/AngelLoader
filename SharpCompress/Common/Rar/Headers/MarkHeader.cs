@@ -7,8 +7,6 @@ internal class MarkHeader : IRarHeader
 {
     private const int MAX_SFX_SIZE = 0x80000 - 16; //archive.cpp line 136
 
-    internal bool OldNumberingFormat { get; private set; }
-
     public bool IsRar5 { get; }
 
     private MarkHeader(bool isRar5) => IsRar5 = isRar5;

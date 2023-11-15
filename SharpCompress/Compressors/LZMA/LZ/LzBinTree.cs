@@ -422,6 +422,4 @@ internal sealed class BinTree : InWindow
         NormalizeLinks(_hash, _hashSizeSum, subValue);
         ReduceOffsets((int)subValue);
     }
-
-    public void SetCutValue(uint cutValue) => _cutValue = cutValue;
 }

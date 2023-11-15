@@ -41,19 +41,6 @@ internal class Encoder
 
     public void FlushStream() => _stream.Flush();
 
-    public void CloseStream() => _stream.Dispose();
-
-    public void Encode(uint start, uint size, uint total)
-    {
-        _low += start * (_range /= total);
-        _range *= size;
-        while (_range < K_TOP_VALUE)
-        {
-            _range <<= 8;
-            ShiftLow();
-        }
-    }
-
     public void ShiftLow()
     {
         if ((uint)_low < 0xFF000000 || (uint)(_low >> 32) == 1)
@@ -84,25 +71,6 @@ internal class Encoder
                 _range <<= 8;
                 ShiftLow();
             }
-        }
-    }
-
-    public void EncodeBit(uint size0, int numTotalBits, uint symbol)
-    {
-        var newBound = (_range >> numTotalBits) * size0;
-        if (symbol == 0)
-        {
-            _range = newBound;
-        }
-        else
-        {
-            _low += newBound;
-            _range -= newBound;
-        }
-        while (_range < K_TOP_VALUE)
-        {
-            _range <<= 8;
-            ShiftLow();
         }
     }
 
@@ -140,37 +108,6 @@ internal class Decoder
         // Stream.ReleaseStream();
         _stream = null;
 
-    public void CloseStream() => _stream.Dispose();
-
-    public void Normalize()
-    {
-        while (_range < K_TOP_VALUE)
-        {
-            _code = (_code << 8) | (byte)_stream.ReadByte();
-            _range <<= 8;
-            _total++;
-        }
-    }
-
-    public void Normalize2()
-    {
-        if (_range < K_TOP_VALUE)
-        {
-            _code = (_code << 8) | (byte)_stream.ReadByte();
-            _range <<= 8;
-            _total++;
-        }
-    }
-
-    public uint GetThreshold(uint total) => _code / (_range /= total);
-
-    public void Decode(uint start, uint size)
-    {
-        _code -= start * _range;
-        _range *= size;
-        Normalize();
-    }
-
     public uint DecodeDirectBits(int numTotalBits)
     {
         var range = _range;
@@ -201,25 +138,6 @@ internal class Decoder
         _range = range;
         _code = code;
         return result;
-    }
-
-    public uint DecodeBit(uint size0, int numTotalBits)
-    {
-        var newBound = (_range >> numTotalBits) * size0;
-        uint symbol;
-        if (_code < newBound)
-        {
-            symbol = 0;
-            _range = newBound;
-        }
-        else
-        {
-            symbol = 1;
-            _code -= newBound;
-            _range -= newBound;
-        }
-        Normalize();
-        return symbol;
     }
 
     public bool IsFinished => _code == 0;

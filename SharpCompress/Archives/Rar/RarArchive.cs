@@ -148,16 +148,6 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         );
     }
 
-    public static bool IsRarFile(FileInfo fileInfo)
-    {
-        if (!fileInfo.Exists)
-        {
-            return false;
-        }
-        using Stream stream = fileInfo.OpenRead();
-        return IsRarFile(stream);
-    }
-
     public static bool IsRarFile(Stream stream, ReaderOptions? options = null)
     {
         try
