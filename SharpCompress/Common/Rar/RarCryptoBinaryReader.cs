@@ -5,8 +5,8 @@ namespace SharpCompress.Common.Rar;
 
 internal sealed class RarCryptoBinaryReader : RarCrcBinaryReader
 {
-    private RarRijndael _rijndael;
-    private byte[] _salt;
+    private readonly RarRijndael _rijndael;
+    private readonly byte[] _salt;
     private readonly string _password;
     private readonly Queue<byte> _data = new Queue<byte>();
     private long _readCount;

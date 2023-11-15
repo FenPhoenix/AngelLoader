@@ -7,12 +7,12 @@ internal partial class BitInput
     public int InAddr; // Curent byte position in the buffer.
     public int InBit; // Current bit position in the current byte.
 
-    public bool ExternalBuffer;
+    public readonly bool ExternalBuffer;
 
     //BitInput(bool AllocBuffer);
     //~BitInput();
 
-    public byte[] InBuf; // Dynamically allocated input buffer.
+    public readonly byte[] InBuf; // Dynamically allocated input buffer.
 
     public void InitBitInput() => InAddr = InBit = 0;
 

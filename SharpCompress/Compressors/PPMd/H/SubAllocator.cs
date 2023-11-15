@@ -23,10 +23,10 @@ internal sealed class SubAllocator
     public const int N1 = 4;
     public const int N2 = 4;
     public const int N3 = 4;
-    public static readonly int N4 = (128 + 3 - (1 * N1) - (2 * N2) - (3 * N3)) / 4;
+    public const int N4 = (128 + 3 - (1 * N1) - (2 * N2) - (3 * N3)) / 4;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'N_INDEXES '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public static readonly int N_INDEXES = N1 + N2 + N3 + N4;
+    public const int N_INDEXES = N1 + N2 + N3 + N4;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'UNIT_SIZE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
     //UPGRADE_NOTE: The initialization of  'UNIT_SIZE' was moved to static method 'SharpCompress.Unpack.PPM.SubAllocator'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"

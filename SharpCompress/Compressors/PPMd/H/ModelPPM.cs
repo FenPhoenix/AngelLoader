@@ -80,13 +80,13 @@ internal sealed class ModelPpm
     public const int PERIOD_BITS = 7;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'TOT_BITS '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public static readonly int TOT_BITS = INT_BITS + PERIOD_BITS;
+    public const int TOT_BITS = INT_BITS + PERIOD_BITS;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'INTERVAL '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public static readonly int INTERVAL = 1 << INT_BITS;
+    public const int INTERVAL = 1 << INT_BITS;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'BIN_SCALE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public static readonly int BIN_SCALE = 1 << TOT_BITS;
+    public const int BIN_SCALE = 1 << TOT_BITS;
 
     public const int MAX_FREQ = 124;
 

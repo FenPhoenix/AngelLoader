@@ -19,7 +19,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 internal struct Pointer
 {
     public uint _address;
-    public byte[] _memory;
+    public readonly byte[] _memory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Pointer"/> structure.
