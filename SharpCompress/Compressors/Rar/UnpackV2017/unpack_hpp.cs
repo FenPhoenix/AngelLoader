@@ -8,15 +8,15 @@ using size_t = System.UInt64;
 using int64 = System.Int64;
 
 using System.Collections.Generic;
-using static SharpCompress_7z.Compressors.Rar.UnpackV2017.PackDef;
-using static SharpCompress_7z.Compressors.Rar.UnpackV2017.UnpackGlobal;
+using static SharpCompress.Compressors.Rar.UnpackV2017.PackDef;
+using static SharpCompress.Compressors.Rar.UnpackV2017.UnpackGlobal;
 using System;
 
 // TODO: REMOVE THIS... WIP
 #pragma warning disable 169
 #pragma warning disable 414
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal static class UnpackGlobal
 {

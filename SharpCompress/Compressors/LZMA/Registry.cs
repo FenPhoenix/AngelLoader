@@ -2,12 +2,12 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using SharpCompress_7z.Archives.SevenZip;
-using SharpCompress_7z.Compressors.BZip2;
-using SharpCompress_7z.Compressors.Filters;
-using SharpCompress_7z.Compressors.PPMd;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Compressors.BZip2;
+using SharpCompress.Compressors.Filters;
+using SharpCompress.Compressors.PPMd;
 
-namespace SharpCompress_7z.Compressors.LZMA;
+namespace SharpCompress.Compressors.LZMA;
 
 internal static class DecoderRegistry
 {

@@ -2,10 +2,10 @@
 
 using System;
 using System.IO;
-using SharpCompress_7z.Compressors.Rar;
-using Decoder = SharpCompress_7z.Compressors.LZMA.RangeCoder.Decoder;
+using SharpCompress.Compressors.Rar;
+using Decoder = SharpCompress.Compressors.LZMA.RangeCoder.Decoder;
 
-namespace SharpCompress_7z.Compressors.PPMd.H;
+namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class ModelPpm
 {

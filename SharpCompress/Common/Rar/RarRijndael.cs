@@ -3,9 +3,9 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
-using SharpCompress_7z.Crypto;
+using SharpCompress.Crypto;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 internal sealed class RarRijndael : IDisposable
 {

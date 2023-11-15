@@ -1,7 +1,7 @@
 ﻿using System;
-using static SharpCompress_7z.Compressors.Rar.UnpackV2017.Unpack.Unpack15Local;
+using static SharpCompress.Compressors.Rar.UnpackV2017.Unpack.Unpack15Local;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal partial class Unpack
 {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal sealed class DataReader
 {

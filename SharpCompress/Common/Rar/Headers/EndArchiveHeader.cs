@@ -1,6 +1,6 @@
-﻿using SharpCompress_7z.IO;
+﻿using SharpCompress.IO;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 internal sealed class EndArchiveHeader : RarHeader
 {

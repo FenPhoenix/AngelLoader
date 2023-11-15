@@ -4,7 +4,7 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 
-namespace SharpCompress_7z.Compressors.Rar.VM;
+namespace SharpCompress.Compressors.Rar.VM;
 
 internal sealed class RarVM : BitInput
 {

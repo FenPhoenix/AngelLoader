@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SharpCompress_7z;
+namespace SharpCompress;
 
 public sealed class Lazy<T>
 {

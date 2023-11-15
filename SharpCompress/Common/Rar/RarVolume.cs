@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress_7z.Common.Rar.Headers;
-using SharpCompress_7z.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common.Rar.Headers;
+using SharpCompress.IO;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 /// <summary>
 /// A RarArchiveVolume is a single rar file that may or may not be a split RarArchive.  A Rar Archive is one to many Rar Parts

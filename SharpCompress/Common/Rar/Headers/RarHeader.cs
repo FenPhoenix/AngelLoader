@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using SharpCompress_7z.IO;
+using SharpCompress.IO;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 // http://www.forensicswiki.org/w/images/5/5b/RARFileStructure.txt
 // https://www.rarlab.com/technote.htm

@@ -3,9 +3,9 @@
 using System;
 using System.IO;
 using AL_Common;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 
-namespace SharpCompress_7z.Compressors.LZMA.LZ;
+namespace SharpCompress.Compressors.LZMA.LZ;
 
 internal sealed class OutWindow : IDisposable
 {

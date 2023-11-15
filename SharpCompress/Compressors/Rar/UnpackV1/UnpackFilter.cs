@@ -1,6 +1,6 @@
-using SharpCompress_7z.Compressors.Rar.VM;
+using SharpCompress.Compressors.Rar.VM;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1;
+namespace SharpCompress.Compressors.Rar.UnpackV1;
 
 internal sealed class UnpackFilter
 {

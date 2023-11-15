@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SharpCompress_7z.Compressors.Filters;
+namespace SharpCompress.Compressors.Filters;
 
 internal sealed class DeltaFilter : Filter
 {

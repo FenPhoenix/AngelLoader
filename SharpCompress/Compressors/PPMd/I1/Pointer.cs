@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace SharpCompress_7z.Compressors.PPMd.I1;
+namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
 /// A structure containing a single address representing a position in the <see cref="_memory"/> array.  This

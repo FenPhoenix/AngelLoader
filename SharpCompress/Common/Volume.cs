@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using SharpCompress_7z.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.IO;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public abstract class Volume : IDisposable
 {

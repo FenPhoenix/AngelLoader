@@ -2,12 +2,12 @@
 
 using System;
 using System.IO;
-using SharpCompress_7z.Archives.SevenZip;
-using SharpCompress_7z.Compressors.LZMA.RangeCoder;
-using SharpCompress_7z.Compressors.PPMd.H;
-using SharpCompress_7z.Compressors.PPMd.I1;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Compressors.LZMA.RangeCoder;
+using SharpCompress.Compressors.PPMd.H;
+using SharpCompress.Compressors.PPMd.I1;
 
-namespace SharpCompress_7z.Compressors.PPMd;
+namespace SharpCompress.Compressors.PPMd;
 
 internal sealed class PpmdStream : Stream
 {

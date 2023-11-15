@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 internal sealed class RarCryptoBinaryReader : RarCrcBinaryReader
 {

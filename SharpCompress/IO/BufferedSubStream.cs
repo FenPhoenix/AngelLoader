@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 
-namespace SharpCompress_7z.IO;
+namespace SharpCompress.IO;
 
 internal sealed class BufferedSubStream : Stream
 {

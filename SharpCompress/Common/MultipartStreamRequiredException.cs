@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public sealed class MultipartStreamRequiredException : ExtractionException
 {

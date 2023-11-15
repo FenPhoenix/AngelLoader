@@ -4,7 +4,7 @@ using System.IO;
 
 #endregion
 
-namespace SharpCompress_7z.Compressors.PPMd.I1;
+namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
 /// A simple range coder.

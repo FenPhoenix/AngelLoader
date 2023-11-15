@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 internal sealed class MarkHeader : IRarHeader
 {

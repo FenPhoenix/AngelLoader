@@ -2,10 +2,10 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal sealed class ArchiveDatabase
 {

@@ -1,7 +1,7 @@
 using System.IO;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 /// <summary>
 /// This represents a single file part that exists in a rar volume.  A compressed file is one or many file parts that are spread across one or may rar parts.

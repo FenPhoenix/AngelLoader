@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1.Decode;
+namespace SharpCompress.Compressors.Rar.UnpackV1.Decode;
 
 internal sealed class BitDecode : Decode
 {

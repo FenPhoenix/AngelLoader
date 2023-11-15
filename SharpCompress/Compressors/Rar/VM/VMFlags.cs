@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Compressors.Rar.VM;
+namespace SharpCompress.Compressors.Rar.VM;
 
 internal enum VMFlags
 {

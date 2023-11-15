@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SharpCompress_7z.Archives.Rar;
+namespace SharpCompress.Archives.Rar;
 
 internal static class RarArchiveVolumeFactory
 {

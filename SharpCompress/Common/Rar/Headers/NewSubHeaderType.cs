@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 internal sealed class NewSubHeaderType : IEquatable<NewSubHeaderType>
 {

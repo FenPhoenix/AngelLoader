@@ -1,7 +1,7 @@
 using System;
-using SharpCompress_7z.Readers;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public sealed class ReaderExtractionEventArgs<T> : EventArgs
 {

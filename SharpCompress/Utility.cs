@@ -2,10 +2,10 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common.Rar;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z;
+namespace SharpCompress;
 
 [CLSCompliant(false)]
 public static class Utility

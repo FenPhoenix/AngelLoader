@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Compressors.Rar;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
+using SharpCompress.Compressors.Rar;
 
-namespace SharpCompress_7z.Readers.Rar;
+namespace SharpCompress.Readers.Rar;
 
 /// <summary>
 /// This class faciliates Reading a Rar Archive in a non-seekable forward-only manner

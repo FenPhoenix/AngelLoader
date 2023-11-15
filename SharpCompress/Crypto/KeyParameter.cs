@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpCompress_7z.Crypto;
+namespace SharpCompress.Crypto;
 
 public sealed class KeyParameter
 {

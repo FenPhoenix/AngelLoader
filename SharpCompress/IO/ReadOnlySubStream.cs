@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace SharpCompress_7z.IO;
+namespace SharpCompress.IO;
 
 internal sealed class ReadOnlySubStream : NonDisposingStream
 {

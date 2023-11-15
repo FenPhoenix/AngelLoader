@@ -1,9 +1,9 @@
 #nullable disable
 
 using System.IO;
-using SharpCompress_7z.Compressors.Rar;
+using SharpCompress.Compressors.Rar;
 
-namespace SharpCompress_7z.Compressors.PPMd.H;
+namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class RangeCoder
 {

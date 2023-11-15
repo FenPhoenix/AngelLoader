@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Readers.Rar;
+namespace SharpCompress.Readers.Rar;
 
 public sealed class RarReaderEntry : RarEntry
 {

@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 
-namespace SharpCompress_7z.Readers.Rar;
+namespace SharpCompress.Readers.Rar;
 
 internal sealed class SingleVolumeRarReader : RarReader
 {

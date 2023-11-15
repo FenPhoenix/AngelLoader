@@ -4,7 +4,7 @@ using System;
 using System.Buffers;
 using System.IO;
 
-namespace SharpCompress_7z.Polyfills;
+namespace SharpCompress.Polyfills;
 
 internal static class StreamExtensions
 {

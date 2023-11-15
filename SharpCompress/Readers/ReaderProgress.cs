@@ -1,8 +1,8 @@
 using System;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 
-namespace SharpCompress_7z.Readers;
+namespace SharpCompress.Readers;
 
 public sealed class ReaderProgress
 {

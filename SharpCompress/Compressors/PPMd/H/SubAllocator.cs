@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SharpCompress_7z.Compressors.PPMd.H;
+namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class SubAllocator
 {

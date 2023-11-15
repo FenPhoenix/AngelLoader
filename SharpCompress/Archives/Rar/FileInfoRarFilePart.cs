@@ -1,7 +1,7 @@
 using System.IO;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Archives.Rar;
+namespace SharpCompress.Archives.Rar;
 
 internal sealed class FileInfoRarFilePart : SeekableFilePart
 {

@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public abstract class FilePart
 {

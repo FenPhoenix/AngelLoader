@@ -8,12 +8,12 @@ using nuint = System.UInt64;
 using size_t = System.UInt64;
 #endif
 
-using SharpCompress_7z.IO;
+using SharpCompress.IO;
 using System;
 using System.IO;
 using System.Text;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 internal sealed class FileHeader : RarHeader
 {

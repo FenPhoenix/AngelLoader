@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CCoderInfo
 {

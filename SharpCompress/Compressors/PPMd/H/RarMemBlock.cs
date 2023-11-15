@@ -1,7 +1,7 @@
 using System;
 using System.Buffers.Binary;
 
-namespace SharpCompress_7z.Compressors.PPMd.H;
+namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class RarMemBlock : Pointer
 {

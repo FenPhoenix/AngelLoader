@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress_7z.Compressors.LZMA;
+namespace SharpCompress.Compressors.LZMA;
 
 internal readonly ref struct BitVector
 {

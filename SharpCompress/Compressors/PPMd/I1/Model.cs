@@ -6,7 +6,7 @@ using System.IO;
 // This is a port of Dmitry Shkarin's PPMd Variant I Revision 1.
 // Ported by Michael Bone (mjbone03@yahoo.com.au).
 
-namespace SharpCompress_7z.Compressors.PPMd.I1;
+namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
 /// The model.

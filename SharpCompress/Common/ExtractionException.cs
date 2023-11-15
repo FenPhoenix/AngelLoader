@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public class ExtractionException : Exception
 {

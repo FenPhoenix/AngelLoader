@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress_7z.Readers;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.IO;
+namespace SharpCompress.IO;
 
 public sealed class SourceStream : Stream
 {

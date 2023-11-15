@@ -3,14 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar.Headers;
-using SharpCompress_7z.Compressors.PPMd.H;
-using SharpCompress_7z.Compressors.Rar.UnpackV1.Decode;
-using SharpCompress_7z.Compressors.Rar.UnpackV1.PPM;
-using SharpCompress_7z.Compressors.Rar.VM;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar.Headers;
+using SharpCompress.Compressors.PPMd.H;
+using SharpCompress.Compressors.Rar.UnpackV1.Decode;
+using SharpCompress.Compressors.Rar.UnpackV1.PPM;
+using SharpCompress.Compressors.Rar.VM;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1;
+namespace SharpCompress.Compressors.Rar.UnpackV1;
 
 internal sealed partial class Unpack : BitInput, IRarUnpack
 {

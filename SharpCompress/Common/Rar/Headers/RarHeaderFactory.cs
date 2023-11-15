@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.IO;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 public sealed class RarHeaderFactory
 {

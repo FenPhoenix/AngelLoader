@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Compressors.LZMA.RangeCoder;
+namespace SharpCompress.Compressors.LZMA.RangeCoder;
 
 // @SharpCompress There are many arrays of these that are created over and over. Cache and recycle them.
 // // 1596 / 1,296,288

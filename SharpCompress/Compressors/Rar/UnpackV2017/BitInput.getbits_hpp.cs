@@ -1,4 +1,4 @@
-﻿namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+﻿namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal partial class BitInput
 {

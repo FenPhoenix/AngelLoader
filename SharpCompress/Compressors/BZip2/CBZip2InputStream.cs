@@ -25,7 +25,7 @@ using System.IO;
  * great code.
  */
 
-namespace SharpCompress_7z.Compressors.BZip2;
+namespace SharpCompress.Compressors.BZip2;
 
 /**
   * An input stream that decompresses from the BZip2 format (with the file

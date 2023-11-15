@@ -1,8 +1,8 @@
 using System.IO;
-using SharpCompress_7z.Compressors.Rar;
-using SharpCompress_7z.IO;
+using SharpCompress.Compressors.Rar;
+using SharpCompress.IO;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 internal class RarCrcBinaryReader : MarkingBinaryReader
 {

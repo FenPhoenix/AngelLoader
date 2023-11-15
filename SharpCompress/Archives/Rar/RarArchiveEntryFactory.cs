@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common.Rar;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Archives.Rar;
+namespace SharpCompress.Archives.Rar;
 
 internal static class RarArchiveEntryFactory
 {

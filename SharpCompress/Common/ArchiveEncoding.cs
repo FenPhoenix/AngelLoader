@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public sealed class ArchiveEncoding
 {

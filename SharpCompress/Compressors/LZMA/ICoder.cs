@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress_7z.Compressors.LZMA;
+namespace SharpCompress.Compressors.LZMA;
 
 /// <summary>
 /// The exception that is thrown when an error in input stream occurs during decoding.

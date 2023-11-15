@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal ref struct CStreamSwitch
 {

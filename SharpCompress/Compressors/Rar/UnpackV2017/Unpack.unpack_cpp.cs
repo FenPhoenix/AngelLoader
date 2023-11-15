@@ -9,11 +9,11 @@ using size_t = System.UInt64;
 #endif
 
 using System;
-using SharpCompress_7z.Common;
-using static SharpCompress_7z.Compressors.Rar.UnpackV2017.UnpackGlobal;
-using static SharpCompress_7z.Compressors.Rar.UnpackV2017.PackDef;
+using SharpCompress.Common;
+using static SharpCompress.Compressors.Rar.UnpackV2017.UnpackGlobal;
+using static SharpCompress.Compressors.Rar.UnpackV2017.PackDef;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal sealed partial class Unpack : BitInput
 {

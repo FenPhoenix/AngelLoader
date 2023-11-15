@@ -7,9 +7,9 @@ using size_t = System.UInt64;
 #endif
 using System;
 using System.IO;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal partial class Unpack : IRarUnpack
 {

@@ -6,7 +6,7 @@ using size_t = System.UInt64;
 #endif
 using uint32 = System.UInt32;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal partial class Unpack
 {

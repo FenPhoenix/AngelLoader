@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress_7z.Compressors.Rar;
+namespace SharpCompress.Compressors.Rar;
 
 internal static class RarCRC
 {

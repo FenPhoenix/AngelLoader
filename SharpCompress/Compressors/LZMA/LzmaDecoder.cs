@@ -1,10 +1,10 @@
 #nullable disable
 
 using System;
-using SharpCompress_7z.Compressors.LZMA.LZ;
-using SharpCompress_7z.Compressors.LZMA.RangeCoder;
+using SharpCompress.Compressors.LZMA.LZ;
+using SharpCompress.Compressors.LZMA.RangeCoder;
 
-namespace SharpCompress_7z.Compressors.LZMA;
+namespace SharpCompress.Compressors.LZMA;
 
 internal sealed class Decoder
 {

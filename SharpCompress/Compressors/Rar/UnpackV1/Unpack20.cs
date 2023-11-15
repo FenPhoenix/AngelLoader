@@ -8,9 +8,9 @@
 */
 
 using System;
-using SharpCompress_7z.Compressors.Rar.UnpackV1.Decode;
+using SharpCompress.Compressors.Rar.UnpackV1.Decode;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1;
+namespace SharpCompress.Compressors.Rar.UnpackV1;
 
 internal partial class Unpack
 {

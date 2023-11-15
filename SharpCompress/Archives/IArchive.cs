@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpCompress_7z.Archives;
+namespace SharpCompress.Archives;
 
 public interface IArchive : IDisposable
 {

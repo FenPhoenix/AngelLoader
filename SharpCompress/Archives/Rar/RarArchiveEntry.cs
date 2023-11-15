@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Common.Rar.Headers;
-using SharpCompress_7z.Compressors.Rar;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
+using SharpCompress.Common.Rar.Headers;
+using SharpCompress.Compressors.Rar;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Archives.Rar;
+namespace SharpCompress.Archives.Rar;
 
 public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 {

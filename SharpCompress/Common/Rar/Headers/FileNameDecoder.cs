@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SharpCompress_7z.Common.Rar.Headers;
+namespace SharpCompress.Common.Rar.Headers;
 
 /// <summary>
 /// This is for the crazy Rar encoding that I don't understand

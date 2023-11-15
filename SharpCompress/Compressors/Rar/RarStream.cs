@@ -2,9 +2,9 @@
 
 using System;
 using System.IO;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Compressors.Rar;
+namespace SharpCompress.Compressors.Rar;
 
 internal class RarStream : Stream
 {

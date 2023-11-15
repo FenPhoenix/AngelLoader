@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Common.Rar.Headers;
-using SharpCompress_7z.IO;
+using SharpCompress.Common.Rar;
+using SharpCompress.Common.Rar.Headers;
+using SharpCompress.IO;
 
-namespace SharpCompress_7z.Readers.Rar;
+namespace SharpCompress.Readers.Rar;
 
 public sealed class RarReaderVolume : RarVolume
 {

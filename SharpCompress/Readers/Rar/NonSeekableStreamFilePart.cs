@@ -1,8 +1,8 @@
 using System.IO;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Common.Rar.Headers;
+using SharpCompress.Common.Rar;
+using SharpCompress.Common.Rar.Headers;
 
-namespace SharpCompress_7z.Readers.Rar;
+namespace SharpCompress.Readers.Rar;
 
 internal sealed class NonSeekableStreamFilePart : RarFilePart
 {

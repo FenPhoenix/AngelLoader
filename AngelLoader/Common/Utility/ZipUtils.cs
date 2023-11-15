@@ -3,8 +3,8 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using SharpCompress_7z.Archives.Rar;
-using SharpCompress_7z.Readers.Rar;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
 
 namespace AngelLoader;

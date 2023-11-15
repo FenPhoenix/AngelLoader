@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using AL_Common;
-using SharpCompress_7z.Archives.SevenZip;
-using SharpCompress_7z.Compressors.LZMA;
+using SharpCompress.Archives.SevenZip;
+using SharpCompress.Compressors.LZMA;
 using static AL_Common.Common;
 
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal sealed class CFolder
 {

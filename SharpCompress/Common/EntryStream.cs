@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Common;
+namespace SharpCompress.Common;
 
 public sealed class EntryStream : Stream
 {

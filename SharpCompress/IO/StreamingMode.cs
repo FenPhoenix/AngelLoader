@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.IO;
+namespace SharpCompress.IO;
 
 public enum StreamingMode
 {

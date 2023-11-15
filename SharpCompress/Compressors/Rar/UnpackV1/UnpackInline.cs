@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1;
+namespace SharpCompress.Compressors.Rar.UnpackV1;
 
 internal partial class Unpack
 {

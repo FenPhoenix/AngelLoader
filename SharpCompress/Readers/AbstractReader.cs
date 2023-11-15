@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
 
-namespace SharpCompress_7z.Readers;
+namespace SharpCompress.Readers;
 
 /// <summary>
 /// A generic push reader that reads unseekable comrpessed streams.

@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Compressors.Rar.UnpackV1.PPM;
+namespace SharpCompress.Compressors.Rar.UnpackV1.PPM;
 
 internal enum BlockTypes
 {

@@ -1,6 +1,6 @@
-using SharpCompress_7z.Common;
+using SharpCompress.Common;
 
-namespace SharpCompress_7z.Readers;
+namespace SharpCompress.Readers;
 
 public sealed class ReaderOptions
 {

@@ -1,4 +1,4 @@
-namespace SharpCompress_7z.Common.SevenZip;
+namespace SharpCompress.Common.SevenZip;
 
 internal readonly struct CBindPair
 {

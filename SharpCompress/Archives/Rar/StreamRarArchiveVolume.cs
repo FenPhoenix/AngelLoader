@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.Common.Rar.Headers;
-using SharpCompress_7z.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common.Rar;
+using SharpCompress.Common.Rar.Headers;
+using SharpCompress.IO;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Archives.Rar;
+namespace SharpCompress.Archives.Rar;
 
 internal sealed class StreamRarArchiveVolume : RarVolume
 {

@@ -1,8 +1,8 @@
 using System;
 using System.Buffers.Binary;
-using SharpCompress_7z.Compressors.PPMd.I1;
+using SharpCompress.Compressors.PPMd.I1;
 
-namespace SharpCompress_7z.Compressors.PPMd;
+namespace SharpCompress.Compressors.PPMd;
 
 internal sealed class PpmdProperties
 {

@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace SharpCompress_7z.Compressors.PPMd.I1;
+namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
 /// The PPM context structure.  This is tightly coupled with <see cref="Model"/>.

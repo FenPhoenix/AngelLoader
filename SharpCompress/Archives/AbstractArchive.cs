@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SharpCompress_7z.Common;
-using SharpCompress_7z.Common.Rar;
-using SharpCompress_7z.IO;
-using SharpCompress_7z.Readers;
+using SharpCompress.Common;
+using SharpCompress.Common.Rar;
+using SharpCompress.IO;
+using SharpCompress.Readers;
 
-namespace SharpCompress_7z.Archives;
+namespace SharpCompress.Archives;
 
 public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtractionListener
     where TEntry : IArchiveEntry

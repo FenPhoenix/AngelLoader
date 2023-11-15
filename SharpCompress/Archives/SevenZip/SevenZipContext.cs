@@ -1,7 +1,7 @@
 ﻿using System.Buffers;
-using SharpCompress_7z.Common.SevenZip;
+using SharpCompress.Common.SevenZip;
 
-namespace SharpCompress_7z.Archives.SevenZip;
+namespace SharpCompress.Archives.SevenZip;
 
 #if false
 public sealed class ArrayWithLength<T>

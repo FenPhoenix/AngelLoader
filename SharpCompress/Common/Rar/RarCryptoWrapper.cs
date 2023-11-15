@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress_7z.Polyfills;
+using SharpCompress.Polyfills;
 
-namespace SharpCompress_7z.Common.Rar;
+namespace SharpCompress.Common.Rar;
 
 internal sealed class RarCryptoWrapper : Stream
 {

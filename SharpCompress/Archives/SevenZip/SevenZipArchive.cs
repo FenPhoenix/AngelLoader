@@ -4,10 +4,10 @@ Lots of byte[] allocations, stream recreations, etc. However, we're already pret
 */
 
 using System.IO;
-using SharpCompress_7z.Common.SevenZip;
+using SharpCompress.Common.SevenZip;
 using static AL_Common.Common;
 
-namespace SharpCompress_7z.Archives.SevenZip;
+namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchive
 {

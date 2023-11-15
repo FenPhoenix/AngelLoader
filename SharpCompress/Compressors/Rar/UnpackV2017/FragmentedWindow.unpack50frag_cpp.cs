@@ -9,7 +9,7 @@ using size_t = System.UInt64;
 #endif
 using System;
 
-namespace SharpCompress_7z.Compressors.Rar.UnpackV2017;
+namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal sealed partial class FragmentedWindow
 {
