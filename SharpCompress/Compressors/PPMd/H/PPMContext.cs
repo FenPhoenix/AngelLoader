@@ -176,13 +176,13 @@ internal sealed class PpmContext : Pointer
         _freqData.IncrementSummFreq(4);
         escFreq = _freqData.SummFreq - p.Freq;
         adder = (model.OrderFall != 0) ? 1 : 0;
-        p.Freq = Utility.URShift((p.Freq + adder), 1);
+        p.Freq = ((p.Freq + adder) >>> 1);
         _freqData.SummFreq = p.Freq;
         do
         {
             p.IncrementAddress();
             escFreq -= p.Freq;
-            p.Freq = Utility.URShift((p.Freq + adder), 1);
+            p.Freq = ((p.Freq + adder) >>> 1);
             _freqData.IncrementSummFreq(p.Freq);
             temp.Address = p.Address - State.SIZE;
             if (p.Freq > temp.Freq)
@@ -222,19 +222,19 @@ internal sealed class PpmContext : Pointer
                 do
                 {
                     // tmp.Freq-=(tmp.Freq >> 1)
-                    tmp.DecrementFreq(Utility.URShift(tmp.Freq, 1));
-                    escFreq = Utility.URShift(escFreq, 1);
+                    tmp.DecrementFreq((tmp.Freq >>> 1));
+                    escFreq = (escFreq >>> 1);
                 } while (escFreq > 1);
-                model.SubAlloc.FreeUnits(_freqData.GetStats(), Utility.URShift((oldNs + 1), 1));
+                model.SubAlloc.FreeUnits(_freqData.GetStats(), ((oldNs + 1) >>> 1));
                 _oneState.SetValues(tmp);
                 model.FoundState.Address = _oneState.Address;
                 return;
             }
         }
-        escFreq -= Utility.URShift(escFreq, 1);
+        escFreq -= (escFreq >>> 1);
         _freqData.IncrementSummFreq(escFreq);
-        int n0 = Utility.URShift((oldNs + 1), 1),
-            n1 = Utility.URShift((NumStats + 1), 1);
+        int n0 = ((oldNs + 1) >>> 1),
+            n1 = ((NumStats + 1) >>> 1);
         if (n0 != n1)
         {
             _freqData.SetStats(model.SubAlloc.ShrinkUnits(_freqData.GetStats(), n0, n1));
@@ -250,12 +250,12 @@ internal sealed class PpmContext : Pointer
         ret += model.PrevSuccess;
         ret += model.GetNs2BsIndx()[tempSuffix.NumStats - 1];
         ret += model.HiBitsFlag + (2 * model.GetHb2Flag()[rs.Symbol]);
-        ret += ((Utility.URShift(model.RunLength, 26)) & 0x20);
+        ret += (((model.RunLength >>> 26)) & 0x20);
         return ret;
     }
 
     internal int GetMean(int summ, int shift, int round) =>
-        (Utility.URShift((summ + (1 << (shift - round))), (shift)));
+        (((summ + (1 << (shift - round))) >>> (shift)));
 
     internal void DecodeBinSymbol(ModelPpm model)
     {
@@ -282,7 +282,7 @@ internal sealed class PpmContext : Pointer
             bs = (bs - GetMean(bs, ModelPpm.PERIOD_BITS, 2)) & 0xFFFF;
             model.BinSumm[off1][off2] = bs;
             model.Coder.SubRange.HighCount = ModelPpm.BIN_SCALE;
-            model.InitEsc = EXP_ESCAPE[Utility.URShift(bs, 10)];
+            model.InitEsc = EXP_ESCAPE[(bs >>> 10)];
             model.NumMasked = 1;
             model.CharMask[rs.Symbol] = model.EscCount;
             model.PrevSuccess = 0;

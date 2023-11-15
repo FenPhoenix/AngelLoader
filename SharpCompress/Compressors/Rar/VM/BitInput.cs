@@ -69,12 +69,12 @@ internal class BitInput
         //      return (BitField & 0xffff);
         (
             (
-                Utility.URShift(
+                (
                     (
                         ((InBuf[inAddr] & 0xff) << 16)
                         + ((InBuf[inAddr + 1] & 0xff) << 8)
                         + ((InBuf[inAddr + 2] & 0xff))
-                    ),
+                    ) >>>
                     (8 - inBit)
                 )
             ) & 0xffff

@@ -642,7 +642,7 @@ internal sealed class ModelPpm
                 {
                     //System.out.println(ns1);
                     pc.FreqData.SetStats(
-                        SubAlloc.ExpandUnits(pc.FreqData.GetStats(), Utility.URShift(ns1, 1))
+                        SubAlloc.ExpandUnits(pc.FreqData.GetStats(), ns1 >>> 1)
                     );
                     if (pc.FreqData.GetStats() == 0)
                     {

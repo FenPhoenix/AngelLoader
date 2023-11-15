@@ -285,7 +285,7 @@ internal partial class Unpack
                 var Length = LDecode[Number -= 270] + 3;
                 if ((Bits = LBits[Number]) > 0)
                 {
-                    Length += Utility.URShift(GetBits(), (16 - Bits));
+                    Length += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
 
@@ -293,7 +293,7 @@ internal partial class Unpack
                 var Distance = DDecode[DistNumber] + 1;
                 if ((Bits = DBits[DistNumber]) > 0)
                 {
-                    Distance += Utility.URShift(GetBits(), (16 - Bits));
+                    Distance += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
 
@@ -329,7 +329,7 @@ internal partial class Unpack
                 var Length = LDecode[LengthNumber] + 2;
                 if ((Bits = LBits[LengthNumber]) > 0)
                 {
-                    Length += Utility.URShift(GetBits(), (16 - Bits));
+                    Length += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
                 if (Distance >= 0x101)
@@ -352,7 +352,7 @@ internal partial class Unpack
                 var Distance = SDDecode[Number -= 261] + 1;
                 if ((Bits = SDBits[Number]) > 0)
                 {
-                    Distance += Utility.URShift(GetBits(), (16 - Bits));
+                    Distance += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
                 CopyString20(2, Distance);
@@ -415,7 +415,7 @@ internal partial class Unpack
 
         if (UnpAudioBlock != 0)
         {
-            UnpChannels = ((Utility.URShift(BitField, 12)) & 3) + 1;
+            UnpChannels = (((BitField >>> 12)) & 3) + 1;
             if (UnpCurChannel >= UnpChannels)
             {
                 UnpCurChannel = 0;
@@ -429,7 +429,7 @@ internal partial class Unpack
         }
         for (I = 0; I < PackDef.BC20; I++)
         {
-            BitLength[I] = (byte)(Utility.URShift(GetBits(), 12));
+            BitLength[I] = (byte)((GetBits() >>> 12));
             AddBits(4);
         }
         UnpackUtility.makeDecodeTables(BitLength, 0, BD, PackDef.BC20);
@@ -451,7 +451,7 @@ internal partial class Unpack
             }
             else if (Number == 16)
             {
-                N = (Utility.URShift(GetBits(), 14)) + 3;
+                N = ((GetBits() >>> 14)) + 3;
                 AddBits(2);
                 while (N-- > 0 && I < TableSize)
                 {
@@ -463,12 +463,12 @@ internal partial class Unpack
             {
                 if (Number == 17)
                 {
-                    N = (Utility.URShift(GetBits(), 13)) + 3;
+                    N = ((GetBits() >>> 13)) + 3;
                     AddBits(3);
                 }
                 else
                 {
-                    N = (Utility.URShift(GetBits(), 9)) + 11;
+                    N = ((GetBits() >>> 9)) + 11;
                     AddBits(7);
                 }
                 while (N-- > 0 && I < TableSize)
@@ -556,7 +556,7 @@ internal partial class Unpack
         var PCh = (8 * v.LastChar) + (v.K1 * v.D1);
         PCh += (v.K2 * v.D2) + (v.K3 * v.D3);
         PCh += (v.K4 * v.D4) + (v.K5 * UnpChannelDelta);
-        PCh = (Utility.URShift(PCh, 3)) & 0xFF;
+        PCh = ((PCh >>> 3)) & 0xFF;
 
         var Ch = PCh - Delta;
 
