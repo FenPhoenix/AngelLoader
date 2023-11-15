@@ -46,7 +46,7 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         }
         else //split mode or single file
         {
-            return new StreamRarArchiveVolume(SrcStream, ReaderOptions, idx++).AsEnumerable();
+            return new StreamRarArchiveVolume(SrcStream, ReaderOptions, idx).AsEnumerable();
         }
     }
 

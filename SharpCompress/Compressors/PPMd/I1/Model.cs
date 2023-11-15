@@ -25,7 +25,6 @@ internal partial class Model
     private int _runLength;
     private byte _previousSuccess;
     private byte _numberMasked;
-    private ModelRestorationMethod _method;
     private PpmState _foundState; // found next state transition
 
     private Allocator _allocator;

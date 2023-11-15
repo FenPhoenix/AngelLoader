@@ -132,8 +132,8 @@ public static class Utility
         var buffer = GetTransferByteArray();
         try
         {
-            var read = 0;
-            var readCount = 0;
+            int read;
+            int readCount;
             do
             {
                 readCount = buffer.Length;

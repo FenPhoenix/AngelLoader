@@ -104,7 +104,7 @@ internal sealed class RarVM : BitInput
 
     private int GetOperand(VMPreparedOperand cmdOp)
     {
-        var ret = 0;
+        int ret;
         if (cmdOp.Type == VMOpType.VM_OPREGMEM)
         {
             var pos = (cmdOp.Offset + cmdOp.Base) & VM_MEMMASK;

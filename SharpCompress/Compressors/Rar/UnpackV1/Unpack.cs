@@ -874,7 +874,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         if ((bitField & 0x8000) != 0)
         {
             unpBlockType = BlockTypes.BLOCK_PPM;
-            return (ppm.DecodeInit(this, PpmEscChar));
+            return (ppm.DecodeInit(this));
         }
         unpBlockType = BlockTypes.BLOCK_LZ;
 

@@ -450,7 +450,7 @@ internal class FileHeader : RarHeader
 
     public bool IsDirectory => HasFlag(IsRar5 ? FileFlagsV5.DIRECTORY : FileFlagsV4.DIRECTORY);
 
-    private bool isEncryptedRar5 = false;
+    private bool isEncryptedRar5;
     public bool IsEncrypted => IsRar5 ? isEncryptedRar5 : HasFlag(FileFlagsV4.PASSWORD);
 
     internal DateTime? FileLastModifiedTime { get; private set; }

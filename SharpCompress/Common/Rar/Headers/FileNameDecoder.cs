@@ -15,8 +15,8 @@ internal static class FileNameDecoder
         var flags = 0;
         var flagBits = 0;
 
-        var low = 0;
-        var high = 0;
+        int low;
+        int high;
         var highByte = GetChar(name, encPos++);
         var buf = new StringBuilder();
         while (encPos < name.Length)
