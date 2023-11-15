@@ -17,13 +17,9 @@ internal partial class Unpack
 {
     private int readBorder;
 
-    internal bool unpAllBuf;
-
     //private ComprDataIO unpIO;
     private Stream readStream;
     private Stream writeStream;
-
-    internal bool unpSomeRead;
 
     private int readTop;
 
@@ -806,13 +802,11 @@ internal partial class Unpack
     {
         if (unpPtr != wrPtr)
         {
-            unpSomeRead = true;
         }
         if (unpPtr < wrPtr)
         {
             writeStream.Write(window, wrPtr, -wrPtr & PackDef.MAXWINMASK);
             writeStream.Write(window, 0, unpPtr);
-            unpAllBuf = true;
         }
         else
         {

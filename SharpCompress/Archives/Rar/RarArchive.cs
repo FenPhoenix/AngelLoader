@@ -21,7 +21,6 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// Constructor with a SourceStream able to handle FileInfo and Streams.
     /// </summary>
     /// <param name="srcStream"></param>
-    /// <param name="options"></param>
     internal RarArchive(SourceStream srcStream)
         : base(srcStream) { }
 
@@ -49,14 +48,14 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         }
     }
 
-    protected override IReader CreateReaderForSolidExtraction()
+    protected IReader CreateReaderForSolidExtraction()
     {
         var stream = Volumes.First().Stream;
         stream.Position = 0;
         return RarReader.Open(stream, ReaderOptions);
     }
 
-    public override bool IsSolid => Volumes.First().IsSolidArchive;
+    public bool IsSolid => Volumes.First().IsSolidArchive;
 
     #region Creation
     /// <summary>

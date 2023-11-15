@@ -85,8 +85,6 @@ internal sealed class ModelPpm
 
     private readonly See2Context[][] _see2Cont = new See2Context[25][];
 
-    private See2Context _dummySee2Cont;
-
     private PpmContext _minContext; //medContext
 
     private PpmContext _maxContext;
@@ -99,7 +97,6 @@ internal sealed class ModelPpm
     private int _numMasked,
         _orderFall,
         _maxOrder,
-        _runLength,
         _initRl;
 
     private readonly int[] _ns2Indx = new int[256];
@@ -187,7 +184,6 @@ internal sealed class ModelPpm
 
         var state = new State(SubAlloc.Heap);
         addr = _minContext.FreqData.GetStats();
-        _runLength = _initRl;
         _prevSuccess = 0;
         for (var i = 0; i < 256; i++)
         {
@@ -266,7 +262,7 @@ internal sealed class ModelPpm
         new Span<int>(CharMask).Clear();
     }
 
-    internal bool DecodeInit(IRarUnpack unpackRead, int escChar)
+    internal bool DecodeInit(IRarUnpack unpackRead)
     {
         var maxOrder = unpackRead.Char & 0xff;
         var reset = ((maxOrder & 0x20) != 0);
@@ -285,7 +281,7 @@ internal sealed class ModelPpm
         }
         if ((maxOrder & 0x40) != 0)
         {
-            escChar = unpackRead.Char;
+            int escChar = unpackRead.Char;
             unpackRead.PpmEscChar = escChar;
         }
         Coder = new RangeCoder(unpackRead);
@@ -307,7 +303,7 @@ internal sealed class ModelPpm
             //medContext = new PPMContext(Heap);
             _maxContext = new PpmContext(Heap);
             FoundState = new State(Heap);
-            _dummySee2Cont = new See2Context();
+            new See2Context();
             for (var i = 0; i < 25; i++)
             {
                 for (var j = 0; j < 16; j++)
@@ -719,7 +715,7 @@ internal sealed class ModelPpm
         //medContext = new PPMContext(Heap);
         _maxContext = new PpmContext(Heap);
         FoundState = new State(Heap);
-        _dummySee2Cont = new See2Context();
+        new See2Context();
         for (var i = 0; i < 25; i++)
         {
             for (var j = 0; j < 16; j++)

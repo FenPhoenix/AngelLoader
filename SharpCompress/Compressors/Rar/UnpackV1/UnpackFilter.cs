@@ -5,7 +5,6 @@ namespace SharpCompress.Compressors.Rar.UnpackV1;
 internal sealed class UnpackFilter
 {
     public byte Type;
-    public byte Channels;
 
     internal UnpackFilter() => Program = new VMPreparedProgram();
 

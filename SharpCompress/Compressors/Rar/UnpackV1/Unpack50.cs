@@ -295,7 +295,6 @@ internal partial class Unpack
         if (Filter.Type == (byte)FilterType.FILTER_DELTA)
         {
             //Filter.Channels=(Inp.fgetbits()>>11)+1;
-            Filter.Channels = (byte)((Inp.fgetbits() >> 11) + 1);
             Inp.faddbits(5);
         }
 

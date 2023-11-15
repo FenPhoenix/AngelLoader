@@ -14,9 +14,6 @@ internal sealed class ArchiveCryptHeader : RarHeader
 
     private bool _usePswCheck;
     private uint _lg2Count; // Log2 of PBKDF2 repetition count.
-    private byte[] _salt;
-    private byte[] _pswCheck;
-    private byte[] _pswCheckCsm;
 
     public ArchiveCryptHeader(RarHeader header, RarCrcBinaryReader reader)
         : base(header, reader, HeaderType.Crypt) { }
@@ -40,11 +37,11 @@ internal sealed class ArchiveCryptHeader : RarHeader
             return;
         }
 
-        _salt = reader.ReadBytes(SIZE_SALT50);
+        reader.ReadBytes(SIZE_SALT50);
         if (_usePswCheck)
         {
-            _pswCheck = reader.ReadBytes(SIZE_PSWCHECK);
-            _pswCheckCsm = reader.ReadBytes(SIZE_PSWCHECK_CSUM);
+            reader.ReadBytes(SIZE_PSWCHECK);
+            reader.ReadBytes(SIZE_PSWCHECK_CSUM);
         }
     }
 }

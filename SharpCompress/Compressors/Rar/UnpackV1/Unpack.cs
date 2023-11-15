@@ -643,7 +643,6 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                         prgStack[I] = null;
                     }
                     writeStream.Write(FilteredData, 0, FilteredDataSize);
-                    unpSomeRead = true;
                     writtenFileSize += FilteredDataSize;
                     DestSize -= FilteredDataSize;
                     WrittenBorder = BlockEnd;
@@ -673,13 +672,11 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
     {
         if (endPtr != startPtr)
         {
-            unpSomeRead = true;
         }
         if (endPtr < startPtr)
         {
             UnpWriteData(window, startPtr, -startPtr & PackDef.MAXWINMASK);
             UnpWriteData(window, 0, endPtr);
-            unpAllBuf = true;
         }
         else
         {
@@ -857,7 +854,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         if ((bitField & 0x8000) != 0)
         {
             unpBlockType = BlockTypes.BLOCK_PPM;
-            return (ppm.DecodeInit(this, PpmEscChar));
+            return (ppm.DecodeInit(this));
         }
         unpBlockType = BlockTypes.BLOCK_LZ;
 
