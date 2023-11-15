@@ -48,7 +48,6 @@ internal class ModelPpm
 
     public virtual int InitEsc
     {
-        get => _initEsc;
         set => _initEsc = value;
     }
 

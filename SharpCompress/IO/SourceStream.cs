@@ -67,7 +67,6 @@ public class SourceStream : Stream
     public ReaderOptions ReaderOptions { get; }
     public bool IsFileMode { get; }
 
-    public IEnumerable<FileInfo> Files => _files;
     public IEnumerable<Stream> Streams => _streams;
 
     private Stream Current => _streams[_stream];

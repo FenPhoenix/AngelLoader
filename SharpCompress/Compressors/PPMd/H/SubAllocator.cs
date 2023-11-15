@@ -7,11 +7,7 @@ namespace SharpCompress.Compressors.PPMd.H;
 
 internal class SubAllocator
 {
-    public virtual int FakeUnitsStart
-    {
-        get => _fakeUnitsStart;
-        set => _fakeUnitsStart = value;
-    }
+    public virtual int FakeUnitsStart => _fakeUnitsStart;
 
     public virtual int HeapEnd => _heapEnd;
 
@@ -19,12 +15,6 @@ internal class SubAllocator
     {
         get => _pText;
         set => _pText = value;
-    }
-
-    public virtual int UnitsStart
-    {
-        get => _unitsStart;
-        set => _unitsStart = value;
     }
 
     public virtual byte[] Heap => _heap;

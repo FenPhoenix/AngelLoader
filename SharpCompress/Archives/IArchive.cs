@@ -14,7 +14,7 @@ public interface IArchive : IDisposable
     event EventHandler<FilePartExtractionBeginEventArgs> FilePartExtractionBegin;
 
     IEnumerable<IArchiveEntry> Entries { get; }
-    IEnumerable<IVolume> Volumes { get; }
+    IEnumerable<IDisposable> Volumes { get; }
 
     ArchiveType Type { get; }
 

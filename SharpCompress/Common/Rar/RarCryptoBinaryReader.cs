@@ -92,13 +92,4 @@ internal sealed class RarCryptoBinaryReader : RarCrcBinaryReader
         _readCount += count;
         return decryptedBytes;
     }
-
-    public void ClearQueue() => _data.Clear();
-
-    public void SkipQueue()
-    {
-        var position = BaseStream.Position;
-        BaseStream.Position = position + _data.Count;
-        ClearQueue();
-    }
 }

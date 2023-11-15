@@ -100,22 +100,9 @@ public abstract class RarVolume : Volume
     }
 
     /// <summary>
-    /// RarArchive is the first volume of a multi-part archive.
-    /// Only Rar 3.0 format and higher
-    /// </summary>
-    public override bool IsFirstVolume
-    {
-        get
-        {
-            EnsureArchiveHeaderLoaded();
-            return ArchiveHeader.IsFirstVolume;
-        }
-    }
-
-    /// <summary>
     /// RarArchive is part of a multi-part archive.
     /// </summary>
-    public override bool IsMultiVolume
+    public virtual bool IsMultiVolume
     {
         get
         {
@@ -134,54 +121,6 @@ public abstract class RarVolume : Volume
         {
             EnsureArchiveHeaderLoaded();
             return ArchiveHeader.IsSolid;
-        }
-    }
-
-    public int MinVersion
-    {
-        get
-        {
-            EnsureArchiveHeaderLoaded();
-            if (_maxCompressionAlgorithm >= 50)
-            {
-                return 5; //5-6
-            }
-            else if (_maxCompressionAlgorithm >= 29)
-            {
-                return 3; //3-4
-            }
-            else if (_maxCompressionAlgorithm >= 20)
-            {
-                return 2; //2
-            }
-            else
-            {
-                return 1;
-            }
-        }
-    }
-
-    public int MaxVersion
-    {
-        get
-        {
-            EnsureArchiveHeaderLoaded();
-            if (_maxCompressionAlgorithm >= 50)
-            {
-                return 6; //5-6
-            }
-            else if (_maxCompressionAlgorithm >= 29)
-            {
-                return 4; //3-4
-            }
-            else if (_maxCompressionAlgorithm >= 20)
-            {
-                return 2; //2
-            }
-            else
-            {
-                return 1;
-            }
         }
     }
 

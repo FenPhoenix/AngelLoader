@@ -27,11 +27,6 @@ public abstract class Entry : IEntry
     public abstract long CompressedSize { get; }
 
     /// <summary>
-    /// The compression type
-    /// </summary>
-    public abstract CompressionType CompressionType { get; }
-
-    /// <summary>
     /// The uncompressed file size
     /// </summary>
     public abstract long Size { get; }

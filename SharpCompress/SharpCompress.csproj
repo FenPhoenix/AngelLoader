@@ -44,6 +44,10 @@
 	<ItemGroup>
 	  <Folder Include="Compressors\ADC\" />
 	  <Folder Include="Compressors\BZip2\" />
+	  <Folder Include="Compressors\Filters\" />
+	  <Folder Include="Compressors\LZMA\LZ\" />
+	  <Folder Include="Compressors\LZMA\RangeCoder\" />
 	  <Folder Include="Compressors\LZMA\Utilites\" />
+	  <Folder Include="Compressors\Xz\Filters\" />
 	</ItemGroup>
 </Project>

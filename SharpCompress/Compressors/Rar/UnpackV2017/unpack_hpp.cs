@@ -20,19 +20,12 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
 internal static class UnpackGlobal
 {
-
-
     // Maximum allowed number of compressed bits processed in quick mode.
     public const int MAX_QUICK_DECODE_BITS = 10;
 
     // Maximum number of filters per entire data block. Must be at least
     // twice more than MAX_PACK_FILTERS to store filters from two data blocks.
     public const int MAX_UNPACK_FILTERS = 8192;
-
-    // Maximum number of filters per entire data block for RAR3 unpack.
-    // Must be at least twice more than v3_MAX_PACK_FILTERS to store filters
-    // from two data blocks.
-    public const int MAX3_UNPACK_FILTERS = 8192;
 
     // Maximum size of single filter block. We restrict it to limit memory
     // allocation. Must be equal or larger than MAX_ANALYZE_SIZE.

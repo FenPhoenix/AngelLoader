@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SharpCompress.Common;
 using SharpCompress.IO;
@@ -10,7 +9,7 @@ namespace SharpCompress.Archives;
 
 public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtractionListener
     where TEntry : IArchiveEntry
-    where TVolume : IVolume
+    where TVolume : IDisposable
 {
     private readonly LazyReadOnlyCollection<TVolume> lazyVolumes;
     private readonly LazyReadOnlyCollection<TEntry> lazyEntries;
@@ -35,32 +34,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
         lazyEntries = new LazyReadOnlyCollection<TEntry>(LoadEntries(Volumes));
     }
 
-#nullable disable
-    internal AbstractArchive(ArchiveType type)
-    {
-        Type = type;
-        lazyVolumes = new LazyReadOnlyCollection<TVolume>(Enumerable.Empty<TVolume>());
-        lazyEntries = new LazyReadOnlyCollection<TEntry>(Enumerable.Empty<TEntry>());
-    }
-
-#nullable enable
-
     public ArchiveType Type { get; }
-
-    public void FireEntryExtractionBegin(IArchiveEntry entry) =>
-        EntryExtractionBegin?.Invoke(this, new ArchiveExtractionEventArgs<IArchiveEntry>(entry));
-
-    public void FireEntryExtractionEnd(IArchiveEntry entry) =>
-        EntryExtractionEnd?.Invoke(this, new ArchiveExtractionEventArgs<IArchiveEntry>(entry));
-
-    private static Stream CheckStreams(Stream stream)
-    {
-        if (!stream.CanSeek || !stream.CanRead)
-        {
-            throw new ArgumentException("Archive streams must be Readable and Seekable");
-        }
-        return stream;
-    }
 
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveEntries across the one or many parts of the RarArchive.
@@ -89,7 +63,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
 
     IEnumerable<IArchiveEntry> IArchive.Entries => Entries.Cast<IArchiveEntry>();
 
-    IEnumerable<IVolume> IArchive.Volumes => lazyVolumes.Cast<IVolume>();
+    IEnumerable<IDisposable> IArchive.Volumes => lazyVolumes.Cast<IDisposable>();
 
     public virtual void Dispose()
     {

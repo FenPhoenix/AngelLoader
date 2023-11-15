@@ -27,22 +27,11 @@ public class RarArchiveEntry : RarEntry, IArchiveEntry
         IsSolid = FileHeader.IsSolid;
     }
 
-    public override CompressionType CompressionType => CompressionType.Rar;
-
     public IArchive Archive => archive;
 
-    internal override IEnumerable<FilePart> Parts => parts.Cast<FilePart>();
+    internal override IEnumerable<FilePart> Parts => parts;
 
     internal override FileHeader FileHeader => parts.First().FileHeader;
-
-    public override long Crc
-    {
-        get
-        {
-            CheckIncomplete();
-            return parts.Select(fp => fp.FileHeader).Single(fh => !fh.IsSplitAfter).FileCrc;
-        }
-    }
 
     public override long Size
     {

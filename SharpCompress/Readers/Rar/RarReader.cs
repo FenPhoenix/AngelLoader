@@ -37,18 +37,6 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
         return new SingleVolumeRarReader(stream, options ?? new ReaderOptions());
     }
 
-    /// <summary>
-    /// Opens a RarReader for Non-seeking usage with multiple volumes
-    /// </summary>
-    /// <param name="streams"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
-    public static RarReader Open(IEnumerable<Stream> streams, ReaderOptions? options = null)
-    {
-        streams.CheckNotNull(nameof(streams));
-        return new MultiVolumeRarReader(streams, options ?? new ReaderOptions());
-    }
-
     protected override IEnumerable<RarReaderEntry> GetEntries(Stream stream)
     {
         volume = new RarReaderVolume(stream, Options);

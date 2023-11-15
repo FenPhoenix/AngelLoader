@@ -19,7 +19,6 @@ internal struct PpmState
 {
     public uint _address;
     public byte[] _memory;
-    public static readonly PpmState ZERO = new PpmState(0, null);
     public const int SIZE = 6;
 
     /// <summary>
@@ -30,54 +29,6 @@ internal struct PpmState
         _address = address;
         _memory = memory;
     }
-
-    /// <summary>
-    /// Gets or sets the symbol.
-    /// </summary>
-    public byte Symbol
-    {
-        get => _memory[_address];
-        set => _memory[_address] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the frequency.
-    /// </summary>
-    public byte Frequency
-    {
-        get => _memory[_address + 1];
-        set => _memory[_address + 1] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the successor.
-    /// </summary>
-    public Model.PpmContext Successor
-    {
-        get =>
-            new Model.PpmContext(
-                _memory[_address + 2]
-                    | (((uint)_memory[_address + 3]) << 8)
-                    | (((uint)_memory[_address + 4]) << 16)
-                    | (((uint)_memory[_address + 5]) << 24),
-                _memory
-            );
-        set
-        {
-            _memory[_address + 2] = (byte)value._address;
-            _memory[_address + 3] = (byte)(value._address >> 8);
-            _memory[_address + 4] = (byte)(value._address >> 16);
-            _memory[_address + 5] = (byte)(value._address >> 24);
-        }
-    }
-
-    /// <summary>
-    /// Gets the <see cref="PpmState"/> at the <paramref name="offset"/> relative to this
-    /// <see cref="PpmState"/>.
-    /// </summary>
-    /// <param name="offset"></param>
-    /// <returns></returns>
-    public PpmState this[int offset] => new PpmState((uint)(_address + (offset * SIZE)), _memory);
 
     /// <summary>
     /// Allow a pointer to be implicitly converted to a PPM state.

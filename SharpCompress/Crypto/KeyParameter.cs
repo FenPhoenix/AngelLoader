@@ -2,7 +2,7 @@
 
 namespace SharpCompress.Crypto;
 
-public class KeyParameter : ICipherParameters
+public class KeyParameter
 {
     private readonly byte[] key;
 

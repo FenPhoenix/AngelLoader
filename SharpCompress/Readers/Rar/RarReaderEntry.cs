@@ -19,8 +19,6 @@ public class RarReaderEntry : RarEntry
 
     internal override FileHeader FileHeader => Part.FileHeader;
 
-    public override CompressionType CompressionType => CompressionType.Rar;
-
     /// <summary>
     /// The compressed file size
     /// </summary>

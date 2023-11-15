@@ -67,9 +67,7 @@ internal partial class Unpack
     public int BlockSize;
     public int BlockBitSize;
     public int BlockStart;
-    public int HeaderSize;
     public bool LastBlockInFile;
-    public bool TablePresent;
 
     public void Unpack5(bool Solid)
     {
@@ -663,8 +661,6 @@ internal partial class Unpack
 
     private bool ReadBlockHeader()
     {
-        Header.HeaderSize = 0;
-
         if (!Inp.ExternalBuffer && Inp.InAddr > ReadTop - 7)
         {
             if (!UnpReadBuf())
@@ -687,7 +683,6 @@ internal partial class Unpack
         }
 
         //Header.HeaderSize=2+ByteCount;
-        Header.HeaderSize = (int)(2 + ByteCount);
 
         Header.BlockBitSize = (BlockFlags & 7) + 1;
 
@@ -714,7 +709,6 @@ internal partial class Unpack
         ReadBorder = Math.Min(ReadBorder, Header.BlockStart + Header.BlockSize - 1);
 
         Header.LastBlockInFile = (BlockFlags & 0x40) != 0;
-        Header.TablePresent = (BlockFlags & 0x80) != 0;
         return true;
     }
 

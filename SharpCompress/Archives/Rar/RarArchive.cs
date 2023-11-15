@@ -59,9 +59,6 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
 
     public override bool IsSolid => Volumes.First().IsSolidArchive;
 
-    public virtual int MinVersion => Volumes.First().MinVersion;
-    public virtual int MaxVersion => Volumes.First().MaxVersion;
-
     #region Creation
     /// <summary>
     /// Constructor with a FileInfo object to an existing file.
@@ -72,23 +69,6 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     {
         filePath.CheckNotNullOrEmpty(nameof(filePath));
         var fileInfo = new FileInfo(filePath);
-        return new RarArchive(
-            new SourceStream(
-                fileInfo,
-                i => RarArchiveVolumeFactory.GetFilePart(i, fileInfo),
-                options ?? new ReaderOptions()
-            )
-        );
-    }
-
-    /// <summary>
-    /// Constructor with a FileInfo object to an existing file.
-    /// </summary>
-    /// <param name="fileInfo"></param>
-    /// <param name="options"></param>
-    public static RarArchive Open(FileInfo fileInfo, ReaderOptions? options = null)
-    {
-        fileInfo.CheckNotNull(nameof(fileInfo));
         return new RarArchive(
             new SourceStream(
                 fileInfo,

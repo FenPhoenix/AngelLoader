@@ -1756,7 +1756,7 @@ public sealed class RijndaelEngine
     * inappropriate.
     */
 
-    public void Init(bool forEncryption, ICipherParameters parameters)
+    public void Init(bool forEncryption, KeyParameter parameters)
     {
         if (parameters is KeyParameter parameter)
         {
@@ -1769,10 +1769,6 @@ public sealed class RijndaelEngine
             "invalid parameter passed to Rijndael init - " + parameters.GetType()
         );
     }
-
-    public string AlgorithmName => "Rijndael";
-
-    public bool IsPartialBlockOkay => false;
 
     public int ProcessBlock(ReadOnlySpan<byte> input, Span<byte> output)
     {

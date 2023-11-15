@@ -5,7 +5,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Common;
 
-public abstract class Volume : IVolume
+public abstract class Volume : IDisposable
 {
     private readonly Stream _actualStream;
 
@@ -24,22 +24,11 @@ public abstract class Volume : IVolume
 
     protected ReaderOptions ReaderOptions { get; }
 
-    /// <summary>
-    /// RarArchive is the first volume of a multi-part archive.
-    /// Only Rar 3.0 format and higher
-    /// </summary>
-    public virtual bool IsFirstVolume => true;
-
-    public virtual int Index { get; internal set; }
+    public int Index { get; }
 
     public string FileName => (_actualStream as FileStream)?.Name!;
 
-    /// <summary>
-    /// RarArchive is part of a multi-part archive.
-    /// </summary>
-    public virtual bool IsMultiVolume => true;
-
-    protected virtual void Dispose(bool disposing)
+    protected void Dispose(bool disposing)
     {
         if (disposing)
         {
