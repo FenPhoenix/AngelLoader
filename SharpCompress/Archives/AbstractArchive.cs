@@ -8,7 +8,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives;
 
-public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtractionListener
+public abstract class AbstractArchive<TEntry, TVolume> : IDisposable, IArchiveExtractionListener
     where TEntry : IArchiveEntry
     where TVolume : IDisposable
 {

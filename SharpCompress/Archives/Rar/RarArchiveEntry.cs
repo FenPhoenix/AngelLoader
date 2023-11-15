@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,7 +28,7 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
         IsSolid = FileHeader.IsSolid;
     }
 
-    public IArchive Archive => archive;
+    public IDisposable Archive => archive;
 
     internal override IEnumerable<FilePart> Parts => parts;
 
