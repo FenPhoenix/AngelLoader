@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using AL_Common;
+using SharpCompress.Crypto;
 using SharpCompress.IO;
 using SharpCompress.Readers;
 
@@ -47,13 +49,7 @@ public sealed class RarHeaderFactory
         }
         else
         {
-            if (Options.Password is null)
-            {
-                throw new CryptographicException(
-                    "Encrypted Rar archive has no password specified."
-                );
-            }
-            reader = new RarCryptoBinaryReader(stream, Options.Password);
+            throw new CryptographicException("Encryption is not supported.");
         }
 
         var header = RarHeader.TryReadBase(reader, _isRar5, Options.ArchiveEncoding);
@@ -83,16 +79,16 @@ public sealed class RarHeaderFactory
                 {
                     case StreamingMode.Seekable:
 
-                        {
-                            reader.BaseStream.Position += ph.DataSize;
-                        }
-                        break;
+                    {
+                        reader.BaseStream.Position += ph.DataSize;
+                    }
+                    break;
                     case StreamingMode.Streaming:
 
-                        {
-                            reader.BaseStream.Skip(ph.DataSize);
-                        }
-                        break;
+                    {
+                        reader.BaseStream.Skip(ph.DataSize);
+                    }
+                    break;
                     default:
                     {
                         throw new InvalidFormatException("Invalid StreamingMode");
@@ -124,29 +120,25 @@ public sealed class RarHeaderFactory
                 {
                     case StreamingMode.Seekable:
 
-                        {
-                            fh.DataStartPosition = reader.BaseStream.Position;
-                            reader.BaseStream.Position += fh.CompressedSize;
-                        }
-                        break;
+                    {
+                        fh.DataStartPosition = reader.BaseStream.Position;
+                        reader.BaseStream.Position += fh.CompressedSize;
+                    }
+                    break;
                     case StreamingMode.Streaming:
 
+                    {
+                        var ms = new ReadOnlySubStream(reader.BaseStream, fh.CompressedSize);
+                        if (fh.R4Salt is null)
                         {
-                            var ms = new ReadOnlySubStream(reader.BaseStream, fh.CompressedSize);
-                            if (fh.R4Salt is null)
-                            {
-                                fh.PackedStream = ms;
-                            }
-                            else
-                            {
-                                fh.PackedStream = new RarCryptoWrapper(
-                                    ms,
-                                    Options.Password!,
-                                    fh.R4Salt
-                                );
-                            }
+                            fh.PackedStream = ms;
                         }
-                        break;
+                        else
+                        {
+                            ThrowHelper.EncryptionNotSupported();
+                        }
+                    }
+                    break;
                     default:
                     {
                         throw new InvalidFormatException("Invalid StreamingMode");
@@ -178,18 +170,18 @@ public sealed class RarHeaderFactory
         {
             case StreamingMode.Seekable:
 
-                {
-                    fh.DataStartPosition = reader.BaseStream.Position;
-                    reader.BaseStream.Position += fh.CompressedSize;
-                }
-                break;
+            {
+                fh.DataStartPosition = reader.BaseStream.Position;
+                reader.BaseStream.Position += fh.CompressedSize;
+            }
+            break;
             case StreamingMode.Streaming:
 
-                {
-                    //skip the data because it's useless?
-                    reader.BaseStream.Skip(fh.CompressedSize);
-                }
-                break;
+            {
+                //skip the data because it's useless?
+                reader.BaseStream.Skip(fh.CompressedSize);
+            }
+            break;
             default:
             {
                 throw new InvalidFormatException("Invalid StreamingMode");

@@ -1,25 +1,24 @@
 using System.IO;
+using AL_Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
+using SharpCompress.Crypto;
 
 namespace SharpCompress.Archives.Rar;
 
 internal class SeekableFilePart : RarFilePart
 {
     private readonly Stream stream;
-    private readonly string? password;
 
     internal SeekableFilePart(
         MarkHeader mh,
         FileHeader fh,
         int index,
-        Stream stream,
-        string? password
+        Stream stream
     )
         : base(mh, fh, index)
     {
         this.stream = stream;
-        this.password = password;
     }
 
     internal override Stream GetCompressedStream()
@@ -27,7 +26,7 @@ internal class SeekableFilePart : RarFilePart
         stream.Position = FileHeader.DataStartPosition;
         if (FileHeader.R4Salt != null)
         {
-            return new RarCryptoWrapper(stream, password!, FileHeader.R4Salt);
+            ThrowHelper.EncryptionNotSupported();
         }
         return stream;
     }

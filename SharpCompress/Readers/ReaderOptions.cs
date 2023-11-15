@@ -9,8 +9,6 @@ public sealed class ReaderOptions
     /// </summary>
     public bool LookForHeader { get; set; }
 
-    public string? Password { get; set; }
-
     public bool DisableCheckIncomplete { get; set; }
 
     /// <summary>

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AL_Common;
 using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 
@@ -78,9 +79,7 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
             {
                 if (filePartEnumerator.Current.FileHeader.R4Salt != null)
                 {
-                    throw new InvalidFormatException(
-                        "Sharpcompress currently does not support multi-volume decryption."
-                    );
+                    ThrowHelper.EncryptionNotSupported();
                 }
                 var fileName = filePartEnumerator.Current.FileHeader.FileName;
                 if (!filePartEnumerator.MoveNext())
