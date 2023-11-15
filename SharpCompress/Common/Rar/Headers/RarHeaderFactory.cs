@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using AL_Common;
-using SharpCompress.Crypto;
 using SharpCompress.IO;
 using SharpCompress.Readers;
 

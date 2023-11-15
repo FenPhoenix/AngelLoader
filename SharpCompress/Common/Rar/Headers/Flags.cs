@@ -53,9 +53,7 @@ internal static class ArchiveFlagsV4
 {
     public const ushort VOLUME = 0x0001;
     public const ushort SOLID = 0x0008;
-    public const ushort NEW_NUMBERING = 0x0010;
     public const ushort PASSWORD = 0x0080;
-    public const ushort FIRST_VOLUME = 0x0100;
     public const ushort ENCRYPT_VER = 0x0200;
 }
 

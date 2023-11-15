@@ -12,5 +12,4 @@ internal interface IRarUnpack
 
     long DestSize { get; }
     int Char { get; }
-    int PpmEscChar { get; set; }
 }

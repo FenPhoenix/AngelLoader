@@ -2,7 +2,6 @@ using System.IO;
 using AL_Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
-using SharpCompress.Crypto;
 
 namespace SharpCompress.Archives.Rar;
 

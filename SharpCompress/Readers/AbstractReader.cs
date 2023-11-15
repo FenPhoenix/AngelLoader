@@ -191,16 +191,4 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         CreateEntryStream(Entry.Parts.First().GetCompressedStream());
 
     #endregion
-
-    public void FireCompressedBytesRead(
-        long currentPartCompressedBytes,
-        long compressedReadBytes
-    ) =>
-        CompressedBytesRead?.Invoke(
-            this,
-            new CompressedBytesReadEventArgs(
-                currentFilePartCompressedBytesRead: currentPartCompressedBytes,
-                compressedBytesRead: compressedReadBytes
-            )
-        );
 }

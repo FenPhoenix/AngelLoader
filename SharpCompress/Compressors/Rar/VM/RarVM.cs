@@ -817,7 +817,7 @@ internal sealed class RarVM : BitInput
         prg.CommandCount = 0;
         if (xorSum == code[0])
         {
-            var filterType = IsStandardFilter(code, codeSize);
+            var filterType = IsStandardFilter(code);
             if (filterType != VMStandardFilters.VMSF_NONE)
             {
                 var curCmd = new VMPreparedCommand();
@@ -1127,7 +1127,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    private VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
+    private VMStandardFilters IsStandardFilter(byte[] code)
     {
         VMStandardFilterSignature[] stdList =
         {

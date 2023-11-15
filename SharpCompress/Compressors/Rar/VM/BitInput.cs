@@ -6,19 +6,10 @@ internal class BitInput
     internal const int MAX_SIZE = 0x8000;
 
     public int inAddr;
-    public int inBit;
+    public int InBit;
 
     // TODO: rename var
-    public int InAddr
-    {
-        get => inAddr;
-        set => inAddr = value;
-    }
-    public int InBit
-    {
-        get => inBit;
-        set => inBit = value;
-    }
+    public int InAddr;
 
     /// <summary>  </summary>
     internal BitInput() => InBuf = new byte[MAX_SIZE];
@@ -28,7 +19,7 @@ internal class BitInput
     internal void InitBitInput()
     {
         inAddr = 0;
-        inBit = 0;
+        InBit = 0;
     }
 
     internal void faddbits(uint bits) =>
@@ -41,9 +32,9 @@ internal class BitInput
     /// <param name="bits"></param>
     internal void AddBits(int bits)
     {
-        bits += inBit;
+        bits += InBit;
         inAddr += (bits >> 3);
-        inBit = bits & 7;
+        InBit = bits & 7;
     }
 
     internal uint fgetbits() =>
@@ -75,7 +66,7 @@ internal class BitInput
                         + ((InBuf[inAddr + 1] & 0xff) << 8)
                         + ((InBuf[inAddr + 2] & 0xff))
                     ) >>>
-                    (8 - inBit)
+                    (8 - InBit)
                 )
             ) & 0xffff
         );

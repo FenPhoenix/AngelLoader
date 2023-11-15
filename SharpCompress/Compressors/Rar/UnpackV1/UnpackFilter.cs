@@ -8,29 +8,17 @@ internal sealed class UnpackFilter
 
     internal UnpackFilter() => Program = new VMPreparedProgram();
 
-    // TODO uint
-    internal uint uBlockStart
-    {
-        get => (uint)BlockStart;
-        set => BlockStart = (int)value;
-    }
-    internal uint uBlockLength
-    {
-        get => (uint)BlockLength;
-        set => BlockLength = (int)value;
-    }
+    internal int BlockStart;
 
-    internal int BlockStart { get; set; }
+    internal int BlockLength;
 
-    internal int BlockLength { get; set; }
+    internal int ExecCount;
 
-    internal int ExecCount { get; set; }
-
-    internal bool NextWindow { get; set; }
+    internal bool NextWindow;
 
     // position of parent filter in Filters array used as prototype for filter
     // in PrgStack array. Not defined for filters in Filters array.
-    internal int ParentFilter { get; set; }
+    internal int ParentFilter;
 
-    internal VMPreparedProgram Program { get; }
+    internal readonly VMPreparedProgram Program;
 }

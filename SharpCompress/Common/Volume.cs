@@ -26,8 +26,6 @@ public abstract class Volume : IDisposable
 
     public int Index { get; }
 
-    public string FileName => (_actualStream as FileStream)?.Name!;
-
     protected void Dispose(bool disposing)
     {
         if (disposing)

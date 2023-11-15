@@ -281,8 +281,8 @@ internal partial class Unpack
             }
         }
 
-        Filter.uBlockStart = ReadFilterData();
-        Filter.uBlockLength = ReadFilterData();
+        Filter.BlockStart = (int)ReadFilterData();
+        Filter.BlockLength = (int)ReadFilterData();
         if (Filter.BlockLength > MAX_FILTER_BLOCK_SIZE)
         {
             Filter.BlockLength = 0;
@@ -317,7 +317,7 @@ internal partial class Unpack
         // flag and process this filter only after processing that older data.
         Filter.NextWindow = WrPtr != UnpPtr && ((WrPtr - UnpPtr) & MaxWinMask) <= Filter.BlockStart;
 
-        Filter.uBlockStart = (uint)((Filter.BlockStart + UnpPtr) & MaxWinMask);
+        Filter.BlockStart = (int)(uint)((Filter.BlockStart + UnpPtr) & MaxWinMask);
         Filters.Add(Filter);
         return true;
     }

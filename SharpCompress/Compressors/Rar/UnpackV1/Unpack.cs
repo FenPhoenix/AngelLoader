@@ -849,7 +849,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 return (false);
             }
         }
-        AddBits((8 - inBit) & 7);
+        AddBits((8 - InBit) & 7);
         long bitField = GetBits() & unchecked((int)0xffFFffFF);
         if ((bitField & 0x8000) != 0)
         {
