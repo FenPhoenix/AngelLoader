@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class PpmContext : Pointer
+internal sealed class PpmContext : Pointer
 {
     internal FreqData FreqData
     {
@@ -18,7 +18,7 @@ internal class PpmContext : Pointer
         }
     }
 
-    public virtual int NumStats
+    public int NumStats
     {
         get
         {

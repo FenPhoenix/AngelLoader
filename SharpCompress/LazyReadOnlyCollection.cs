@@ -73,7 +73,7 @@ public sealed class LazyReadOnlyCollection<T> : ICollection<T>
     {
         if (!fullyLoaded)
         {
-            this.ForEach(x => { });
+            this.ForEach(static _ => { });
             fullyLoaded = true;
         }
     }

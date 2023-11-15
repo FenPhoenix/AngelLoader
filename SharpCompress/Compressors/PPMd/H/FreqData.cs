@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class FreqData : Pointer
+internal sealed class FreqData : Pointer
 {
     internal const int SIZE = 6;
 
@@ -29,7 +29,7 @@ internal class FreqData : Pointer
 
     internal int GetStats() => BinaryPrimitives.ReadInt32LittleEndian(Memory.AsSpan(Address + 2));
 
-    internal virtual void SetStats(State state) => SetStats(state.Address);
+    internal void SetStats(State state) => SetStats(state.Address);
 
     internal void SetStats(int state) =>
         BinaryPrimitives.WriteInt32LittleEndian(Memory.AsSpan(Address + 2), state);

@@ -6,7 +6,7 @@ using SharpCompress.Compressors.Rar;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class ModelPpm
+internal sealed class ModelPpm
 {
     private void InitBlock()
     {
@@ -22,56 +22,56 @@ internal class ModelPpm
 
     public SubAllocator SubAlloc { get; } = new SubAllocator();
 
-    public virtual See2Context DummySee2Cont => _dummySee2Cont;
+    public See2Context DummySee2Cont => _dummySee2Cont;
 
-    public virtual int InitRl => _initRl;
+    public int InitRl => _initRl;
 
-    public virtual int EscCount
+    public int EscCount
     {
         get => _escCount;
         set => _escCount = value & 0xff;
     }
 
-    public virtual int[] CharMask => _charMask;
+    public int[] CharMask => _charMask;
 
-    public virtual int NumMasked
+    public int NumMasked
     {
         get => _numMasked;
         set => _numMasked = value;
     }
 
-    public virtual int PrevSuccess
+    public int PrevSuccess
     {
         get => _prevSuccess;
         set => _prevSuccess = value & 0xff;
     }
 
-    public virtual int InitEsc
+    public int InitEsc
     {
         set => _initEsc = value;
     }
 
-    public virtual int RunLength
+    public int RunLength
     {
         get => _runLength;
         set => _runLength = value;
     }
 
-    public virtual int HiBitsFlag
+    public int HiBitsFlag
     {
         get => _hiBitsFlag;
         set => _hiBitsFlag = value & 0xff;
     }
 
-    public virtual int[][] BinSumm => _binSumm;
+    public int[][] BinSumm => _binSumm;
 
     internal RangeCoder Coder { get; private set; }
 
     internal State FoundState { get; private set; }
 
-    public virtual byte[] Heap => SubAlloc.Heap;
+    public byte[] Heap => SubAlloc.Heap;
 
-    public virtual int OrderFall => _orderFall;
+    public int OrderFall => _orderFall;
 
     public const int MAX_O = 64; /* maximum allowed model order */
 
@@ -326,7 +326,7 @@ internal class ModelPpm
         return (_minContext.Address != 0);
     }
 
-    public virtual int DecodeChar()
+    public int DecodeChar()
     {
         // Debug
         //subAlloc.dumpHeap();
@@ -395,17 +395,17 @@ internal class ModelPpm
         return (symbol);
     }
 
-    public virtual See2Context[][] GetSee2Cont() => _see2Cont;
+    public See2Context[][] GetSee2Cont() => _see2Cont;
 
-    public virtual void IncEscCount(int dEscCount) => EscCount += dEscCount;
+    public void IncEscCount(int dEscCount) => EscCount += dEscCount;
 
-    public virtual void IncRunLength(int dRunLength) => RunLength += dRunLength;
+    public void IncRunLength(int dRunLength) => RunLength += dRunLength;
 
-    public virtual int[] GetHb2Flag() => _hb2Flag;
+    public int[] GetHb2Flag() => _hb2Flag;
 
-    public virtual int[] GetNs2BsIndx() => _ns2BsIndx;
+    public int[] GetNs2BsIndx() => _ns2BsIndx;
 
-    public virtual int[] GetNs2Indx() => _ns2Indx;
+    public int[] GetNs2Indx() => _ns2Indx;
 
     private int CreateSuccessors(bool skip, State p1)
     {

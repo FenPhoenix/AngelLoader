@@ -61,10 +61,6 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     protected abstract IEnumerable<TVolume> LoadVolumes(SourceStream srcStream);
     protected abstract IEnumerable<TEntry> LoadEntries(IEnumerable<TVolume> volumes);
 
-    IEnumerable<IArchiveEntry> IArchive.Entries => Entries.Cast<IArchiveEntry>();
-
-    IEnumerable<IDisposable> IArchive.Volumes => lazyVolumes.Cast<IDisposable>();
-
     public virtual void Dispose()
     {
         if (!disposed)

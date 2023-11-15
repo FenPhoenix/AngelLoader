@@ -1019,7 +1019,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             vmCode.Add((byte)(GetBits() >> 8));
             AddBits(8);
         }
-        return (AddVMCode(FirstByte, vmCode, Length));
+        return (AddVMCode(FirstByte, vmCode));
     }
 
     private bool ReadVMCodePPM()
@@ -1064,10 +1064,10 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             }
             vmCode.Add((byte)Ch); // VMCode[I]=Ch;
         }
-        return (AddVMCode(FirstByte, vmCode, Length));
+        return (AddVMCode(FirstByte, vmCode));
     }
 
-    private bool AddVMCode(int firstByte, List<byte> vmCode, int length)
+    private bool AddVMCode(int firstByte, List<byte> vmCode)
     {
         var Inp = new BitInput();
         Inp.InitBitInput();
