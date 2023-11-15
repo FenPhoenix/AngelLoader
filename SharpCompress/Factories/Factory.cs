@@ -12,11 +12,7 @@ public abstract class Factory : IFactory
 {
     static Factory()
     {
-        RegisterFactory(new ZipFactory());
         RegisterFactory(new RarFactory());
-        RegisterFactory(new SevenZipFactory());
-        RegisterFactory(new GZipFactory());
-        RegisterFactory(new TarFactory());
     }
 
     private static readonly HashSet<Factory> _factories = new HashSet<Factory>();

@@ -43,5 +43,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Compressors\ADC\" />
+	  <Folder Include="Compressors\BZip2\" />
+	  <Folder Include="Compressors\LZMA\Utilites\" />
 	</ItemGroup>
 </Project>
