@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class RarNode : Pointer
+internal sealed class RarNode : Pointer
 {
     private int _next; //rarnode pointer
 

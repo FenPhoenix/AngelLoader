@@ -727,7 +727,7 @@ internal sealed class ModelPpm
         return (_minContext.Address != 0);
     }
 
-    internal void NextContext()
+    private void NextContext()
     {
         var addr = FoundState.GetSuccessor();
         if (_orderFall == 0 && addr > SubAlloc.PText)

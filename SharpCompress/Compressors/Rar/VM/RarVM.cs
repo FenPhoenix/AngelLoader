@@ -18,10 +18,10 @@ internal sealed class RarVM : BitInput
     //}
     internal byte[] Mem { get; private set; }
 
-    public const int VM_MEMSIZE = 0x40000;
+    private const int VM_MEMSIZE = 0x40000;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'VM_MEMMASK '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public const int VM_MEMMASK = (VM_MEMSIZE - 1);
+    private const int VM_MEMMASK = (VM_MEMSIZE - 1);
 
     public const int VM_GLOBALMEMADDR = 0x3C000;
 
@@ -94,7 +94,7 @@ internal sealed class RarVM : BitInput
         // *)Addr,Value)
     }
 
-    internal void SetLowEndianValue(List<byte> mem, int offset, int value)
+    internal static void SetLowEndianValue(List<byte> mem, int offset, int value)
     {
         mem[offset + 0] = (byte)(value & 0xff);
         mem[offset + 1] = (byte)((value >>> 8) & 0xff);
@@ -1017,7 +1017,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    private void optimize(VMPreparedProgram prg)
+    private static void optimize(VMPreparedProgram prg)
     {
         //UPGRADE_NOTE: There is an untranslated Statement.  Please refer to original code. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1153'"
 
@@ -1127,7 +1127,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    private VMStandardFilters IsStandardFilter(byte[] code)
+    private static VMStandardFilters IsStandardFilter(byte[] code)
     {
         VMStandardFilterSignature[] stdList =
         {

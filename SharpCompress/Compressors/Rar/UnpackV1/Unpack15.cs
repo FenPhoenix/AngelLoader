@@ -753,7 +753,7 @@ internal partial class Unpack
         corrHuff(ChSetB, NToPlB);
     }
 
-    private void corrHuff(int[] CharSet, int[] NumToPlace)
+    private static void corrHuff(int[] CharSet, int[] NumToPlace)
     {
         int I,
             J,

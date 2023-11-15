@@ -18,8 +18,6 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
-
     internal AbstractReader(ReaderOptions options)
     {
         Options = options;

@@ -5,7 +5,7 @@ internal class BitInput
     /// <summary> the max size of the input</summary>
     internal const int MAX_SIZE = 0x8000;
 
-    public int inAddr;
+    protected int inAddr;
     public int InBit;
 
     // TODO: rename var

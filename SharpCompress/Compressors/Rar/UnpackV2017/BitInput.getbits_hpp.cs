@@ -2,7 +2,7 @@
 
 internal partial class BitInput
 {
-    public const int MAX_SIZE = 0x8000; // Size of input buffer.
+    protected const int MAX_SIZE = 0x8000; // Size of input buffer.
 
     public int InAddr; // Curent byte position in the buffer.
     public int InBit; // Current bit position in the current byte.

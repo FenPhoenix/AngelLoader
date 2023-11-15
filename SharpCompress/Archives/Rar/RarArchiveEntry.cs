@@ -34,7 +34,7 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 
     internal override FileHeader FileHeader => parts.First().FileHeader;
 
-    public override long Size
+    public long Size
     {
         get
         {

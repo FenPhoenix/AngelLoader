@@ -27,5 +27,5 @@ public sealed class RarReaderEntry : RarEntry
     /// <summary>
     /// The uncompressed file size
     /// </summary>
-    public override long Size => Part.FileHeader.UncompressedSize;
+    public long Size => Part.FileHeader.UncompressedSize;
 }

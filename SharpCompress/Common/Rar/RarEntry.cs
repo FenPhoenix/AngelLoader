@@ -33,19 +33,12 @@ public abstract class RarEntry
     /// </summary>
     public bool IsDirectory => FileHeader.IsDirectory;
 
-    public bool IsSplitAfter => FileHeader.IsSplitAfter;
-
     public bool IsSolid { get; set; }
 
     /// <summary>
     /// The compressed file size
     /// </summary>
     public abstract long CompressedSize { get; }
-
-    /// <summary>
-    /// The uncompressed file size.
-    /// </summary>
-    public virtual long Size { get; }
 
     internal virtual IEnumerable<FilePart> Parts { get; }
 }
