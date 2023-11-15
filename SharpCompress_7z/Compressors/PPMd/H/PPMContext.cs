@@ -275,6 +275,7 @@ internal sealed class PpmContext : Pointer
             bs = (bs - GetMean(bs, ModelPpm.PERIOD_BITS, 2)) & 0xFFFF;
             model.BinSumm[off1][off2] = bs;
             model.Coder.SubRange.HighCount = ModelPpm.BIN_SCALE;
+            model._initEsc = EXP_ESCAPE[(bs >>> 10)];
             model.NumMasked = 1;
             model.CharMask[rs.Symbol] = model.EscCount;
             model.PrevSuccess = 0;
@@ -319,7 +320,7 @@ internal sealed class PpmContext : Pointer
         }
     }
 
-    internal void Update1_0(ModelPpm model, int p)
+    internal void update1_0(ModelPpm model, int p)
     {
         model.FoundState.Address = p;
         model.PrevSuccess = 2 * model.FoundState.Freq > FreqData.SummFreq ? 1 : 0;

@@ -1,6 +1,7 @@
 #nullable disable
 
 using System.IO;
+using SharpCompress_7z.Compressors.Rar;
 
 namespace SharpCompress_7z.Compressors.PPMd.H;
 
@@ -14,7 +15,14 @@ internal sealed class RangeCoder
     private long _low,
         _code,
         _range;
+    private readonly IRarUnpack _unpackRead;
     private readonly Stream _stream;
+
+    internal RangeCoder(IRarUnpack unpackRead)
+    {
+        _unpackRead = unpackRead;
+        Init();
+    }
 
     internal RangeCoder(Stream stream)
     {
@@ -47,6 +55,10 @@ internal sealed class RangeCoder
     {
         get
         {
+            if (_unpackRead != null)
+            {
+                return (_unpackRead.Char);
+            }
             if (_stream != null)
             {
                 return _stream.ReadByte();

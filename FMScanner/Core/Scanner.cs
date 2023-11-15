@@ -28,8 +28,8 @@ using System.Xml;
 using AL_Common;
 using AL_Common.FastZipReader;
 using JetBrains.Annotations;
-using SharpCompress.Archives.Rar;
-using SharpCompress.Readers.Rar;
+using SharpCompress_7z.Archives.Rar;
+using SharpCompress_7z.Readers.Rar;
 using SharpCompress_7z.Archives.SevenZip;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
@@ -1195,7 +1195,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
-        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
+        SharpCompress_7z.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
 
         if (_fmFormat == FMFormat.Rar)
         {

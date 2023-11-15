@@ -130,6 +130,8 @@ internal sealed class SubAllocator
         }
     }
 
+    public int GetAllocatedMemory() => _subAllocatorSize;
+
     public bool StartSubAllocator(int saSize)
     {
         int t = saSize;
