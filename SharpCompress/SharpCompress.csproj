@@ -30,19 +30,17 @@
 	  <Compile Remove="Compressors\BZip2\**" />
 	  <Compile Remove="Compressors\Filters\**" />
 	  <Compile Remove="Compressors\LZMA\**" />
+	  <Compile Remove="Compressors\Xz\**" />
 	  <EmbeddedResource Remove="Compressors\ADC\**" />
 	  <EmbeddedResource Remove="Compressors\BZip2\**" />
 	  <EmbeddedResource Remove="Compressors\Filters\**" />
 	  <EmbeddedResource Remove="Compressors\LZMA\**" />
+	  <EmbeddedResource Remove="Compressors\Xz\**" />
 	  <None Remove="Compressors\ADC\**" />
 	  <None Remove="Compressors\BZip2\**" />
 	  <None Remove="Compressors\Filters\**" />
 	  <None Remove="Compressors\LZMA\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="ZstdSharp.Port" Version="0.7.2" />
+	  <None Remove="Compressors\Xz\**" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
@@ -52,10 +50,6 @@
 		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(VersionlessImplicitFrameworkDefine)' == 'NETFRAMEWORK' ">
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
 		<PackageReference Include="System.Memory" Version="4.5.5" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Compressors\Xz\Filters\" />
 	</ItemGroup>
 </Project>
