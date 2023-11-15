@@ -76,7 +76,7 @@ public abstract class Entry : IEntry
 
     public bool IsSolid { get; set; }
 
-    internal virtual void Close() { }
+    internal void Close() { }
 
     /// <summary>
     /// Entry file attribute.

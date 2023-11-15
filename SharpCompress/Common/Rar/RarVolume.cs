@@ -70,7 +70,7 @@ public abstract class RarVolume : Volume
                             var part = CreateFilePart(lastMarkHeader!, fh);
                             var buffer = new byte[fh.CompressedSize];
                             part.GetCompressedStream().Read(buffer, 0, buffer.Length);
-                            Comment = System.Text.Encoding.UTF8.GetString(
+                            System.Text.Encoding.UTF8.GetString(
                                 buffer,
                                 0,
                                 buffer.Length - 1
@@ -102,7 +102,7 @@ public abstract class RarVolume : Volume
     /// <summary>
     /// RarArchive is part of a multi-part archive.
     /// </summary>
-    public virtual bool IsMultiVolume
+    public bool IsMultiVolume
     {
         get
         {
@@ -123,6 +123,4 @@ public abstract class RarVolume : Volume
             return ArchiveHeader.IsSolid;
         }
     }
-
-    public string? Comment { get; internal set; }
 }

@@ -47,7 +47,7 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
         }
     }
 
-    protected virtual IEnumerable<FilePart> CreateFilePartEnumerableForCurrentEntry() =>
+    protected IEnumerable<FilePart> CreateFilePartEnumerableForCurrentEntry() =>
         Entry.Parts;
 
     protected override EntryStream GetEntryStream()

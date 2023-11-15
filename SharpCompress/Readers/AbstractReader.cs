@@ -111,7 +111,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
 
     protected virtual Stream RequestInitialStream() => Volume.Stream;
 
-    internal virtual bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
+    internal bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
 
     protected abstract IEnumerable<TEntry> GetEntries(Stream stream);
 
