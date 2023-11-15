@@ -727,11 +727,18 @@ internal static class FMBackupAndRestore
                             }
                             continue;
                         }
-
-                        if ((entry.LastModifiedTime != null &&
-                            fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime()) ||
-                            fi.Length != entry.Size)
+                        if (entry.LastModifiedTime != null)
                         {
+                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                            DateTime eDT = ((DateTime)entry.LastModifiedTime).ToUniversalTime();
+                            // I think RAR can sometimes use the DOS datetime, so to be safe let's do the 2 second tolerance
+                            if ((fiDT == eDT ||
+                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                fi.Length == entry.Size)
+                            {
+                                continue;
+                            }
                             changedList.Add(efn);
                         }
                     }
