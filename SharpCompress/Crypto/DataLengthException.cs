@@ -1,5 +1,3 @@
-using System;
-
 namespace SharpCompress.Crypto;
 
 public sealed class DataLengthException : CryptoException
@@ -8,6 +6,7 @@ public sealed class DataLengthException : CryptoException
     * base constructor.
     */
 
+#if false
     public DataLengthException() { }
 
     /**
@@ -16,9 +15,11 @@ public sealed class DataLengthException : CryptoException
      * @param message the message to be carried with the exception.
      */
 
+    public DataLengthException(string message, Exception exception)
+        : base(message, exception) { }
+#endif
+
     public DataLengthException(string message)
         : base(message) { }
 
-    public DataLengthException(string message, Exception exception)
-        : base(message, exception) { }
 }

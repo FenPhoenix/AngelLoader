@@ -17,8 +17,6 @@ internal partial class Unpack
 {
     private int readBorder;
 
-    private bool suspended;
-
     internal bool unpAllBuf;
 
     //private ComprDataIO unpIO;
@@ -28,8 +26,6 @@ internal partial class Unpack
     internal bool unpSomeRead;
 
     private int readTop;
-
-    private long destUnpSize;
 
     private byte[] window;
 
@@ -225,7 +221,7 @@ internal partial class Unpack
 
     private void unpack15(bool solid)
     {
-        if (suspended)
+        if (Suspended)
         {
             unpPtr = wrPtr;
         }
@@ -243,15 +239,15 @@ internal partial class Unpack
             {
                 unpPtr = wrPtr;
             }
-            --destUnpSize;
+            --DestSize;
         }
-        if (destUnpSize >= 0)
+        if (DestSize >= 0)
         {
             getFlagsBuf();
             FlagsCnt = 8;
         }
 
-        while (destUnpSize >= 0)
+        while (DestSize >= 0)
         {
             unpPtr &= PackDef.MAXWINMASK;
 
@@ -262,7 +258,7 @@ internal partial class Unpack
             if (((wrPtr - unpPtr) & PackDef.MAXWINMASK) < 270 && wrPtr != unpPtr)
             {
                 oldUnpWriteBuf();
-                if (suspended)
+                if (Suspended)
                 {
                     return;
                 }
@@ -686,7 +682,7 @@ internal partial class Unpack
         }
 
         window[unpPtr++] = (byte)((ChSet[BytePlace] >>> 8));
-        --destUnpSize;
+        --DestSize;
 
         while (true)
         {
@@ -784,7 +780,7 @@ internal partial class Unpack
 
     private void oldCopyString(int Distance, int Length)
     {
-        destUnpSize -= Length;
+        DestSize -= Length;
         while ((Length--) != 0)
         {
             window[unpPtr] = window[(unpPtr - Distance) & PackDef.MAXWINMASK];

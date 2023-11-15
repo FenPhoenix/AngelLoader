@@ -36,7 +36,7 @@ internal partial class Unpack
         get => readBorder;
         set => readBorder = value;
     }
-    private long DestUnpSize => destUnpSize;
+    private long DestUnpSize => DestSize;
     private long WrittenFileSize => writtenFileSize;
     private byte[] Window => window;
 
@@ -70,8 +70,6 @@ internal partial class Unpack
 
     public void Unpack5(bool Solid)
     {
-        FileExtracted = true;
-
         if (!Suspended)
         {
             UnpInitData(Solid);
@@ -131,7 +129,6 @@ internal partial class Unpack
 
                 if (Suspended)
                 {
-                    FileExtracted = false;
                     return;
                 }
             }

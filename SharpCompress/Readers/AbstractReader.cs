@@ -8,9 +8,9 @@ using SharpCompress.Common.Rar;
 namespace SharpCompress.Readers;
 
 /// <summary>
-/// A generic push reader that reads unseekable comrpessed streams.
+/// A generic push reader that reads unseekable compressed streams.
 /// </summary>
-public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtractionListener
+public abstract class AbstractReader<TEntry, TVolume> : IReader
     where TEntry : RarEntry
     where TVolume : Volume
 {
@@ -18,20 +18,14 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    public event EventHandler<ReaderExtractionEventArgs<RarEntry>>? EntryExtractionProgress;
-
     public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
-    public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
 
-    internal AbstractReader(ReaderOptions options, ArchiveType archiveType)
+    internal AbstractReader(ReaderOptions options)
     {
-        ArchiveType = archiveType;
         Options = options;
     }
 
     internal ReaderOptions Options { get; }
-
-    public ArchiveType ArchiveType { get; }
 
     /// <summary>
     /// Current volume that the current entry resides in
@@ -172,9 +166,8 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
 
     internal void Write(Stream writeStream)
     {
-        var streamListener = this as IReaderExtractionListener;
         using Stream s = OpenEntryStream();
-        s.TransferTo(writeStream, Entry, streamListener);
+        s.TransferTo(writeStream);
     }
 
     public EntryStream OpenEntryStream()
@@ -199,9 +192,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
 
     #endregion
 
-    RarEntry IReader.Entry => Entry;
-
-    void IExtractionListener.FireCompressedBytesRead(
+    public void FireCompressedBytesRead(
         long currentPartCompressedBytes,
         long compressedReadBytes
     ) =>
@@ -210,33 +201,6 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
             new CompressedBytesReadEventArgs(
                 currentFilePartCompressedBytesRead: currentPartCompressedBytes,
                 compressedBytesRead: compressedReadBytes
-            )
-        );
-
-    void IExtractionListener.FireFilePartExtractionBegin(
-        string name,
-        long size,
-        long compressedSize
-    ) =>
-        FilePartExtractionBegin?.Invoke(
-            this,
-            new FilePartExtractionBeginEventArgs(
-                compressedSize: compressedSize,
-                size: size,
-                name: name
-            )
-        );
-
-    void IReaderExtractionListener.FireEntryExtractionProgress(
-        RarEntry entry,
-        long bytesTransferred,
-        int iterations
-    ) =>
-        EntryExtractionProgress?.Invoke(
-            this,
-            new ReaderExtractionEventArgs<RarEntry>(
-                entry,
-                new ReaderProgress(entry, bytesTransferred, iterations)
             )
         );
 }

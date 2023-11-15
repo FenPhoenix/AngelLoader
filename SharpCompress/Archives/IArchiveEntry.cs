@@ -1,5 +1,3 @@
-using SharpCompress.Common;
-
 namespace SharpCompress.Archives;
 
 public interface IArchiveEntry

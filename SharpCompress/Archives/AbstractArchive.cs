@@ -26,16 +26,13 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable, IArchiveEx
     private bool disposed;
     protected readonly SourceStream SrcStream;
 
-    internal AbstractArchive(ArchiveType type, SourceStream srcStream)
+    internal AbstractArchive(SourceStream srcStream)
     {
-        Type = type;
         ReaderOptions = srcStream.ReaderOptions;
         SrcStream = srcStream;
         lazyVolumes = new LazyReadOnlyCollection<TVolume>(LoadVolumes(SrcStream));
         lazyEntries = new LazyReadOnlyCollection<TEntry>(LoadEntries(Volumes));
     }
-
-    public ArchiveType Type { get; }
 
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveEntries across the one or many parts of the RarArchive.
@@ -50,13 +47,13 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable, IArchiveEx
     /// <summary>
     /// The total size of the files compressed in the archive.
     /// </summary>
-    public virtual long TotalSize =>
+    public long TotalSize =>
         Entries.Aggregate(0L, (total, cf) => total + cf.CompressedSize);
 
     /// <summary>
     /// The total size of the files as uncompressed in the archive.
     /// </summary>
-    public virtual long TotalUncompressSize =>
+    public long TotalUncompressedSize =>
         Entries.Aggregate(0L, (total, cf) => total + cf.Size);
 
     protected abstract IEnumerable<TVolume> LoadVolumes(SourceStream srcStream);
@@ -80,7 +77,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable, IArchiveEx
         lazyVolumes.EnsureFullyLoaded();
     }
 
-    void IExtractionListener.FireCompressedBytesRead(
+    public void FireCompressedBytesRead(
         long currentPartCompressedBytes,
         long compressedReadBytes
     ) =>
@@ -92,7 +89,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable, IArchiveEx
             )
         );
 
-    void IExtractionListener.FireFilePartExtractionBegin(
+    public void FireFilePartExtractionBegin(
         string name,
         long size,
         long compressedSize

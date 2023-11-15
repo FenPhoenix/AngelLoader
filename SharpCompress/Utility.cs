@@ -2,8 +2,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress.Common.Rar;
-using SharpCompress.Readers;
 
 namespace SharpCompress;
 
@@ -191,9 +189,7 @@ public static class Utility
 
     public static long TransferTo(
         this Stream source,
-        Stream destination,
-        RarEntry entry,
-        IReaderExtractionListener readerExtractionListener
+        Stream destination
     )
     {
         var array = GetTransferByteArray();
@@ -206,7 +202,6 @@ public static class Utility
                 total += count;
                 destination.Write(array, 0, count);
                 iterations++;
-                readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
             }
             return total;
         }

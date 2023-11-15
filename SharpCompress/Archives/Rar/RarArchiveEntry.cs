@@ -59,14 +59,14 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
             return new RarStream(
                 archive.UnpackV1.Value,
                 FileHeader,
-                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
+                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
             );
         }
 
         return new RarStream(
             archive.UnpackV2017.Value,
             FileHeader,
-            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
+            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
         );
     }
 

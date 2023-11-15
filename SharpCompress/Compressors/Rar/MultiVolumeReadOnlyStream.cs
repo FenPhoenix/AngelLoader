@@ -16,18 +16,10 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
     private IEnumerator<RarFilePart> filePartEnumerator;
     private Stream currentStream;
 
-    private readonly IExtractionListener streamListener;
-
-    private long currentPartTotalReadBytes;
-    private long currentEntryTotalReadBytes;
-
     internal MultiVolumeReadOnlyStream(
-        IEnumerable<RarFilePart> parts,
-        IExtractionListener streamListener
+        IEnumerable<RarFilePart> parts
     )
     {
-        this.streamListener = streamListener;
-
         filePartEnumerator = parts.GetEnumerator();
         filePartEnumerator.MoveNext();
         InitializeNextFilePart();
@@ -53,15 +45,7 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
         currentPosition = 0;
         currentStream = filePartEnumerator.Current.GetCompressedStream();
 
-        currentPartTotalReadBytes = 0;
-
         CurrentCrc = filePartEnumerator.Current.FileHeader.FileCrc;
-
-        streamListener.FireFilePartExtractionBegin(
-            filePartEnumerator.Current.FilePartName,
-            filePartEnumerator.Current.FileHeader.CompressedSize,
-            filePartEnumerator.Current.FileHeader.UncompressedSize
-        );
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -113,12 +97,6 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
                 break;
             }
         }
-        currentPartTotalReadBytes += totalRead;
-        currentEntryTotalReadBytes += totalRead;
-        streamListener.FireCompressedBytesRead(
-            currentPartTotalReadBytes,
-            currentEntryTotalReadBytes
-        );
         return totalRead;
     }
 

@@ -20,23 +20,9 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         // to ease in porting Unpack50.cs
         Inp = this;
 
-    public bool FileExtracted { get; private set; }
+    public long DestSize { get; private set; }
 
-    public long DestSize
-    {
-        get => destUnpSize;
-        set
-        {
-            destUnpSize = value;
-            FileExtracted = false;
-        }
-    }
-
-    public bool Suspended
-    {
-        get => suspended;
-        set => suspended = value;
-    }
+    private bool Suspended;
 
     public int Char
     {
@@ -127,7 +113,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
     public void DoUnpack(FileHeader fileHeader, Stream readStream, Stream writeStream)
     {
-        destUnpSize = fileHeader.UncompressedSize;
+        DestSize = fileHeader.UncompressedSize;
         this.fileHeader = fileHeader;
         this.readStream = readStream;
         this.writeStream = writeStream;
@@ -135,7 +121,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         {
             Init(null);
         }
-        suspended = false;
+        Suspended = false;
         DoUnpack();
     }
 
@@ -178,18 +164,18 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         var buffer = new byte[0x10000];
         while (true)
         {
-            var code = readStream.Read(buffer, 0, (int)Math.Min(buffer.Length, destUnpSize));
+            var code = readStream.Read(buffer, 0, (int)Math.Min(buffer.Length, DestSize));
             if (code == 0 || code == -1)
             {
                 break;
             }
-            code = code < destUnpSize ? code : (int)destUnpSize;
+            code = code < DestSize ? code : (int)DestSize;
             writeStream.Write(buffer, 0, code);
-            if (destUnpSize >= 0)
+            if (DestSize >= 0)
             {
-                destUnpSize -= code;
+                DestSize -= code;
             }
-            if (suspended)
+            if (Suspended)
             {
                 return;
             }
@@ -219,9 +205,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             }
         }
 
-        FileExtracted = true;
-
-        if (!suspended)
+        if (!Suspended)
         {
             UnpInitData(solid);
             if (!unpReadBuf())
@@ -256,13 +240,12 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             if (((wrPtr - unpPtr) & PackDef.MAXWINMASK) < 260 && wrPtr != unpPtr)
             {
                 UnpWriteBuf();
-                if (destUnpSize <= 0)
+                if (DestSize <= 0)
                 {
                     return;
                 }
-                if (suspended)
+                if (Suspended)
                 {
-                    FileExtracted = false;
                     return;
                 }
             }
@@ -662,7 +645,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                     writeStream.Write(FilteredData, 0, FilteredDataSize);
                     unpSomeRead = true;
                     writtenFileSize += FilteredDataSize;
-                    destUnpSize -= FilteredDataSize;
+                    DestSize -= FilteredDataSize;
                     WrittenBorder = BlockEnd;
                     WriteSize = (unpPtr - WrittenBorder) & PackDef.MAXWINMASK;
                 }
@@ -706,19 +689,19 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
     private void UnpWriteData(byte[] data, int offset, int size)
     {
-        if (destUnpSize <= 0)
+        if (DestSize <= 0)
         {
             return;
         }
         var writeSize = size;
-        if (writeSize > destUnpSize)
+        if (writeSize > DestSize)
         {
-            writeSize = (int)destUnpSize;
+            writeSize = (int)DestSize;
         }
         writeStream.Write(data, offset, writeSize);
 
         writtenFileSize += size;
-        destUnpSize -= size;
+        DestSize -= size;
     }
 
     private void InsertOldDist(uint distance) =>

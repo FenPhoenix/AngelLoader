@@ -212,7 +212,7 @@ internal partial class Unpack
     {
         int Bits;
 
-        if (suspended)
+        if (Suspended)
         {
             unpPtr = wrPtr;
         }
@@ -230,10 +230,10 @@ internal partial class Unpack
                     return;
                 }
             }
-            --destUnpSize;
+            --DestSize;
         }
 
-        while (destUnpSize >= 0)
+        while (DestSize >= 0)
         {
             unpPtr &= PackDef.MAXWINMASK;
 
@@ -247,7 +247,7 @@ internal partial class Unpack
             if (((wrPtr - unpPtr) & PackDef.MAXWINMASK) < 270 && wrPtr != unpPtr)
             {
                 oldUnpWriteBuf();
-                if (suspended)
+                if (Suspended)
                 {
                     return;
                 }
@@ -269,7 +269,7 @@ internal partial class Unpack
                 {
                     UnpCurChannel = 0;
                 }
-                --destUnpSize;
+                --DestSize;
                 continue;
             }
 
@@ -277,7 +277,7 @@ internal partial class Unpack
             if (Number < 256)
             {
                 window[unpPtr++] = (byte)Number;
-                --destUnpSize;
+                --DestSize;
                 continue;
             }
             if (Number > 269)
@@ -366,7 +366,7 @@ internal partial class Unpack
     {
         lastDist = oldDist[oldDistPtr++ & 3] = Distance;
         lastLength = Length;
-        destUnpSize -= Length;
+        DestSize -= Length;
 
         var DestPtr = unpPtr - Distance;
         if (DestPtr < PackDef.MAXWINSIZE - 300 && unpPtr < PackDef.MAXWINSIZE - 300)

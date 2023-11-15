@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
@@ -24,7 +23,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// <param name="srcStream"></param>
     /// <param name="options"></param>
     internal RarArchive(SourceStream srcStream)
-        : base(ArchiveType.Rar, srcStream) { }
+        : base(srcStream) { }
 
     protected override IEnumerable<RarArchiveEntry> LoadEntries(IEnumerable<RarVolume> volumes) =>
         RarArchiveEntryFactory.GetEntries(this, volumes, ReaderOptions);
