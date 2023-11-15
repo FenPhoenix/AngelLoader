@@ -13,7 +13,6 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
-using SharpCompress.Common;
 using SharpCompress.Readers.Rar;
 using SharpCompress_7z.Archives.SevenZip;
 using static AL_Common.Common;
@@ -1773,19 +1772,18 @@ internal static class FMInstallAndPlay
                 fs.Position = 0;
             }
 
-            int entriesDone = 0;
-
             using var reader = RarReader.Open(fs);
-            reader.EntryExtractionProgress += Reader_EntryExtractionProgress;
 
+            int i = -1;
             while (reader.MoveToNextEntry())
             {
+                i++;
                 var entry = reader.Entry;
                 string fileName = entry.Key;
 
-                if (fileName[fileName.Length - 1].IsDirSep()) continue;
-
-                // Disabled for this release as I need to test it more thoroughly
+                if (!entry.IsDirectory && !fileName[fileName.Length - 1].IsDirSep())
+                {
+                    // Disabled for this release as I need to test it more thoroughly
 #if false
                     #region Relative/malicious path check
 
@@ -1805,28 +1803,25 @@ internal static class FMInstallAndPlay
                     #endregion
 #endif
 
-                if (fileName.Rel_ContainsDirSep())
-                {
-                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                    if (fileName.Rel_ContainsDirSep())
+                    {
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                    }
+
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
+                    reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+
+                    File_UnSetReadOnly(extractedName);
+
+                    if (_installCts.Token.IsCancellationRequested)
+                    {
+                        return (true, false);
+                    }
+
                 }
 
-                string extractedName = Path.Combine(fmInstalledPath, fileName);
-                reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
-
-                File_UnSetReadOnly(extractedName);
-
-                if (_installCts.Token.IsCancellationRequested)
-                {
-                    return (true, false);
-                }
-                entriesDone++;
-            }
-
-            void Reader_EntryExtractionProgress(object sender, ReaderExtractionEventArgs<IEntry> e)
-            {
-                // ReSharper disable once AccessToModifiedClosure
-                int percentOfEntries = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
+                int percentOfEntries = GetPercentFromValue_Int(i, entriesCount).Clamp(0, 100);
                 int newMainPercent = mainPercent + (percentOfEntries / fmCount).ClampToZero();
 
                 if (!_installCts.IsCancellationRequested)

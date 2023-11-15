@@ -2366,7 +2366,7 @@ internal static class Core
         {
             // For 7z FMs, we'll have already refreshed the cache during the scan, and the whole point is to
             // avoid doing it again
-            if (!refreshCache) refreshCache = !fm.Archive.ExtIs7z();
+            if (!refreshCache) refreshCache = !fm.Archive.ExtIs7z() && !fm.Archive.ExtIsRar();
             fm.ForceReadmeReCache = false;
             Ini.WriteFullFMDataIni();
         }

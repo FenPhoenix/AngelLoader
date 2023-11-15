@@ -169,7 +169,7 @@ internal static class FMScan
                             (
                                 path: fmArchivePath,
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
-                                cachePath: fm.Archive.ExtIs7z()
+                                cachePath: fm.Archive.ExtIs7z() || fm.Archive.ExtIsRar()
                                     ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                     : "",
                                 isTDM: fm.Game == Game.TDM,

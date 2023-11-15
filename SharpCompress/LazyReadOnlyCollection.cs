@@ -6,13 +6,15 @@ using System.Collections.Generic;
 
 namespace SharpCompress;
 
-internal sealed class LazyReadOnlyCollection<T> : ICollection<T>
+public sealed class LazyReadOnlyCollection<T> : ICollection<T>
 {
     private readonly List<T> backing = new List<T>();
     private readonly IEnumerator<T> source;
     private bool fullyLoaded;
 
     public LazyReadOnlyCollection(IEnumerable<T> source) => this.source = source.GetEnumerator();
+
+    public T this[int index] => backing[index];
 
     private class LazyLoader : IEnumerator<T>
     {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
+using SharpCompress.Readers.Rar;
 using SharpCompress_7z.Archives.SevenZip;
 using static System.StringComparison;
 using static AL_Common.Common;
@@ -713,6 +715,26 @@ internal static class Utility
         }
 
         return true;
+    }
+
+    // @RAR: Duplicate because we don't want to put it in Common cause then it has to reference SharpCompress
+    // And then we couldn't have SharpCompress reference Common. Meh.
+    internal static void ExtractToFile_Fast(
+        this RarReader reader,
+        string fileName,
+        bool overwrite,
+        byte[] tempBuffer)
+    {
+        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        {
+            reader.WriteEntryTo(destination);
+        }
+        DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
+        if (lastModifiedTime != null)
+        {
+            File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+        }
     }
 
     #region GLML

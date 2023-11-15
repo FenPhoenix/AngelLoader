@@ -44,13 +44,13 @@ public abstract class AbstractWritableArchive<TEntry, TVolume>
     internal AbstractWritableArchive(ArchiveType type, SourceStream srcStream)
         : base(type, srcStream) { }
 
-    public override ICollection<TEntry> Entries
+    public override LazyReadOnlyCollection<TEntry> Entries
     {
         get
         {
             if (hasModifications)
             {
-                return modifiedEntries;
+                return new LazyReadOnlyCollection<TEntry>(modifiedEntries);
             }
             return base.Entries;
         }

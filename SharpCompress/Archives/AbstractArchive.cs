@@ -65,7 +65,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveEntries across the one or many parts of the RarArchive.
     /// </summary>
-    public virtual ICollection<TEntry> Entries => lazyEntries;
+    public virtual LazyReadOnlyCollection<TEntry> Entries => lazyEntries;
 
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveVolumes across the one or many parts of the RarArchive.

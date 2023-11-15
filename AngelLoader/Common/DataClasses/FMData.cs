@@ -237,7 +237,9 @@ public sealed class FanMission
     internal bool NeedsScan() => !MarkedUnavailable && (Game == Game.Null ||
         (Game != Game.Unsupported && !MarkedScanned));
 
-    internal bool IsFastToScan() => Game != Game.TDM && !Archive.ExtIs7z();
+    // Rar is only "slow to scan" if it's solid, but since there's no quick way to tell, let's just always call
+    // it "slow to scan".
+    internal bool IsFastToScan() => Game != Game.TDM && !Archive.ExtIs7z() && !Archive.ExtIsRar();
 
     #endregion
 }
