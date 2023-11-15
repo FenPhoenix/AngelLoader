@@ -7,7 +7,7 @@
     <FileVersion>0.33.0</FileVersion>
     <Authors>Adam Hathcock</Authors>
     <TargetFrameworks>net472</TargetFrameworks>
-    <AssemblyName>SharpCompress_7z</AssemblyName>
+    <AssemblyName>SharpCompress</AssemblyName>
     <Copyright>Copyright (c) 2014  Adam Hathcock</Copyright>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
