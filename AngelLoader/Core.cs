@@ -1052,7 +1052,10 @@ internal static class Core
     FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
     {
         bool extIsArchive = fm.Archive.ExtIsArchive();
-        if (extIsArchive && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
+        if (extIsArchive &&
+            (titleTrimmed.EqualsI(".zip") ||
+             titleTrimmed.EqualsI(".7z") ||
+             titleTrimmed.EqualsI(".rar")))
         {
             bool matched = fm.Archive.EndsWithI(titleTrimmed);
             return (matched, matched);

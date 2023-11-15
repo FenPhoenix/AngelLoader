@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
+using SharpCompress.Archives.Rar;
 using SharpCompress_7z.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
@@ -243,8 +244,6 @@ internal static class FMLanguages
 
         try
         {
-            bool fmIsZip = archivePath.ExtIsZip();
-
             static (bool EarlyOutEnglish, List<string>? Languages)
             Search(string fn, bool earlyOutOnEnglish, bool[] foundLangInArchive, List<string> ret)
             {
@@ -270,7 +269,7 @@ internal static class FMLanguages
                 return (false, null);
             }
 
-            if (fmIsZip)
+            if (archivePath.ExtIsZip())
             {
                 using var zipArchive = new ZipArchiveFast(File_OpenReadFast(archivePath), allowUnsupportedEntries: true);
                 int filesCount = zipArchive.Entries.Count;
@@ -278,6 +277,18 @@ internal static class FMLanguages
                 {
                     // ZipArchiveFast guarantees full names to never contain backslashes
                     string fn = zipArchive.Entries[i].FullName;
+                    var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
+                    if (result.EarlyOutEnglish) return (true, result.Languages!);
+                }
+            }
+            else if (archivePath.ExtIsRar())
+            {
+                using var fs = File_OpenReadFast(archivePath);
+                using var rarArchive = RarArchive.Open(fs);
+                var entries = rarArchive.Entries;
+                foreach (var entry in entries)
+                {
+                    string fn = entry.Key.ToForwardSlashes();
                     var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
                     if (result.EarlyOutEnglish) return (true, result.Languages!);
                 }
