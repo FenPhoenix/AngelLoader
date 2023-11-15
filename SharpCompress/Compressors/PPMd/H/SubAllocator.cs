@@ -387,46 +387,5 @@ internal sealed class SubAllocator
 
     private int SizeOfFreeList() => _freeList.Length * RarNode.SIZE;
 
-    // Debug
-    // public void dumpHeap() {
-    // File file = new File("P:\\test\\heapdumpj");
-    // OutputStream out = null;
-    // try {
-    // out = new FileOutputStream(file);
-    // out.write(heap, heapStart, heapEnd - heapStart);
-    // out.flush();
-    // System.out.println("Heap dumped to " + file.getAbsolutePath());
-    // }
-    // catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // finally {
-    // FileUtil.close(out);
-    // }
-    // }
-
-    // Debug
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("SubAllocator[");
-        buffer.Append("\n  subAllocatorSize=");
-        buffer.Append(_subAllocatorSize);
-        buffer.Append("\n  glueCount=");
-        buffer.Append(_glueCount);
-        buffer.Append("\n  heapStart=");
-        buffer.Append(_heapStart);
-        buffer.Append("\n  loUnit=");
-        buffer.Append(_loUnit);
-        buffer.Append("\n  hiUnit=");
-        buffer.Append(_hiUnit);
-        buffer.Append("\n  pText=");
-        buffer.Append(_pText);
-        buffer.Append("\n  unitsStart=");
-        buffer.Append(_unitsStart);
-        buffer.Append("\n]");
-        return buffer.ToString();
-    }
-
     static SubAllocator() => UNIT_SIZE = Math.Max(PpmContext.SIZE, RarMemBlock.SIZE);
 }

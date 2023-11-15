@@ -389,8 +389,6 @@ internal sealed class FileHeader : RarHeader
         return path;
     }
 
-    public override string ToString() => FileName;
-
     private ushort Flags { get; set; }
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;

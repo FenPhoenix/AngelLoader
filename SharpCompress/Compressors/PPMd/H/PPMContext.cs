@@ -2,7 +2,6 @@
 
 using System;
 using System.Buffers.Binary;
-using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
@@ -487,26 +486,6 @@ internal sealed class PpmContext : Pointer
         coder.SubRange.HighCount = hiCnt;
         Update1(model, p.Address);
         return (true);
-    }
-
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("PPMContext[");
-        buffer.Append("\n  Address=");
-        buffer.Append(Address);
-        buffer.Append("\n  size=");
-        buffer.Append(SIZE);
-        buffer.Append("\n  numStats=");
-        buffer.Append(NumStats);
-        buffer.Append("\n  Suffix=");
-        buffer.Append(GetSuffix());
-        buffer.Append("\n  freqData=");
-        buffer.Append(_freqData);
-        buffer.Append("\n  oneState=");
-        buffer.Append(_oneState);
-        buffer.Append("\n]");
-        return buffer.ToString();
     }
 
     static PpmContext() => UNION_SIZE = Math.Max(FreqData.SIZE, State.SIZE);

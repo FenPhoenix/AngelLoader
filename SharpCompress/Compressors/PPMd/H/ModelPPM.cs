@@ -705,49 +705,5 @@ internal sealed class ModelPpm
         var address = fs.GetSuccessor();
         _maxContext.Address = address;
         _minContext.Address = address;
-
-        //TODO-----debug
-        //		int pos = minContext.getFreqData().getStats();
-        //		State a = new State(getHeap());
-        //		a.Address=pos);
-        //		pos+=State.size;
-        //		a.Address=pos);
-        //--dbg end
     }
-
-    // Debug
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("ModelPPM[");
-        buffer.Append("\n  numMasked=");
-        buffer.Append(_numMasked);
-        buffer.Append("\n  initEsc=");
-        buffer.Append(_initEsc);
-        buffer.Append("\n  orderFall=");
-        buffer.Append(_orderFall);
-        buffer.Append("\n  maxOrder=");
-        buffer.Append(_maxOrder);
-        buffer.Append("\n  runLength=");
-        buffer.Append(_runLength);
-        buffer.Append("\n  initRL=");
-        buffer.Append(_initRl);
-        buffer.Append("\n  escCount=");
-        buffer.Append(_escCount);
-        buffer.Append("\n  prevSuccess=");
-        buffer.Append(_prevSuccess);
-        buffer.Append("\n  foundState=");
-        buffer.Append(FoundState);
-        buffer.Append("\n  coder=");
-        buffer.Append(Coder);
-        buffer.Append("\n  subAlloc=");
-        buffer.Append(SubAlloc);
-        buffer.Append("\n]");
-        return buffer.ToString();
-    }
-
-    // Debug
-    //    public void dumpHeap() {
-    //        subAlloc.dumpHeap();
-    //    }
 }

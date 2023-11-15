@@ -93,23 +93,6 @@ internal sealed class RangeCoder
             _low = (_low << 8) & UINT_MASK;
         }
     }
-
-    // Debug
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("RangeCoder[");
-        buffer.Append("\n  low=");
-        buffer.Append(_low);
-        buffer.Append("\n  code=");
-        buffer.Append(_code);
-        buffer.Append("\n  range=");
-        buffer.Append(_range);
-        buffer.Append("\n  subrange=");
-        buffer.Append(SubRange);
-        buffer.Append(']');
-        return buffer.ToString();
-    }
 }
 
 internal sealed class SubRange
@@ -137,20 +120,5 @@ internal sealed class SubRange
     {
         get => _scale;
         set => _scale = value & RangeCoder.UINT_MASK;
-    }
-
-    // Debug
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("SubRange[");
-        buffer.Append("\n  lowCount=");
-        buffer.Append(_lowCount);
-        buffer.Append("\n  highCount=");
-        buffer.Append(_highCount);
-        buffer.Append("\n  scale=");
-        buffer.Append(_scale);
-        buffer.Append(']');
-        return buffer.ToString();
     }
 }

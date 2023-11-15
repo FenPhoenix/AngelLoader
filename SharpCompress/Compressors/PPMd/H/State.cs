@@ -69,22 +69,4 @@ internal sealed class State : Pointer
             mem2[pos2] = temp;
         }
     }
-
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("State[");
-        buffer.Append("\n  Address=");
-        buffer.Append(Address);
-        buffer.Append("\n  size=");
-        buffer.Append(SIZE);
-        buffer.Append("\n  symbol=");
-        buffer.Append(Symbol);
-        buffer.Append("\n  freq=");
-        buffer.Append(Freq);
-        buffer.Append("\n  successor=");
-        buffer.Append(GetSuccessor());
-        buffer.Append("\n]");
-        return buffer.ToString();
-    }
 }

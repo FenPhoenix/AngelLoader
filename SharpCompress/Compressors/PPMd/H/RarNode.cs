@@ -32,18 +32,4 @@ internal sealed class RarNode : Pointer
             BinaryPrimitives.WriteInt32LittleEndian(Memory.AsSpan(Address), next);
         }
     }
-
-    public override string ToString()
-    {
-        var buffer = new StringBuilder();
-        buffer.Append("State[");
-        buffer.Append("\n  Address=");
-        buffer.Append(Address);
-        buffer.Append("\n  size=");
-        buffer.Append(SIZE);
-        buffer.Append("\n  next=");
-        buffer.Append(GetNext());
-        buffer.Append("\n]");
-        return buffer.ToString();
-    }
 }
