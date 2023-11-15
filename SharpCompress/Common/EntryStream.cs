@@ -4,7 +4,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Common;
 
-public class EntryStream : Stream
+public sealed class EntryStream : Stream
 {
     private readonly IReader _reader;
     private readonly Stream _stream;

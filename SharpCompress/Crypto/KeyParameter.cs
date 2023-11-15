@@ -2,7 +2,7 @@
 
 namespace SharpCompress.Crypto;
 
-public class KeyParameter
+public sealed class KeyParameter
 {
     private readonly byte[] key;
 

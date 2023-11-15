@@ -1,12 +1,11 @@
 #nullable disable
 
-using System.IO;
 using System.Text;
 using SharpCompress.Compressors.Rar;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class RangeCoder
+internal sealed class RangeCoder
 {
     internal const int TOP = 1 << 24;
     internal const int BOT = 1 << 15;
@@ -17,7 +16,6 @@ internal class RangeCoder
         _code,
         _range;
     private readonly IRarUnpack _unpackRead;
-    private readonly Stream _stream;
 
     internal RangeCoder(IRarUnpack unpackRead)
     {
@@ -53,10 +51,6 @@ internal class RangeCoder
             if (_unpackRead != null)
             {
                 return (_unpackRead.Char);
-            }
-            if (_stream != null)
-            {
-                return _stream.ReadByte();
             }
             return -1;
         }
@@ -118,7 +112,7 @@ internal class RangeCoder
     }
 }
 
-internal class SubRange
+internal sealed class SubRange
 {
     // uint LowCount, HighCount, scale;
     private long _lowCount,

@@ -15,7 +15,7 @@ using System.Text;
 
 namespace SharpCompress.Common.Rar.Headers;
 
-internal class FileHeader : RarHeader
+internal sealed class FileHeader : RarHeader
 {
     private uint _fileCrc;
 

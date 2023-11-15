@@ -1,6 +1,6 @@
 namespace SharpCompress.Compressors.Rar.VM;
 
-internal class VMStandardFilterSignature
+internal sealed class VMStandardFilterSignature
 {
     internal VMStandardFilterSignature(int length, uint crc, VMStandardFilters type)
     {

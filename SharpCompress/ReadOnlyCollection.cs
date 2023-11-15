@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SharpCompress;
 
-public class ReadOnlyCollection<T> : ICollection<T>
+public sealed class ReadOnlyCollection<T> : ICollection<T>
 {
     private readonly ICollection<T> collection;
 

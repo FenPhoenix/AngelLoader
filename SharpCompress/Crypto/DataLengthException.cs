@@ -2,7 +2,7 @@ using System;
 
 namespace SharpCompress.Crypto;
 
-public class DataLengthException : CryptoException
+public sealed class DataLengthException : CryptoException
 {
     /**
     * base constructor.

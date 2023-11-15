@@ -5,7 +5,7 @@ using SharpCompress.Common.Rar.Headers;
 
 namespace SharpCompress.Readers.Rar;
 
-public class RarReaderEntry : RarEntry
+public sealed class RarReaderEntry : RarEntry
 {
     internal RarReaderEntry(bool solid, RarFilePart part)
     {

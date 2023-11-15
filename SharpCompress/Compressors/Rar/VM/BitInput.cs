@@ -19,7 +19,6 @@ internal class BitInput
         get => inBit;
         set => inBit = value;
     }
-    public bool ExternalBuffer;
 
     /// <summary>  </summary>
     internal BitInput() => InBuf = new byte[MAX_SIZE];

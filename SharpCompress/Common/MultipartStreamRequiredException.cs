@@ -1,6 +1,6 @@
 namespace SharpCompress.Common;
 
-public class MultipartStreamRequiredException : ExtractionException
+public sealed class MultipartStreamRequiredException : ExtractionException
 {
     public MultipartStreamRequiredException(string message)
         : base(message) { }

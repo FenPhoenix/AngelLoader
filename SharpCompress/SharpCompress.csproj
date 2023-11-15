@@ -25,6 +25,20 @@
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Compressors\ADC\**" />
+	  <Compile Remove="Compressors\BZip2\**" />
+	  <Compile Remove="Compressors\Filters\**" />
+	  <Compile Remove="Compressors\LZMA\**" />
+	  <EmbeddedResource Remove="Compressors\ADC\**" />
+	  <EmbeddedResource Remove="Compressors\BZip2\**" />
+	  <EmbeddedResource Remove="Compressors\Filters\**" />
+	  <EmbeddedResource Remove="Compressors\LZMA\**" />
+	  <None Remove="Compressors\ADC\**" />
+	  <None Remove="Compressors\BZip2\**" />
+	  <None Remove="Compressors\Filters\**" />
+	  <None Remove="Compressors\LZMA\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
@@ -42,12 +56,6 @@
 		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Compressors\ADC\" />
-	  <Folder Include="Compressors\BZip2\" />
-	  <Folder Include="Compressors\Filters\" />
-	  <Folder Include="Compressors\LZMA\LZ\" />
-	  <Folder Include="Compressors\LZMA\RangeCoder\" />
-	  <Folder Include="Compressors\LZMA\Utilites\" />
 	  <Folder Include="Compressors\Xz\Filters\" />
 	</ItemGroup>
 </Project>

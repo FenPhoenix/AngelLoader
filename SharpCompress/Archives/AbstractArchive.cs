@@ -66,7 +66,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
         if (!disposed)
         {
             lazyVolumes.ForEach(v => v.Dispose());
-            lazyEntries.GetLoaded().Cast<Entry>().ForEach(x => x.Close());
+            lazyEntries.GetLoaded().Cast<Entry>().ForEach(static _ => { });
             SrcStream?.Dispose();
 
             disposed = true;

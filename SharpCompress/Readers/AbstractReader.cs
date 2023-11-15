@@ -17,7 +17,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    public event EventHandler<ReaderExtractionEventArgs<IEntry>>? EntryExtractionProgress;
+    public event EventHandler<ReaderExtractionEventArgs<Entry>>? EntryExtractionProgress;
 
     public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
     public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
@@ -198,7 +198,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
 
     #endregion
 
-    IEntry IReader.Entry => Entry;
+    Entry IReader.Entry => Entry;
 
     void IExtractionListener.FireCompressedBytesRead(
         long currentPartCompressedBytes,
@@ -233,7 +233,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
     ) =>
         EntryExtractionProgress?.Invoke(
             this,
-            new ReaderExtractionEventArgs<IEntry>(
+            new ReaderExtractionEventArgs<Entry>(
                 entry,
                 new ReaderProgress(entry, bytesTransferred, iterations)
             )

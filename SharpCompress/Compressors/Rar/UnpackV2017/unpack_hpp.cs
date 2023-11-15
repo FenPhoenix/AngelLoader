@@ -158,7 +158,7 @@ if (Decoded!=NULL)
 
 
 //struct UnpackFilter
-internal class UnpackFilter
+internal sealed class UnpackFilter
 {
     public byte Type;
     public uint BlockStart;
@@ -169,7 +169,7 @@ internal class UnpackFilter
     public bool NextWindow;
 };
 
-internal class AudioVariables // For RAR 2.0 archives only.
+internal sealed class AudioVariables // For RAR 2.0 archives only.
 {
     public int K1, K2, K3, K4, K5;
     public int D1, D2, D3, D4;
@@ -182,7 +182,7 @@ internal class AudioVariables // For RAR 2.0 archives only.
 
 // We can use the fragmented dictionary in case heap does not have the single
 // large enough memory block. It is slower than normal dictionary.
-internal partial class FragmentedWindow
+internal sealed partial class FragmentedWindow
 {
     private const int MAX_MEM_BLOCKS = 32;
 

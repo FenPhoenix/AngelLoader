@@ -2,7 +2,7 @@ using System;
 
 namespace SharpCompress.Common;
 
-public class MultiVolumeExtractionException : ExtractionException
+public sealed class MultiVolumeExtractionException : ExtractionException
 {
     public MultiVolumeExtractionException(string message)
         : base(message) { }

@@ -14,23 +14,8 @@ internal partial class Model
 {
     private const byte UPPER_FREQUENCY = 5;
 
-    private PpmContext _maximumContext;
     private readonly byte[] _numberStatisticsToBinarySummaryIndex = new byte[256];
     private readonly byte[] _probabilities = new byte[260];
-    private byte _escapeCount;
-    private int _modelOrder;
-    private int _orderFall;
-    private int _initialEscape;
-    private int _initialRunLength;
-    private int _runLength;
-    private byte _previousSuccess;
-    private byte _numberMasked;
-    private PpmState _foundState; // found next state transition
-
-    private Allocator _allocator;
-    private Coder _coder;
-    private PpmContext _minimumContext;
-    private byte _numberStatistics;
 
     #region Public Methods
 

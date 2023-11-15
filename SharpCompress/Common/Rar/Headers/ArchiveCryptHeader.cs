@@ -4,7 +4,7 @@ using SharpCompress.IO;
 
 namespace SharpCompress.Common.Rar.Headers;
 
-internal class ArchiveCryptHeader : RarHeader
+internal sealed class ArchiveCryptHeader : RarHeader
 {
     private const int CRYPT_VERSION = 0; // Supported encryption version.
     private const int SIZE_SALT50 = 16;

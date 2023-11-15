@@ -5,7 +5,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Common.Rar.Headers;
 
-public class RarHeaderFactory
+public sealed class RarHeaderFactory
 {
     private bool _isRar5;
 

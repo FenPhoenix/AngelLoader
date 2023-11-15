@@ -3,7 +3,7 @@ using SharpCompress.Common.Rar.Headers;
 
 namespace SharpCompress.Compressors.Rar;
 
-internal class RarCrcStream : RarStream
+internal sealed class RarCrcStream : RarStream
 {
     private readonly MultiVolumeReadOnlyStream readStream;
     private uint currentCrc;

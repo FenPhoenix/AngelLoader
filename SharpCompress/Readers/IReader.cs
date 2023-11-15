@@ -6,12 +6,12 @@ namespace SharpCompress.Readers;
 
 public interface IReader : IDisposable
 {
-    event EventHandler<ReaderExtractionEventArgs<IEntry>> EntryExtractionProgress;
+    event EventHandler<ReaderExtractionEventArgs<Entry>> EntryExtractionProgress;
 
     event EventHandler<CompressedBytesReadEventArgs> CompressedBytesRead;
     event EventHandler<FilePartExtractionBeginEventArgs> FilePartExtractionBegin;
 
-    IEntry Entry { get; }
+    Entry Entry { get; }
 
     /// <summary>
     /// Decompresses the current entry to the stream.  This cannot be called twice for the current entry.

@@ -7,7 +7,7 @@ using SharpCompress.Crypto;
 
 namespace SharpCompress.Common.Rar;
 
-internal class RarRijndael : IDisposable
+internal sealed class RarRijndael : IDisposable
 {
     internal const int CRYPTO_BLOCK_SIZE = 16;
 

@@ -9,7 +9,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
-public class RarArchiveEntry : RarEntry, IArchiveEntry
+public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 {
     private readonly ICollection<RarFilePart> parts;
     private readonly RarArchive archive;
