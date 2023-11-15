@@ -1,18 +1,11 @@
 using System;
 using System.Buffers.Binary;
-using System.Text;
 
 namespace SharpCompress_7z.Compressors.PPMd.H;
 
 internal sealed class FreqData : Pointer
 {
     internal const int SIZE = 6;
-
-    //    struct FreqData
-    //    {
-    //        ushort SummFreq;
-    //        STATE _PACK_ATTR * Stats;
-    //    };
 
     internal FreqData(byte[] memory)
         : base(memory) { }

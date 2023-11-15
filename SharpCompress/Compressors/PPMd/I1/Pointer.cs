@@ -20,6 +20,7 @@ internal struct Pointer
 {
     public uint _address;
     public readonly byte[] _memory;
+    public static readonly Pointer ZERO = new(0, null);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Pointer"/> structure.
@@ -31,12 +32,23 @@ internal struct Pointer
     }
 
     /// <summary>
+    /// Gets or sets the byte at the given <paramref name="offset"/>.
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    public readonly byte this[int offset]
+    {
+        get => _memory[_address + offset];
+        set => _memory[_address + offset] = value;
+    }
+
+    /// <summary>
     /// Allow a <see cref="MemoryNode"/> to be implicitly converted to a <see cref="Pointer"/>.
     /// </summary>
     /// <param name="memoryNode"></param>
     /// <returns></returns>
     public static implicit operator Pointer(MemoryNode memoryNode) =>
-        new Pointer(memoryNode._address, memoryNode._memory);
+        new(memoryNode._address, memoryNode._memory);
 
     /// <summary>
     /// Allow a <see cref="Model.PpmContext"/> to be implicitly converted to a <see cref="Pointer"/>.
@@ -44,7 +56,7 @@ internal struct Pointer
     /// <param name="context"></param>
     /// <returns></returns>
     public static implicit operator Pointer(Model.PpmContext context) =>
-        new Pointer(context._address, context._memory);
+        new(context._address, context._memory);
 
     /// <summary>
     /// Allow a <see cref="PpmState"/> to be implicitly converted to a <see cref="Pointer"/>.
@@ -52,7 +64,7 @@ internal struct Pointer
     /// <param name="state"></param>
     /// <returns></returns>
     public static implicit operator Pointer(PpmState state) =>
-        new Pointer(state._address, state._memory);
+        new(state._address, state._memory);
 
     /// <summary>
     /// Increase the address of a pointer by the given number of bytes.
@@ -62,12 +74,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator +(Pointer pointer, int offset)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer is a null pointer.");
-        }
-#endif
         pointer._address = (uint)(pointer._address + offset);
         return pointer;
     }
@@ -80,12 +86,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator +(Pointer pointer, uint offset)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer is a null pointer.");
-        }
-#endif
         pointer._address += offset;
         return pointer;
     }
@@ -97,12 +97,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator ++(Pointer pointer)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer being incremented is a null pointer.");
-        }
-#endif
         pointer._address++;
         return pointer;
     }
@@ -115,12 +109,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator -(Pointer pointer, int offset)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer is a null pointer.");
-        }
-#endif
         pointer._address = (uint)(pointer._address - offset);
         return pointer;
     }
@@ -133,12 +121,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator -(Pointer pointer, uint offset)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer is a null pointer.");
-        }
-#endif
         pointer._address -= offset;
         return pointer;
     }
@@ -150,12 +132,6 @@ internal struct Pointer
     /// <returns></returns>
     public static Pointer operator --(Pointer pointer)
     {
-#if DEBUG
-        if (pointer._address == 0)
-        {
-            throw new InvalidOperationException("The pointer being decremented is a null pointer.");
-        }
-#endif
         pointer._address--;
         return pointer;
     }
@@ -168,20 +144,6 @@ internal struct Pointer
     /// <returns>The number of bytes between the two pointers.</returns>
     public static uint operator -(Pointer pointer1, Pointer pointer2)
     {
-#if DEBUG
-        if (pointer1._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the left of the subtraction operator is a null pointer."
-            );
-        }
-        if (pointer2._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the right of the subtraction operator is a null pointer."
-            );
-        }
-#endif
         return pointer1._address - pointer2._address;
     }
 
@@ -193,20 +155,6 @@ internal struct Pointer
     /// <returns></returns>
     public static bool operator <(Pointer pointer1, Pointer pointer2)
     {
-#if DEBUG
-        if (pointer1._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the left of the less than operator is a null pointer."
-            );
-        }
-        if (pointer2._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the right of the less than operator is a null pointer."
-            );
-        }
-#endif
         return pointer1._address < pointer2._address;
     }
 
@@ -218,20 +166,6 @@ internal struct Pointer
     /// <returns></returns>
     public static bool operator <=(Pointer pointer1, Pointer pointer2)
     {
-#if DEBUG
-        if (pointer1._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the left of the less than or equal to operator is a null pointer."
-            );
-        }
-        if (pointer2._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the right of the less than or equal to operator is a null pointer."
-            );
-        }
-#endif
         return pointer1._address <= pointer2._address;
     }
 
@@ -243,20 +177,6 @@ internal struct Pointer
     /// <returns></returns>
     public static bool operator >(Pointer pointer1, Pointer pointer2)
     {
-#if DEBUG
-        if (pointer1._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the left of the greater than operator is a null pointer."
-            );
-        }
-        if (pointer2._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the right of the greater than operator is a null pointer."
-            );
-        }
-#endif
         return pointer1._address > pointer2._address;
     }
 
@@ -268,20 +188,6 @@ internal struct Pointer
     /// <returns></returns>
     public static bool operator >=(Pointer pointer1, Pointer pointer2)
     {
-#if DEBUG
-        if (pointer1._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the left of the greater than or equal to operator is a null pointer."
-            );
-        }
-        if (pointer2._address == 0)
-        {
-            throw new InvalidOperationException(
-                "The pointer to the right of the greater than or equal to operator is a null pointer."
-            );
-        }
-#endif
         return pointer1._address >= pointer2._address;
     }
 
@@ -308,7 +214,7 @@ internal struct Pointer
     /// </summary>
     /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to.</param>
-    public override bool Equals(object obj)
+    public readonly override bool Equals(object obj)
     {
         if (obj is Pointer pointer)
         {

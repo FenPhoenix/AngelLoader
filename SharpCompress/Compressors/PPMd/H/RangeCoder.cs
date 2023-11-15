@@ -1,14 +1,14 @@
 #nullable disable
 
-using System.Text;
+using System.IO;
 using SharpCompress_7z.Compressors.Rar;
 
 namespace SharpCompress_7z.Compressors.PPMd.H;
 
 internal sealed class RangeCoder
 {
-    internal const int TOP = 1 << 24;
-    internal const int BOT = 1 << 15;
+    private const int TOP = 1 << 24;
+    private const int BOT = 1 << 15;
     internal const long UINT_MASK = 0xFFFFffffL;
 
     // uint low, code, range;
@@ -16,10 +16,17 @@ internal sealed class RangeCoder
         _code,
         _range;
     private readonly IRarUnpack _unpackRead;
+    private readonly Stream _stream;
 
     internal RangeCoder(IRarUnpack unpackRead)
     {
         _unpackRead = unpackRead;
+        Init();
+    }
+
+    internal RangeCoder(Stream stream)
+    {
+        _stream = stream;
         Init();
     }
 
@@ -29,7 +36,7 @@ internal sealed class RangeCoder
 
         _low = _code = 0L;
         _range = 0xFFFFffffL;
-        for (var i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             _code = ((_code << 8) | Char) & UINT_MASK;
         }
@@ -40,7 +47,7 @@ internal sealed class RangeCoder
         get
         {
             _range = (_range / SubRange.Scale) & UINT_MASK;
-            return (int)((_code - _low) / (_range));
+            return (int)((_code - _low) / _range);
         }
     }
 
@@ -52,16 +59,21 @@ internal sealed class RangeCoder
             {
                 return (_unpackRead.Char);
             }
+            if (_stream != null)
+            {
+                return _stream.ReadByte();
+            }
             return -1;
         }
     }
 
-    internal SubRange SubRange { get; private set; }
+    //internal SubRange SubRange { get; private set; }
+    internal SubRange SubRange;
 
     internal long GetCurrentShiftCount(int shift)
     {
-        _range = (_range >>> shift);
-        return ((_code - _low) / (_range)) & UINT_MASK;
+        _range >>>= shift;
+        return ((_code - _low) / _range) & UINT_MASK;
     }
 
     internal void Decode()
@@ -80,7 +92,7 @@ internal sealed class RangeCoder
         //		}
 
         // Rewrote for clarity
-        var c2 = false;
+        bool c2 = false;
         while ((_low ^ (_low + _range)) < TOP || (c2 = _range < BOT))
         {
             if (c2)

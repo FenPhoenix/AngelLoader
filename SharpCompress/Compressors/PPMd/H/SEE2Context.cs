@@ -6,7 +6,7 @@ internal sealed class See2Context
     {
         get
         {
-            var retVal = (_summ >>> Shift);
+            int retVal = _summ >>> _shift;
             _summ -= retVal;
             return retVal + ((retVal == 0) ? 1 : 0);
         }
@@ -22,28 +22,28 @@ internal sealed class See2Context
     private int _summ;
 
     // byte Shift;
-    internal int Shift;
+    private int _shift;
 
     // byte Count;
     private int _count;
 
     public void Initialize(int initVal)
     {
-        Shift = (ModelPpm.PERIOD_BITS - 4) & 0xff;
-        _summ = (initVal << Shift) & 0xffff;
+        _shift = (ModelPpm.PERIOD_BITS - 4) & 0xff;
+        _summ = (initVal << _shift) & 0xffff;
         _count = 4;
     }
 
     public void Update()
     {
-        if (Shift < ModelPpm.PERIOD_BITS && --_count == 0)
+        if (_shift < ModelPpm.PERIOD_BITS && --_count == 0)
         {
             _summ += _summ;
-            _count = (3 << Shift++);
+            _count = (3 << _shift++);
         }
         _summ &= 0xffff;
         _count &= 0xff;
-        Shift &= 0xff;
+        _shift &= 0xff;
     }
 
     public void IncSumm(int dSumm) => Summ += dSumm;
