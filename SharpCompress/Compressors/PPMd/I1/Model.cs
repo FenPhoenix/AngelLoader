@@ -144,25 +144,6 @@ internal partial class Model
         _emptySee2Context._count = (byte)(SIGNATURE >> 24);
     }
 
-    /// <summary>
-    /// Encode (ie. compress) a given source stream, writing the encoded result to the target stream.
-    /// </summary>
-    public void Encode(Stream target, Stream source, PpmdProperties properties)
-    {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
-
-        if (source is null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        EncodeStart(properties);
-        EncodeBlock(target, source, true);
-    }
-
     internal Coder EncodeStart(PpmdProperties properties)
     {
         _allocator = properties._allocator;
@@ -230,30 +211,6 @@ internal partial class Model
 
         StopEncoding:
         _coder.RangeEncoderFlush(target);
-    }
-
-    /// <summary>
-    /// Dencode (ie. decompress) a given source stream, writing the decoded result to the target stream.
-    /// </summary>
-    public void Decode(Stream target, Stream source, PpmdProperties properties)
-    {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
-
-        if (source is null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        DecodeStart(source, properties);
-        var buffer = new byte[65536];
-        int read;
-        while ((read = DecodeBlock(source, buffer, 0, buffer.Length)) != 0)
-        {
-            target.Write(buffer, 0, read);
-        }
     }
 
     internal Coder DecodeStart(Stream source, PpmdProperties properties)

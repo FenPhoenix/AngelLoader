@@ -751,14 +751,6 @@ internal partial class Unpack
     //          WrittenFileSize+=Size;
     //        }
 
-    private void UnpInitData50(bool Solid)
-    {
-        if (!Solid)
-        {
-            TablesRead5 = false;
-        }
-    }
-
     private bool ReadBlockHeader()
     {
         Header.HeaderSize = 0;

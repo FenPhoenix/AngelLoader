@@ -172,38 +172,6 @@ public static class Utility
         }
     }
 
-    public static bool Find(this Stream source, byte[] array)
-    {
-        var buffer = GetTransferByteArray();
-        try
-        {
-            var count = 0;
-            var len = source.Read(buffer, 0, buffer.Length);
-
-            do
-            {
-                for (var i = 0; i < len; i++)
-                {
-                    if (array[count] == buffer[i])
-                    {
-                        count++;
-                        if (count == array.Length)
-                        {
-                            source.Position = source.Position - len + i - array.Length + 1;
-                            return true;
-                        }
-                    }
-                }
-            } while ((len = source.Read(buffer, 0, buffer.Length)) > 0);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer);
-        }
-
-        return false;
-    }
-
     public static DateTime DosDateToDateTime(ushort iDate, ushort iTime)
     {
         var year = (iDate / 512) + 1980;
@@ -235,25 +203,6 @@ public static class Utility
             dt = new DateTime();
         }
         return dt;
-    }
-
-    public static uint DateTimeToDosTime(this DateTime? dateTime)
-    {
-        if (dateTime is null)
-        {
-            return 0;
-        }
-
-        var localDateTime = dateTime.Value.ToLocalTime();
-
-        return (uint)(
-            (localDateTime.Second / 2)
-            | (localDateTime.Minute << 5)
-            | (localDateTime.Hour << 11)
-            | (localDateTime.Day << 16)
-            | (localDateTime.Month << 21)
-            | ((localDateTime.Year - 1980) << 25)
-        );
     }
 
     public static DateTime DosDateToDateTime(uint iTime) =>
@@ -320,38 +269,6 @@ public static class Utility
         (count = source.Read(array, 0, array.Length)) != 0;
 
     private static byte[] GetTransferByteArray() => ArrayPool<byte>.Shared.Rent(81920);
-
-    public static bool ReadFully(this Stream stream, byte[] buffer)
-    {
-        var total = 0;
-        int read;
-        while ((read = stream.Read(buffer, total, buffer.Length - total)) > 0)
-        {
-            total += read;
-            if (total >= buffer.Length)
-            {
-                return true;
-            }
-        }
-        return (total >= buffer.Length);
-    }
-
-    public static bool ReadFully(this Stream stream, Span<byte> buffer)
-    {
-        var total = 0;
-        int read;
-        while ((read = stream.Read(buffer.Slice(total, buffer.Length - total))) > 0)
-        {
-            total += read;
-            if (total >= buffer.Length)
-            {
-                return true;
-            }
-        }
-        return (total >= buffer.Length);
-    }
-
-    public static string TrimNulls(this string source) => source.Replace('\0', ' ').Trim();
 
     /// <summary>
     /// Swap the endianness of a UINT32

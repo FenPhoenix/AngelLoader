@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 
 namespace SharpCompress.Compressors.LZMA;
 
@@ -34,40 +33,6 @@ public interface ICodeProgress
     /// </param>
     void SetProgress(long inSize, long outSize);
 }
-
-internal interface ICoder
-{
-    /// <summary>
-    /// Codes streams.
-    /// </summary>
-    /// <param name="inStream">
-    /// input Stream.
-    /// </param>
-    /// <param name="outStream">
-    /// output Stream.
-    /// </param>
-    /// <param name="inSize">
-    /// input Size. -1 if unknown.
-    /// </param>
-    /// <param name="outSize">
-    /// output Size. -1 if unknown.
-    /// </param>
-    /// <param name="progress">
-    /// callback progress reference.
-    /// </param>
-    void Code(Stream inStream, Stream outStream, long inSize, long outSize, ICodeProgress progress);
-}
-
-/*
-public interface ICoder2
-{
-     void Code(ISequentialInStream []inStreams,
-            const UInt64 []inSizes,
-            ISequentialOutStream []outStreams,
-            UInt64 []outSizes,
-            ICodeProgress progress);
-};
-*/
 
 /// <summary>
 /// Provides the fields that represent properties idenitifiers for compressing.
@@ -148,19 +113,4 @@ internal enum CoderPropId
     /// Specifies mode with end marker.
     /// </summary>
     EndMarker
-}
-
-internal interface ISetCoderProperties
-{
-    void SetCoderProperties(ReadOnlySpan<CoderPropId> propIDs, ReadOnlySpan<object> properties);
-}
-
-internal interface IWriteCoderProperties
-{
-    void WriteCoderProperties(Stream outStream);
-}
-
-internal interface ISetDecoderProperties
-{
-    void SetDecoderProperties(byte[] properties);
 }

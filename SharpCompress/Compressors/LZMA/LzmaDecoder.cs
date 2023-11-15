@@ -7,7 +7,7 @@ using SharpCompress.Compressors.LZMA.RangeCoder;
 
 namespace SharpCompress.Compressors.LZMA;
 
-public class Decoder : ICoder, ISetDecoderProperties // ,System.IO.Stream
+public class Decoder
 {
     private class LenDecoder
     {

@@ -148,8 +148,6 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         );
     }
 
-    public static bool IsRarFile(string filePath) => IsRarFile(new FileInfo(filePath));
-
     public static bool IsRarFile(FileInfo fileInfo)
     {
         if (!fileInfo.Exists)

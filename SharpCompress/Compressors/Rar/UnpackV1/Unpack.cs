@@ -1309,13 +1309,4 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             rarVM.execute(Prg);
         }
     }
-
-    private void CleanUp()
-    {
-        if (ppm != null)
-        {
-            var allocator = ppm.SubAlloc;
-            allocator?.StopSubAllocator();
-        }
-    }
 }
