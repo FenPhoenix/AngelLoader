@@ -32,8 +32,6 @@ internal class StateRef
         }
     }
 
-    public virtual void IncrementFreq(int dFreq) => _freq = (_freq + dFreq) & 0xff;
-
     public virtual void DecrementFreq(int dFreq) => _freq = (_freq - dFreq) & 0xff;
 
     public virtual int GetSuccessor() => _successor;

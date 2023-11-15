@@ -7,23 +7,9 @@ namespace SharpCompress.Compressors.Rar.UnpackV1;
 
 internal partial class Unpack
 {
-    // Maximum allowed number of compressed bits processed in quick mode.
-    private const int MAX_QUICK_DECODE_BITS = 10;
-
     // Maximum number of filters per entire data block. Must be at least
     // twice more than MAX_PACK_FILTERS to store filters from two data blocks.
     private const int MAX_UNPACK_FILTERS = 8192;
-
-    // Maximum number of filters per entire data block for RAR3 unpack.
-    // Must be at least twice more than v3_MAX_PACK_FILTERS to store filters
-    // from two data blocks.
-    private const int MAX3_UNPACK_FILTERS = 8192;
-
-    // Limit maximum number of channels in RAR3 delta filter to some reasonable
-    // value to prevent too slow processing of corrupt archives with invalid
-    // channels number. Must be equal or larger than v3_MAX_FILTER_CHANNELS.
-    // No need to provide it for RAR5, which uses only 5 bits to store channels.
-    private const int MAX3_UNPACK_CHANNELS = 1024;
 
     // Maximum size of single filter block. We restrict it to limit memory
     // allocation. Must be equal or larger than MAX_ANALYZE_SIZE.
@@ -32,70 +18,6 @@ internal partial class Unpack
     // Write data in 4 MB or smaller blocks. Must not exceed PACK_MAX_WRITE,
     // so we keep number of buffered filter in unpacker reasonable.
     private const int UNPACK_MAX_WRITE = 0x400000;
-
-    // Decode compressed bit fields to alphabet numbers.
-    //        struct DecodeTable
-    //        {
-    //            // Real size of DecodeNum table.
-    //            public uint MaxNum;
-    //
-    //            // Left aligned start and upper limit codes defining code space
-    //            // ranges for bit lengths. DecodeLen[BitLength-1] defines the start of
-    //            // range for bit length and DecodeLen[BitLength] defines next code
-    //            // after the end of range or in other words the upper limit code
-    //            // for specified bit length.
-    //            //uint DecodeLen[16];
-    //            public uint [] DecodeLen = new uint[16];
-    //
-    //            // Every item of this array contains the sum of all preceding items.
-    //            // So it contains the start position in code list for every bit length.
-    //            public uint DecodePos[16];
-    //
-    //            // Number of compressed bits processed in quick mode.
-    //            // Must not exceed MAX_QUICK_DECODE_BITS.
-    //            public uint QuickBits;
-    //
-    //            // Translates compressed bits (up to QuickBits length)
-    //            // to bit length in quick mode.
-    //            public byte QuickLen[1<<MAX_QUICK_DECODE_BITS];
-    //
-    //            // Translates compressed bits (up to QuickBits length)
-    //            // to position in alphabet in quick mode.
-    //            // 'ushort' saves some memory and even provides a little speed gain
-    //            // comparting to 'uint' here.
-    //            public ushort QuickNum[1<<MAX_QUICK_DECODE_BITS];
-    //
-    //            // Translate the position in code list to position in alphabet.
-    //            // We do not allocate it dynamically to avoid performance overhead
-    //            // introduced by pointer, so we use the largest possible table size
-    //            // as array dimension. Real size of this array is defined in MaxNum.
-    //            // We use this array if compressed bit field is too lengthy
-    //            // for QuickLen based translation.
-    //            // 'ushort' saves some memory and even provides a little speed gain
-    //            // comparting to 'uint' here.
-    //            public ushort DecodeNum[LARGEST_TABLE_SIZE];
-    //        }
-
-    //        struct UnpackBlockHeader
-    //        {
-    //            public int BlockSize;
-    //            public int BlockBitSize;
-    //            public int BlockStart;
-    //            public int HeaderSize;
-    //            public bool LastBlockInFile;
-    //            public bool TablePresent;
-    //        }
-
-    //        struct UnpackBlockTables
-    //        {
-    //            public DecodeTable LD;  // Decode literals.
-    //            public DecodeTable DD;  // Decode distances.
-    //            public DecodeTable LDD; // Decode lower bits of distances.
-    //            public DecodeTable RD;  // Decode repeating distances.
-    //            public DecodeTable BD;  // Decode bit lengths in Huffman table.
-    //        }
-
-    //        private UnpackBlockHeader BlockHeader;
 
     private bool TablesRead5;
     private int WriteBorder;
@@ -115,16 +37,8 @@ internal partial class Unpack
         get => readBorder;
         set => readBorder = value;
     }
-    private long DestUnpSize
-    {
-        get => destUnpSize;
-        set => destUnpSize = value;
-    }
-    private long WrittenFileSize
-    {
-        get => writtenFileSize;
-        set => writtenFileSize = value;
-    }
+    private long DestUnpSize => destUnpSize;
+    private long WrittenFileSize => writtenFileSize;
     private byte[] Window => window;
 
     private uint LastLength
@@ -137,11 +51,7 @@ internal partial class Unpack
 
     private void SetOldDistN(int i, uint value) => oldDist[i] = (int)value;
 
-    private int WrPtr
-    {
-        get => wrPtr;
-        set => wrPtr = value;
-    }
+    private int WrPtr => wrPtr;
     private Unpack BlockHeader => this;
 
     private Unpack Header => this;

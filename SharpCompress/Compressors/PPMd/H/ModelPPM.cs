@@ -753,18 +753,4 @@ internal class ModelPpm
     //    public void dumpHeap() {
     //        subAlloc.dumpHeap();
     //    }
-
-    internal void NextContext()
-    {
-        var addr = FoundState.GetSuccessor();
-        if (_orderFall == 0 && addr > SubAlloc.PText)
-        {
-            _minContext.Address = addr;
-            _maxContext.Address = addr;
-        }
-        else
-        {
-            UpdateModel();
-        }
-    }
 }

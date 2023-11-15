@@ -2,7 +2,7 @@
 
 namespace SharpCompress.Crypto;
 
-public sealed class RijndaelEngine : IBlockCipher
+public sealed class RijndaelEngine
 {
     private const int MAXROUNDS = 14;
 
@@ -1773,8 +1773,6 @@ public sealed class RijndaelEngine : IBlockCipher
     public string AlgorithmName => "Rijndael";
 
     public bool IsPartialBlockOkay => false;
-
-    public int GetBlockSize() => BC / 2;
 
     public int ProcessBlock(ReadOnlySpan<byte> input, Span<byte> output)
     {

@@ -219,25 +219,6 @@ public static class Utility
         return sTime.AddSeconds(unixtime);
     }
 
-    public static long TransferTo(this Stream source, Stream destination)
-    {
-        var array = GetTransferByteArray();
-        try
-        {
-            long total = 0;
-            while (ReadTransferBlock(source, array, out var count))
-            {
-                total += count;
-                destination.Write(array, 0, count);
-            }
-            return total;
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(array);
-        }
-    }
-
     public static long TransferTo(
         this Stream source,
         Stream destination,

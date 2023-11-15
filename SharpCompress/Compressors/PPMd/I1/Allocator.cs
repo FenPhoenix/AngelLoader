@@ -120,42 +120,6 @@ internal class Allocator
     }
 
     /// <summary>
-    /// Start the allocator (create a single, large array of bytes).
-    /// </summary>
-    /// <remarks>
-    /// Note that .NET will create that array on the large object heap (because it is so large).
-    /// </remarks>
-    /// <param name="allocatorSize"></param>
-    public void Start(int allocatorSize)
-    {
-        var size = (uint)allocatorSize;
-        if (_allocatorSize != size)
-        {
-            Stop();
-            _memory = new byte[HEAP_OFFSET + size]; // the single, large array of bytes
-            _heap = new Pointer(HEAP_OFFSET, _memory); // reserve bytes in the range 0 .. HeapOffset - 1
-            _allocatorSize = size;
-        }
-    }
-
-    /// <summary>
-    /// Stop the allocator (free the single, large array of bytes).  This can safely be called multiple times (without
-    /// intervening calls to <see cref="Start"/>).
-    /// </summary>
-    /// <remarks>
-    /// Because the array is on the large object heap it may not be freed immediately.
-    /// </remarks>
-    public void Stop()
-    {
-        if (_allocatorSize != 0)
-        {
-            _allocatorSize = 0;
-            _memory = null;
-            _heap = Pointer.ZERO;
-        }
-    }
-
-    /// <summary>
     /// Determine how much memory (from the single, large array) is currenly in use.
     /// </summary>
     /// <returns></returns>
@@ -209,33 +173,6 @@ internal class Allocator
             return _memoryNodes[0].Remove();
         }
         return AllocateUnitsRare(0);
-    }
-
-    /// <summary>
-    /// Increase the size of an existing allocation (represented by a <see cref="Pointer"/>).
-    /// </summary>
-    /// <param name="oldPointer"></param>
-    /// <param name="oldUnitCount"></param>
-    /// <returns></returns>
-    public Pointer ExpandUnits(Pointer oldPointer, uint oldUnitCount)
-    {
-        uint oldIndex = UNITS_TO_INDEX[oldUnitCount - 1];
-        uint newIndex = UNITS_TO_INDEX[oldUnitCount];
-
-        if (oldIndex == newIndex)
-        {
-            return oldPointer;
-        }
-
-        var pointer = AllocateUnits(oldUnitCount + 1);
-
-        if (pointer != Pointer.ZERO)
-        {
-            CopyUnits(pointer, oldPointer, oldUnitCount);
-            _memoryNodes[oldIndex].Insert(oldPointer, oldUnitCount);
-        }
-
-        return pointer;
     }
 
     /// <summary>

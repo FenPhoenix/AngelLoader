@@ -109,45 +109,6 @@ public class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         return new RarArchive(new SourceStream(stream, i => null, options ?? new ReaderOptions()));
     }
 
-    /// <summary>
-    /// Constructor with all file parts passed in
-    /// </summary>
-    /// <param name="fileInfos"></param>
-    /// <param name="readerOptions"></param>
-    public static RarArchive Open(
-        IEnumerable<FileInfo> fileInfos,
-        ReaderOptions? readerOptions = null
-    )
-    {
-        fileInfos.CheckNotNull(nameof(fileInfos));
-        var files = fileInfos.ToArray();
-        return new RarArchive(
-            new SourceStream(
-                files[0],
-                i => i < files.Length ? files[i] : null,
-                readerOptions ?? new ReaderOptions()
-            )
-        );
-    }
-
-    /// <summary>
-    /// Constructor with all stream parts passed in
-    /// </summary>
-    /// <param name="streams"></param>
-    /// <param name="readerOptions"></param>
-    public static RarArchive Open(IEnumerable<Stream> streams, ReaderOptions? readerOptions = null)
-    {
-        streams.CheckNotNull(nameof(streams));
-        var strms = streams.ToArray();
-        return new RarArchive(
-            new SourceStream(
-                strms[0],
-                i => i < strms.Length ? strms[i] : null,
-                readerOptions ?? new ReaderOptions()
-            )
-        );
-    }
-
     public static bool IsRarFile(Stream stream, ReaderOptions? options = null)
     {
         try
