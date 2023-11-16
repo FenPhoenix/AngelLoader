@@ -2,17 +2,13 @@
 //#define FMScanner_FullCode
 
 /*
-@MEM(Scanner readme line splitting):
+@NET5/@MEM(Scanner readme line splitting):
 We could just get the full text and then allocate an array of int pairs for start and length of each line,
 then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
 be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
 
 @RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
 @RAR: We'll have to test the whole collection for identicality and functionality as rar files. Find or make some batch converter.
-
-@RAR: RAR5 solid FM had a CRC mismatch - test with regular SharpCompress!
-@RAR: Dammit, it doesn't happen with regular SharpCompress. We messed something up in our ripping out of stuff.
-Try and find which commit it was exactly.
 */
 
 //#define ScanSynchronous
@@ -945,7 +941,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                 }
             }
 
@@ -1050,7 +1046,7 @@ public sealed partial class Scanner : IDisposable
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                     _readmeFiles.Add(readme);
                 }
                 catch
@@ -2398,7 +2394,7 @@ public sealed partial class Scanner : IDisposable
                 return true;
             }
 
-            string[] nums = dateString.Split_Char(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
+            string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
             if (nums.Length == 3)
             {
                 bool unambiguousYearFound = false;
@@ -2474,7 +2470,7 @@ public sealed partial class Scanner : IDisposable
     {
         if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
-        List<string> list = fmData.TagsString.Split_Char(CA_CommaSemicolon, StringSplitOptions.None, _sevenZipContext.IntArrayPool).ToList();
+        List<string> list = fmData.TagsString.Split(CA_CommaSemicolon, StringSplitOptions.None).ToList();
         bool tagFound = false;
         for (int i = 0; i < list.Count; i++)
         {
@@ -3248,7 +3244,7 @@ public sealed partial class Scanner : IDisposable
 
         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !fmIni.Tags.IsEmpty())
         {
-            string[] tagsArray = fmIni.Tags.Split_Char(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
+            string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
             string authorString = "";
             for (int i = 0, authorsFound = 0; i < tagsArray.Length; i++)
@@ -3536,7 +3532,7 @@ public sealed partial class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                            last.Lines.ClearFullAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
                         }
                     }
                     finally
@@ -3556,7 +3552,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    last.Lines.ClearFullAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
                 }
             }
             finally
@@ -4274,7 +4270,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (value.Contains("  ", Ordinal))
                 {
-                    string[] titleWords = value.Split_String(SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext.IntArrayPool);
+                    string[] titleWords = value.Split(SA_DoubleSpaces, StringSplitOptions.None);
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
