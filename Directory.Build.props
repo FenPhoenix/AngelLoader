@@ -1,5 +1,5 @@
 <Project>
  <PropertyGroup>
-   <SolutionTargetFramework>net472</SolutionTargetFramework>
+   <SolutionTargetFramework>net8.0-windows</SolutionTargetFramework>
  </PropertyGroup>
 </Project>
