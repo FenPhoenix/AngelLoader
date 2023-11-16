@@ -470,7 +470,7 @@ internal sealed class Allocator
         _glueCount = 1 << 13;
     }
 
-    private void CopyUnits(Pointer target, Pointer source, uint unitCount)
+    private static void CopyUnits(Pointer target, Pointer source, uint unitCount)
     {
         do
         {

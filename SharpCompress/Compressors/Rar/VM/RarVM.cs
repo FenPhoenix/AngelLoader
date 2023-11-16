@@ -94,7 +94,7 @@ internal sealed class RarVM : BitInput
         // *)Addr,Value)
     }
 
-    internal void SetLowEndianValue(List<byte> mem, int offset, int value)
+    internal static void SetLowEndianValue(List<byte> mem, int offset, int value)
     {
         mem[offset + 0] = (byte)(value & 0xff);
         mem[offset + 1] = (byte)(Utility.URShift(value, 8) & 0xff);
@@ -1017,7 +1017,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    private void optimize(VMPreparedProgram prg)
+    private static void optimize(VMPreparedProgram prg)
     {
         //UPGRADE_NOTE: There is an untranslated Statement.  Please refer to original code. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1153'"
 
@@ -1127,7 +1127,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    private VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
+    public VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
     {
         VMStandardFilterSignature[] stdList =
         {

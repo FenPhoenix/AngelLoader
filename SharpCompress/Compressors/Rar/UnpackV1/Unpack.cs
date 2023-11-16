@@ -1232,21 +1232,21 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         var globalData = StackFilter.Program.GlobalData;
         for (var I = 0; I < 7; I++)
         {
-            rarVM.SetLowEndianValue(globalData, I * 4, StackFilter.Program.InitR[I]);
+            RarVM.SetLowEndianValue(globalData, I * 4, StackFilter.Program.InitR[I]);
         }
 
         // VM.SetLowEndianValue((uint
         // *)&GlobalData[0x1c],StackFilter->BlockLength);
-        rarVM.SetLowEndianValue(globalData, 0x1c, StackFilter.BlockLength);
+        RarVM.SetLowEndianValue(globalData, 0x1c, StackFilter.BlockLength);
 
         // VM.SetLowEndianValue((uint *)&GlobalData[0x20],0);
-        rarVM.SetLowEndianValue(globalData, 0x20, 0);
-        rarVM.SetLowEndianValue(globalData, 0x24, 0);
-        rarVM.SetLowEndianValue(globalData, 0x28, 0);
+        RarVM.SetLowEndianValue(globalData, 0x20, 0);
+        RarVM.SetLowEndianValue(globalData, 0x24, 0);
+        RarVM.SetLowEndianValue(globalData, 0x28, 0);
 
         // VM.SetLowEndianValue((uint
         // *)&GlobalData[0x2c],StackFilter->ExecCount);
-        rarVM.SetLowEndianValue(globalData, 0x2c, StackFilter.ExecCount);
+        RarVM.SetLowEndianValue(globalData, 0x2c, StackFilter.ExecCount);
 
         // memset(&GlobalData[0x30],0,16);
         for (var i = 0; i < 16; i++)
@@ -1297,11 +1297,11 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
             // rarVM.SetLowEndianValue((uint
             // *)&Prg->GlobalData[0x24],int64to32(WrittenFileSize));
-            rarVM.SetLowEndianValue(Prg.GlobalData, 0x24, (int)writtenFileSize);
+            RarVM.SetLowEndianValue(Prg.GlobalData, 0x24, (int)writtenFileSize);
 
             // rarVM.SetLowEndianValue((uint
             // *)&Prg->GlobalData[0x28],int64to32(WrittenFileSize>>32));
-            rarVM.SetLowEndianValue(
+            RarVM.SetLowEndianValue(
                 Prg.GlobalData,
                 0x28,
                 (int)(Utility.URShift(writtenFileSize, 32))

@@ -89,7 +89,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the suffix.
         /// </summary>
-        public PpmContext Suffix
+        public readonly PpmContext Suffix
         {
             get =>
                 new PpmContext(
@@ -133,14 +133,14 @@ internal sealed partial class Model
         /// </para>
         /// </remarks>
         /// <returns></returns>
-        public PpmState FirstState => new PpmState(_address + 2, _memory);
+        public readonly PpmState FirstState => new PpmState(_address + 2, _memory);
 
         /// <summary>
         /// Gets or sets the symbol of the first PPM state.  This is provided for convenience.  The same
         /// information can be obtained using the Symbol property on the PPM state provided by the
         /// <see cref="FirstState"/> property.
         /// </summary>
-        public byte FirstStateSymbol
+        public readonly byte FirstStateSymbol
         {
             get => _memory[_address + 2];
             set => _memory[_address + 2] = value;
@@ -161,7 +161,7 @@ internal sealed partial class Model
         /// Gets or sets the successor of the first PPM state.  This is provided for convenience.  The same
         /// information can be obtained using the Successor property on the PPM state provided by the
         /// </summary>
-        public PpmContext FirstStateSuccessor
+        public readonly PpmContext FirstStateSuccessor
         {
             get =>
                 new PpmContext(
@@ -253,7 +253,7 @@ internal sealed partial class Model
         /// </summary>
         /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
         /// <param name="obj">Another object to compare to.</param>
-        public override bool Equals(object obj)
+        public readonly override bool Equals(object obj)
         {
             if (obj is PpmContext context)
             {

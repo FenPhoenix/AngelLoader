@@ -21,7 +21,7 @@ internal partial class Unpack
     //  return D[0]+(D[1]<<8);
     //}
 
-    private uint32 RawGet4(byte[] D, int offset) =>
+    private static uint32 RawGet4(byte[] D, int offset) =>
         (uint)(D[offset] + (D[offset + 1] << 8) + (D[offset + 2] << 16) + (D[offset + 3] << 24));
 
     //inline uint64 RawGet8(const void *Data)
@@ -42,7 +42,7 @@ internal partial class Unpack
     //  D[1]=(byte)(Field>>8);
     //}
 
-    private void RawPut4(uint32 Field, byte[] D, int offset)
+    private static void RawPut4(uint32 Field, byte[] D, int offset)
     {
         D[offset] = (byte)(Field);
         D[offset + 1] = (byte)(Field >> 8);

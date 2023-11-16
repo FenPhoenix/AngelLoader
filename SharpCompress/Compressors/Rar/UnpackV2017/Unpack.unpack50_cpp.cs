@@ -222,7 +222,7 @@ internal partial class Unpack
         UnpWriteBuf();
     }
 
-    private uint ReadFilterData(BitInput Inp)
+    private static uint ReadFilterData(BitInput Inp)
     {
         var ByteCount = (Inp.fgetbits() >> 14) + 1;
         Inp.addbits(2);

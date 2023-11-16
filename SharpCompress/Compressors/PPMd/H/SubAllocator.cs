@@ -100,7 +100,7 @@ internal class SubAllocator
         return retVal;
     }
 
-    private int U2B(int nu) => UNIT_SIZE * nu;
+    private static int U2B(int nu) => UNIT_SIZE * nu;
 
     /* memblockptr */
 

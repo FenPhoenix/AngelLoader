@@ -85,7 +85,7 @@ internal struct MemoryNode
     /// </summary>
     public uint UnitCount
     {
-        get =>
+        readonly get =>
             _memory[_address + 8]
             | (((uint)_memory[_address + 9]) << 8)
             | (((uint)_memory[_address + 10]) << 16)
@@ -223,7 +223,7 @@ internal struct MemoryNode
     /// </summary>
     /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to.</param>
-    public override bool Equals(object obj)
+    public readonly override bool Equals(object obj)
     {
         if (obj is MemoryNode memoryNode)
         {

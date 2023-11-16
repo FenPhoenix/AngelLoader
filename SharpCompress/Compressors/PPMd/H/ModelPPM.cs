@@ -867,7 +867,7 @@ internal class ModelPpm
             {
                 byte symbol;
                 _binSumm[off1][off2] =
-                    (bs + INTERVAL - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+                    (bs + INTERVAL - PpmContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
                 FoundState.Address = rs.Address;
                 symbol = (byte)rs.Symbol;
                 rs.IncrementFreq((rs.Freq < 128) ? 1 : 0);
@@ -876,7 +876,7 @@ internal class ModelPpm
                 NextContext();
                 return symbol;
             }
-            bs = (bs - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+            bs = (bs - PpmContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
             _binSumm[off1][off2] = bs;
             _initEsc = PpmContext.EXP_ESCAPE[Utility.URShift(bs, 10)];
             int i;

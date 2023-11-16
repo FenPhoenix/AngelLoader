@@ -255,7 +255,7 @@ internal class PpmContext : Pointer
         return ret;
     }
 
-    internal int GetMean(int summ, int shift, int round) =>
+    internal static int GetMean(int summ, int shift, int round) =>
         (Utility.URShift((summ + (1 << (shift - round))), (shift)));
 
     internal void DecodeBinSymbol(ModelPpm model)

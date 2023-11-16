@@ -39,7 +39,7 @@ internal struct Pointer
     /// </summary>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public byte this[int offset]
+    public readonly byte this[int offset]
     {
         get
         {
@@ -341,7 +341,7 @@ internal struct Pointer
     /// </summary>
     /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to.</param>
-    public override bool Equals(object obj)
+    public readonly override bool Equals(object obj)
     {
         if (obj is Pointer pointer)
         {
