@@ -32,7 +32,7 @@ internal class FileInfoRarArchiveVolume : RarVolume
     internal FileInfo FileInfo { get; }
 
     internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
-        new FileInfoRarFilePart(this, ReaderOptions.Password, markHeader, fileHeader, FileInfo);
+        new FileInfoRarFilePart(this, markHeader, fileHeader, FileInfo);
 
     internal override IEnumerable<RarFilePart> ReadFileParts() => FileParts;
 }

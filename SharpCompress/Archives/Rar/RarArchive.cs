@@ -22,7 +22,6 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// Constructor with a SourceStream able to handle FileInfo and Streams.
     /// </summary>
     /// <param name="srcStream"></param>
-    /// <param name="options"></param>
     internal RarArchive(SourceStream srcStream)
         : base(ArchiveType.Rar, srcStream) { }
 

@@ -73,8 +73,9 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
     {
         get
         {
-            var headers = parts.Select(x => x.FileHeader);
-            return !headers.First().IsSplitBefore && !headers.Last().IsSplitAfter;
+            var headers = parts.Select(static x => x.FileHeader);
+            var fileHeaders = headers as FileHeader[] ?? headers.ToArray();
+            return !fileHeaders.First().IsSplitBefore && !fileHeaders.Last().IsSplitAfter;
         }
     }
 

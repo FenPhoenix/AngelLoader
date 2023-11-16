@@ -8,19 +8,16 @@ namespace SharpCompress.Archives.Rar;
 internal class SeekableFilePart : RarFilePart
 {
     private readonly Stream stream;
-    private readonly string? password;
 
     internal SeekableFilePart(
         MarkHeader mh,
         FileHeader fh,
         int index,
-        Stream stream,
-        string? password
+        Stream stream
     )
         : base(mh, fh, index)
     {
         this.stream = stream;
-        this.password = password;
     }
 
     internal override Stream GetCompressedStream()
