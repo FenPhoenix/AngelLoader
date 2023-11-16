@@ -1,4 +1,5 @@
-// @NET5: Can we get rid of this? Does .NET 8 now have the multi select thing or whatever it was?
+// @NET5: The official FolderBrowserDialog doesn't have multiselect, that's the reason we still need this.
+// The OpenFileDialog has it, but we need it on the folder one.
 
 using System;
 using System.Collections.Generic;
