@@ -1,5 +1,7 @@
 ﻿//#define ENABLE_UNUSED
 
+// @NET5(StreamReaderCustom): See if .NET modern's version of this is better/faster/whatever
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -134,7 +136,7 @@ public sealed class StreamReaderCustom
         if (encodingCruftEnabled)
         {
             _decoders ??= new Dictionary<Encoding, Decoder>(_knownEncodingCount);
-            if (_decoders.TryGetValue(encoding, out Decoder decoder))
+            if (_decoders.TryGetValue(encoding, out Decoder? decoder))
             {
                 _decoder = decoder;
             }
@@ -152,7 +154,7 @@ public sealed class StreamReaderCustom
                 { 514, new char[514] },
                 { 1027, new char[1027] }
             };
-            if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
+            if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[]? maxCharsBuffer))
             {
                 _charBuffer = maxCharsBuffer;
             }
@@ -163,7 +165,7 @@ public sealed class StreamReaderCustom
             }
 
             _perEncodingPreambles ??= new Dictionary<Encoding, byte[]>(_knownEncodingCount);
-            if (_perEncodingPreambles.TryGetValue(encoding, out byte[] preamble))
+            if (_perEncodingPreambles.TryGetValue(encoding, out byte[]? preamble))
             {
                 _preamble = preamble;
             }

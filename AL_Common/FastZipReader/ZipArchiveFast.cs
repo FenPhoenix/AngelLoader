@@ -199,7 +199,7 @@ public sealed class ZipArchiveFast : IDisposable
     {
         message = "";
 
-        if (_unopenableArchives != null && _unopenableArchives.TryGetValue(entry, out string result))
+        if (_unopenableArchives != null && _unopenableArchives.TryGetValue(entry, out string? result))
         {
             message = result;
             return false;

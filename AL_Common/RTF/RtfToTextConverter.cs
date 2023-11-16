@@ -1998,7 +1998,7 @@ public sealed partial class RtfToTextConverter
             case _shiftJisWin:
                 return _shiftJisWinEncoding;
             default:
-                if (_encodings.TryGetValue(codePage, out Encoding result))
+                if (_encodings.TryGetValue(codePage, out Encoding? result))
                 {
                     return result;
                 }

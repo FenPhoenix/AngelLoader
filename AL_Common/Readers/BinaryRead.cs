@@ -1,5 +1,7 @@
 ﻿//#define ENABLE_UNUSED
 
+// @NET5(BinaryRead): See if .NET modern's version of this is better/faster/whatever
+
 using System.IO;
 namespace AL_Common;
 
@@ -32,6 +34,8 @@ public static class BinaryRead
 
 #endif
 
+#if ENABLE_UNUSED
+
     /// <summary>Reads the next byte from the current stream and advances the current position of the stream by one byte.</summary>
     /// <returns>The next byte read from the current stream.</returns>
     /// <exception cref="T:System.IO.EndOfStreamException">The end of the stream is reached.</exception>
@@ -44,7 +48,6 @@ public static class BinaryRead
         return buffer.Buffer[0];
     }
 
-#if ENABLE_UNUSED
 
     /// <summary>Reads a signed byte from this stream and advances the current position of the stream by one byte.</summary>
     /// <returns>A signed byte read from the current stream.</returns>
