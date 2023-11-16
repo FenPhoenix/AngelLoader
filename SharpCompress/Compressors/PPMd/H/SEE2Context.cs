@@ -8,7 +8,7 @@ internal sealed class See2Context
     {
         get
         {
-            var retVal = Utility.URShift(_summ, _shift);
+            var retVal = (_summ >>> _shift);
             _summ -= retVal;
             return retVal + ((retVal == 0) ? 1 : 0);
         }

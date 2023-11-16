@@ -8,14 +8,6 @@ namespace SharpCompress.Compressors.Rar.VM;
 
 internal sealed class RarVM : BitInput
 {
-    //private void  InitBlock()
-    //{
-    //    Mem.set_Renamed(offset + 0, Byte.valueOf((sbyte) (value_Renamed & 0xff)));
-    //    Mem.set_Renamed(offset + 1, Byte.valueOf((sbyte) ((Utility.URShift(value_Renamed, 8)) & 0xff)));
-    //    Mem.set_Renamed(offset + 2, Byte.valueOf((sbyte) ((Utility.URShift(value_Renamed, 16)) & 0xff)));
-    //    Mem.set_Renamed(offset + 3, Byte.valueOf((sbyte) ((Utility.URShift(value_Renamed, 24)) & 0xff)));
-
-    //}
     internal byte[] Mem { get; private set; }
 
     public const int VM_MEMSIZE = 0x40000;
@@ -97,9 +89,9 @@ internal sealed class RarVM : BitInput
     internal static void SetLowEndianValue(List<byte> mem, int offset, int value)
     {
         mem[offset + 0] = (byte)(value & 0xff);
-        mem[offset + 1] = (byte)(Utility.URShift(value, 8) & 0xff);
-        mem[offset + 2] = (byte)(Utility.URShift(value, 16) & 0xff);
-        mem[offset + 3] = (byte)(Utility.URShift(value, 24) & 0xff);
+        mem[offset + 1] = (byte)((value >>> 8) & 0xff);
+        mem[offset + 2] = (byte)((value >>> 16) & 0xff);
+        mem[offset + 3] = (byte)((value >>> 24) & 0xff);
     }
 
     private int GetOperand(VMPreparedOperand cmdOp)
@@ -600,10 +592,10 @@ internal sealed class RarVM : BitInput
                     {
                         var value1 = GetValue(cmd.IsByteMode, Mem, op1);
                         var value2 = GetValue(cmd.IsByteMode, Mem, op2);
-                        var result = Utility.URShift(value1, value2);
+                        var result = (value1 >>> value2);
                         flags = (VMFlags)(
                             (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
-                            | ((Utility.URShift(value1, (value2 - 1))) & (int)VMFlags.VM_FC)
+                            | (((value1 >>> (value2 - 1))) & (int)VMFlags.VM_FC)
                         );
                         SetValue(cmd.IsByteMode, Mem, op1, result);
                     }
@@ -1224,7 +1216,7 @@ internal sealed class RarVM : BitInput
 
                     //UPGRADE_NOTE: Final was removed from the declaration of 'Masks '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
                     byte[] Masks = { 4, 4, 6, 6, 0, 0, 7, 7, 4, 4, 0, 0, 4, 4, 0, 0 };
-                    fileOffset = Utility.URShift(fileOffset, 4);
+                    fileOffset = (fileOffset >>> 4);
 
                     while (curPos < dataSize - 21)
                     {
@@ -1402,7 +1394,7 @@ internal sealed class RarVM : BitInput
                             D1 = (int)prevDelta;
 
                             var predicted = (8 * prevByte) + (K1 * D1) + (K2 * D2) + (K3 * D3);
-                            predicted = Utility.URShift(predicted, 3) & 0xff;
+                            predicted = (predicted >>> 3) & 0xff;
 
                             long curByte = Mem[srcPos++];
 
@@ -1526,7 +1518,7 @@ internal sealed class RarVM : BitInput
     {
         var inAddr = bitPos / 8;
         var inBit = bitPos & 7;
-        var andMask = Utility.URShift(unchecked((int)0xffffffff), (32 - bitCount));
+        var andMask = (unchecked((int)0xffffffff) >>> (32 - bitCount));
         andMask = ~(andMask << inBit);
 
         bitField <<= inBit;
@@ -1535,8 +1527,8 @@ internal sealed class RarVM : BitInput
         {
             Mem[curPos + inAddr + i] &= (byte)(andMask);
             Mem[curPos + inAddr + i] |= (byte)(bitField);
-            andMask = (Utility.URShift(andMask, 8)) | unchecked((int)0xff000000);
-            bitField = Utility.URShift(bitField, 8);
+            andMask = ((andMask >>> 8)) | unchecked((int)0xff000000);
+            bitField = (bitField >>> 8);
         }
     }
 
@@ -1548,8 +1540,8 @@ internal sealed class RarVM : BitInput
         bitField |= (Mem[curPos + inAddr++] & 0xff) << 8;
         bitField |= (Mem[curPos + inAddr++] & 0xff) << 16;
         bitField |= (Mem[curPos + inAddr] & 0xff) << 24;
-        bitField = Utility.URShift(bitField, inBit);
-        return (bitField & (Utility.URShift(unchecked((int)0xffffffff), (32 - bitCount))));
+        bitField = (bitField >>> inBit);
+        return (bitField & ((unchecked((int)0xffffffff) >>> (32 - bitCount))));
     }
 
     public void setMemory(int pos, byte[] data, int offset, int dataSize)

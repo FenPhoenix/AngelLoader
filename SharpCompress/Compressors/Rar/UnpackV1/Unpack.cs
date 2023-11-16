@@ -356,7 +356,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 var Length = LDecode[Number -= 271] + 3;
                 if ((Bits = LBits[Number]) > 0)
                 {
-                    Length += Utility.URShift(GetBits(), (16 - Bits));
+                    Length += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
 
@@ -368,7 +368,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                     {
                         if (Bits > 4)
                         {
-                            Distance += ((Utility.URShift(GetBits(), (20 - Bits))) << 4);
+                            Distance += (((GetBits() >>> (20 - Bits))) << 4);
                             AddBits(Bits - 4);
                         }
                         if (lowDistRepCount > 0)
@@ -393,7 +393,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                     }
                     else
                     {
-                        Distance += Utility.URShift(GetBits(), (16 - Bits));
+                        Distance += (GetBits() >>> (16 - Bits));
                         AddBits(Bits);
                     }
                 }
@@ -451,7 +451,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 var Length = LDecode[LengthNumber] + 2;
                 if ((Bits = LBits[LengthNumber]) > 0)
                 {
-                    Length += Utility.URShift(GetBits(), (16 - Bits));
+                    Length += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
                 InsertLastMatch(Length, Distance);
@@ -463,7 +463,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 var Distance = SDDecode[Number -= 263] + 1;
                 if ((Bits = SDBits[Number]) > 0)
                 {
-                    Distance += Utility.URShift(GetBits(), (16 - Bits));
+                    Distance += (GetBits() >>> (16 - Bits));
                     AddBits(Bits);
                 }
                 InsertOldDist(Distance);
@@ -889,11 +889,11 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
         for (var i = 0; i < PackDef.BC; i++)
         {
-            var length = (Utility.URShift(GetBits(), 12)) & 0xFF;
+            var length = ((GetBits() >>> 12)) & 0xFF;
             AddBits(4);
             if (length == 15)
             {
-                var zeroCount = (Utility.URShift(GetBits(), 12)) & 0xFF;
+                var zeroCount = ((GetBits() >>> 12)) & 0xFF;
                 AddBits(4);
                 if (zeroCount == 0)
                 {
@@ -919,7 +919,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
         const int TableSize = PackDef.HUFF_TABLE_SIZE;
 
-        for (var i = 0; i < TableSize; )
+        for (var i = 0; i < TableSize;)
         {
             if (inAddr > readTop - 5)
             {
@@ -939,12 +939,12 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 int N;
                 if (Number == 16)
                 {
-                    N = (Utility.URShift(GetBits(), 13)) + 3;
+                    N = ((GetBits() >>> 13)) + 3;
                     AddBits(3);
                 }
                 else
                 {
-                    N = (Utility.URShift(GetBits(), 9)) + 11;
+                    N = ((GetBits() >>> 9)) + 11;
                     AddBits(7);
                 }
                 while (N-- > 0 && i < TableSize)
@@ -958,12 +958,12 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 int N;
                 if (Number == 18)
                 {
-                    N = (Utility.URShift(GetBits(), 13)) + 3;
+                    N = ((GetBits() >>> 13)) + 3;
                     AddBits(3);
                 }
                 else
                 {
-                    N = (Utility.URShift(GetBits(), 9)) + 11;
+                    N = ((GetBits() >>> 9)) + 11;
                     AddBits(7);
                 }
                 while (N-- > 0 && i < TableSize)
@@ -1171,7 +1171,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         // set registers to optional parameters
         // if any
         {
-            var InitMask = Utility.URShift(Inp.GetBits(), 9);
+            var InitMask = (Inp.GetBits() >>> 9);
             Inp.AddBits(7);
             for (var I = 0; I < 7; I++)
             {
@@ -1281,7 +1281,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 {
                     return (false);
                 }
-                globalData[offset + I] = (byte)(Utility.URShift(Inp.GetBits(), 8));
+                globalData[offset + I] = (byte)((Inp.GetBits() >>> 8));
                 Inp.AddBits(8);
             }
         }
@@ -1304,7 +1304,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             RarVM.SetLowEndianValue(
                 Prg.GlobalData,
                 0x28,
-                (int)(Utility.URShift(writtenFileSize, 32))
+                (int)((writtenFileSize >>> 32))
             );
             rarVM.execute(Prg);
         }

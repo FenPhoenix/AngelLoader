@@ -622,7 +622,7 @@ internal sealed class ModelPpm
                 {
                     //System.out.println(ns1);
                     pc.FreqData.SetStats(
-                        SubAlloc.ExpandUnits(pc.FreqData.GetStats(), Utility.URShift(ns1, 1))
+                        SubAlloc.ExpandUnits(pc.FreqData.GetStats(), (ns1 >>> 1))
                     );
                     if (pc.FreqData.GetStats() == 0)
                     {
@@ -853,7 +853,7 @@ internal sealed class ModelPpm
             }
             bs = (bs - PpmContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
             BinSumm[off1][off2] = bs;
-            InitEsc = PpmContext.EXP_ESCAPE[Utility.URShift(bs, 10)];
+            InitEsc = PpmContext.EXP_ESCAPE[(bs >>> 10)];
             int i;
             for (i = 0; i < 256; i++)
             {

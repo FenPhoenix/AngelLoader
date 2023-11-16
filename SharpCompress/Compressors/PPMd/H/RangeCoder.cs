@@ -72,7 +72,7 @@ internal sealed class RangeCoder
 
     internal long GetCurrentShiftCount(int shift)
     {
-        _range = Utility.URShift(_range, shift);
+        _range = (_range >>> shift);
         return ((_code - _low) / (_range)) & UINT_MASK;
     }
 

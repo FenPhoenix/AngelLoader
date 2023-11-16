@@ -2,45 +2,13 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress;
 
 [CLSCompliant(false)]
 public static class Utility
 {
-    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) =>
-        new ReadOnlyCollection<T>(items);
-
-    /// <summary>
-    /// Performs an unsigned bitwise right shift with the specified number
-    /// </summary>
-    /// <param name="number">Number to operate on</param>
-    /// <param name="bits">Amount of bits to shift</param>
-    /// <returns>The resulting number from the shift operation</returns>
-    public static int URShift(int number, int bits)
-    {
-        if (number >= 0)
-        {
-            return number >> bits;
-        }
-        return (number >> bits) + (2 << ~bits);
-    }
-
-    /// <summary>
-    /// Performs an unsigned bitwise right shift with the specified number
-    /// </summary>
-    /// <param name="number">Number to operate on</param>
-    /// <param name="bits">Amount of bits to shift</param>
-    /// <returns>The resulting number from the shift operation</returns>
-    public static long URShift(long number, int bits)
-    {
-        if (number >= 0)
-        {
-            return number >> bits;
-        }
-        return (number >> bits) + (2L << ~bits);
-    }
+    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) => new(items);
 
     public static void SetSize(this List<byte> list, int count)
     {
