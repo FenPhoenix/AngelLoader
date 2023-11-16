@@ -419,17 +419,14 @@ internal static class RtfProcessing
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
             int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
 
-            int lastIndexSource = 0;
-            int lastIndexDest = 0;
-
             ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
             Span<byte> retBytesSpan = retBytes.AsSpan();
 
             ReadOnlySpan<byte> headerSpan = currentReadmeBytesSpan.Slice(0, firstIndexPastHeader);
             headerSpan.CopyTo(retBytesSpan.Slice(0));
 
-            lastIndexSource += firstIndexPastHeader;
-            lastIndexDest = firstIndexPastHeader;
+            int lastIndexSource = firstIndexPastHeader;
+            int lastIndexDest = firstIndexPastHeader;
 
             // Copy color table
             // Fortunately, only the first color table is used, so we can just stick ourselves right at the start

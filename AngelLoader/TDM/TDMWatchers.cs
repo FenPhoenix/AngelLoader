@@ -85,7 +85,7 @@ internal static class TDMWatchers
 
     #region Event handlers
 
-    private static async void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private static async void FileWatcherTimers_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         if (Core.View == null!) return;
         await RefreshIfAllowed(TDM_FileChanged.MissionInfo);

@@ -1267,12 +1267,16 @@ internal static class GameConfigFiles
 
         RemoveKeyLine(key_game_screen_size, lines);
 
-        System.Drawing.Rectangle res = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-        lines.Add(key_game_screen_size + " " + res.Width.ToStrInv() + " " + res.Height.ToStrInv());
+        System.Windows.Forms.Screen? screen = System.Windows.Forms.Screen.PrimaryScreen;
+        if (screen != null)
+        {
+            System.Drawing.Rectangle res = screen.Bounds;
+            lines.Add(key_game_screen_size + " " + res.Width.ToStrInv() + " " + res.Height.ToStrInv());
 
-        RemoveConsecutiveWhiteSpace(lines);
+            RemoveConsecutiveWhiteSpace(lines);
 
-        TryWriteAllLines(camCfgFile, lines);
+            TryWriteAllLines(camCfgFile, lines);
+        }
     }
 
 #endif

@@ -328,7 +328,7 @@ internal static class TDM
 
         foreach (TDM_LocalFMData localData in localFMDataList)
         {
-            if (tdmFMsDict.TryGetValue(localData.InternalName, out FanMission fm))
+            if (tdmFMsDict.TryGetValue(localData.InternalName, out FanMission? fm))
             {
                 // Only add, don't remove any the user has set manually
                 if (localData.MissionCompletedOnNormal)
@@ -434,7 +434,7 @@ internal static class TDM
 
             foreach (TDM_LocalFMData localData in localDataList)
             {
-                if (internalTDMDict.TryGetValue(localData.InternalName, out FanMission fm) &&
+                if (internalTDMDict.TryGetValue(localData.InternalName, out FanMission? fm) &&
                     int.TryParse(localData.DownloadedVersion, out int version) &&
                     fm.TDMVersion != version)
                 {

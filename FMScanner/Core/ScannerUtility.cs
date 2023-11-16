@@ -853,7 +853,7 @@ internal static class Utility
                         {
                             string name = subSB.ToString();
 
-                            if (HTML.HTMLNamedEntities.TryGetValue(name, out string value) &&
+                            if (HTML.HTMLNamedEntities.TryGetValue(name, out string? value) &&
                                 UInt_TryParseInv(value, out uint result))
                             {
                                 ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);

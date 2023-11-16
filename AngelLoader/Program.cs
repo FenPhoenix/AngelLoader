@@ -116,7 +116,7 @@ internal static class Program
             AppDomain.CurrentDomain.UnhandledException += static (_, e) =>
             {
                 Exception ex = (Exception)e.ExceptionObject;
-                if (ex.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
+                if (ex.TargetSite?.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
                 {
                     Log("*** Unhandled exception: ", ex);
                 }

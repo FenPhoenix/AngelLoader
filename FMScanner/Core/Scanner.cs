@@ -598,7 +598,7 @@ public sealed partial class Scanner : IDisposable
 
                     try
                     {
-                        FMToScan? fm = missions[i];
+                        FMToScan fm = missions[i];
                         scannedFMAndError =
                             fm.IsTDM
                                 ? ScanCurrentDarkModFM(fm)
@@ -755,8 +755,8 @@ public sealed partial class Scanner : IDisposable
         }
 
         TDM_ServerFMData? infoFromServer = null;
-        if (_tdmContext.ServerFMData.TryGetValue(FMWorkingPathDirName, out TDM_ServerFMData serverFMData) &&
-            _tdmContext.LocalFMData.TryGetValue(FMWorkingPathDirName, out TDM_LocalFMData localFMData) &&
+        if (_tdmContext.ServerFMData.TryGetValue(FMWorkingPathDirName, out TDM_ServerFMData? serverFMData) &&
+            _tdmContext.LocalFMData.TryGetValue(FMWorkingPathDirName, out TDM_LocalFMData? localFMData) &&
             serverFMData.Version == localFMData.DownloadedVersion)
         {
             infoFromServer = serverFMData;
@@ -769,7 +769,7 @@ public sealed partial class Scanner : IDisposable
         };
 
         if (!Directory.Exists(_fmWorkingPath) &&
-            _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string realPK4))
+            _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string? realPK4))
         {
             if (_tdmContext.FMsPath.IsEmpty())
             {

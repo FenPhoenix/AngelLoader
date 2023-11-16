@@ -3,6 +3,7 @@ using System.Buffers;
 
 namespace FMScanner;
 
+// @NET5(StringSplit): Is .NET modern better about allocations here, so we can get rid of this?
 internal static class StringSplit
 {
     private readonly ref struct RentedArray<T>

@@ -1982,6 +1982,10 @@ internal static class Core
         // ArgumentNullException (stringToEscape is null)
         // UriFormatException (The length of stringToEscape exceeds 32766 characters)
         // Those are both checked for above so we're good.
+
+        // @NET5: EscapeUriString() is marked obsolete and "can corrupt the Uri string in some cases".
+        // We're supposed to use EscapeDataString(), but that's not a drop-in replacement, it behaves differently.
+        // We should figure this out, but it's fine for now.
         url = Uri.EscapeUriString(url);
 
         if (!CheckUrl(url)) return;
@@ -2286,7 +2290,7 @@ internal static class Core
             version = null;
         }
 
-        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion;
+        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }

@@ -105,7 +105,7 @@ internal static class Engine
 
         return tcs.Task;
 
-        void ProcessOnExited(object sender, EventArgs e)
+        void ProcessOnExited(object? sender, EventArgs e)
         {
             process.WaitForExit();
             tcs.TrySetResult(process.ExitCode);

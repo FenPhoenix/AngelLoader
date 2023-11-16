@@ -23,7 +23,7 @@ internal static partial class Ini
             var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
             foreach (FieldInfo field in fields)
             {
-                dict[field.Name] = (field, f.GetValue(lText));
+                dict[field.Name] = (field, f.GetValue(lText)!);
             }
             sections["[" + f.Name + "]"] = dict;
         }

@@ -85,7 +85,7 @@ internal static partial class Ini
                 return Path.Combine(Paths.Data, Paths.FMDataBakBase + "1");
             }
 
-            FileInfo? lastWritten = fileInfos.OrderByDescending(static x => x.LastWriteTime).ToArray()[0];
+            FileInfo lastWritten = fileInfos.OrderByDescending(static x => x.LastWriteTime).ToArray()[0];
             string lastWrittenFileNumStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
 
             int newNum = 1;

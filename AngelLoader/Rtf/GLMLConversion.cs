@@ -274,7 +274,7 @@ internal static class GLMLConversion
                         {
                             string name = subSB.ToString();
 
-                            if (HTML.HTMLNamedEntities.TryGetValue(name, out string value))
+                            if (HTML.HTMLNamedEntities.TryGetValue(name, out string? value))
                             {
                                 sb.Append(@"\u");
                                 sb.Append(value);

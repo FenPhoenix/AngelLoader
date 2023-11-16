@@ -806,7 +806,7 @@ public sealed partial class Scanner
     /// </summary>
     private sealed class TitlesStrNaturalNumericSort : IComparer<string>
     {
-        public int Compare(string x, string y)
+        public int Compare(string? x, string? y)
         {
             if (x == y) return 0;
             if (x.IsEmpty()) return -1;
