@@ -25,16 +25,14 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     private bool disposed;
     protected readonly SourceStream SrcStream;
 
-    internal AbstractArchive(ArchiveType type, SourceStream srcStream)
+    internal AbstractArchive(SourceStream srcStream)
     {
-        Type = type;
         ReaderOptions = srcStream.ReaderOptions;
         SrcStream = srcStream;
         lazyVolumes = new LazyReadOnlyCollection<TVolume>(LoadVolumes(SrcStream));
         lazyEntries = new LazyReadOnlyCollection<TEntry>(LoadEntries(Volumes));
     }
 
-    public ArchiveType Type { get; }
 
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveEntries across the one or many parts of the RarArchive.

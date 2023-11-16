@@ -2,7 +2,7 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class StateRef
+internal sealed class StateRef
 {
     private int _symbol;
 
@@ -32,15 +32,13 @@ internal class StateRef
         }
     }
 
-    public virtual void IncrementFreq(int dFreq) => _freq = (_freq + dFreq) & 0xff;
+    public void DecrementFreq(int dFreq) => _freq = (_freq - dFreq) & 0xff;
 
-    public virtual void DecrementFreq(int dFreq) => _freq = (_freq - dFreq) & 0xff;
+    public int GetSuccessor() => _successor;
 
-    public virtual int GetSuccessor() => _successor;
+    public void SetSuccessor(PpmContext successor) => SetSuccessor(successor.Address);
 
-    public virtual void SetSuccessor(PpmContext successor) => SetSuccessor(successor.Address);
-
-    public virtual void SetSuccessor(int successor) => _successor = successor;
+    public void SetSuccessor(int successor) => _successor = successor;
 
     public override string ToString()
     {

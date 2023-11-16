@@ -11,8 +11,6 @@ public interface IReader : IDisposable
     event EventHandler<CompressedBytesReadEventArgs> CompressedBytesRead;
     event EventHandler<FilePartExtractionBeginEventArgs> FilePartExtractionBegin;
 
-    ArchiveType ArchiveType { get; }
-
     IEntry Entry { get; }
 
     /// <summary>

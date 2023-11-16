@@ -22,15 +22,12 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtracti
     public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
     public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
 
-    internal AbstractReader(ReaderOptions options, ArchiveType archiveType)
+    internal AbstractReader(ReaderOptions options)
     {
-        ArchiveType = archiveType;
         Options = options;
     }
 
     internal ReaderOptions Options { get; }
-
-    public ArchiveType ArchiveType { get; }
 
     /// <summary>
     /// Current volume that the current entry resides in

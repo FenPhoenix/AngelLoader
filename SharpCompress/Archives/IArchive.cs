@@ -16,8 +16,6 @@ public interface IArchive : IDisposable
     IEnumerable<IArchiveEntry> Entries { get; }
     IEnumerable<IDisposable> Volumes { get; }
 
-    ArchiveType Type { get; }
-
     /// <summary>
     /// Use this method to extract all entries in an archive in order.
     /// This is primarily for SOLID Rar Archives or 7Zip Archives as they need to be

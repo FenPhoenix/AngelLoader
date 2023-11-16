@@ -1127,7 +1127,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    public VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
+    public static VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
     {
         VMStandardFilterSignature[] stdList =
         {

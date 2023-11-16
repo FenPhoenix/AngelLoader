@@ -5,29 +5,29 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class SubAllocator
+internal sealed class SubAllocator
 {
-    public virtual int FakeUnitsStart
+    public int FakeUnitsStart
     {
         get => _fakeUnitsStart;
         set => _fakeUnitsStart = value;
     }
 
-    public virtual int HeapEnd => _heapEnd;
+    public int HeapEnd => _heapEnd;
 
-    public virtual int PText
+    public int PText
     {
         get => _pText;
         set => _pText = value;
     }
 
-    public virtual int UnitsStart
+    public int UnitsStart
     {
         get => _unitsStart;
         set => _unitsStart = value;
     }
 
-    public virtual byte[] Heap => _heap;
+    public byte[] Heap => _heap;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'N4 '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
     public const int N1 = 4;
@@ -79,7 +79,7 @@ internal class SubAllocator
 
     public SubAllocator() => Clean();
 
-    public virtual void Clean() => _subAllocatorSize = 0;
+    public void Clean() => _subAllocatorSize = 0;
 
     private void InsertNode(int p, int indx)
     {
@@ -89,7 +89,7 @@ internal class SubAllocator
         _freeList[indx].SetNext(temp);
     }
 
-    public virtual void IncPText() => _pText++;
+    public void IncPText() => _pText++;
 
     private int RemoveNode(int indx)
     {
@@ -104,7 +104,7 @@ internal class SubAllocator
 
     /* memblockptr */
 
-    private int MbPtr(int basePtr, int items) => (basePtr + U2B(items));
+    private static int MbPtr(int basePtr, int items) => (basePtr + U2B(items));
 
     private void SplitBlock(int pv, int oldIndx, int newIndx)
     {
@@ -120,7 +120,7 @@ internal class SubAllocator
         InsertNode(p, _units2Indx[uDiff - 1]);
     }
 
-    public virtual void StopSubAllocator()
+    public void StopSubAllocator()
     {
         if (_subAllocatorSize != 0)
         {
@@ -139,9 +139,9 @@ internal class SubAllocator
         }
     }
 
-    public virtual int GetAllocatedMemory() => _subAllocatorSize;
+    public int GetAllocatedMemory() => _subAllocatorSize;
 
-    public virtual bool StartSubAllocator(int saSize)
+    public bool StartSubAllocator(int saSize)
     {
         var t = saSize;
         if (_subAllocatorSize == t)
@@ -276,7 +276,7 @@ internal class SubAllocator
         return retVal;
     }
 
-    public virtual int AllocUnits(int nu)
+    public int AllocUnits(int nu)
     {
         var indx = _units2Indx[nu - 1];
         if (_freeList[indx].GetNext() != 0)
@@ -293,7 +293,7 @@ internal class SubAllocator
         return AllocUnitsRare(indx);
     }
 
-    public virtual int AllocContext()
+    public int AllocContext()
     {
         if (_hiUnit != _loUnit)
         {
@@ -306,7 +306,7 @@ internal class SubAllocator
         return AllocUnitsRare(0);
     }
 
-    public virtual int ExpandUnits(int oldPtr, int oldNu)
+    public int ExpandUnits(int oldPtr, int oldNu)
     {
         var i0 = _units2Indx[oldNu - 1];
         var i1 = _units2Indx[oldNu - 1 + 1];
@@ -324,7 +324,7 @@ internal class SubAllocator
         return ptr;
     }
 
-    public virtual int ShrinkUnits(int oldPtr, int oldNu, int newNu)
+    public int ShrinkUnits(int oldPtr, int oldNu, int newNu)
     {
         // System.out.println("SubAllocator.shrinkUnits(" + OldPtr + ", " +
         // OldNU + ", " + NewNU + ")");
@@ -350,11 +350,11 @@ internal class SubAllocator
         return oldPtr;
     }
 
-    public virtual void FreeUnits(int ptr, int oldNu) => InsertNode(ptr, _units2Indx[oldNu - 1]);
+    public void FreeUnits(int ptr, int oldNu) => InsertNode(ptr, _units2Indx[oldNu - 1]);
 
-    public virtual void DecPText(int dPText) => PText -= dPText;
+    public void DecPText(int dPText) => PText -= dPText;
 
-    public virtual void InitSubAllocator()
+    public void InitSubAllocator()
     {
         int i,
             k;

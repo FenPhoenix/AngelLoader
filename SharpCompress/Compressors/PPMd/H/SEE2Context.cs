@@ -2,9 +2,9 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class See2Context
+internal sealed class See2Context
 {
-    public virtual int Mean
+    public int Mean
     {
         get
         {
@@ -14,19 +14,19 @@ internal class See2Context
         }
     }
 
-    public virtual int Count
+    public int Count
     {
         get => _count;
         set => _count = value & 0xff;
     }
 
-    public virtual int Shift
+    public int Shift
     {
         get => _shift;
         set => _shift = value & 0xff;
     }
 
-    public virtual int Summ
+    public int Summ
     {
         get => _summ;
         set => _summ = value & 0xffff;
@@ -50,7 +50,7 @@ internal class See2Context
         _count = 4;
     }
 
-    public virtual void Update()
+    public void Update()
     {
         if (_shift < ModelPpm.PERIOD_BITS && --_count == 0)
         {
@@ -62,7 +62,7 @@ internal class See2Context
         _shift &= 0xff;
     }
 
-    public virtual void IncSumm(int dSumm) => Summ += dSumm;
+    public void IncSumm(int dSumm) => Summ += dSumm;
 
     public override string ToString()
     {
