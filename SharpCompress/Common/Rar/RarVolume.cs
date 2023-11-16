@@ -102,7 +102,7 @@ public abstract class RarVolume : Volume
     /// <summary>
     /// RarArchive is part of a multi-part archive.
     /// </summary>
-    public virtual bool IsMultiVolume
+    public bool IsMultiVolume
     {
         get
         {

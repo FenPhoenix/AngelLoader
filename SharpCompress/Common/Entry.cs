@@ -76,10 +76,10 @@ public abstract class Entry : IEntry
 
     public bool IsSolid { get; set; }
 
-    internal virtual void Close() { }
+    internal void Close() { }
 
     /// <summary>
     /// Entry file attribute.
     /// </summary>
-    public virtual int? Attrib => throw new NotImplementedException();
+    public int? Attrib => throw new NotImplementedException();
 }

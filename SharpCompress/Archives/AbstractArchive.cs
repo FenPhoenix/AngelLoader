@@ -37,7 +37,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveEntries across the one or many parts of the RarArchive.
     /// </summary>
-    public virtual LazyReadOnlyCollection<TEntry> Entries => lazyEntries;
+    public LazyReadOnlyCollection<TEntry> Entries => lazyEntries;
 
     /// <summary>
     /// Returns an ReadOnlyCollection of all the RarArchiveVolumes across the one or many parts of the RarArchive.
@@ -53,7 +53,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive
     /// <summary>
     /// The total size of the files as uncompressed in the archive.
     /// </summary>
-    public virtual long TotalUncompressSize =>
+    public virtual long TotalUncompressedSize =>
         Entries.Aggregate(0L, (total, cf) => total + cf.Size);
 
     protected abstract IEnumerable<TVolume> LoadVolumes(SourceStream srcStream);

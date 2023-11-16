@@ -228,13 +228,11 @@ public static class Utility
         var array = GetTransferByteArray();
         try
         {
-            var iterations = 0;
             long total = 0;
             while (ReadTransferBlock(source, array, out var count))
             {
                 total += count;
                 destination.Write(array, 0, count);
-                iterations++;
             }
             return total;
         }
