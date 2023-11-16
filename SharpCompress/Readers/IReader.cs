@@ -6,11 +6,6 @@ namespace SharpCompress.Readers;
 
 public interface IReader : IDisposable
 {
-    event EventHandler<ReaderExtractionEventArgs<IEntry>> EntryExtractionProgress;
-
-    event EventHandler<CompressedBytesReadEventArgs> CompressedBytesRead;
-    event EventHandler<FilePartExtractionBeginEventArgs> FilePartExtractionBegin;
-
     IEntry Entry { get; }
 
     /// <summary>

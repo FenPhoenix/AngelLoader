@@ -17,11 +17,6 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    public event EventHandler<ReaderExtractionEventArgs<IEntry>>? EntryExtractionProgress;
-
-    public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
-    public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
-
     internal AbstractReader(ReaderOptions options)
     {
         Options = options;
