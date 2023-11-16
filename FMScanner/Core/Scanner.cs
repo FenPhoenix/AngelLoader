@@ -3514,7 +3514,7 @@ public sealed partial class Scanner : IDisposable
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
-                ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
+                ReadmeInternal last = _readmeFiles[^1];
 
                 bool readmeIsRtf = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
@@ -3852,12 +3852,12 @@ public sealed partial class Scanner : IDisposable
 
         if (value.IsEmpty()) return value;
 
-        if (value[0] == '\"' && value[value.Length - 1] == '\"') value = value.Trim(CA_DoubleQuote);
+        if (value[0] == '\"' && value[^1] == '\"') value = value.Trim(CA_DoubleQuote);
 
         if (value.IsEmpty()) return value;
 
         if ((value[0] == LeftDoubleQuote || value[0] == RightDoubleQuote) &&
-            (value[value.Length - 1] == LeftDoubleQuote || value[value.Length - 1] == RightDoubleQuote))
+            (value[^1] == LeftDoubleQuote || value[^1] == RightDoubleQuote))
         {
             value = value.Trim(CA_UnicodeQuotes);
         }
@@ -3886,9 +3886,9 @@ public sealed partial class Scanner : IDisposable
         #endregion
 
         // Remove trailing period unless it's at the end of a single letter (eg. "Robin G.")
-        if (value.CharAppearsExactlyOnce('.') && value[value.Length - 1] == '.' &&
-            !((value.Length >= 3 && !char.IsWhiteSpace(value[value.Length - 2]) && char.IsWhiteSpace(value[value.Length - 3])) ||
-              (value.Length == 2 && !char.IsWhiteSpace(value[value.Length - 2]))))
+        if (value.CharAppearsExactlyOnce('.') && value[^1] == '.' &&
+            !((value.Length >= 3 && !char.IsWhiteSpace(value[^2]) && char.IsWhiteSpace(value[^3])) ||
+              (value.Length == 2 && !char.IsWhiteSpace(value[^2]))))
         {
             value = value.Substring(0, value.Length - 1);
         }
@@ -4362,8 +4362,8 @@ public sealed partial class Scanner : IDisposable
             {
                 DetectedTitle altTitle = titles[i];
                 if (altTitle.Value.ContainsWhiteSpace() &&
-                    !(altTitle.Value.Length >= 2 && altTitle.Value[altTitle.Value.Length - 1].IsAsciiUpper() &&
-                      !altTitle.Value[altTitle.Value.Length - 2].IsAsciiAlphanumeric()))
+                    !(altTitle.Value.Length >= 2 && altTitle.Value[^1].IsAsciiUpper() &&
+                      !altTitle.Value[^2].IsAsciiAlphanumeric()))
                 {
                     swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
                     break;
@@ -4616,7 +4616,7 @@ public sealed partial class Scanner : IDisposable
 
         const string junkChars = "!@#$%^&*";
         bool authorLastCharIsJunk = false;
-        char lastChar = author[author.Length - 1];
+        char lastChar = author[^1];
         for (int i = 0; i < junkChars.Length; i++)
         {
             if (lastChar == junkChars[i])
@@ -4625,7 +4625,7 @@ public sealed partial class Scanner : IDisposable
                 break;
             }
         }
-        if (authorLastCharIsJunk && author[author.Length - 2] == ' ')
+        if (authorLastCharIsJunk && author[^2] == ' ')
         {
             author = author.Substring(0, author.Length - 2);
         }
@@ -4753,7 +4753,7 @@ public sealed partial class Scanner : IDisposable
             if (Utility.EqualsI_Local(fnNoExt, "rus") ||
                 Utility.EndsWithI_Local(fnNoExt, "_ru") ||
                 Utility.EndsWithI_Local(fnNoExt, "_rus") ||
-                (fnNoExt.Length >= 4 && Utility.EndsWithI_Local(fnNoExt, "RUS") && fnNoExt[fnNoExt.Length - 4].IsAsciiLower()) ||
+                (fnNoExt.Length >= 4 && Utility.EndsWithI_Local(fnNoExt, "RUS") && fnNoExt[^4].IsAsciiLower()) ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
                 langs |= Language.Russian;

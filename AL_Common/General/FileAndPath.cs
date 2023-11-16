@@ -81,7 +81,7 @@ public static partial class Common
     public static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
+    public static bool EndsWithDirSep(this string value) => value.Length > 0 && value[^1].IsDirSep();
 
     // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
     // sep chars are in no way guaranteed to match those of the OS.

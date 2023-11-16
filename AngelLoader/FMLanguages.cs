@@ -218,7 +218,7 @@ internal static class FMLanguages
 
         while (searchList.Count > 0)
         {
-            string bdPath = searchList[searchList.Count - 1];
+            string bdPath = searchList[^1];
             searchList.RemoveAt(searchList.Count - 1);
             bool englishFound = FastIO.SearchDirForLanguages(bdPath, searchList, langsFoundList, earlyOutOnEnglish);
             // Matching FMSel behavior: early-out on English

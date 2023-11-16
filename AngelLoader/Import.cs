@@ -305,7 +305,7 @@ internal static class Import
                                 {
                                     archiveDirs.Add(lt.Substring(0, lt.Length - 2));
                                 }
-                                else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                                else if (!lt.IsEmpty() && lt[0] == '[' && lt[^1] == ']')
                                 {
                                     break;
                                 }
@@ -331,7 +331,7 @@ internal static class Import
                         // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
                         if (missionDirsRead &&
                             !_nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
-                            lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
+                            lineTB[^1] == ']' && lineTB.Contains('.') &&
                             _darkLoaderFMRegex.Match(lineTB).Success)
                         {
                             int lastIndexDot = lineTB.LastIndexOf('.');
@@ -385,7 +385,7 @@ internal static class Import
                                 if (lts.StartsWithO("comment=\""))
                                 {
                                     string comment = ltb.Substring(9);
-                                    if (comment.Length >= 2 && comment[comment.Length - 1] == '\"')
+                                    if (comment.Length >= 2 && comment[^1] == '\"')
                                     {
                                         comment = comment.Substring(0, comment.Length - 1);
                                         fm.Comment = DLUnescapeChars(comment);
@@ -394,7 +394,7 @@ internal static class Import
                                 else if (lts.StartsWithO("title=\""))
                                 {
                                     string title = ltb.Substring(7);
-                                    if (title.Length >= 2 && title[title.Length - 1] == '\"')
+                                    if (title.Length >= 2 && title[^1] == '\"')
                                     {
                                         title = title.Substring(0, title.Length - 1);
                                         fm.Title = DLUnescapeChars(title);
@@ -432,7 +432,7 @@ internal static class Import
                                     // result will be 0 on fail, which is the empty value so it's fine
                                     fm.FinishedOn = result;
                                 }
-                                else if (!ltb.IsEmpty() && ltb[0] == '[' && ltb[ltb.Length - 1] == ']')
+                                else if (!ltb.IsEmpty() && ltb[0] == '[' && ltb[^1] == ']')
                                 {
                                     break;
                                 }
@@ -522,7 +522,7 @@ internal static class Import
                         ss2Dir = lt.Substring(10).Trim();
                         ss2DirRead = true;
                     }
-                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[^1] == ']')
                     {
                         break;
                     }
@@ -635,7 +635,7 @@ internal static class Import
                         {
                             fm.SelectedReadme = lineFM.Substring(9);
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[^1] == ']')
                         {
                             break;
                         }
@@ -682,7 +682,7 @@ internal static class Import
                             archiveDir = lc.Substring(12).Trim();
                             break;
                         }
-                        else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
+                        else if (!lc.IsEmpty() && lc[0] == '[' && lc[^1] == ']')
                         {
                             break;
                         }
@@ -786,7 +786,7 @@ internal static class Import
                             ulong.TryParse(lineFM.Substring(7), out ulong result);
                             fm.SizeBytes = result;
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[^1] == ']')
                         {
                             break;
                         }

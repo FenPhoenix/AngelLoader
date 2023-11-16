@@ -310,7 +310,7 @@ public sealed partial class RtfDisplayedReadmeParser
         }
         // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
         // in the loop below
-        else if (entries.Length > 1 && entries[entries.Length - 1].IsWhiteSpace())
+        else if (entries.Length > 1 && entries[^1].IsWhiteSpace())
         {
             realEntryCount--;
         }

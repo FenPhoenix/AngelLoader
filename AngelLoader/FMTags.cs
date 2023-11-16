@@ -176,8 +176,7 @@ internal static class FMTags
         }
 
         // Cheap and easy to understand
-        if (sb.Length > 0 &&
-            sb[sb.Length - 1] == ',')
+        if (sb.Length > 0 && sb[^1] == ',')
         {
             sb.Remove(sb.Length - 1, 1);
         }

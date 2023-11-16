@@ -476,7 +476,7 @@ internal static class Utility
     /// <returns></returns>
     internal static string RemoveSurroundingParentheses(this string value)
     {
-        if (value.IsEmpty() || value[0] != '(' || value[value.Length - 1] != ')') return value;
+        if (value.IsEmpty() || value[0] != '(' || value[^1] != ')') return value;
 
         bool surroundedByParens = false;
         do
@@ -511,7 +511,7 @@ internal static class Utility
         value.CharAppearsExactlyOnce('\"')
             ? value[0] == '\"'
                 ? value.Substring(1)
-                : value[value.Length - 1] == '\"'
+                : value[^1] == '\"'
                     ? value.Substring(0, value.Length - 1)
                     : value
             : value;
