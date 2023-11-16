@@ -1052,7 +1052,11 @@ internal static class Core
     FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
     {
         bool extIsArchive = fm.Archive.ExtIsArchive();
-        if (extIsArchive && (titleTrimmed.EqualsI(".zip") || titleTrimmed.EqualsI(".7z")))
+        if (extIsArchive &&
+            // @RAR: Rule of three, let's pack these away in an array or something
+            (titleTrimmed.EqualsI(".zip") ||
+             titleTrimmed.EqualsI(".7z") ||
+             titleTrimmed.EqualsI(".rar")))
         {
             bool matched = fm.Archive.EndsWithI(titleTrimmed);
             return (matched, matched);
@@ -2361,9 +2365,11 @@ internal static class Core
 
         if (fm.ForceReadmeReCache)
         {
-            // For 7z FMs, we'll have already refreshed the cache during the scan, and the whole point is to
-            // avoid doing it again
-            if (!refreshCache) refreshCache = !fm.Archive.ExtIs7z();
+            if (!refreshCache)
+            {
+                // The whole point of the during-scan readme copy is not to have to do it again
+                refreshCache = !fm.NeedsReadmesCachedDuringScan();
+            }
             fm.ForceReadmeReCache = false;
             Ini.WriteFullFMDataIni();
         }

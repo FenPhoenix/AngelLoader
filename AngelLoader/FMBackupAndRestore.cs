@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -605,8 +606,7 @@ internal static class FMBackupAndRestore
         var addedList = new HashSetPathI();
         var fullList = new HashSetPathI();
 
-        bool fmIsZip = fmArchivePath.ExtIsZip();
-        if (fmIsZip)
+        if (fmArchivePath.ExtIsZip())
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
@@ -677,6 +677,85 @@ internal static class FMBackupAndRestore
                 {
                     continue;
                 }
+
+                if (!entriesFullNamesHash.Contains(fn))
+                {
+                    addedList.Add(fn);
+                }
+            }
+        }
+        else if (fmArchivePath.ExtIsRar())
+        {
+            using var fs = File_OpenReadFast(fmArchivePath);
+            using var archive = RarArchive.Open(fmArchivePath);
+
+            ICollection<RarArchiveEntry> entries = archive.Entries;
+            int entriesCount = entries.Count;
+
+            var entriesFullNamesHash = new HashSetPathI(entriesCount);
+
+            foreach (RarArchiveEntry entry in entries)
+            {
+                string efn = entry.Key.ToBackSlashes();
+
+                entriesFullNamesHash.Add(efn);
+
+                if (IsIgnoredFile(efn) ||
+                    // IsDirectory has been unreliable in the past, so check manually here too
+                    entry.IsDirectory || efn.EndsWithDirSep() ||
+                    IsSaveOrScreenshot(efn, fm.Game))
+                {
+                    continue;
+                }
+
+                fullList.Add(efn);
+
+                string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                if (installedFMFiles.Contains(fileInInstalledDir))
+                {
+                    try
+                    {
+                        var fi = new FileInfo(fileInInstalledDir);
+
+                        if (useOnlySize)
+                        {
+                            if (fi.Length != entry.Size)
+                            {
+                                changedList.Add(efn);
+                            }
+                            continue;
+                        }
+                        if (entry.LastModifiedTime != null)
+                        {
+                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                            DateTime eDT = ((DateTime)entry.LastModifiedTime).ToUniversalTime();
+                            // I think RAR can sometimes use the DOS datetime, so to be safe let's do the 2 second tolerance
+                            if ((fiDT == eDT ||
+                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                fi.Length == entry.Size)
+                            {
+                                continue;
+                            }
+                            changedList.Add(efn);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogFMInfo(fm, ErrorText.ExInLWT + "(7z)", ex);
+                    }
+                }
+            }
+
+            foreach (string f in installedFMFiles)
+            {
+                string fnTemp = Path.GetFileName(f);
+                if (IsIgnoredFile(fnTemp))
+                {
+                    continue;
+                }
+
+                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
                 if (!entriesFullNamesHash.Contains(fn))
                 {

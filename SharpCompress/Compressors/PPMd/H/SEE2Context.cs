@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class See2Context
@@ -6,10 +8,16 @@ internal sealed class See2Context
     {
         get
         {
-            int retVal = _summ >>> _shift;
+            var retVal = (_summ >>> _shift);
             _summ -= retVal;
             return retVal + ((retVal == 0) ? 1 : 0);
         }
+    }
+
+    public int Shift
+    {
+        get => _shift;
+        set => _shift = value & 0xff;
     }
 
     public int Summ
@@ -17,6 +25,8 @@ internal sealed class See2Context
         get => _summ;
         set => _summ = value & 0xffff;
     }
+
+    public const int SIZE = 4;
 
     // ushort Summ;
     private int _summ;
@@ -47,4 +57,20 @@ internal sealed class See2Context
     }
 
     public void IncSumm(int dSumm) => Summ += dSumm;
+
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("SEE2Context[");
+        buffer.Append("\n  size=");
+        buffer.Append(SIZE);
+        buffer.Append("\n  summ=");
+        buffer.Append(_summ);
+        buffer.Append("\n  shift=");
+        buffer.Append(_shift);
+        buffer.Append("\n  count=");
+        buffer.Append(_count);
+        buffer.Append("\n]");
+        return buffer.ToString();
+    }
 }

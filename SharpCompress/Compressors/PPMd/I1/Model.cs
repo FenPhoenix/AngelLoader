@@ -13,8 +13,9 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// </summary>
 internal sealed partial class Model
 {
-    private const uint SIGNATURE = 0x84acaf8fU;
-    private const int MAXIMUM_ORDER = 16; // maximum allowed model order
+    public const uint SIGNATURE = 0x84acaf8fU;
+    public const char VARIANT = 'I';
+    public const int MAXIMUM_ORDER = 16; // maximum allowed model order
 
     private const byte UPPER_FREQUENCY = 5;
     private const byte INTERVAL_BIT_COUNT = 7;
@@ -81,11 +82,11 @@ internal sealed partial class Model
 
         _numberStatisticsToBinarySummaryIndex[0] = 2 * 0;
         _numberStatisticsToBinarySummaryIndex[1] = 2 * 1;
-        for (int index = 2; index < 11; index++)
+        for (var index = 2; index < 11; index++)
         {
             _numberStatisticsToBinarySummaryIndex[index] = 2 * 2;
         }
-        for (int index = 11; index < 256; index++)
+        for (var index = 11; index < 256; index++)
         {
             _numberStatisticsToBinarySummaryIndex[index] = 2 * 3;
         }
@@ -107,7 +108,7 @@ internal sealed partial class Model
         uint step = 1;
         uint probability = UPPER_FREQUENCY;
 
-        for (int index = 0; index < UPPER_FREQUENCY; index++)
+        for (var index = 0; index < UPPER_FREQUENCY; index++)
         {
             _probabilities[index] = (byte)index;
         }
@@ -127,9 +128,9 @@ internal sealed partial class Model
         // Create the context array.
 
         _see2Contexts = new See2Context[24, 32];
-        for (int index1 = 0; index1 < 24; index1++)
+        for (var index1 = 0; index1 < 24; index1++)
         {
-            for (int index2 = 0; index2 < 32; index2++)
+            for (var index2 = 0; index2 < 32; index2++)
             {
                 _see2Contexts[index1, index2] = new See2Context();
             }
@@ -137,12 +138,10 @@ internal sealed partial class Model
 
         // Set the signature (identifying the algorithm).
 
-        _emptySee2Context = new See2Context
-        {
-            _summary = (ushort)(SIGNATURE & 0x0000ffff),
-            _shift = (byte)((SIGNATURE >> 16) & 0x000000ff),
-            _count = (byte)(SIGNATURE >> 24)
-        };
+        _emptySee2Context = new See2Context();
+        _emptySee2Context._summary = (ushort)(SIGNATURE & 0x0000ffff);
+        _emptySee2Context._shift = (byte)((SIGNATURE >> 16) & 0x000000ff);
+        _emptySee2Context._count = (byte)(SIGNATURE >> 24);
     }
 
     internal Coder DecodeStart(Stream source, PpmdProperties properties)
@@ -163,7 +162,7 @@ internal sealed partial class Model
             return 0;
         }
 
-        int total = 0;
+        var total = 0;
         while (total < count)
         {
             if (_numberStatistics != 0)
@@ -239,7 +238,7 @@ internal sealed partial class Model
         {
             _orderFall = _modelOrder;
             for (
-                PpmContext context = _maximumContext;
+                var context = _maximumContext;
                 context.Suffix != PpmContext.ZERO;
                 context = context.Suffix
             )
@@ -267,30 +266,30 @@ internal sealed partial class Model
         // allocates enough space for 256 PPM states (each is 6 bytes)
 
         _previousSuccess = 0;
-        for (int index = 0; index < 256; index++)
+        for (var index = 0; index < 256; index++)
         {
-            PpmState state = _maximumContext.Statistics[index];
+            var state = _maximumContext.Statistics[index];
             state.Symbol = (byte)index;
             state.Frequency = 1;
             state.Successor = PpmContext.ZERO;
         }
 
         uint probability = 0;
-        for (int index1 = 0; probability < 25; probability++)
+        for (var index1 = 0; probability < 25; probability++)
         {
             while (_probabilities[index1] == probability)
             {
                 index1++;
             }
-            for (int index2 = 0; index2 < 8; index2++)
+            for (var index2 = 0; index2 < 8; index2++)
             {
                 _binarySummary[probability, index2] = (ushort)(
                     BINARY_SCALE - (INITIAL_BINARY_ESCAPES[index2] / (index1 + 1))
                 );
             }
-            for (int index2 = 8; index2 < 64; index2 += 8)
+            for (var index2 = 8; index2 < 64; index2 += 8)
             {
-                for (int index3 = 0; index3 < 8; index3++)
+                for (var index3 = 0; index3 < 8; index3++)
                 {
                     _binarySummary[probability, index2 + index3] = _binarySummary[
                         probability,
@@ -307,7 +306,7 @@ internal sealed partial class Model
             {
                 index1++;
             }
-            for (int index2 = 0; index2 < 32; index2++)
+            for (var index2 = 0; index2 < 32; index2++)
             {
                 _see2Contexts[probability, index2].Initialize((2 * index1) + 5);
             }
@@ -316,21 +315,21 @@ internal sealed partial class Model
 
     private void UpdateModel(PpmContext minimumContext)
     {
-        PpmState state = PpmState.ZERO;
+        var state = PpmState.ZERO;
         PpmContext successor;
-        PpmContext currentContext = _maximumContext;
+        var currentContext = _maximumContext;
         uint numberStatistics;
         uint ns1;
         uint cf;
         uint sf;
         uint s0;
         uint foundStateFrequency = _foundState.Frequency;
-        byte foundStateSymbol = _foundState.Symbol;
+        var foundStateSymbol = _foundState.Symbol;
         byte symbol;
         byte flag;
 
-        PpmContext foundStateSuccessor = _foundState.Successor;
-        PpmContext context = minimumContext.Suffix;
+        var foundStateSuccessor = _foundState.Successor;
+        var context = minimumContext.Suffix;
 
         if ((foundStateFrequency < MAXIMUM_FREQUENCY / 4) && (context != PpmContext.ZERO))
         {
@@ -488,10 +487,10 @@ internal sealed partial class Model
 
     private PpmContext CreateSuccessors(bool skip, PpmState state, PpmContext context)
     {
-        PpmContext upBranch = _foundState.Successor;
-        PpmState[] states = new PpmState[MAXIMUM_ORDER];
+        var upBranch = _foundState.Successor;
+        var states = new PpmState[MAXIMUM_ORDER];
         uint stateIndex = 0;
-        byte symbol = _foundState.Symbol;
+        var symbol = _foundState.Symbol;
 
         if (!skip)
         {
@@ -502,7 +501,7 @@ internal sealed partial class Model
             }
         }
 
-        bool gotoLoopEntry = false;
+        var gotoLoopEntry = false;
         if (state != PpmState.ZERO)
         {
             context = context.Suffix;
@@ -559,9 +558,9 @@ internal sealed partial class Model
         }
 
         const byte localNumberStatistics = 0;
-        byte localFlags = (byte)((symbol >= 0x40) ? 0x10 : 0x00);
+        var localFlags = (byte)((symbol >= 0x40) ? 0x10 : 0x00);
         symbol = upBranch.NumberStatistics;
-        byte localSymbol = symbol;
+        var localSymbol = symbol;
         byte localFrequency;
         PpmContext localSuccessor = ((Pointer)upBranch) + 1;
         localFlags |= (byte)((symbol >= 0x40) ? 0x08 : 0x00);
@@ -578,8 +577,8 @@ internal sealed partial class Model
                     state++;
                 } while (temporary != symbol);
             }
-            uint cf = (uint)(state.Frequency - 1);
-            uint s0 = (uint)(context.SummaryFrequency - context.NumberStatistics - cf);
+            var cf = (uint)(state.Frequency - 1);
+            var s0 = (uint)(context.SummaryFrequency - context.NumberStatistics - cf);
             localFrequency = (byte)(
                 1 + ((2 * cf <= s0) ? (uint)((5 * cf > s0) ? 1 : 0) : ((cf + (2 * s0) - 3) / s0))
             );
@@ -612,18 +611,18 @@ internal sealed partial class Model
     private PpmContext ReduceOrder(PpmState state, PpmContext context)
     {
         PpmState currentState;
-        PpmState[] states = new PpmState[MAXIMUM_ORDER];
+        var states = new PpmState[MAXIMUM_ORDER];
         uint stateIndex = 0;
-        PpmContext currentContext = context;
+        var currentContext = context;
         PpmContext upBranch = _allocator._text;
         byte temporary;
-        byte symbol = _foundState.Symbol;
+        var symbol = _foundState.Symbol;
 
         states[stateIndex++] = _foundState;
         _foundState.Successor = upBranch;
         _orderFall++;
 
-        bool gotoLoopEntry = false;
+        var gotoLoopEntry = false;
         if (state != PpmState.ZERO)
         {
             context = context.Suffix;
@@ -733,7 +732,7 @@ internal sealed partial class Model
                     (currentContext.Flags & 0x10)
                     + ((currentContext.Statistics.Symbol >= 0x40) ? 0x08 : 0x00)
                 );
-                PpmState state = currentContext.Statistics;
+                var state = currentContext.Statistics;
                 Copy(currentContext.FirstState, state);
                 _allocator.SpecialFreeUnits(state);
                 currentContext.FirstStateFrequency = (byte)(
@@ -807,9 +806,9 @@ internal sealed partial class Model
 
     private static void Swap(PpmState state1, PpmState state2)
     {
-        byte swapSymbol = state1.Symbol;
-        byte swapFrequency = state1.Frequency;
-        PpmContext swapSuccessor = state1.Successor;
+        var swapSymbol = state1.Symbol;
+        var swapFrequency = state1.Frequency;
+        var swapSuccessor = state1.Successor;
 
         state1.Symbol = state2.Symbol;
         state1.Frequency = state2.Frequency;

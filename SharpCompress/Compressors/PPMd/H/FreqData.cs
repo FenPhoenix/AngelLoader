@@ -1,11 +1,18 @@
 using System;
 using System.Buffers.Binary;
+using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class FreqData : Pointer
 {
     internal const int SIZE = 6;
+
+    //    struct FreqData
+    //    {
+    //        ushort SummFreq;
+    //        STATE _PACK_ATTR * Stats;
+    //    };
 
     internal FreqData(byte[] memory)
         : base(memory) { }
@@ -26,4 +33,20 @@ internal sealed class FreqData : Pointer
 
     internal void SetStats(int state) =>
         BinaryPrimitives.WriteInt32LittleEndian(Memory.AsSpan(Address + 2), state);
+
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("FreqData[");
+        buffer.Append("\n  Address=");
+        buffer.Append(Address);
+        buffer.Append("\n  size=");
+        buffer.Append(SIZE);
+        buffer.Append("\n  summFreq=");
+        buffer.Append(SummFreq);
+        buffer.Append("\n  stats=");
+        buffer.Append(GetStats());
+        buffer.Append("\n]");
+        return buffer.ToString();
+    }
 }

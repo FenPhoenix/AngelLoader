@@ -113,11 +113,20 @@ public static partial class Utils
 
     internal static bool ExtIsGlml(this string value) => value.EndsWithI(".glml");
 
-    internal static bool ExtIsArchive(this string value) => value.EndsWithI(".zip") || value.EndsWithI(".7z");
+    /*
+    @RAR: Finish going through these.
+    @RAR: We have too much duplicated code now, clean it up.
+    */
+    internal static bool ExtIsArchive(this string value) =>
+        value.EndsWithI(".zip") ||
+        value.EndsWithI(".7z") ||
+        value.EndsWithI(".rar");
 
     internal static bool ExtIsZip(this string value) => value.EndsWithI(".zip");
 
     internal static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
+
+    internal static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
 
     #endregion
 

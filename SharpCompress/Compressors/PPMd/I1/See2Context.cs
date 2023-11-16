@@ -1,3 +1,9 @@
+#region Using
+
+
+
+#endregion
+
 namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
@@ -32,7 +38,7 @@ internal sealed class See2Context
 
     public uint Mean()
     {
-        uint value = (uint)(_summary >> _shift);
+        var value = (uint)(_summary >> _shift);
         _summary = (ushort)(_summary - value);
         return (uint)(value + ((value == 0) ? 1 : 0));
     }

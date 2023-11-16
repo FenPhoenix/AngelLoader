@@ -1,7 +1,10 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
 
 namespace AngelLoader;
@@ -37,5 +40,42 @@ public static partial class Utils
             StreamCopyNoAlloc(source, destination, tempBuffer);
         }
         File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
+    }
+
+    internal static void ExtractToFile_Fast(
+        this RarArchiveEntry entry,
+        string fileName,
+        bool overwrite,
+        byte[] tempBuffer)
+    {
+        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream source = entry.OpenEntryStream())
+        {
+            StreamCopyNoAlloc(source, destination, tempBuffer);
+        }
+        if (entry.LastModifiedTime != null)
+        {
+            File.SetLastWriteTime(fileName, (DateTime)entry.LastModifiedTime);
+        }
+    }
+
+    internal static void ExtractToFile_Fast(
+        this RarReader reader,
+        string fileName,
+        bool overwrite,
+        byte[] tempBuffer)
+    {
+        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream source = reader.OpenEntryStream())
+        {
+            StreamCopyNoAlloc(source, destination, tempBuffer);
+        }
+        DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
+        if (lastModifiedTime != null)
+        {
+            File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+        }
     }
 }

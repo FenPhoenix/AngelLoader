@@ -20,7 +20,7 @@ internal struct PpmState
     public uint _address;
     public readonly byte[] _memory;
     public static readonly PpmState ZERO = new PpmState(0, null);
-    private const int SIZE = 6;
+    public const int SIZE = 6;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PpmState"/> structure.

@@ -33,4 +33,6 @@ public static class ThrowHelper
     public static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
     [DoesNotReturn]
     public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
+    [DoesNotReturn]
+    public static void EncryptionNotSupported() => throw new NotSupportedException("Encrypted archives are not supported.");
 }

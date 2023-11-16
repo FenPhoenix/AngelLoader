@@ -6,6 +6,13 @@
 We could just get the full text and then allocate an array of int pairs for start and length of each line,
 then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
 be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
+
+@RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
+@RAR: We'll have to test the whole collection for identicality and functionality as rar files. Find or make some batch converter.
+
+@RAR: RAR5 solid FM had a CRC mismatch - test with regular SharpCompress!
+@RAR: Dammit, it doesn't happen with regular SharpCompress. We messed something up in our ripping out of stuff.
+Try and find which commit it was exactly.
 */
 
 //#define ScanSynchronous
@@ -25,6 +32,8 @@ using System.Xml;
 using AL_Common;
 using AL_Common.FastZipReader;
 using JetBrains.Annotations;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
@@ -63,6 +72,9 @@ public sealed partial class Scanner : IDisposable
 
     private readonly MemoryStream _generalMemoryStream = new();
 
+    private Stream _rarStream = null!;
+    private RarArchive _rarArchive = null!;
+
     #endregion
 
     /// <summary>
@@ -90,7 +102,9 @@ public sealed partial class Scanner : IDisposable
     {
         NotInArchive,
         Zip,
-        SevenZip
+        SevenZip,
+        Rar,
+        RarSolid
     }
 
     private FMFormat _fmFormat = FMFormat.NotInArchive;
@@ -179,15 +193,24 @@ public sealed partial class Scanner : IDisposable
 
         private SevenZipArchiveEntry? _archiveFileInfo;
 
+        private readonly bool _rar;
+
         private DateTime? _lastWriteTime;
         internal DateTime LastWriteTime
         {
             get
             {
-                if (_archiveFileInfo != null)
+                if (_rar)
                 {
-                    _lastWriteTime = _archiveFileInfo.LastModifiedTime ?? DateTime.MinValue;
-                    _archiveFileInfo = null;
+                    return (DateTime)_lastWriteTime!;
+                }
+                else
+                {
+                    if (_archiveFileInfo != null)
+                    {
+                        _lastWriteTime = _archiveFileInfo.LastModifiedTime ?? DateTime.MinValue;
+                        _archiveFileInfo = null;
+                    }
                 }
                 return (DateTime)_lastWriteTime!;
             }
@@ -213,6 +236,14 @@ public sealed partial class Scanner : IDisposable
             FullName = archiveFileInfo.FileName;
             Length = archiveFileInfo.UncompressedSize;
             _archiveFileInfo = archiveFileInfo;
+        }
+
+        internal FileInfoCustom(RarArchiveEntry entry)
+        {
+            _rar = true;
+            FullName = entry.Key;
+            Length = entry.Size;
+            _lastWriteTime = entry.LastModifiedTime ?? DateTime.MinValue;
         }
     }
 
@@ -503,9 +534,17 @@ public sealed partial class Scanner : IDisposable
             else
             {
                 string fmPath = missions[i].Path;
-                _fmFormat = fmPath.ExtIsZip() ? FMFormat.Zip : fmPath.ExtIs7z() ? FMFormat.SevenZip : FMFormat.NotInArchive;
+                _fmFormat = fmPath.ExtIsZip()
+                    ? FMFormat.Zip
+                    : fmPath.ExtIs7z()
+                        ? FMFormat.SevenZip
+                        : fmPath.ExtIsRar()
+                            ? FMFormat.Rar
+                            : FMFormat.NotInArchive;
 
                 _archive?.Dispose();
+                _rarArchive?.Dispose();
+                _rarStream?.Dispose();
 
                 if (_fmFormat > FMFormat.NotInArchive)
                 {
@@ -578,7 +617,10 @@ public sealed partial class Scanner : IDisposable
                     }
                     finally
                     {
-                        if (missions[i].Path.ExtIs7z()) DeleteFMWorkingPath();
+                        if (missions[i].Path.ExtIs7z() || missions[i].Path.ExtIsRar())
+                        {
+                            DeleteFMWorkingPath();
+                        }
                     }
 
                     scannedFMDataList.Add(scannedFMAndError);
@@ -1157,7 +1199,26 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
-        if (_fmFormat == FMFormat.SevenZip)
+        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
+
+        if (_fmFormat == FMFormat.Rar)
+        {
+            _rarStream = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
+            _rarArchive = RarArchive.Open(_rarStream);
+            rarEntries = _rarArchive.Entries;
+            // Load the lazy-loaded list so it doesn't throw later
+            _ = rarEntries.Count;
+
+            if (_rarArchive.IsSolid)
+            {
+                _fmFormat = FMFormat.RarSolid;
+                _rarArchive.Dispose();
+                _rarStream.Dispose();
+                _rarStream = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
+            }
+        }
+
+        if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
         {
             #region Partial 7z extract
 
@@ -1198,27 +1259,49 @@ public sealed partial class Scanner : IDisposable
                 */
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
                 {
-                    var sevenZipArchive = new SevenZipArchive(fs, _sevenZipContext);
+                    sevenZipSize = (ulong)fs.Length;
+                    ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
+                    int entriesCount;
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    sevenZipSize = (ulong)fs.Length;
-                    ListFast<SevenZipArchiveEntry> entries = sevenZipArchive.Entries;
-                    for (int i = 0; i < entries.Count; i++)
+                    if (_fmFormat == FMFormat.SevenZip)
                     {
-                        SevenZipArchiveEntry entry = entries[i];
-
-                        if (entry.IsAnti) continue;
-
+                        var sevenZipArchive = new SevenZipArchive(fs, _sevenZipContext);
+                        sevenZipEntries = sevenZipArchive.Entries;
+                        entriesCount = sevenZipEntries.Count;
+                    }
+                    else
+                    {
+                        entriesCount = rarEntries.Count;
+                    }
+                    for (int i = 0; i < entriesCount; i++)
+                    {
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        string fn = entry.FileName;
+                        SevenZipArchiveEntry sevenZipEntry = null!;
+                        RarArchiveEntry rarEntry = null!;
+                        string fn;
+                        long uncompressedSize;
+                        if (_fmFormat == FMFormat.SevenZip)
+                        {
+                            sevenZipEntry = sevenZipEntries[i];
+                            if (sevenZipEntry.IsAnti) continue;
+                            fn = sevenZipEntry.FileName;
+                            uncompressedSize = sevenZipEntry.UncompressedSize;
+                        }
+                        else
+                        {
+                            rarEntry = rarEntries[i];
+                            fn = rarEntry.Key;
+                            uncompressedSize = rarEntry.Size;
+                        }
 
                         int dirSeps;
 
                         // Always extract readmes no matter what, so our .7z caching is always correct.
                         // Also maybe we would need to always extract them regardless for other reasons, but
                         // yeah.
-                        if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
+                        if (fn.IsValidReadme() && uncompressedSize > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                               (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                                fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
@@ -1289,7 +1372,9 @@ public sealed partial class Scanner : IDisposable
                             fileNamesList.Add(fn);
                         }
 
-                        _fmDirFileInfos.Add(new FileInfoCustom(entry));
+                        _fmDirFileInfos.Add(_fmFormat == FMFormat.SevenZip
+                            ? new FileInfoCustom(sevenZipEntry)
+                            : new FileInfoCustom(rarEntry));
                     }
                 }
 
@@ -1365,31 +1450,52 @@ public sealed partial class Scanner : IDisposable
 
                 #endregion
 
-                string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
-
-                Fen7z.Result result = Fen7z.Extract(
-                    sevenZipWorkingPath: _sevenZipWorkingPath,
-                    sevenZipPathAndExe: _sevenZipExePath,
-                    archivePath: fm.Path,
-                    outputPath: _fmWorkingPath,
-                    cancellationToken: cancellationToken,
-                    listFile: listFile,
-                    fileNamesList: fileNamesList);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (result.ErrorOccurred)
+                if (_fmFormat == FMFormat.SevenZip)
                 {
-                    Log(fm.Path + ": fm is 7z\r\n" +
-                        "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                        result);
+                    string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
 
-                    return UnsupportedZip(
+                    Fen7z.Result result = Fen7z.Extract(
+                        sevenZipWorkingPath: _sevenZipWorkingPath,
+                        sevenZipPathAndExe: _sevenZipExePath,
                         archivePath: fm.Path,
-                        fen7zResult: result,
-                        ex: null,
-                        errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                   fm.Path + ": fm is 7z\r\n");
+                        outputPath: _fmWorkingPath,
+                        cancellationToken: cancellationToken,
+                        listFile: listFile,
+                        fileNamesList: fileNamesList);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (result.ErrorOccurred)
+                    {
+                        Log(fm.Path + ": fm is 7z\r\n" +
+                            "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                            result);
+
+                        return UnsupportedZip(
+                            archivePath: fm.Path,
+                            fen7zResult: result,
+                            ex: null,
+                            errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                                       fm.Path + ": fm is 7z\r\n");
+                    }
+                }
+                else
+                {
+                    HashSetI fileNamesHash = fileNamesList.ToHashSetI();
+
+                    using var rarReader = RarReader.Open(_rarStream);
+
+                    while (rarReader.MoveToNextEntry())
+                    {
+                        string fn = rarReader.Entry.Key;
+                        string finalFileName = Path.Combine(_fmWorkingPath, fn);
+                        if (fileNamesHash.Contains(fn))
+                        {
+                            string dir = Path.GetDirectoryName(finalFileName)!;
+                            Directory.CreateDirectory(dir);
+                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true, DiskFileStreamBuffer);
+                        }
+                    }
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -1433,7 +1539,7 @@ public sealed partial class Scanner : IDisposable
                 return zipResult.ScannedFMDataAndError;
             }
         }
-        else
+        else if (_fmFormat == FMFormat.NotInArchive)
         {
             if (!Directory.Exists(_fmWorkingPath))
             {
@@ -1463,6 +1569,10 @@ public sealed partial class Scanner : IDisposable
             {
                 case FMFormat.Zip:
                     fmData.Size = (ulong)_archive.ArchiveStreamLength;
+                    break;
+                case FMFormat.Rar:
+                case FMFormat.RarSolid:
+                    fmData.Size = (ulong)_rarStream.Length;
                     break;
                 case FMFormat.SevenZip:
                     fmData.Size = sevenZipSize;
@@ -1497,6 +1607,8 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => "zip",
                 FMFormat.SevenZip => "7z",
+                FMFormat.Rar => "rar",
+                FMFormat.RarSolid => "rar (solid)",
                 _ => "dir"
             };
             Log(fm.Path + ": fm is " + ext + ", " +
@@ -2036,7 +2148,9 @@ public sealed partial class Scanner : IDisposable
                     misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
                         scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
-                else if (scanner._fmFormat == FMFormat.SevenZip || scanner._fmDirFileInfos.Count > 0)
+                else if (scanner._fmFormat == FMFormat.SevenZip ||
+                         scanner._fmFormat == FMFormat.RarSolid ||
+                         scanner._fmDirFileInfos.Count > 0)
                 {
                     misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
                 }
@@ -2460,13 +2574,19 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
-            int filesCount = _fmFormat == FMFormat.Zip ? _archive.Entries.Count : _fmDirFileInfos.Count;
+            int filesCount = _fmFormat switch
+            {
+                FMFormat.Zip => _archive.Entries.Count,
+                FMFormat.Rar => _rarArchive.Entries.Count,
+                _ => _fmDirFileInfos.Count
+            };
             for (int i = 0; i < filesCount; i++)
             {
                 string fn = _fmFormat switch
                 {
                     FMFormat.Zip => _archive.Entries[i].FullName,
-                    FMFormat.SevenZip => _fmDirFileInfos[i].FullName,
+                    FMFormat.SevenZip or FMFormat.RarSolid => _fmDirFileInfos[i].FullName,
+                    FMFormat.Rar => _rarArchive.Entries[i].Key,
                     _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length)
                 };
 
@@ -2959,6 +3079,11 @@ public sealed partial class Scanner : IDisposable
             using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
             fmInfoXml.Load(es);
         }
+        else if (_fmFormat == FMFormat.Rar)
+        {
+            using var es = _rarArchive.Entries[file.Index].OpenEntryStream();
+            fmInfoXml.Load(es);
+        }
         else
         {
             fmInfoXml.Load(Path.Combine(_fmWorkingPath, file.Name));
@@ -3249,7 +3374,8 @@ public sealed partial class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            ZipArchiveFastEntry? readmeEntry = null;
+            ZipArchiveFastEntry? zipReadmeEntry = null;
+            RarArchiveEntry? rarReadmeEntry = null;
 
             int readmeFileLen;
             string readmeFileOnDisk = "";
@@ -3258,11 +3384,19 @@ public sealed partial class Scanner : IDisposable
 
             if (_fmFormat == FMFormat.Zip)
             {
-                readmeEntry = _archive.Entries[readmeFile.Index];
-                readmeFileLen = (int)readmeEntry.Length;
+                zipReadmeEntry = _archive.Entries[readmeFile.Index];
+                readmeFileLen = (int)zipReadmeEntry.Length;
                 if (readmeFileLen == 0) continue;
 
-                isGlml = readmeEntry.FullName.ExtIsGlml();
+                isGlml = zipReadmeEntry.FullName.ExtIsGlml();
+            }
+            else if (_fmFormat == FMFormat.Rar)
+            {
+                rarReadmeEntry = _rarArchive.Entries[readmeFile.Index];
+                readmeFileLen = (int)rarReadmeEntry.Size;
+                if (readmeFileLen == 0) continue;
+
+                isGlml = rarReadmeEntry.Key.ExtIsGlml();
             }
             else
             {
@@ -3323,7 +3457,16 @@ public sealed partial class Scanner : IDisposable
             {
                 _readmeFiles.Add(new ReadmeInternal(
                     isGlml: isGlml,
-                    lastModifiedDateRaw: readmeEntry!.LastWriteTime,
+                    lastModifiedDateRaw: zipReadmeEntry!.LastWriteTime,
+                    scan: scanThisReadme,
+                    useForDateDetect: useThisReadmeForDateDetect
+                ));
+            }
+            else if (_fmFormat == FMFormat.Rar)
+            {
+                _readmeFiles.Add(new ReadmeInternal(
+                    isGlml: isGlml,
+                    lastModifiedDate: rarReadmeEntry!.LastModifiedTime ?? DateTime.MinValue,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 ));
@@ -3345,9 +3488,12 @@ public sealed partial class Scanner : IDisposable
             {
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                readmeStream = _fmFormat == FMFormat.Zip
-                    ? _archive.OpenEntry(readmeEntry!)
-                    : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
+                readmeStream = _fmFormat switch
+                {
+                    FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
+                    FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
+                    _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer)
+                };
 
                 // Stupid micro-optimization
                 const int rtfHeaderBytesLength = 6;
@@ -3359,7 +3505,7 @@ public sealed partial class Scanner : IDisposable
                     readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
                 }
 
-                if (_fmFormat == FMFormat.Zip)
+                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
                 {
                     readmeStream.Dispose();
                 }
@@ -3375,7 +3521,11 @@ public sealed partial class Scanner : IDisposable
                 {
                     if (_fmFormat == FMFormat.Zip)
                     {
-                        readmeStream = _archive.OpenEntry(readmeEntry!);
+                        readmeStream = _archive.OpenEntry(zipReadmeEntry!);
+                    }
+                    else if (_fmFormat == FMFormat.Rar)
+                    {
+                        readmeStream = rarReadmeEntry!.OpenEntryStream();
                     }
 
                     byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
@@ -3396,9 +3546,12 @@ public sealed partial class Scanner : IDisposable
                 }
                 else
                 {
-                    Stream stream = _fmFormat == FMFormat.Zip
-                        ? CreateSeekableStreamFromZipEntry(readmeEntry!, readmeFileLen)
-                        : readmeStream;
+                    Stream stream = _fmFormat switch
+                    {
+                        FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
+                        FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
+                        _ => readmeStream
+                    };
 
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
@@ -3418,6 +3571,16 @@ public sealed partial class Scanner : IDisposable
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
         using var es = _archive.OpenEntry(readmeEntry);
+        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        _generalMemoryStream.Position = 0;
+        return _generalMemoryStream;
+    }
+
+    private Stream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
+    {
+        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.Position = 0;
+        using var es = readmeEntry.OpenEntryStream();
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
@@ -4637,7 +4800,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Choose smallest .gam file
 
-        static ZipArchiveFastEntry? GetSmallestGamEntry(ZipArchiveFast _archive, List<NameAndIndex> _baseDirFiles)
+        static ZipArchiveFastEntry? GetSmallestGamEntry_Zip(ZipArchiveFast _archive, List<NameAndIndex> _baseDirFiles)
         {
             int smallestSizeIndex = -1;
             long smallestSize = long.MaxValue;
@@ -4650,6 +4813,27 @@ public sealed partial class Scanner : IDisposable
                     if (gamFile.Length <= smallestSize)
                     {
                         smallestSize = gamFile.Length;
+                        smallestSizeIndex = item.Index;
+                    }
+                }
+            }
+
+            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
+        }
+
+        static RarArchiveEntry? GetSmallestGamEntry_Rar(RarArchive _archive, List<NameAndIndex> _baseDirFiles)
+        {
+            int smallestSizeIndex = -1;
+            long smallestSize = long.MaxValue;
+            for (int i = 0; i < _baseDirFiles.Count; i++)
+            {
+                NameAndIndex item = _baseDirFiles[i];
+                if (item.Name.ExtIsGam())
+                {
+                    RarArchiveEntry gamFile = _archive.Entries[item.Index];
+                    if (gamFile.Size <= smallestSize)
+                    {
+                        smallestSize = gamFile.Size;
                         smallestSizeIndex = item.Index;
                     }
                 }
@@ -4679,9 +4863,11 @@ public sealed partial class Scanner : IDisposable
                     NameAndIndex mis = _usedMisFiles[i];
                     long length = _fmFormat == FMFormat.Zip
                         ? _archive.Entries[mis.Index].Length
-                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
-                            ? _fmDirFileInfos[mis.Index].Length
-                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
+                        : _fmFormat == FMFormat.Rar
+                            ? _rarArchive.Entries[mis.Index].Size
+                            : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
+                                ? _fmDirFileInfos[mis.Index].Length
+                                : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
 
                     if (length <= smallestSize)
                     {
@@ -4699,12 +4885,17 @@ public sealed partial class Scanner : IDisposable
         #region Setup
 
         ZipArchiveFastEntry misFileZipEntry = null!;
+        RarArchiveEntry misFileRarEntry = null!;
 
         string misFileOnDisk = "";
 
         if (_fmFormat == FMFormat.Zip)
         {
             misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
+        }
+        else if (_fmFormat == FMFormat.Rar)
+        {
+            misFileRarEntry = _rarArchive.Entries[smallestUsedMisFile.Index];
         }
         else
         {
@@ -4774,9 +4965,12 @@ public sealed partial class Scanner : IDisposable
         Stream? misStream = null;
         try
         {
-            misStream = _fmFormat == FMFormat.Zip
-                ? _archive.OpenEntry(misFileZipEntry)
-                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            misStream = _fmFormat switch
+            {
+                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
+                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
+                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer)
+            };
 
             for (int i = 0; i < _locations.Length; i++)
             {
@@ -4791,7 +4985,7 @@ public sealed partial class Scanner : IDisposable
 
                 byte[] buffer;
 
-                if (_fmFormat == FMFormat.Zip)
+                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
                 {
                     buffer = _zipOffsetBuffers[i];
                     int length = _zipOffsets[i];
@@ -4917,24 +5111,41 @@ public sealed partial class Scanner : IDisposable
             return false;
         }
 
-        if (_fmFormat == FMFormat.Zip)
+        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
             // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
-            using Stream stream = _archive.OpenEntry(GetSmallestGamEntry(_archive, _baseDirFiles) ?? misFileZipEntry);
+            Stream? stream = null;
+            try
+            {
+                if (_fmFormat == FMFormat.Zip)
+                {
+                    stream = _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry);
+                }
+                else
+                {
+                    RarArchiveEntry? entry = GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles);
+                    stream = entry != null ? entry.OpenEntryStream() : misFileRarEntry.OpenEntryStream();
+                }
+
 #if FMScanner_FullCode
-            ret.Game
+                ret.Game
 #else
-            game
+                game
 #endif
-                = StreamContainsIdentString(
-                    stream,
-                    RopeyArrow,
-                    GameTypeBuffer_ChunkPlusRopeyArrow,
-                    _gameTypeBufferSize)
-                    ? Game.Thief2
-                    : Game.Thief1;
+                    = StreamContainsIdentString(
+                        stream,
+                        RopeyArrow,
+                        GameTypeBuffer_ChunkPlusRopeyArrow,
+                        _gameTypeBufferSize)
+                        ? Game.Thief2
+                        : Game.Thief1;
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
         }
         else
         {
@@ -5017,9 +5228,12 @@ public sealed partial class Scanner : IDisposable
 #endif
             == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmFormat == FMFormat.Zip
-                ? _archive.OpenEntry(misFileZipEntry)
-                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            using Stream stream = _fmFormat switch
+            {
+                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
+                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
+                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer)
+            };
             if (StreamContainsIdentString(
                     stream,
                     MAPPARAM,
@@ -5094,7 +5308,7 @@ public sealed partial class Scanner : IDisposable
         {
             // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
             // That means our working path is NOT temporary!!!
-            if (_fmFormat == FMFormat.SevenZip &&
+            if ((_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid) &&
                 !_fmWorkingPath.IsEmpty() &&
                 Directory.Exists(_fmWorkingPath))
             {
@@ -5199,24 +5413,45 @@ public sealed partial class Scanner : IDisposable
     {
         lines.Clear();
 
-        if (_fmFormat == FMFormat.Zip)
+        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
         {
-            ZipArchiveFastEntry entry = _archive.Entries[item.Index];
-            using var entryStream = _archive.OpenEntry(entry);
+            Stream? entryStream = null;
+            try
+            {
+                long entryLength;
+                if (_fmFormat == FMFormat.Zip)
+                {
+                    ZipArchiveFastEntry entry = _archive.Entries[item.Index];
+                    entryStream = _archive.OpenEntry(entry);
+                    entryLength = entry.Length;
+                }
+                else
+                {
+                    RarArchiveEntry entry = _rarArchive.Entries[item.Index];
+                    entryStream = entry.OpenEntryStream();
+                    entryLength = entry.Size;
+                }
 
-            // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
-            // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-            _generalMemoryStream.SetLength(entry.Length);
-            _generalMemoryStream.Position = 0;
+                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
+                // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
+                _generalMemoryStream.SetLength(entryLength);
+                _generalMemoryStream.Position = 0;
 
-            StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
-            _generalMemoryStream.Position = 0;
+                StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
+                _generalMemoryStream.Position = 0;
 
-            Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ?? Encoding.GetEncoding(1252);
-            _generalMemoryStream.Position = 0;
+                Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ??
+                                    Encoding.GetEncoding(1252);
+                _generalMemoryStream.Position = 0;
 
-            using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false, _streamReaderCustom, disposeStream: false);
-            while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+                using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false,
+                    _streamReaderCustom, disposeStream: false);
+                while (sr.Reader.ReadLine() is { } line) lines.Add(line);
+            }
+            finally
+            {
+                entryStream?.Dispose();
+            }
         }
         else
         {
@@ -5233,9 +5468,12 @@ public sealed partial class Scanner : IDisposable
     {
         lines.Clear();
 
-        using Stream stream = _fmFormat == FMFormat.Zip
-            ? _archive.OpenEntry(_archive.Entries[item.Index])
-            : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
+        using Stream stream = _fmFormat switch
+        {
+            FMFormat.Zip => _archive.OpenEntry(_archive.Entries[item.Index]),
+            FMFormat.Rar => _rarArchive.Entries[item.Index].OpenEntryStream(),
+            _ => GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer)
+        };
 
         // Stupid micro-optimization: Don't call Dispose() method on stream twice
         using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
@@ -5251,9 +5489,12 @@ public sealed partial class Scanner : IDisposable
     [PublicAPI]
     public void Dispose()
     {
-        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _archive?.Dispose();
         _zipContext?.Dispose();
+        _rarArchive?.Dispose();
+        _rarStream?.Dispose();
+        // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _streamReaderCustom.DeInit();
         _generalMemoryStream.Dispose();
     }

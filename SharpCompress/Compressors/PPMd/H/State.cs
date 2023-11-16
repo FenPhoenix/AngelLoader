@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
@@ -63,7 +64,27 @@ internal sealed class State : Pointer
             mem2 = ptr2.Memory;
         for (int i = 0, pos1 = ptr1.Address, pos2 = ptr2.Address; i < SIZE; i++, pos1++, pos2++)
         {
-            (mem1[pos1], mem2[pos2]) = (mem2[pos2], mem1[pos1]);
+            var temp = mem1[pos1];
+            mem1[pos1] = mem2[pos2];
+            mem2[pos2] = temp;
         }
+    }
+
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("State[");
+        buffer.Append("\n  Address=");
+        buffer.Append(Address);
+        buffer.Append("\n  size=");
+        buffer.Append(SIZE);
+        buffer.Append("\n  symbol=");
+        buffer.Append(Symbol);
+        buffer.Append("\n  freq=");
+        buffer.Append(Freq);
+        buffer.Append("\n  successor=");
+        buffer.Append(GetSuccessor());
+        buffer.Append("\n]");
+        return buffer.ToString();
     }
 }

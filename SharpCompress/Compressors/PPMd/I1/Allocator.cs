@@ -2,12 +2,10 @@
 
 namespace SharpCompress.Compressors.PPMd.I1;
 
-/// <summary>
 /// Allocate a single, large array and then provide sections of this array to callers.  Callers are provided with
 /// instances of <see cref="Pointer"/> (which simply contain a single address value, representing a location
 /// in the large array).  Callers can then cast <see cref="Pointer"/> to one of the following structures (all
 /// of which also simply contain a single address value):
-/// </summary>
 internal sealed class Allocator
 {
     private const uint UNIT_SIZE = 12;
@@ -30,13 +28,13 @@ internal sealed class Allocator
     public uint _allocatorSize;
     public uint _glueCount;
     public Pointer _baseUnit;
-    private Pointer _lowUnit;
-    private Pointer _highUnit;
+    public Pointer _lowUnit;
+    public Pointer _highUnit;
     public Pointer _text;
     public Pointer _heap;
     public readonly MemoryNode[] _memoryNodes;
 
-    private byte[] _memory;
+    public byte[] _memory;
 
     /// <summary>
     /// Initializes static read-only arrays used by the <see cref="Allocator"/>.
@@ -99,21 +97,20 @@ internal sealed class Allocator
     /// </summary>
     public void Initialize()
     {
-        for (int index = 0; index < INDEX_COUNT; index++)
+        for (var index = 0; index < INDEX_COUNT; index++)
         {
             _memoryNodes[index] = new MemoryNode(
                 (uint)(NODE_OFFSET + (index * MemoryNode.SIZE)),
-                _memory)
-            {
-                Stamp = 0,
-                Next = MemoryNode.ZERO,
-                UnitCount = 0
-            };
+                _memory
+            );
+            _memoryNodes[index].Stamp = 0;
+            _memoryNodes[index].Next = MemoryNode.ZERO;
+            _memoryNodes[index].UnitCount = 0;
         }
 
         _text = _heap;
 
-        uint difference = UNIT_SIZE * (_allocatorSize / 8 / UNIT_SIZE * 7);
+        var difference = UNIT_SIZE * (_allocatorSize / 8 / UNIT_SIZE * 7);
 
         _highUnit = _heap + _allocatorSize;
         _lowUnit = _highUnit - difference;
@@ -131,7 +128,7 @@ internal sealed class Allocator
     /// <param name="allocatorSize"></param>
     public void Start(int allocatorSize)
     {
-        uint size = (uint)allocatorSize;
+        var size = (uint)allocatorSize;
         if (_allocatorSize != size)
         {
             Stop();
@@ -148,7 +145,7 @@ internal sealed class Allocator
     /// <remarks>
     /// Because the array is on the large object heap it may not be freed immediately.
     /// </remarks>
-    private void Stop()
+    public void Stop()
     {
         if (_allocatorSize != 0)
         {
@@ -164,7 +161,7 @@ internal sealed class Allocator
     /// <returns></returns>
     public uint GetMemoryUsed()
     {
-        uint memoryUsed = _allocatorSize - (_highUnit - _lowUnit) - (_baseUnit - _text);
+        var memoryUsed = _allocatorSize - (_highUnit - _lowUnit) - (_baseUnit - _text);
         for (uint index = 0; index < INDEX_COUNT; index++)
         {
             memoryUsed -= UNIT_SIZE * INDEX_TO_UNITS[index] * _memoryNodes[index].Stamp;
@@ -186,7 +183,7 @@ internal sealed class Allocator
             return _memoryNodes[index].Remove();
         }
 
-        Pointer allocatedBlock = _lowUnit;
+        var allocatedBlock = _lowUnit;
         _lowUnit += INDEX_TO_UNITS[index] * UNIT_SIZE;
         if (_lowUnit <= _highUnit)
         {
@@ -205,7 +202,7 @@ internal sealed class Allocator
     {
         if (_highUnit != _lowUnit)
         {
-            return _highUnit -= UNIT_SIZE;
+            return (_highUnit -= UNIT_SIZE);
         }
         if (_memoryNodes[0].Available)
         {
@@ -230,7 +227,7 @@ internal sealed class Allocator
             return oldPointer;
         }
 
-        Pointer pointer = AllocateUnits(oldUnitCount + 1);
+        var pointer = AllocateUnits(oldUnitCount + 1);
 
         if (pointer != Pointer.ZERO)
         {
@@ -327,7 +324,7 @@ internal sealed class Allocator
     public void ExpandText()
     {
         MemoryNode memoryNode;
-        uint[] counts = new uint[INDEX_COUNT];
+        var counts = new uint[INDEX_COUNT];
 
         while ((memoryNode = _baseUnit).Stamp == uint.MaxValue)
         {
@@ -368,7 +365,7 @@ internal sealed class Allocator
             }
         }
 
-        uint oldIndex = index;
+        var oldIndex = index;
         do
         {
             if (++oldIndex == INDEX_COUNT)
@@ -386,8 +383,8 @@ internal sealed class Allocator
 
     private void SplitBlock(Pointer pointer, uint oldIndex, uint newIndex)
     {
-        uint unitCountDifference = (uint)(INDEX_TO_UNITS[oldIndex] - INDEX_TO_UNITS[newIndex]);
-        Pointer newPointer = pointer + (INDEX_TO_UNITS[newIndex] * UNIT_SIZE);
+        var unitCountDifference = (uint)(INDEX_TO_UNITS[oldIndex] - INDEX_TO_UNITS[newIndex]);
+        var newPointer = pointer + (INDEX_TO_UNITS[newIndex] * UNIT_SIZE);
 
         uint index = UNITS_TO_INDEX[unitCountDifference - 1];
         if (INDEX_TO_UNITS[index] != unitCountDifference)
@@ -406,12 +403,10 @@ internal sealed class Allocator
 
     private void GlueFreeBlocks()
     {
-        var memoryNode = new MemoryNode(LOCAL_OFFSET, _memory)
-        {
-            Stamp = 0,
-            Next = MemoryNode.ZERO,
-            UnitCount = 0
-        };
+        var memoryNode = new MemoryNode(LOCAL_OFFSET, _memory);
+        memoryNode.Stamp = 0;
+        memoryNode.Next = MemoryNode.ZERO;
+        memoryNode.UnitCount = 0;
 
         MemoryNode memoryNode0;
         MemoryNode memoryNode1;
@@ -450,7 +445,7 @@ internal sealed class Allocator
         while (memoryNode.Available)
         {
             memoryNode0 = memoryNode.Remove();
-            uint unitCount = memoryNode0.UnitCount;
+            var unitCount = memoryNode0.UnitCount;
             if (unitCount != 0)
             {
                 for (; unitCount > 128; unitCount -= 128, memoryNode0 += 128)
@@ -461,7 +456,7 @@ internal sealed class Allocator
                 uint index = UNITS_TO_INDEX[unitCount - 1];
                 if (INDEX_TO_UNITS[index] != unitCount)
                 {
-                    uint unitCountDifference = unitCount - INDEX_TO_UNITS[--index];
+                    var unitCountDifference = unitCount - INDEX_TO_UNITS[--index];
                     _memoryNodes[unitCountDifference - 1].Insert(
                         memoryNode0 + (unitCount - unitCountDifference),
                         unitCountDifference

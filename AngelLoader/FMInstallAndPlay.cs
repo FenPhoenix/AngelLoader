@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using SharpCompress.Archives.Rar;
+using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
@@ -1501,14 +1503,12 @@ internal static class FMInstallAndPlay
 
                 int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
 
-                bool fmIsZip = fmData.ArchivePath.ExtIsZip();
-
                 // Framework zip extracting is much faster, so use it if possible
                 // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
                 // But we don't want to parse out stupid console output for error detection and junk if we
                 // don't have to so whatever.
 
-                (bool canceled, bool installFailed) = await (fmIsZip
+                (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
                     ? InstallFMZip(
                         fmData.ArchivePath,
                         fmInstalledPath,
@@ -1517,6 +1517,8 @@ internal static class FMInstallAndPlay
                         fmDataList.Length,
                         zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
                         fileStreamBuffer ??= new byte[FileStreamBufferSize])
+                    : fmData.ArchivePath.ExtIsRar()
+                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, zipExtractTempBuffer ??= new byte[StreamCopyBufferSize]))
                     : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                 if (installFailed)
@@ -1750,6 +1752,103 @@ internal static class FMInstallAndPlay
 
             return (false, false);
         });
+    }
+
+    private static (bool Canceled, bool InstallFailed)
+    InstallFMRar(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount, byte[] tempBuffer)
+    {
+        bool single = fmCount == 1;
+
+        try
+        {
+            Directory.CreateDirectory(fmInstalledPath);
+            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+
+            using var fs = File_OpenReadFast(fmArchivePath);
+            int entriesCount;
+            using (var archive = RarArchive.Open(fs))
+            {
+                entriesCount = archive.Entries.Count;
+                fs.Position = 0;
+            }
+
+            using var reader = RarReader.Open(fs);
+
+            int i = -1;
+            while (reader.MoveToNextEntry())
+            {
+                i++;
+                var entry = reader.Entry;
+                string fileName = entry.Key;
+
+                if (!entry.IsDirectory && !fileName[fileName.Length - 1].IsDirSep())
+                {
+                    // Disabled for this release as I need to test it more thoroughly
+#if false
+                    #region Relative/malicious path check
+
+                    // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't
+                    // worry about it. This is basically what ZipFileExtensions.ExtractToDirectory() does.
+
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
+                    string full = Path.GetFullPath(extractedName);
+                    if (!full.StartsWithI(fmInstalledPath))
+                    {
+                        throw new IOException(
+                            "Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).\r\n" +
+                            "Entry full file name: " + fileName + "\r\n" +
+                            "Path where it wanted to end up: " + full);
+                    }
+
+                    #endregion
+#endif
+
+                    if (fileName.Rel_ContainsDirSep())
+                    {
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                    }
+
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
+                    reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+
+                    File_UnSetReadOnly(extractedName);
+
+                    if (_installCts.Token.IsCancellationRequested)
+                    {
+                        return (true, false);
+                    }
+
+                }
+
+                int percentOfEntries = GetPercentFromValue_Int(i, entriesCount).Clamp(0, 100);
+                int newMainPercent = mainPercent + (percentOfEntries / fmCount).ClampToZero();
+
+                if (!_installCts.IsCancellationRequested)
+                {
+                    if (single)
+                    {
+                        Core.View.SetProgressPercent(percentOfEntries);
+                    }
+                    else
+                    {
+                        Core.View.SetProgressBoxState_Double(
+                            mainPercent: newMainPercent,
+                            subMessage: fmArchive,
+                            subPercent: percentOfEntries
+                        );
+                    }
+                }
+            }
+
+            return (_installCts.IsCancellationRequested, false);
+        }
+        catch (Exception ex)
+        {
+            Log("Error extracting rar " + fmArchivePath + " to " + fmInstalledPath + "\r\n", ex);
+            Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
+            return (false, true);
+        }
     }
 
     private static (bool Canceled, bool InstallFailed)

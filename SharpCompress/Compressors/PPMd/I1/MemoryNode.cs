@@ -138,7 +138,7 @@ internal struct MemoryNode
     /// <returns></returns>
     public MemoryNode Remove()
     {
-        MemoryNode next = Next;
+        var next = Next;
         Unlink();
         Stamp--;
         return next;

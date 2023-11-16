@@ -22,7 +22,7 @@ internal sealed partial class Model
         public uint _address;
         public readonly byte[] _memory;
         public static readonly PpmContext ZERO = new PpmContext(0, null);
-        private const int SIZE = 12;
+        public const int SIZE = 12;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PpmContext"/> structure.
@@ -133,7 +133,7 @@ internal sealed partial class Model
         /// </para>
         /// </remarks>
         /// <returns></returns>
-        public readonly PpmState FirstState => new(_address + 2, _memory);
+        public readonly PpmState FirstState => new PpmState(_address + 2, _memory);
 
         /// <summary>
         /// Gets or sets the symbol of the first PPM state.  This is provided for convenience.  The same
@@ -142,6 +142,7 @@ internal sealed partial class Model
         /// </summary>
         public readonly byte FirstStateSymbol
         {
+            get => _memory[_address + 2];
             set => _memory[_address + 2] = value;
         }
 
@@ -162,6 +163,14 @@ internal sealed partial class Model
         /// </summary>
         public readonly PpmContext FirstStateSuccessor
         {
+            get =>
+                new PpmContext(
+                    _memory[_address + 4]
+                        | (((uint)_memory[_address + 5]) << 8)
+                        | (((uint)_memory[_address + 6]) << 16)
+                        | (((uint)_memory[_address + 7]) << 24),
+                    _memory
+                );
             set
             {
                 _memory[_address + 4] = (byte)value._address;
@@ -260,11 +269,145 @@ internal sealed partial class Model
         public override int GetHashCode() => _address.GetHashCode();
     }
 
+    private void EncodeBinarySymbol(int symbol, PpmContext context)
+    {
+        var state = context.FirstState;
+        int index1 = _probabilities[state.Frequency - 1];
+        var index2 =
+            _numberStatisticsToBinarySummaryIndex[context.Suffix.NumberStatistics]
+            + _previousSuccess
+            + context.Flags
+            + ((_runLength >> 26) & 0x20);
+
+        if (state.Symbol == symbol)
+        {
+            _foundState = state;
+            state.Frequency += (byte)((state.Frequency < 196) ? 1 : 0);
+            _coder._lowCount = 0;
+            _coder._highCount = _binarySummary[index1, index2];
+            _binarySummary[index1, index2] += (ushort)(
+                INTERVAL - Mean(_binarySummary[index1, index2], PERIOD_BIT_COUNT, 2)
+            );
+            _previousSuccess = 1;
+            _runLength++;
+        }
+        else
+        {
+            _coder._lowCount = _binarySummary[index1, index2];
+            _binarySummary[index1, index2] -= (ushort)Mean(
+                _binarySummary[index1, index2],
+                PERIOD_BIT_COUNT,
+                2
+            );
+            _coder._highCount = BINARY_SCALE;
+            _initialEscape = EXPONENTIAL_ESCAPES[_binarySummary[index1, index2] >> 10];
+            _characterMask[state.Symbol] = _escapeCount;
+            _previousSuccess = 0;
+            _numberMasked = 0;
+            _foundState = PpmState.ZERO;
+        }
+    }
+
+    private void EncodeSymbol1(int symbol, PpmContext context)
+    {
+        uint lowCount;
+        uint index = context.Statistics.Symbol;
+        var state = context.Statistics;
+        _coder._scale = context.SummaryFrequency;
+        if (index == symbol)
+        {
+            _coder._highCount = state.Frequency;
+            _previousSuccess = (byte)((2 * _coder._highCount >= _coder._scale) ? 1 : 0);
+            _foundState = state;
+            _foundState.Frequency += 4;
+            context.SummaryFrequency += 4;
+            _runLength += _previousSuccess;
+            if (state.Frequency > MAXIMUM_FREQUENCY)
+            {
+                Rescale(context);
+            }
+            _coder._lowCount = 0;
+            return;
+        }
+
+        lowCount = state.Frequency;
+        index = context.NumberStatistics;
+        _previousSuccess = 0;
+        while ((++state).Symbol != symbol)
+        {
+            lowCount += state.Frequency;
+            if (--index == 0)
+            {
+                _coder._lowCount = lowCount;
+                _characterMask[state.Symbol] = _escapeCount;
+                _numberMasked = context.NumberStatistics;
+                index = context.NumberStatistics;
+                _foundState = PpmState.ZERO;
+                do
+                {
+                    _characterMask[(--state).Symbol] = _escapeCount;
+                } while (--index != 0);
+                _coder._highCount = _coder._scale;
+                return;
+            }
+        }
+        _coder._highCount = (_coder._lowCount = lowCount) + state.Frequency;
+        Update1(state, context);
+    }
+
+    private void EncodeSymbol2(int symbol, PpmContext context)
+    {
+        var see2Context = MakeEscapeFrequency(context);
+        uint currentSymbol;
+        uint lowCount = 0;
+        var index = (uint)(context.NumberStatistics - _numberMasked);
+        var state = context.Statistics - 1;
+
+        do
+        {
+            do
+            {
+                currentSymbol = state[1].Symbol;
+                state++;
+            } while (_characterMask[currentSymbol] == _escapeCount);
+            _characterMask[currentSymbol] = _escapeCount;
+            if (currentSymbol == symbol)
+            {
+                goto SymbolFound;
+            }
+            lowCount += state.Frequency;
+        } while (--index != 0);
+
+        _coder._lowCount = lowCount;
+        _coder._scale += _coder._lowCount;
+        _coder._highCount = _coder._scale;
+        see2Context._summary += (ushort)_coder._scale;
+        _numberMasked = context.NumberStatistics;
+        return;
+
+        SymbolFound:
+        _coder._lowCount = lowCount;
+        lowCount += state.Frequency;
+        _coder._highCount = lowCount;
+        for (var p1 = state; --index != 0; )
+        {
+            do
+            {
+                currentSymbol = p1[1].Symbol;
+                p1++;
+            } while (_characterMask[currentSymbol] == _escapeCount);
+            lowCount += p1.Frequency;
+        }
+        _coder._scale += lowCount;
+        see2Context.Update();
+        Update2(state, context);
+    }
+
     private void DecodeBinarySymbol(PpmContext context)
     {
-        PpmState state = context.FirstState;
+        var state = context.FirstState;
         int index1 = _probabilities[state.Frequency - 1];
-        int index2 =
+        var index2 =
             _numberStatisticsToBinarySummaryIndex[context.Suffix.NumberStatistics]
             + _previousSuccess
             + context.Flags
@@ -304,7 +447,7 @@ internal sealed partial class Model
         uint index;
         uint count;
         uint highCount = context.Statistics.Frequency;
-        PpmState state = context.Statistics;
+        var state = context.Statistics;
         _coder._scale = context.SummaryFrequency;
 
         count = _coder.RangeGetCurrentCount();
@@ -351,13 +494,13 @@ internal sealed partial class Model
 
     private void DecodeSymbol2(PpmContext context)
     {
-        See2Context see2Context = MakeEscapeFrequency(context);
+        var see2Context = MakeEscapeFrequency(context);
         uint currentSymbol;
         uint count;
         uint highCount = 0;
-        uint index = (uint)(context.NumberStatistics - _numberMasked);
+        var index = (uint)(context.NumberStatistics - _numberMasked);
         uint stateIndex = 0;
-        PpmState state = context.Statistics - 1;
+        var state = context.Statistics - 1;
 
         do
         {
@@ -434,7 +577,7 @@ internal sealed partial class Model
 
     private See2Context MakeEscapeFrequency(PpmContext context)
     {
-        uint numberStatistics;
+        var numberStatistics = (uint)2 * context.NumberStatistics;
         See2Context see2Context;
 
         if (context.NumberStatistics != 0xff)
@@ -443,8 +586,8 @@ internal sealed partial class Model
             // dimension of the see2Contexts array is always in the range 0 .. 31).
 
             numberStatistics = context.Suffix.NumberStatistics;
-            int index1 = _probabilities[context.NumberStatistics + 2] - 3;
-            int index2 =
+            var index1 = _probabilities[context.NumberStatistics + 2] - 3;
+            var index2 =
                 ((context.SummaryFrequency > 11 * (context.NumberStatistics + 1)) ? 1 : 0)
                 + ((2 * context.NumberStatistics < numberStatistics + _numberMasked) ? 2 : 0)
                 + context.Flags;
@@ -564,14 +707,14 @@ internal sealed partial class Model
     {
         int index = context.NumberStatistics;
         int escapeFrequency;
-        int scaleValue = (scale ? 1 : 0);
+        var scaleValue = (scale ? 1 : 0);
 
         context.Statistics = _allocator.ShrinkUnits(
             context.Statistics,
             oldUnitCount,
             (uint)((index + 2) >> 1)
         );
-        PpmState statistics = context.Statistics;
+        var statistics = context.Statistics;
         context.Flags = (byte)(
             (context.Flags & (0x10 + (scale ? 0x04 : 0x00)))
             + ((statistics.Symbol >= 0x40) ? 0x08 : 0x00)
@@ -623,7 +766,7 @@ internal sealed partial class Model
             return PpmContext.ZERO;
         }
 
-        uint unitCount = (uint)((context.NumberStatistics + 2) >> 1);
+        var unitCount = (uint)((context.NumberStatistics + 2) >> 1);
         context.Statistics = _allocator.MoveUnitsUp(context.Statistics, unitCount);
         index = context.NumberStatistics;
         for (state = context.Statistics + index; state >= context.Statistics; state--)
@@ -675,7 +818,7 @@ internal sealed partial class Model
     {
         if (context.NumberStatistics == 0)
         {
-            PpmState state = context.FirstState;
+            var state = context.FirstState;
             if ((Pointer)state.Successor >= _allocator._baseUnit && order < _modelOrder)
             {
                 state.Successor = RemoveBinaryContexts(order + 1, state.Successor);
@@ -696,7 +839,7 @@ internal sealed partial class Model
         }
 
         for (
-            PpmState state = context.Statistics + context.NumberStatistics;
+            var state = context.Statistics + context.NumberStatistics;
             state >= context.Statistics;
             state--
         )
