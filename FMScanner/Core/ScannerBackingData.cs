@@ -526,29 +526,26 @@ public sealed partial class Scanner
 
     #endregion
 
-    // @NET5(Regexes):
-    // Generating these does make the scan a couple hundred milliseconds faster, but bloats up our dll by 70K(!)
-    // That's an insane amount given how little we're getting out of it. We could do it if we felt like it but meh.
+    // @NET5(Regexes): Having these be generated bloats us up by 70K, but we get a sizable perf increase.
+    // GetAuthor() is like 4x faster, GetReleaseDate() is 2x.
     #region Regexes
 
     // PERF: Making regexes compiled increases their performance by a huge amount.
     // And as we know, regexes need all the performance help they can get.
-    private readonly Regex AThief3Mission =
-        new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
-            RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
+    [GeneratedRegex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
+    private static partial Regex AThief3MissionRegex();
 
-    private readonly Regex OpenParenSpacesRegex =
-        new Regex(@"\(\s+", RegexOptions.Compiled);
+    [GeneratedRegex(@"\(\s+")]
+    private static partial Regex OpenParenSpacesRegex();
 
-    private readonly Regex CloseParenSpacesRegex =
-        new Regex(@"\s+\)", RegexOptions.Compiled);
+    [GeneratedRegex(@"\s+\)")]
+    private static partial Regex CloseParenSpacesRegex();
 
-    private readonly Regex DaySuffixesRegex =
-        new Regex("[0123456789](?<Suffix>(st|nd|rd|th)).+",
-            RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
+    [GeneratedRegex("[0123456789](?<Suffix>(st|nd|rd|th)).+", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
+    private static partial Regex DaySuffixesRegex();
 
-    private readonly Regex AuthorEmailRegex =
-        new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
+    [GeneratedRegex(@"\(?\S+@\S+\.\S{2,5}\)?")]
+    private static partial Regex AuthorEmailRegex();
 
 #if FMScanner_FullCode
     private readonly Regex VersionExclude1Regex =
@@ -594,25 +591,39 @@ public sealed partial class Scanner
     };
 #endif
 
+    #region Author
+
+    [GeneratedRegex(
+        @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorRegex1();
+
+    [GeneratedRegex(
+        @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorRegex2();
+
+    [GeneratedRegex(
+        @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorRegex3();
+
+    [GeneratedRegex(
+        @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorRegex4();
+
     private readonly Regex[] AuthorRegexes =
     {
-        new Regex(
-            @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture)
+        AuthorRegex1(),
+        AuthorRegex2(),
+        AuthorRegex3(),
+        AuthorRegex4()
     };
+
+    #endregion
+
+    #region Author copyright
 
     private const string _copyrightSecondPart =
         //language=regexp
@@ -622,173 +633,158 @@ public sealed partial class Scanner
 
     // Unicode 00A9 = copyright symbol
 
+    [GeneratedRegex(
+        //language=regexp
+        @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorMissionCopyrightRegex1();
+
+    [GeneratedRegex(
+        //language=regexp
+        @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
+        _copyrightSecondPart,
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorMissionCopyrightRegex2();
+
+    [GeneratedRegex(
+        //language=regexp
+        @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
+        _copyrightSecondPart,
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorMissionCopyrightRegex3();
+
+    // @NET5: Generate these regexes
     private readonly Regex[] AuthorMissionCopyrightRegexes =
     {
-        new Regex(
-            //language=regexp
-            @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            //language=regexp
-            @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
-            _copyrightSecondPart,
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            //language=regexp
-            @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
-            _copyrightSecondPart,
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture)
+        AuthorMissionCopyrightRegex1(),
+        AuthorMissionCopyrightRegex2(),
+        AuthorMissionCopyrightRegex3()
     };
 
     // This one is only to be used if we know the above line says "Copyright" or something, because it has
     // an @ as an option for a copyright symbol (used by some Theker missions) and we want to be sure it
     // means what we think it means.
-    private readonly Regex AuthorGeneralCopyrightIncludeAtSymbolRegex =
-        new Regex(
-            //language=regexp
-            @"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(@"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorGeneralCopyrightIncludeAtSymbolRegex();
 
-    private readonly Regex AuthorGeneralCopyrightRegex =
-        new Regex(
-            //language=regexp
-            @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(@"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AuthorGeneralCopyrightRegex();
 
-    private readonly Regex CopyrightAuthorYearRegex = new Regex(" [0123456789]+.*$", RegexOptions.Compiled);
-
-    private readonly Regex TitleByAuthorRegex =
-        new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    #region Release date detection
-
-    private readonly Regex MultipleColonsRegex =
-        new Regex(@"(:\s*)+",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex MultipleDashesRegex =
-        new Regex("-{2,}",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex MultipleUnicodeDashesRegex =
-        new Regex(@"\u2013{2,}",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex AnyDateNumberRTLRegex =
-        new Regex("(Y2K|[0123456789])",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
-
-    private readonly Regex NewDarkAndNumberRegex =
-        new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex EuropeanDateRegex =
-        new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex PeriodWithOptionalSurroundingSpacesRegex =
-        new Regex(@"\s*\.\s*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex DateSeparatorsRegex =
-        // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
-        new Regex(@"\s*(,|~|-|/|\.)\s*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex DateOfSeparatorRegex =
-        new Regex(@"\s*of\s*",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex OneOrMoreWhiteSpaceCharsRegex =
-        new Regex(@"\s+", RegexOptions.Compiled);
-
-    private readonly Regex FebrRegex =
-        new Regex("Febr ",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex SeptRegex =
-        new Regex("Sept ",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex OktRegex =
-        new Regex("Okt ",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex Y2KRegex =
-        new Regex("Y2K",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex JanuaryVariationsRegex =
-        new Regex("Jan(vier|uar )",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex FebruaryVariationsRegex =
-        new Regex("F(eburar(y| )|(é|e)vrier)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex MarchVariationsRegex =
-        new Regex("M(ar(tch|s|z)|ärz)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex AprilVariationsRegex =
-        new Regex("avril",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex MayVariationsRegex =
-        new Regex("mai",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex JuneVariationsRegex =
-        new Regex("Ju(in|ni)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex JulyVariationsRegex =
-        new Regex("Ju(l(ly|i)|ille(t|r))",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex AugustVariationsRegex =
-        new Regex("ao(u|û)t",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex SeptemberVariationsRegex =
-        new Regex("septembre",
-            IgnoreCaseInvariant | RegexOptions.Compiled);
-
-    private readonly Regex OctoberVariationsRegex =
-        new Regex("O(ctobre|ktober)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex HalloweenRegex =
-        new Regex("Halloween",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex ChristmasRegex =
-        new Regex("Christmas",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex NovemberVariationsRegex =
-        new Regex("novembre",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    private readonly Regex DecemberVariationsRegex =
-        new Regex("D((é|e)cembre|ezember)",
-            IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(" [0123456789]+.*$")]
+    private static partial Regex CopyrightAuthorYearRegex();
 
     #endregion
 
-    private readonly Regex MultipleWhiteSpaceRegex =
-        new Regex(@"\s{2,}", RegexOptions.Compiled);
+    [GeneratedRegex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex TitleByAuthorRegex();
 
-    private readonly Regex DarkMod_TDM_MapSequence_MissionLine_Regex =
-        new Regex(@"^Mission [0123456789]+\:\s*.+", RegexOptions.Compiled);
+    #region Release date detection
 
-    private readonly Regex DarkModTxtFieldsRegex =
-        new Regex("(Title:|Author:|Description:|Version:|Required TDM Version:)",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(@"(:\s*)+", RegexOptions.ExplicitCapture)]
+    private static partial Regex MultipleColonsRegex();
+
+    [GeneratedRegex("-{2,}", RegexOptions.ExplicitCapture)]
+    private static partial Regex MultipleDashesRegex();
+
+    [GeneratedRegex(@"\u2013{2,}", RegexOptions.ExplicitCapture)]
+    private static partial Regex MultipleUnicodeDashesRegex();
+
+    [GeneratedRegex("(Y2K|[0123456789])",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft)]
+    private static partial Regex AnyDateNumberRTLRegex();
+
+    [GeneratedRegex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkAndNumberRegex();
+
+    [GeneratedRegex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
+        RegexOptions.ExplicitCapture)]
+    private static partial Regex EuropeanDateRegex();
+
+    [GeneratedRegex(@"\s*\.\s*", RegexOptions.ExplicitCapture)]
+    private static partial Regex PeriodWithOptionalSurroundingSpacesRegex();
+
+    // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
+    [GeneratedRegex(@"\s*(,|~|-|/|\.)\s*", RegexOptions.ExplicitCapture)]
+    private static partial Regex DateSeparatorsRegex();
+
+    [GeneratedRegex(@"\s*of\s*", IgnoreCaseInvariant)]
+    private static partial Regex DateOfSeparatorRegex();
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex OneOrMoreWhiteSpaceCharsRegex();
+
+    [GeneratedRegex("Febr ", IgnoreCaseInvariant)]
+    private static partial Regex FebrRegex();
+
+    [GeneratedRegex("Sept ", IgnoreCaseInvariant)]
+    private static partial Regex SeptRegex();
+
+    [GeneratedRegex("Okt ", IgnoreCaseInvariant)]
+    private static partial Regex OktRegex();
+
+    [GeneratedRegex("Y2K", IgnoreCaseInvariant)]
+    private static partial Regex Y2KRegex();
+
+    [GeneratedRegex("Jan(vier|uar )", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex JanuaryVariationsRegex();
+
+    [GeneratedRegex("F(eburar(y| )|(é|e)vrier)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex FebruaryVariationsRegex();
+
+    [GeneratedRegex("M(ar(tch|s|z)|ärz)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex MarchVariationsRegex();
+
+    [GeneratedRegex("avril", IgnoreCaseInvariant)]
+    private static partial Regex AprilVariationsRegex();
+
+    [GeneratedRegex("mai", IgnoreCaseInvariant)]
+    private static partial Regex MayVariationsRegex();
+
+    [GeneratedRegex("Ju(in|ni)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex JuneVariationsRegex();
+
+    [GeneratedRegex("Ju(l(ly|i)|ille(t|r))",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex JulyVariationsRegex();
+
+    [GeneratedRegex("ao(u|û)t",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex AugustVariationsRegex();
+
+    [GeneratedRegex("septembre", IgnoreCaseInvariant)]
+    private static partial Regex SeptemberVariationsRegex();
+
+    [GeneratedRegex("\"O(ctobre|ktober)",
+        IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex OctoberVariationsRegex();
+
+    [GeneratedRegex("Halloween", IgnoreCaseInvariant)]
+    private static partial Regex HalloweenRegex();
+
+    [GeneratedRegex("Christmas", IgnoreCaseInvariant)]
+    private static partial Regex ChristmasRegex();
+
+    [GeneratedRegex("novembre", IgnoreCaseInvariant)]
+    private static partial Regex NovemberVariationsRegex();
+
+    [GeneratedRegex("D((é|e)cembre|ezember)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex DecemberVariationsRegex();
+
+    #endregion
+
+    [GeneratedRegex(@"\s{2,}")]
+    private static partial Regex MultipleWhiteSpaceRegex();
+
+    [GeneratedRegex(@"^Mission [0123456789]+\:\s*.+")]
+    private static partial Regex DarkMod_TDM_MapSequence_MissionLine_Regex();
+
+    [GeneratedRegex("(Title:|Author:|Description:|Version:|Required TDM Version:)",
+        RegexOptions.ExplicitCapture)]
+    private static partial Regex DarkModTxtFieldsRegex();
 
     /*
     Catches stuff like "PD" but also "CoS"
@@ -797,9 +793,9 @@ public sealed partial class Scanner
     be a perf tweak, as everything works out fine as is in terms of accuracy.
     @PERF_TODO: We could make this faster with a custom version I guess, but that was annoying so whatever
     */
-    private readonly Regex AcronymRegex =
-        new Regex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
+        RegexOptions.ExplicitCapture)]
+    private static partial Regex AcronymRegex();
 
     #endregion
 

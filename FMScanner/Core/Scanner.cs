@@ -884,7 +884,7 @@ public sealed partial class Scanner : IDisposable
                         "Mission" line to be one mission, and if it has multiple maps then it's one mission
                         with loading zones.
                         */
-                        else if (DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
+                        else if (DarkMod_TDM_MapSequence_MissionLine_Regex().Match(lineT).Success)
                         {
                             misCount++;
                         }
@@ -924,7 +924,7 @@ public sealed partial class Scanner : IDisposable
             // That's _TERRIBLE_ but we want to match behavior.
             if (darkModTxtReadme != null)
             {
-                MatchCollection matches = DarkModTxtFieldsRegex.Matches(darkModTxtReadme.Text);
+                MatchCollection matches = DarkModTxtFieldsRegex().Matches(darkModTxtReadme.Text);
                 int plus = 0;
                 foreach (Match match in matches)
                 {
@@ -1165,7 +1165,7 @@ public sealed partial class Scanner : IDisposable
 
         if (!fmData.Author.IsEmpty())
         {
-            Match match = AuthorEmailRegex.Match(fmData.Author);
+            Match match = AuthorEmailRegex().Match(fmData.Author);
             if (match.Success)
             {
                 fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
@@ -2283,9 +2283,9 @@ public sealed partial class Scanner : IDisposable
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (EuropeanDateRegex.Match(dateString).Success)
+        if (EuropeanDateRegex().Match(dateString).Success)
         {
-            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(CA_Period);
+            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex().Replace(dateString, ".").Trim(CA_Period);
             if (DateTime.TryParseExact(
                     dateStringTemp,
                     _dateFormatsEuropean,
@@ -2299,39 +2299,39 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        dateString = DateSeparatorsRegex.Replace(dateString, " ");
-        dateString = DateOfSeparatorRegex.Replace(dateString, " ");
-        dateString = OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
+        dateString = DateSeparatorsRegex().Replace(dateString, " ");
+        dateString = DateOfSeparatorRegex().Replace(dateString, " ");
+        dateString = OneOrMoreWhiteSpaceCharsRegex().Replace(dateString, " ");
 
-        dateString = FebrRegex.Replace(dateString, "Feb ");
-        dateString = SeptRegex.Replace(dateString, "Sep ");
-        dateString = OktRegex.Replace(dateString, "Oct ");
+        dateString = FebrRegex().Replace(dateString, "Feb ");
+        dateString = SeptRegex().Replace(dateString, "Sep ");
+        dateString = OktRegex().Replace(dateString, "Oct ");
 
-        dateString = HalloweenRegex.Replace(dateString, "Oct 31");
-        dateString = ChristmasRegex.Replace(dateString, "Dec 25");
+        dateString = HalloweenRegex().Replace(dateString, "Oct 31");
+        dateString = ChristmasRegex().Replace(dateString, "Dec 25");
 
         // Cute...
-        dateString = Y2KRegex.Replace(dateString, "2000");
+        dateString = Y2KRegex().Replace(dateString, "2000");
 
-        dateString = JanuaryVariationsRegex.Replace(dateString, "Jan");
-        dateString = FebruaryVariationsRegex.Replace(dateString, "Feb");
-        dateString = MarchVariationsRegex.Replace(dateString, "Mar");
-        dateString = AprilVariationsRegex.Replace(dateString, "Apr");
-        dateString = MayVariationsRegex.Replace(dateString, "May");
-        dateString = JuneVariationsRegex.Replace(dateString, "Jun");
-        dateString = JulyVariationsRegex.Replace(dateString, "Jul");
-        dateString = AugustVariationsRegex.Replace(dateString, "Aug");
-        dateString = SeptemberVariationsRegex.Replace(dateString, "Sep");
-        dateString = OctoberVariationsRegex.Replace(dateString, "Oct");
-        dateString = NovemberVariationsRegex.Replace(dateString, "Nov");
-        dateString = DecemberVariationsRegex.Replace(dateString, "Dec");
+        dateString = JanuaryVariationsRegex().Replace(dateString, "Jan");
+        dateString = FebruaryVariationsRegex().Replace(dateString, "Feb");
+        dateString = MarchVariationsRegex().Replace(dateString, "Mar");
+        dateString = AprilVariationsRegex().Replace(dateString, "Apr");
+        dateString = MayVariationsRegex().Replace(dateString, "May");
+        dateString = JuneVariationsRegex().Replace(dateString, "Jun");
+        dateString = JulyVariationsRegex().Replace(dateString, "Jul");
+        dateString = AugustVariationsRegex().Replace(dateString, "Aug");
+        dateString = SeptemberVariationsRegex().Replace(dateString, "Sep");
+        dateString = OctoberVariationsRegex().Replace(dateString, "Oct");
+        dateString = NovemberVariationsRegex().Replace(dateString, "Nov");
+        dateString = DecemberVariationsRegex().Replace(dateString, "Dec");
 
         dateString = dateString.Trim(CA_Period);
         dateString = dateString.Trim(CA_Parens);
         dateString = dateString.Trim();
 
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-        Match match = DaySuffixesRegex.Match(dateString);
+        Match match = DaySuffixesRegex().Match(dateString);
         if (match.Success)
         {
             Group suffix = match.Groups["Suffix"];
@@ -3623,13 +3623,13 @@ public sealed partial class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
+                    Match newDarkMatch = NewDarkAndNumberRegex().Match(ret);
                     if (newDarkMatch.Success)
                     {
                         ret = ret.Substring(0, newDarkMatch.Index);
                     }
 
-                    Match rtlNumberMatch = AnyDateNumberRTLRegex.Match(ret);
+                    Match rtlNumberMatch = AnyDateNumberRTLRegex().Match(ret);
                     if (rtlNumberMatch.Success)
                     {
                         ret = ret.Substring(0, rtlNumberMatch.Index + rtlNumberMatch.Length);
@@ -3784,9 +3784,9 @@ public sealed partial class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    lineStartTrimmed = MultipleColonsRegex.Replace(lineStartTrimmed, ":");
-                    lineStartTrimmed = MultipleDashesRegex.Replace(lineStartTrimmed, "-");
-                    lineStartTrimmed = MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
+                    lineStartTrimmed = MultipleColonsRegex().Replace(lineStartTrimmed, ":");
+                    lineStartTrimmed = MultipleDashesRegex().Replace(lineStartTrimmed, "-");
+                    lineStartTrimmed = MultipleUnicodeDashesRegex().Replace(lineStartTrimmed, "\u2013");
                 }
 
                 // Don't count these chars if they're part of a key
@@ -3860,7 +3860,7 @@ public sealed partial class Scanner : IDisposable
 
         value = value.RemoveUnpairedLeadingOrTrailingQuotes();
 
-        value = MultipleWhiteSpaceRegex.Replace(value, " ");
+        value = MultipleWhiteSpaceRegex().Replace(value, " ");
         value = value.Replace('\t', ' ');
 
         #region Parentheses
@@ -3870,8 +3870,8 @@ public sealed partial class Scanner : IDisposable
         bool containsOpenParen = value.Contains('(');
         bool containsCloseParen = value.Contains(')');
 
-        if (containsOpenParen) value = OpenParenSpacesRegex.Replace(value, "(");
-        if (containsCloseParen) value = CloseParenSpacesRegex.Replace(value, ")");
+        if (containsOpenParen) value = OpenParenSpacesRegex().Replace(value, "(");
+        if (containsCloseParen) value = CloseParenSpacesRegex().Replace(value, ")");
 
         // If there's stuff like "(this an incomplete sentence and" at the end, chop it right off
         if (containsOpenParen && !containsCloseParen && value.CharAppearsExactlyOnce('('))
@@ -3936,7 +3936,7 @@ public sealed partial class Scanner : IDisposable
                      lineT.StartsWithI_Local("A Thief fan") ||
                      lineT.StartsWithI_Local("A fan mission") ||
                      lineT.StartsWithI_Local("A Thief 3") ||
-                     AThief3Mission.Match(lineT).Success ||
+                     AThief3MissionRegex().Match(lineT).Success ||
                      lineT.StartsWithI_Local("A System Shock") ||
                      lineT.StartsWithI_Local("An SS2")))
                 {
@@ -4321,7 +4321,7 @@ public sealed partial class Scanner : IDisposable
 
         byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
 
-        bool titleContainsAcronym = AcronymRegex.Match(mainTitle.Value).Success;
+        bool titleContainsAcronym = AcronymRegex().Match(mainTitle.Value).Success;
         Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
 
         bool swapDone = false;
@@ -4369,7 +4369,7 @@ public sealed partial class Scanner : IDisposable
 
         if (!swapDone &&
             !serverTitle.IsEmpty() &&
-            !AcronymRegex.Match(serverTitle).Success &&
+            !AcronymRegex().Match(serverTitle).Success &&
             (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
@@ -4458,7 +4458,7 @@ public sealed partial class Scanner : IDisposable
             }
             else
             {
-                Match m = AuthorGeneralCopyrightRegex.Match(lineT);
+                Match m = AuthorGeneralCopyrightRegex().Match(lineT);
                 if (!m.Success) continue;
 
                 string author = CleanupCopyrightAuthor(m.Groups["Author"].Value);
@@ -4523,7 +4523,7 @@ public sealed partial class Scanner : IDisposable
 
                 string secondHalf = lineT.Substring(lineT.IndexOf(" by", OrdinalIgnoreCase));
 
-                Match match = TitleByAuthorRegex.Match(secondHalf);
+                Match match = TitleByAuthorRegex().Match(secondHalf);
                 if (match.Success) return match.Groups["Author"].Value;
             }
         }
@@ -4565,8 +4565,8 @@ public sealed partial class Scanner : IDisposable
                     // This whole nonsense is just to support the use of @ as a copyright symbol (used by some
                     // Theker missions); we want to be very specific about when we decide that "@" means "©".
                     Match m = !pastFirstLineOfCopyrightSection
-                        ? AuthorGeneralCopyrightIncludeAtSymbolRegex.Match(line)
-                        : AuthorGeneralCopyrightRegex.Match(line);
+                        ? AuthorGeneralCopyrightIncludeAtSymbolRegex().Match(line)
+                        : AuthorGeneralCopyrightRegex().Match(line);
                     if (m.Success)
                     {
                         author = m.Groups["Author"].Value;
@@ -4607,7 +4607,7 @@ public sealed partial class Scanner : IDisposable
         index = author.IndexOf(". ", Ordinal);
         if (index > -1) author = author.Substring(0, index);
 
-        Match yearMatch = CopyrightAuthorYearRegex.Match(author);
+        Match yearMatch = CopyrightAuthorYearRegex().Match(author);
         if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
         const string junkChars = "!@#$%^&*";
