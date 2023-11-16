@@ -14,12 +14,6 @@ internal sealed class See2Context
         }
     }
 
-    public int Count
-    {
-        get => _count;
-        set => _count = value & 0xff;
-    }
-
     public int Shift
     {
         get => _shift;

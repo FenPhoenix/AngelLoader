@@ -21,12 +21,6 @@ internal sealed class SubAllocator
         set => _pText = value;
     }
 
-    public int UnitsStart
-    {
-        get => _unitsStart;
-        set => _unitsStart = value;
-    }
-
     public byte[] Heap => _heap;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'N4 '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"

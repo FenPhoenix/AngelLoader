@@ -9,18 +9,6 @@ internal sealed class UnpackFilter
 
     internal UnpackFilter() => Program = new VMPreparedProgram();
 
-    // TODO uint
-    internal uint uBlockStart
-    {
-        get => (uint)BlockStart;
-        set => BlockStart = (int)value;
-    }
-    internal uint uBlockLength
-    {
-        get => (uint)BlockLength;
-        set => BlockLength = (int)value;
-    }
-
     internal int BlockStart { get; set; }
 
     internal int BlockLength { get; set; }
