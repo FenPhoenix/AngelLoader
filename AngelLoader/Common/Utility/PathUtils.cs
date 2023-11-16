@@ -116,10 +116,6 @@ public static partial class Utils
     /*
     @RAR: Finish going through these.
     @RAR: We have too much duplicated code now, clean it up.
-    @RAR: Decide if we want to call out to 7z.exe:
-    -If we do, it would almost certainly be faster, but we would add back megabytes of size.
-    -Unless we can figure out a way to compile 7z.dll with 7z and rar and nothing else.
-    -We could still look into libarchive/libarchive.net.
     */
     internal static bool ExtIsArchive(this string value) =>
         value.EndsWithI(".zip") ||
