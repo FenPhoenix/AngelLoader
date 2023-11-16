@@ -6,7 +6,7 @@
     <AssemblyVersion>1.0.2</AssemblyVersion>
     <FileVersion>1.0.2</FileVersion>
     <Authors>yinyue200</Authors>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>$(SolutionTargetFramework)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>Ude.NetStandard</AssemblyName>
     <Description>Ude.NetStandard is a compiled C# port of Mozilla Universal Charset Detector for dotnet.</Description>

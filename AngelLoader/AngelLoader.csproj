@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>$(SolutionTargetFramework)</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<Platforms>x86;x64</Platforms>
 		<LangVersion>latest</LangVersion>

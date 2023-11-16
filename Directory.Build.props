@@ -1,0 +1,5 @@
+<Project>
+ <PropertyGroup>
+   <SolutionTargetFramework>net472</SolutionTargetFramework>
+ </PropertyGroup>
+</Project>

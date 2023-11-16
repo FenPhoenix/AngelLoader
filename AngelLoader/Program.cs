@@ -1,5 +1,6 @@
 ﻿//#define WPF
 //#define ENABLE_RTF_VISUAL_TEST_FORM
+//#define HIGH_DPI
 
 using System;
 using System.Drawing;
@@ -77,6 +78,9 @@ internal static class Program
         // anyway (even if we're the second instance), so such tricks won't help us. Oh well.
         System.Windows.Forms.Application.EnableVisualStyles();
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+#if HIGH_DPI
+        System.Windows.Forms.Application.SetHighDpiMode(System.Windows.Forms.HighDpiMode.PerMonitorV2);
+#endif
 #if NET6_0_OR_GREATER
         // It's not like we wouldn't choose a more modern font given a clean slate, but this at least gets
         // things working without having to redo the entire set of hardcoded UI assumptions based on the font.
