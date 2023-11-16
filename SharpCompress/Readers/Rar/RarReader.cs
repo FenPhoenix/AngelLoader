@@ -53,8 +53,7 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
     protected override EntryStream GetEntryStream()
     {
         var stream = new MultiVolumeReadOnlyStream(
-            CreateFilePartEnumerableForCurrentEntry().Cast<RarFilePart>(),
-            this
+            CreateFilePartEnumerableForCurrentEntry().Cast<RarFilePart>()
         );
         if (Entry.IsRarV3)
         {

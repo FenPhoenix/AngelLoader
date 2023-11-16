@@ -7,7 +7,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives;
 
-public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtractionListener
+public abstract class AbstractArchive<TEntry, TVolume> : IArchive
     where TEntry : IArchiveEntry
     where TVolume : IDisposable
 {
@@ -75,37 +75,11 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
         }
     }
 
-    void IArchiveExtractionListener.EnsureEntriesLoaded()
+    public void EnsureEntriesLoaded()
     {
         lazyEntries.EnsureFullyLoaded();
         lazyVolumes.EnsureFullyLoaded();
     }
-
-    void IExtractionListener.FireCompressedBytesRead(
-        long currentPartCompressedBytes,
-        long compressedReadBytes
-    ) =>
-        CompressedBytesRead?.Invoke(
-            this,
-            new CompressedBytesReadEventArgs(
-                currentFilePartCompressedBytesRead: currentPartCompressedBytes,
-                compressedBytesRead: compressedReadBytes
-            )
-        );
-
-    void IExtractionListener.FireFilePartExtractionBegin(
-        string name,
-        long size,
-        long compressedSize
-    ) =>
-        FilePartExtractionBegin?.Invoke(
-            this,
-            new FilePartExtractionBeginEventArgs(
-                compressedSize: compressedSize,
-                size: size,
-                name: name
-            )
-        );
 
     /// <summary>
     /// Use this method to extract all entries in an archive in order.
@@ -120,7 +94,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     /// <returns></returns>
     public IReader ExtractAllEntries()
     {
-        ((IArchiveExtractionListener)this).EnsureEntriesLoaded();
+        EnsureEntriesLoaded();
         return CreateReaderForSolidExtraction();
     }
 
@@ -138,8 +112,8 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     {
         get
         {
-            ((IArchiveExtractionListener)this).EnsureEntriesLoaded();
-            return Entries.All(x => x.IsComplete);
+            EnsureEntriesLoaded();
+            return Entries.All(static x => x.IsComplete);
         }
     }
 }

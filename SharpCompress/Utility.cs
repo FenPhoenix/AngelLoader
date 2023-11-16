@@ -222,8 +222,7 @@ public static class Utility
     public static long TransferTo(
         this Stream source,
         Stream destination,
-        Common.Entry entry,
-        IReaderExtractionListener readerExtractionListener
+        Common.Entry entry
     )
     {
         var array = GetTransferByteArray();
@@ -236,7 +235,6 @@ public static class Utility
                 total += count;
                 destination.Write(array, 0, count);
                 iterations++;
-                readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
             }
             return total;
         }

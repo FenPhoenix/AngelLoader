@@ -47,7 +47,7 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
         get
         {
             CheckIncomplete();
-            return parts.Aggregate(0L, (total, fp) => total + fp.FileHeader.CompressedSize);
+            return parts.Aggregate(0L, static (total, fp) => total + fp.FileHeader.CompressedSize);
         }
     }
 
@@ -58,14 +58,14 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
             return new RarStream(
                 archive.UnpackV1.Value,
                 FileHeader,
-                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
+                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
             );
         }
 
         return new RarStream(
             archive.UnpackV2017.Value,
             FileHeader,
-            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
+            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
         );
     }
 
