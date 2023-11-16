@@ -3,27 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SharpCompress.Common;
-using SharpCompress.Common.Rar;
 
 namespace SharpCompress.Readers;
 
 /// <summary>
-/// A generic push reader that reads unseekable compressed streams.
+/// A generic push reader that reads unseekable comrpessed streams.
 /// </summary>
-public abstract class AbstractReader<TEntry, TVolume> : IReader
-    where TEntry : RarEntry
+public abstract class AbstractReader<TEntry, TVolume> : IReader, IReaderExtractionListener
+    where TEntry : Entry
     where TVolume : Volume
 {
     private bool completed;
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    internal AbstractReader(ReaderOptions options)
+    public event EventHandler<ReaderExtractionEventArgs<IEntry>>? EntryExtractionProgress;
+
+    public event EventHandler<CompressedBytesReadEventArgs>? CompressedBytesRead;
+    public event EventHandler<FilePartExtractionBeginEventArgs>? FilePartExtractionBegin;
+
+    internal AbstractReader(ReaderOptions options, ArchiveType archiveType)
     {
+        ArchiveType = archiveType;
         Options = options;
     }
 
     internal ReaderOptions Options { get; }
+
+    public ArchiveType ArchiveType { get; }
 
     /// <summary>
     /// Current volume that the current entry resides in
@@ -104,7 +111,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     protected virtual Stream RequestInitialStream() => Volume.Stream;
 
-    internal bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
+    internal virtual bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
 
     protected abstract IEnumerable<TEntry> GetEntries(Stream stream);
 
@@ -164,8 +171,9 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     internal void Write(Stream writeStream)
     {
+        var streamListener = this as IReaderExtractionListener;
         using Stream s = OpenEntryStream();
-        s.TransferTo(writeStream);
+        s.TransferTo(writeStream, Entry, streamListener);
     }
 
     public EntryStream OpenEntryStream()
@@ -189,4 +197,45 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         CreateEntryStream(Entry.Parts.First().GetCompressedStream());
 
     #endregion
+
+    IEntry IReader.Entry => Entry;
+
+    void IExtractionListener.FireCompressedBytesRead(
+        long currentPartCompressedBytes,
+        long compressedReadBytes
+    ) =>
+        CompressedBytesRead?.Invoke(
+            this,
+            new CompressedBytesReadEventArgs(
+                currentFilePartCompressedBytesRead: currentPartCompressedBytes,
+                compressedBytesRead: compressedReadBytes
+            )
+        );
+
+    void IExtractionListener.FireFilePartExtractionBegin(
+        string name,
+        long size,
+        long compressedSize
+    ) =>
+        FilePartExtractionBegin?.Invoke(
+            this,
+            new FilePartExtractionBeginEventArgs(
+                compressedSize: compressedSize,
+                size: size,
+                name: name
+            )
+        );
+
+    void IReaderExtractionListener.FireEntryExtractionProgress(
+        Entry entry,
+        long bytesTransferred,
+        int iterations
+    ) =>
+        EntryExtractionProgress?.Invoke(
+            this,
+            new ReaderExtractionEventArgs<IEntry>(
+                entry,
+                new ReaderProgress(entry, bytesTransferred, iterations)
+            )
+        );
 }

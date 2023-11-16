@@ -1,7 +1,11 @@
+using SharpCompress.Common;
+
 namespace SharpCompress.Archives;
 
-public interface IArchiveEntry
+public interface IArchiveEntry : IEntry
 {
-    long CompressedSize { get; }
-    long Size { get; }
+    /// <summary>
+    /// The archive can find all the parts of the archive needed to extract this entry.
+    /// </summary>
+    bool IsComplete { get; }
 }

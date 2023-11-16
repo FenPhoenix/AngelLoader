@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal sealed class RarMemBlock : Pointer
+internal class RarMemBlock : Pointer
 {
     public const int SIZE = 12;
 
@@ -49,10 +49,8 @@ internal sealed class RarMemBlock : Pointer
 
     internal void Remove()
     {
-        var temp = new RarMemBlock(Memory)
-        {
-            Address = GetPrev()
-        };
+        var temp = new RarMemBlock(Memory);
+        temp.Address = GetPrev();
         temp.SetNext(GetNext()); // prev.setNext(next);
         temp.Address = GetNext();
         temp.SetPrev(GetPrev()); // next.setPrev(prev);
@@ -72,7 +70,7 @@ internal sealed class RarMemBlock : Pointer
 
     internal void SetNext(RarMemBlock next) => SetNext(next.Address);
 
-    private void SetNext(int next)
+    internal void SetNext(int next)
     {
         _next = next;
         if (Memory != null)
@@ -99,7 +97,7 @@ internal sealed class RarMemBlock : Pointer
         }
     }
 
-    private int GetPrev()
+    internal int GetPrev()
     {
         if (Memory != null)
         {
@@ -110,7 +108,7 @@ internal sealed class RarMemBlock : Pointer
 
     internal void SetPrev(RarMemBlock prev) => SetPrev(prev.Address);
 
-    private void SetPrev(int prev)
+    internal void SetPrev(int prev)
     {
         _prev = prev;
         if (Memory != null)

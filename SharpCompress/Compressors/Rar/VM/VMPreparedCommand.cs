@@ -1,6 +1,6 @@
 namespace SharpCompress.Compressors.Rar.VM;
 
-internal sealed class VMPreparedCommand
+internal class VMPreparedCommand
 {
     internal VMPreparedCommand()
     {

@@ -3,12 +3,22 @@ using System.Text;
 
 namespace SharpCompress.Common;
 
-public sealed class ArchiveEncoding
+public class ArchiveEncoding
 {
     /// <summary>
     /// Default encoding to use when archive format doesn't specify one.
     /// </summary>
-    public Encoding Default { get; }
+    public Encoding Default { get; set; }
+
+    /// <summary>
+    /// ArchiveEncoding used by encryption schemes which don't comply with RFC 2898.
+    /// </summary>
+    public Encoding Password { get; set; }
+
+    /// <summary>
+    /// Set this encoding when you want to force it for all encoding operations.
+    /// </summary>
+    public Encoding? Forced { get; set; }
 
     /// <summary>
     /// Set this when you want to use a custom method for all decoding operations.
@@ -17,11 +27,12 @@ public sealed class ArchiveEncoding
     public Func<byte[], int, int, string>? CustomDecoder { get; set; }
 
     public ArchiveEncoding()
-        : this(Encoding.Default) { }
+        : this(Encoding.Default, Encoding.Default) { }
 
-    public ArchiveEncoding(Encoding def)
+    public ArchiveEncoding(Encoding def, Encoding password)
     {
         Default = def;
+        Password = password;
     }
 
 #if !NETFRAMEWORK
@@ -33,7 +44,7 @@ public sealed class ArchiveEncoding
     public string Decode(byte[] bytes, int start, int length) =>
         GetDecoder().Invoke(bytes, start, length);
 
-    public Encoding GetEncoding() => Default ?? Encoding.UTF8;
+    public Encoding GetEncoding() => Forced ?? Default ?? Encoding.UTF8;
 
     public Func<byte[], int, int, string> GetDecoder() =>
         CustomDecoder ?? ((bytes, index, count) => GetEncoding().GetString(bytes, index, count));

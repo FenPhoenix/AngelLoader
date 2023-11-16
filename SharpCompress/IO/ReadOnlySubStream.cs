@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SharpCompress.IO;
 
-internal sealed class ReadOnlySubStream : NonDisposingStream
+internal class ReadOnlySubStream : NonDisposingStream
 {
     private long _position;
 

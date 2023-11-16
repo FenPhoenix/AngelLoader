@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SharpCompress.Common.Rar.Headers;
 
-internal sealed class MarkHeader : IRarHeader
+internal class MarkHeader : IRarHeader
 {
     private const int MAX_SFX_SIZE = 0x80000 - 16; //archive.cpp line 136
 

@@ -11,8 +11,19 @@ using System;
 
 namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
-internal sealed partial class FragmentedWindow
+internal partial class FragmentedWindow
 {
+    public FragmentedWindow()
+    {
+        //memset(Mem,0,sizeof(Mem));
+        //memset(MemSize,0,sizeof(MemSize));
+    }
+
+    //FragmentedWindow::~FragmentedWindow()
+    //{
+    //  Reset();
+    //}
+
     private void Reset()
     {
         for (uint I = 0; I < Mem.Length; I++)

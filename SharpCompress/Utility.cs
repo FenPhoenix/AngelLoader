@@ -2,13 +2,45 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using SharpCompress.Readers;
 
 namespace SharpCompress;
 
 [CLSCompliant(false)]
 public static class Utility
 {
-    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) => new(items);
+    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) =>
+        new ReadOnlyCollection<T>(items);
+
+    /// <summary>
+    /// Performs an unsigned bitwise right shift with the specified number
+    /// </summary>
+    /// <param name="number">Number to operate on</param>
+    /// <param name="bits">Amount of bits to shift</param>
+    /// <returns>The resulting number from the shift operation</returns>
+    public static int URShift(int number, int bits)
+    {
+        if (number >= 0)
+        {
+            return number >> bits;
+        }
+        return (number >> bits) + (2 << ~bits);
+    }
+
+    /// <summary>
+    /// Performs an unsigned bitwise right shift with the specified number
+    /// </summary>
+    /// <param name="number">Number to operate on</param>
+    /// <param name="bits">Amount of bits to shift</param>
+    /// <returns>The resulting number from the shift operation</returns>
+    public static long URShift(long number, int bits)
+    {
+        if (number >= 0)
+        {
+            return number >> bits;
+        }
+        return (number >> bits) + (2L << ~bits);
+    }
 
     public static void SetSize(this List<byte> list, int count)
     {
@@ -100,8 +132,8 @@ public static class Utility
         var buffer = GetTransferByteArray();
         try
         {
-            int read;
-            int readCount;
+            var read = 0;
+            var readCount = 0;
             do
             {
                 readCount = buffer.Length;
@@ -140,7 +172,7 @@ public static class Utility
         }
     }
 
-    private static DateTime DosDateToDateTime(ushort iDate, ushort iTime)
+    public static DateTime DosDateToDateTime(ushort iDate, ushort iTime)
     {
         var year = (iDate / 512) + 1980;
         var month = iDate % 512 / 32;
@@ -189,17 +221,22 @@ public static class Utility
 
     public static long TransferTo(
         this Stream source,
-        Stream destination
+        Stream destination,
+        Common.Entry entry,
+        IReaderExtractionListener readerExtractionListener
     )
     {
         var array = GetTransferByteArray();
         try
         {
+            var iterations = 0;
             long total = 0;
             while (ReadTransferBlock(source, array, out var count))
             {
                 total += count;
                 destination.Write(array, 0, count);
+                iterations++;
+                readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
             }
             return total;
         }

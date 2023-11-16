@@ -4,18 +4,20 @@ using SharpCompress.Common.Rar;
 
 namespace SharpCompress.Readers.Rar;
 
-internal sealed class SingleVolumeRarReader : RarReader
+internal class SingleVolumeRarReader : RarReader
 {
     private readonly Stream stream;
 
     internal SingleVolumeRarReader(Stream stream, ReaderOptions options)
         : base(options) => this.stream = stream;
 
-    protected override void ValidateArchive(RarVolume archive)
+    internal override void ValidateArchive(RarVolume archive)
     {
         if (archive.IsMultiVolume)
         {
-            throw new MultiVolumeExtractionException("Streamed archive is a Multi-volume archive.  Use different RarReader method to extract.");
+            var msg =
+                "Streamed archive is a Multi-volume archive.  Use different RarReader method to extract.";
+            throw new MultiVolumeExtractionException(msg);
         }
     }
 

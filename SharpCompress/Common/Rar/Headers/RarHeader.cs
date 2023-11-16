@@ -106,7 +106,7 @@ internal class RarHeader : IRarHeader
 
     protected bool IsRar5 => _isRar5;
 
-    private uint HeaderCrc { get; }
+    protected uint HeaderCrc { get; }
 
     internal byte HeaderCode { get; }
 

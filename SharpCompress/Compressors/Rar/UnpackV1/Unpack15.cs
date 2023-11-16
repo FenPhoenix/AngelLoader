@@ -17,11 +17,19 @@ internal partial class Unpack
 {
     private int readBorder;
 
+    private bool suspended;
+
+    internal bool unpAllBuf;
+
     //private ComprDataIO unpIO;
     private Stream readStream;
     private Stream writeStream;
 
+    internal bool unpSomeRead;
+
     private int readTop;
+
+    private long destUnpSize;
 
     private byte[] window;
 
@@ -217,7 +225,7 @@ internal partial class Unpack
 
     private void unpack15(bool solid)
     {
-        if (Suspended)
+        if (suspended)
         {
             unpPtr = wrPtr;
         }
@@ -235,15 +243,15 @@ internal partial class Unpack
             {
                 unpPtr = wrPtr;
             }
-            --DestSize;
+            --destUnpSize;
         }
-        if (DestSize >= 0)
+        if (destUnpSize >= 0)
         {
             getFlagsBuf();
             FlagsCnt = 8;
         }
 
-        while (DestSize >= 0)
+        while (destUnpSize >= 0)
         {
             unpPtr &= PackDef.MAXWINMASK;
 
@@ -254,7 +262,7 @@ internal partial class Unpack
             if (((wrPtr - unpPtr) & PackDef.MAXWINMASK) < 270 && wrPtr != unpPtr)
             {
                 oldUnpWriteBuf();
-                if (Suspended)
+                if (suspended)
                 {
                     return;
                 }
@@ -373,7 +381,7 @@ internal partial class Unpack
             BitField <<= 1;
             LCount = 0;
         }
-        BitField = (BitField >>> 8);
+        BitField = Utility.URShift(BitField, 8);
         if (AvrLn1 < 37)
         {
             for (Length = 0; ; Length++)
@@ -381,7 +389,7 @@ internal partial class Unpack
                 if (
                     (
                         (BitField ^ ShortXor1[Length])
-                        & (~((0xff >>> getShortLen1(Length))))
+                        & (~(Utility.URShift(0xff, getShortLen1(Length))))
                     ) == 0
                 )
                 {
@@ -484,7 +492,7 @@ internal partial class Unpack
         if (Nlzb > 0xff)
         {
             Nlzb = 0x90;
-            Nhfb = (Nhfb >>> 1);
+            Nhfb = Utility.URShift(Nhfb, 1);
         }
         OldAvr2 = AvrLn2;
 
@@ -517,7 +525,7 @@ internal partial class Unpack
             }
         }
         AvrLn2 += Length;
-        AvrLn2 -= (AvrLn2 >>> 5);
+        AvrLn2 -= Utility.URShift(AvrLn2, 5);
 
         BitField = GetBits();
         if (AvrPlcB > 0x28ff)
@@ -554,7 +562,7 @@ internal partial class Unpack
         ChSetB[DistancePlace] = ChSetB[NewDistancePlace];
         ChSetB[NewDistancePlace] = Distance;
 
-        Distance = (((Distance & 0xff00) | ((GetBits() >>> 8))) >>> 1);
+        Distance = Utility.URShift(((Distance & 0xff00) | (Utility.URShift(GetBits(), 8))), 1);
         AddBits(7);
 
         OldAvr3 = AvrLn3;
@@ -655,7 +663,7 @@ internal partial class Unpack
                 Length = (BitField & 0x4000) != 0 ? 4 : 3;
                 AddBits(1);
                 Distance = decodeNum(GetBits(), STARTHF2, DecHf2, PosHf2);
-                Distance = (Distance << 5) | ((GetBits() >>> 11));
+                Distance = (Distance << 5) | (Utility.URShift(GetBits(), 11));
                 AddBits(5);
                 oldCopyString(Distance, Length);
                 return;
@@ -669,16 +677,16 @@ internal partial class Unpack
             }
         }
         AvrPlc += BytePlace;
-        AvrPlc -= (AvrPlc >>> 8);
+        AvrPlc -= Utility.URShift(AvrPlc, 8);
         Nhfb += 16;
         if (Nhfb > 0xff)
         {
             Nhfb = 0x90;
-            Nlzb = (Nlzb >>> 1);
+            Nlzb = Utility.URShift(Nlzb, 1);
         }
 
-        window[unpPtr++] = (byte)((ChSet[BytePlace] >>> 8));
-        --DestSize;
+        window[unpPtr++] = (byte)(Utility.URShift(ChSet[BytePlace], 8));
+        --destUnpSize;
 
         while (true)
         {
@@ -707,7 +715,7 @@ internal partial class Unpack
         while (true)
         {
             Flags = ChSetC[FlagsPlace];
-            FlagBuf = (Flags >>> 8);
+            FlagBuf = Utility.URShift(Flags, 8);
             NewFlagsPlace = NToPlC[Flags++ & 0xff]++;
             if ((Flags & 0xff) != 0)
             {
@@ -753,7 +761,7 @@ internal partial class Unpack
         corrHuff(ChSetB, NToPlB);
     }
 
-    private static void corrHuff(int[] CharSet, int[] NumToPlace)
+    private void corrHuff(int[] CharSet, int[] NumToPlace)
     {
         int I,
             J,
@@ -776,7 +784,7 @@ internal partial class Unpack
 
     private void oldCopyString(int Distance, int Length)
     {
-        DestSize -= Length;
+        destUnpSize -= Length;
         while ((Length--) != 0)
         {
             window[unpPtr] = window[(unpPtr - Distance) & PackDef.MAXWINMASK];
@@ -793,7 +801,7 @@ internal partial class Unpack
         }
         AddBits(StartPos);
         return (
-            (((Num - (I != 0 ? DecTab[I - 1] : 0)) >>> (16 - StartPos)))
+            (Utility.URShift((Num - (I != 0 ? DecTab[I - 1] : 0)), (16 - StartPos)))
             + PosTab[StartPos]
         );
     }
@@ -802,11 +810,13 @@ internal partial class Unpack
     {
         if (unpPtr != wrPtr)
         {
+            unpSomeRead = true;
         }
         if (unpPtr < wrPtr)
         {
             writeStream.Write(window, wrPtr, -wrPtr & PackDef.MAXWINMASK);
             writeStream.Write(window, 0, unpPtr);
+            unpAllBuf = true;
         }
         else
         {

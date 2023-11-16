@@ -260,7 +260,7 @@ internal sealed partial class Unpack : BitInput
     // LengthTable contains the length in bits for every element of alphabet.
     // Dec is the structure to decode Huffman code/
     // Size is size of length table and DecodeNum field in Dec structure,
-    private static void MakeDecodeTables(byte[] LengthTable, int offset, DecodeTable Dec, uint Size)
+    private void MakeDecodeTables(byte[] LengthTable, int offset, DecodeTable Dec, uint Size)
     {
         // Size of alphabet and DecodePos array.
         Dec.MaxNum = Size;

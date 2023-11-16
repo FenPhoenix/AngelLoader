@@ -76,7 +76,7 @@ internal sealed class DecodeTable
     // 'ushort' saves some memory and even provides a little speed gain
     // comparting to 'uint' here.
     public readonly ushort[] DecodeNum = new ushort[LARGEST_TABLE_SIZE];
-}
+};
 
 internal struct UnpackBlockHeader
 {
@@ -86,7 +86,7 @@ internal struct UnpackBlockHeader
     public int HeaderSize;
     public bool LastBlockInFile;
     public bool TablePresent;
-}
+};
 
 internal struct UnpackBlockTables
 {
@@ -104,7 +104,7 @@ internal struct UnpackBlockTables
         RD = new DecodeTable();
         BD = new DecodeTable();
     }
-}
+};
 
 
 #if RarV2017_RAR_SMP
@@ -158,7 +158,7 @@ if (Decoded!=NULL)
 
 
 //struct UnpackFilter
-internal sealed class UnpackFilter
+internal class UnpackFilter
 {
     public byte Type;
     public uint BlockStart;
@@ -167,9 +167,9 @@ internal sealed class UnpackFilter
     //  uint Width;
     //  byte PosR;
     public bool NextWindow;
-}
+};
 
-internal sealed class AudioVariables // For RAR 2.0 archives only.
+internal class AudioVariables // For RAR 2.0 archives only.
 {
     public int K1, K2, K3, K4, K5;
     public int D1, D2, D3, D4;
@@ -177,12 +177,12 @@ internal sealed class AudioVariables // For RAR 2.0 archives only.
     public readonly uint[] Dif = new uint[11];
     public uint ByteCount;
     public int LastChar;
-}
+};
 
 
 // We can use the fragmented dictionary in case heap does not have the single
 // large enough memory block. It is slower than normal dictionary.
-internal sealed partial class FragmentedWindow
+internal partial class FragmentedWindow
 {
     private const int MAX_MEM_BLOCKS = 32;
 

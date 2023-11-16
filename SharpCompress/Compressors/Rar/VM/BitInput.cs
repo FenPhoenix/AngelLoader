@@ -5,11 +5,21 @@ internal class BitInput
     /// <summary> the max size of the input</summary>
     internal const int MAX_SIZE = 0x8000;
 
-    protected int inAddr;
-    public int InBit;
+    public int inAddr;
+    public int inBit;
 
     // TODO: rename var
-    public int InAddr;
+    public int InAddr
+    {
+        get => inAddr;
+        set => inAddr = value;
+    }
+    public int InBit
+    {
+        get => inBit;
+        set => inBit = value;
+    }
+    public bool ExternalBuffer;
 
     /// <summary>  </summary>
     internal BitInput() => InBuf = new byte[MAX_SIZE];
@@ -19,7 +29,7 @@ internal class BitInput
     internal void InitBitInput()
     {
         inAddr = 0;
-        InBit = 0;
+        inBit = 0;
     }
 
     internal void faddbits(uint bits) =>
@@ -32,9 +42,9 @@ internal class BitInput
     /// <param name="bits"></param>
     internal void AddBits(int bits)
     {
-        bits += InBit;
+        bits += inBit;
         inAddr += (bits >> 3);
-        InBit = bits & 7;
+        inBit = bits & 7;
     }
 
     internal uint fgetbits() =>
@@ -60,13 +70,13 @@ internal class BitInput
         //      return (BitField & 0xffff);
         (
             (
-                (
+                Utility.URShift(
                     (
                         ((InBuf[inAddr] & 0xff) << 16)
                         + ((InBuf[inAddr + 1] & 0xff) << 8)
                         + ((InBuf[inAddr + 2] & 0xff))
-                    ) >>>
-                    (8 - InBit)
+                    ),
+                    (8 - inBit)
                 )
             ) & 0xffff
         );

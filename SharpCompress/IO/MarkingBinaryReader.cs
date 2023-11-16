@@ -9,9 +9,9 @@ internal class MarkingBinaryReader : BinaryReader
     public MarkingBinaryReader(Stream stream)
         : base(stream) { }
 
-    public long CurrentReadByteCount { get; protected set; }
+    public virtual long CurrentReadByteCount { get; protected set; }
 
-    public void Mark() => CurrentReadByteCount = 0;
+    public virtual void Mark() => CurrentReadByteCount = 0;
 
     public override int Read() => throw new NotSupportedException();
 

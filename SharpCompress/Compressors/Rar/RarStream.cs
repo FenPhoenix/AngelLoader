@@ -124,9 +124,11 @@ internal class RarStream : Stream
             Buffer.BlockCopy(buffer, offset, tmpBuffer, tmpCount, count);
             tmpCount += count;
             tmpOffset = 0;
+            unpack.Suspended = true;
         }
         else
         {
+            unpack.Suspended = false;
         }
     }
 }

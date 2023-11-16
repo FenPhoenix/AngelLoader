@@ -2,7 +2,7 @@ using System;
 
 namespace SharpCompress.Common;
 
-public sealed class InvalidFormatException : ExtractionException
+public class InvalidFormatException : ExtractionException
 {
     public InvalidFormatException(string message)
         : base(message) { }

@@ -9,7 +9,9 @@ internal interface IRarUnpack
     void DoUnpack();
 
     // eg u/i pause/resume button
+    bool Suspended { get; set; }
 
     long DestSize { get; }
     int Char { get; }
+    int PpmEscChar { get; set; }
 }

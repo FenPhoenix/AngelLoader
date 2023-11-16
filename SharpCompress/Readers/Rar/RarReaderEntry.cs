@@ -5,7 +5,7 @@ using SharpCompress.Common.Rar.Headers;
 
 namespace SharpCompress.Readers.Rar;
 
-public sealed class RarReaderEntry : RarEntry
+public class RarReaderEntry : RarEntry
 {
     internal RarReaderEntry(bool solid, RarFilePart part)
     {
@@ -27,5 +27,5 @@ public sealed class RarReaderEntry : RarEntry
     /// <summary>
     /// The uncompressed file size
     /// </summary>
-    public long Size => Part.FileHeader.UncompressedSize;
+    public override long Size => Part.FileHeader.UncompressedSize;
 }

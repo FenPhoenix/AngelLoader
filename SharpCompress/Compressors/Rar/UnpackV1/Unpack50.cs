@@ -19,6 +19,7 @@ internal partial class Unpack
     // so we keep number of buffered filter in unpacker reasonable.
     private const int UNPACK_MAX_WRITE = 0x400000;
 
+    private bool TablesRead5;
     private int WriteBorder;
 
     // TODO: see logic in unpack.cpp Unpack::Init()
@@ -36,7 +37,7 @@ internal partial class Unpack
         get => readBorder;
         set => readBorder = value;
     }
-    private long DestUnpSize => DestSize;
+    private long DestUnpSize => destUnpSize;
     private long WrittenFileSize => writtenFileSize;
     private byte[] Window => window;
 
@@ -63,13 +64,15 @@ internal partial class Unpack
     private List<UnpackFilter> Filters => filters;
 
     // TODO: make sure these aren't already somewhere else
-    private int BlockSize;
-    private int BlockBitSize;
-    private int BlockStart;
-    private bool LastBlockInFile;
+    public int BlockSize;
+    public int BlockBitSize;
+    public int BlockStart;
+    public bool LastBlockInFile;
 
-    private void Unpack5(bool Solid)
+    public void Unpack5(bool Solid)
     {
+        FileExtracted = true;
+
         if (!Suspended)
         {
             UnpInitData(Solid);
@@ -81,7 +84,10 @@ internal partial class Unpack
             // Check TablesRead5 to be sure that we read tables at least once
             // regardless of current block header TablePresent flag.
             // So we can safefly use these tables below.
-            return;
+            if (!ReadBlockHeader() || !ReadTables() || !TablesRead5)
+            {
+                return;
+            }
         }
 
         while (true)
@@ -129,6 +135,7 @@ internal partial class Unpack
 
                 if (Suspended)
                 {
+                    FileExtracted = false;
                     return;
                 }
             }
@@ -273,7 +280,7 @@ internal partial class Unpack
 
     private bool ReadFilter(UnpackFilter Filter)
     {
-        if (Inp.InAddr > ReadTop - 16)
+        if (!Inp.ExternalBuffer && Inp.InAddr > ReadTop - 16)
         {
             if (!UnpReadBuf())
             {
@@ -281,8 +288,8 @@ internal partial class Unpack
             }
         }
 
-        Filter.BlockStart = (int)ReadFilterData();
-        Filter.BlockLength = (int)ReadFilterData();
+        Filter.uBlockStart = ReadFilterData();
+        Filter.uBlockLength = ReadFilterData();
         if (Filter.BlockLength > MAX_FILTER_BLOCK_SIZE)
         {
             Filter.BlockLength = 0;
@@ -295,6 +302,7 @@ internal partial class Unpack
         if (Filter.Type == (byte)FilterType.FILTER_DELTA)
         {
             //Filter.Channels=(Inp.fgetbits()>>11)+1;
+            Filter.Channels = (byte)((Inp.fgetbits() >> 11) + 1);
             Inp.faddbits(5);
         }
 
@@ -317,7 +325,7 @@ internal partial class Unpack
         // flag and process this filter only after processing that older data.
         Filter.NextWindow = WrPtr != UnpPtr && ((WrPtr - UnpPtr) & MaxWinMask) <= Filter.BlockStart;
 
-        Filter.BlockStart = (int)(uint)((Filter.BlockStart + UnpPtr) & MaxWinMask);
+        Filter.uBlockStart = (uint)((Filter.BlockStart + UnpPtr) & MaxWinMask);
         Filters.Add(Filter);
         return true;
     }
@@ -653,7 +661,7 @@ internal partial class Unpack
 
     private bool ReadBlockHeader()
     {
-        if (Inp.InAddr > ReadTop - 7)
+        if (!Inp.ExternalBuffer && Inp.InAddr > ReadTop - 7)
         {
             if (!UnpReadBuf())
             {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
-public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
+public class RarArchiveEntry : RarEntry, IArchiveEntry
 {
     private readonly ICollection<RarFilePart> parts;
     private readonly RarArchive archive;
@@ -28,13 +27,13 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
         IsSolid = FileHeader.IsSolid;
     }
 
-    public IDisposable Archive => archive;
+    public IArchive Archive => archive;
 
     internal override IEnumerable<FilePart> Parts => parts;
 
     internal override FileHeader FileHeader => parts.First().FileHeader;
 
-    public long Size
+    public override long Size
     {
         get
         {
@@ -59,14 +58,14 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
             return new RarStream(
                 archive.UnpackV1.Value,
                 FileHeader,
-                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
+                new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
             );
         }
 
         return new RarStream(
             archive.UnpackV2017.Value,
             FileHeader,
-            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>())
+            new MultiVolumeReadOnlyStream(Parts.Cast<RarFilePart>(), archive)
         );
     }
 
@@ -74,9 +73,8 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
     {
         get
         {
-            var headers = parts.Select(static x => x.FileHeader);
-            var fileHeaders = headers as FileHeader[] ?? headers.ToArray();
-            return !fileHeaders.First().IsSplitBefore && !fileHeaders.Last().IsSplitAfter;
+            var headers = parts.Select(x => x.FileHeader);
+            return !headers.First().IsSplitBefore && !headers.Last().IsSplitAfter;
         }
     }
 

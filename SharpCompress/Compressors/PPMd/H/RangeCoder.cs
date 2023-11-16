@@ -1,14 +1,15 @@
 #nullable disable
 
 using System.IO;
+using System.Text;
 using SharpCompress.Compressors.Rar;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal sealed class RangeCoder
+internal class RangeCoder
 {
-    private const int TOP = 1 << 24;
-    private const int BOT = 1 << 15;
+    internal const int TOP = 1 << 24;
+    internal const int BOT = 1 << 15;
     internal const long UINT_MASK = 0xFFFFffffL;
 
     // uint low, code, range;
@@ -24,19 +25,13 @@ internal sealed class RangeCoder
         Init();
     }
 
-    internal RangeCoder(Stream stream)
-    {
-        _stream = stream;
-        Init();
-    }
-
     private void Init()
     {
         SubRange = new SubRange();
 
         _low = _code = 0L;
         _range = 0xFFFFffffL;
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             _code = ((_code << 8) | Char) & UINT_MASK;
         }
@@ -47,7 +42,7 @@ internal sealed class RangeCoder
         get
         {
             _range = (_range / SubRange.Scale) & UINT_MASK;
-            return (int)((_code - _low) / _range);
+            return (int)((_code - _low) / (_range));
         }
     }
 
@@ -67,13 +62,12 @@ internal sealed class RangeCoder
         }
     }
 
-    //internal SubRange SubRange { get; private set; }
-    internal SubRange SubRange;
+    internal SubRange SubRange { get; private set; }
 
     internal long GetCurrentShiftCount(int shift)
     {
-        _range >>>= shift;
-        return ((_code - _low) / _range) & UINT_MASK;
+        _range = Utility.URShift(_range, shift);
+        return ((_code - _low) / (_range)) & UINT_MASK;
     }
 
     internal void Decode()
@@ -92,7 +86,7 @@ internal sealed class RangeCoder
         //		}
 
         // Rewrote for clarity
-        bool c2 = false;
+        var c2 = false;
         while ((_low ^ (_low + _range)) < TOP || (c2 = _range < BOT))
         {
             if (c2)
@@ -105,9 +99,26 @@ internal sealed class RangeCoder
             _low = (_low << 8) & UINT_MASK;
         }
     }
+
+    // Debug
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("RangeCoder[");
+        buffer.Append("\n  low=");
+        buffer.Append(_low);
+        buffer.Append("\n  code=");
+        buffer.Append(_code);
+        buffer.Append("\n  range=");
+        buffer.Append(_range);
+        buffer.Append("\n  subrange=");
+        buffer.Append(SubRange);
+        buffer.Append(']');
+        return buffer.ToString();
+    }
 }
 
-internal sealed class SubRange
+internal class SubRange
 {
     // uint LowCount, HighCount, scale;
     private long _lowCount,
@@ -132,5 +143,20 @@ internal sealed class SubRange
     {
         get => _scale;
         set => _scale = value & RangeCoder.UINT_MASK;
+    }
+
+    // Debug
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("SubRange[");
+        buffer.Append("\n  lowCount=");
+        buffer.Append(_lowCount);
+        buffer.Append("\n  highCount=");
+        buffer.Append(_highCount);
+        buffer.Append("\n  scale=");
+        buffer.Append(_scale);
+        buffer.Append(']');
+        return buffer.ToString();
     }
 }

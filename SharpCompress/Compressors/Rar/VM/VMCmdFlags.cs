@@ -1,10 +1,10 @@
 namespace SharpCompress.Compressors.Rar.VM;
 
-internal static class VMCmdFlags
+internal class VMCmdFlags
 {
-    private const byte VMCF_OP0 = 0;
-    private const byte VMCF_OP1 = 1;
-    private const byte VMCF_OP2 = 2;
+    public const byte VMCF_OP0 = 0;
+    public const byte VMCF_OP1 = 1;
+    public const byte VMCF_OP2 = 2;
     public const byte VMCF_OPMASK = 3;
     public const byte VMCF_BYTEMODE = 4;
     public const byte VMCF_JUMP = 8;
@@ -12,7 +12,7 @@ internal static class VMCmdFlags
     public const byte VMCF_USEFLAGS = 32;
     public const byte VMCF_CHFLAGS = 64;
 
-    public static readonly byte[] VM_CmdFlags =
+    public static byte[] VM_CmdFlags =
     {
         VMCF_OP2 | VMCF_BYTEMODE,
         VMCF_OP2 | VMCF_BYTEMODE | VMCF_CHFLAGS,

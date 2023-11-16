@@ -174,7 +174,7 @@ internal static class UnpackUtility
         input.AddBits(bits);
         var N =
             dec.DecodePos[bits]
-            + ((((int)bitField - decodeLen[bits - 1]) >>> (16 - bits)));
+            + (Utility.URShift(((int)bitField - decodeLen[bits - 1]), (16 - bits)));
         if (N >= dec.MaxNum)
         {
             N = 0;

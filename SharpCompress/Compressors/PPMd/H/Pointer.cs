@@ -9,8 +9,7 @@ internal abstract class Pointer
     /// </param>
     internal Pointer(byte[] mem) => Memory = mem;
 
-    //internal byte[] Memory { get; private set; }
-    internal byte[] Memory;
+    internal byte[] Memory { get; private set; }
 
     internal virtual int Address { get; set; }
 

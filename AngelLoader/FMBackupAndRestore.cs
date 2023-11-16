@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
-using SharpCompress.Archives.SevenZip;
+using SharpCompress_7z.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;

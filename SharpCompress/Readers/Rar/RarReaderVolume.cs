@@ -6,7 +6,7 @@ using SharpCompress.IO;
 
 namespace SharpCompress.Readers.Rar;
 
-public sealed class RarReaderVolume : RarVolume
+public class RarReaderVolume : RarVolume
 {
     internal RarReaderVolume(Stream stream, ReaderOptions options, int index = 0)
         : base(StreamingMode.Streaming, stream, options, index) { }

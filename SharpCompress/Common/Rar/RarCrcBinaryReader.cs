@@ -15,6 +15,10 @@ internal class RarCrcBinaryReader : MarkingBinaryReader
 
     public void ResetCrc() => _currentCrc = 0xffffffff;
 
+    protected void UpdateCrc(byte b) => _currentCrc = RarCRC.CheckCrc(_currentCrc, b);
+
+    protected byte[] ReadBytesNoCrc(int count) => base.ReadBytes(count);
+
     public override byte ReadByte()
     {
         var b = base.ReadByte();

@@ -15,7 +15,7 @@ using System.Text;
 
 namespace SharpCompress.Common.Rar.Headers;
 
-internal sealed class FileHeader : RarHeader
+internal class FileHeader : RarHeader
 {
     private uint _fileCrc;
 
@@ -389,6 +389,8 @@ internal sealed class FileHeader : RarHeader
         return path;
     }
 
+    public override string ToString() => FileName;
+
     private ushort Flags { get; set; }
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;
@@ -448,7 +450,7 @@ internal sealed class FileHeader : RarHeader
 
     public bool IsDirectory => HasFlag(IsRar5 ? FileFlagsV5.DIRECTORY : FileFlagsV4.DIRECTORY);
 
-    private bool isEncryptedRar5;
+    private bool isEncryptedRar5 = false;
     public bool IsEncrypted => IsRar5 ? isEncryptedRar5 : HasFlag(FileFlagsV4.PASSWORD);
 
     internal DateTime? FileLastModifiedTime { get; private set; }

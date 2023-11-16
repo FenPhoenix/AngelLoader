@@ -1,22 +1,38 @@
+using System.Text;
+
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal sealed class See2Context
+internal class See2Context
 {
-    public int Mean
+    public virtual int Mean
     {
         get
         {
-            int retVal = _summ >>> _shift;
+            var retVal = Utility.URShift(_summ, _shift);
             _summ -= retVal;
             return retVal + ((retVal == 0) ? 1 : 0);
         }
     }
 
-    public int Summ
+    public virtual int Count
+    {
+        get => _count;
+        set => _count = value & 0xff;
+    }
+
+    public virtual int Shift
+    {
+        get => _shift;
+        set => _shift = value & 0xff;
+    }
+
+    public virtual int Summ
     {
         get => _summ;
         set => _summ = value & 0xffff;
     }
+
+    public const int SIZE = 4;
 
     // ushort Summ;
     private int _summ;
@@ -34,7 +50,7 @@ internal sealed class See2Context
         _count = 4;
     }
 
-    public void Update()
+    public virtual void Update()
     {
         if (_shift < ModelPpm.PERIOD_BITS && --_count == 0)
         {
@@ -46,5 +62,21 @@ internal sealed class See2Context
         _shift &= 0xff;
     }
 
-    public void IncSumm(int dSumm) => Summ += dSumm;
+    public virtual void IncSumm(int dSumm) => Summ += dSumm;
+
+    public override string ToString()
+    {
+        var buffer = new StringBuilder();
+        buffer.Append("SEE2Context[");
+        buffer.Append("\n  size=");
+        buffer.Append(SIZE);
+        buffer.Append("\n  summ=");
+        buffer.Append(_summ);
+        buffer.Append("\n  shift=");
+        buffer.Append(_shift);
+        buffer.Append("\n  count=");
+        buffer.Append(_count);
+        buffer.Append("\n]");
+        return buffer.ToString();
+    }
 }

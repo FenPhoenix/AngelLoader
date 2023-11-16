@@ -1,6 +1,6 @@
 namespace SharpCompress.Compressors.Rar.UnpackV1.Decode;
 
-internal sealed class AudioVariables
+internal class AudioVariables
 {
     internal AudioVariables() => Dif = new int[11];
 

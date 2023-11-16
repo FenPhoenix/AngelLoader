@@ -7,7 +7,7 @@ namespace SharpCompress.Common.Rar.Headers;
 /// </summary>
 internal static class FileNameDecoder
 {
-    private static int GetChar(byte[] name, int pos) => name[pos] & 0xff;
+    internal static int GetChar(byte[] name, int pos) => name[pos] & 0xff;
 
     internal static string Decode(byte[] name, int encPos)
     {
@@ -15,8 +15,8 @@ internal static class FileNameDecoder
         var flags = 0;
         var flagBits = 0;
 
-        int low;
-        int high;
+        var low = 0;
+        var high = 0;
         var highByte = GetChar(name, encPos++);
         var buf = new StringBuilder();
         while (encPos < name.Length)

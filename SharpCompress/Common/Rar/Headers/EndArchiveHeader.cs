@@ -2,7 +2,7 @@
 
 namespace SharpCompress.Common.Rar.Headers;
 
-internal sealed class EndArchiveHeader : RarHeader
+internal class EndArchiveHeader : RarHeader
 {
     public EndArchiveHeader(RarHeader header, RarCrcBinaryReader reader)
         : base(header, reader, HeaderType.EndArchive) { }

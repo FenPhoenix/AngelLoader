@@ -26,8 +26,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 internal struct MemoryNode
 {
     public uint _address;
-    public readonly byte[] _memory;
-    public static readonly MemoryNode ZERO = new MemoryNode(0, null);
+    public byte[] _memory;
     public const int SIZE = 12;
 
     /// <summary>
@@ -37,111 +36,6 @@ internal struct MemoryNode
     {
         _address = address;
         _memory = memory;
-    }
-
-    /// <summary>
-    /// Gets or sets the stamp.
-    /// </summary>
-    public uint Stamp
-    {
-        get =>
-            _memory[_address]
-            | (((uint)_memory[_address + 1]) << 8)
-            | (((uint)_memory[_address + 2]) << 16)
-            | (((uint)_memory[_address + 3]) << 24);
-        set
-        {
-            _memory[_address] = (byte)value;
-            _memory[_address + 1] = (byte)(value >> 8);
-            _memory[_address + 2] = (byte)(value >> 16);
-            _memory[_address + 3] = (byte)(value >> 24);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the next memory node.
-    /// </summary>
-    public MemoryNode Next
-    {
-        get =>
-            new MemoryNode(
-                _memory[_address + 4]
-                    | (((uint)_memory[_address + 5]) << 8)
-                    | (((uint)_memory[_address + 6]) << 16)
-                    | (((uint)_memory[_address + 7]) << 24),
-                _memory
-            );
-        set
-        {
-            _memory[_address + 4] = (byte)value._address;
-            _memory[_address + 5] = (byte)(value._address >> 8);
-            _memory[_address + 6] = (byte)(value._address >> 16);
-            _memory[_address + 7] = (byte)(value._address >> 24);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the unit count.
-    /// </summary>
-    public uint UnitCount
-    {
-        readonly get =>
-            _memory[_address + 8]
-            | (((uint)_memory[_address + 9]) << 8)
-            | (((uint)_memory[_address + 10]) << 16)
-            | (((uint)_memory[_address + 11]) << 24);
-        set
-        {
-            _memory[_address + 8] = (byte)value;
-            _memory[_address + 9] = (byte)(value >> 8);
-            _memory[_address + 10] = (byte)(value >> 16);
-            _memory[_address + 11] = (byte)(value >> 24);
-        }
-    }
-
-    /// <summary>
-    /// Gets whether there is a next memory node available.
-    /// </summary>
-    public bool Available => Next._address != 0;
-
-    /// <summary>
-    /// Link in the provided memory node.
-    /// </summary>
-    /// <param name="memoryNode"></param>
-    public void Link(MemoryNode memoryNode)
-    {
-        memoryNode.Next = Next;
-        Next = memoryNode;
-    }
-
-    /// <summary>
-    /// Unlink this memory node.
-    /// </summary>
-    public void Unlink() => Next = Next.Next;
-
-    /// <summary>
-    /// Insert the memory node into the linked list.
-    /// </summary>
-    /// <param name="memoryNode"></param>
-    /// <param name="unitCount"></param>
-    public void Insert(MemoryNode memoryNode, uint unitCount)
-    {
-        Link(memoryNode);
-        memoryNode.Stamp = uint.MaxValue;
-        memoryNode.UnitCount = unitCount;
-        Stamp++;
-    }
-
-    /// <summary>
-    /// Remove this memory node from the linked list.
-    /// </summary>
-    /// <returns></returns>
-    public MemoryNode Remove()
-    {
-        MemoryNode next = Next;
-        Unlink();
-        Stamp--;
-        return next;
     }
 
     /// <summary>
@@ -223,7 +117,7 @@ internal struct MemoryNode
     /// </summary>
     /// <returns>true if obj and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to.</param>
-    public readonly override bool Equals(object obj)
+    public override bool Equals(object obj)
     {
         if (obj is MemoryNode memoryNode)
         {

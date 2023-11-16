@@ -16,7 +16,7 @@ public sealed class LazyReadOnlyCollection<T> : ICollection<T>
 
     public T this[int index] => backing[index];
 
-    private sealed class LazyLoader : IEnumerator<T>
+    private class LazyLoader : IEnumerator<T>
     {
         private readonly LazyReadOnlyCollection<T> lazyReadOnlyCollection;
         private bool disposed;
@@ -73,7 +73,7 @@ public sealed class LazyReadOnlyCollection<T> : ICollection<T>
     {
         if (!fullyLoaded)
         {
-            this.ForEach(static _ => { });
+            this.ForEach(x => { });
             fullyLoaded = true;
         }
     }

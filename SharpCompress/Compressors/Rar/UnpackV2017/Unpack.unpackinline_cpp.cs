@@ -100,7 +100,7 @@ internal partial class Unpack
         }
     }
 
-    private static uint DecodeNumber(BitInput Inp, DecodeTable Dec)
+    private uint DecodeNumber(BitInput Inp, DecodeTable Dec)
     {
         // Left aligned 15 bit length raw bit field.
         var BitField = Inp.getbits() & 0xfffe;
@@ -148,7 +148,7 @@ internal partial class Unpack
         return Dec.DecodeNum[Pos];
     }
 
-    private static uint SlotToLength(BitInput Inp, uint Slot)
+    private uint SlotToLength(BitInput Inp, uint Slot)
     {
         uint LBits,
             Length = 2;

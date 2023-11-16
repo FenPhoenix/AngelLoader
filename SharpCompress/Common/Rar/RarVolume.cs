@@ -14,17 +14,17 @@ namespace SharpCompress.Common.Rar;
 public abstract class RarVolume : Volume
 {
     private readonly RarHeaderFactory _headerFactory;
-    private int _maxCompressionAlgorithm;
+    internal int _maxCompressionAlgorithm;
 
     internal RarVolume(StreamingMode mode, Stream stream, ReaderOptions options, int index = 0)
         : base(stream, options, index) => _headerFactory = new RarHeaderFactory(mode, options);
 
 #nullable disable
-    private ArchiveHeader ArchiveHeader { get; set; }
+    internal ArchiveHeader ArchiveHeader { get; private set; }
 
 #nullable enable
 
-    private StreamingMode Mode => _headerFactory.StreamingMode;
+    internal StreamingMode Mode => _headerFactory.StreamingMode;
 
     internal abstract IEnumerable<RarFilePart> ReadFileParts();
 
@@ -70,7 +70,7 @@ public abstract class RarVolume : Volume
                             var part = CreateFilePart(lastMarkHeader!, fh);
                             var buffer = new byte[fh.CompressedSize];
                             part.GetCompressedStream().Read(buffer, 0, buffer.Length);
-                            System.Text.Encoding.UTF8.GetString(
+                            Comment = System.Text.Encoding.UTF8.GetString(
                                 buffer,
                                 0,
                                 buffer.Length - 1
@@ -102,7 +102,7 @@ public abstract class RarVolume : Volume
     /// <summary>
     /// RarArchive is part of a multi-part archive.
     /// </summary>
-    public bool IsMultiVolume
+    public virtual bool IsMultiVolume
     {
         get
         {
@@ -123,4 +123,6 @@ public abstract class RarVolume : Volume
             return ArchiveHeader.IsSolid;
         }
     }
+
+    public string? Comment { get; internal set; }
 }

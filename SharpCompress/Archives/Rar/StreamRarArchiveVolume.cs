@@ -7,7 +7,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
-internal sealed class StreamRarArchiveVolume : RarVolume
+internal class StreamRarArchiveVolume : RarVolume
 {
     internal StreamRarArchiveVolume(Stream stream, ReaderOptions options, int index = 0)
         : base(StreamingMode.Seekable, stream, options, index) { }
@@ -15,5 +15,5 @@ internal sealed class StreamRarArchiveVolume : RarVolume
     internal override IEnumerable<RarFilePart> ReadFileParts() => GetVolumeFileParts();
 
     internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
-        new SeekableFilePart(markHeader, fileHeader, Index, Stream);
+        new SeekableFilePart(markHeader, fileHeader, Index, Stream, ReaderOptions.Password);
 }

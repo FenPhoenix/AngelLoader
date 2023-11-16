@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using AL_Common;
 using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 
@@ -17,10 +16,18 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
     private IEnumerator<RarFilePart> filePartEnumerator;
     private Stream currentStream;
 
+    private readonly IExtractionListener streamListener;
+
+    private long currentPartTotalReadBytes;
+    private long currentEntryTotalReadBytes;
+
     internal MultiVolumeReadOnlyStream(
-        IEnumerable<RarFilePart> parts
+        IEnumerable<RarFilePart> parts,
+        IExtractionListener streamListener
     )
     {
+        this.streamListener = streamListener;
+
         filePartEnumerator = parts.GetEnumerator();
         filePartEnumerator.MoveNext();
         InitializeNextFilePart();
@@ -46,7 +53,15 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
         currentPosition = 0;
         currentStream = filePartEnumerator.Current.GetCompressedStream();
 
+        currentPartTotalReadBytes = 0;
+
         CurrentCrc = filePartEnumerator.Current.FileHeader.FileCrc;
+
+        streamListener.FireFilePartExtractionBegin(
+            filePartEnumerator.Current.FilePartName,
+            filePartEnumerator.Current.FileHeader.CompressedSize,
+            filePartEnumerator.Current.FileHeader.UncompressedSize
+        );
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -79,7 +94,9 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
             {
                 if (filePartEnumerator.Current.FileHeader.R4Salt != null)
                 {
-                    ThrowHelper.EncryptionNotSupported();
+                    throw new InvalidFormatException(
+                        "Sharpcompress currently does not support multi-volume decryption."
+                    );
                 }
                 var fileName = filePartEnumerator.Current.FileHeader.FileName;
                 if (!filePartEnumerator.MoveNext())
@@ -96,6 +113,12 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
                 break;
             }
         }
+        currentPartTotalReadBytes += totalRead;
+        currentEntryTotalReadBytes += totalRead;
+        streamListener.FireCompressedBytesRead(
+            currentPartTotalReadBytes,
+            currentEntryTotalReadBytes
+        );
         return totalRead;
     }
 
