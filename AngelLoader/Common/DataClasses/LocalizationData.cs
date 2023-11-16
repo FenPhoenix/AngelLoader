@@ -256,7 +256,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extraction failed fully or partially.";
         internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-Zip extraction failed fully or partially.";
-        internal readonly string Extract_RarExtractFailedFullyOrPartially = "Rar extraction failed fully or partially.";
+        internal readonly string Extract_RarExtractFailedFullyOrPartially = "RAR extraction failed fully or partially.";
         [FenGenBlankLine]
         internal readonly string Scan_ExceptionInScanOne = "There was a problem scanning the FM. See the log file for error details.";
         internal readonly string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
