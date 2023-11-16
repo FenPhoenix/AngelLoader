@@ -21,7 +21,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// <see cref="_shift"/> is a field rather than a property).
 /// </remarks>
 /// </remarks>
-internal class See2Context
+internal sealed class See2Context
 {
     private const byte PERIOD_BIT_COUNT = 7;
 

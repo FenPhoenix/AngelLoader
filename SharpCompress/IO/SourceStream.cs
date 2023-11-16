@@ -6,7 +6,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.IO;
 
-public class SourceStream : Stream
+public sealed class SourceStream : Stream
 {
     private long _prevSize;
     private readonly List<FileInfo> _files;

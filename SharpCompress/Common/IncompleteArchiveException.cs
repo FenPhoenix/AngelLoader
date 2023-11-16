@@ -1,6 +1,6 @@
 namespace SharpCompress.Common;
 
-public class IncompleteArchiveException : ArchiveException
+public sealed class IncompleteArchiveException : ArchiveException
 {
     public IncompleteArchiveException(string message)
         : base(message) { }

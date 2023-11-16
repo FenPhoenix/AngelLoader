@@ -4,7 +4,7 @@ using SharpCompress.Compressors.PPMd.I1;
 
 namespace SharpCompress.Compressors.PPMd;
 
-public class PpmdProperties
+public sealed class PpmdProperties
 {
     private int _allocatorSize;
     internal Allocator? _allocator;

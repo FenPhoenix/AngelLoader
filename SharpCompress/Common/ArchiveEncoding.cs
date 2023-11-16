@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SharpCompress.Common;
 
-public class ArchiveEncoding
+public sealed class ArchiveEncoding
 {
     /// <summary>
     /// Default encoding to use when archive format doesn't specify one.

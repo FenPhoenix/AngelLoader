@@ -6,7 +6,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// instances of <see cref="Pointer"/> (which simply contain a single address value, representing a location
 /// in the large array).  Callers can then cast <see cref="Pointer"/> to one of the following structures (all
 /// of which also simply contain a single address value):
-internal class Allocator
+internal sealed class Allocator
 {
     private const uint UNIT_SIZE = 12;
     private const uint LOCAL_OFFSET = 4; // reserve the first four bytes for Pointer.Zero

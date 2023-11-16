@@ -7,7 +7,7 @@ using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
-internal class StreamRarArchiveVolume : RarVolume
+internal sealed class StreamRarArchiveVolume : RarVolume
 {
     internal StreamRarArchiveVolume(Stream stream, ReaderOptions options, int index = 0)
         : base(StreamingMode.Seekable, stream, options, index) { }

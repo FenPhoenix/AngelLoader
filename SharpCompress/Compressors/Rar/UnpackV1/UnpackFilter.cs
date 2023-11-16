@@ -2,7 +2,7 @@ using SharpCompress.Compressors.Rar.VM;
 
 namespace SharpCompress.Compressors.Rar.UnpackV1;
 
-internal class UnpackFilter
+internal sealed class UnpackFilter
 {
     public byte Type;
     public byte Channels;

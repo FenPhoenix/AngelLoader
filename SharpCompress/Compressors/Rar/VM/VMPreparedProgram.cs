@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SharpCompress.Compressors.Rar.VM;
 
-internal class VMPreparedProgram
+internal sealed class VMPreparedProgram
 {
     internal List<VMPreparedCommand> Commands = new List<VMPreparedCommand>();
     internal List<VMPreparedCommand> AltCommands = new List<VMPreparedCommand>();

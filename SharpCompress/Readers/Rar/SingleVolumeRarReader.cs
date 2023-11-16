@@ -4,7 +4,7 @@ using SharpCompress.Common.Rar;
 
 namespace SharpCompress.Readers.Rar;
 
-internal class SingleVolumeRarReader : RarReader
+internal sealed class SingleVolumeRarReader : RarReader
 {
     private readonly Stream stream;
 

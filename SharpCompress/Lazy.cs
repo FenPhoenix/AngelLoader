@@ -4,7 +4,7 @@ using System;
 
 namespace SharpCompress;
 
-public class Lazy<T>
+public sealed class Lazy<T>
 {
     private readonly Func<T> _lazyFunc;
     private bool _evaluated;

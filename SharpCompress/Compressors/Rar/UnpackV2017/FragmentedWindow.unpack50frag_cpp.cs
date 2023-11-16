@@ -11,7 +11,7 @@ using System;
 
 namespace SharpCompress.Compressors.Rar.UnpackV2017;
 
-internal partial class FragmentedWindow
+internal sealed partial class FragmentedWindow
 {
     public FragmentedWindow()
     {

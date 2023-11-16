@@ -3,7 +3,7 @@ using SharpCompress.Common;
 
 namespace SharpCompress.Readers;
 
-public class ReaderProgress
+public sealed class ReaderProgress
 {
     private readonly IEntry _entry;
     public long BytesTransferred { get; }

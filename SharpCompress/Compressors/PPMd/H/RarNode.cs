@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class RarNode : Pointer
+internal sealed class RarNode : Pointer
 {
     private int _next; //rarnode pointer
 

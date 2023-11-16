@@ -13,7 +13,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// Note that in most cases fields are used rather than properties for performance reasons (for example,
 /// <see cref="_scale"/> is a field rather than a property).
 /// </remarks>
-internal class Coder
+internal sealed class Coder
 {
     private const uint RANGE_TOP = 1 << 24;
     private const uint RANGE_BOTTOM = 1 << 15;

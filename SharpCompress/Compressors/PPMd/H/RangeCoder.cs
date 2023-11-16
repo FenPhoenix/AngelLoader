@@ -6,7 +6,7 @@ using SharpCompress.Compressors.Rar;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class RangeCoder
+internal sealed class RangeCoder
 {
     internal const int TOP = 1 << 24;
     internal const int BOT = 1 << 15;
@@ -124,7 +124,7 @@ internal class RangeCoder
     }
 }
 
-internal class SubRange
+internal sealed class SubRange
 {
     // uint LowCount, HighCount, scale;
     private long _lowCount,

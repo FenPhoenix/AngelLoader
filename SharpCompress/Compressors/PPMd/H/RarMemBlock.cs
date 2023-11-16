@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
-internal class RarMemBlock : Pointer
+internal sealed class RarMemBlock : Pointer
 {
     public const int SIZE = 12;
 

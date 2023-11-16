@@ -12,7 +12,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// the instance rather than just copying a reference to the same instance).
 /// </para>
 /// </remarks>
-internal partial class Model
+internal sealed partial class Model
 {
     /// <summary>
     /// The structure which represents the current PPM context.  This is 12 bytes in size.

@@ -11,7 +11,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// <summary>
 /// The model.
 /// </summary>
-internal partial class Model
+internal sealed partial class Model
 {
     public const uint SIGNATURE = 0x84acaf8fU;
     public const char VARIANT = 'I';
