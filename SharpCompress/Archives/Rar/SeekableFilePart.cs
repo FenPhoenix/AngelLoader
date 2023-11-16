@@ -1,4 +1,5 @@
 using System.IO;
+using AL_Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 
@@ -27,7 +28,7 @@ internal class SeekableFilePart : RarFilePart
         stream.Position = FileHeader.DataStartPosition;
         if (FileHeader.R4Salt != null)
         {
-            return new RarCryptoWrapper(stream, password!, FileHeader.R4Salt);
+            ThrowHelper.EncryptionNotSupported();
         }
         return stream;
     }
