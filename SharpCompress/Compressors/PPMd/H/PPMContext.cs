@@ -284,7 +284,7 @@ internal sealed class PpmContext : Pointer
             model.BinSumm[off1][off2] = bs;
             model.Coder.SubRange.HighCount = ModelPpm.BIN_SCALE;
             model.InitEsc = EXP_ESCAPE[Utility.URShift(bs, 10)];
-            model.NumMasked = 1;
+            model.MumMasked = 1;
             model.CharMask[rs.Symbol] = model.EscCount;
             model.PrevSuccess = 0;
             model.FoundState.Address = 0;
@@ -345,7 +345,7 @@ internal sealed class PpmContext : Pointer
     {
         long count;
         int hiCnt,
-            i = NumStats - model.NumMasked;
+            i = NumStats - model.MumMasked;
         var psee2C = MakeEscFreq2(model, i);
         var coder = model.Coder;
 
@@ -389,7 +389,7 @@ internal sealed class PpmContext : Pointer
         {
             coder.SubRange.LowCount = hiCnt;
             coder.SubRange.HighCount = coder.SubRange.Scale;
-            i = NumStats - model.NumMasked; // ->NumMasked;
+            i = NumStats - model.MumMasked; // ->NumMasked;
             pps--;
             do
             {
@@ -397,7 +397,7 @@ internal sealed class PpmContext : Pointer
                 model.CharMask[temp.Symbol] = model.EscCount;
             } while (--i != 0);
             psee2C.IncSumm((int)coder.SubRange.Scale);
-            model.NumMasked = NumStats;
+            model.MumMasked = NumStats;
         }
         return (true);
     }
@@ -429,7 +429,7 @@ internal sealed class PpmContext : Pointer
             var idx2 = 0;
             idx2 += ((diff < suff.NumStats - numStats) ? 1 : 0);
             idx2 += 2 * ((_freqData.SummFreq < 11 * numStats) ? 1 : 0);
-            idx2 += 4 * ((model.NumMasked > diff) ? 1 : 0);
+            idx2 += 4 * ((model.MumMasked > diff) ? 1 : 0);
             idx2 += model.HiBitsFlag;
             psee2C = model.GetSee2Cont()[idx1][idx2];
             model.Coder.SubRange.Scale = psee2C.Mean;
@@ -511,7 +511,7 @@ internal sealed class PpmContext : Pointer
                 model.HiBitsFlag = model.GetHb2Flag()[model.FoundState.Symbol];
                 coder.SubRange.LowCount = hiCnt;
                 model.CharMask[p.Symbol] = model.EscCount;
-                model.NumMasked = numStats;
+                model.MumMasked = numStats;
                 i = numStats - 1;
                 model.FoundState.Address = 0;
                 do
