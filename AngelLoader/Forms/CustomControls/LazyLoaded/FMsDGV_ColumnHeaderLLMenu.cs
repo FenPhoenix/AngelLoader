@@ -81,16 +81,16 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 
     #region Private event handlers
 
-    private void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
+    private void ResetColumnVisibilityMenuItem_Click(object? sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
 
-    private void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
+    private void ResetColumnPositionsMenuItem_Click(object? sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
 
-    private void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
+    private void ResetAllColumnWidthsMenuItem_Click(object? sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
 
-    private void CheckBoxMenuItems_Click(object sender, EventArgs e)
+    private void CheckBoxMenuItems_Click(object? sender, EventArgs e)
     {
-        var s = (ToolStripMenuItemCustom)sender;
-        _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag], s.Checked);
+        if (sender is not ToolStripMenuItemCustom s) return;
+        _owner.FMsDGV.MakeColumnVisible(_owner.FMsDGV.Columns[(int)s.Tag!], s.Checked);
         _owner.FMsDGV.SelectProperly();
     }
 

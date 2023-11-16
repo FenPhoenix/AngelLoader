@@ -109,8 +109,12 @@ internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
         // IMPORTANT(TreeView node draw): DO NOT change any of the params "e.Node.Bounds" or "TextFormatFlags.NoPrefix"
         // They have to be just so or we get one or more of several different visual problems.
         // Don't use e.Bounds, keep e.Node.Bounds.
-        e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
-        TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor, TextFormatFlags.NoPrefix);
+        if (e.Node != null)
+        {
+            e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
+            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor,
+                TextFormatFlags.NoPrefix);
+        }
 
         base.OnDrawNode(e);
     }

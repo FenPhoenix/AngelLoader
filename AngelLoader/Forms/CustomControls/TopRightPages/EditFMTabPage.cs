@@ -25,22 +25,22 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Event sending
 
-    private void ScanForReadmesButton_Clicked(object sender, EventArgs e)
+    private void ScanForReadmesButton_Clicked(object? sender, EventArgs e)
     {
         _owner.Async_EventHandler_Main(ScanSender.Readmes, e);
     }
 
-    private void ScanTitleButton_Clicked(object sender, EventArgs e)
+    private void ScanTitleButton_Clicked(object? sender, EventArgs e)
     {
         _owner.Async_EventHandler_Main(ScanSender.Title, e);
     }
 
-    private void ScanAuthorButton_Clicked(object sender, EventArgs e)
+    private void ScanAuthorButton_Clicked(object? sender, EventArgs e)
     {
         _owner.Async_EventHandler_Main(ScanSender.Author, e);
     }
 
-    private void ScanReleaseDateButton_Clicked(object sender, EventArgs e)
+    private void ScanReleaseDateButton_Clicked(object? sender, EventArgs e)
     {
         _owner.Async_EventHandler_Main(ScanSender.ReleaseDate, e);
     }
@@ -262,7 +262,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Title
 
-    private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
+    private void EditFMTitleTextBox_TextChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -270,7 +270,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         _owner.RefreshSelectedRowCell(Column.Title);
     }
 
-    private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
+    private void EditFMAltTitlesArrowButton_Click(object? sender, EventArgs e)
     {
         List<string> fmAltTitles = _owner.FMsDGV.GetMainSelectedFM().AltTitles;
         if (fmAltTitles.Count == 0) return;
@@ -291,9 +291,10 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             MenuPos.BottomLeft);
     }
 
-    private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
+    private void EditFMAltTitlesMenuItems_Click(object? sender, EventArgs e)
     {
-        _page.EditFMTitleTextBox.Text = ((ToolStripMenuItemWithBackingText)sender).BackingText;
+        if (sender is not ToolStripMenuItemWithBackingText s) return;
+        _page.EditFMTitleTextBox.Text = s.BackingText;
         Ini.WriteFullFMDataIni();
     }
 
@@ -301,7 +302,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Author
 
-    private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
+    private void EditFMAuthorTextBox_TextChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -313,7 +314,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Release date
 
-    private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void EditFMReleaseDateCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         _page.EditFMReleaseDateDateTimePicker.Visible = _page.EditFMReleaseDateCheckBox.Checked;
@@ -327,7 +328,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         Ini.WriteFullFMDataIni();
     }
 
-    private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+    private void EditFMReleaseDateDateTimePicker_ValueChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -340,7 +341,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Last played
 
-    private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void EditFMLastPlayedCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         _page.EditFMLastPlayedDateTimePicker.Visible = _page.EditFMLastPlayedCheckBox.Checked;
@@ -354,7 +355,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         Ini.WriteFullFMDataIni();
     }
 
-    private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
+    private void EditFMLastPlayedDateTimePicker_ValueChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
@@ -367,7 +368,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Rating
 
-    private void EditFMRatingButton_Click(object sender, EventArgs e)
+    private void EditFMRatingButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(
             _owner.FMsDGV_FM_LLMenu.GetRatingMenu(),
@@ -380,7 +381,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Finished on
 
-    private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
+    private void EditFMFinishedOnButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(
             _owner.FMsDGV_FM_LLMenu.GetFinishedOnMenu(),
@@ -393,7 +394,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Languages
 
-    private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void EditFMLanguageComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
@@ -403,7 +404,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         Ini.WriteFullFMDataIni();
     }
 
-    private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
+    private void EditFMScanLanguagesButton_Click(object? sender, EventArgs e)
     {
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
         if (fm == null) return;
@@ -426,7 +427,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         else
         {
             string backingItem = _page.EditFMLanguageComboBox.SelectedBackingItem();
-            return LangStringsToEnums.TryGetValue(backingItem, out Language language) ? language : Language.Default;
+            return LangStringsToEnums.GetValueOrDefault(backingItem, Language.Default);
         }
     }
 

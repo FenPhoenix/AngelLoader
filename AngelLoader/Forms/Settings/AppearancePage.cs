@@ -20,7 +20,7 @@ public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPa
 
     public int GetVScrollPos() => PagePanel.VerticalScroll.Value;
 
-    private void FMsListGroupBox_PaintCustom(object sender, PaintEventArgs e)
+    private void FMsListGroupBox_PaintCustom(object? sender, PaintEventArgs e)
     {
         Images.DrawHorizDiv(e.Graphics, 8, 136, FMsListGroupBox.Width - 9);
         Images.DrawHorizDiv(e.Graphics, 8, 264, FMsListGroupBox.Width - 9);

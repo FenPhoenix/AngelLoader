@@ -722,7 +722,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
     #region Event handlers
 
-    private void MenuOpening(object sender, CancelEventArgs e)
+    private void MenuOpening(object? sender, CancelEventArgs e)
     {
         // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
         // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
@@ -734,7 +734,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     }
 
     // Extra async/await avoidance
-    private async void AsyncMenuItems_Click(object sender, EventArgs e)
+    private async void AsyncMenuItems_Click(object? sender, EventArgs e)
     {
         if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
         {
@@ -784,14 +784,15 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    private void OpenFMFolderMenuItem_Click(object sender, EventArgs e)
+    private void OpenFMFolderMenuItem_Click(object? sender, EventArgs e)
     {
         Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
     }
 
-    private void RatingMenuItems_Click(object sender, EventArgs e)
+    private void RatingMenuItems_Click(object? sender, EventArgs e)
     {
-        int rating = ((ToolStripMenuItemWithBackingField<int>)sender).Field;
+        if (sender is not ToolStripMenuItemWithBackingField<int> item) return;
+        int rating = item.Field;
 
         FanMission[] sFMs = _owner.FMsDGV.GetSelectedFMs();
         if (sFMs.Length > 0)
@@ -805,9 +806,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         Ini.WriteFullFMDataIni();
     }
 
-    private void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
+    private void RatingRCMenuItems_CheckedChanged(object? sender, EventArgs e)
     {
-        var s = (ToolStripMenuItemCustom)sender;
+        if (sender is not ToolStripMenuItemCustom s) return;
         if (!s.Checked) return;
 
         foreach (ToolStripMenuItemCustom item in RatingMenu.Items)
@@ -816,9 +817,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    private void FinishedOnMenuItems_Click(object sender, EventArgs e)
+    private void FinishedOnMenuItems_Click(object? sender, EventArgs e)
     {
-        var senderItem = (ToolStripMenuItemCustom)sender;
+        if (sender is not ToolStripMenuItemCustom senderItem) return;
 
         FanMission[] selFMs = _owner.FMsDGV.GetSelectedFMs();
         FanMission mainFM = _owner.FMsDGV.GetMainSelectedFM();
@@ -904,12 +905,12 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         Ini.WriteFullFMDataIni();
     }
 
-    private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
+    private void FinishedOnUnknownMenuItem_CheckedChanged(object? sender, EventArgs e)
     {
         if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
     }
 
-    private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl();
+    private void WebSearchMenuItem_Click(object? sender, EventArgs e) => Core.OpenWebSearchUrl();
 
     #endregion
 }

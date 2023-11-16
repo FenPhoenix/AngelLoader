@@ -151,28 +151,28 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
     #region Page
 
-    private void Patch_NewMantle_CheckBox_CheckStateChanged(object sender, EventArgs e)
+    private void Patch_NewMantle_CheckBox_CheckStateChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().NewMantle = _page.Patch_NewMantle_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }
 
-    private void Patch_PostProc_CheckBox_CheckStateChanged(object sender, EventArgs e)
+    private void Patch_PostProc_CheckBox_CheckStateChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().PostProc = _page.Patch_PostProc_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }
 
-    private void Patch_NDSubs_CheckBox_CheckStateChanged(object sender, EventArgs e)
+    private void Patch_NDSubs_CheckBox_CheckStateChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         _owner.FMsDGV.GetMainSelectedFM().NDSubs = _page.Patch_NDSubs_CheckBox.ToNullableBool();
         Ini.WriteFullFMDataIni();
     }
 
-    private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
+    private void PatchRemoveDMLButton_Click(object? sender, EventArgs e)
     {
         if (_page.PatchDMLsListBox.SelectedIndex == -1) return;
 
@@ -183,7 +183,7 @@ public sealed class PatchTabPage : Lazy_TabsBase
     }
 
     // @ViewBusinessLogic(PatchAddDMLButton_Click)
-    private void PatchAddDMLButton_Click(object sender, EventArgs e)
+    private void PatchAddDMLButton_Click(object? sender, EventArgs e)
     {
         var dmlFiles = new List<string>();
 
@@ -215,11 +215,11 @@ public sealed class PatchTabPage : Lazy_TabsBase
         }
     }
 
-    private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
+    private void PatchOpenFMFolderButton_Click(object? sender, EventArgs e) => Core.OpenFMFolder(_owner.FMsDGV.GetMainSelectedFM());
 
-    private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlusButton(_page.PatchAddDMLButton, e);
+    private void PatchAddDMLButton_Paint(object? sender, PaintEventArgs e) => Images.PaintPlusButton(_page.PatchAddDMLButton, e);
 
-    private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => Images.PaintMinusButton(_page.PatchRemoveDMLButton, e);
+    private void PatchRemoveDMLButton_Paint(object? sender, PaintEventArgs e) => Images.PaintMinusButton(_page.PatchRemoveDMLButton, e);
 
     private void DisablePatchNonDMLSection()
     {

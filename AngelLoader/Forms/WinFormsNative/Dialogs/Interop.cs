@@ -14,7 +14,7 @@ namespace AngelLoader.Forms.WinFormsNative.Dialogs;
 [ComImport]
 [Guid(Guids.IFileOpenDialog)]
 [CoClass(typeof(FileOpenDialogCoClass))]
-internal interface NativeFolderBrowserDialog : IFileOpenDialog { }
+internal interface NativeFolderBrowserDialog : IFileOpenDialog;
 
 #pragma warning restore IDE1006
 
@@ -22,7 +22,7 @@ internal interface NativeFolderBrowserDialog : IFileOpenDialog { }
 [TypeLibType(TypeLibTypeFlags.FCanCreate)]
 [Guid(Guids.FileOpenDialog)]
 [ClassInterface(ClassInterfaceType.None)]
-internal class FileOpenDialogCoClass { }
+internal class FileOpenDialogCoClass;
 
 #endregion
 

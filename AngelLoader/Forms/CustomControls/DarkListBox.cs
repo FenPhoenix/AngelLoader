@@ -34,8 +34,8 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
             // Hack to fix the background color not changing with modes if we're disabled
             if (!Enabled)
             {
-                Native.PostMessage(Handle, Native.WM_ENABLE, (IntPtr)1, IntPtr.Zero);
-                Native.PostMessage(Handle, Native.WM_ENABLE, (IntPtr)0, IntPtr.Zero);
+                Native.PostMessage(Handle, Native.WM_ENABLE, 1, IntPtr.Zero);
+                Native.PostMessage(Handle, Native.WM_ENABLE, 0, IntPtr.Zero);
             }
         }
     }
@@ -164,7 +164,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
             string[] ret = new string[Items.Count];
             for (int i = 0; i < Items.Count; i++)
             {
-                ret[i] = Items[i]?.Text ?? "";
+                ret[i] = Items[i].Text;
             }
             return ret;
         }
@@ -183,7 +183,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
     }
 
     [Browsable(false)]
-    public string SelectedItem => SelectedItems.Count == 0 ? "" : SelectedItems[0]?.Text ?? "";
+    public string SelectedItem => SelectedItems.Count == 0 ? "" : SelectedItems[0].Text;
 
     [Browsable(false)]
     public string[] SelectedItemsAsStrings
@@ -193,7 +193,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
             string[] ret = new string[SelectedItems.Count];
             for (int i = 0; i < SelectedItems.Count; i++)
             {
-                ret[i] = SelectedItems[i]?.Text ?? "";
+                ret[i] = SelectedItems[i].Text;
             }
             return ret;
         }
@@ -329,7 +329,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
 
         ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 
-        ListViewItem item = hitTest.Item;
+        ListViewItem? item = hitTest.Item;
 
         if (item != null)
         {

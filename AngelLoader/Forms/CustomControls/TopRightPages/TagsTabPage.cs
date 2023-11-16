@@ -147,7 +147,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
     }
 
     // Robustness for if the user presses tab to get away, rather than clicking
-    internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
+    internal void AddTagTextBoxOrListBox_Leave(object? sender, EventArgs e)
     {
         if ((sender == _page.AddTagTextBox && !AddTagLLDropDown.Focused) ||
             (AddTagLLDropDown.Visible &&
@@ -157,7 +157,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
         }
     }
 
-    private void AddTagTextBox_TextChanged(object sender, EventArgs e)
+    private void AddTagTextBox_TextChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
 
@@ -172,7 +172,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
         }
     }
 
-    internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
+    internal void AddTagTextBoxOrListBox_KeyDown(object? sender, KeyEventArgs e)
     {
         DarkListBox box = AddTagLLDropDown.ListBox;
 
@@ -207,7 +207,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
         }
     }
 
-    internal void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
+    internal void AddTagListBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (AddTagLLDropDown.ListBox.SelectedIndex == -1) return;
 
@@ -235,9 +235,9 @@ public sealed class TagsTabPage : Lazy_TabsBase
                 : (parent.Text, selNode.Text);
     }
 
-    private void RemoveTagButton_Click(object sender, EventArgs e) => RemoveTagOperation();
+    private void RemoveTagButton_Click(object? sender, EventArgs e) => RemoveTagOperation();
 
-    internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
+    internal void AddTagListBox_MouseUp(object? sender, MouseEventArgs e)
     {
         if (e.Button != MouseButtons.Left) return;
 
@@ -253,13 +253,13 @@ public sealed class TagsTabPage : Lazy_TabsBase
         AddTagLLDropDown.HideAndClear();
     }
 
-    private void AddTagButton_Click(object sender, EventArgs e)
+    private void AddTagButton_Click(object? sender, EventArgs e)
     {
         AddTagOperation(_owner.FMsDGV.GetMainSelectedFM(), _page.AddTagTextBox.Text);
     }
 
     // @ViewBusinessLogic (AddTagFromListButton_Click - lots of menu items and event hookups)
-    private void AddTagFromListButton_Click(object sender, EventArgs e)
+    private void AddTagFromListButton_Click(object? sender, EventArgs e)
     {
         GlobalTags.SortAndMoveMiscToEnd();
 
@@ -305,9 +305,9 @@ public sealed class TagsTabPage : Lazy_TabsBase
         ControlUtils.ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, MenuPos.LeftDown);
     }
 
-    private void AddTagMenuItem_Click(object sender, EventArgs e)
+    private void AddTagMenuItem_Click(object? sender, EventArgs e)
     {
-        var item = (ToolStripMenuItemWithBackingText)sender;
+        if (sender is not ToolStripMenuItemWithBackingText item) return;
         if (item.HasDropDownItems) return;
 
         var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
@@ -316,9 +316,9 @@ public sealed class TagsTabPage : Lazy_TabsBase
         AddTagOperation(_owner.FMsDGV.GetMainSelectedFM(), cat.BackingText + ": " + item.BackingText);
     }
 
-    private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
+    private void AddTagMenuCustomItem_Click(object? sender, EventArgs e)
     {
-        var item = (ToolStripMenuItemWithBackingText)sender;
+        if (sender is not ToolStripMenuItemWithBackingText item) return;
 
         var cat = (ToolStripMenuItemWithBackingText?)item.OwnerItem;
         if (cat == null) return;
@@ -326,9 +326,17 @@ public sealed class TagsTabPage : Lazy_TabsBase
         _page.AddTagTextBox.SetTextAndMoveCursorToEnd(cat.BackingText + ": ");
     }
 
-    private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => _page.AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText);
+    private void AddTagMenuMiscItem_Click(object? sender, EventArgs e)
+    {
+        if (sender is not ToolStripMenuItemWithBackingText s) return;
+        _page.AddTagTextBox.SetTextAndMoveCursorToEnd(s.BackingText);
+    }
 
-    private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => _page.AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItemWithBackingText)sender).BackingText + " ");
+    private void AddTagMenuEmptyItem_Click(object? sender, EventArgs e)
+    {
+        if (sender is not ToolStripMenuItemWithBackingText s) return;
+        _page.AddTagTextBox.SetTextAndMoveCursorToEnd(s.BackingText + " ");
+    }
 
     private void AddTagOperation(FanMission fm, string catAndTag)
     {

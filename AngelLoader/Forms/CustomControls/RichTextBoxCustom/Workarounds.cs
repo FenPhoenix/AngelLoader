@@ -29,7 +29,7 @@ internal sealed partial class RichTextBoxCustom
     {
         if (_fullDetectUrlsSet) return;
 
-        Native.SendMessage(Handle, Native.EM_AUTOURLDETECT, (IntPtr)(Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR), IntPtr.Zero);
+        Native.SendMessage(Handle, Native.EM_AUTOURLDETECT, Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR, IntPtr.Zero);
         _fullDetectUrlsSet = true;
     }
 
@@ -187,7 +187,7 @@ internal sealed partial class RichTextBoxCustom
     {
         if (VerticalScrollBarVisible(this))
         {
-            m.Result = (IntPtr)1;
+            m.Result = 1;
             EnterReaderMode();
         }
     }
@@ -231,7 +231,7 @@ internal sealed partial class RichTextBoxCustom
         }
     }
 
-    private void AutoScrollTimer_Tick(object sender, EventArgs e)
+    private void AutoScrollTimer_Tick(object? sender, EventArgs e)
     {
         if (_scrollIncrementY != 0) BetterScroll(Handle, _scrollIncrementY);
     }
@@ -322,7 +322,7 @@ internal sealed partial class RichTextBoxCustom
         if (LinkCursor)
         {
             Native.SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
-            m.Result = (IntPtr)1;
+            m.Result = 1;
         }
         // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where
         // it wants to set right-arrow-pointer but is then told to set IBeam etc.
@@ -351,7 +351,7 @@ internal sealed partial class RichTextBoxCustom
 
     private void CheckAndHandleEnLinkMsg(ref Message m)
     {
-        if (((Native.NMHDR)m.GetLParam(typeof(Native.NMHDR))).code != Native.EN_LINK)
+        if (((Native.NMHDR)m.GetLParam(typeof(Native.NMHDR))!).code != Native.EN_LINK)
         {
             base.WndProc(ref m);
             return;
@@ -366,16 +366,16 @@ internal sealed partial class RichTextBoxCustom
         */
         Native.ENLINK enlink =
 #if X64
-            ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64)));
+            ConvertFromENLINK64((Native.ENLINK64)m.GetLParam(typeof(Native.ENLINK64))!);
 #else
-            (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK));
+            (Native.ENLINK)m.GetLParam(typeof(Native.ENLINK))!;
 #endif
 
         switch (enlink.msg)
         {
             case Native.WM_SETCURSOR:
                 LinkCursor = true;
-                m.Result = (IntPtr)1;
+                m.Result = 1;
                 return;
             case Native.WM_LBUTTONDOWN:
                 // Run base link-mousedown handler (eventually) - otherwise we'd have to re-implement

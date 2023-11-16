@@ -167,13 +167,13 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
         if (_darkModeEnabled) Invalidate();
     }
 
-    protected override void OnTextBoxLostFocus(object source, EventArgs e)
+    protected override void OnTextBoxLostFocus(object? source, EventArgs e)
     {
         base.OnTextBoxLostFocus(source, e);
         if (_darkModeEnabled) Invalidate();
     }
 
-    private void DarkNumericUpDown_Paint(object sender, PaintEventArgs e)
+    private void DarkNumericUpDown_Paint(object? sender, PaintEventArgs e)
     {
         if (!_darkModeEnabled) return;
 

@@ -365,7 +365,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
         if (e.Index >= 0 && e.Index < Items.Count)
         {
-            string text = Items[e.Index].ToString();
+            string text = Items[e.Index].ToStringOrEmpty();
 
             const int padding = -1;
 
@@ -402,7 +402,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         else if (FireMouseLeaveOnLeaveWindow && m.Msg == Native.WM_MOUSELEAVE)
         {
             OnMouseLeave(EventArgs.Empty);
-            m.Result = (IntPtr)1;
+            m.Result = 1;
             // If we return here, the ComboBox remains highlighted even when the mouse leaves.
             // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
             // this particular case it's fine, it just hides the readme controls twice. But remember in case

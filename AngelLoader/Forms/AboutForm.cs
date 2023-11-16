@@ -89,11 +89,11 @@ public sealed partial class AboutForm : DarkFormBase
         }
     }
 
-    private void LinkLabels_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    private void LinkLabels_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
     {
         string link = sender == GitHubLinkLabel
             ? NonLocalizableText.AL_GitHub_Link
-            : NonLocalizableText.Dependencies[Array.IndexOf(_linkLabels, (DarkLinkLabel)sender)].Link;
+            : NonLocalizableText.Dependencies[Array.IndexOf(_linkLabels, (DarkLinkLabel)sender!)].Link;
 
         Core.OpenLink(link);
     }

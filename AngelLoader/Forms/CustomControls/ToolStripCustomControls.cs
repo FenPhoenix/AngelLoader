@@ -146,7 +146,8 @@ public class ToolStripMenuItemCustom : ToolStripMenuItem
     /// </summary>
     public override string Text
     {
-        get => base.Text;
+        get => base.Text ?? "";
+        // @NET5: Deal with this
         set => base.Text = value.EscapeAmpersands();
     }
 }

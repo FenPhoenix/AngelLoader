@@ -68,7 +68,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 
     internal Lazy_ReadmeEncodingsMenu(MainForm owner) => _owner = owner;
 
-    private void MenuItems_CheckedChanged(object sender, EventArgs e)
+    private void MenuItems_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (sender is not ToolStripMenuItemCustom { Checked: true } senderItem) return;

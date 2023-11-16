@@ -17,7 +17,7 @@ public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPa
         ThiefBuddyOptionsGroupBox.PaintCustom += ThiefBuddyOptionsGroupBox_PaintCustom;
     }
 
-    private void ThiefBuddyOptionsGroupBox_PaintCustom(object sender, PaintEventArgs e)
+    private void ThiefBuddyOptionsGroupBox_PaintCustom(object? sender, PaintEventArgs e)
     {
         Images.DrawHorizDiv(e.Graphics, 16, 40, ThiefBuddyOptionsGroupBox.Width - 17);
     }

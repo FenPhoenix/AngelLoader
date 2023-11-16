@@ -72,7 +72,7 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
         SelectAllMenuItem.Text = LText.Global.SelectAll;
     }
 
-    private void MenuOpening(object sender, CancelEventArgs e)
+    private void MenuOpening(object? sender, CancelEventArgs e)
     {
         if (!_owner.ReadmeRichTextBox.Visible)
         {

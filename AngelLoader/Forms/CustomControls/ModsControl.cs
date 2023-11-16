@@ -172,11 +172,11 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         }
     }
 
-    private void OnItemsCheckedChanged(object sender, EventArgs e)
+    private void OnItemsCheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
-        var s = (DarkCheckBox)sender;
+        if (sender is not DarkCheckBox s) return;
 
         int checkBoxIndex = Array.IndexOf(_checkBoxes, s, 0, CheckItems.Length);
         if (checkBoxIndex == -1) return;
@@ -227,7 +227,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     }
 
 
-    private void CheckList_Paint(object sender, PaintEventArgs e)
+    private void CheckList_Paint(object? sender, PaintEventArgs e)
     {
         if (_cautionRectangle != Rectangle.Empty && ShowImportantCheckBox.Checked)
         {

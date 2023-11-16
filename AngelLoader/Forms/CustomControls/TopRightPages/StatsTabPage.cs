@@ -13,7 +13,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
     #region Event sending
 
-    private void ScanCustomResourcesButton_Clicked(object sender, EventArgs e)
+    private void ScanCustomResourcesButton_Clicked(object? sender, EventArgs e)
     {
         _owner.Async_EventHandler_Main(ScanSender.CustomResources, e);
     }

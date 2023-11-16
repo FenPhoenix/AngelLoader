@@ -117,12 +117,12 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
     #region Page
 
-    private void ModsDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+    private void ModsDisabledModsTextBox_TextChanged(object? sender, EventArgs e)
     {
         UpdateFMDisabledMods(writeIni: false);
     }
 
-    private void Mods_DisabledModsUpdated(object sender, EventArgs e)
+    private void Mods_DisabledModsUpdated(object? sender, EventArgs e)
     {
         UpdateFMDisabledMods(writeIni: true);
     }

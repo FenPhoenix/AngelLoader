@@ -77,7 +77,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
     protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
     {
-        e.ArrowColor = e.Item.Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+        e.ArrowColor = e.Item is { Enabled: true } ? DarkColors.LightText : DarkColors.DisabledText;
         e.ArrowRectangle = new Rectangle(new Point(e.ArrowRectangle.Left, e.ArrowRectangle.Top), e.ArrowRectangle.Size);
 
         base.OnRenderArrow(e);

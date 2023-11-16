@@ -1201,13 +1201,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 OutConfig.DateCustomFormatString = GetFormattedCustomDateString();
             }
 
-            OutConfig.DateCustomFormat1 = AppearancePage.Date1ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat1 = AppearancePage.Date1ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator1 = AppearancePage.DateSeparator1TextBox.Text;
-            OutConfig.DateCustomFormat2 = AppearancePage.Date2ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat2 = AppearancePage.Date2ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator2 = AppearancePage.DateSeparator2TextBox.Text;
-            OutConfig.DateCustomFormat3 = AppearancePage.Date3ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat3 = AppearancePage.Date3ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator3 = AppearancePage.DateSeparator3TextBox.Text;
-            OutConfig.DateCustomFormat4 = AppearancePage.Date4ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat4 = AppearancePage.Date4ComboBox.SelectedItem.ToStringOrEmpty();
 
             #endregion
 
@@ -1365,14 +1365,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Paths page
 
-    private void ExePathTextBoxes_Leave(object sender, EventArgs e)
+    private void ExePathTextBoxes_Leave(object? sender, EventArgs e)
     {
-        var exePathTextBox = (DarkTextBox)sender;
+        if (sender is not DarkTextBox exePathTextBox) return;
         ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
         ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
     }
 
-    private void ExePathBrowseButtons_Click(object sender, EventArgs e)
+    private void ExePathBrowseButtons_Click(object? sender, EventArgs e)
     {
         DarkTextBox? tb = null;
         for (int i = 0; i < SupportedGameCount; i++)
@@ -1417,10 +1417,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return false;
     }
 
-    private void BackupPathTextBox_Leave(object sender, EventArgs e)
+    private void BackupPathTextBox_Leave(object? sender, EventArgs e)
     {
-        var s = (DarkTextBox)sender;
-        ShowPathError(s, BackupPathInvalid_Settings(s.Text, GameExeTextBoxes));
+        if (sender is not DarkTextBox textBox) return;
+        ShowPathError(textBox, BackupPathInvalid_Settings(textBox.Text, GameExeTextBoxes));
     }
 
     // @NET5: Do it on this side of the boundary now because we'll want to use the built-in Vista dialog that comes with .NET 5
@@ -1443,7 +1443,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return path;
     }
 
-    private void BackupPathBrowseButton_Click(object sender, EventArgs e)
+    private void BackupPathBrowseButton_Click(object? sender, EventArgs e)
     {
         DarkTextBox tb = PathsPage.BackupPathTextBox;
 
@@ -1466,7 +1466,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return (dialog.ShowDialogDark(this), dialog.FileName);
     }
 
-    private void SteamExeTextBox_TextChanged(object sender, EventArgs e)
+    private void SteamExeTextBox_TextChanged(object? sender, EventArgs e)
     {
         PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
     }
@@ -1479,14 +1479,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         SetUseSteamGameCheckBoxesEnabled(PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked);
     }
 
     #region Archive paths
 
-    private void AddFMArchivePathButton_Click(object sender, EventArgs e)
+    private void AddFMArchivePathButton_Click(object? sender, EventArgs e)
     {
         using var d = new VistaFolderBrowserDialog();
 
@@ -1523,7 +1523,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         CheckForErrors();
     }
 
-    private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
+    private void RemoveFMArchivePathButton_Click(object? sender, EventArgs e)
     {
         PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
         CheckForErrors();
@@ -1535,7 +1535,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Appearance page
 
-    private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void LanguageComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
@@ -1581,7 +1581,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void VisualThemeRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
@@ -1602,14 +1602,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void GameOrganizationRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         AppearancePage.UseShortGameTabNamesCheckBox.Enabled = AppearancePage.OrganizeGamesByTabRadioButton.Checked;
     }
 
     #region Articles
 
-    private void ArticlesCheckBox_CheckedChanged(object sender, EventArgs e) => SetArticlesEnabledState();
+    private void ArticlesCheckBox_CheckedChanged(object? sender, EventArgs e) => SetArticlesEnabledState();
 
     private void SetArticlesEnabledState()
     {
@@ -1617,7 +1617,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         AppearancePage.MoveArticlesToEndCheckBox.Enabled = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
     }
 
-    private void ArticlesTextBox_Leave(object sender, EventArgs e) => FormatArticles();
+    private void ArticlesTextBox_Leave(object? sender, EventArgs e) => FormatArticles();
 
     private void FormatArticles()
     {
@@ -1652,7 +1652,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Rating display
 
-    private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void RatingOutOfTenRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
@@ -1662,7 +1662,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void RatingOutOfFiveRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
@@ -1672,7 +1672,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void RatingUseStarsCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         SetRatingImage();
@@ -1753,7 +1753,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void DateShortAndLongRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         AppearancePage.DateCustomFormatPanel.Enabled = false;
         AppearancePage.PreviewDateLabel.Text = sender == AppearancePage.DateCurrentCultureShortRadioButton
@@ -1761,14 +1761,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             : _exampleDate.ToLongDateString();
     }
 
-    private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void DateCustomRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
-        var s = (RadioButton)sender;
-        AppearancePage.DateCustomFormatPanel.Enabled = s.Checked;
-        if (s.Checked) UpdateCustomExampleDate();
+        if (sender is not RadioButton radioButton) return;
+        AppearancePage.DateCustomFormatPanel.Enabled = radioButton.Checked;
+        if (radioButton.Checked) UpdateCustomExampleDate();
     }
 
-    private void DateCustomValue_Changed(object sender, EventArgs e)
+    private void DateCustomValue_Changed(object? sender, EventArgs e)
     {
         if (AppearancePage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
     }
@@ -1779,7 +1779,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Other page
 
-    private void WebSearchURLResetButtons_Click(object sender, EventArgs e)
+    private void WebSearchURLResetButtons_Click(object? sender, EventArgs e)
     {
         int index = Array.FindIndex(GameWebSearchUrlResetButtons, x => x == sender);
         GameWebSearchUrlTextBoxes[index].Text = Defaults.WebSearchUrls[index];
@@ -1789,7 +1789,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Thief Buddy page
 
-    private async void ThiefBuddyExistenceCheckTimer_Tick(object sender, EventArgs e)
+    private async void ThiefBuddyExistenceCheckTimer_Tick(object? sender, EventArgs e)
     {
         try
         {
@@ -1821,7 +1821,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             : LText.SettingsWindow.ThiefBuddy_StatusNotInstalled;
     }
 
-    private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
     {
         Core.OpenLink(NonLocalizableText.ThiefBuddyLink);
     }

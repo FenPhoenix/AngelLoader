@@ -1,3 +1,5 @@
+// @NET5: Can we get rid of this? Does .NET 8 now have the multi select thing or whatever it was?
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -157,7 +159,11 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
             if (hr == HResult.Ok && ppszName != IntPtr.Zero)
             {
-                DirectoryNames.Add(Marshal.PtrToStringAuto(ppszName));
+                string? directoryName = Marshal.PtrToStringAuto(ppszName);
+                if (directoryName != null)
+                {
+                    DirectoryNames.Add(directoryName);
+                }
             }
 
             Marshal.FreeCoTaskMem(ppszName);

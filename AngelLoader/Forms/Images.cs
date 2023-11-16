@@ -767,7 +767,7 @@ public static class Images
     private static readonly Dictionary<Image, Image> _disabledImages = new(25);
     internal static Image GetDisabledImage(Image image)
     {
-        if (_disabledImages.TryGetValue(image, out Image result))
+        if (_disabledImages.TryGetValue(image, out Image? result))
         {
             return result;
         }

@@ -193,19 +193,19 @@ public sealed partial class MainForm : DarkFormBase,
     #region Non-public-release methods
 
 #if !ReleaseBeta && !ReleasePublic
-    private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
+    private void ForceWindowedCheckBox_CheckedChanged(object? sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
 
-    private void ScreenShotModeCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    private void ScreenShotModeCheckBoxes_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
-        CheckBox checkBox = (CheckBox)sender;
+        if (sender is not CheckBox checkBox) return;
         GameConfigFiles.SetScreenShotMode(checkBox == T1ScreenShotModeCheckBox ? GameIndex.Thief1 : GameIndex.Thief2, checkBox.Checked);
     }
 
-    private void TitaniumModeCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    private void TitaniumModeCheckBoxes_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
-        CheckBox checkBox = (CheckBox)sender;
+        if (sender is not CheckBox checkBox) return;
         GameConfigFiles.SetTitaniumMode(checkBox == T1TitaniumModeCheckBox ? GameIndex.Thief1 : GameIndex.Thief2, checkBox.Checked);
     }
 
@@ -240,23 +240,23 @@ public sealed partial class MainForm : DarkFormBase,
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
-    private void TestButton_Click(object sender, EventArgs e)
+    private void TestButton_Click(object? sender, EventArgs e)
     {
         Config.VisualTheme = Config.DarkMode ? VisualTheme.Classic : VisualTheme.Dark;
         SetTheme(Config.VisualTheme);
     }
 
-    private void Test2Button_Click(object sender, EventArgs e)
+    private void Test2Button_Click(object? sender, EventArgs e)
     {
         Width = 1458;
         Height = 872;
     }
 
-    private void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object? sender, EventArgs e)
     {
     }
 
-    private void Test4Button_Click(object sender, EventArgs e)
+    private void Test4Button_Click(object? sender, EventArgs e)
     {
     }
 
@@ -336,7 +336,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                     FilterBarFLP.HorizontalScroll.SmallChange = 45;
 
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
 
                     FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                 }
@@ -1305,7 +1305,7 @@ public sealed partial class MainForm : DarkFormBase,
         base.OnLocationChanged(e);
     }
 
-    private async void MainForm_KeyDown(object sender, KeyEventArgs e)
+    private async void MainForm_KeyDown(object? sender, KeyEventArgs e)
     {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         if (e.Control && e.KeyCode == Keys.E)
@@ -2037,18 +2037,18 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Menu button
 
-    private void MainMenuButton_Click(object sender, EventArgs e)
+    private void MainMenuButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
     }
 
-    private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
+    private void MainMenuButton_Enter(object? sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
 
     #endregion
 
     #region Menu items
 
-    internal void MainMenu_GameVersionsMenuItem_Click(object sender, EventArgs e)
+    internal void MainMenu_GameVersionsMenuItem_Click(object? sender, EventArgs e)
     {
         try
         {
@@ -2063,15 +2063,15 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void ViewHelpFileMenuItem_Click(object sender, EventArgs e) => Core.OpenHelpFile();
+    internal void ViewHelpFileMenuItem_Click(object? sender, EventArgs e) => Core.OpenHelpFile();
 
-    internal void AboutMenuItem_Click(object sender, EventArgs e)
+    internal void AboutMenuItem_Click(object? sender, EventArgs e)
     {
         using var f = new AboutForm();
         f.ShowDialogDark(this);
     }
 
-    internal void Exit_Click(object sender, EventArgs e) => Close();
+    internal void Exit_Click(object? sender, EventArgs e) => Close();
 
     #endregion
 
@@ -2117,7 +2117,7 @@ public sealed partial class MainForm : DarkFormBase,
         AutosizeGameTabsWidth();
     }
 
-    private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
+    private void GameFilterControlsShowHideButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
             GameFilterControlsShowHideButtonToolStrip,
@@ -2126,9 +2126,9 @@ public sealed partial class MainForm : DarkFormBase,
             GameFilterControlsShowHideButton.Height);
     }
 
-    internal async void GameFilterControlsMenuItems_Click(object sender, EventArgs e)
+    internal async void GameFilterControlsMenuItems_Click(object? sender, EventArgs e)
     {
-        var s = (ToolStripMenuItemCustom)sender;
+        if (sender is not ToolStripMenuItemCustom s) return;
 
         if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(static x => !x))
         {
@@ -2260,7 +2260,7 @@ public sealed partial class MainForm : DarkFormBase,
         FMsDGV.Filter.DeepCopyTo(gameFilter);
     }
 
-    private void GamesTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
+    private void GamesTabControl_Deselecting(object? sender, TabControlCancelEventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (GamesTabControl.Visible && e.TabPage is DarkTabPageCustom darkTabPageCustom)
@@ -2269,7 +2269,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
+    private async void GamesTabControl_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
@@ -2495,7 +2495,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region Filter bar controls
 
     // A ton of things in one event handler to cut down on async/awaits
-    private async void FilterWindowOpenButtons_Click(object sender, EventArgs e)
+    private async void FilterWindowOpenButtons_Click(object? sender, EventArgs e)
     {
         if (sender == FilterByReleaseDateButton || sender == FilterByLastPlayedButton)
         {
@@ -2594,14 +2594,15 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Filter bar right-hand controls
 
-    internal void FMsListZoomButtons_Click(object sender, EventArgs e)
+    internal void FMsListZoomButtons_Click(object? sender, EventArgs e)
     {
-        ZoomFMsDGVType zoomType = (ZoomFMsDGVType)Array.IndexOf(Lazy_FMsListZoomButtons.Buttons, (ToolStripButtonCustom)sender);
+        if (sender is not ToolStripButtonCustom s) return;
+        ZoomFMsDGVType zoomType = (ZoomFMsDGVType)Array.IndexOf(Lazy_FMsListZoomButtons.Buttons, s);
         ZoomFMsDGV(zoomType);
     }
 
     // A ton of things in one event handler to cut down on async/awaits
-    internal async void Async_EventHandler_Main(object sender, EventArgs e)
+    internal async void Async_EventHandler_Main(object? sender, EventArgs e)
     {
         if (sender == RefreshFromDiskButton)
         {
@@ -2741,14 +2742,14 @@ public sealed partial class MainForm : DarkFormBase,
     // Single-threading it would also allow it to be packed away in a custom control.
     private bool _repeatButtonRunning;
 
-    private void FilterBarScrollButtons_Click(object sender, EventArgs e)
+    private void FilterBarScrollButtons_Click(object? sender, EventArgs e)
     {
         if (_repeatButtonRunning) return;
         int direction = sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
-        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
     }
 
-    private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
+    private void FilterBarScrollButtons_MouseDown(object? sender, MouseEventArgs e)
     {
         if (e.Button != MouseButtons.Left) return;
         RunRepeatButton(sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT);
@@ -2762,28 +2763,28 @@ public sealed partial class MainForm : DarkFormBase,
         {
             while (_repeatButtonRunning)
             {
-                Invoke(new Action(() => Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)direction, IntPtr.Zero)));
+                Invoke(new Action(() => Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero)));
                 Thread.Sleep(150);
             }
         });
     }
 
-    private void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
+    private void FilterBarScrollButtons_EnabledChanged(object? sender, EventArgs e) => _repeatButtonRunning = false;
 
-    private void FilterBarScrollButtons_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
+    private void FilterBarScrollButtons_MouseUp(object? sender, MouseEventArgs e) => _repeatButtonRunning = false;
 
-    private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
+    private void FilterBarScrollButtons_VisibleChanged(object? sender, EventArgs e)
     {
-        var senderButton = (Button)sender;
+        if (sender is not Button senderButton) return;
         DarkArrowButton otherButton = senderButton == FilterBarScrollLeftButton
             ? FilterBarScrollRightButton
             : FilterBarScrollLeftButton;
         if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
     }
 
-    private void FilterBarFLP_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
+    private void FilterBarFLP_SizeChanged(object? sender, EventArgs e) => SetFilterBarScrollButtons();
 
-    private void FilterBarFLP_Scroll(object sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
+    private void FilterBarFLP_Scroll(object? sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
 
     /*
     PERF_TODO: This is still called too many times on startup.
@@ -2838,7 +2839,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // WinForms? Argh!
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)Native.SB_LINELEFT, IntPtr.Zero);
+                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINELEFT, IntPtr.Zero);
                 }
             }
         }
@@ -2851,7 +2852,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // Ditto the above
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, (IntPtr)Native.SB_LINERIGHT, IntPtr.Zero);
+                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINERIGHT, IntPtr.Zero);
                 }
             }
         }
@@ -2868,7 +2869,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Filter controls visibility menu
 
-    private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
+    private void FilterControlsShowHideButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(FilterControlsLLMenu.Menu,
             FilterIconButtonsToolStrip,
@@ -2877,15 +2878,15 @@ public sealed partial class MainForm : DarkFormBase,
             FilterIconButtonsToolStrip.Height);
     }
 
-    internal async void FilterControlsMenuItems_Click(object sender, EventArgs e)
+    internal async void FilterControlsMenuItems_Click(object? sender, EventArgs e)
     {
-        var s = (ToolStripMenuItemCustom)sender;
+        if (sender is not ToolStripMenuItemCustom s) return;
 
         try
         {
             FilterBarFLP.SuspendDrawing();
 
-            Component[] filterItems = _hideableFilterControls[(int)s.Tag];
+            Component[] filterItems = _hideableFilterControls[(int)s.Tag!];
             for (int i = 0; i < filterItems.Length; i++)
             {
                 switch (filterItems[i])
@@ -2907,7 +2908,7 @@ public sealed partial class MainForm : DarkFormBase,
                             // for this one filter.
                             bool buttonWasChecked = toolStripButton.Checked;
                             toolStripButton.Checked = false;
-                            var filterControl = (HideableFilterControls)s.Tag;
+                            var filterControl = (HideableFilterControls)s.Tag!;
                             switch (filterControl)
                             {
                                 case HideableFilterControls.ReleaseDate:
@@ -2942,7 +2943,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    private void ResetLayoutButton_Click(object sender, EventArgs e)
+    private void ResetLayoutButton_Click(object? sender, EventArgs e)
     {
         MainSplitContainer.SetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
         TopSplitContainer.SetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
@@ -3156,7 +3157,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Top-right area
 
-    private static void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
+    private static void TopRightTabControl_Selected(object? sender, TabControlEventArgs e)
     {
         if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
         {
@@ -3164,7 +3165,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopRightCollapseButton_Click(object sender, EventArgs e)
+    private void TopRightCollapseButton_Click(object? sender, EventArgs e)
     {
         TopSplitContainer.ToggleFullScreen();
         SetTopRightCollapsedState(TopSplitContainer.FullScreen);
@@ -3193,14 +3194,14 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopRightMenuButton_Click(object sender, EventArgs e)
+    private void TopRightMenuButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
-    internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
+    internal void TopRightMenu_MenuItems_Click(object? sender, EventArgs e)
     {
-        var s = (ToolStripMenuItemCustom)sender;
+        if (sender is not ToolStripMenuItemCustom s) return;
 
         TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabsData.Count);
 
@@ -3228,7 +3229,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void TextBoxLeave_Save(object sender, EventArgs e)
+    internal void TextBoxLeave_Save(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         Ini.WriteFullFMDataIni();
@@ -3697,7 +3698,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region FMsDGV event handlers
 
     // @MEM(CellValueNeeded): ehhh, you know...
-    private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+    private void FMsDGV_CellValueNeeded(object? sender, DataGridViewCellValueEventArgs e)
     {
         if (CellValueNeededDisabled) return;
 
@@ -3846,7 +3847,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private async void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+    private async void FMsDGV_ColumnHeaderMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
     {
         if (e.Button != MouseButtons.Left) return;
 
@@ -3872,7 +3873,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
+    private void FMsDGV_MouseDown(object? sender, MouseEventArgs e)
     {
         if (e.Button != MouseButtons.Right) return;
 
@@ -3897,7 +3898,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
+    private async void FMsDGV_SelectionChanged(object? sender, EventArgs e)
     {
         if (FMsDGV.SuppressSelectionEvent) return;
 
@@ -3944,7 +3945,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void FMsDGV_KeyDown(object sender, KeyEventArgs e)
+    private void FMsDGV_KeyDown(object? sender, KeyEventArgs e)
     {
         if (ControlUtils.IsMenuKey(e))
         {
@@ -3952,7 +3953,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    private async void FMsDGV_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex > -1 && Core.SelectedFMIsPlayable(out FanMission? fm))
         {
@@ -4061,7 +4062,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Choose readme
 
-    internal void ChooseReadmeButton_Click(object sender, EventArgs e)
+    internal void ChooseReadmeButton_Click(object? sender, EventArgs e)
     {
         int itemCount = ChooseReadmeLLPanel.ListBox.Items.Count;
         if (itemCount == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
@@ -4085,7 +4086,7 @@ public sealed partial class MainForm : DarkFormBase,
         Core.LoadReadme(fm);
     }
 
-    private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void ChooseReadmeComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
@@ -4094,14 +4095,14 @@ public sealed partial class MainForm : DarkFormBase,
         Core.LoadReadme(fm);
     }
 
-    private void ChooseReadmeComboBox_DropDownClosed(object sender, EventArgs e)
+    private void ChooseReadmeComboBox_DropDownClosed(object? sender, EventArgs e)
     {
         if (!CursorOverReadmeArea()) ShowReadmeControls(false);
     }
 
     #endregion
 
-    internal void ReadmeEncodingMenuItems_Click(object sender, EventArgs e)
+    internal void ReadmeEncodingMenuItems_Click(object? sender, EventArgs e)
     {
         if (sender is not ToolStripMenuItemWithBackingField<int> menuItem) return;
 
@@ -4111,7 +4112,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Allows the readme controls to hide when the mouse moves directly from the readme area onto another
     // window. General-case showing and hiding is still handled by PreFilterMessage() for reliability.
     // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
-    internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
+    internal void ReadmeArea_MouseLeave(object? sender, EventArgs e)
     {
         IntPtr hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
         if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
@@ -4119,20 +4120,22 @@ public sealed partial class MainForm : DarkFormBase,
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
 
-    private void ReadmeButtons_Click(object sender, EventArgs e)
+    private void ReadmeButtons_Click(object? sender, EventArgs e)
     {
-        if (sender == ReadmeFullScreenButton)
+        if (sender is not DarkButton button) return;
+
+        if (button == ReadmeFullScreenButton)
         {
             MainSplitContainer.ToggleFullScreen();
             ShowReadmeControls(CursorOverReadmeArea());
         }
-        else if (sender == ReadmeEncodingButton)
+        else if (button == ReadmeEncodingButton)
         {
             ControlUtils.ShowMenu(Lazy_ReadmeEncodingsMenu.Menu, ReadmeEncodingButton, MenuPos.LeftDown);
         }
         else
         {
-            ReadmeRichTextBox.Zoom(GetReadmeZoomButton((DarkButton)sender));
+            ReadmeRichTextBox.Zoom(GetReadmeZoomButton(button));
         }
     }
 
@@ -4171,7 +4174,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetMainSelectedFM());
+    internal void ViewHTMLReadmeButton_Click(object? sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetMainSelectedFM());
 
     public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
 
@@ -4254,7 +4257,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
     // Just gonna have to leave this part as-is.
-    internal void PlayOriginalGameButton_Click(object sender, EventArgs e)
+    internal void PlayOriginalGameButton_Click(object? sender, EventArgs e)
     {
         PlayOriginalGameLLMenu.Construct();
 
@@ -4274,45 +4277,48 @@ public sealed partial class MainForm : DarkFormBase,
         ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
     }
 
-    internal void PlayOriginalGameMenuItems_Click(object sender, EventArgs e)
+    internal void PlayOriginalGameMenuItems_Click(object? sender, EventArgs e)
     {
-        GameIndex gameIndex = ((ToolStripMenuItemCustom)sender).GameIndex;
+        if (sender is not ToolStripMenuItemCustom s) return;
+        GameIndex gameIndex = s.GameIndex;
 
         bool playMP = sender == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
         FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
     }
 
-    internal void PlayOriginalGameModMenuItems_Click(object sender, EventArgs e)
+    internal void PlayOriginalGameModMenuItems_Click(object? sender, EventArgs e)
     {
-        ShowPerGameModsWindow(((ToolStripMenuItemCustom)sender).GameIndex);
+        if (sender is not ToolStripMenuItemCustom s) return;
+        ShowPerGameModsWindow(s.GameIndex);
     }
 
     #endregion
 
     #region Multiple buttons
 
-    internal void PlayOriginalGameButtons_Click(object sender, EventArgs e)
+    internal void PlayOriginalGameButtons_Click(object? sender, EventArgs e)
     {
-        FMInstallAndPlay.PlayOriginalGame(((DarkButton)sender).GameIndex);
+        if (sender is not DarkButton button) return;
+        FMInstallAndPlay.PlayOriginalGame(button.GameIndex);
     }
 
-    internal void PlayOriginalGameButtons_MouseUp(object sender, MouseEventArgs e)
+    internal void PlayOriginalGameButtons_MouseUp(object? sender, MouseEventArgs e)
     {
-        DarkButton button = (DarkButton)sender;
+        if (sender is not DarkButton button) return;
         if (CursorOverControl(button) && e.Button == MouseButtons.Right)
         {
             ShowPerGameModsWindow(button.GameIndex);
         }
     }
 
-    internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
+    internal void PlayOriginalT2MPButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu,
             Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
     }
 
-    internal void PlayT2MPMenuItem_Click(object sender, EventArgs e)
+    internal void PlayT2MPMenuItem_Click(object? sender, EventArgs e)
     {
         FMInstallAndPlay.PlayOriginalGame(GameIndex.Thief2, playMP: true);
     }
@@ -4332,7 +4338,7 @@ public sealed partial class MainForm : DarkFormBase,
     -We could have the ability to go straight to the FM's page on the TDM site.
     -Maybe on Thieves' Guild too? Is this a good time to consider ability to download ratings etc.?
     */
-    internal void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl();
+    internal void WebSearchButton_Click(object? sender, EventArgs e) => Core.OpenWebSearchUrl();
 
     #endregion
 
@@ -4725,7 +4731,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // Draw a nice separator between the bottom of the readme and the bottom bar. Every other side is already
     // visually separated enough.
-    private void MainSplitContainer_Panel2_Paint(object sender, PaintEventArgs e)
+    private void MainSplitContainer_Panel2_Paint(object? sender, PaintEventArgs e)
     {
         SplitterPanel panel2 = MainSplitContainer.Panel2;
 
@@ -4740,13 +4746,13 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void BottomLeftFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomLeftAreaSeparatedItems);
+    private void BottomLeftFLP_Paint(object? sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomLeftAreaSeparatedItems);
 
-    private void BottomRightFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomRightAreaSeparatedItems);
+    private void BottomRightFLP_Paint(object? sender, PaintEventArgs e) => Images.PaintControlSeparators(e, 2, items: _bottomRightAreaSeparatedItems);
 
-    private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
+    private void FilterIconButtonsToolStrip_Paint(object? sender, PaintEventArgs e) => Images.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 
-    private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e)
+    private void RefreshAreaToolStrip_Paint(object? sender, PaintEventArgs e)
     {
         // This one is a special case, so draw it explicitly here
         Pen s1Pen = Images.Sep1Pen;
@@ -4772,48 +4778,54 @@ public sealed partial class MainForm : DarkFormBase,
             x: ClearFiltersButton.Bounds.Right + 6);
     }
 
-    private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => Images.PaintControlSeparators(e, -1, _filterLabels, 5, 20);
+    private void FilterBarFLP_Paint(object? sender, PaintEventArgs e) => Images.PaintControlSeparators(e, -1, _filterLabels, 5, 20);
 
-    private void PlayFMButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
+    private void PlayFMButton_Paint(object? sender, PaintEventArgs e) => Images.PaintPlayFMButton(PlayFMButton, e);
 
-    internal void PlayOriginalGameButton_Paint(object sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(Lazy_PlayOriginalControls.ButtonSingle, e);
+    internal void PlayOriginalGameButton_Paint(object? sender, PaintEventArgs e) => Images.PaintPlayOriginalButton(Lazy_PlayOriginalControls.ButtonSingle, e);
 
-    internal void PlayOriginalGamesButtons_Paint(object sender, PaintEventArgs e)
+    internal void PlayOriginalGamesButtons_Paint(object? sender, PaintEventArgs e)
     {
-        DarkButton button = (DarkButton)sender;
+        if (sender is not DarkButton button) return;
 
         Image image = Images.GetPerGameImage(button.GameIndex).Primary.Large(button.Enabled);
 
         Images.PaintBitmapButton(button, e, image, x: 8);
     }
 
-    private void SettingsButton_Paint(object sender, PaintEventArgs e) => Images.PaintBitmapButton(
+    private void SettingsButton_Paint(object? sender, PaintEventArgs e) => Images.PaintBitmapButton(
         SettingsButton,
         e,
         SettingsButton.Enabled ? Images.Settings : Images.GetDisabledImage(Images.Settings),
         x: 10);
 
-    private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
+    private void TopRightMenuButton_Paint(object? sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_TopRight(TopRightMenuButton, e);
 
-    private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
+    private void MainMenuButton_Paint(object? sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
 
-    private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
+    private void ResetLayoutButton_Paint(object? sender, PaintEventArgs e) => Images.PaintResetLayoutButton(ResetLayoutButton, e);
 
-    internal void ScanIconButtons_Paint(object sender, PaintEventArgs e) => Images.PaintScanButtons((Button)sender, e);
-
-    private void ReadmeButtons_Paint(object sender, PaintEventArgs e)
+    internal void ScanIconButtons_Paint(object? sender, PaintEventArgs e)
     {
-        if (sender == ReadmeFullScreenButton)
+        if (sender is not Button button) return;
+        Images.PaintScanButtons(button, e);
+    }
+
+    private void ReadmeButtons_Paint(object? sender, PaintEventArgs e)
+    {
+        if (sender is not DarkButton button) return;
+
+        if (button == ReadmeFullScreenButton)
         {
             Images.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
         }
-        else if (sender == ReadmeEncodingButton)
+        else if (button == ReadmeEncodingButton)
         {
             Images.PaintReadmeEncodingButton(ReadmeEncodingButton, e);
         }
         else
         {
-            Images.PaintZoomButtons((Button)sender, e, GetReadmeZoomButton((DarkButton)sender));
+            Images.PaintZoomButtons(button, e, GetReadmeZoomButton(button));
         }
     }
 
@@ -4999,17 +5011,23 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Drag & drop
 
-    private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
+    private void EverythingPanel_DragEnter(object? sender, DragEventArgs e)
     {
-        if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out _))
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out _))
         {
             e.Effect = DragDropEffects.Copy;
         }
     }
 
-    private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
+    private async void EverythingPanel_DragDrop(object? sender, DragEventArgs e)
     {
-        if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out string[]? droppedItems))
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out string[]? droppedItems))
         {
             await FMArchives.Add(droppedItems.ToList());
         }
@@ -5187,17 +5205,17 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
 
-    private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    private void TopSplitContainer_FullScreenChanged(object? sender, EventArgs e)
     {
         TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
     }
 
-    private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    private void MainSplitContainer_FullScreenChanged(object? sender, EventArgs e)
     {
         MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
     }
 
-    private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)
+    private void TopRightTabBar_MouseClick(object? sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {

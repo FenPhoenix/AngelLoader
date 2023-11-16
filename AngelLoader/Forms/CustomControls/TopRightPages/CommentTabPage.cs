@@ -49,7 +49,7 @@ public sealed class CommentTabPage : Lazy_TabsBase
 
     #region Page
 
-    private void CommentTextBox_TextChanged(object sender, EventArgs e)
+    private void CommentTextBox_TextChanged(object? sender, EventArgs e)
     {
         if (_owner.EventsDisabled > 0) return;
         FanMission? fm = _owner._displayedFM;
