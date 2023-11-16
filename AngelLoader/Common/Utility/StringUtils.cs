@@ -6,6 +6,8 @@ namespace AngelLoader;
 
 public static partial class Utils
 {
+    // @NET5(StartsWith/EndsWith): The .NET 8 versions of these are almost certainly going to be way faster now.
+    // We should profile and probably switch.
     #region StartsWith and EndsWith
 
     internal static bool StartsWithFast(this string str, string value)
