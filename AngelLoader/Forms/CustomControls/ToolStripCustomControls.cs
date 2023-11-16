@@ -144,11 +144,10 @@ public class ToolStripMenuItemCustom : ToolStripMenuItem
     /// <summary>
     /// Sets the text and escapes ampersands.
     /// </summary>
-    public override string Text
+    public override string? Text
     {
-        get => base.Text ?? "";
-        // @NET5: Deal with this
-        set => base.Text = value.EscapeAmpersands();
+        get => base.Text;
+        set => base.Text = value?.EscapeAmpersands() ?? "";
     }
 }
 
