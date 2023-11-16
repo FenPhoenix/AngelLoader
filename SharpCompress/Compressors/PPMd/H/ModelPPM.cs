@@ -1,8 +1,10 @@
 #nullable disable
 
 using System;
+using System.IO;
 using System.Text;
 using SharpCompress.Compressors.Rar;
+using Decoder = SharpCompress.Compressors.LZMA.RangeCoder.Decoder;
 
 namespace SharpCompress.Compressors.PPMd.H;
 
@@ -48,6 +50,7 @@ internal class ModelPpm
 
     public virtual int InitEsc
     {
+        get => _initEsc;
         set => _initEsc = value;
     }
 
@@ -752,4 +755,204 @@ internal class ModelPpm
     //    public void dumpHeap() {
     //        subAlloc.dumpHeap();
     //    }
+
+    internal bool DecodeInit(Stream stream, int maxOrder, int maxMemory)
+    {
+        if (stream != null)
+        {
+            Coder = new RangeCoder(stream);
+        }
+
+        if (maxOrder == 1)
+        {
+            SubAlloc.StopSubAllocator();
+            return (false);
+        }
+        SubAlloc.StartSubAllocator(maxMemory);
+        _minContext = new PpmContext(Heap);
+
+        //medContext = new PPMContext(Heap);
+        _maxContext = new PpmContext(Heap);
+        FoundState = new State(Heap);
+        _dummySee2Cont = new See2Context();
+        for (var i = 0; i < 25; i++)
+        {
+            for (var j = 0; j < 16; j++)
+            {
+                _see2Cont[i][j] = new See2Context();
+            }
+        }
+        StartModelRare(maxOrder);
+
+        return (_minContext.Address != 0);
+    }
+
+    internal void NextContext()
+    {
+        var addr = FoundState.GetSuccessor();
+        if (_orderFall == 0 && addr > SubAlloc.PText)
+        {
+            _minContext.Address = addr;
+            _maxContext.Address = addr;
+        }
+        else
+        {
+            UpdateModel();
+        }
+    }
+
+    public int DecodeChar(Decoder decoder)
+    {
+        if (_minContext.NumStats != 1)
+        {
+            var s = _tempState1.Initialize(Heap);
+            s.Address = _minContext.FreqData.GetStats();
+            int i;
+            int count,
+                hiCnt;
+            if (
+                (count = (int)decoder.GetThreshold((uint)_minContext.FreqData.SummFreq))
+                < (hiCnt = s.Freq)
+            )
+            {
+                byte symbol;
+                decoder.Decode(0, (uint)s.Freq);
+                symbol = (byte)s.Symbol;
+                _minContext.update1_0(this, s.Address);
+                NextContext();
+                return symbol;
+            }
+            _prevSuccess = 0;
+            i = _minContext.NumStats - 1;
+            do
+            {
+                s.IncrementAddress();
+                if ((hiCnt += s.Freq) > count)
+                {
+                    byte symbol;
+                    decoder.Decode((uint)(hiCnt - s.Freq), (uint)s.Freq);
+                    symbol = (byte)s.Symbol;
+                    _minContext.Update1(this, s.Address);
+                    NextContext();
+                    return symbol;
+                }
+            } while (--i > 0);
+            if (count >= _minContext.FreqData.SummFreq)
+            {
+                return -2;
+            }
+            _hiBitsFlag = _hb2Flag[FoundState.Symbol];
+            decoder.Decode((uint)hiCnt, (uint)(_minContext.FreqData.SummFreq - hiCnt));
+            for (i = 0; i < 256; i++)
+            {
+                _charMask[i] = -1;
+            }
+            _charMask[s.Symbol] = 0;
+            i = _minContext.NumStats - 1;
+            do
+            {
+                s.DecrementAddress();
+                _charMask[s.Symbol] = 0;
+            } while (--i > 0);
+        }
+        else
+        {
+            var rs = _tempState1.Initialize(Heap);
+            rs.Address = _minContext.GetOneState().Address;
+            _hiBitsFlag = GetHb2Flag()[FoundState.Symbol];
+            var off1 = rs.Freq - 1;
+            var off2 = _minContext.GetArrayIndex(this, rs);
+            var bs = _binSumm[off1][off2];
+            if (decoder.DecodeBit((uint)bs, 14) == 0)
+            {
+                byte symbol;
+                _binSumm[off1][off2] =
+                    (bs + INTERVAL - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+                FoundState.Address = rs.Address;
+                symbol = (byte)rs.Symbol;
+                rs.IncrementFreq((rs.Freq < 128) ? 1 : 0);
+                _prevSuccess = 1;
+                IncRunLength(1);
+                NextContext();
+                return symbol;
+            }
+            bs = (bs - _minContext.GetMean(bs, PERIOD_BITS, 2)) & 0xFFFF;
+            _binSumm[off1][off2] = bs;
+            _initEsc = PpmContext.EXP_ESCAPE[Utility.URShift(bs, 10)];
+            int i;
+            for (i = 0; i < 256; i++)
+            {
+                _charMask[i] = -1;
+            }
+            _charMask[rs.Symbol] = 0;
+            _prevSuccess = 0;
+        }
+        for (; ; )
+        {
+            var s = _tempState1.Initialize(Heap);
+            int i;
+            int count,
+                hiCnt;
+            See2Context see;
+            int num,
+                numMasked = _minContext.NumStats;
+            do
+            {
+                _orderFall++;
+                _minContext.Address = _minContext.GetSuffix();
+                if (_minContext.Address <= SubAlloc.PText || _minContext.Address > SubAlloc.HeapEnd)
+                {
+                    return -1;
+                }
+            } while (_minContext.NumStats == numMasked);
+            hiCnt = 0;
+            s.Address = _minContext.FreqData.GetStats();
+            i = 0;
+            num = _minContext.NumStats - numMasked;
+            do
+            {
+                var k = _charMask[s.Symbol];
+                hiCnt += s.Freq & k;
+                _minContext._ps[i] = s.Address;
+                s.IncrementAddress();
+                i -= k;
+            } while (i != num);
+
+            see = _minContext.MakeEscFreq(this, numMasked, out var freqSum);
+            freqSum += hiCnt;
+            count = (int)decoder.GetThreshold((uint)freqSum);
+
+            if (count < hiCnt)
+            {
+                byte symbol;
+                var ps = _tempState2.Initialize(Heap);
+                for (
+                    hiCnt = 0, i = 0, ps.Address = _minContext._ps[i];
+                    (hiCnt += ps.Freq) <= count;
+                    i++, ps.Address = _minContext._ps[i]
+                )
+                {
+                    ;
+                }
+                s.Address = ps.Address;
+                decoder.Decode((uint)(hiCnt - s.Freq), (uint)s.Freq);
+                see.Update();
+                symbol = (byte)s.Symbol;
+                _minContext.Update2(this, s.Address);
+                UpdateModel();
+                return symbol;
+            }
+            if (count >= freqSum)
+            {
+                return -2;
+            }
+            decoder.Decode((uint)hiCnt, (uint)(freqSum - hiCnt));
+            see.Summ += freqSum;
+            do
+            {
+                s.Address = _minContext._ps[--i];
+                _charMask[s.Symbol] = 0;
+            } while (i != 0);
+        }
+    }
 }

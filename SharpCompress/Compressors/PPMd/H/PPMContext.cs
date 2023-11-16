@@ -328,6 +328,19 @@ internal class PpmContext : Pointer
         }
     }
 
+    internal void update1_0(ModelPpm model, int p)
+    {
+        model.FoundState.Address = p;
+        model.PrevSuccess = 2 * model.FoundState.Freq > _freqData.SummFreq ? 1 : 0;
+        model.IncRunLength(model.PrevSuccess);
+        _freqData.IncrementSummFreq(4);
+        model.FoundState.IncrementFreq(4);
+        if (model.FoundState.Freq > ModelPpm.MAX_FREQ)
+        {
+            Rescale(model);
+        }
+    }
+
     internal bool DecodeSymbol2(ModelPpm model)
     {
         long count;
@@ -425,6 +438,32 @@ internal class PpmContext : Pointer
         {
             psee2C = model.DummySee2Cont;
             model.Coder.SubRange.Scale = 1;
+        }
+        return psee2C;
+    }
+
+    internal See2Context MakeEscFreq(ModelPpm model, int numMasked, out int escFreq)
+    {
+        See2Context psee2C;
+        var numStats = NumStats;
+        var nonMasked = numStats - numMasked;
+        if (numStats != 256)
+        {
+            var suff = GetTempPpmContext(model.Heap);
+            suff.Address = GetSuffix();
+            var idx1 = model.GetNs2Indx()[nonMasked - 1];
+            var idx2 = 0;
+            idx2 += ((nonMasked < suff.NumStats - numStats) ? 1 : 0);
+            idx2 += 2 * ((_freqData.SummFreq < 11 * numStats) ? 1 : 0);
+            idx2 += 4 * ((numMasked > nonMasked) ? 1 : 0);
+            idx2 += model.HiBitsFlag;
+            psee2C = model.GetSee2Cont()[idx1][idx2];
+            escFreq = psee2C.Mean;
+        }
+        else
+        {
+            psee2C = model.DummySee2Cont;
+            escFreq = 1;
         }
         return psee2C;
     }

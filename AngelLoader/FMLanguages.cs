@@ -5,7 +5,7 @@ using System.IO;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;

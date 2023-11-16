@@ -25,6 +25,12 @@ internal class RangeCoder
         Init();
     }
 
+    internal RangeCoder(Stream stream)
+    {
+        _stream = stream;
+        Init();
+    }
+
     private void Init()
     {
         SubRange = new SubRange();

@@ -55,12 +55,6 @@
 		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Compressors\ADC\" />
-	  <Folder Include="Compressors\BZip2\" />
-	  <Folder Include="Compressors\Filters\" />
-	  <Folder Include="Compressors\LZMA\LZ\" />
-	  <Folder Include="Compressors\LZMA\RangeCoder\" />
-	  <Folder Include="Compressors\LZMA\Utilites\" />
-	  <Folder Include="Compressors\Xz\Filters\" />
+	  <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
 	</ItemGroup>
 </Project>

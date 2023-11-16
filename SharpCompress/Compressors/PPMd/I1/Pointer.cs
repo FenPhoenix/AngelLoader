@@ -1,5 +1,7 @@
 #nullable disable
 
+using System;
+
 namespace SharpCompress.Compressors.PPMd.I1;
 
 /// <summary>
@@ -20,6 +22,8 @@ internal struct Pointer
 {
     public uint _address;
     public byte[] _memory;
+    public static readonly Pointer ZERO = new Pointer(0, null);
+    public const int SIZE = 1;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Pointer"/> structure.
@@ -28,6 +32,35 @@ internal struct Pointer
     {
         _address = address;
         _memory = memory;
+    }
+
+    /// <summary>
+    /// Gets or sets the byte at the given <paramref name="offset"/>.
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    public byte this[int offset]
+    {
+        get
+        {
+#if DEBUG
+            if (_address == 0)
+            {
+                throw new InvalidOperationException("The pointer being indexed is a null pointer.");
+            }
+#endif
+            return _memory[_address + offset];
+        }
+        set
+        {
+#if DEBUG
+            if (_address == 0)
+            {
+                throw new InvalidOperationException("The pointer being indexed is a null pointer.");
+            }
+#endif
+            _memory[_address + offset] = value;
+        }
     }
 
     /// <summary>

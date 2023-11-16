@@ -8,7 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;

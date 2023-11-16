@@ -34,7 +34,7 @@ using AL_Common.FastZipReader;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
-using SharpCompress_7z.Archives.SevenZip;
+using SharpCompress.Archives.SevenZip;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;
