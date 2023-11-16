@@ -32,7 +32,7 @@ internal sealed class Allocator
     public Pointer _highUnit;
     public Pointer _text;
     public Pointer _heap;
-    public MemoryNode[] _memoryNodes;
+    public readonly MemoryNode[] _memoryNodes;
 
     public byte[] _memory;
 

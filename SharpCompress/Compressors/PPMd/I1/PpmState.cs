@@ -18,7 +18,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 internal struct PpmState
 {
     public uint _address;
-    public byte[] _memory;
+    public readonly byte[] _memory;
     public static readonly PpmState ZERO = new PpmState(0, null);
     public const int SIZE = 6;
 

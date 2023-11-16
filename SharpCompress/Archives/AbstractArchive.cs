@@ -23,7 +23,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IArchive, IArchiveExtra
     protected ReaderOptions ReaderOptions { get; }
 
     private bool disposed;
-    protected SourceStream SrcStream;
+    protected readonly SourceStream SrcStream;
 
     internal AbstractArchive(ArchiveType type, SourceStream srcStream)
     {

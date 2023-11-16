@@ -21,7 +21,7 @@ internal sealed class RarVM : BitInput
     public const int VM_MEMSIZE = 0x40000;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'VM_MEMMASK '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public static readonly int VM_MEMMASK = (VM_MEMSIZE - 1);
+    public const int VM_MEMMASK = (VM_MEMSIZE - 1);
 
     public const int VM_GLOBALMEMADDR = 0x3C000;
 
@@ -1165,7 +1165,7 @@ internal sealed class RarVM : BitInput
                     {
                         break;
                     }
-                    var fileSize = 0x1000000;
+                    const int fileSize = 0x1000000;
                     var cmpByte2 = (byte)(
                         (filterType == VMStandardFilters.VMSF_E8E9) ? 0xe9 : 0xe8
                     );
@@ -1306,7 +1306,7 @@ internal sealed class RarVM : BitInput
                     int dataSize = R[4],
                         width = R[0] - 3,
                         posR = R[1];
-                    var channels = 3;
+                    const int channels = 3;
                     var srcPos = 0;
                     var destDataPos = dataSize;
                     SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);

@@ -80,7 +80,7 @@ internal class PpmContext : Pointer
     private PpmContext _tempPpmContext;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'ps '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    internal int[] _ps = new int[256];
+    internal readonly int[] _ps = new int[256];
 
     public PpmContext(byte[] memory)
         : base(memory)

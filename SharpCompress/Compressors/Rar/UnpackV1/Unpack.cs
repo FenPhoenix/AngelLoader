@@ -917,7 +917,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
 
         UnpackUtility.makeDecodeTables(bitLength, 0, BD, PackDef.BC);
 
-        var TableSize = PackDef.HUFF_TABLE_SIZE;
+        const int TableSize = PackDef.HUFF_TABLE_SIZE;
 
         for (var i = 0; i < TableSize; )
         {
@@ -1273,7 +1273,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                     DataSize + RarVM.VM_FIXEDGLOBALSIZE - CurSize
                 );
             }
-            var offset = RarVM.VM_FIXEDGLOBALSIZE;
+            const int offset = RarVM.VM_FIXEDGLOBALSIZE;
             globalData = StackFilter.Program.GlobalData;
             for (var I = 0; I < DataSize; I++)
             {

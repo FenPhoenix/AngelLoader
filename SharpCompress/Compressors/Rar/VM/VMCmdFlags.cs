@@ -12,7 +12,7 @@ internal class VMCmdFlags
     public const byte VMCF_USEFLAGS = 32;
     public const byte VMCF_CHFLAGS = 64;
 
-    public static byte[] VM_CmdFlags =
+    public static readonly byte[] VM_CmdFlags =
     {
         VMCF_OP2 | VMCF_BYTEMODE,
         VMCF_OP2 | VMCF_BYTEMODE | VMCF_CHFLAGS,

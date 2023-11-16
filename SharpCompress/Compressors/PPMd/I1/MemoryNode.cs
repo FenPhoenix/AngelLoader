@@ -26,7 +26,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 internal struct MemoryNode
 {
     public uint _address;
-    public byte[] _memory;
+    public readonly byte[] _memory;
     public static readonly MemoryNode ZERO = new MemoryNode(0, null);
     public const int SIZE = 12;
 

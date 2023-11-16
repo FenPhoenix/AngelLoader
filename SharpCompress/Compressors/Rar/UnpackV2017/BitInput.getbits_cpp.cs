@@ -21,7 +21,7 @@ internal partial class BitInput
             // So let's allocate 3 additional bytes for situation, when we need to
             // read only 1 byte from the last position of buffer and avoid a crash
             // from access to next 3 bytes, which contents we do not need.
-            size_t BufSize = MAX_SIZE + 3;
+            const size_t BufSize = MAX_SIZE + 3;
             InBuf = new byte[BufSize];
 
             // Ensure that we get predictable results when accessing bytes in area

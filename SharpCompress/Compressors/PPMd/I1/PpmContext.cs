@@ -20,7 +20,7 @@ internal sealed partial class Model
     internal struct PpmContext
     {
         public uint _address;
-        public byte[] _memory;
+        public readonly byte[] _memory;
         public static readonly PpmContext ZERO = new PpmContext(0, null);
         public const int SIZE = 12;
 

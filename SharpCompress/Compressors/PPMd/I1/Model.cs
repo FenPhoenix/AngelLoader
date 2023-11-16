@@ -669,7 +669,7 @@ internal sealed partial class Model
             return context;
         }
 
-        byte localNumberStatistics = 0;
+        const byte localNumberStatistics = 0;
         var localFlags = (byte)((symbol >= 0x40) ? 0x10 : 0x00);
         symbol = upBranch.NumberStatistics;
         var localSymbol = symbol;

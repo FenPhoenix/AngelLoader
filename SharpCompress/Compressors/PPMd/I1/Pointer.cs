@@ -21,7 +21,7 @@ namespace SharpCompress.Compressors.PPMd.I1;
 internal struct Pointer
 {
     public uint _address;
-    public byte[] _memory;
+    public readonly byte[] _memory;
     public static readonly Pointer ZERO = new Pointer(0, null);
     public const int SIZE = 1;
 
