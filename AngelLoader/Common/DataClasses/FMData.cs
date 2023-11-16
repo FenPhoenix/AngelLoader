@@ -241,5 +241,7 @@ public sealed class FanMission
     // it "slow to scan".
     internal bool IsFastToScan() => Game != Game.TDM && !Archive.ExtIs7z() && !Archive.ExtIsRar();
 
+    internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
+
     #endregion
 }
