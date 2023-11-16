@@ -95,6 +95,8 @@ public sealed class ZipArchiveFast : IDisposable
     [PublicAPI]
     private ZipArchiveFast(Stream stream, ZipContext context, bool disposeContext, bool allowUnsupportedEntries)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
@@ -102,8 +104,6 @@ public sealed class ZipArchiveFast : IDisposable
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
         _disposeContext = disposeContext;
-
-        if (stream == null) throw new ArgumentNullException(nameof(stream));
 
         _context = context;
 
@@ -449,7 +449,7 @@ public sealed class ZipArchiveFast : IDisposable
 
     private void ThrowIfDisposed()
     {
-        if (_isDisposed) throw new ObjectDisposedException(typeof(ZipArchiveFast).ToString());
+        ObjectDisposedException.ThrowIf(_isDisposed, typeof(ZipArchiveFast).ToString());
     }
 
     /// <summary>

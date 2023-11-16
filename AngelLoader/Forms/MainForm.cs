@@ -3768,7 +3768,7 @@ public sealed partial class MainForm : DarkFormBase,
                         if (fm.Title.StartsWithI(a + " "))
                         {
                             // Take the actual article from the name so as to preserve casing
-                            title = fm.Title.Substring(a.Length + 1) + ", " + fm.Title.Substring(0, a.Length);
+                            title = string.Concat(fm.Title.AsSpan(a.Length + 1), ", ", fm.Title.AsSpan(0, a.Length));
                             break;
                         }
                     }

@@ -526,6 +526,9 @@ public sealed partial class Scanner
 
     #endregion
 
+    // @NET5(Regexes):
+    // Generating these does make the scan a couple hundred milliseconds faster, but bloats up our dll by 70K(!)
+    // That's an insane amount given how little we're getting out of it. We could do it if we felt like it but meh.
     #region Regexes
 
     // PERF: Making regexes compiled increases their performance by a huge amount.

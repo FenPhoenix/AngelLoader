@@ -28,7 +28,7 @@ public static partial class Common
         return value.StartsWithO(@"\\") ? @"\\" + value.Substring(2).ToSystemDirSeps() : value.ToSystemDirSeps();
     }
 
-    public static string MakeUNCPath(string path) => path.StartsWithO(@"\\") ? @"\\?\UNC\" + path.Substring(2) : @"\\?\" + path;
+    public static string MakeUNCPath(string path) => path.StartsWithO(@"\\") ? string.Concat(@"\\?\UNC\", path.AsSpan(2)) : @"\\?\" + path;
 
     #endregion
 
