@@ -140,7 +140,7 @@ public static class Utility
         }
     }
 
-    public static DateTime DosDateToDateTime(ushort iDate, ushort iTime)
+    private static DateTime DosDateToDateTime(ushort iDate, ushort iTime)
     {
         var year = (iDate / 512) + 1980;
         var month = iDate % 512 / 32;

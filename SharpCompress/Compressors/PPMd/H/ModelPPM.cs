@@ -96,8 +96,7 @@ internal sealed class ModelPpm
     internal int _initEsc;
     private int _numMasked,
         _orderFall,
-        _maxOrder,
-        _initRl;
+        _maxOrder;
 
     private readonly int[] _ns2Indx = new int[256];
 
@@ -169,7 +168,6 @@ internal sealed class ModelPpm
     {
         new Span<int>(CharMask).Clear();
         SubAlloc.InitSubAllocator();
-        _initRl = -(_maxOrder < 12 ? _maxOrder : 12) - 1;
         var addr = SubAlloc.AllocContext();
         _minContext.Address = addr;
         _maxContext.Address = addr;
@@ -302,7 +300,7 @@ internal sealed class ModelPpm
             //medContext = new PPMContext(Heap);
             _maxContext = new PpmContext(Heap);
             FoundState = new State(Heap);
-            new See2Context();
+            DummySee2Cont = new See2Context();
             for (var i = 0; i < 25; i++)
             {
                 for (var j = 0; j < 16; j++)
@@ -714,7 +712,7 @@ internal sealed class ModelPpm
         //medContext = new PPMContext(Heap);
         _maxContext = new PpmContext(Heap);
         FoundState = new State(Heap);
-        new See2Context();
+        DummySee2Cont = new See2Context();
         for (var i = 0; i < 25; i++)
         {
             for (var j = 0; j < 16; j++)

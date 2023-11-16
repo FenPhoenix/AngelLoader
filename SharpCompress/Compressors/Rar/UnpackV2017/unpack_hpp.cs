@@ -197,7 +197,7 @@ internal sealed partial class FragmentedWindow
     //void CopyString(uint Length,uint Distance,size_t &UnpPtr,size_t MaxWinMask);
     //void CopyData(byte *Dest,size_t WinPos,size_t Size);
     //size_t GetBlockSize(size_t StartPos,size_t RequiredSize);
-}
+};
 
 
 internal partial class Unpack
