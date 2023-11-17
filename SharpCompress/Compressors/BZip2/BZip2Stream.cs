@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace SharpCompress.Compressors.BZip2;
 
@@ -55,14 +56,10 @@ internal sealed class BZip2Stream : Stream
     public override void SetLength(long value) => _stream.SetLength(value);
 
     // @NET5(SharpCompress): Figure out if we should get these working
-#if false
-#if !NETFRAMEWORK && !NETSTANDARD2_0
 
-    public override int Read(Span<byte> buffer) => stream.Read(buffer);
+    public override int Read(Span<byte> buffer) => _stream.Read(buffer);
 
-    public override void Write(ReadOnlySpan<byte> buffer) => stream.Write(buffer);
-#endif
-#endif
+    public override void Write(ReadOnlySpan<byte> buffer) => _stream.Write(buffer);
 
     public override void Write(byte[] buffer, int offset, int count) =>
         _stream.Write(buffer, offset, count);

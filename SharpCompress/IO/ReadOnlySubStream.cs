@@ -69,7 +69,6 @@ internal sealed class ReadOnlySubStream : NonDisposingStream
         return value;
     }
 
-#if !NETFRAMEWORK && !NETSTANDARD2_0
     public override int Read(Span<byte> buffer)
     {
         var slice_len = BytesLeftToRead < buffer.Length ? BytesLeftToRead : buffer.Length;
@@ -81,7 +80,6 @@ internal sealed class ReadOnlySubStream : NonDisposingStream
         }
         return read;
     }
-#endif
 
     public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 

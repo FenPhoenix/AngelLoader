@@ -35,9 +35,7 @@ public sealed class ArchiveEncoding
         Password = password;
     }
 
-#if !NETFRAMEWORK
     static ArchiveEncoding() => Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
 
     public string Decode(byte[] bytes) => Decode(bytes, 0, bytes.Length);
 
