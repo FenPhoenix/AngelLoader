@@ -1,104 +1,93 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>$(SolutionTargetFramework)</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <Platforms>AnyCPU;x86</Platforms>
-    <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release;DebugTesting</Configurations>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>$(SolutionTargetFramework)</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<Platforms>AnyCPU;x86</Platforms>
+		<LangVersion>latest</LangVersion>
+		<Configurations>Debug;Release;DebugTesting</Configurations>
 
-    <Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
 
-    <AssemblyTitle>FMInfoGen</AssemblyTitle>
-    <Product>FMInfoGen</Product>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-  </PropertyGroup>
+		<AssemblyTitle>FMInfoGen</AssemblyTitle>
+		<Product>FMInfoGen</Product>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<FileVersion>1.0.0</FileVersion>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\x86\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x86'">
-    <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x86'">
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\x86\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|AnyCPU'">
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\Debug\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release</DefineConstants>
-    <OutputPath>bin\x86\Release\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE;Release</DefineConstants>
+		<OutputPath>bin\x86\Release\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;Release</DefineConstants>
-    <OutputPath>bin\Release\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE;Release</DefineConstants>
+		<OutputPath>bin\Release\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
-    <PackageReference Include="SharpClipboard" Version="3.5.2" />
-    <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
-    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
-    <PackageReference Include="YamlDotNet" Version="8.1.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+		<PackageReference Include="SharpClipboard" Version="3.5.2" />
+		<PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
+		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+		<PackageReference Include="YamlDotNet" Version="8.1.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\AL_Common\AL_Common.csproj" />
-    <ProjectReference Include="..\..\..\FMScanner\FMScanner.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\AL_Common\AL_Common.csproj" />
+		<ProjectReference Include="..\..\..\FMScanner\FMScanner.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
-  </Target>
-  <!--
-    "NG7zLibs_net_AfterBuild" is a 7z.libs target. We have to run after it if we want the 7z.dll file to exist so
-    we can copy it. Blah. Also, it underlines the string like it doesn't exist, but it does find it. Tested.
-  -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" DependsOnTargets="NG7zLibs_net_AfterBuild">
-    <Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
-  </Target>
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 
 </Project>
