@@ -30,7 +30,7 @@ for writing. Even if you put it after the using block, it throws. So always set 
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
 */
 
-internal static class FMBackupAndRestore
+internal static partial class FMBackupAndRestore
 {
     #region Private fields
     // fmsel source code says:
@@ -61,11 +61,12 @@ internal static class FMBackupAndRestore
     private const int _removeFileEqLen = 11;
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
-    private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
-        RegexOptions.Compiled | IgnoreCaseInvariant);
 
-    private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
-        RegexOptions.Compiled | IgnoreCaseInvariant);
+    [GeneratedRegex(@"^save_[0123456789]{1,2}[/\\]", IgnoreCaseInvariant)]
+    private static partial Regex SS2SaveDirsInZipRegex();
+
+    [GeneratedRegex(@"[/\\]save_[0123456789]{1,2}[/\\]?$", IgnoreCaseInvariant)]
+    private static partial Regex SS2SaveDirsOnDiskRegex();
 
     #endregion
 
@@ -290,7 +291,7 @@ internal static class FMBackupAndRestore
 
                     foreach (string dir in ss2SaveDirs)
                     {
-                        if (_ss2SaveDirsOnDiskRegex.IsMatch(dir))
+                        if (SS2SaveDirsOnDiskRegex().IsMatch(dir))
                         {
                             savesAndScreensFiles.AddRange(Directory.GetFiles(dir, "*", SearchOption.AllDirectories));
                         }
@@ -424,7 +425,7 @@ internal static class FMBackupAndRestore
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
                             entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true, zipExtractTempBuffer);
                         }
-                        else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
+                        else if (fm.Game == Game.SS2 && (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                             entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
@@ -451,7 +452,7 @@ internal static class FMBackupAndRestore
                                  fn.PathStartsWithI(_darkNetSavesDirS) ||
                                  fn.PathStartsWithI(_screensDirS) ||
                                  (fm.Game == Game.SS2 &&
-                                  (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
+                                  (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                 entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
@@ -490,7 +491,7 @@ internal static class FMBackupAndRestore
                                     !val.PathStartsWithI(_darkNetSavesDirS) &&
                                     !val.PathStartsWithI(_screensDirS) &&
                                     (fm.Game != Game.SS2 ||
-                                     (!_ss2SaveDirsInZipRegex.IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
+                                     (!SS2SaveDirsInZipRegex().IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
                                     !val.EqualsI(Paths.FMSelInf) &&
                                     !val.EqualsI(_startMisSav) &&
                                     // Reject malformed and/or maliciously formed paths - we're going to
@@ -592,7 +593,7 @@ internal static class FMBackupAndRestore
         (game == Game.Thief3 &&
          path.PathStartsWithI(_t3SavesDirS)) ||
         (game == Game.SS2 &&
-         (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
+         (SS2SaveDirsInZipRegex().IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
         (game != Game.Thief3 &&
          (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
 
