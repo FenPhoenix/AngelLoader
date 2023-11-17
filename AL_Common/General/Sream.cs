@@ -1,57 +1,56 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace AL_Common;
 
 public static partial class Common
 {
-    private static bool? _fieldStreamBufferFieldFound;
-    private static FieldInfo? _fieldStreamBufferFieldInfo;
+    private static bool? _fileStreamBufferFieldFound;
+    private static FieldInfo? _fileStreamStrategyFieldInfo;
+    private static Type? _fileStreamBufferedStrategyType;
+    private static FieldInfo? _bufferField;
 
     #region Methods
 
     public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
-        buffer.Clear();
+        FileStream fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096);
 
-        if (_fieldStreamBufferFieldFound == null)
+        if (_fileStreamBufferFieldFound == true)
+        {
+            object? strategyInstance = _fileStreamStrategyFieldInfo!.GetValue(fs);
+            _bufferField?.SetValue(strategyInstance, buffer);
+        }
+        else if (_fileStreamBufferFieldFound == null)
         {
             try
             {
-                // @NET5(FileStream buffering): Newer .NETs (since the FileStream "strategy" additions) are totally different
-                // We'd have to see if they added a way to pass in a buffer, and if not, we'd have to write totally
-                // different code to get at the buffer here for newer .NETs.
-                // typeof(FileStream) (base type) because that's the type where the buffer field is
-                _fieldStreamBufferFieldInfo = typeof(FileStream)
+                _fileStreamStrategyFieldInfo = typeof(FileStream)
                     .GetField(
-                        "_buffer",
+                        "_strategy",
                         BindingFlags.NonPublic | BindingFlags.Instance);
 
-                _fieldStreamBufferFieldFound = _fieldStreamBufferFieldInfo != null &&
-                                               _fieldStreamBufferFieldInfo.FieldType == typeof(byte[]);
+                if (_fileStreamStrategyFieldInfo != null)
+                {
+                    object? strategyInstance = _fileStreamStrategyFieldInfo.GetValue(fs);
+                    if (strategyInstance != null)
+                    {
+                        _fileStreamBufferedStrategyType = strategyInstance.GetType();
+                        _bufferField = _fileStreamBufferedStrategyType
+                            .GetField(
+                                "_buffer",
+                                BindingFlags.NonPublic | BindingFlags.Instance);
+                        _fileStreamBufferFieldFound = _bufferField != null;
+                    }
+                }
             }
             catch
             {
-                _fieldStreamBufferFieldFound = false;
-                _fieldStreamBufferFieldInfo = null;
-            }
-        }
-
-        var fs =
-            _fieldStreamBufferFieldFound == true
-                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
-                : new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        if (_fieldStreamBufferFieldFound == true)
-        {
-            try
-            {
-                _fieldStreamBufferFieldInfo?.SetValue(fs, buffer);
-            }
-            catch
-            {
-                _fieldStreamBufferFieldFound = false;
-                _fieldStreamBufferFieldInfo = null;
+                _fileStreamBufferFieldFound = false;
+                _fileStreamStrategyFieldInfo = null;
+                _fileStreamBufferedStrategyType = null;
+                _bufferField = null;
             }
         }
 
