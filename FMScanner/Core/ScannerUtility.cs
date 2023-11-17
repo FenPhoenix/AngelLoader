@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
-using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
+using SharpCompress.Readers.Rar;
 using static System.StringComparison;
 using static AL_Common.Common;
 
@@ -79,9 +78,9 @@ internal static class Utility
     {
         int dotIndex = value.IndexOf('.');
         return dotIndex > -1 &&
-               ((dotIndex == 9 && value.StartsWithI_Local("fminfo-en")) ||
-                (dotIndex == 10 && value.StartsWithI_Local("fminfo-eng")) ||
-                !(dotIndex > 6 && value.StartsWithI_Local("fminfo")));
+               ((dotIndex == 9 && value.StartsWithI("fminfo-en")) ||
+                (dotIndex == 10 && value.StartsWithI("fminfo-eng")) ||
+                !(dotIndex > 6 && value.StartsWithI("fminfo")));
     }
 
     internal static bool IsValidReadme(this string readme) =>
@@ -280,120 +279,6 @@ internal static class Utility
     #endregion
 
     #region StartsWith and EndsWith
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct StringCompareReturn
-    {
-        internal readonly bool RequiresStringComparison;
-        internal readonly int Compare;
-
-        public StringCompareReturn(int compare)
-        {
-            RequiresStringComparison = false;
-            Compare = compare;
-        }
-
-        public StringCompareReturn(bool requiresStringComparison)
-        {
-            RequiresStringComparison = requiresStringComparison;
-            Compare = 0;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EqualsI_Local(this string str1, string str2)
-    {
-        if (str1.Length != str2.Length) return false;
-
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan(), str2.AsSpan());
-        return result.RequiresStringComparison ? str1.Equals(str2, OrdinalIgnoreCase) : result.Compare == 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EqualsI_Local(ReadOnlySpan<char> str1, string str2)
-    {
-        int str1Len = str1.Length;
-        int str2Len = str2.Length;
-
-        if (str1Len != str2Len) return false;
-
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1, str2.AsSpan());
-        return result.RequiresStringComparison ? str1.ToString().Equals(str2, OrdinalIgnoreCase) : result.Compare == 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool StartsWithI_Local(this string str1, string str2)
-    {
-        int str1Len = str1.Length;
-        int str2Len = str2.Length;
-
-        if (str1Len < str2Len) return false;
-
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan().Slice(0, str2Len), str2.AsSpan());
-        return result.RequiresStringComparison ? str1.StartsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool EndsWithI_Local(ReadOnlySpan<char> str1, string str2)
-    {
-        int str1Len = str1.Length;
-        int str2Len = str2.Length;
-
-        if (str1Len < str2Len) return false;
-
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.Slice(str1Len - str2Len), str2.AsSpan());
-        return result.RequiresStringComparison ? str1.ToString().EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
-    }
-
-    // Copied from .NET 7 and slightly modified
-    internal static unsafe StringCompareReturn CompareToOrdinalIgnoreCase(
-        ReadOnlySpan<char> strA,
-        ReadOnlySpan<char> strB)
-    {
-        int length = Math.Min(strA.Length, strB.Length);
-        fixed (char* strARef = &MemoryMarshal.GetReference(strA))
-        fixed (char* strBRef = &MemoryMarshal.GetReference(strB))
-        {
-            char* charA = strARef;
-            char* charB = strBRef;
-            while (length != 0 &&
-                   //*charA <= '\u007F' &&
-                   // Only check the needle for non-ASCII chars, matching our old custom StartsWith/EndsWith
-                   // function, and avoiding 99.9999% of ToString() allocations that would otherwise happen here.
-                   *charB <= '\u007F')
-            {
-                int currentA = *charA;
-                int currentB = *charB;
-                if (currentA == currentB)
-                {
-                    ++charA;
-                    ++charB;
-                    --length;
-                }
-                else
-                {
-                    if ((uint)(currentA - 97) <= 25U)
-                    {
-                        currentA -= 32;
-                    }
-                    if ((uint)(currentB - 97) <= 25U)
-                    {
-                        currentB -= 32;
-                    }
-                    if (currentA != currentB)
-                    {
-                        return new StringCompareReturn(compare: currentA - currentB);
-                    }
-                    ++charA;
-                    ++charB;
-                    --length;
-                }
-            }
-            return length == 0
-                ? new StringCompareReturn(compare: strA.Length - strB.Length)
-                : new StringCompareReturn(requiresStringComparison: true);
-        }
-    }
 
     private enum CaseComparison
     {

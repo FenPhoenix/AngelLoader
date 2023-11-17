@@ -30,6 +30,17 @@ public static partial class Common
     public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool StartsWithI(this string str, string value) => str.StartsWith(value, OrdinalIgnoreCase);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EndsWithI(this string str, string value) => str.EndsWith(value, OrdinalIgnoreCase);
+
+    public static bool StartsWithI(this ReadOnlySpan<char> str, string value) => str.StartsWith(value, OrdinalIgnoreCase);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EndsWithI(this ReadOnlySpan<char> str, string value) => str.EndsWith(value, OrdinalIgnoreCase);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
     #region ASCII-specific
@@ -128,6 +139,20 @@ public static partial class Common
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Determines whether this string and a specified <see langword="string"/> object have the same value.
+    /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsI(this ReadOnlySpan<char> first, string second) => first.Equals(second, OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Determines whether this string and a specified <see langword="string"/> object have the same value.
+    /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsI(this ReadOnlySpan<char> first, ReadOnlySpan<char> second) => first.Equals(second, OrdinalIgnoreCase);
 
     /// <summary>
     /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
