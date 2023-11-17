@@ -253,13 +253,15 @@ internal static class Win32ThemeHooks
                     COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                     _ => GetSysColor_Original!(nIndex)
                 },
-                // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
-                // This is the ONLY way that works on those versions.
-                // (note: it's really just GetSysColorBrush() that it calls, we technically don't need to do
-                // this here in GetSysColor(), but let's do it for robustness because who knows what could change.)
-                _ => nIndex == COLOR_3DFACE
-                    ? ColorTranslator.ToWin32(DarkColors.DarkBackground)
-                    : GetSysColor_Original!(nIndex)
+                /*
+                On .NET 8, SystemBrushes/SystemPens end up calling GetSysColor() for every individual requested
+                brush/pen and caching the result (at least that's what it looks like it's doing by observing the
+                behavior). So if we started in dark mode, they would end up here and caching the dark mode color
+                we used to have here. Fortunately, the color we had here was only for unthemed Windows 7, but
+                .NET 8 only supports 10+. So we can just remove this altogether and everything will now work
+                correctly.
+                */
+                _ => GetSysColor_Original!(nIndex)
             }
             : GetSysColor_Original!(nIndex);
     }
@@ -288,11 +290,15 @@ internal static class Win32ThemeHooks
                     COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
                     _ => GetSysColorBrush_Original!(nIndex)
                 },
-                // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
-                // This is the ONLY way that works on those versions.
-                _ => nIndex == COLOR_3DFACE
-                    ? SysColorBrush_DarkBackground
-                    : GetSysColorBrush_Original!(nIndex)
+                /*
+                On .NET 8, SystemBrushes/SystemPens end up calling GetSysColor() for every individual requested
+                brush/pen and caching the result (at least that's what it looks like it's doing by observing the
+                behavior). So if we started in dark mode, they would end up here and caching the dark mode color
+                we used to have here. Fortunately, the color we had here was only for unthemed Windows 7, but
+                .NET 8 only supports 10+. So we can just remove this altogether and everything will now work
+                correctly.
+                */
+                _ => GetSysColorBrush_Original!(nIndex)
             }
             : GetSysColorBrush_Original!(nIndex);
     }
