@@ -1223,7 +1223,7 @@ internal static class Core
                     bool andPass = true;
                     foreach (CatAndTagsList andTag in andTags)
                     {
-                        if (!fm.Tags.TryGetValue(andTag.Category, out FMTagsCollection match))
+                        if (!fm.Tags.TryGetValue(andTag.Category, out FMTagsCollection? match))
                         {
                             andPass = false;
                             break;
@@ -1261,7 +1261,7 @@ internal static class Core
                     bool orPass = false;
                     foreach (CatAndTagsList orTag in orTags)
                     {
-                        if (!fm.Tags.TryGetValue(orTag.Category, out FMTagsCollection match))
+                        if (!fm.Tags.TryGetValue(orTag.Category, out FMTagsCollection? match))
                         {
                             continue;
                         }
@@ -1302,7 +1302,7 @@ internal static class Core
                     bool notPass = true;
                     foreach (CatAndTagsList notTag in notTags)
                     {
-                        if (!fm.Tags.TryGetValue(notTag.Category, out FMTagsCollection match))
+                        if (!fm.Tags.TryGetValue(notTag.Category, out FMTagsCollection? match))
                         {
                             continue;
                         }

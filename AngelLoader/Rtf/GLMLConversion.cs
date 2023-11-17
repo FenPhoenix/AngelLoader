@@ -241,7 +241,7 @@ internal static class GLMLConversion
                             string num = subSB.ToString();
 
                             bool success = num.Length > 0 && num[0] == 'x'
-                                ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
+                                ? int.TryParse(num.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
                                 : Int_TryParseInv(num, out result);
 
                             if (success)

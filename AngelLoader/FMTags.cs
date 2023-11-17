@@ -50,7 +50,7 @@ internal static class FMTags
         // Child node (tag)
         else
         {
-            if (fm.Tags.TryGetValue(catText, out FMTagsCollection tagsList) &&
+            if (fm.Tags.TryGetValue(catText, out FMTagsCollection? tagsList) &&
                 tagsList.Contains(tagText))
             {
                 tagsList.Remove(tagText);
@@ -251,7 +251,7 @@ internal static class FMTags
 
             #region FM tags
 
-            if (existingFMTags.TryGetValue(cat, out FMTagsCollection tagsList))
+            if (existingFMTags.TryGetValue(cat, out FMTagsCollection? tagsList))
             {
                 tagsList.Add(tag);
             }
@@ -266,7 +266,7 @@ internal static class FMTags
 
             #region Global tags
 
-            if (GlobalTags.TryGetValue(cat, out FMTagsCollection globalTagsList))
+            if (GlobalTags.TryGetValue(cat, out FMTagsCollection? globalTagsList))
             {
                 globalTagsList.Add(tag);
             }

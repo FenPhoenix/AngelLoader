@@ -816,7 +816,7 @@ internal static class Utility
                             string num = subSB.ToString();
 
                             bool success = num.Length > 0 && num[0] == 'x'
-                                ? uint.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint result)
+                                ? uint.TryParse(num.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint result)
                                 : UInt_TryParseInv(num, out result);
 
                             if (success)

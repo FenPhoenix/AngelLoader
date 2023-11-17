@@ -29,8 +29,8 @@ using AL_Common;
 using AL_Common.FastZipReader;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
-using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
+using SharpCompress.Readers.Rar;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;
@@ -496,7 +496,7 @@ public sealed partial class Scanner : IDisposable
             ThrowHelper.ArgumentException("Argument is null or empty.", nameof(tempPath));
         }
 
-        if (missions == null) throw new ArgumentNullException(nameof(missions));
+        ArgumentNullException.ThrowIfNull(missions, nameof(missions));
         if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
         {
             Log("No mission(s) specified. tempPath: " + tempPath);
@@ -2335,8 +2335,8 @@ public sealed partial class Scanner : IDisposable
         if (match.Success)
         {
             Group suffix = match.Groups["Suffix"];
-            dateString = dateString.Substring(0, suffix.Index) +
-                         dateString.Substring(suffix.Index + suffix.Length);
+            dateString = string.Concat(dateString.AsSpan(0, suffix.Index),
+                dateString.AsSpan(suffix.Index + suffix.Length));
         }
 
         // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
@@ -2466,7 +2466,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private void SetMiscTag(ScannedFMData fmData, string tag)
+    private static void SetMiscTag(ScannedFMData fmData, string tag)
     {
         if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
@@ -3562,7 +3562,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private Stream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
@@ -3572,7 +3572,7 @@ public sealed partial class Scanner : IDisposable
         return _generalMemoryStream;
     }
 
-    private Stream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
@@ -3709,7 +3709,11 @@ public sealed partial class Scanner : IDisposable
         return ret;
     }
 
-    private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, ListFast<string> lines)
+    private
+#if !FMScanner_FullCode
+    static
+#endif
+    string GetValueFromLines(SpecialLogic specialLogic, string[] keys, ListFast<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
