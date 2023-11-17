@@ -3524,6 +3524,8 @@ public sealed partial class Scanner : IDisposable
                         readmeStream = rarReadmeEntry!.OpenEntryStream();
                     }
 
+                    // @MEM(RTF pooled byte arrays): This pool barely helps us
+                    // Most of the arrays are used only once, a handful are used twice.
                     byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
                     try
                     {
