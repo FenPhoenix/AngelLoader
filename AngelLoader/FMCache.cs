@@ -229,7 +229,7 @@ internal static class FMCache
                         if (isSolid)
                         {
                             archive.Dispose();
-                            using var fs = File_OpenReadFast(fmArchivePath);
+                            using var fs = File.OpenRead(fmArchivePath);
                             using var reader = RarReader.Open(fs);
                             await RarExtractSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
                         }
@@ -667,7 +667,7 @@ internal static class FMCache
 
                     int extractorFilesCount;
 
-                    using (var fs = File_OpenReadFast(fmArchivePath))
+                    using (var fs = File.OpenRead(fmArchivePath))
                     {
                         var archive = new SevenZipArchive(fs);
                         ListFast<SevenZipArchiveEntry> entries = archive.Entries;

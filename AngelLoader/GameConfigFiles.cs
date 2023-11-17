@@ -115,7 +115,7 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using (var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(camModIni), new StreamReaderCustom()))
+        using (var sr = new StreamReaderCustom.SRC_Wrapper(File.OpenRead(camModIni), new StreamReaderCustom()))
         {
             /*
              Conforms to the way NewDark reads it:

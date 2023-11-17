@@ -39,17 +39,12 @@ public static partial class Common
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), new StreamReaderCustom());
+        using var sr = new StreamReaderCustom.SRC_Wrapper(File.OpenRead(path), new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
         }
         return ret;
-    }
-
-    public static FileStream_LengthCached File_OpenReadFast(string path)
-    {
-        return new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read);
     }
 
     #endregion

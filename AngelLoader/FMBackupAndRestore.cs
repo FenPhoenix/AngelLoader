@@ -581,7 +581,7 @@ internal static class FMBackupAndRestore
         // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
         ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
         entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-        using var fs = File_OpenReadFast(fileNameOnDisk);
+        using var fs = File.OpenRead(fileNameOnDisk);
         using var eo = entry.Open();
         // @MEM(Backup/AddEntry): stream.CopyTo(), we could recycle the buffer here
         fs.CopyTo(eo);
@@ -686,7 +686,7 @@ internal static class FMBackupAndRestore
         }
         else if (fmArchivePath.ExtIsRar())
         {
-            using var fs = File_OpenReadFast(fmArchivePath);
+            using var fs = File.OpenRead(fmArchivePath);
             using var archive = RarArchive.Open(fmArchivePath);
 
             ICollection<RarArchiveEntry> entries = archive.Entries;
@@ -765,7 +765,7 @@ internal static class FMBackupAndRestore
         }
         else
         {
-            using var fs = File_OpenReadFast(fmArchivePath);
+            using var fs = File.OpenRead(fmArchivePath);
             var archive = new SevenZipArchive(fs);
 
             ListFast<SevenZipArchiveEntry> entries = archive.Entries;

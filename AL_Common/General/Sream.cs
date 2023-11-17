@@ -5,51 +5,12 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Classes
-
     private static bool? _fieldStreamBufferFieldFound;
     private static FieldInfo? _fieldStreamBufferFieldInfo;
 
-    public sealed class FileStream_LengthCached : FileStream
-    {
-        private long _length = -1;
-        public override long Length
-        {
-            get
-            {
-                if (_length == -1)
-                {
-                    _length = base.Length;
-                }
-                return _length;
-            }
-        }
-
-        public FileStream_LengthCached(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share,
-            int bufferSize)
-            : base(path, mode, access, share, bufferSize)
-        {
-        }
-
-        public FileStream_LengthCached(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share)
-            : base(path, mode, access, share)
-        {
-        }
-    }
-
-    #endregion
-
     #region Methods
 
-    public static FileStream_LengthCached GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
+    public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
         buffer.Clear();
 
@@ -78,8 +39,8 @@ public static partial class Common
 
         var fs =
             _fieldStreamBufferFieldFound == true
-                ? new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
-                : new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
+                : new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         if (_fieldStreamBufferFieldFound == true)
         {

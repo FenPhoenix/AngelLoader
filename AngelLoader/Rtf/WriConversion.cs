@@ -17,7 +17,7 @@ internal static class WriConversion
     {
         try
         {
-            using var fs = File_OpenReadFast(fileName);
+            using var fs = File.OpenRead(fileName);
             (bool success, _, _) = ReadWriFileHeader(fs);
             return success;
         }
