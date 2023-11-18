@@ -46,7 +46,7 @@ internal readonly ref struct ZipGenericExtraField
     // shouldn't ever read the byte at position endExtraField
     // assumes we are positioned at the beginning of an extra field subfield
     internal static bool TryReadBlock(
-        Stream stream,
+        SubReadStream stream,
         long endExtraField,
         ZipContext context,
         out ZipGenericExtraField field)
@@ -117,7 +117,7 @@ internal readonly ref struct Zip64ExtraField
     // If there are more than one Zip64 extra fields, we take the first one that has the expected size
     //
     internal static Zip64ExtraField GetJustZip64Block(
-        Stream extraFieldStream,
+        SubReadStream extraFieldStream,
         bool readUncompressedSize,
         bool readCompressedSize,
         bool readLocalHeaderOffset,
@@ -230,7 +230,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
     }
 
     internal static bool TryReadBlock(
-        Stream stream,
+        FileStream stream,
         ZipContext context,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
     {
@@ -273,7 +273,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 
     internal static bool TryReadBlock(
-        Stream stream,
+        FileStream stream,
         ZipContext context,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
     {
@@ -309,7 +309,7 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipContext context)
+    internal static bool TrySkipBlock(FileStream stream, long streamLength, ZipContext context)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -369,7 +369,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
     // in either case, the zip64 extra field info will be incorporated into other fields
     internal static bool TryReadBlock(
-        Stream stream,
+        FileStream stream,
         ZipContext context,
         out ZipCentralDirectoryFileHeader header)
     {
@@ -469,7 +469,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
     }
 
     internal static bool TryReadBlock(
-        Stream stream,
+        FileStream stream,
         ZipContext context,
         out ZipEndOfCentralDirectoryBlock eocdBlock)
     {

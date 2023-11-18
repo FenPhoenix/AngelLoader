@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using AL_Common.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -40,9 +41,8 @@ public sealed class ZipArchiveFast : IDisposable
 
     private bool _isDisposed;
     private long _expectedNumberOfEntries;
-    private readonly Stream? _backingStream;
 
-    private readonly Stream _archiveStream;
+    private readonly FileStream _archiveStream;
     public readonly long ArchiveStreamLength;
 
     // invalid until ReadCentralDirectory
@@ -67,7 +67,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
     /// entries with unsupported compression methods are found.
     /// </param>
-    public ZipArchiveFast(Stream stream, bool allowUnsupportedEntries) :
+    public ZipArchiveFast(FileStream stream, bool allowUnsupportedEntries) :
         this(stream, new ZipContext(), disposeContext: true, allowUnsupportedEntries)
     {
     }
@@ -87,13 +87,13 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     [PublicAPI]
-    public ZipArchiveFast(Stream stream, ZipContext context, bool allowUnsupportedEntries) :
+    public ZipArchiveFast(FileStream stream, ZipContext context, bool allowUnsupportedEntries) :
         this(stream, context, disposeContext: false, allowUnsupportedEntries)
     {
     }
 
     [PublicAPI]
-    private ZipArchiveFast(Stream stream, ZipContext context, bool disposeContext, bool allowUnsupportedEntries)
+    private ZipArchiveFast(FileStream stream, ZipContext context, bool disposeContext, bool allowUnsupportedEntries)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
@@ -110,36 +110,17 @@ public sealed class ZipArchiveFast : IDisposable
         // Fen's note: Inlined Init() for nullable detection purposes...
         #region Init
 
-        Stream? extraTempStream = null;
-
-        try
+        if (!stream.CanRead)
         {
-            _backingStream = null;
-
-            if (!stream.CanRead)
-            {
-                ThrowHelper.ReadModeCapabilities();
-            }
-            if (!stream.CanSeek)
-            {
-                _backingStream = stream;
-                extraTempStream = stream = new MemoryStream();
-                _backingStream.CopyTo(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            _archiveStream = stream;
-            ArchiveStreamLength = _archiveStream.Length;
-
-            context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
-
-            ReadEndOfCentralDirectory();
+            ThrowHelper.ReadModeCapabilities();
         }
-        catch
-        {
-            extraTempStream?.Dispose();
-            throw;
-        }
+
+        _archiveStream = stream;
+        ArchiveStreamLength = _archiveStream.Length;
+
+        context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
+
+        ReadEndOfCentralDirectory();
 
         #endregion
     }
@@ -176,7 +157,7 @@ public sealed class ZipArchiveFast : IDisposable
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
-                uncompressedStream = new System.IO.Compression.DeflateStream(compressedStreamToRead, System.IO.Compression.CompressionMode.Decompress, leaveOpen: true);
+                uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress, leaveOpen: true);
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
@@ -462,7 +443,6 @@ public sealed class ZipArchiveFast : IDisposable
         {
             _archiveStream.Dispose();
             _context.ArchiveSubReadStream.SetSuperStream(null);
-            _backingStream?.Dispose();
 
             if (_disposeContext) _context.Dispose();
 

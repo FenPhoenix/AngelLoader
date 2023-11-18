@@ -13,9 +13,9 @@ internal sealed class SubReadStream : Stream
     private long _startInSuperStream;
     private long _positionInSuperStream;
     private long _endInSuperStream;
-    private Stream _superStream = null!;
+    private FileStream _superStream = null!;
 
-    internal void SetSuperStream(Stream? stream) => _superStream = stream!;
+    internal void SetSuperStream(FileStream? stream) => _superStream = stream!;
 
     internal void Set(long startPosition, long maxLength)
     {
