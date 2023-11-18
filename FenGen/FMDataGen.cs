@@ -330,14 +330,15 @@ internal static class FMData
             else if (_numericTypes.Contains(field.Type))
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
+                string tryParseLine = field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);";
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
-                    w.WL("bool success = " + field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);");
+                    w.WL("bool success = " + tryParseLine);
                     w.WL(objDotField + " = success ? result : " + ((long)field.NumericEmpty).ToStrInv() + ";");
                 }
                 else
                 {
-                    w.WL(field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);");
+                    w.WL(tryParseLine);
                     w.WL(objDotField + " = result;");
                 }
             }
