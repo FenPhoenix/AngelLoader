@@ -450,7 +450,7 @@ internal static partial class Ini
         int lastIndexOfComma = line.LastIndexOf(',');
 
         if (lastIndexOfComma > -1 &&
-            TryParseIntFromEnd(line, lastIndexOfComma + 1, 10, out int result) &&
+            Int_TryParseInv(line.AsSpan()[(lastIndexOfComma + 1)..], out int result) &&
             // 0 = default, we don't want to handle "default" as it's not a specific code page
             result > 0)
         {

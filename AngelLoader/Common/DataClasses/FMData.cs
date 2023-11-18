@@ -109,13 +109,11 @@ public sealed class FanMission
     internal readonly DictionaryI<int> ReadmeCodePages = new();
 
     [FenGenNumericEmpty(0)]
-    [FenGenMaxDigits(20)]
     internal ulong SizeBytes = 0;
 
     [FenGenIgnore]
     private int _rating = -1;
     [FenGenNumericEmpty(-1)]
-    [FenGenMaxDigits(2)]
     internal int Rating { get => _rating; set => _rating = value.SetRatingClamped(); }
 
     internal readonly ExpandableDate ReleaseDate = new();
@@ -136,7 +134,6 @@ public sealed class FanMission
     [FenGenIgnore]
     private uint _finishedOn;
     [FenGenNumericEmpty(0)]
-    [FenGenMaxDigits(2)]
     internal uint FinishedOn
     {
         get => _finishedOn;
@@ -207,7 +204,6 @@ public sealed class FanMission
     internal bool? NDSubs;
 
     [FenGenNumericEmpty(-1)]
-    [FenGenMaxDigits(10)]
     internal int MisCount = -1;
 
 #if DateAccTest

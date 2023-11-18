@@ -74,17 +74,6 @@ public static class FenGenAttributes
     public sealed class FenGenNumericEmptyAttribute(long value) : Attribute;
 
     /// <summary>
-    /// A perf/alloc optimization that's only for numeric fields where you don't need to parse negatives<br/>
-    /// (because it won't work with them). If you specify a maximum number of digits with this attribute,<br/>
-    /// the codegen will create code that can parse the value out of the line without taking the extra<br/>
-    /// allocation of a substring of the value. If you don't specify this attribute, the value will still<br/>
-    /// be read correctly but there will be an extra allocation.
-    /// </summary>
-    [Conditional("compile_FenGen_attributes")]
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenMaxDigitsAttribute(int value) : Attribute;
-
-    /// <summary>
     /// List type can be "MultipleLines" or "CommaSeparated".
     /// </summary>
     [Conditional("compile_FenGen_attributes")]

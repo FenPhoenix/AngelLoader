@@ -148,7 +148,6 @@ internal static class GenAttributes
     internal const string FenGenDoNotWrite = nameof(FenGenDoNotWrite);
     internal const string FenGenIniName = nameof(FenGenIniName);
     internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
-    internal const string FenGenMaxDigits = nameof(FenGenMaxDigits);
     internal const string FenGenListType = nameof(FenGenListType);
     internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
     internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);

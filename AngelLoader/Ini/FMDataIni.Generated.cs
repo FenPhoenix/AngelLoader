@@ -4,10 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
-using AL_Common;
 using AngelLoader.DataClasses;
+using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
 using static AngelLoader.GameSupport;
@@ -64,9 +65,8 @@ internal static partial class Ini
 
     private static void FMData_TDMVersion_Set(FanMission fm, string val, int eqIndex)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        int.TryParse(val, out int result);
+        int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.TDMVersion = result;
     }
 
@@ -161,14 +161,14 @@ internal static partial class Ini
     private static void FMData_SizeBytes_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Trim();
-        TryParseULongFromEnd(val, eqIndex + 1, 20, out ulong result);
+        ulong.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out ulong result);
         fm.SizeBytes = result;
     }
 
     private static void FMData_Rating_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Trim();
-        bool success = TryParseIntFromEnd(val, eqIndex + 1, 2, out int result);
+        bool success = int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.Rating = success ? result : -1;
     }
 
@@ -196,7 +196,7 @@ internal static partial class Ini
     private static void FMData_FinishedOn_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Trim();
-        TryParseUIntFromEnd(val, eqIndex + 1, 2, out uint result);
+        uint.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out uint result);
         fm.FinishedOn = result;
     }
 
@@ -282,7 +282,7 @@ internal static partial class Ini
     private static void FMData_MisCount_Set(FanMission fm, string val, int eqIndex)
     {
         val = val.Trim();
-        bool success = TryParseIntFromEnd(val, eqIndex + 1, 10, out int result);
+        bool success = int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.MisCount = success ? result : -1;
     }
 

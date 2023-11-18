@@ -1,9 +1,4 @@
-﻿//#define ENABLE_ALWAYS_FAST_NUMERIC_PARSE
-
-#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
-using System;
-#endif
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,7 +21,6 @@ internal static class FMData
         internal string IniName = "";
         internal ListType ListType = ListType.MultipleLines;
         internal long? NumericEmpty;
-        internal int? MaxDigits;
         internal bool DoNotTrimValue;
         internal bool DoNotSubstring;
         internal bool DoNotConvertDateTimeToLocal;
@@ -86,31 +80,6 @@ internal static class FMData
 
         File.WriteAllText(destFile, w.ToString());
     }
-
-#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
-
-    private static readonly Dictionary<string, int> _numericTypeToMaxDigits = new(StringComparer.OrdinalIgnoreCase)
-    {
-        { "byte", 3 },
-        { "sbyte", 3 },
-        { "short", 5 },
-        { "ushort", 5 },
-        { "int", 10 },
-        { "uint", 10 },
-        { "long", 19 },
-        { "ulong", 20 },
-
-        { "byte?", 3 },
-        { "sbyte?", 3 },
-        { "short?", 5 },
-        { "ushort?", 5 },
-        { "int?", 10 },
-        { "uint?", 10 },
-        { "long?", 19 },
-        { "ulong?", 20 }
-    };
-
-#endif
 
     [MustUseReturnValue]
     private static List<Field> ReadSourceFields(string sourceFile)
@@ -176,14 +145,6 @@ internal static class FMData
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
                             Long_TryParseInv(val, out long result);
                             field.NumericEmpty = result;
-                            break;
-                        }
-                        case GenAttributes.FenGenMaxDigits:
-                        {
-                            CheckParamCount(attr, 1);
-                            string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            Int_TryParseInv(val, out int result);
-                            field.MaxDigits = result > 0 ? result : null;
                             break;
                         }
                         case GenAttributes.FenGenListType:
@@ -252,11 +213,10 @@ internal static class FMData
 
     private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
     {
-        static string GetFloatArgsRead(string fieldType) =>
+        static string GetTryParseArgsRead(string fieldType) =>
             IsDecimal(fieldType)
                 ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
-                : "";
-
+                : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
         const string val = "val";
         const string eqIndex = "eqIndex";
 
@@ -276,18 +236,7 @@ internal static class FMData
             w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
             w.WL("{");
 
-            string parseMethodName =
-                field.MaxDigits == null
-                    ? ""
-                    : field.Type switch
-                    {
-                        "int" => "TryParseIntFromEnd",
-                        "uint" => "TryParseUIntFromEnd",
-                        "ulong" => "TryParseULongFromEnd",
-                        _ => ""
-                    };
-
-            if (field.Type != "bool" && field.Type != "bool?" && parseMethodName.IsEmpty() && !field.DoNotSubstring)
+            if (field.Type != "bool" && field.Type != "bool?" && !_numericTypes.Contains(field.Type) && !field.DoNotSubstring)
             {
                 w.WL(val + " = " + val + ".Substring(" + eqIndex + " + 1);");
             }
@@ -337,14 +286,14 @@ internal static class FMData
                 }
                 else if (_numericTypes.Contains(listType))
                 {
-                    string floatArgs = GetFloatArgsRead(listType);
+                    string tryParseArgs = GetTryParseArgsRead(listType);
                     if (field.ListType == ListType.MultipleLines)
                     {
                         w.WL("if (" + objDotField + " == null)");
                         w.WL("{");
                         w.WL(objDotField + " = new List<" + listType + ">();");
                         w.WL("}");
-                        w.WL("bool success = " + listType + ".TryParse(" + val + ", " + floatArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -357,7 +306,7 @@ internal static class FMData
                         w.WL("for (int a = 0; a < items.Length; a++)");
                         w.WL("{");
                         w.WL("items[a] = items[a].Trim();");
-                        w.WL("bool success = " + listType + ".TryParse(items[a], " + floatArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(items[a].AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -380,38 +329,24 @@ internal static class FMData
             }
             else if (_numericTypes.Contains(field.Type))
             {
-                string floatArgs = GetFloatArgsRead(field.Type);
+                string tryParseArgs = GetTryParseArgsRead(field.Type);
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
-                    if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
-                    {
-                        w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
-                    }
-                    else
-                    {
-                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
-                    }
+                    w.WL("bool success = " + field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);");
                     w.WL(objDotField + " = success ? result : " + ((long)field.NumericEmpty).ToStrInv() + ";");
                 }
                 else
                 {
-                    if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
-                    {
-                        w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
-                    }
-                    else
-                    {
-                        w.WL(field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
-                    }
+                    w.WL(field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);");
                     w.WL(objDotField + " = result;");
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
-                string floatArgs = GetFloatArgsRead(field.Type);
+                string tryParseArgs = GetTryParseArgsRead(field.Type);
                 string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ", " + floatArgs + "out " + ftNonNull + " result);");
+                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ".AsSpan()[" + eqIndex + " + 1)..], " + tryParseArgs + "out " + ftNonNull + " result);");
                 w.WL("if (success)");
                 w.WL("{");
                 w.WL(objDotField + " = result;");
