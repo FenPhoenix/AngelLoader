@@ -168,7 +168,15 @@ public static partial class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool EqualsFalse(this string value) => string.Equals(value, bool.FalseString, OrdinalIgnoreCase);
+    public static bool EqualsTrue(this ReadOnlySpan<char> value) => value.Equals(bool.TrueString, OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsFalse(this ReadOnlySpan<char> value) => value.Equals(bool.FalseString, OrdinalIgnoreCase);
 
     /// <summary>
     /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.

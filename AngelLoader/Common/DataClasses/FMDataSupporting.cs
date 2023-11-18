@@ -25,7 +25,7 @@ internal sealed class ExpandableDate
             }
             else
             {
-                _dateTime = ConvertHexUnixDateToDateTime(UnixDateString);
+                _dateTime = ConvertHexUnixDateToDateTime(UnixDateString.AsSpan());
                 _expanded = true;
                 return _dateTime;
             }

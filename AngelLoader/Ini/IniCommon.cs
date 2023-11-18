@@ -613,7 +613,7 @@ internal static partial class Ini
 
     #region Config
 
-    private static bool TryParseIntPair(string valTrimmed, out int first, out int second)
+    private static bool TryParseIntPair(ReadOnlySpan<char> valTrimmed, out int first, out int second)
     {
         if (!valTrimmed.Contains(','))
         {
@@ -622,7 +622,10 @@ internal static partial class Ini
             return false;
         }
 
-        string[] values = valTrimmed.Split(CA_Comma);
+        // @NET5: Fix this allocation later
+        string valStr = valTrimmed.ToString();
+
+        string[] values = valStr.Split(CA_Comma);
         bool firstExists = Int_TryParseInv(values[0].Trim(), out first);
         bool secondExists = Int_TryParseInv(values[1].Trim(), out second);
 
@@ -639,9 +642,11 @@ internal static partial class Ini
         return getGlobalFilter ? config.Filter : config.GameTabsState.GetFilter(gameIndex);
     }
 
-    private static void AddColumn(ConfigData config, string valTrimmed, Column columnType)
+    private static void AddColumn(ConfigData config, ReadOnlySpan<char> valTrimmed, Column columnType)
     {
-        string value = valTrimmed.Trim(CA_Comma);
+        // @NET5: Fix this allocation later
+        string valTrimmedStr = valTrimmed.ToString();
+        string value = valTrimmedStr.Trim(CA_Comma);
         string[] cProps;
         if (value.Contains(',') &&
             (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
@@ -666,7 +671,7 @@ internal static partial class Ini
         }
     }
 
-    private static void ReadFilterTags(string tagsToAdd, FMCategoriesCollection existingTags)
+    private static void ReadFilterTags(ReadOnlySpan<char> tagsToAdd, FMCategoriesCollection existingTags)
     {
         if (tagsToAdd.IsWhiteSpace()) return;
 
@@ -674,7 +679,9 @@ internal static partial class Ini
         // form "category:" (with no tags list). This is because we allow filtering by entire category,
         // whereas we don't allow FMs to have categories with no tags in them.
 
-        string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+        // @NET5: Fix this allocation later
+        string tagsToAddStr = tagsToAdd.ToString();
+        string[] tagsArray = tagsToAddStr.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < tagsArray.Length; i++)
         {
             if (!FMTags.TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
@@ -696,9 +703,11 @@ internal static partial class Ini
         }
     }
 
-    private static void ReadFinishedStates(Filter filter, string val)
+    private static void ReadFinishedStates(Filter filter, ReadOnlySpan<char> val)
     {
-        foreach (string finishedState in val.Split(CA_Comma))
+        // @NET5: Fix this allocation later
+        string valStr = val.ToString();
+        foreach (string finishedState in valStr.Split(CA_Comma))
         {
             switch (finishedState.Trim())
             {

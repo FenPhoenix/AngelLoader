@@ -35,16 +35,16 @@ internal static partial class Ini
 
     #region Settings window state
 
-    private static void Config_SettingsTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsTab_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(SettingsTab).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(SettingsTab).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.SettingsTab = (SettingsTab)field.GetValue(null);
         }
     }
 
-    private static void Config_SettingsWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsWindowSize_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (TryParseIntPair(valTrimmed, out int width, out int height))
         {
@@ -52,7 +52,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SettingsWindowSplitterDistance_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsWindowSplitterDistance_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -60,7 +60,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SettingsPathsVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsPathsVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -68,7 +68,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SettingsAppearanceVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsAppearanceVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -76,7 +76,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -84,7 +84,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SettingsThiefBuddyVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SettingsThiefBuddyVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -94,134 +94,134 @@ internal static partial class Ini
 
     #endregion
 
-    private static void Config_LaunchGamesWithSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_LaunchGamesWithSteam_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.LaunchGamesWithSteam = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_SteamExe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SteamExe_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.SteamExe = valTrimmed;
+        config.SteamExe = valTrimmed.ToString();
     }
 
-    private static void Config_RunThiefBuddyOnFMPlay_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_RunThiefBuddyOnFMPlay_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(RunThiefBuddyOnFMPlay).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(RunThiefBuddyOnFMPlay).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.RunThiefBuddyOnFMPlay = (RunThiefBuddyOnFMPlay)field.GetValue(null);
         }
     }
 
-    private static void Config_FMsBackupPath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FMsBackupPath_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMsBackupPath = valTrimmed;
+        config.FMsBackupPath = valTrimmed.ToString();
     }
 
-    private static void Config_FMArchivePath_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FMArchivePath_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMArchivePaths.Add(valTrimmed);
+        config.FMArchivePaths.Add(valTrimmed.ToString());
     }
 
-    private static void Config_FMArchivePathsIncludeSubfolders_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FMArchivePathsIncludeSubfolders_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FMArchivePathsIncludeSubfolders = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_GameOrganization_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameOrganization_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(GameOrganization).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(GameOrganization).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.GameOrganization = (GameOrganization)field.GetValue(null);
         }
     }
 
-    private static void Config_UseShortGameTabNames_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_UseShortGameTabNames_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.UseShortGameTabNames = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_EnableArticles_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_EnableArticles_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.EnableArticles = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_Articles_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_Articles_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        string[] articles = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        string[] articles = valTrimmed.ToString().Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
         config.Articles.ClearAndAdd_Small(articles.Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
     }
 
-    private static void Config_MoveArticlesToEnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_MoveArticlesToEnd_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.MoveArticlesToEnd = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_RatingDisplayStyle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_RatingDisplayStyle_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(RatingDisplayStyle).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(RatingDisplayStyle).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
         }
     }
 
-    private static void Config_RatingUseStars_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_RatingUseStars_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.RatingUseStars = valTrimmed.EqualsTrue();
     }
 
     #region Date format
 
-    private static void Config_DateFormat_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateFormat_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(DateFormat).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(DateFormat).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.DateFormat = (DateFormat)field.GetValue(null);
         }
     }
 
-    private static void Config_DateCustomFormat1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomFormat1_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomFormat1 = valRaw;
+        config.DateCustomFormat1 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomSeparator1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomSeparator1_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomSeparator1 = valRaw;
+        config.DateCustomSeparator1 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomFormat2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomFormat2_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomFormat2 = valRaw;
+        config.DateCustomFormat2 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomSeparator2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomSeparator2_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomSeparator2 = valRaw;
+        config.DateCustomSeparator2 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomFormat3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomFormat3_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomFormat3 = valRaw;
+        config.DateCustomFormat3 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomSeparator3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomSeparator3_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomSeparator3 = valRaw;
+        config.DateCustomSeparator3 = valRaw.ToString();
     }
 
-    private static void Config_DateCustomFormat4_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DateCustomFormat4_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.DateCustomFormat4 = valRaw;
+        config.DateCustomFormat4 = valRaw.ToString();
     }
 
     #endregion
 
-    private static void Config_DaysRecent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DaysRecent_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (UInt_TryParseInv(valTrimmed, out uint result))
         {
@@ -229,87 +229,87 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_ConvertWAVsTo16BitOnInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConvertWAVsTo16BitOnInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ConvertWAVsTo16BitOnInstall = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ConvertOGGsToWAVsOnInstall = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_UseOldMantlingForOldDarkFMs_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_UseOldMantlingForOldDarkFMs_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.UseOldMantlingForOldDarkFMs = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_HideUninstallButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_HideUninstallButton_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.HideUninstallButton = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_HideFMListZoomButtons_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_HideFMListZoomButtons_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.HideFMListZoomButtons = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_HideExitButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_HideExitButton_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.HideExitButton = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_HideWebSearchButton_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_HideWebSearchButton_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.HideWebSearchButton = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_ConfirmInstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConfirmInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(ConfirmBeforeInstall).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(ConfirmBeforeInstall).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.ConfirmBeforeInstall = (ConfirmBeforeInstall)field.GetValue(null);
         }
     }
 
-    private static void Config_ConfirmUninstall_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConfirmUninstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ConfirmUninstall = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_BackupFMData_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_BackupFMData_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(BackupFMData).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(BackupFMData).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.BackupFMData = (BackupFMData)field.GetValue(null);
         }
     }
 
-    private static void Config_BackupAlwaysAsk_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_BackupAlwaysAsk_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.BackupAlwaysAsk = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_Language_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_Language_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.Language = valTrimmed;
+        config.Language = valTrimmed.ToString();
     }
 
-    private static void Config_WebSearchUrl_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_WebSearchUrl_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.SetWebSearchUrl(gameIndex, valRaw);
+        config.SetWebSearchUrl(gameIndex, valRaw.ToString());
     }
 
-    private static void Config_ConfirmPlayOnDCOrEnter_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConfirmPlayOnDCOrEnter_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ConfirmPlayOnDCOrEnter = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_VisualTheme_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_VisualTheme_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.VisualTheme = (VisualTheme)field.GetValue(null);
@@ -318,43 +318,43 @@ internal static partial class Ini
 
     #region Filter visibilities
 
-    private static void Config_FilterVisibleTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleTitle_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.Title] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleAuthor_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.Author] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleReleaseDate_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.ReleaseDate] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleLastPlayed_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.LastPlayed] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleTags_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleTags_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.Tags] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleFinishedState_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleFinishedState_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.FinishedState] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleRating_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleRating_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.Rating] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleShowUnsupported_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.ShowUnsupported] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleShowUnavailable_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleShowUnavailable_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.ShowUnavailable] = valTrimmed.EqualsTrue();
     }
-    private static void Config_FilterVisibleShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterVisibleShowRecentAtTop_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.FilterControlVisibilities[(int)HideableFilterControls.ShowRecentAtTop] = valTrimmed.EqualsTrue();
     }
@@ -363,9 +363,9 @@ internal static partial class Ini
 
     #region Filter values
 
-    private static void Config_FilterGames_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterGames_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        string[] iniGames = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        string[] iniGames = valTrimmed.ToString().Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < iniGames.Length; i++)
         {
             string iniGame = iniGames[i].Trim();
@@ -377,42 +377,42 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_FilterTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterTitle_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        GetFilter(config, gameIndex, ignoreGameIndex).Title = valRaw;
+        GetFilter(config, gameIndex, ignoreGameIndex).Title = valRaw.ToString();
     }
 
-    private static void Config_FilterAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterAuthor_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        GetFilter(config, gameIndex, ignoreGameIndex).Author = valRaw;
+        GetFilter(config, gameIndex, ignoreGameIndex).Author = valRaw.ToString();
     }
 
-    private static void Config_FilterReleaseDateFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterReleaseDateFrom_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         GetFilter(config, gameIndex, ignoreGameIndex).ReleaseDateFrom = ConvertHexUnixDateToDateTime(valTrimmed);
     }
 
-    private static void Config_FilterReleaseDateTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterReleaseDateTo_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         GetFilter(config, gameIndex, ignoreGameIndex).ReleaseDateTo = ConvertHexUnixDateToDateTime(valTrimmed);
     }
 
-    private static void Config_FilterLastPlayedFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterLastPlayedFrom_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         GetFilter(config, gameIndex, ignoreGameIndex).LastPlayedFrom = ConvertHexUnixDateToDateTime(valTrimmed);
     }
 
-    private static void Config_FilterLastPlayedTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterLastPlayedTo_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         GetFilter(config, gameIndex, ignoreGameIndex).LastPlayedTo = ConvertHexUnixDateToDateTime(valTrimmed);
     }
 
-    private static void Config_FilterFinishedStates_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterFinishedStates_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         ReadFinishedStates(GetFilter(config, gameIndex, ignoreGameIndex), valTrimmed);
     }
 
-    private static void Config_FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterRatingFrom_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -420,7 +420,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterRatingTo_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -428,17 +428,17 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_FilterTagsAnd_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterTagsAnd_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         ReadFilterTags(valRaw, GetFilter(config, gameIndex, ignoreGameIndex).Tags.AndTags);
     }
 
-    private static void Config_FilterTagsOr_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterTagsOr_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         ReadFilterTags(valRaw, GetFilter(config, gameIndex, ignoreGameIndex).Tags.OrTags);
     }
 
-    private static void Config_FilterTagsNot_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FilterTagsNot_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         ReadFilterTags(valRaw, GetFilter(config, gameIndex, ignoreGameIndex).Tags.NotTags);
     }
@@ -447,27 +447,27 @@ internal static partial class Ini
 
     #region Per-game fields
 
-    private static void Config_NewMantling_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_NewMantling_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.SetNewMantling(gameIndex, valTrimmed.EqualsTrue() ? true : valTrimmed.EqualsFalse() ? false : null);
     }
 
-    private static void Config_DisabledMods_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DisabledMods_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.SetDisabledMods(gameIndex, valTrimmed);
+        config.SetDisabledMods(gameIndex, valTrimmed.ToString());
     }
 
-    private static void Config_Exe_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_Exe_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.SetGameExe(gameIndex, valTrimmed);
+        config.SetGameExe(gameIndex, valTrimmed.ToString());
     }
 
-    private static void Config_UseSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_UseSteam_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.SetUseSteamSwitch(gameIndex, valTrimmed.EqualsTrue());
     }
 
-    private static void Config_GameFilterVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameFilterVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.GameFilterControlVisibilities[(int)gameIndex] = valTrimmed.EqualsTrue();
     }
@@ -478,19 +478,19 @@ internal static partial class Ini
     // Even if we add new games, they don't need to go here, because they'll use the new key name format
     // (game prefixed instead of suffixed).
 
-    private static void Config_GameFilterVisibleT1_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameFilterVisibleT1_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.GameFilterControlVisibilities[(int)GameIndex.Thief1] = valTrimmed.EqualsTrue();
     }
-    private static void Config_GameFilterVisibleT2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameFilterVisibleT2_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.GameFilterControlVisibilities[(int)GameIndex.Thief2] = valTrimmed.EqualsTrue();
     }
-    private static void Config_GameFilterVisibleT3_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameFilterVisibleT3_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.GameFilterControlVisibilities[(int)GameIndex.Thief3] = valTrimmed.EqualsTrue();
     }
-    private static void Config_GameFilterVisibleSS2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameFilterVisibleSS2_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.GameFilterControlVisibilities[(int)GameIndex.SS2] = valTrimmed.EqualsTrue();
     }
@@ -499,19 +499,19 @@ internal static partial class Ini
 
     #endregion
 
-    private static void Config_ShowRecentAtTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ShowRecentAtTop_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ShowRecentAtTop = valTrimmed.EqualsTrue();
     }
-    private static void Config_ShowUnsupported_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ShowUnsupported_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ShowUnsupported = valTrimmed.EqualsTrue();
     }
-    private static void Config_ShowUnavailableFMs_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ShowUnavailableFMs_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ShowUnavailableFMs = valTrimmed.EqualsTrue();
     }
-    private static void Config_FMsListFontSizeInPoints_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FMsListFontSizeInPoints_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
         {
@@ -519,17 +519,17 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_SortedColumn_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SortedColumn_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(Column).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(Column).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.SortedColumn = (Column)field.GetValue(null);
         }
     }
-    private static void Config_SortDirection_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SortDirection_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(SortDirection).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(SortDirection).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.SortDirection = (SortDirection)field.GetValue(null);
@@ -539,76 +539,76 @@ internal static partial class Ini
     #region Columns
 
 #if DateAccTest
-    private static void Config_ColumnDateAccuracy_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnDateAccuracy_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.DateAccuracy);
     }
 #endif
 
-    private static void Config_ColumnGame_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnGame_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Game);
     }
-    private static void Config_ColumnInstalled_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnInstalled_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Installed);
     }
-    private static void Config_ColumnMisCount_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnMisCount_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.MissionCount);
     }
-    private static void Config_ColumnTitle_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnTitle_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Title);
     }
-    private static void Config_ColumnArchive_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnArchive_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Archive);
     }
-    private static void Config_ColumnAuthor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnAuthor_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Author);
     }
-    private static void Config_ColumnSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnSize_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Size);
     }
-    private static void Config_ColumnRating_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnRating_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Rating);
     }
-    private static void Config_ColumnFinished_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnFinished_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Finished);
     }
-    private static void Config_ColumnReleaseDate_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnReleaseDate_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.ReleaseDate);
     }
-    private static void Config_ColumnLastPlayed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnLastPlayed_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.LastPlayed);
     }
-    private static void Config_ColumnDateAdded_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnDateAdded_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.DateAdded);
     }
-    private static void Config_ColumnDisabledMods_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnDisabledMods_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.DisabledMods);
     }
-    private static void Config_ColumnComment_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ColumnComment_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.Comment);
     }
 
     #endregion
 
-    private static void Config_SelFMInstDir_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SelFMInstDir_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        GetSelectedFM(config, gameIndex, ignoreGameIndex).InstalledName = valTrimmed;
+        GetSelectedFM(config, gameIndex, ignoreGameIndex).InstalledName = valTrimmed.ToString();
     }
-    private static void Config_SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_SelFMIndexFromTop_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
@@ -616,22 +616,22 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_MainWindowState_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_MainWindowState_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(WindowState).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(WindowState).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.MainWindowState = (WindowState)field.GetValue(null);
         }
     }
-    private static void Config_MainWindowSize_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_MainWindowSize_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (TryParseIntPair(valTrimmed, out int width, out int height))
         {
             config.MainWindowSize = new Size(width, height);
         }
     }
-    private static void Config_MainWindowLocation_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_MainWindowLocation_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (TryParseIntPair(valTrimmed, out int x, out int y))
         {
@@ -639,27 +639,27 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_MainSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_MainSplitterPercent_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
         {
             config.MainSplitterPercent = result;
         }
     }
-    private static void Config_TopSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TopSplitterPercent_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
         {
             config.TopSplitterPercent = result;
         }
     }
-    private static void Config_TopRightPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TopRightPanelCollapsed_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightPanelCollapsed = valTrimmed.EqualsTrue();
     }
-    private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_GameTab_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(GameIndex).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(GameIndex).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.GameTab = (GameIndex)field.GetValue(null);
@@ -668,104 +668,104 @@ internal static partial class Ini
 
     #region Top-right tabs
 
-    private static void Config_TopRightTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TopRightTab_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(TopRightTab).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(TopRightTab).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
             config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
         }
     }
 
-    private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_StatsTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.Statistics).DisplayIndex = result;
     }
-    private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_StatsTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.Statistics).Visible = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_EditFMTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.EditFM).DisplayIndex = result;
     }
-    private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_EditFMTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.EditFM).Visible = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_CommentTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.Comment).DisplayIndex = result;
     }
-    private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_CommentTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.Comment).Visible = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TagsTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.Tags).DisplayIndex = result;
     }
-    private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TagsTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.Tags).Visible = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_PatchTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.Patch).DisplayIndex = result;
     }
-    private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_PatchTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.Patch).Visible = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ModsTabPosition_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
         config.TopRightTabsData.GetTab(TopRightTab.Mods).DisplayIndex = result;
     }
-    private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ModsTabVisible_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightTabsData.GetTab(TopRightTab.Mods).Visible = valTrimmed.EqualsTrue();
     }
 
     #endregion
 
-    private static void Config_ReadmeZoomFactor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ReadmeZoomFactor_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
         {
             config.ReadmeZoomFactor = result;
         }
     }
-    private static void Config_ReadmeUseFixedWidthFont_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ReadmeUseFixedWidthFont_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ReadmeUseFixedWidthFont = valTrimmed.EqualsTrue();
     }
-    private static void Config_EnableCharacterDetailFix_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_EnableCharacterDetailFix_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.EnableCharacterDetailFix = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_PlayOriginalSeparateButtons_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_PlayOriginalSeparateButtons_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.PlayOriginalSeparateButtons = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_AskedToScanForMisCounts_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_AskedToScanForMisCounts_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.AskedToScanForMisCounts = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_EnableFuzzySearch_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_EnableFuzzySearch_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.EnableFuzzySearch = valTrimmed.EqualsTrue();
     }
@@ -774,9 +774,9 @@ internal static partial class Ini
 
     private sealed unsafe class Config_DelegatePointerWrapper
     {
-        internal readonly delegate*<ConfigData, string, string, GameIndex, bool, void> Action;
+        internal readonly delegate*<ConfigData, ReadOnlySpan<char>, ReadOnlySpan<char>, GameIndex, bool, void> Action;
 
-        internal Config_DelegatePointerWrapper(delegate*<ConfigData, string, string, GameIndex, bool, void> action)
+        internal Config_DelegatePointerWrapper(delegate*<ConfigData, ReadOnlySpan<char>, ReadOnlySpan<char>, GameIndex, bool, void> action)
         {
             Action = action;
         }
@@ -1024,8 +1024,8 @@ internal static partial class Ini
             int eqIndex = lineTS.IndexOf('=');
             if (eqIndex > -1)
             {
-                string valRaw = lineTS.Substring(eqIndex + 1);
-                string valTrimmed = valRaw.Trim();
+                ReadOnlySpan<char> valRaw = lineTS.AsSpan()[(eqIndex + 1)..];
+                ReadOnlySpan<char> valTrimmed = valRaw.Trim();
 
                 // @GENGAMES (ConfigIni prefix detector) - Begin
 

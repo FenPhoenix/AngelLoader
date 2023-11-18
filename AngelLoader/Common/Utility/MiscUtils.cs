@@ -72,7 +72,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="unixDate"></param>
     /// <returns>A DateTime object, or null if the string couldn't be converted to a valid date for any reason.</returns>
-    internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate)
+    internal static DateTime? ConvertHexUnixDateToDateTime(ReadOnlySpan<char> unixDate)
     {
         bool success = long.TryParse(
             unixDate,

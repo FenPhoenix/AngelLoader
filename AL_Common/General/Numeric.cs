@@ -67,7 +67,7 @@ public static partial class Common
     /// <exception cref="ArgumentException"></exception>
     /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Float_TryParseInv(string s, out float result)
+    public static bool Float_TryParseInv(ReadOnlySpan<char> s, out float result)
     {
         return float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
     }
@@ -107,6 +107,19 @@ public static partial class Common
     /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool UInt_TryParseInv(string s, out uint result)
+    {
+        return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    /// <summary>
+    /// Calls <see langword="uint"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="uint"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool UInt_TryParseInv(ReadOnlySpan<char> s, out uint result)
     {
         return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
