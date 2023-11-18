@@ -24,100 +24,94 @@ internal static partial class Ini
     // This nonsense is to allow for keys to be looked up in a dictionary rather than running ten thousand
     // if statements on every line.
 
-    private static void FMData_NoArchive_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_NoArchive_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.NoArchive = val.EndEqualsTrue(eqIndex + 1);
+        fm.NoArchive = val.EqualsTrue();
     }
 
-    private static void FMData_MarkedScanned_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_MarkedScanned_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.MarkedScanned = val.EndEqualsTrue(eqIndex + 1);
+        fm.MarkedScanned = val.EqualsTrue();
     }
 
-    private static void FMData_Pinned_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Pinned_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.Pinned = val.EndEqualsTrue(eqIndex + 1);
+        fm.Pinned = val.EqualsTrue();
     }
 
-    private static void FMData_Archive_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Archive_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.Archive = val;
+        fm.Archive = val.ToString();
     }
 
-    private static void FMData_InstalledDir_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_InstalledDir_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.InstalledDir = val;
+        fm.InstalledDir = val.ToString();
     }
 
-    private static void FMData_TDMInstalledDir_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_TDMInstalledDir_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.TDMInstalledDir = val;
+        fm.TDMInstalledDir = val.ToString();
     }
 
-    private static void FMData_TDMVersion_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_TDMVersion_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
+        int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.TDMVersion = result;
     }
 
-    private static void FMData_Title_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Title_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.Title = val;
+        fm.Title = val.ToString();
     }
 
-    private static void FMData_AltTitles_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_AltTitles_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        if (!string.IsNullOrEmpty(val))
+        if (!val.IsEmpty)
         {
-            fm.AltTitles.Add(val);
+            fm.AltTitles.Add(val.ToString());
         }
     }
 
-    private static void FMData_Author_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Author_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.Author = val;
+        fm.Author = val.ToString();
     }
 
-    private static void FMData_Game_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Game_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        if (val.ValueEqualsIAscii("Thief1", eqIndex + 1))
+        if (val.EqualsI("Thief1"))
         {
             fm.Game = Game.Thief1;
         }
-        else if (val.ValueEqualsIAscii("Thief2", eqIndex + 1))
+        else if (val.EqualsI("Thief2"))
         {
             fm.Game = Game.Thief2;
         }
-        else if (val.ValueEqualsIAscii("Thief3", eqIndex + 1))
+        else if (val.EqualsI("Thief3"))
         {
             fm.Game = Game.Thief3;
         }
-        else if (val.ValueEqualsIAscii("SS2", eqIndex + 1))
+        else if (val.EqualsI("SS2"))
         {
             fm.Game = Game.SS2;
         }
-        else if (val.ValueEqualsIAscii("TDM", eqIndex + 1))
+        else if (val.EqualsI("TDM"))
         {
             fm.Game = Game.TDM;
         }
-        else if (val.ValueEqualsIAscii("Unsupported", eqIndex + 1))
+        else if (val.EqualsI("Unsupported"))
         {
             fm.Game = Game.Unsupported;
         }
@@ -127,224 +121,218 @@ internal static partial class Ini
         }
     }
 
-    private static void FMData_Installed_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Installed_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.Installed = val.EndEqualsTrue(eqIndex + 1);
+        fm.Installed = val.EqualsTrue();
     }
 
-    private static void FMData_NoReadmes_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_NoReadmes_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.NoReadmes = val.EndEqualsTrue(eqIndex + 1);
+        fm.NoReadmes = val.EqualsTrue();
     }
 
-    private static void FMData_ForceReadmeReCache_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_ForceReadmeReCache_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.ForceReadmeReCache = val.EndEqualsTrue(eqIndex + 1);
+        fm.ForceReadmeReCache = val.EqualsTrue();
     }
 
-    private static void FMData_SelectedReadme_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_SelectedReadme_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.SelectedReadme = val;
+        fm.SelectedReadme = val.ToString();
     }
 
-    private static void FMData_ReadmeEncoding_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_ReadmeEncoding_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        AddReadmeEncoding(fm, val, eqIndex + 1);
+        AddReadmeEncoding(fm, val);
     }
 
-    private static void FMData_SizeBytes_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_SizeBytes_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        ulong.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out ulong result);
+        ulong.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out ulong result);
         fm.SizeBytes = result;
     }
 
-    private static void FMData_Rating_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Rating_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        bool success = int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
+        bool success = int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.Rating = success ? result : -1;
     }
 
-    private static void FMData_ReleaseDate_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_ReleaseDate_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.ReleaseDate.UnixDateString = val;
+        fm.ReleaseDate.UnixDateString = val.ToString();
     }
 
-    private static void FMData_LastPlayed_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_LastPlayed_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.LastPlayed.UnixDateString = val;
+        fm.LastPlayed.UnixDateString = val.ToString();
     }
 
-    private static void FMData_DateAdded_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_DateAdded_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
         fm.DateAdded = ConvertHexUnixDateToDateTime(val);
     }
 
-    private static void FMData_FinishedOn_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_FinishedOn_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        uint.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out uint result);
+        uint.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out uint result);
         fm.FinishedOn = result;
     }
 
-    private static void FMData_FinishedOnUnknown_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_FinishedOnUnknown_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.FinishedOnUnknown = val.EndEqualsTrue(eqIndex + 1);
+        fm.FinishedOnUnknown = val.EqualsTrue();
     }
 
-    private static void FMData_Comment_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Comment_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         // We require this value to be untrimmed
-        fm.Comment = val;
+        fm.Comment = val.ToString();
     }
 
-    private static void FMData_DisabledMods_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_DisabledMods_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.DisabledMods = val;
+        fm.DisabledMods = val.ToString();
     }
 
-    private static void FMData_DisableAllMods_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_DisableAllMods_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.DisableAllMods = val.EndEqualsTrue(eqIndex + 1);
+        fm.DisableAllMods = val.EqualsTrue();
     }
 
-    private static void FMData_HasResources_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasResources_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.ResourcesScanned = !val.ValueEqualsIAscii("NotScanned", eqIndex + 1);
-        FillFMHasXFields(fm, val, eqIndex + 1);
+        fm.ResourcesScanned = !val.EqualsI("NotScanned");
+        FillFMHasXFields(fm, val);
     }
 
-    private static void FMData_LangsScanned_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_LangsScanned_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.LangsScanned = val.EndEqualsTrue(eqIndex + 1);
+        fm.LangsScanned = val.EqualsTrue();
     }
 
-    private static void FMData_Langs_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_Langs_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        SetFMLanguages(fm, val, eqIndex + 1);
+        SetFMLanguages(fm, val);
     }
 
-    private static void FMData_SelectedLang_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_SelectedLang_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        if (Langs_TryGetValue(val, eqIndex + 1, val.Length, out var result))
+        // @NET5: Get rid of this allocation
+        if (Langs_TryGetValue(val.ToString(), 0, val.Length, out var result))
         {
             fm.SelectedLang = result;
         }
     }
 
-    private static void FMData_TagsString_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_TagsString_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        fm.TagsString = val;
+        fm.TagsString = val.ToString();
     }
 
-    private static void FMData_NewMantle_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_NewMantle_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.NewMantle = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
+        fm.NewMantle = val.EqualsTrue() ? true : val.EqualsFalse() ? false : (bool?)null;
     }
 
-    private static void FMData_PostProc_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_PostProc_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.PostProc = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
+        fm.PostProc = val.EqualsTrue() ? true : val.EqualsFalse() ? false : (bool?)null;
     }
 
-    private static void FMData_NDSubs_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_NDSubs_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        fm.NDSubs = val.EndEqualsTrue(eqIndex + 1) ? true : val.EndEqualsFalse(eqIndex + 1) ? false : (bool?)null;
+        fm.NDSubs = val.EqualsTrue() ? true : val.EqualsFalse() ? false : (bool?)null;
     }
 
-    private static void FMData_MisCount_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_MisCount_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        bool success = int.TryParse(val.AsSpan()[(eqIndex + 1)..], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
+        bool success = int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.MisCount = success ? result : -1;
     }
 
     #region Old resource format - backward compatibility, we still have to be able to read it
 
-    private static void FMData_HasMap_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasMap_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Map, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Map, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasAutomap_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasAutomap_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Automap, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Automap, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasScripts_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasScripts_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Scripts, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Scripts, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasTextures_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasTextures_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Textures, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Textures, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasSounds_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasSounds_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Sounds, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Sounds, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasObjects_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasObjects_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Objects, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Objects, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasCreatures_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasCreatures_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Creatures, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Creatures, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasMotions_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasMotions_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Motions, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Motions, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasMovies_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasMovies_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Movies, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Movies, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
-    private static void FMData_HasSubtitles_Set(FanMission fm, string val, int eqIndex)
+    private static void FMData_HasSubtitles_Set(FanMission fm, ReadOnlySpan<char> val)
     {
-        fm.SetResource(CustomResources.Subtitles, val.EndEqualsTrue(eqIndex + 1));
+        fm.SetResource(CustomResources.Subtitles, val.EqualsTrue());
         fm.ResourcesScanned = true;
     }
 
@@ -352,64 +340,64 @@ internal static partial class Ini
 
     private readonly unsafe struct FMData_DelegatePointerWrapper
     {
-        internal readonly delegate*<FanMission, string, int, void> Action;
+        internal readonly delegate*<FanMission, ReadOnlySpan<char>, void> Action;
 
-        internal FMData_DelegatePointerWrapper(delegate*<FanMission, string, int, void> action)
+        internal FMData_DelegatePointerWrapper(delegate*<FanMission, ReadOnlySpan<char>, void> action)
         {
             Action = action;
         }
     }
 
-    private static readonly unsafe Dictionary<string, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new KeyComparer())
+    private static readonly unsafe Dictionary<ReadOnlyMemory<char>, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new MemoryStringComparer())
     {
-        { "NoArchive", new FMData_DelegatePointerWrapper(&FMData_NoArchive_Set) },
-        { "MarkedScanned", new FMData_DelegatePointerWrapper(&FMData_MarkedScanned_Set) },
-        { "Pinned", new FMData_DelegatePointerWrapper(&FMData_Pinned_Set) },
-        { "Archive", new FMData_DelegatePointerWrapper(&FMData_Archive_Set) },
-        { "InstalledDir", new FMData_DelegatePointerWrapper(&FMData_InstalledDir_Set) },
-        { "TDMInstalledDir", new FMData_DelegatePointerWrapper(&FMData_TDMInstalledDir_Set) },
-        { "TDMVersion", new FMData_DelegatePointerWrapper(&FMData_TDMVersion_Set) },
-        { "Title", new FMData_DelegatePointerWrapper(&FMData_Title_Set) },
-        { "AltTitles", new FMData_DelegatePointerWrapper(&FMData_AltTitles_Set) },
-        { "Author", new FMData_DelegatePointerWrapper(&FMData_Author_Set) },
-        { "Game", new FMData_DelegatePointerWrapper(&FMData_Game_Set) },
-        { "Installed", new FMData_DelegatePointerWrapper(&FMData_Installed_Set) },
-        { "NoReadmes", new FMData_DelegatePointerWrapper(&FMData_NoReadmes_Set) },
-        { "ForceReadmeReCache", new FMData_DelegatePointerWrapper(&FMData_ForceReadmeReCache_Set) },
-        { "SelectedReadme", new FMData_DelegatePointerWrapper(&FMData_SelectedReadme_Set) },
-        { "ReadmeEncoding", new FMData_DelegatePointerWrapper(&FMData_ReadmeEncoding_Set) },
-        { "SizeBytes", new FMData_DelegatePointerWrapper(&FMData_SizeBytes_Set) },
-        { "Rating", new FMData_DelegatePointerWrapper(&FMData_Rating_Set) },
-        { "ReleaseDate", new FMData_DelegatePointerWrapper(&FMData_ReleaseDate_Set) },
-        { "LastPlayed", new FMData_DelegatePointerWrapper(&FMData_LastPlayed_Set) },
-        { "DateAdded", new FMData_DelegatePointerWrapper(&FMData_DateAdded_Set) },
-        { "FinishedOn", new FMData_DelegatePointerWrapper(&FMData_FinishedOn_Set) },
-        { "FinishedOnUnknown", new FMData_DelegatePointerWrapper(&FMData_FinishedOnUnknown_Set) },
-        { "Comment", new FMData_DelegatePointerWrapper(&FMData_Comment_Set) },
-        { "DisabledMods", new FMData_DelegatePointerWrapper(&FMData_DisabledMods_Set) },
-        { "DisableAllMods", new FMData_DelegatePointerWrapper(&FMData_DisableAllMods_Set) },
-        { "HasResources", new FMData_DelegatePointerWrapper(&FMData_HasResources_Set) },
-        { "LangsScanned", new FMData_DelegatePointerWrapper(&FMData_LangsScanned_Set) },
-        { "Langs", new FMData_DelegatePointerWrapper(&FMData_Langs_Set) },
-        { "SelectedLang", new FMData_DelegatePointerWrapper(&FMData_SelectedLang_Set) },
-        { "TagsString", new FMData_DelegatePointerWrapper(&FMData_TagsString_Set) },
-        { "NewMantle", new FMData_DelegatePointerWrapper(&FMData_NewMantle_Set) },
-        { "PostProc", new FMData_DelegatePointerWrapper(&FMData_PostProc_Set) },
-        { "NDSubs", new FMData_DelegatePointerWrapper(&FMData_NDSubs_Set) },
-        { "MisCount", new FMData_DelegatePointerWrapper(&FMData_MisCount_Set) },
+        { "NoArchive".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NoArchive_Set) },
+        { "MarkedScanned".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_MarkedScanned_Set) },
+        { "Pinned".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Pinned_Set) },
+        { "Archive".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Archive_Set) },
+        { "InstalledDir".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_InstalledDir_Set) },
+        { "TDMInstalledDir".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_TDMInstalledDir_Set) },
+        { "TDMVersion".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_TDMVersion_Set) },
+        { "Title".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Title_Set) },
+        { "AltTitles".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_AltTitles_Set) },
+        { "Author".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Author_Set) },
+        { "Game".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Game_Set) },
+        { "Installed".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Installed_Set) },
+        { "NoReadmes".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NoReadmes_Set) },
+        { "ForceReadmeReCache".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ForceReadmeReCache_Set) },
+        { "SelectedReadme".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_SelectedReadme_Set) },
+        { "ReadmeEncoding".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ReadmeEncoding_Set) },
+        { "SizeBytes".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_SizeBytes_Set) },
+        { "Rating".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Rating_Set) },
+        { "ReleaseDate".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ReleaseDate_Set) },
+        { "LastPlayed".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_LastPlayed_Set) },
+        { "DateAdded".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_DateAdded_Set) },
+        { "FinishedOn".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_FinishedOn_Set) },
+        { "FinishedOnUnknown".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_FinishedOnUnknown_Set) },
+        { "Comment".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Comment_Set) },
+        { "DisabledMods".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_DisabledMods_Set) },
+        { "DisableAllMods".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_DisableAllMods_Set) },
+        { "HasResources".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasResources_Set) },
+        { "LangsScanned".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_LangsScanned_Set) },
+        { "Langs".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Langs_Set) },
+        { "SelectedLang".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_SelectedLang_Set) },
+        { "TagsString".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_TagsString_Set) },
+        { "NewMantle".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NewMantle_Set) },
+        { "PostProc".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_PostProc_Set) },
+        { "NDSubs".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NDSubs_Set) },
+        { "MisCount".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_MisCount_Set) },
 
         #region Old resource format - backward compatibility, we still have to be able to read it
 
-        { "HasMap", new FMData_DelegatePointerWrapper(&FMData_HasMap_Set) },
-        { "HasAutomap", new FMData_DelegatePointerWrapper(&FMData_HasAutomap_Set) },
-        { "HasScripts", new FMData_DelegatePointerWrapper(&FMData_HasScripts_Set) },
-        { "HasTextures", new FMData_DelegatePointerWrapper(&FMData_HasTextures_Set) },
-        { "HasSounds", new FMData_DelegatePointerWrapper(&FMData_HasSounds_Set) },
-        { "HasObjects", new FMData_DelegatePointerWrapper(&FMData_HasObjects_Set) },
-        { "HasCreatures", new FMData_DelegatePointerWrapper(&FMData_HasCreatures_Set) },
-        { "HasMotions", new FMData_DelegatePointerWrapper(&FMData_HasMotions_Set) },
-        { "HasMovies", new FMData_DelegatePointerWrapper(&FMData_HasMovies_Set) },
-        { "HasSubtitles", new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) }
+        { "HasMap".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasMap_Set) },
+        { "HasAutomap".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasAutomap_Set) },
+        { "HasScripts".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasScripts_Set) },
+        { "HasTextures".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasTextures_Set) },
+        { "HasSounds".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasSounds_Set) },
+        { "HasObjects".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasObjects_Set) },
+        { "HasCreatures".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasCreatures_Set) },
+        { "HasMotions".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasMotions_Set) },
+        { "HasMovies".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasMovies_Set) },
+        { "HasSubtitles".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) }
 
         #endregion
     };

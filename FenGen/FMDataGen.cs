@@ -193,17 +193,6 @@ internal static class FMData
                 field.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
                     ? ((FieldDeclarationSyntax)item).Declaration.Type
                     : ((PropertyDeclarationSyntax)item).Type).ToString();
-
-#if ENABLE_ALWAYS_FAST_NUMERIC_PARSE
-
-                if (field.MaxDigits == null &&
-                    _numericTypeToMaxDigits.TryGetValue(field.Type, out int maxDigits))
-                {
-                    field.MaxDigits = maxDigits;
-                }
-
-#endif
-
                 fields.Add(field);
             }
         }
@@ -218,7 +207,6 @@ internal static class FMData
                 ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                 : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
         const string val = "val";
-        const string eqIndex = "eqIndex";
 
         w.WL("#region Generated code for reader");
         w.WL();
@@ -233,13 +221,8 @@ internal static class FMData
 
             string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
-            w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
+            w.WL("private static void FMData_" + fieldIniName + "_Set(FanMission " + obj + ", ReadOnlySpan<char> " + val + ")");
             w.WL("{");
-
-            if (field.Type != "bool" && field.Type != "bool?" && !_numericTypes.Contains(field.Type) && !field.DoNotSubstring)
-            {
-                w.WL(val + " = " + val + ".Substring(" + eqIndex + " + 1);");
-            }
 
             if (!field.DoNotTrimValue)
             {
@@ -252,7 +235,7 @@ internal static class FMData
 
             if (field.IsReadmeEncoding)
             {
-                w.WL("AddReadmeEncoding(" + obj + ", " + val + ", " + eqIndex + " + 1);");
+                w.WL("AddReadmeEncoding(" + obj + ", " + val + ");");
             }
             else if (field.Type.StartsWithO("List<"))
             {
@@ -262,13 +245,15 @@ internal static class FMData
                     ? val
                     : "result";
 
-                string objListSet = objDotField + ".Add(" + varToAdd + ");";
+                string toString = listType == "string" ? ".ToString()" : "";
+                string objListSet = objDotField + ".Add(" + varToAdd + toString + ");";
 
                 if (listType == "string")
                 {
                     if (field.ListType == ListType.MultipleLines)
                     {
-                        w.WL("if (!string.IsNullOrEmpty(" + val + "))");
+                        //w.WL("if (!string.IsNullOrEmpty(" + val + "))");
+                        w.WL("if (!val.IsEmpty)");
                         w.WL("{");
                         w.WL(objListSet);
                         w.WL("}");
@@ -276,7 +261,7 @@ internal static class FMData
                     else
                     {
                         w.WL(objDotField + ".Clear();");
-                        w.WL("string[] items = " + val + ".Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
+                        w.WL("string[] items = " + val + ".ToString().Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);");
                         w.WL("for (int a = 0; a < items.Length; a++)");
                         w.WL("{");
                         w.WL("string result = items[a].Trim();");
@@ -293,7 +278,7 @@ internal static class FMData
                         w.WL("{");
                         w.WL(objDotField + " = new List<" + listType + ">();");
                         w.WL("}");
-                        w.WL("bool success = " + listType + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(" + val + ", " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -306,7 +291,7 @@ internal static class FMData
                         w.WL("for (int a = 0; a < items.Length; a++)");
                         w.WL("{");
                         w.WL("items[a] = items[a].Trim();");
-                        w.WL("bool success = " + listType + ".TryParse(items[a].AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(items[a], " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -317,20 +302,20 @@ internal static class FMData
             }
             else if (field.Type == "string")
             {
-                w.WL(objDotField + " = " + val + ";");
+                w.WL(objDotField + " = " + val + ".ToString();");
             }
             else if (field.Type == "bool")
             {
-                w.WL(objDotField + " = " + val + ".EndEqualsTrue(" + eqIndex + " + 1);");
+                w.WL(objDotField + " = " + val + ".EqualsTrue();");
             }
             else if (field.Type == "bool?")
             {
-                w.WL(objDotField + " = " + val + ".EndEqualsTrue(" + eqIndex + " + 1) ? true : " + val + ".EndEqualsFalse(" + eqIndex + " + 1) ? false : (bool?)null;");
+                w.WL(objDotField + " = " + val + ".EqualsTrue() ? true : " + val + ".EqualsFalse() ? false : (bool?)null;");
             }
             else if (_numericTypes.Contains(field.Type))
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
-                string tryParseLine = field.Type + ".TryParse(" + val + ".AsSpan()[(" + eqIndex + " + 1)..], " + tryParseArgs + "out " + field.Type + " result);";
+                string tryParseLine = field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);";
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
                     w.WL("bool success = " + tryParseLine);
@@ -347,7 +332,7 @@ internal static class FMData
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
                 string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ".AsSpan()[" + eqIndex + " + 1)..], " + tryParseArgs + "out " + ftNonNull + " result);");
+                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ", " + tryParseArgs + "out " + ftNonNull + " result);");
                 w.WL("if (success)");
                 w.WL("{");
                 w.WL(objDotField + " = result;");
@@ -365,7 +350,7 @@ internal static class FMData
                 {
                     string ifType = gi > 1 ? "else if" : "if";
                     string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
-                    w.WL(ifType + " (" + val + ".ValueEqualsIAscii(\"" + gamesEnum.GameEnumNames[gi] + "\", " + eqIndex + " + 1))");
+                    w.WL(ifType + " (" + val + ".EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                     w.WL("{");
                     w.WL(objDotField + " = " + gameDotGameType + ";");
                     w.WL("}");
@@ -379,19 +364,20 @@ internal static class FMData
             {
                 if (field.IsEnumAndSingleAssignment)
                 {
-                    w.WL("if (Langs_TryGetValue(" + val + ", " + eqIndex + " + 1, " + val + ".Length, out var result))");
+                    w.WL("// @NET5: Get rid of this allocation");
+                    w.WL("if (Langs_TryGetValue(" + val + ".ToString(), 0, " + val + ".Length, out var result))");
                     w.WL("{");
                     w.WL(objDotField + " = result;");
                     w.WL("}");
                 }
                 else
                 {
-                    w.WL("SetFMLanguages(" + obj + ", " + val + ", " + eqIndex + " + 1);");
+                    w.WL("SetFMLanguages(" + obj + ", " + val + ");");
                 }
             }
             else if (field.Type == "ExpandableDate")
             {
-                w.WL(objDotField + ".UnixDateString = " + val + ";");
+                w.WL(objDotField + ".UnixDateString = " + val + ".ToString();");
             }
             else if (field.Type == "DateTime?")
             {
@@ -400,8 +386,8 @@ internal static class FMData
             else if (field.Type == "CustomResources")
             {
                 // Totally shouldn't be hardcoded...
-                w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsIAscii(\"NotScanned\", " + eqIndex + " + 1);");
-                w.WL("FillFMHasXFields(" + obj + ", " + val + ", " + eqIndex + " + 1);");
+                w.WL(obj + ".ResourcesScanned = !" + val + ".EqualsI(\"NotScanned\");");
+                w.WL("FillFMHasXFields(" + obj + ", " + val + ");");
             }
 
             w.WL("}"); // end of setter method
@@ -426,9 +412,9 @@ internal static class FMData
         w.WL();
         foreach (string item in customResourceFieldNames)
         {
-            w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", string " + val + ", int " + eqIndex + ")");
+            w.WL("private static void FMData_" + item + "_Set(FanMission " + obj + ", ReadOnlySpan<char> " + val + ")");
             w.WL("{");
-            w.WL(obj + ".SetResource(CustomResources." + item.Substring(3) + ", " + val + ".EndEqualsTrue(" + eqIndex + " + 1));");
+            w.WL(obj + ".SetResource(CustomResources." + item.Substring(3) + ", " + val + ".EqualsTrue());");
             w.WL(obj + ".ResourcesScanned = true;");
             w.WL("}");
             w.WL();
@@ -444,23 +430,23 @@ internal static class FMData
 
         w.WL("private readonly unsafe struct FMData_DelegatePointerWrapper");
         w.WL("{");
-        w.WL("internal readonly delegate*<FanMission, string, int, void> Action;");
+        w.WL("internal readonly delegate*<FanMission, ReadOnlySpan<char>, void> Action;");
         w.WL();
-        w.WL("internal FMData_DelegatePointerWrapper(delegate*<FanMission, string, int, void> action)");
+        w.WL("internal FMData_DelegatePointerWrapper(delegate*<FanMission, ReadOnlySpan<char>, void> action)");
         w.WL("{");
         w.WL("Action = action;");
         w.WL("}");
         w.WL("}");
         w.WL();
 
-        w.WL("private static readonly unsafe Dictionary<string, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new KeyComparer())");
+        w.WL("private static readonly unsafe Dictionary<ReadOnlyMemory<char>, FMData_DelegatePointerWrapper> _actionDict_FMData = new(new MemoryStringComparer())");
         w.WL("{");
         for (int i = 0; i < dictFields.Count; i++)
         {
             Field field = dictFields[i];
             string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
             string comma = i == dictFields.Count - 1 ? "" : ",";
-            w.WL("{ \"" + fieldIniName + "\", new FMData_DelegatePointerWrapper(&FMData_" + fieldIniName + "_Set) }" + comma);
+            w.WL("{ \"" + fieldIniName + "\".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_" + fieldIniName + "_Set) }" + comma);
 
             if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
             {

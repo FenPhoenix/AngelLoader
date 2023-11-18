@@ -179,39 +179,6 @@ public static partial class Common
     public static bool EqualsFalse(this ReadOnlySpan<char> value) => value.Equals(bool.FalseString, OrdinalIgnoreCase);
 
     /// <summary>
-    /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="indexAfterEq"></param>
-    /// <returns></returns>
-    public static bool EndEqualsTrue(this string value, int indexAfterEq)
-    {
-        int valueLen = value.Length;
-        return valueLen - indexAfterEq == 4 &&
-               (value[valueLen - 4] == 'T' || value[valueLen - 4] == 't') &&
-               (value[valueLen - 3] == 'R' || value[valueLen - 3] == 'r') &&
-               (value[valueLen - 2] == 'U' || value[valueLen - 2] == 'u') &&
-               (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
-    }
-
-    /// <summary>
-    /// Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="indexAfterEq"></param>
-    /// <returns></returns>
-    public static bool EndEqualsFalse(this string value, int indexAfterEq)
-    {
-        int valueLen = value.Length;
-        return valueLen - indexAfterEq == 5 &&
-               (value[valueLen - 5] == 'F' || value[valueLen - 5] == 'f') &&
-               (value[valueLen - 4] == 'A' || value[valueLen - 4] == 'a') &&
-               (value[valueLen - 3] == 'L' || value[valueLen - 3] == 'l') &&
-               (value[valueLen - 2] == 'S' || value[valueLen - 2] == 's') &&
-               (value[valueLen - 1] == 'E' || value[valueLen - 1] == 'e');
-    }
-
-    /// <summary>
     /// Uses ASCII case-insensitivity. Should not be used with non-ASCII values!
     /// </summary>
     /// <param name="str"></param>

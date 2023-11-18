@@ -264,17 +264,19 @@ internal static partial class Ini
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void PopulateFMFieldFromLine(FanMission fm, string line)
     {
-        string lineTS = line.TrimStart();
-        int eqIndex = lineTS.IndexOf('=');
-        if (eqIndex > -1 && lineTS[0] != ';')
+        ReadOnlyMemory<char> lineTS = line.AsMemory().TrimStart();
+        ReadOnlySpan<char> lineTSSpan = lineTS.Span;
+        int eqIndex = lineTSSpan.IndexOf('=');
+        if (eqIndex > -1 && lineTSSpan[0] != ';')
         {
-            if (_actionDict_FMData.TryGetValue(lineTS, out var result))
+            if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
             {
                 // If the value is an arbitrary string or other unknowable type, then we need to split
                 // the string so the value part can go in the FM field. But if the value is a knowable
                 // type, then we don't need to split the string, we can just parse the value section.
                 // This slashes our allocation count WAY down.
-                result.Action(fm, lineTS, eqIndex);
+                ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
+                result.Action(fm, valRaw);
             }
         }
     }
@@ -501,16 +503,16 @@ internal static partial class Ini
 
     #region FMData
 
-    private static void AddReadmeEncoding(FanMission fm, string line, int indexAfterEq)
+    private static void AddReadmeEncoding(FanMission fm, ReadOnlySpan<char> line)
     {
         int lastIndexOfComma = line.LastIndexOf(',');
 
         if (lastIndexOfComma > -1 &&
-            Int_TryParseInv(line.AsSpan()[(lastIndexOfComma + 1)..], out int result) &&
+            Int_TryParseInv(line[(lastIndexOfComma + 1)..], out int result) &&
             // 0 = default, we don't want to handle "default" as it's not a specific code page
             result > 0)
         {
-            string readme = line.Substring(indexAfterEq, lastIndexOfComma - indexAfterEq);
+            string readme = line[..lastIndexOfComma].ToString();
             if (!readme.IsEmpty())
             {
                 fm.ReadmeCodePages[readme.ToBackSlashes()] = result;
@@ -520,13 +522,13 @@ internal static partial class Ini
 
     // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
     // We don't write out whitespace between them anyway.
-    private static void SetFMLanguages(FanMission fm, string langsString, int start)
+    private static void SetFMLanguages(FanMission fm, ReadOnlySpan<char> langsSpan)
     {
+        // @NET5: Get rid of this allocation
+        var langsString = langsSpan.ToString();
         // It's always supposed to be ascii lowercase, so only take the allocation if it's not
-        if (!langsString.IsAsciiLower(start))
+        if (!langsString.IsAsciiLower(0))
         {
-            // This will lowercase the key portion of the string too, but we only deal with the value so we
-            // don't care
             langsString = langsString.ToLowerInvariant();
         }
 
@@ -534,9 +536,9 @@ internal static partial class Ini
 
         int len = langsString.Length;
 
-        int curStart = start;
+        int curStart = 0;
 
-        for (int i = start; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             char c = langsString[i];
 
@@ -583,22 +585,25 @@ internal static partial class Ini
         return true;
     }
 
-    private static void FillFMHasXFields(FanMission fm, string fieldsString, int start)
+    private static void FillFMHasXFields(FanMission fm, ReadOnlySpan<char> fieldsSpan)
     {
         // Resources must be cleared here
         fm.Resources = CustomResources.None;
 
-        int curStart = start;
+        int curStart = 0;
 
-        int len = fieldsString.Length;
+        int len = fieldsSpan.Length;
 
-        for (int i = start; i < len; i++)
+        // @NET5: Get rid of this allocation
+        string fieldsString = fieldsSpan.ToString();
+
+        for (int i = 0; i < len; i++)
         {
             char c = fieldsString[i];
 
             if (c == ',' || i == len - 1)
             {
-                if (curStart == start && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
+                if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
                 {
                     return;
                 }
