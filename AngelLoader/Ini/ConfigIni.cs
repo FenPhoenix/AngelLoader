@@ -1017,14 +1017,14 @@ internal static partial class Ini
 
         for (int li = 0; li < iniLines.Count; li++)
         {
-            string lineTS = iniLines[li].TrimStart();
+            ReadOnlySpan<char> lineTS = iniLines[li].AsSpan().TrimStart();
 
             if (lineTS.Length == 0 || lineTS[0] == ';') continue;
 
             int eqIndex = lineTS.IndexOf('=');
             if (eqIndex > -1)
             {
-                ReadOnlySpan<char> valRaw = lineTS.AsSpan()[(eqIndex + 1)..];
+                ReadOnlySpan<char> valRaw = lineTS[(eqIndex + 1)..];
                 ReadOnlySpan<char> valTrimmed = valRaw.Trim();
 
                 // @GENGAMES (ConfigIni prefix detector) - Begin
@@ -1046,24 +1046,24 @@ internal static partial class Ini
                             case '1':
                                 gameIndex = GameIndex.Thief1;
                                 ignoreGameIndex = false;
-                                lineTS = lineTS.Substring(2);
+                                lineTS = lineTS[2..];
                                 break;
                             case '2':
                                 gameIndex = GameIndex.Thief2;
                                 ignoreGameIndex = false;
-                                lineTS = lineTS.Substring(2);
+                                lineTS = lineTS[2..];
                                 break;
                             case '3':
                                 gameIndex = GameIndex.Thief3;
                                 ignoreGameIndex = false;
-                                lineTS = lineTS.Substring(2);
+                                lineTS = lineTS[2..];
                                 break;
                             case 'D':
                                 if (eqIndex >= 3 && lineTS[2] == 'M')
                                 {
                                     gameIndex = GameIndex.TDM;
                                     ignoreGameIndex = false;
-                                    lineTS = lineTS.Substring(3);
+                                    lineTS = lineTS[3..];
                                 }
                                 break;
                         }
@@ -1072,13 +1072,14 @@ internal static partial class Ini
                     {
                         gameIndex = GameIndex.SS2;
                         ignoreGameIndex = false;
-                        lineTS = lineTS.Substring(3);
+                        lineTS = lineTS[3..];
                     }
                 }
 
                 // @GENGAMES (ConfigIni prefix detector) - End
 
-                if (configDict.TryGetValue(lineTS, out var result))
+                // @NET5: Fix this allocation later
+                if (configDict.TryGetValue(lineTS.ToString(), out var result))
                 {
                     result.Action(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
                 }
