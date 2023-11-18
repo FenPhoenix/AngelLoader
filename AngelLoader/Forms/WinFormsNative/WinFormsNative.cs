@@ -242,7 +242,6 @@ internal static class Native
         internal CHARRANGE? charrange = null;
     }
 
-#if X64
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
     public class ENLINK64
@@ -250,7 +249,6 @@ internal static class Native
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
         public byte[] contents = new byte[56];
     }
-#endif
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
@@ -331,20 +329,11 @@ internal static class Native
 
     internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
     {
-#if X64
         return GetWindowLongPtr64(hWnd, nIndex);
-#else
-        return GetWindowLong32(hWnd, nIndex);
-#endif
     }
 
-#if X64
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
-#else
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
-    private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
-#endif
 
     [DllImport("user32.dll")]
     internal static extern IntPtr WindowFromPoint(Point pt);

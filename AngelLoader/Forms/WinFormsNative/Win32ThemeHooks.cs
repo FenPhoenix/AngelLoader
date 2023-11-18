@@ -18,11 +18,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-#if X64
 using CoreHook;
-#else
-using EasyHook;
-#endif
 
 namespace AngelLoader.Forms.WinFormsNative;
 
@@ -106,17 +102,10 @@ internal static class Win32ThemeHooks
                 "GetSysColor",
                 GetSysColor_Hooked);
 
-            // @x64 (GetSysColorBrush hook):
-            // Fails with 'STATUS_NOT_SUPPORTED: Hooking near conditional jumps is not supported. (Code: 487)'
-            // on x64. Sigh... Fortunately, this thing seems to only be used for the Win7 non-Aero scroll bar
-            // corners...? I don't see any difference with this disabled on Win10. So... not the worst thing...
-            // 2023-11-11: This seems to work with CoreHook.
-#if !NETFRAMEWORK || !X64
             (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
                 "user32.dll",
                 "GetSysColorBrush",
                 GetSysColorBrush_Hooked);
-#endif
 
             (_drawThemeBackgroundHook, DrawThemeBackground_Original) = InstallHook<DrawThemeBackgroundDelegate>(
                 "uxtheme.dll",

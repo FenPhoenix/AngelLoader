@@ -228,22 +228,7 @@ internal static class Paths
 
     private static string? _sevenZipPath;
     // Use a 64-bit version if possible for even more out-of-memory prevention...
-    internal static string SevenZipPath
-    {
-        get
-        {
-#if !X64
-            if (!Environment.Is64BitOperatingSystem)
-            {
-                return _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z32");
-            }
-            else
-#endif
-            {
-                return _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z64");
-            }
-        }
-    }
+    internal static string SevenZipPath => _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z64");
 
     private static string? _sevenZipExe;
     internal static string SevenZipExe => _sevenZipExe ??= PathCombineFast_NoChecks(SevenZipPath, "7z.exe");

@@ -135,18 +135,6 @@ internal static class FMArchives
                         i--;
                         continue;
                     }
-#if !X64
-                    else if (PathContainsUnsupportedProgramFilesFolder(di, out string progFilesPath))
-                    {
-                        string message = "This path contains '" + progFilesPath +
-                                         "' which is an unsupported path for 32-bit apps.\r\n\r\n" +
-                                         "The passed path was:\r\n\r\n" +
-                                         di + "\r\n\r\n";
-                        Log(message, stackTrace: true);
-                        Core.Dialogs.ShowError_ViewOwned(message);
-                        return false;
-                    }
-#endif
 
                     if (!archivesLinesTruncated)
                     {

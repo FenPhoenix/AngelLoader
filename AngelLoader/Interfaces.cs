@@ -48,7 +48,7 @@ public interface IViewEnvironment
 public interface IDialogs
 {
     (MBoxButton ButtonPressed, bool CheckBoxChecked) ShowMultiChoiceDialog(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel = null, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
-#if !X64
+#if false
     void ShowError_ViewOwned(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
 #endif
     void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);

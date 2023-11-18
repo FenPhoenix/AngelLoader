@@ -21,50 +21,6 @@ public static partial class Utils
         return relativePath.IsEmpty() ? basePath : Path.GetFullPath(Path.Combine(basePath, relativePath));
     }
 
-#if !X64
-    // @X64: We won't need this Program Files thing on x64
-    internal static bool PathContainsUnsupportedProgramFilesFolder(string fullPath, out string programFilesPathName)
-    {
-        // If we're 32/32, then "Program Files" actually IS correct (it's the only one in that case)
-        if (Environment.Is64BitOperatingSystem)
-        {
-            string? programFiles;
-            try
-            {
-                programFiles = Environment.GetEnvironmentVariable("ProgramW6432");
-                if (programFiles.IsEmpty())
-                {
-                    programFilesPathName = "";
-                    return false;
-                }
-            }
-            catch
-            {
-                programFilesPathName = "";
-                return false;
-            }
-
-            programFiles = programFiles.TrimEnd(CA_BS_FS);
-            if (fullPath.TrimEnd(CA_BS_FS).PathEqualsI(programFiles) ||
-                fullPath.PathStartsWithI(programFiles + "\\"))
-            {
-                programFilesPathName = programFiles;
-                return true;
-            }
-            else
-            {
-                programFilesPathName = "";
-                return false;
-            }
-        }
-        else
-        {
-            programFilesPathName = "";
-            return false;
-        }
-    }
-#endif
-
     #region Get file / dir names
 
     /// <summary>

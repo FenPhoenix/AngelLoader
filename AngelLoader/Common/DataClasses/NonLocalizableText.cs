@@ -81,11 +81,7 @@ internal static partial class NonLocalizableText
         ("Ookii Dialogs", "https://github.com/augustoproiete/ookii-dialogs-winforms"),
         (".NET Core 3 System.IO.Compression", "https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression"),
         ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
-#if X64
         ("CoreHook", "https://github.com/unknownv2/CoreHook/"),
-#else
-        ("EasyHook", "https://github.com/EasyHook/EasyHook"),
-#endif
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans")
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
