@@ -283,10 +283,10 @@ internal static class Core
     private static Forms.MainForm View = null!;
 #endif
 
-    internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
-    internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
-    internal static readonly string ALCommonProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AL_Common"));
-    internal static readonly string FenGenProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\FenGen"));
+    internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\..\"));
+    internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\..\AngelLoader"));
+    internal static readonly string ALCommonProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\..\AL_Common"));
+    internal static readonly string FenGenProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\..\FenGen"));
     internal static readonly string ALProjectFile = Path.Combine(ALProjectPath, "AngelLoader.csproj");
 
     // Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.

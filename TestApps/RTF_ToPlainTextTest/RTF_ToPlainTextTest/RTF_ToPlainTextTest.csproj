@@ -7,35 +7,19 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;DebugTestMode;ReleaseTestMode</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DefineConstants>TRACE;FMScanner_FullCode;X64</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefineConstants>TRACE;FMScanner_FullCode;X64</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTestMode|x86'">
-    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTestMode|x64'">
     <DefineConstants>TRACE;FMScanner_FullCode;X64</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseTestMode|x86'">
-    <DefineConstants>TRACE;FMScanner_FullCode</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseTestMode|x64'">

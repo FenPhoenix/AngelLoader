@@ -24,7 +24,7 @@
 		<IsTrimmable>true</IsTrimmable>
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Platforms>AnyCPU;x64</Platforms>
+		<Platforms>x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\AL_Common\AL_Common.csproj" />

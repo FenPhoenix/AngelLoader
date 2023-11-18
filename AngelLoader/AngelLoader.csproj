@@ -4,7 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>$(SolutionTargetFramework)</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
-		<Platforms>x86;x64</Platforms>
+		<Platforms>x64</Platforms>
 		<LangVersion>latest</LangVersion>
 		<Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts;RT_HeavyTests</Configurations>
 		<StartupObject>AngelLoader.Program</StartupObject>
@@ -27,38 +27,15 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-		<OutputPath>bin\x86\Debug\</OutputPath>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DEBUG;TRACE;Debug;X64</DefineConstants>
 		<OutputPath>bin\x64\Debug\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release</DefineConstants>
-		<OutputPath>bin\x86\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE;Release;X64</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
-		<OutputPath>bin\x86\Release\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_HeavyTests|x86'">
-	  <Optimize>true</Optimize>
-	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests</DefineConstants>
-	  <OutputPath>bin\x86\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x64'">
@@ -73,22 +50,10 @@
 	  <OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,NoAsserts</DefineConstants>
-		<OutputPath>bin\x86\Release\</OutputPath>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x64'">
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE;Release,Release_Testing,NoAsserts;X64</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Beta|x86'">
-		<Optimize>true</Optimize>
-		<OutputPath>bin\x86\Release_Beta\</OutputPath>
-		<DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Beta|x64'">
@@ -97,22 +62,10 @@
 		<DefineConstants>TRACE;Release, ReleaseBeta;X64</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Public|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
-		<OutputPath>bin\x86\Release_Public\</OutputPath>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Public|x64'">
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE;Release, ReleasePublic;X64</DefineConstants>
 		<OutputPath>bin\x64\Release_Public\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
-		<OutputPath>bin\x86\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x64'">

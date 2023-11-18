@@ -4,7 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>$(SolutionTargetFramework)</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
-		<Platforms>AnyCPU;x86;x64</Platforms>
+		<Platforms>x64</Platforms>
 		<LangVersion>latest</LangVersion>
 		<Configurations>Debug;Release;DebugTesting</Configurations>
 
@@ -18,46 +18,14 @@
 		<FileVersion>1.0.0</FileVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-		<OutputPath>bin\x86\Debug\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-		<OutputPath>bin\Debug\</OutputPath>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 	  <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
 	  <OutputPath>bin\Debug\</OutputPath>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x86'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-		<OutputPath>bin\x86\Debug\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|AnyCPU'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-		<OutputPath>bin\Debug\</OutputPath>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x64'">
 	  <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
 	  <OutputPath>bin\Debug\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release</DefineConstants>
-		<OutputPath>bin\x86\Release\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release</DefineConstants>
-		<OutputPath>bin\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
