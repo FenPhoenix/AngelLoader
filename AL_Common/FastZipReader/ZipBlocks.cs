@@ -420,7 +420,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
         // stream's position to the proper place.
 
-        stream.AdvanceToPosition(endExtraFields + fileCommentLength, context);
+        stream.Position = endExtraFields + fileCommentLength;
 
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;

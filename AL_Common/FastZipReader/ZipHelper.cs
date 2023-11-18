@@ -165,20 +165,6 @@ public static class ZipHelpers
         }
     }
 
-    // Skip to a further position downstream (without relying on the stream being seekable)
-    internal static void AdvanceToPosition(this Stream stream, long position, ZipContext context)
-    {
-        long numBytesLeft = position - stream.Position;
-        Debug.Assert(numBytesLeft >= 0);
-        while (numBytesLeft != 0)
-        {
-            int numBytesToSkip = numBytesLeft > ZipContext.ThrowAwayBufferSize ? ZipContext.ThrowAwayBufferSize : (int)numBytesLeft;
-            int numBytesActuallySkipped = stream.Read(context.ThrowawayBuffer, 0, numBytesToSkip);
-            if (numBytesActuallySkipped == 0) ThrowHelper.IOException(SR.UnexpectedEndOfStream);
-            numBytesLeft -= numBytesActuallySkipped;
-        }
-    }
-
     // Returns true if we are out of bytes
     private static bool SeekBackwardsAndRead(Stream stream, byte[] buffer, out int bufferPointer)
     {
