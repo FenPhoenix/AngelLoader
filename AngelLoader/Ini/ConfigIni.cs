@@ -772,7 +772,7 @@ internal static partial class Ini
 
     #endregion
 
-    private sealed unsafe class Config_DelegatePointerWrapper
+    private readonly unsafe struct Config_DelegatePointerWrapper
     {
         internal readonly delegate*<ConfigData, ReadOnlySpan<char>, ReadOnlySpan<char>, GameIndex, bool, void> Action;
 

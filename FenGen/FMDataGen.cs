@@ -442,7 +442,7 @@ internal static class FMData
             dictFields.Add(new Field { Name = item });
         }
 
-        w.WL("private sealed unsafe class FMData_DelegatePointerWrapper");
+        w.WL("private readonly unsafe struct FMData_DelegatePointerWrapper");
         w.WL("{");
         w.WL("internal readonly delegate*<FanMission, string, int, void> Action;");
         w.WL();
