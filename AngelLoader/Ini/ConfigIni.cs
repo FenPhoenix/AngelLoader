@@ -782,187 +782,187 @@ internal static partial class Ini
         }
     }
 
-    private static unsafe Dictionary<string, Config_DelegatePointerWrapper>
-    CreateConfigDictionary() => new(new KeyComparer())
+    private static unsafe Dictionary<ReadOnlyMemory<char>, Config_DelegatePointerWrapper>
+    CreateConfigDictionary() => new(new MemoryStringComparer())
     {
         #region Settings window state
 
-        { "SettingsTab", new Config_DelegatePointerWrapper(&Config_SettingsTab_Set) },
-        { "SettingsWindowSize", new Config_DelegatePointerWrapper(&Config_SettingsWindowSize_Set) },
-        { "SettingsWindowSplitterDistance", new Config_DelegatePointerWrapper(&Config_SettingsWindowSplitterDistance_Set) },
-        { "SettingsPathsVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsPathsVScrollPos_Set) },
-        { "SettingsAppearanceVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
-        { "SettingsOtherVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
-        { "SettingsThiefBuddyVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
+        { "SettingsTab".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsTab_Set) },
+        { "SettingsWindowSize".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsWindowSize_Set) },
+        { "SettingsWindowSplitterDistance".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsWindowSplitterDistance_Set) },
+        { "SettingsPathsVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsPathsVScrollPos_Set) },
+        { "SettingsAppearanceVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
+        { "SettingsOtherVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
+        { "SettingsThiefBuddyVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
 
         #endregion
 
-        { "LaunchGamesWithSteam", new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
-        { "SteamExe", new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
-        { "RunThiefBuddyOnFMPlay", new Config_DelegatePointerWrapper(&Config_RunThiefBuddyOnFMPlay_Set) },
-        { "FMsBackupPath", new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
-        { "FMArchivePath", new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
-        { "FMArchivePathsIncludeSubfolders", new Config_DelegatePointerWrapper(&Config_FMArchivePathsIncludeSubfolders_Set) },
-        { "GameOrganization", new Config_DelegatePointerWrapper(&Config_GameOrganization_Set) },
-        { "UseShortGameTabNames", new Config_DelegatePointerWrapper(&Config_UseShortGameTabNames_Set) },
-        { "EnableArticles", new Config_DelegatePointerWrapper(&Config_EnableArticles_Set) },
-        { "Articles", new Config_DelegatePointerWrapper(&Config_Articles_Set) },
-        { "MoveArticlesToEnd", new Config_DelegatePointerWrapper(&Config_MoveArticlesToEnd_Set) },
-        { "RatingDisplayStyle", new Config_DelegatePointerWrapper(&Config_RatingDisplayStyle_Set) },
-        { "RatingUseStars", new Config_DelegatePointerWrapper(&Config_RatingUseStars_Set) },
+        { "LaunchGamesWithSteam".AsMemory(), new Config_DelegatePointerWrapper(&Config_LaunchGamesWithSteam_Set) },
+        { "SteamExe".AsMemory(), new Config_DelegatePointerWrapper(&Config_SteamExe_Set) },
+        { "RunThiefBuddyOnFMPlay".AsMemory(), new Config_DelegatePointerWrapper(&Config_RunThiefBuddyOnFMPlay_Set) },
+        { "FMsBackupPath".AsMemory(), new Config_DelegatePointerWrapper(&Config_FMsBackupPath_Set) },
+        { "FMArchivePath".AsMemory(), new Config_DelegatePointerWrapper(&Config_FMArchivePath_Set) },
+        { "FMArchivePathsIncludeSubfolders".AsMemory(), new Config_DelegatePointerWrapper(&Config_FMArchivePathsIncludeSubfolders_Set) },
+        { "GameOrganization".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameOrganization_Set) },
+        { "UseShortGameTabNames".AsMemory(), new Config_DelegatePointerWrapper(&Config_UseShortGameTabNames_Set) },
+        { "EnableArticles".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableArticles_Set) },
+        { "Articles".AsMemory(), new Config_DelegatePointerWrapper(&Config_Articles_Set) },
+        { "MoveArticlesToEnd".AsMemory(), new Config_DelegatePointerWrapper(&Config_MoveArticlesToEnd_Set) },
+        { "RatingDisplayStyle".AsMemory(), new Config_DelegatePointerWrapper(&Config_RatingDisplayStyle_Set) },
+        { "RatingUseStars".AsMemory(), new Config_DelegatePointerWrapper(&Config_RatingUseStars_Set) },
 
         #region Date format
 
-        { "DateFormat", new Config_DelegatePointerWrapper(&Config_DateFormat_Set) },
-        { "DateCustomFormat1", new Config_DelegatePointerWrapper(&Config_DateCustomFormat1_Set) },
-        { "DateCustomSeparator1", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator1_Set) },
-        { "DateCustomFormat2", new Config_DelegatePointerWrapper(&Config_DateCustomFormat2_Set) },
-        { "DateCustomSeparator2", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator2_Set) },
-        { "DateCustomFormat3", new Config_DelegatePointerWrapper(&Config_DateCustomFormat3_Set) },
-        { "DateCustomSeparator3", new Config_DelegatePointerWrapper(&Config_DateCustomSeparator3_Set) },
-        { "DateCustomFormat4", new Config_DelegatePointerWrapper(&Config_DateCustomFormat4_Set) },
+        { "DateFormat".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateFormat_Set) },
+        { "DateCustomFormat1".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomFormat1_Set) },
+        { "DateCustomSeparator1".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomSeparator1_Set) },
+        { "DateCustomFormat2".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomFormat2_Set) },
+        { "DateCustomSeparator2".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomSeparator2_Set) },
+        { "DateCustomFormat3".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomFormat3_Set) },
+        { "DateCustomSeparator3".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomSeparator3_Set) },
+        { "DateCustomFormat4".AsMemory(), new Config_DelegatePointerWrapper(&Config_DateCustomFormat4_Set) },
 
         #endregion
 
-        { "DaysRecent", new Config_DelegatePointerWrapper(&Config_DaysRecent_Set) },
-        { "ConvertWAVsTo16BitOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertWAVsTo16BitOnInstall_Set) },
-        { "ConvertOGGsToWAVsOnInstall", new Config_DelegatePointerWrapper(&Config_ConvertOGGsToWAVsOnInstall_Set) },
-        { "UseOldMantlingForOldDarkFMs", new Config_DelegatePointerWrapper(&Config_UseOldMantlingForOldDarkFMs_Set) },
-        { "HideUninstallButton", new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
-        { "HideFMListZoomButtons", new Config_DelegatePointerWrapper(&Config_HideFMListZoomButtons_Set) },
-        { "HideExitButton", new Config_DelegatePointerWrapper(&Config_HideExitButton_Set) },
-        { "HideWebSearchButton", new Config_DelegatePointerWrapper(&Config_HideWebSearchButton_Set) },
-        { "ConfirmBeforeInstall", new Config_DelegatePointerWrapper(&Config_ConfirmInstall_Set) },
-        { "ConfirmUninstall", new Config_DelegatePointerWrapper(&Config_ConfirmUninstall_Set) },
-        { "BackupFMData", new Config_DelegatePointerWrapper(&Config_BackupFMData_Set) },
-        { "BackupAlwaysAsk", new Config_DelegatePointerWrapper(&Config_BackupAlwaysAsk_Set) },
-        { "Language", new Config_DelegatePointerWrapper(&Config_Language_Set) },
-        { "WebSearchUrl", new Config_DelegatePointerWrapper(&Config_WebSearchUrl_Set) },
-        { "ConfirmPlayOnDCOrEnter", new Config_DelegatePointerWrapper(&Config_ConfirmPlayOnDCOrEnter_Set) },
-        { "VisualTheme", new Config_DelegatePointerWrapper(&Config_VisualTheme_Set) },
+        { "DaysRecent".AsMemory(), new Config_DelegatePointerWrapper(&Config_DaysRecent_Set) },
+        { "ConvertWAVsTo16BitOnInstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConvertWAVsTo16BitOnInstall_Set) },
+        { "ConvertOGGsToWAVsOnInstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConvertOGGsToWAVsOnInstall_Set) },
+        { "UseOldMantlingForOldDarkFMs".AsMemory(), new Config_DelegatePointerWrapper(&Config_UseOldMantlingForOldDarkFMs_Set) },
+        { "HideUninstallButton".AsMemory(), new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
+        { "HideFMListZoomButtons".AsMemory(), new Config_DelegatePointerWrapper(&Config_HideFMListZoomButtons_Set) },
+        { "HideExitButton".AsMemory(), new Config_DelegatePointerWrapper(&Config_HideExitButton_Set) },
+        { "HideWebSearchButton".AsMemory(), new Config_DelegatePointerWrapper(&Config_HideWebSearchButton_Set) },
+        { "ConfirmBeforeInstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConfirmInstall_Set) },
+        { "ConfirmUninstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConfirmUninstall_Set) },
+        { "BackupFMData".AsMemory(), new Config_DelegatePointerWrapper(&Config_BackupFMData_Set) },
+        { "BackupAlwaysAsk".AsMemory(), new Config_DelegatePointerWrapper(&Config_BackupAlwaysAsk_Set) },
+        { "Language".AsMemory(), new Config_DelegatePointerWrapper(&Config_Language_Set) },
+        { "WebSearchUrl".AsMemory(), new Config_DelegatePointerWrapper(&Config_WebSearchUrl_Set) },
+        { "ConfirmPlayOnDCOrEnter".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConfirmPlayOnDCOrEnter_Set) },
+        { "VisualTheme".AsMemory(), new Config_DelegatePointerWrapper(&Config_VisualTheme_Set) },
 
         #region Filter visibilities
 
-        { "FilterVisibleTitle", new Config_DelegatePointerWrapper(&Config_FilterVisibleTitle_Set) },
-        { "FilterVisibleAuthor", new Config_DelegatePointerWrapper(&Config_FilterVisibleAuthor_Set) },
-        { "FilterVisibleReleaseDate", new Config_DelegatePointerWrapper(&Config_FilterVisibleReleaseDate_Set) },
-        { "FilterVisibleLastPlayed", new Config_DelegatePointerWrapper(&Config_FilterVisibleLastPlayed_Set) },
-        { "FilterVisibleTags", new Config_DelegatePointerWrapper(&Config_FilterVisibleTags_Set) },
-        { "FilterVisibleFinishedState", new Config_DelegatePointerWrapper(&Config_FilterVisibleFinishedState_Set) },
-        { "FilterVisibleRating", new Config_DelegatePointerWrapper(&Config_FilterVisibleRating_Set) },
-        { "FilterVisibleShowUnsupported", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnsupported_Set) },
-        { "FilterVisibleShowUnavailable", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnavailable_Set) },
-        { "FilterVisibleShowRecentAtTop", new Config_DelegatePointerWrapper(&Config_FilterVisibleShowRecentAtTop_Set) },
+        { "FilterVisibleTitle".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleTitle_Set) },
+        { "FilterVisibleAuthor".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleAuthor_Set) },
+        { "FilterVisibleReleaseDate".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleReleaseDate_Set) },
+        { "FilterVisibleLastPlayed".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleLastPlayed_Set) },
+        { "FilterVisibleTags".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleTags_Set) },
+        { "FilterVisibleFinishedState".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleFinishedState_Set) },
+        { "FilterVisibleRating".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleRating_Set) },
+        { "FilterVisibleShowUnsupported".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnsupported_Set) },
+        { "FilterVisibleShowUnavailable".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleShowUnavailable_Set) },
+        { "FilterVisibleShowRecentAtTop".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterVisibleShowRecentAtTop_Set) },
 
         #endregion
 
         #region Filter values
 
-        { "FilterGames", new Config_DelegatePointerWrapper(&Config_FilterGames_Set) },
-        { "FilterTitle", new Config_DelegatePointerWrapper(&Config_FilterTitle_Set) },
-        { "FilterAuthor", new Config_DelegatePointerWrapper(&Config_FilterAuthor_Set) },
-        { "FilterReleaseDateFrom", new Config_DelegatePointerWrapper(&Config_FilterReleaseDateFrom_Set) },
-        { "FilterReleaseDateTo", new Config_DelegatePointerWrapper(&Config_FilterReleaseDateTo_Set) },
-        { "FilterLastPlayedFrom", new Config_DelegatePointerWrapper(&Config_FilterLastPlayedFrom_Set) },
-        { "FilterLastPlayedTo", new Config_DelegatePointerWrapper(&Config_FilterLastPlayedTo_Set) },
-        { "FilterFinishedStates", new Config_DelegatePointerWrapper(&Config_FilterFinishedStates_Set) },
-        { "FilterRatingFrom", new Config_DelegatePointerWrapper(&Config_FilterRatingFrom_Set) },
-        { "FilterRatingTo", new Config_DelegatePointerWrapper(&Config_FilterRatingTo_Set) },
-        { "FilterTagsAnd", new Config_DelegatePointerWrapper(&Config_FilterTagsAnd_Set) },
-        { "FilterTagsOr", new Config_DelegatePointerWrapper(&Config_FilterTagsOr_Set) },
-        { "FilterTagsNot", new Config_DelegatePointerWrapper(&Config_FilterTagsNot_Set) },
+        { "FilterGames".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterGames_Set) },
+        { "FilterTitle".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterTitle_Set) },
+        { "FilterAuthor".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterAuthor_Set) },
+        { "FilterReleaseDateFrom".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterReleaseDateFrom_Set) },
+        { "FilterReleaseDateTo".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterReleaseDateTo_Set) },
+        { "FilterLastPlayedFrom".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterLastPlayedFrom_Set) },
+        { "FilterLastPlayedTo".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterLastPlayedTo_Set) },
+        { "FilterFinishedStates".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterFinishedStates_Set) },
+        { "FilterRatingFrom".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterRatingFrom_Set) },
+        { "FilterRatingTo".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterRatingTo_Set) },
+        { "FilterTagsAnd".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterTagsAnd_Set) },
+        { "FilterTagsOr".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterTagsOr_Set) },
+        { "FilterTagsNot".AsMemory(), new Config_DelegatePointerWrapper(&Config_FilterTagsNot_Set) },
 
         #endregion
 
         #region Per-game fields
 
-        { "NewMantling", new Config_DelegatePointerWrapper(&Config_NewMantling_Set) },
+        { "NewMantling".AsMemory(), new Config_DelegatePointerWrapper(&Config_NewMantling_Set) },
 
-        { "DisabledMods", new Config_DelegatePointerWrapper(&Config_DisabledMods_Set) },
+        { "DisabledMods".AsMemory(), new Config_DelegatePointerWrapper(&Config_DisabledMods_Set) },
 
-        { "Exe", new Config_DelegatePointerWrapper(&Config_Exe_Set) },
+        { "Exe".AsMemory(), new Config_DelegatePointerWrapper(&Config_Exe_Set) },
 
-        { "UseSteam", new Config_DelegatePointerWrapper(&Config_UseSteam_Set) },
+        { "UseSteam".AsMemory(), new Config_DelegatePointerWrapper(&Config_UseSteam_Set) },
 
-        { "GameFilterVisible", new Config_DelegatePointerWrapper(&Config_GameFilterVisible_Set) },
+        { "GameFilterVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisible_Set) },
 
-        { "SelFMInstDir", new Config_DelegatePointerWrapper(&Config_SelFMInstDir_Set) },
-        { "SelFMIndexFromTop", new Config_DelegatePointerWrapper(&Config_SelFMIndexFromTop_Set) },
+        { "SelFMInstDir".AsMemory(), new Config_DelegatePointerWrapper(&Config_SelFMInstDir_Set) },
+        { "SelFMIndexFromTop".AsMemory(), new Config_DelegatePointerWrapper(&Config_SelFMIndexFromTop_Set) },
 
         #endregion
 
-        { "ShowRecentAtTop", new Config_DelegatePointerWrapper(&Config_ShowRecentAtTop_Set) },
-        { "ShowUnsupported", new Config_DelegatePointerWrapper(&Config_ShowUnsupported_Set) },
-        { "ShowUnavailableFMs", new Config_DelegatePointerWrapper(&Config_ShowUnavailableFMs_Set) },
-        { "FMsListFontSizeInPoints", new Config_DelegatePointerWrapper(&Config_FMsListFontSizeInPoints_Set) },
+        { "ShowRecentAtTop".AsMemory(), new Config_DelegatePointerWrapper(&Config_ShowRecentAtTop_Set) },
+        { "ShowUnsupported".AsMemory(), new Config_DelegatePointerWrapper(&Config_ShowUnsupported_Set) },
+        { "ShowUnavailableFMs".AsMemory(), new Config_DelegatePointerWrapper(&Config_ShowUnavailableFMs_Set) },
+        { "FMsListFontSizeInPoints".AsMemory(), new Config_DelegatePointerWrapper(&Config_FMsListFontSizeInPoints_Set) },
 
-        { "SortedColumn", new Config_DelegatePointerWrapper(&Config_SortedColumn_Set) },
-        { "SortDirection", new Config_DelegatePointerWrapper(&Config_SortDirection_Set) },
+        { "SortedColumn".AsMemory(), new Config_DelegatePointerWrapper(&Config_SortedColumn_Set) },
+        { "SortDirection".AsMemory(), new Config_DelegatePointerWrapper(&Config_SortDirection_Set) },
 
         #region Columns
 
 #if DateAccTest
-        { "ColumnDateAccuracy", new Config_DelegatePointerWrapper(&Config_ColumnDateAccuracy_Set) },
+        { "ColumnDateAccuracy".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnDateAccuracy_Set) },
 #endif
-        { "ColumnGame", new Config_DelegatePointerWrapper(&Config_ColumnGame_Set) },
-        { "ColumnInstalled", new Config_DelegatePointerWrapper(&Config_ColumnInstalled_Set) },
-        { "ColumnMissionCount", new Config_DelegatePointerWrapper(&Config_ColumnMisCount_Set) },
-        { "ColumnTitle", new Config_DelegatePointerWrapper(&Config_ColumnTitle_Set) },
-        { "ColumnArchive", new Config_DelegatePointerWrapper(&Config_ColumnArchive_Set) },
-        { "ColumnAuthor", new Config_DelegatePointerWrapper(&Config_ColumnAuthor_Set) },
-        { "ColumnSize", new Config_DelegatePointerWrapper(&Config_ColumnSize_Set) },
-        { "ColumnRating", new Config_DelegatePointerWrapper(&Config_ColumnRating_Set) },
-        { "ColumnFinished", new Config_DelegatePointerWrapper(&Config_ColumnFinished_Set) },
-        { "ColumnReleaseDate", new Config_DelegatePointerWrapper(&Config_ColumnReleaseDate_Set) },
-        { "ColumnLastPlayed", new Config_DelegatePointerWrapper(&Config_ColumnLastPlayed_Set) },
-        { "ColumnDateAdded", new Config_DelegatePointerWrapper(&Config_ColumnDateAdded_Set) },
-        { "ColumnDisabledMods", new Config_DelegatePointerWrapper(&Config_ColumnDisabledMods_Set) },
-        { "ColumnComment", new Config_DelegatePointerWrapper(&Config_ColumnComment_Set) },
+        { "ColumnGame".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnGame_Set) },
+        { "ColumnInstalled".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnInstalled_Set) },
+        { "ColumnMissionCount".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnMisCount_Set) },
+        { "ColumnTitle".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnTitle_Set) },
+        { "ColumnArchive".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnArchive_Set) },
+        { "ColumnAuthor".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnAuthor_Set) },
+        { "ColumnSize".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnSize_Set) },
+        { "ColumnRating".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnRating_Set) },
+        { "ColumnFinished".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnFinished_Set) },
+        { "ColumnReleaseDate".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnReleaseDate_Set) },
+        { "ColumnLastPlayed".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnLastPlayed_Set) },
+        { "ColumnDateAdded".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnDateAdded_Set) },
+        { "ColumnDisabledMods".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnDisabledMods_Set) },
+        { "ColumnComment".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnComment_Set) },
 
         #endregion
 
-        { "MainWindowState", new Config_DelegatePointerWrapper(&Config_MainWindowState_Set) },
-        { "MainWindowSize", new Config_DelegatePointerWrapper(&Config_MainWindowSize_Set) },
-        { "MainWindowLocation", new Config_DelegatePointerWrapper(&Config_MainWindowLocation_Set) },
+        { "MainWindowState".AsMemory(), new Config_DelegatePointerWrapper(&Config_MainWindowState_Set) },
+        { "MainWindowSize".AsMemory(), new Config_DelegatePointerWrapper(&Config_MainWindowSize_Set) },
+        { "MainWindowLocation".AsMemory(), new Config_DelegatePointerWrapper(&Config_MainWindowLocation_Set) },
 
-        { "MainSplitterPercent", new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
-        { "TopSplitterPercent", new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
-        { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopRightPanelCollapsed_Set) },
-        { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
+        { "MainSplitterPercent".AsMemory(), new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
+        { "TopSplitterPercent".AsMemory(), new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
+        { "TopRightPanelCollapsed".AsMemory(), new Config_DelegatePointerWrapper(&Config_TopRightPanelCollapsed_Set) },
+        { "GameTab".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
 
         #region Top-right tabs
 
-        { "TopRightTab", new Config_DelegatePointerWrapper(&Config_TopRightTab_Set) },
+        { "TopRightTab".AsMemory(), new Config_DelegatePointerWrapper(&Config_TopRightTab_Set) },
 
-        { "StatsTabPosition", new Config_DelegatePointerWrapper(&Config_StatsTabPosition_Set) },
-        { "StatsTabVisible", new Config_DelegatePointerWrapper(&Config_StatsTabVisible_Set) },
+        { "StatsTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_StatsTabPosition_Set) },
+        { "StatsTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_StatsTabVisible_Set) },
 
-        { "EditFMTabPosition", new Config_DelegatePointerWrapper(&Config_EditFMTabPosition_Set) },
-        { "EditFMTabVisible", new Config_DelegatePointerWrapper(&Config_EditFMTabVisible_Set) },
+        { "EditFMTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_EditFMTabPosition_Set) },
+        { "EditFMTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_EditFMTabVisible_Set) },
 
-        { "CommentTabPosition", new Config_DelegatePointerWrapper(&Config_CommentTabPosition_Set) },
-        { "CommentTabVisible", new Config_DelegatePointerWrapper(&Config_CommentTabVisible_Set) },
+        { "CommentTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_CommentTabPosition_Set) },
+        { "CommentTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_CommentTabVisible_Set) },
 
-        { "TagsTabPosition", new Config_DelegatePointerWrapper(&Config_TagsTabPosition_Set) },
-        { "TagsTabVisible", new Config_DelegatePointerWrapper(&Config_TagsTabVisible_Set) },
+        { "TagsTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_TagsTabPosition_Set) },
+        { "TagsTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_TagsTabVisible_Set) },
 
-        { "PatchTabPosition", new Config_DelegatePointerWrapper(&Config_PatchTabPosition_Set) },
-        { "PatchTabVisible", new Config_DelegatePointerWrapper(&Config_PatchTabVisible_Set) },
+        { "PatchTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_PatchTabPosition_Set) },
+        { "PatchTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_PatchTabVisible_Set) },
 
-        { "ModsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
-        { "ModsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
+        { "ModsTabPosition".AsMemory(), new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
+        { "ModsTabVisible".AsMemory(), new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
 
         #endregion
 
-        { "ReadmeZoomFactor", new Config_DelegatePointerWrapper(&Config_ReadmeZoomFactor_Set) },
-        { "ReadmeUseFixedWidthFont", new Config_DelegatePointerWrapper(&Config_ReadmeUseFixedWidthFont_Set) },
-        { "EnableCharacterDetailFix", new Config_DelegatePointerWrapper(&Config_EnableCharacterDetailFix_Set) },
+        { "ReadmeZoomFactor".AsMemory(), new Config_DelegatePointerWrapper(&Config_ReadmeZoomFactor_Set) },
+        { "ReadmeUseFixedWidthFont".AsMemory(), new Config_DelegatePointerWrapper(&Config_ReadmeUseFixedWidthFont_Set) },
+        { "EnableCharacterDetailFix".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableCharacterDetailFix_Set) },
 
-        { "PlayOriginalSeparateButtons", new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
+        { "PlayOriginalSeparateButtons".AsMemory(), new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
 
-        { "AskedToScanForMisCounts", new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
+        { "AskedToScanForMisCounts".AsMemory(), new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
 
-        { "EnableFuzzySearch", new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
+        { "EnableFuzzySearch".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
 
         #region Backward compatibility
 
@@ -977,10 +977,10 @@ internal static partial class Ini
         Or else they'll be reading from an old config that won't have data for the new game(s) anyway.
         */
 
-        { "GameFilterVisibleT1", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
-        { "GameFilterVisibleT2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
-        { "GameFilterVisibleT3", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT3_Set) },
-        { "GameFilterVisibleSS2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) }
+        { "GameFilterVisibleT1".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
+        { "GameFilterVisibleT2".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
+        { "GameFilterVisibleT3".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT3_Set) },
+        { "GameFilterVisibleSS2".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) }
 
         #endregion
     };
@@ -1017,14 +1017,15 @@ internal static partial class Ini
 
         for (int li = 0; li < iniLines.Count; li++)
         {
-            ReadOnlySpan<char> lineTS = iniLines[li].AsSpan().TrimStart();
+            ReadOnlyMemory<char> lineTS = iniLines[li].AsMemory().TrimStart();
+            var lineTSInitialSpan = lineTS.Span;
 
-            if (lineTS.Length == 0 || lineTS[0] == ';') continue;
+            if (lineTSInitialSpan.Length == 0 || lineTSInitialSpan[0] == ';') continue;
 
-            int eqIndex = lineTS.IndexOf('=');
+            int eqIndex = lineTSInitialSpan.IndexOf('=');
             if (eqIndex > -1)
             {
-                ReadOnlySpan<char> valRaw = lineTS[(eqIndex + 1)..];
+                ReadOnlySpan<char> valRaw = lineTSInitialSpan[(eqIndex + 1)..];
                 ReadOnlySpan<char> valTrimmed = valRaw.Trim();
 
                 // @GENGAMES (ConfigIni prefix detector) - Begin
@@ -1039,47 +1040,51 @@ internal static partial class Ini
 
                 if (eqIndex >= 2)
                 {
-                    if (lineTS[0] == 'T')
+                    if (lineTSInitialSpan[0] == 'T')
                     {
-                        switch (lineTS[1])
+                        switch (lineTSInitialSpan[1])
                         {
                             case '1':
                                 gameIndex = GameIndex.Thief1;
                                 ignoreGameIndex = false;
                                 lineTS = lineTS[2..];
+                                eqIndex -= 2;
                                 break;
                             case '2':
                                 gameIndex = GameIndex.Thief2;
                                 ignoreGameIndex = false;
                                 lineTS = lineTS[2..];
+                                eqIndex -= 2;
                                 break;
                             case '3':
                                 gameIndex = GameIndex.Thief3;
                                 ignoreGameIndex = false;
                                 lineTS = lineTS[2..];
+                                eqIndex -= 2;
                                 break;
                             case 'D':
-                                if (eqIndex >= 3 && lineTS[2] == 'M')
+                                if (eqIndex >= 3 && lineTSInitialSpan[2] == 'M')
                                 {
                                     gameIndex = GameIndex.TDM;
                                     ignoreGameIndex = false;
                                     lineTS = lineTS[3..];
+                                    eqIndex -= 3;
                                 }
                                 break;
                         }
                     }
-                    else if (eqIndex >= 3 && lineTS[0] == 'S' && lineTS[1] == 'S' && lineTS[2] == '2')
+                    else if (eqIndex >= 3 && lineTSInitialSpan[0] == 'S' && lineTSInitialSpan[1] == 'S' && lineTSInitialSpan[2] == '2')
                     {
                         gameIndex = GameIndex.SS2;
                         ignoreGameIndex = false;
                         lineTS = lineTS[3..];
+                        eqIndex -= 3;
                     }
                 }
 
                 // @GENGAMES (ConfigIni prefix detector) - End
 
-                // @NET5: Fix this allocation later
-                if (configDict.TryGetValue(lineTS.ToString(), out var result))
+                if (configDict.TryGetValue(lineTS[..eqIndex], out var result))
                 {
                     result.Action(config, valTrimmed, valRaw, gameIndex, ignoreGameIndex);
                 }

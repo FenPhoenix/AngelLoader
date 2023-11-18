@@ -178,6 +178,7 @@ internal static partial class Ini
         }
     }
 
+    // @NET5: Remove the need for this comparer too
     private sealed class KeyComparer : IEqualityComparer<string>
     {
         public bool Equals(string x, string y)
@@ -239,6 +240,13 @@ internal static partial class Ini
                 return (int)(hash1 + (hash2 * 1566083941));
             }
         }
+    }
+
+    private sealed class MemoryStringComparer : IEqualityComparer<ReadOnlyMemory<char>>
+    {
+        public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y) => x.Span.Equals(y.Span, StringComparison.Ordinal);
+
+        public int GetHashCode(ReadOnlyMemory<char> obj) => string.GetHashCode(obj.Span);
     }
 
     internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
