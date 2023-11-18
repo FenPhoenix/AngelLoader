@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FMDATA_MINIMALMEM
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -249,11 +251,57 @@ internal static partial class Ini
         public int GetHashCode(ReadOnlyMemory<char> obj) => string.GetHashCode(obj.Span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AddFMIfNotNull(FanMission? fm)
+    {
+        if (fm != null)
+        {
+            List<FanMission> list = fm.Game == Game.TDM ? FMDataIniListTDM : FMDataIniList;
+            list.Add(fm);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe void PopulateFMFieldFromLine(FanMission fm, string line)
+    {
+        string lineTS = line.TrimStart();
+        int eqIndex = lineTS.IndexOf('=');
+        if (eqIndex > -1 && lineTS[0] != ';')
+        {
+            if (_actionDict_FMData.TryGetValue(lineTS, out var result))
+            {
+                // If the value is an arbitrary string or other unknowable type, then we need to split
+                // the string so the value part can go in the FM field. But if the value is a knowable
+                // type, then we don't need to split the string, we can just parse the value section.
+                // This slashes our allocation count WAY down.
+                result.Action(fm, lineTS, eqIndex);
+            }
+        }
+    }
+
     internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
         fmsListTDM.Clear();
 
+#if FMDATA_MINIMALMEM
+        using var sw = File.OpenText(fileName);
+        FanMission? fm = null;
+        while (sw.ReadLine() is { } line)
+        {
+            string lineT = line.Trim();
+            if (lineT == "[FM]")
+            {
+                AddFMIfNotNull(fm);
+                fm = new FanMission();
+            }
+            else if (fm != null)
+            {
+                PopulateFMFieldFromLine(fm, line);
+            }
+        }
+        AddFMIfNotNull(fm);
+#else
         var lines = File_ReadAllLines_List(fileName);
 
         int linesLength = lines.Count;
@@ -284,10 +332,10 @@ internal static partial class Ini
                     }
                     i++;
                 }
-                List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
-                list.Add(fm);
+                AddFMIfNotNull(fm);
             }
         }
+#endif
     }
 
     internal static void WriteConfigIni()
