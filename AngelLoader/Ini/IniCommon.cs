@@ -524,23 +524,21 @@ internal static partial class Ini
     // We don't write out whitespace between them anyway.
     private static void SetFMLanguages(FanMission fm, ReadOnlySpan<char> langsSpan)
     {
-        // @NET5: Get rid of this allocation
-        var langsString = langsSpan.ToString();
         // It's always supposed to be ascii lowercase, so only take the allocation if it's not
-        if (!langsString.IsAsciiLower(0))
+        if (!langsSpan.IsAsciiLower())
         {
-            langsString = langsString.ToLowerInvariant();
+            langsSpan = langsSpan.ToString().ToLowerInvariant().AsSpan();
         }
 
         fm.Langs = Language.Default;
 
-        int len = langsString.Length;
+        int len = langsSpan.Length;
 
         int curStart = 0;
 
         for (int i = 0; i < len; i++)
         {
-            char c = langsString[i];
+            char c = langsSpan[i];
 
             if (c == ',' || i == len - 1)
             {
@@ -548,7 +546,7 @@ internal static partial class Ini
 
                 if (end == len - 1) end++;
 
-                if (end - curStart > 0 && Langs_TryGetValue(langsString, curStart, end, out Language result))
+                if (end - curStart > 0 && Langs_TryGetValue(langsSpan, curStart, end, out Language result))
                 {
                     fm.Langs |= result;
                 }

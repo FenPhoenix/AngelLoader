@@ -97,9 +97,9 @@ public static partial class Common
         return true;
     }
 
-    public static bool IsAsciiLower(this string str, int start)
+    public static bool IsAsciiLower(this ReadOnlySpan<char> str)
     {
-        for (int i = start; i < str.Length; i++)
+        for (int i = 0; i < str.Length; i++)
         {
             char c = str[i];
             if (c > 127 || IsAsciiUpper(c)) return false;

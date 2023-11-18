@@ -364,8 +364,7 @@ internal static class FMData
             {
                 if (field.IsEnumAndSingleAssignment)
                 {
-                    w.WL("// @NET5: Get rid of this allocation");
-                    w.WL("if (Langs_TryGetValue(" + val + ".ToString(), 0, " + val + ".Length, out var result))");
+                    w.WL("if (Langs_TryGetValue(" + val + ", 0, " + val + ".Length, out var result))");
                     w.WL("{");
                     w.WL(objDotField + " = result;");
                     w.WL("}");

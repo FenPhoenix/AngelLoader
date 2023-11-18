@@ -236,8 +236,7 @@ internal static partial class Ini
     private static void FMData_SelectedLang_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        // @NET5: Get rid of this allocation
-        if (Langs_TryGetValue(val.ToString(), 0, val.Length, out var result))
+        if (Langs_TryGetValue(val, 0, val.Length, out var result))
         {
             fm.SelectedLang = result;
         }

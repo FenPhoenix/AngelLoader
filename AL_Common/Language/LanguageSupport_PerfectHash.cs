@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace AL_Common;
 
@@ -84,14 +85,7 @@ public static partial class LanguageSupport
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Hash(string str, int start, int len)
-    {
-        uint hval = (uint)len;
-        return hval + asso_values[str[start]];
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool SeqEqual(string seq1, int seq1Start, int seq1Length, string seq2)
+    private static bool SeqEqual(ReadOnlySpan<char> seq1, int seq1Start, int seq1Length, string seq2)
     {
         if (seq1Length != seq2.Length) return false;
 
@@ -102,12 +96,13 @@ public static partial class LanguageSupport
         return true;
     }
 
-    public static bool Langs_TryGetValue(string str, int start, int end, out Language result)
+    public static bool Langs_TryGetValue(ReadOnlySpan<char> str, int start, int end, out Language result)
     {
         int len = end - start;
         if (len is <= MAX_WORD_LENGTH and >= MIN_WORD_LENGTH)
         {
-            uint key = Hash(str, start, len);
+            uint hval = (uint)len;
+            uint key = hval + asso_values[str[start]];
 
             if (key <= MAX_HASH_VALUE)
             {
