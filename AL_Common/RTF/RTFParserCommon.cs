@@ -863,7 +863,7 @@ public static partial class RTFParserCommon
         public void Clear()
         {
             Top = null;
-            _dict?.Clear();
+            _dict?.Reset();
             _array.Clear();
             _fontEntryPoolVirtualCount = _fontEntryPool.Count;
         }

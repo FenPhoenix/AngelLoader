@@ -406,16 +406,6 @@ public static partial class Common
     public static void ClearAndAdd_Large<T>(this List<T> list, T[] items)
     {
         list.Clear();
-        /*
-        @MEM(List.AddRange): This thing allocates a new array every time! WTF?!
-
-        T[] array = new T[count];
-        objs.CopyTo(array, 0);
-        array.CopyTo((Array) this._items, index);
-
-        @NET5(List.AddRange): They fixed this in .NET 7 at least.
-        c.CopyTo(_items, index);
-        */
         list.AddRange(items);
     }
 

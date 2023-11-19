@@ -76,5 +76,17 @@ public static partial class Common
 #endif
     }
 
+    /// <summary>
+    /// Clears the dictionary and sets its internal storage to zero-length.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="dictionary"></param>
+    public static void Reset<TKey, TValue>(this Dictionary<TKey, TValue> dictionary) where TKey : notnull
+    {
+        dictionary.Clear();
+        dictionary.TrimExcess();
+    }
+
     #endregion
 }
