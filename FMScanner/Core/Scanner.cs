@@ -12,13 +12,13 @@ Implemented ReadOnlyMemory/ReadOnlySpan for readmes in a branch, but didn't get 
 We save 40MB in string allocs, but then we get 12MB of ReadOnlyMemory allocs.
 
 Before:
-Type            Allocations   Bytes          Average Size (Bytes)
-System.String   | 2,008,301   | 170,450,930  | 84.87
+Type                   Allocations   Bytes          Average Size (Bytes)
+string                 | 2,008,301   | 170,450,930  | 84.87
 
 After:
-Type            Allocations   Bytes          Average Size (Bytes)
-System.String   | 1,792,302   |  40,483,233  | 78.38
-System.ReadOnlyMemory<System.Char>[] | 15,174      | 11,709,920  | 771.71
+Type                   Allocations   Bytes          Average Size (Bytes)
+string                 | 1,792,302   | 140,483,233  | 78.38
+ReadOnlyMemory<char>[] | 15,174      | 11,709,920   | 771.71
 
 How is a ReadOnlyMemory 771 bytes anyway?!
 
