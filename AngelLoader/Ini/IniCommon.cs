@@ -217,15 +217,16 @@ internal static partial class Ini
         }
     }
 
-    internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
+    internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
         fmsListTDM.Clear();
 
 #if FMDATA_MINIMALMEM
-        using var sw = File.OpenText(fileName);
+        using var sr = File_OpenTextFast(fileName);
+
         FanMission? fm = null;
-        while (sw.ReadLine() is { } line)
+        while (sr.Reader.ReadLine() is { } line)
         {
             string lineT = line.Trim();
             if (lineT == "[FM]")

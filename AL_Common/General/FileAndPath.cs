@@ -47,6 +47,11 @@ public static partial class Common
         return ret;
     }
 
+    public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)
+    {
+        return new StreamReaderCustom.SRC_Wrapper(File.OpenRead(path), new StreamReaderCustom());
+    }
+
     #endregion
 
     #region Path-specific string queries (separator-agnostic)
