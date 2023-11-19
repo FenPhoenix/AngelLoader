@@ -7,8 +7,29 @@ We could just get the full text and then allocate an array of int pairs for star
 then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
 be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
 
+2023-11-19:
+Implemented ReadOnlyMemory/ReadOnlySpan for readmes in a branch, but didn't get any perf improvement.
+We save 40MB in string allocs, but then we get 12MB of ReadOnlyMemory allocs.
+
+Before:
+Type            Allocations   Bytes          Average Size (Bytes)
+System.String   | 2,008,301   | 170,450,930  | 84.87
+
+After:
+Type            Allocations   Bytes          Average Size (Bytes)
+System.String   | 1,792,302   |  40,483,233  | 78.38
+System.ReadOnlyMemory<System.Char>[] | 15,174      | 11,709,920  | 771.71
+
+How is a ReadOnlyMemory 771 bytes anyway?!
+
+We were caching ReadOnlyMemory objects in the readme lines list, for two reasons. First, so we didn't have to
+search the text for linebreaks constantly every time through (which is a lot), and second, because we need to
+be able to get the positions in the underlying string for Regex.Match(), and only Memory/ReadOnlyMemory can
+provide that, spans can't. So meh. We're more likely to gain perf by getting rid of the zip filename strings,
+as those are the large majority of the string allocs. But we're already pretty blazing fast and it's getting
+hard to get much of a gain even from alloc reductions. Meh.
+
 @RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
-@RAR: We'll have to test the whole collection for identicality and functionality as rar files. Find or make some batch converter.
 */
 
 //#define ScanSynchronous
