@@ -556,7 +556,7 @@ internal static partial class Ini
         }
     }
 
-    private static bool SegmentEquals(this string first, int start, int end, string second)
+    private static bool SegmentEquals(this ReadOnlySpan<char> first, int start, int end, string second)
     {
         for (; start < end; start++)
         {
@@ -592,16 +592,13 @@ internal static partial class Ini
 
         int len = fieldsSpan.Length;
 
-        // @NET5: Get rid of this allocation
-        string fieldsString = fieldsSpan.ToString();
-
         for (int i = 0; i < len; i++)
         {
-            char c = fieldsString[i];
+            char c = fieldsSpan[i];
 
             if (c == ',' || i == len - 1)
             {
-                if (curStart == 0 && fieldsString.SegmentEquals(curStart, i, nameof(CustomResources.None)))
+                if (curStart == 0 && fieldsSpan.SegmentEquals(curStart, i, nameof(CustomResources.None)))
                 {
                     return;
                 }
@@ -611,7 +608,7 @@ internal static partial class Ini
                     for (int crI = 1; crI < CustomResourcesCount; crI++, at <<= 1)
                     {
                         CustomResources cr = (CustomResources)at;
-                        if (fieldsString.SegmentEquals(curStart, i, CustomResourcesNames[crI]))
+                        if (fieldsSpan.SegmentEquals(curStart, i, CustomResourcesNames[crI]))
                         {
                             fm.SetResource(cr, true);
                             break;
