@@ -3831,10 +3831,9 @@ public sealed partial class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    // @NET5: These three are our sole blockers to a 99.5% readme-line-allocation-free scanner.
-                    // We should be able to rewrite these without regex replace, by just skipping past all
-                    // occurrences of the pattern and then the last one is our index. Should match the current
-                    // behavior.
+                    // @NET5: These are fine because they only run on detected release date lines.
+                    // Turns out we can't actually remove them anyway, they need to be deduplicated for the
+                    // string to date converter, it looks like. Probably. Anyway whatever, it's fine.
                     lineStartTrimmed = MultipleColonsRegex().Replace(lineStartTrimmed, ":");
                     lineStartTrimmed = MultipleDashesRegex().Replace(lineStartTrimmed, "-");
                     lineStartTrimmed = MultipleUnicodeDashesRegex().Replace(lineStartTrimmed, "\u2013");
