@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using SpanExtensions;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
@@ -697,31 +698,28 @@ internal static partial class Ini
 
     private static void AddColumn(ConfigData config, ReadOnlySpan<char> valTrimmed, Column columnType)
     {
-        // @NET5: Fix this allocation later
-        string valTrimmedStr = valTrimmed.ToString();
-        string value = valTrimmedStr.Trim(CA_Comma);
-        string[] cProps;
-        if (value.Contains(',') &&
-            (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
+        valTrimmed = valTrimmed.Trim(CA_Comma);
+
+        ColumnData col = new() { Id = columnType };
+
+        int i = 0;
+        foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.Split(valTrimmed, ','))
         {
-            var col = new ColumnData { Id = columnType };
-            for (int i = 0; i < cProps.Length; i++)
+            switch (i)
             {
-                switch (i)
-                {
-                    case 0 when Int_TryParseInv(cProps[i], out int di):
-                        col.DisplayIndex = di;
-                        break;
-                    case 1 when Int_TryParseInv(cProps[i], out int width):
-                        col.Width = width;
-                        break;
-                    case 2:
-                        col.Visible = cProps[i].EqualsTrue();
-                        break;
-                }
+                case 0 when Int_TryParseInv(part, out int di):
+                    col.DisplayIndex = di;
+                    break;
+                case 1 when Int_TryParseInv(part, out int width):
+                    col.Width = width;
+                    break;
+                case 2:
+                    col.Visible = part.EqualsTrue();
+                    break;
             }
-            config.Columns[(int)col.Id] = col;
+            i++;
         }
+        config.Columns[(int)col.Id] = col;
     }
 
     private static void ReadFilterTags(ReadOnlySpan<char> tagsToAdd, FMCategoriesCollection existingTags)
