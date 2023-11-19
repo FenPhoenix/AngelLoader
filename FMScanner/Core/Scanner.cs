@@ -334,9 +334,7 @@ public sealed partial class Scanner : IDisposable
         ScanOptions fullScanOptions,
         ScannerTDMContext tdmContext)
     {
-#if !NETFRAMEWORK
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         _fullScanOptions = fullScanOptions;
 

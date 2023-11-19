@@ -97,9 +97,7 @@ public sealed class ZipArchiveFast : IDisposable
     {
         ArgumentNullException.ThrowIfNull(stream);
 
-#if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
 
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
