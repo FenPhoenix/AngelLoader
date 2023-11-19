@@ -1463,18 +1463,17 @@ internal static class FMInstallAndPlay
 
         try
         {
-            (bool success, List<string> archivePaths) = await Task.Run(() =>
-            {
-                Core.View.ShowProgressBox_Single(
-                    message1: LText.ProgressBox.PreparingToInstall,
-                    progressType: ProgressType.Indeterminate,
-                    cancelAction: CancelInstallToken
-                );
+            _installCts = _installCts.Recreate();
 
-                _installCts = _installCts.Recreate();
+            Core.View.ShowProgressBox_Single(
+                message1: LText.ProgressBox.PreparingToInstall,
+                progressType: ProgressType.Indeterminate,
+                cancelAction: CancelInstallToken
+            );
 
-                return DoPreChecks(fms, fmDataList, install: true);
-            });
+            (bool success, List<string> archivePaths) =
+                await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
+
             if (!success) return false;
 
             Core.View.SetProgressBoxState(
