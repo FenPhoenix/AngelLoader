@@ -344,13 +344,13 @@ public sealed partial class RtfDisplayedReadmeParser
                         if (indexPastHue < entry.Length)
                         {
                             char firstDigit = entry[indexPastHue];
-                            if (firstDigit.IsAsciiNumeric())
+                            if (char.IsAsciiDigit(firstDigit))
                             {
                                 int colorValue = firstDigit - '0';
                                 for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
                                 {
                                     char c = entry[colorI];
-                                    if (!c.IsAsciiNumeric()) break;
+                                    if (!char.IsAsciiDigit(c)) break;
                                     // Color value too long, must be 1-3 digits
                                     if (colorI >= indexPastHue + 3)
                                     {

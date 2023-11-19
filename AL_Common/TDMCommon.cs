@@ -58,7 +58,7 @@ public static partial class Common
     private static bool IsValidTDMInternalNameChar(char c)
     {
         return
-            c.IsAsciiAlpha() || c.IsAsciiNumeric() ||
+            char.IsAsciiLetter(c) || char.IsAsciiDigit(c) ||
             // "Western European high-ascii chars" (0xC0 to 0xFF in Win1252 / ISO 8859-1 - both encodings are the
             // same in that char range)
             (c >= 0xC0 && c <= 0xFF);
@@ -69,7 +69,7 @@ public static partial class Common
         for (int i = 0; i < value.Length; i++)
         {
             char c = value[i];
-            if ((!c.IsAsciiAlpha() && !c.IsAsciiNumeric() && !(c >= 0xC0 && c <= 0xFF) && c != '_') || char.IsUpper(c))
+            if ((!char.IsAsciiLetter(c) && !char.IsAsciiDigit(c) && !(c >= 0xC0 && c <= 0xFF) && c != '_') || char.IsUpper(c))
             {
                 return false;
             }

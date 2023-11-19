@@ -821,7 +821,7 @@ public sealed partial class Scanner
             for (int i = xIndex1 + 1; i < xEnd; i++)
             {
                 char c = x[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     xNum *= 10;
                     xNum += c - '0';
@@ -840,7 +840,7 @@ public sealed partial class Scanner
             for (int i = yIndex1 + 1; i < yEnd; i++)
             {
                 char c = y[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     yNum *= 10;
                     yNum += c - '0';

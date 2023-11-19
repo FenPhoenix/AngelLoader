@@ -60,7 +60,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         char[] keyword = _ctx.Keyword;
 
-        if (!ch.IsAsciiAlpha())
+        if (!char.IsAsciiLetter(ch))
         {
             /* From the spec:
              "A control symbol consists of a backslash followed by a single, non-alphabetical character.
@@ -75,7 +75,7 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             int keywordCount;
             for (keywordCount = 0;
-                 keywordCount < KeywordMaxLen && ch.IsAsciiAlpha();
+                 keywordCount < KeywordMaxLen && char.IsAsciiLetter(ch);
                  keywordCount++, ch = (char)_rtfBytes[CurrentPos++])
             {
                 keyword[keywordCount] = ch;
@@ -87,13 +87,13 @@ public sealed partial class RtfDisplayedReadmeParser
                 negateParam = 1;
                 ch = (char)_rtfBytes[CurrentPos++];
             }
-            if (ch.IsAsciiNumeric())
+            if (char.IsAsciiDigit(ch))
             {
                 hasParam = true;
 
                 // Parse param in real-time to avoid doing a second loop over
                 for (int i = 0;
-                     i < ParamMaxLen && ch.IsAsciiNumeric();
+                     i < ParamMaxLen && char.IsAsciiDigit(ch);
                      i++, ch = (char)_rtfBytes[CurrentPos++])
                 {
                     param = (param * 10) + (ch - '0');

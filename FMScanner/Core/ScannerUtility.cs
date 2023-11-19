@@ -332,11 +332,11 @@ internal static class Utility
                 }
             }
 
-            if (sc.IsAsciiUpper() && vc.IsAsciiLower())
+            if (char.IsAsciiLetterUpper(sc) && char.IsAsciiLetterLower(vc))
             {
                 if (caseComparison == CaseComparison.GivenOrLower || sc != vc - 32) return false;
             }
-            else if (vc.IsAsciiUpper() && sc.IsAsciiLower())
+            else if (char.IsAsciiLetterUpper(vc) && char.IsAsciiLetterLower(sc))
             {
                 if (caseComparison == CaseComparison.GivenOrUpper || sc != vc + 32) return false;
             }
@@ -493,7 +493,7 @@ internal static class Utility
                 AddRomanConvertedChar(romanNumeralRun, acronymChars, romanNumeralToDecimalTable);
                 titleIndex = romanNumeralIndex - 1;
             }
-            else if (c.IsAsciiNumeric() || c.IsAsciiUpper())
+            else if (char.IsAsciiDigit(c) || char.IsAsciiLetterUpper(c))
             {
                 acronymChars.Add(c);
             }
@@ -532,7 +532,7 @@ internal static class Utility
         for (int i = 0; i < length; i++)
         {
             char c = value[i];
-            if (c.IsAsciiUpper())
+            if (char.IsAsciiLetterUpper(c))
             {
                 if (upperCaseIndex == -1)
                 {
@@ -730,7 +730,7 @@ internal static class Utility
                     }
                 }
                 // HTML Unicode named character references
-                else if (i < glml.Length - 3 && glml[i + 1].IsAsciiAlpha())
+                else if (i < glml.Length - 3 && char.IsAsciiLetter(glml[i + 1]))
                 {
                     for (int j = i + 1; i < glml.Length; j++)
                     {
@@ -759,7 +759,7 @@ internal static class Utility
                             break;
                         }
                         // Support named references with numbers somewhere after their first char ("blk34" for instance)
-                        else if (!glml[j].IsAsciiAlphanumeric())
+                        else if (!char.IsAsciiLetterOrDigit(glml[j]))
                         {
                             sb.Append('&').Append(subSB).Append(glml[j]);
                             i = j;

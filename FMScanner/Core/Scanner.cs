@@ -2419,7 +2419,7 @@ public sealed partial class Scanner : IDisposable
         isAmbiguous = true;
         foreach (char c in dateString)
         {
-            if (c.IsAsciiAlpha())
+            if (char.IsAsciiLetter(c))
             {
                 isAmbiguous = false;
                 break;
@@ -4294,7 +4294,7 @@ public sealed partial class Scanner : IDisposable
             for (int i = 0; i < value.Length; i++)
             {
                 // TODO: Only ASCII letters, so it won't catch lowercase other stuff
-                if (value[i].IsAsciiLower())
+                if (char.IsAsciiLetterLower(value[i]))
                 {
                     titleContainsLowerCaseAsciiChars = true;
                     break;
@@ -4393,8 +4393,8 @@ public sealed partial class Scanner : IDisposable
             {
                 DetectedTitle altTitle = titles[i];
                 if (altTitle.Value.ContainsWhiteSpace() &&
-                    !(altTitle.Value.Length >= 2 && altTitle.Value[^1].IsAsciiUpper() &&
-                      !altTitle.Value[^2].IsAsciiAlphanumeric()))
+                    !(altTitle.Value.Length >= 2 && char.IsAsciiLetterUpper(altTitle.Value[^1]) &&
+                      !char.IsAsciiLetterOrDigit(altTitle.Value[^2])))
                 {
                     swapDone = SwapMainTitleWithTitleAtIndex(titles, i);
                     break;
@@ -4784,7 +4784,7 @@ public sealed partial class Scanner : IDisposable
             if (fnNoExt.EqualsI("rus") ||
                 fnNoExt.EndsWithI("_ru") ||
                 fnNoExt.EndsWithI("_rus") ||
-                (fnNoExt.Length >= 4 && fnNoExt.EndsWithI("RUS") && fnNoExt[^4].IsAsciiLower()) ||
+                (fnNoExt.Length >= 4 && fnNoExt.EndsWithI("RUS") && char.IsAsciiLetterLower(fnNoExt[^4])) ||
                 fn.ContainsI("RusPack") || fn.ContainsI("RusText"))
             {
                 langs |= Language.Russian;

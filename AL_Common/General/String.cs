@@ -43,47 +43,30 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
-    // @NET5: There are some built-in versions of some of these now.
     #region ASCII-specific
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool BothAreAscii(char char1, char char2) => (char1 | char2) < 128;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiUpper(this char c) => (uint)(c - 'A') <= 'Z' - 'A';
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
-        (char1.IsAsciiAlpha() && char2.IsAsciiAlpha() && (char1 & '_') == (char2 & '_'));
+        (char.IsAsciiLetter(char1) && char.IsAsciiLetter(char2) && (char1 & '_') == (char2 & '_'));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlpha(this char c) => (((uint)c - 'A') & ~0x20) < 26;
+    public static bool IsAsciiAlpha(this byte b) => char.IsAsciiLetter((char)b);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlpha(this byte b) => (((uint)b - 'A') & ~0x20) < 26;
+    public static bool IsAsciiNumeric(this byte b) => char.IsAsciiDigit((char)b);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiNumeric(this byte c) => (uint)(c - '0') <= '9' - '0';
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlphanumeric(this char c) => IsAsciiAlpha(c) || IsAsciiNumeric(c);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiHex(this byte b) =>
-        b.IsAsciiNumeric() || ((((uint)b - 'A') & ~0x20) < 6);
+    public static bool IsAsciiHex(this byte b) => char.IsAsciiHexDigit((char)b);
 
     public static bool IsAsciiAlphaUpper(this string str)
     {
         for (int i = 0; i < str.Length; i++)
         {
-            if (!str[i].IsAsciiUpper()) return false;
+            if (!char.IsAsciiLetterUpper(str[i])) return false;
         }
         return true;
     }
@@ -93,7 +76,7 @@ public static partial class Common
         for (int i = 0; i < str.Length; i++)
         {
             char c = str[i];
-            if (c > 127 || IsAsciiUpper(c)) return false;
+            if (c > 127 || char.IsAsciiLetterUpper(c)) return false;
         }
         return true;
     }
@@ -103,7 +86,7 @@ public static partial class Common
         for (int i = 0; i < str.Length; i++)
         {
             char c = str[i];
-            if (c > 127 || IsAsciiUpper(c)) return false;
+            if (c > 127 || char.IsAsciiLetterUpper(c)) return false;
         }
         return true;
     }

@@ -384,7 +384,7 @@ internal static partial class Ini
             for (int i = indexPastSeparator; i < end; i++)
             {
                 char c = str[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     checked
                     {
@@ -430,7 +430,7 @@ internal static partial class Ini
             for (int i = indexPastSeparator; i < end; i++)
             {
                 char c = str[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     checked
                     {
@@ -476,7 +476,7 @@ internal static partial class Ini
             for (int i = indexPastSeparator; i < end; i++)
             {
                 char c = str[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     checked
                     {

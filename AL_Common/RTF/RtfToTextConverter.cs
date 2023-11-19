@@ -1460,13 +1460,13 @@ public sealed partial class RtfToTextConverter
                         negateParam = 1;
                         ch = (char)_rtfBytes[CurrentPos++];
                     }
-                    if (ch.IsAsciiNumeric())
+                    if (char.IsAsciiDigit(ch))
                     {
                         int param = 0;
 
                         // Parse param in real-time to avoid doing a second loop over
                         for (int i = 0;
-                             i < ParamMaxLen && ch.IsAsciiNumeric();
+                             i < ParamMaxLen && char.IsAsciiDigit(ch);
                              i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
                             param = (param * 10) + (ch - '0');
@@ -1695,7 +1695,7 @@ public sealed partial class RtfToTextConverter
         bool alphaCharsFound = false;
         bool alphaFound;
         for (i = 0;
-             i < _fldinstSymbolNumberMaxLen && ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
+             i < _fldinstSymbolNumberMaxLen && ((alphaFound = char.IsAsciiLetter(ch)) || char.IsAsciiDigit(ch));
              i++, ch = (char)_rtfBytes[CurrentPos++])
         {
             if (alphaFound) alphaCharsFound = true;
@@ -1882,7 +1882,7 @@ public sealed partial class RtfToTextConverter
                 if (ch != ' ') return RewindAndSkipGroup();
 
                 int numDigitCount = 0;
-                while ((ch = (char)_rtfBytes[CurrentPos++]).IsAsciiNumeric())
+                while (char.IsAsciiDigit(ch = (char)_rtfBytes[CurrentPos++]))
                 {
                     if (numDigitCount > _fldinstSymbolNumberMaxLen) goto breakout;
                     numDigitCount++;
