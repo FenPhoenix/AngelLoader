@@ -653,7 +653,6 @@ public sealed partial class Scanner
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
     private static partial Regex AuthorMissionCopyrightRegex3();
 
-    // @NET5: Generate these regexes
     private readonly Regex[] AuthorMissionCopyrightRegexes =
     {
         AuthorMissionCopyrightRegex1(),
