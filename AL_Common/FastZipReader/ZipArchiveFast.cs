@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using AL_Common.FastZipReader.Deflate64Managed;
+using AL_Common.FastZipReader.DeflateManaged;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
@@ -159,7 +159,7 @@ public sealed class ZipArchiveFast : IDisposable
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
-                uncompressedStream = new Deflate64ManagedStream(compressedStreamToRead);
+                uncompressedStream = new DeflateManagedStream(compressedStreamToRead, entry.Length);
                 break;
             case CompressionMethodValues.Stored:
             default:

@@ -16,12 +16,10 @@ public static class SR
 {
     // Not localizable cause who the hell cares
     public static readonly string GenericInvalidData = "Found invalid data while decoding.";
-    public static readonly string InvalidArgumentOffsetCount = "Offset plus count is larger than the length of target array.";
     public static readonly string InvalidBlockLength = "Block length does not match with its complement.";
     public static readonly string InvalidHuffmanData = "Failed to construct a huffman tree using the length array. The stream might be corrupted.";
     public static readonly string NotSupported = "This operation is not supported.";
     public static readonly string NotSupported_UnreadableStream = "Stream does not support reading.";
-    public static readonly string ObjectDisposed_StreamClosed = "Cannot access a closed stream.";
     public static readonly string UnknownBlockType = "Unknown block type. Stream might be corrupted.";
     public static readonly string UnknownState = "Decoder is in some unknown state. This might be caused by corrupted data.";
     public static readonly string CDCorrupt = "Central Directory corrupt.";
@@ -46,6 +44,8 @@ public static class SR
     public static readonly string WritingNotSupported = "This stream from ZipArchiveEntry does not support writing.";
     public static readonly string Zip64EOCDNotWhereExpected = "Zip 64 End of Central Directory Record not where indicated.";
     public static readonly string EOF_ReadBeyondEOF = "Unable to read beyond the end of the stream.";
+    public static readonly string CannotWriteToDeflateStream = "Writing to the compression stream is not supported.";
+    public static readonly string InvalidBeginCall = "Only one asynchronous reader or writer is allowed time at one time.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
 #endif
