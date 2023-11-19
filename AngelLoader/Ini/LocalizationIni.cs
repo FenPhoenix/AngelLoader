@@ -14,18 +14,18 @@ internal static partial class Ini
         const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
         FieldInfo[] sectionFields = typeof(LText_Class).GetFields(_bfLText);
-        var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, StringComparer.Ordinal);
+        var sections = new Dictionary<ReadOnlyMemory<char>, Dictionary<ReadOnlyMemory<char>, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, new MemoryStringComparer());
         for (int i = 0; i < sectionFields.Length; i++)
         {
             FieldInfo f = sectionFields[i];
 
             FieldInfo[] fields = f.FieldType.GetFields(_bfLText);
-            var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
+            var dict = new Dictionary<ReadOnlyMemory<char>, (FieldInfo, object)>(fields.Length, new MemoryStringComparer());
             foreach (FieldInfo field in fields)
             {
-                dict[field.Name] = (field, f.GetValue(lText)!);
+                dict[field.Name.AsMemory()] = (field, f.GetValue(lText)!);
             }
-            sections["[" + f.Name + "]"] = dict;
+            sections[("[" + f.Name + "]").AsMemory()] = dict;
         }
 
         #endregion
@@ -34,8 +34,8 @@ internal static partial class Ini
         int linesLength = lines.Count;
         for (int i = 0; i < linesLength; i++)
         {
-            string lineT = lines[i].Trim();
-            if (lineT.Length > 0 && lineT[0] == '[' && sections.TryGetValue(lineT, out var fields))
+            var lineT = lines[i].AsMemory();
+            if (lineT.Length > 0 && lineT.Span[0] == '[' && sections.TryGetValue(lineT, out var fields))
             {
                 while (i < linesLength - 1)
                 {
@@ -43,7 +43,7 @@ internal static partial class Ini
                     int eqIndex = lt.IndexOf('=');
                     if (eqIndex > -1)
                     {
-                        if (fields.TryGetValue(lt, out var value))
+                        if (fields.TryGetValue(lt.AsMemory()[..eqIndex], out var value))
                         {
                             value.FieldInfo.SetValue(value.Obj, lt.Substring(eqIndex + 1));
                         }
