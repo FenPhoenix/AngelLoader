@@ -753,9 +753,7 @@ internal static partial class Ini
 
     private static void ReadFinishedStates(Filter filter, ReadOnlySpan<char> val)
     {
-        // @NET5: Fix this allocation later
-        string valStr = val.ToString();
-        foreach (string finishedState in valStr.Split(CA_Comma))
+        foreach (ReadOnlySpan<char> finishedState in ReadOnlySpanExtensions.Split(val, ','))
         {
             switch (finishedState.Trim())
             {
