@@ -6,6 +6,8 @@ using static AL_Common.Common;
 
 namespace AngelLoader.DataClasses;
 
+// @NET5/@MEM: We could do the "frugal object" pattern (https://prodotnetmemory.com/slides/PerformancePatternsLong/#79)
+// There's often zero or one tag in here, so it would reduce memory usage.
 public sealed class FMTagsCollection : IEnumerable<string>
 {
     private readonly List<string> _list;
