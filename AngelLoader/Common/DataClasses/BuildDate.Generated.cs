@@ -7,5 +7,5 @@ namespace AngelLoader.DataClasses;
 [FenGenBuildDateDestClass]
 internal static class BuildDateSource
 {
-    internal const string BuildDate = "20231119051416";
+    internal const string BuildDate = "";
 }
