@@ -671,19 +671,16 @@ internal static partial class Ini
 
     private static bool TryParseIntPair(ReadOnlySpan<char> valTrimmed, out int first, out int second)
     {
-        if (!valTrimmed.Contains(','))
+        int commaIndex = valTrimmed.IndexOf(',');
+        if (commaIndex == -1)
         {
             first = 0;
             second = 0;
             return false;
         }
 
-        // @NET5: Fix this allocation later
-        string valStr = valTrimmed.ToString();
-
-        string[] values = valStr.Split(CA_Comma);
-        bool firstExists = Int_TryParseInv(values[0].Trim(), out first);
-        bool secondExists = Int_TryParseInv(values[1].Trim(), out second);
+        bool firstExists = Int_TryParseInv(valTrimmed[..commaIndex].Trim(), out first);
+        bool secondExists = Int_TryParseInv(valTrimmed[(commaIndex + 1)..].Trim(), out second);
 
         return firstExists && secondExists;
     }
