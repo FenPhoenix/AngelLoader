@@ -730,12 +730,9 @@ internal static partial class Ini
         // form "category:" (with no tags list). This is because we allow filtering by entire category,
         // whereas we don't allow FMs to have categories with no tags in them.
 
-        // @NET5: Fix this allocation later
-        string tagsToAddStr = tagsToAdd.ToString();
-        string[] tagsArray = tagsToAddStr.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < tagsArray.Length; i++)
+        foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.SplitAny(tagsToAdd, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
         {
-            if (!FMTags.TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+            if (!FMTags.TryGetCatAndTag(part, out string cat, out string tag) ||
                 cat.IsEmpty())
             {
                 continue;

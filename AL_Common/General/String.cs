@@ -397,6 +397,29 @@ public static partial class Common
         return foundCount;
     }
 
+    /// <summary>
+    /// Returns the number of times a character appears in a string, earlying-out once it's counted <paramref name="maxToCount"/>
+    /// occurrences.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="character"></param>
+    /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
+    /// <returns></returns>
+    public static int CountCharsUpToAmount(this ReadOnlySpan<char> value, char character, int maxToCount)
+    {
+        int foundCount = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i] == character)
+            {
+                foundCount++;
+                if (foundCount == maxToCount) break;
+            }
+        }
+
+        return foundCount;
+    }
+
     public static bool CharCountIsAtLeast(this string value, char character, int count)
     {
         int foundCount = 0;

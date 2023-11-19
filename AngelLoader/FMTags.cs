@@ -194,7 +194,7 @@ internal static class FMTags
         fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false, sb);
     }
 
-    internal static bool TryGetCatAndTag(string item, out string cat, out string tag)
+    private static bool TryGetCatAndTag(string item, out string cat, out string tag)
     {
         switch (item.CountCharsUpToAmount(':', 2))
         {
@@ -213,6 +213,31 @@ internal static class FMTags
             default:
                 cat = PresetTags.MiscCategory;
                 tag = item.Trim();
+                break;
+        }
+
+        return true;
+    }
+
+    internal static bool TryGetCatAndTag(ReadOnlySpan<char> item, out string cat, out string tag)
+    {
+        switch (item.CountCharsUpToAmount(':', 2))
+        {
+            case > 1:
+                cat = "";
+                tag = "";
+                return false;
+            case 1:
+                int index = item.IndexOf(':');
+                cat = item[..index].Trim().ToString();
+                // Save an alloc if we're ascii lowercase already (case conversion always allocs, even if
+                // the new string is the same as the old)
+                if (!cat.IsAsciiLower()) cat = cat.ToLowerInvariant();
+                tag = item[(index + 1)..].Trim().ToString();
+                break;
+            default:
+                cat = PresetTags.MiscCategory;
+                tag = item.Trim().ToString();
                 break;
         }
 
