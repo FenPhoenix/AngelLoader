@@ -13,8 +13,8 @@ public sealed class FMTagsCollection : IEnumerable<string>
 
     public FMTagsCollection()
     {
-        _list = new List<string>();
-        _hashSet = new HashSetI();
+        _list = new List<string>(0);
+        _hashSet = new HashSetI(0);
     }
 
     public FMTagsCollection(int capacity)
@@ -90,8 +90,8 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
 
     public FMCategoriesCollection()
     {
-        _list = new List<string>();
-        _dict = new DictionaryI<FMTagsCollection>();
+        _list = new List<string>(0);
+        _dict = new DictionaryI<FMTagsCollection>(0);
     }
 
     public FMCategoriesCollection(int capacity)
