@@ -6,24 +6,7 @@ namespace AngelLoader;
 
 public static partial class Utils
 {
-    // @NET5(StartsWith/EndsWith): The .NET 8 versions of these are almost certainly going to be way faster now.
-    // We should profile and probably switch.
-
-    // @NET5: There's tons of string work we could replace with spans and stuff, go through it all!
     #region StartsWith and EndsWith
-
-    internal static bool StartsWithFast(this string str, string value)
-    {
-        int valueLength = value.Length;
-        if (str.Length < valueLength) return false;
-
-        for (int i = 0; i < valueLength; i++)
-        {
-            if (str[i] != value[i]) return false;
-        }
-
-        return true;
-    }
 
     #region Starts with plus whitespace
 

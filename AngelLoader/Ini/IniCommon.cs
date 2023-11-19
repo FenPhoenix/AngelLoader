@@ -44,7 +44,7 @@ internal static partial class Ini
         {
             string lineT = line.Trim();
             if (inMeta &&
-                lineT.StartsWithFast(nameof(LText.Meta.TranslatedLanguageName) + "="))
+                lineT.StartsWithO(nameof(LText.Meta.TranslatedLanguageName) + "="))
             {
                 langDict[key] = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                 return;

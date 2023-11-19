@@ -43,6 +43,7 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
+    // @NET5: There are some built-in versions of some of these now.
     #region ASCII-specific
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

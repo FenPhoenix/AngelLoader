@@ -994,7 +994,7 @@ internal static partial class Ini
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();
-                if (lineT.StartsWithFast("VisualTheme="))
+                if (lineT.StartsWithO("VisualTheme="))
                 {
                     return lineT.ValueEqualsIAscii("Dark", 12) ? VisualTheme.Dark : VisualTheme.Classic;
                 }

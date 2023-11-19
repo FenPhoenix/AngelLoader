@@ -294,7 +294,7 @@ internal static class Utility
     /// <returns></returns>
     internal static bool StartsWithGU(this string str, string value)
     {
-        return StartsWithFast(str, value, CaseComparison.GivenOrUpper);
+        return StartsWith_Scanner(str, value, CaseComparison.GivenOrUpper);
     }
 
     /// <summary>
@@ -305,10 +305,10 @@ internal static class Utility
     /// <returns></returns>
     internal static bool StartsWithGL(this string str, string value)
     {
-        return StartsWithFast(str, value, CaseComparison.GivenOrLower);
+        return StartsWith_Scanner(str, value, CaseComparison.GivenOrLower);
     }
 
-    private static bool StartsWithFast(this string str, string value, CaseComparison caseComparison)
+    private static bool StartsWith_Scanner(this string str, string value, CaseComparison caseComparison)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 

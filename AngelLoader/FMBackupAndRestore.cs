@@ -482,7 +482,7 @@ internal static partial class FMBackupAndRestore
 
                             while (sr.ReadLine() is { } line)
                             {
-                                bool startsWithRemoveFile = line.StartsWithFast(_removeFileEq);
+                                bool startsWithRemoveFile = line.StartsWithO(_removeFileEq);
 
                                 if (!startsWithRemoveFile) continue;
 

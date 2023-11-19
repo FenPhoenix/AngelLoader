@@ -200,14 +200,14 @@ internal static class CheckUpdates
                 if (!line.Contains('=')) continue;
 
                 string val = line.Substring(line.IndexOf('=') + 1);
-                if (line.StartsWithFast_NoNullChecks("Version="))
+                if (line.StartsWithO("Version="))
                 {
                     if (Version.TryParse(val, out Version result))
                     {
                         ret.Version = result;
                     }
                 }
-                if (line.StartsWithFast_NoNullChecks("Checksum="))
+                if (line.StartsWithO("Checksum="))
                 {
                     byte[] bytes = HexStringToBytes(val);
                     if (bytes.Length > 0)
@@ -215,14 +215,14 @@ internal static class CheckUpdates
                         ret.Checksum = bytes;
                     }
                 }
-                else if (line.StartsWithFast_NoNullChecks("DownloadUrl="))
+                else if (line.StartsWithO("DownloadUrl="))
                 {
                     if (Uri.IsWellFormedUriString(val, UriKind.Absolute))
                     {
                         ret.DownloadUrl = new Uri(val);
                     }
                 }
-                else if (line.StartsWithFast_NoNullChecks("ChangelogUrl="))
+                else if (line.StartsWithO("ChangelogUrl="))
                 {
                     if (Uri.IsWellFormedUriString(val, UriKind.Absolute))
                     {
