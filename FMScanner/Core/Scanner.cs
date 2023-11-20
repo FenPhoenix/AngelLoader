@@ -4270,13 +4270,13 @@ public sealed partial class Scanner : IDisposable
                 string tfLineD = tfLinesD[i];
 
                 ReadOnlySpan<char> tfLineDSpan = tfLineD.AsSpan();
-                ReadOnlySpan<char> lineSpan = line.AsSpan().Slice(0, indexOfColon);
+                ReadOnlySpan<char> lineSpan = line.AsSpan()[..indexOfColon];
 
                 int tfLineDSpanLen = tfLineDSpan.Length;
                 int lineSpanLen = lineSpan.Length;
 
                 if (tfLineDSpanLen >= lineSpanLen &&
-                    tfLineDSpan.Slice(0, lineSpanLen).EqualsI(lineSpan))
+                    tfLineDSpan[..lineSpanLen].EqualsI(lineSpan))
                 {
                     return true;
                 }

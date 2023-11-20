@@ -422,8 +422,8 @@ internal static class RtfProcessing
             ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
             Span<byte> retBytesSpan = retBytes.AsSpan();
 
-            ReadOnlySpan<byte> headerSpan = currentReadmeBytesSpan.Slice(0, firstIndexPastHeader);
-            headerSpan.CopyTo(retBytesSpan.Slice(0));
+            ReadOnlySpan<byte> headerSpan = currentReadmeBytesSpan[..firstIndexPastHeader];
+            headerSpan.CopyTo(retBytesSpan);
 
             int lastIndexSource = firstIndexPastHeader;
             int lastIndexDest = firstIndexPastHeader;
@@ -438,7 +438,7 @@ internal static class RtfProcessing
             if (colorEntriesBytesList != null)
             {
                 ReadOnlySpan<byte> colorTableSpan = colorEntriesBytesList.ItemsArray.AsSpan(0, colorTableEntryLength);
-                colorTableSpan.CopyTo(retBytesSpan.Slice(lastIndexDest, retBytesLength - lastIndexDest));
+                colorTableSpan.CopyTo(retBytesSpan[lastIndexDest..retBytesLength]);
                 lastIndexDest += colorTableEntryLength;
             }
 
@@ -447,8 +447,8 @@ internal static class RtfProcessing
                 CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
-            ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan.Slice(lastIndexSource, (lastClosingBraceIndex - lastIndexSource));
-            bodyToLastClosingBrace.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
+            bodyToLastClosingBrace.CopyTo(retBytesSpan[lastIndexDest..]);
 
             lastIndexSource += bodyToLastClosingBrace.Length;
             lastIndexDest += bodyToLastClosingBrace.Length;
@@ -463,11 +463,11 @@ internal static class RtfProcessing
 
             // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
             ReadOnlySpan<byte> backgroundSpan = RTF_DarkBackgroundBytes.AsSpan();
-            backgroundSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            backgroundSpan.CopyTo(retBytesSpan[lastIndexDest..]);
 
             lastIndexDest += backgroundSpan.Length;
 
-            currentReadmeBytesSpan.Slice(lastIndexSource).CopyTo(retBytesSpan.Slice(lastIndexDest));
+            currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
 
             return retBytes;
 
@@ -516,7 +516,7 @@ internal static class RtfProcessing
                 CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
-                currentReadmeBytesSpan.Slice(lastIndexSource).CopyTo(retBytesSpan.Slice(lastIndexDest));
+                currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
                 return retBytes;
             }
 
@@ -542,14 +542,14 @@ internal static class RtfProcessing
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
             ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
-            bodySpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            bodySpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ansiCpgSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            ansiCpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += ansiCpgLength;
-            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan().Slice(0, cpgBytes.Count);
-            codePageSpan.CopyTo(retBytesSpan.Slice(lastIndexDest));
+            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan()[..cpgBytes.Count];
+            codePageSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += codePageSpan.Length;
             plus += ansiCpgLength + codePageSpan.Length;
         }
