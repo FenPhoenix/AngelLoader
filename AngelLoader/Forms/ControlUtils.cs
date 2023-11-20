@@ -26,13 +26,13 @@ internal static class ControlUtils
     internal static void SuspendDrawing(this Control control)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
-        Native.SendMessage(control.Handle, Native.WM_SETREDRAW, false, IntPtr.Zero);
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, false, IntPtr.Zero);
     }
 
     internal static void ResumeDrawing(this Control control, bool invalidateInsteadOfRefresh = false)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
-        Native.SendMessage(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
         if (invalidateInsteadOfRefresh)
         {
             control.Invalidate();
@@ -112,7 +112,7 @@ internal static class ControlUtils
 
     #endregion
 
-    internal static void HideFocusRectangle(this Control control) => Native.SendMessage(
+    internal static void HideFocusRectangle(this Control control) => Native.SendMessageW(
         control.Handle,
         Native.WM_CHANGEUISTATE,
         new IntPtr(Native.SetControlFocusToHidden),
@@ -170,7 +170,7 @@ internal static class ControlUtils
         var ptrWParam = new IntPtr(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
 
         IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
-        Native.SendMessage(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, IntPtr.Zero);
+        Native.SendMessageW(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, IntPtr.Zero);
     }
 
     #endregion

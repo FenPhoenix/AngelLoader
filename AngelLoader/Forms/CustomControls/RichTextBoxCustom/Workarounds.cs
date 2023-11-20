@@ -29,7 +29,7 @@ internal sealed partial class RichTextBoxCustom
     {
         if (_fullDetectUrlsSet) return;
 
-        Native.SendMessage(Handle, Native.EM_AUTOURLDETECT, Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR, IntPtr.Zero);
+        Native.SendMessageW(Handle, Native.EM_AUTOURLDETECT, Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR, IntPtr.Zero);
         _fullDetectUrlsSet = true;
     }
 

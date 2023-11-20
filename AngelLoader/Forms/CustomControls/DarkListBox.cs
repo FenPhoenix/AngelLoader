@@ -34,8 +34,8 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
             // Hack to fix the background color not changing with modes if we're disabled
             if (!Enabled)
             {
-                Native.PostMessage(Handle, Native.WM_ENABLE, 1, IntPtr.Zero);
-                Native.PostMessage(Handle, Native.WM_ENABLE, 0, IntPtr.Zero);
+                Native.PostMessageW(Handle, Native.WM_ENABLE, 1, IntPtr.Zero);
+                Native.PostMessageW(Handle, Native.WM_ENABLE, 0, IntPtr.Zero);
             }
         }
     }

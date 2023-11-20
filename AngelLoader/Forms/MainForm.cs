@@ -336,7 +336,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                     FilterBarFLP.HorizontalScroll.SmallChange = 45;
 
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
 
                     FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                 }
@@ -354,7 +354,7 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (controlOver is DarkTextBox { Multiline: true })
                     {
-                        Native.SendMessage(controlOver.Handle, m.Msg, m.WParam, m.LParam);
+                        Native.SendMessageW(controlOver.Handle, m.Msg, m.WParam, m.LParam);
                     }
                     else if (CursorOverControl(TopSplitContainer.Panel2))
                     {
@@ -370,7 +370,7 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     if (cb.Parent is { IsHandleCreated: true })
                     {
-                        Native.SendMessage(cb.Parent.Handle, m.Msg, m.WParam, m.LParam);
+                        Native.SendMessageW(cb.Parent.Handle, m.Msg, m.WParam, m.LParam);
                     }
                     else
                     {
@@ -379,7 +379,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    Native.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
+                    Native.SendMessageW(hWnd, m.Msg, m.WParam, m.LParam);
                 }
             }
             return BlockMessage;
@@ -2744,7 +2744,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (_repeatButtonRunning) return;
         int direction = sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
-        Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
+        Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
     }
 
     private void FilterBarScrollButtons_MouseDown(object? sender, MouseEventArgs e)
@@ -2761,7 +2761,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             while (_repeatButtonRunning)
             {
-                Invoke(new Action(() => Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero)));
+                Invoke(new Action(() => Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero)));
                 Thread.Sleep(150);
             }
         });
@@ -2837,7 +2837,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // WinForms? Argh!
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINELEFT, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINELEFT, IntPtr.Zero);
                 }
             }
         }
@@ -2850,7 +2850,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // Ditto the above
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessage(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINERIGHT, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINERIGHT, IntPtr.Zero);
                 }
             }
         }
