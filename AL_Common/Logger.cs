@@ -9,7 +9,7 @@ using static AL_Common.Common;
 
 namespace AL_Common;
 
-public static class Logger
+public static partial class Logger
 {
     private static readonly object _lock = new();
 
@@ -33,8 +33,8 @@ public static class Logger
         internal ushort wMilliseconds;
     }
 
-    [DllImport("kernel32.dll")]
-    private static extern void GetLocalTime(ref SYSTEMTIME systemTime);
+    [LibraryImport("kernel32.dll")]
+    private static partial void GetLocalTime(ref SYSTEMTIME systemTime);
 
     // For logging purposes: It takes an entire 5ms to get one DateTime.Now, but I don't really need hardcore
     // accuracy in logging dates, they're really just there for vague temporality. Because we log on startup,
