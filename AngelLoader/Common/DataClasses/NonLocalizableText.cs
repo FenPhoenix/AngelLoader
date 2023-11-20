@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Reflection;
-using System.Runtime.Versioning;
-using AL_Common;
+using System.Runtime.InteropServices;
 
 namespace AngelLoader.DataClasses;
 
@@ -48,22 +46,7 @@ internal static partial class NonLocalizableText
             ? result.ToLocalTime().ToString("yyyy MMM dd, HH:mm:ss", CultureInfo.CurrentCulture)
             : "";
 
-        try
-        {
-            object[] attrs = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute), false);
-            if (attrs.Length == 1)
-            {
-                var fn = new FrameworkName(((TargetFrameworkAttribute)attrs[0]).FrameworkName);
-                string dotNetName = fn.Identifier.ContainsI("Framework")
-                    ? ".NET Framework " + fn.Version
-                    : ".NET " + fn.Version;
-                ret += "\r\n" + dotNetName;
-            }
-        }
-        catch
-        {
-            // ignore
-        }
+        ret += "\r\n" + RuntimeInformation.FrameworkDescription;
 
         return ret;
     }
