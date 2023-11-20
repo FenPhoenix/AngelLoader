@@ -157,8 +157,9 @@ internal static partial class Native
     [DllImport("Shell32.dll", SetLastError = false)]
     internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    internal static extern bool DestroyIcon(IntPtr hIcon);
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool DestroyIcon(IntPtr hIcon);
 
     #endregion
 
@@ -655,14 +656,15 @@ internal static partial class Native
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
 
-    [DllImport("uxtheme.dll", ExactSpelling = true)]
-    public static extern int CloseThemeData(IntPtr hTheme);
+    [LibraryImport("uxtheme.dll")]
+    public static partial int CloseThemeData(IntPtr hTheme);
 
-    [DllImport("uxtheme.dll", ExactSpelling = true)]
-    internal static extern bool IsThemeActive();
+    [LibraryImport("uxtheme.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool IsThemeActive();
 
-    [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-    internal static extern IntPtr CreateSolidBrush(int crColor);
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    internal static partial IntPtr CreateSolidBrush(int crColor);
 
     #endregion
 
