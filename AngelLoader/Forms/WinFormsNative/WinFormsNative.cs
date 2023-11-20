@@ -49,10 +49,16 @@ internal static partial class Native
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private sealed class POINT
+    public readonly struct POINT
     {
-        public int x;
-        public int y;
+        public readonly int X;
+        public readonly int Y;
+
+        public POINT(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 
     #region Cursor
@@ -297,8 +303,10 @@ internal static partial class Native
     [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     private static partial UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr WindowFromPoint(Point pt);
+    [LibraryImport("user32.dll", EntryPoint = "WindowFromPoint")]
+    private static partial IntPtr WindowFromPoint_Native(POINT pt);
+
+    internal static IntPtr WindowFromPoint(Point pt) => WindowFromPoint_Native(new POINT(pt.X, pt.Y));
 
     #endregion
 
@@ -706,9 +714,9 @@ internal static partial class Native
         }
     }
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+    private static partial bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
     internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
     {
