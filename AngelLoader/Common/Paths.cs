@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;
@@ -25,32 +23,6 @@ internal static class Paths
     internal const string AppFileName = "AngelLoader.exe";
 #endif
 
-    // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern int GetModuleFileNameW(HandleRef hModule, StringBuilder buffer, int length);
-    private static string GetStartupPath()
-    {
-        var nullHandleRef = new HandleRef(null, IntPtr.Zero);
-        const int MAX_PATH = 260;
-        const int MAX_UNICODESTRING_LEN = short.MaxValue;
-        const int ERROR_INSUFFICIENT_BUFFER = 122;
-
-        var buffer = new StringBuilder(MAX_PATH);
-        int noOfTimes = 1;
-        int length;
-        while (((length = GetModuleFileNameW(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&
-               Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER &&
-               buffer.Capacity < MAX_UNICODESTRING_LEN)
-        {
-            noOfTimes += 2;
-            int capacity = noOfTimes * MAX_PATH < MAX_UNICODESTRING_LEN ? noOfTimes * MAX_PATH : MAX_UNICODESTRING_LEN;
-            buffer.EnsureCapacity(capacity);
-        }
-        buffer.Length = length;
-        return Path.GetDirectoryName(buffer.ToString())!;
-    }
-
 #if DEBUG || Release_Testing
     private static string? _startup;
     internal static string Startup
@@ -70,11 +42,11 @@ internal static class Paths
                     var is set. Obviously don't add this var yourself.
                     */
                     string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
-                    _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : GetStartupPath();
+                    _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : AppContext.BaseDirectory;
                 }
                 catch
                 {
-                    _startup = GetStartupPath();
+                    _startup = AppContext.BaseDirectory;
                 }
             }
 
@@ -82,7 +54,7 @@ internal static class Paths
         }
     }
 #else
-    internal static readonly string Startup = GetStartupPath();
+    internal static readonly string Startup = AppContext.BaseDirectory;
 #endif
 
     #endregion
