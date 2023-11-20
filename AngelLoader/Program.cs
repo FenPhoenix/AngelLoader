@@ -109,15 +109,13 @@ internal static class Program
             // We don't need to clear this log because LogStartup overwrites (no append)
             LogStartup(viewEnv.ProductVersion + " Started session");
 
-            // Do this after the startup log so we don't try to log something at the same time as the non-
-            // lock-protected startup log
+            // Do this after the startup log so we don't try to log something at the same time as the non-lock-
+            // protected startup log
             AppDomain.CurrentDomain.UnhandledException += static (_, e) =>
             {
-                Exception ex = (Exception)e.ExceptionObject;
-                if (ex.TargetSite?.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
-                {
-                    Log("*** Unhandled exception: ", ex);
-                }
+                // .NET 8 returns false from the assembly whatever equality check (why was it there in the first
+                // place?)
+                Log("*** Unhandled exception: ", (Exception)e.ExceptionObject);
             };
 
 #if !WPF
