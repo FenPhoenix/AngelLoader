@@ -64,7 +64,7 @@ internal static class TDM_Downloader
 
             if (!success || request == null) return fail;
 
-            using Stream dataStream = await request.Content.ReadAsStreamAsync();
+            await using Stream dataStream = await request.Content.ReadAsStreamAsync(cancellationToken);
 #else
             using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
 #endif
