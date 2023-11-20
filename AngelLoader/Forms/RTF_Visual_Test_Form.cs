@@ -50,8 +50,8 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
         }
     }
 
-    [DllImport("user32", CharSet = CharSet.Unicode)]
-    private static extern int RegisterWindowMessageW(string message);
+    [LibraryImport("user32", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int RegisterWindowMessageW(string message);
 
     private const int HWND_BROADCAST = 0xffff;
     private static readonly int WM_CHANGECOMBOBOXSELECTEDINDEX = RegisterWindowMessageW(nameof(WM_CHANGECOMBOBOXSELECTEDINDEX) + "|" + AppGuid);
