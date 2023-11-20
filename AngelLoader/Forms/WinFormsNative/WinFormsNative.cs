@@ -13,7 +13,7 @@ namespace AngelLoader.Forms.WinFormsNative;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "CommentTypo")]
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
-internal static class Native
+internal static partial class Native
 {
     private const int WM_USER = 0x0400;
     internal const int WM_REFLECT = WM_USER + 0x1C00;
@@ -274,11 +274,12 @@ internal static class Native
 
     #region Device context
 
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetWindowDC(IntPtr hWnd);
+    [LibraryImport("user32.dll")]
+    private static partial IntPtr GetWindowDC(IntPtr hWnd);
 
-    [DllImport("user32.dll")]
-    private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
     public sealed class GraphicsContext_Ref : IDisposable
     {
