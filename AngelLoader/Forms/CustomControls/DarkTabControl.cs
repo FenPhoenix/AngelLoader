@@ -398,15 +398,27 @@ public sealed class DarkTabControl : TabControl, IDarkable
         var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
         if (index < 0 || bt == null!) return;
 
-        if (show)
+        try
         {
-            bt.Visible = true;
-            if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
+            // Fix: On .NET 8, we were getting index out of range exceptions from OnPaint() from SelectedTab
+            // after the insert call. SelectedTab isn't supposed to throw, and it does check for index == -1
+            // and tab count == 0, but SelectedIndex must be wrong (beyond collection size) during this window.
+            this.SuspendDrawing();
+
+            if (show)
+            {
+                bt.Visible = true;
+                if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
+            }
+            else
+            {
+                bt.Visible = false;
+                if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
+            }
         }
-        else
+        finally
         {
-            bt.Visible = false;
-            if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
+            this.ResumeDrawing();
         }
     }
 
