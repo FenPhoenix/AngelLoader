@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -81,7 +80,7 @@ internal sealed class AddTagLLDropDown : IDarkable
             foreach (string item in list) _listBox.Items.Add(item);
         }
 
-        Point p = _form.PointToClient_Fast(_realPage.AddTagTextBox.PointToScreen_Fast(Point.Empty));
+        Point p = _form.PointToClient(_realPage.AddTagTextBox.PointToScreen(Point.Empty));
         _listBox.Location = p with { Y = p.Y + _realPage.AddTagTextBox.Height };
         _listBox.Size = new Size(Math.Max(_realPage.AddTagTextBox.Width, 256), 225);
 

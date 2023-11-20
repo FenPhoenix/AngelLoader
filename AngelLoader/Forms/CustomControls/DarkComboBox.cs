@@ -388,7 +388,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         // TODO(combobox clamp): fix other sides: left, top, bottom
         if (m.Msg == Native.WM_CTLCOLORLISTBOX)
         {
-            Point p = this.PointToScreen_Fast(new Point(0, Height));
+            Point p = PointToScreen(new Point(0, Height));
 
             Rectangle screenBounds = Screen.FromControl(this).WorkingArea;
             int screenWidth = screenBounds.X + screenBounds.Width;

@@ -409,7 +409,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
 
-            Control? control = Control.FromHandle(Native.WindowFromPoint(Native.GetCursorPosition_Fast()));
+            Control? control = Control.FromHandle(Native.WindowFromPoint(Cursor.Position));
             if (control is ToolStripDropDown) return PassMessageOn;
 
             ShowReadmeControls(CursorOverReadmeArea());
@@ -2510,7 +2510,7 @@ public sealed partial class MainForm : DarkFormBase,
                     parent: this,
                     form: f,
                     desiredLocation:
-                    FilterBarFLP.PointToScreen_Fast(new Point(
+                    FilterBarFLP.PointToScreen(new Point(
                         FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
                         FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height)));
 
@@ -2539,7 +2539,7 @@ public sealed partial class MainForm : DarkFormBase,
                     parent: this,
                     form: f,
                     desiredLocation:
-                    FilterBarFLP.PointToScreen_Fast(new Point(
+                    FilterBarFLP.PointToScreen(new Point(
                         FilterIconButtonsToolStrip.Location.X +
                         FilterByRatingButton.Bounds.X,
                         FilterIconButtonsToolStrip.Location.Y +
@@ -4112,7 +4112,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
     internal void ReadmeArea_MouseLeave(object? sender, EventArgs e)
     {
-        IntPtr hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
+        IntPtr hWnd = Native.WindowFromPoint(Cursor.Position);
         if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
     }
 
@@ -4970,7 +4970,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!control.Visible || !control.Enabled) return false;
 
-        Point rpt = this.PointToClient_Fast(control.PointToScreen_Fast(Point.Empty));
+        Point rpt = PointToClient(control.PointToScreen(Point.Empty));
         Size rcs = fullArea ? control.Size : control.ClientSize;
 
         Point ptc = this.ClientCursorPos();
@@ -5219,7 +5219,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if (TopRightTabControl.GetTabBarRect().Contains(TopRightTabControl.ClientCursorPos()))
             {
-                TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
+                TopRightLLMenu.Menu.Show(Cursor.Position);
             }
         }
     }
