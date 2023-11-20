@@ -12,6 +12,8 @@ namespace AL_Common;
 [PublicAPI]
 public static partial class Common
 {
+    public const int MAX_PATH = 260;
+
     #region Fields / classes
 
     // Class instead of enum so we don't have to keep casting its fields

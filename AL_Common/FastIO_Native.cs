@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static AL_Common.Common;
 
 namespace AL_Common;
 
@@ -127,7 +128,7 @@ public static partial class FastIO_Native
         internal uint nFileSizeLow;
         internal uint dwReserved0;
         internal uint dwReserved1;
-        private fixed char _cFileName[260];
+        private fixed char _cFileName[MAX_PATH];
         private fixed char _cAlternateFileName[14];
 
         /// <summary>
@@ -150,7 +151,8 @@ public static partial class FastIO_Native
             }
         }
 
-        public string ConvertFileNameToString() => GetStringFromFixedBuffer(MemoryMarshal.CreateReadOnlySpan(ref _cFileName[0], 260));
+        public string ConvertFileNameToString() =>
+            GetStringFromFixedBuffer(MemoryMarshal.CreateReadOnlySpan(ref _cFileName[0], MAX_PATH));
     }
 
     #endregion
@@ -161,7 +163,7 @@ public static partial class FastIO_Native
     {
         // Vital, path must not have a trailing separator
         // We also normalize it manually because we use \?\\ which skips normalization
-        path = path.ToBackSlashes().TrimEnd(Common.CA_Backslash);
+        path = path.ToBackSlashes().TrimEnd(CA_Backslash);
 
         if (!pathIsKnownValid)
         {

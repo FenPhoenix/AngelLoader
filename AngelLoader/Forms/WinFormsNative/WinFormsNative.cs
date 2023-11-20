@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AL_Common.Common;
+
 // ReSharper disable ArrangeTrailingCommaInMultilineLists
 
 namespace AngelLoader.Forms.WinFormsNative;
@@ -111,7 +113,7 @@ internal static partial class Native
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        internal fixed char szPath[260/*MAX_PATH*/];
+        internal fixed char szPath[MAX_PATH];
     }
 
     [LibraryImport("Shell32.dll", SetLastError = false)]

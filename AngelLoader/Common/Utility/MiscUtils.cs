@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -119,22 +118,7 @@ public static partial class Utils
             return false;
         }
 
-        static string GetProcessPath(int procId, StringBuilder buffer)
-        {
-            buffer.Clear();
-
-            using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
-            if (!hProc.IsInvalid)
-            {
-                int size = buffer.Capacity;
-                if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
-            }
-            return "";
-        }
-
         #endregion
-
-        var buffer = new StringBuilder(1024);
 
         // We're doing this whole rigamarole because the game might have been started by someone other than
         // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
@@ -146,7 +130,7 @@ public static partial class Utils
             {
                 try
                 {
-                    string fn = GetProcessPath(proc.Id, buffer);
+                    string? fn = GetProcessName(proc.Id);
                     if (!fn.IsEmpty() &&
                         ((checkAllGames &&
                           (AnyGameRunning(fn) ||
