@@ -114,13 +114,13 @@ internal static class FastIO
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsFile(WIN32_FIND_DATAW findData)
+    private static bool IsFile(FindData findData)
     {
         return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsDirectory(WIN32_FIND_DATAW findData, bool ignoreReparsePoints)
+    private static bool IsDirectory(FindData findData, bool ignoreReparsePoints)
     {
         return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
                (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
@@ -155,7 +155,7 @@ internal static class FastIO
         using FileFinder fileFinder = FileFinder.Create(
             searchPath,
             FIND_FIRST_EX_LARGE_FETCH,
-            out WIN32_FIND_DATAW findData);
+            out FindData findData);
 
         if (fileFinder.IsInvalid)
         {
@@ -215,7 +215,7 @@ internal static class FastIO
         using FileFinder fileFinder = FileFinder.Create(
             searchPath,
             FIND_FIRST_EX_LARGE_FETCH,
-            out WIN32_FIND_DATAW findData);
+            out FindData findData);
 
         if (fileFinder.IsInvalid)
         {

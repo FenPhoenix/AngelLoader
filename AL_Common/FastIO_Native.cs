@@ -9,7 +9,7 @@ namespace AL_Common;
 // @NET5(FastIO): This whole thing needs reconsidering
 // .NET modern does the don't-ask-for-8.3-thing already, so it should be as fast as this at least.
 // It also fixes the 3-character extension quirk.
-public static class FastIO_Native
+public static partial class FastIO_Native
 {
     #region Fields
 
@@ -45,60 +45,112 @@ public static class FastIO_Native
 
         private FileFinder(IntPtr handle) => _handle = handle;
 
-        public static FileFinder Create(string fileName, int additionalFlags, out WIN32_FIND_DATAW findData)
+        public static FileFinder Create(string fileName, int additionalFlags, out FindData findData)
         {
-            return new FileFinder(FindFirstFileExW(
+            IntPtr handle = FindFirstFileExW(
                 fileName,
                 FindExInfoBasic,
-                out findData,
+                out WIN32_FIND_DATAW findDataInternal,
                 FindExSearchNameMatch,
                 IntPtr.Zero,
-                additionalFlags));
+                additionalFlags);
+
+            findData = new FindData(findDataInternal);
+            return new FileFinder(handle);
         }
 
-        public bool TryFindNextFile(out WIN32_FIND_DATAW findData) => FindNextFileW(_handle, out findData);
+        public bool TryFindNextFile(out FindData findData)
+        {
+            bool success = FindNextFileW(_handle, out var findDataInternal);
+            findData = new FindData(findDataInternal);
+            return success;
+        }
 
         public bool IsInvalid => _handle == IntPtr.Zero || _handle == new IntPtr(-1);
 
         public void Dispose() => FindClose(_handle);
+    }
 
-        #region P/Invoke
+    #region P/Invoke
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr FindFirstFileExW(
-            string lpFileName,
-            int fInfoLevelId,
-            out WIN32_FIND_DATAW lpFindFileData,
-            int fSearchOp,
-            IntPtr lpSearchFilter,
-            int dwAdditionalFlags);
+    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    private static partial IntPtr FindFirstFileExW(
+        string lpFileName,
+        int fInfoLevelId,
+        out WIN32_FIND_DATAW lpFindFileData,
+        int fSearchOp,
+        IntPtr lpSearchFilter,
+        int dwAdditionalFlags);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool FindClose(IntPtr hFindFile);
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool FindClose(IntPtr hFindFile);
 
-        #endregion
+    #endregion
+
+    public readonly ref struct FindData
+    {
+        public readonly uint dwFileAttributes;
+        public readonly FILE_TIME ftCreationTime;
+#if false
+        public readonly FILE_TIME ftLastAccessTime;
+        public readonly FILE_TIME ftLastWriteTime;
+#endif
+        public readonly string cFileName;
+
+        internal FindData(WIN32_FIND_DATAW findDataInternal)
+        {
+            dwFileAttributes = findDataInternal.dwFileAttributes;
+            ftCreationTime = findDataInternal.ftCreationTime;
+#if false
+            ftLastAccessTime = findDataInternal.ftLastAccessTime;
+            ftLastWriteTime = findDataInternal.ftLastWriteTime;
+#endif
+            cFileName = findDataInternal.ConvertFileNameToString();
+        }
     }
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct WIN32_FIND_DATAW
+    internal unsafe struct WIN32_FIND_DATAW
     {
-        public uint dwFileAttributes;
-        public FILE_TIME ftCreationTime;
-        public FILE_TIME ftLastAccessTime;
-        public FILE_TIME ftLastWriteTime;
-        public uint nFileSizeHigh;
-        public uint nFileSizeLow;
-        public uint dwReserved0;
-        public uint dwReserved1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string cFileName;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-        public string cAlternateFileName;
+        internal uint dwFileAttributes;
+        internal FILE_TIME ftCreationTime;
+        internal FILE_TIME ftLastAccessTime;
+        internal FILE_TIME ftLastWriteTime;
+        internal uint nFileSizeHigh;
+        internal uint nFileSizeLow;
+        internal uint dwReserved0;
+        internal uint dwReserved1;
+        private fixed char _cFileName[260];
+        private fixed char _cAlternateFileName[14];
+
+        /// <summary>
+        /// Gets the null-terminated string length of the given span.
+        /// </summary>
+        private static int GetFixedBufferStringLength(ReadOnlySpan<char> span)
+        {
+            int length = span.IndexOf('\0');
+            return length < 0 ? span.Length : length;
+        }
+
+        /// <summary>
+        /// Returns a string from the given span, terminating the string at null if present.
+        /// </summary>
+        private static string GetStringFromFixedBuffer(ReadOnlySpan<char> span)
+        {
+            fixed (char* c = &MemoryMarshal.GetReference(span))
+            {
+                return new string(c, 0, GetFixedBufferStringLength(span));
+            }
+        }
+
+        public string ConvertFileNameToString() => GetStringFromFixedBuffer(MemoryMarshal.CreateReadOnlySpan(ref _cFileName[0], 260));
     }
 
     #endregion

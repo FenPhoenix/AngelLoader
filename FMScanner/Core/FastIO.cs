@@ -67,7 +67,7 @@ internal static class FastIO
             using FileFinder fileFinder = FileFinder.Create(
                 searchPath + p,
                 0,
-                out WIN32_FIND_DATAW findData);
+                out FindData findData);
 
             if (fileFinder.IsInvalid)
             {
@@ -95,7 +95,7 @@ internal static class FastIO
         using (FileFinder fileFinder = FileFinder.Create(
                    searchPath + "*",
                    0,
-                   out WIN32_FIND_DATAW findData))
+                   out FindData findData))
         {
             if (fileFinder.IsInvalid)
             {
