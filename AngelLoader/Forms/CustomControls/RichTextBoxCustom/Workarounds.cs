@@ -196,7 +196,7 @@ internal sealed partial class RichTextBoxCustom
     {
         _cursorScrollBounds.Location = Point.Subtract(PointToClient(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
 
-        Native.SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
+        SetRichTextBoxCursor(Cursors.NoMoveVert);
         _autoScrollTimer.Start();
         _endOnMouseUp = false;
 
@@ -310,6 +310,12 @@ internal sealed partial class RichTextBoxCustom
 
     #region Cursor fixes
 
+    private void SetRichTextBoxCursor(Cursor cursor)
+    {
+        // Have to set parent cursor, otherwise the cursor doesn't change until the mouse moves
+        if (Parent != null) Parent.Cursor = cursor;
+    }
+
     private bool LinkCursor;
 
     private void CursorHandler(ref Message m)
@@ -321,7 +327,7 @@ internal sealed partial class RichTextBoxCustom
         DefWndProc(ref m);
         if (LinkCursor)
         {
-            Native.SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
+            SetRichTextBoxCursor(Cursors.Hand);
             m.Result = 1;
         }
         // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where

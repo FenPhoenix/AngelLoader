@@ -125,9 +125,6 @@ internal static partial class Native
 
     #region RichTextBox
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr SetCursor(HandleRef hCursor);
-
     #region Reader mode
 
     internal delegate bool TranslateDispatchCallbackDelegate(ref MSG lpmsg);
