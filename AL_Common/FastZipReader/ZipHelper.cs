@@ -40,10 +40,8 @@ public sealed class ZipContext : IDisposable
     internal readonly byte[] FilenameBuffer = new byte[ushort.MaxValue];
 
     private const int _backwardsSeekingBufferSize = 32;
-    internal const int ThrowAwayBufferSize = 64;
 
     internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
-    internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 

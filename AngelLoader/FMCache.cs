@@ -216,13 +216,12 @@ internal static class FMCache
                 {
                     byte[] rarExtractTempBuffer = new byte[StreamCopyBufferSize];
 
-                    bool isSolid;
                     RarArchive? archive = null;
                     try
                     {
                         archive = RarArchive.Open(fmArchivePath);
                         int entriesCount = archive.Entries.Count;
-                        isSolid = archive.IsSolid;
+                        bool isSolid = archive.IsSolid;
 
                         // @HTMLRefExtraction(FMCache):
                         // TODO: Support HTML ref extraction for solid .rar files too

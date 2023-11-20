@@ -6,7 +6,6 @@ using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
@@ -119,7 +118,7 @@ internal static class Program
             };
 
 #if !WPF
-            System.Windows.Forms.Application.Run(new AppContext(viewEnv));
+            System.Windows.Forms.Application.Run(new AL_AppContext(viewEnv));
 #else
 #endif
 
@@ -139,9 +138,9 @@ internal static class Program
     }
 
 #if !WPF
-    private sealed class AppContext : System.Windows.Forms.ApplicationContext
+    private sealed class AL_AppContext : System.Windows.Forms.ApplicationContext
     {
-        internal AppContext(IViewEnvironment viewEnv) => Core.Init(viewEnv);
+        internal AL_AppContext(IViewEnvironment viewEnv) => Core.Init(viewEnv);
     }
 #else
 #endif
