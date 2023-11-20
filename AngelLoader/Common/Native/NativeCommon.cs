@@ -4,7 +4,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader;
 
-internal static class NativeCommon
+internal static partial class NativeCommon
 {
     #region Process
 
@@ -18,8 +18,8 @@ internal static class NativeCommon
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
-    [DllImport("kernel32.dll")]
-    internal static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+    [LibraryImport("kernel32.dll")]
+    internal static partial SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
     #endregion
 }

@@ -41,7 +41,7 @@ public class DarkTextBox : TextBox, IDarkable
     [PublicAPI]
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool DarkModeEnabled
+    public unsafe bool DarkModeEnabled
     {
         set
         {

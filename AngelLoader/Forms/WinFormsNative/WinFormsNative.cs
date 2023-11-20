@@ -144,18 +144,17 @@ internal static partial class Native
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct SHSTOCKICONINFO
+    internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
-        internal string szPath;
+        internal fixed char szPath[260/*MAX_PATH*/];
     }
 
-    [DllImport("Shell32.dll", SetLastError = false)]
-    internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
+    [LibraryImport("Shell32.dll", SetLastError = false)]
+    internal static partial int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -326,16 +325,17 @@ internal static partial class Native
 
     #region Window
 
-    [DllImport("user32.dll")]
-    internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
     internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
     {
         return GetWindowLongPtr64(hWnd, nIndex);
     }
 
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-    private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
     [DllImport("user32.dll")]
     internal static extern IntPtr WindowFromPoint(Point pt);
@@ -497,7 +497,7 @@ internal static partial class Native
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct SCROLLBARINFO
+    internal unsafe struct SCROLLBARINFO
     {
         internal int cbSize;
         internal RECT rcScrollBar;
@@ -505,8 +505,7 @@ internal static partial class Native
         internal int xyThumbTop;
         internal int xyThumbBottom;
         internal int reserved;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        internal int[] rgstate;
+        internal fixed int rgstate[6];
     }
 
     [Flags]
@@ -520,15 +519,15 @@ internal static partial class Native
         SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
     }
 
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+    internal static partial bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 
-    [DllImport("user32.dll")]
-    internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+    [LibraryImport("user32.dll")]
+    internal static partial int SetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
 
-    [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
-    internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+    [LibraryImport("user32.dll", EntryPoint = "GetScrollBarInfo", SetLastError = true)]
+    internal static partial int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
     #endregion
 
@@ -650,11 +649,11 @@ internal static partial class Native
 
     #endregion
 
-    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-    internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+    [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
+    internal static partial int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
 
-    [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
+    [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
+    internal static partial IntPtr OpenThemeData(IntPtr hWnd, string classList);
 
     [LibraryImport("uxtheme.dll")]
     public static partial int CloseThemeData(IntPtr hTheme);
@@ -777,7 +776,7 @@ internal static partial class Native
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     [PublicAPI]
-    internal struct LOGFONTW
+    internal unsafe struct LOGFONTW
     {
         internal int lfHeight;
         internal int lfWidth;
@@ -792,8 +791,7 @@ internal static partial class Native
         internal byte lfClipPrecision;
         internal byte lfQuality;
         internal byte lfPitchAndFamily;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
-        internal string lfFaceName;
+        internal fixed char lfFaceName[LF_FACESIZE];
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -818,8 +816,8 @@ internal static partial class Native
         internal int iPaddedBorderWidth;
     }
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
+    [LibraryImport("user32.dll")]
+    private static partial int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
