@@ -639,21 +639,28 @@ internal static partial class Native
 
     private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
 
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+    private static partial bool EnumThreadWindows(int dwThreadId, IntPtr lpfn, IntPtr lParam);
 
     internal static List<IntPtr> GetProcessWindowHandles()
     {
         var handles = new List<IntPtr>();
 
         using Process currentProcess = Process.GetCurrentProcess();
+        IntPtr callback = Marshal.GetFunctionPointerForDelegate<EnumThreadDelegate>(Callback);
         foreach (ProcessThread thread in currentProcess.Threads)
         {
-            EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
+            EnumThreadWindows(thread.Id, callback, IntPtr.Zero);
         }
 
         return handles;
+
+        bool Callback(IntPtr hWnd, IntPtr _)
+        {
+            handles.Add(hWnd);
+            return true;
+        }
     }
 
     #endregion
