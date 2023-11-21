@@ -110,7 +110,7 @@ internal static class Guids
     internal const string IShellItemArray = "B63EA76D-1F85-456F-A19C-48159EFA858B";
 }
 
-internal static class NativeMethods
+internal static partial class NativeMethods
 {
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 4)]
@@ -217,8 +217,8 @@ internal static class NativeMethods
 
     // @NET5: The .NET 8 version of this is insane and I have no comprehension of what they're doing
     // But this is the very last one that's still on DllImport. Let's fix this when we can.
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-    internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
+    [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    internal static unsafe partial HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, out void* ppv);
 }
 
 #region Interfaces
@@ -344,7 +344,7 @@ internal interface IFileOpenDialog //: IFileDialog // IFileDialog is commented-o
     void SetDefaultFolder([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetFolder([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi);
+    unsafe void SetFolder(void* psi);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetFolder([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);

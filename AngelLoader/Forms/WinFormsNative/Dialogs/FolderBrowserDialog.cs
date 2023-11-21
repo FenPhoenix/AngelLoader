@@ -98,7 +98,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
     #region Private methods
 
-    private void SetDialogProperties(NativeFolderBrowserDialog dialog)
+    private unsafe void SetDialogProperties(NativeFolderBrowserDialog dialog)
     {
         NativeMethods.FOS flags =
             NativeMethods.FOS.FOS_PICKFOLDERS |
@@ -134,14 +134,14 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
                 InitialDirectory,
                 IntPtr.Zero,
                 ref guid,
-                out object item);
+                out void* item);
 
             if (result != HResult.Ok)
             {
                 throw Marshal.GetExceptionForHR((int)result) ?? new Exception("Argh!\r\n" + result);
             }
 
-            dialog.SetFolder((IShellItem)item);
+            dialog.SetFolder(item);
         }
     }
 
