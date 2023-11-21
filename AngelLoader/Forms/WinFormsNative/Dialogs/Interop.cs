@@ -215,6 +215,8 @@ internal static class NativeMethods
         internal uint pid;
     }
 
+    // @NET5: The .NET 8 version of this is insane and I have no comprehension of what they're doing
+    // But this is the very last one that's still on DllImport. Let's fix this when we can.
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
 }
