@@ -173,13 +173,13 @@ internal static partial class Native
         internal IntPtr hwnd;
         internal ReaderModeFlags fFlags;
         internal IntPtr prc;
-        internal ReaderScrollCallbackDelegate pfnScroll;
-        internal TranslateDispatchCallbackDelegate fFlags2;
+        internal IntPtr pfnScroll;
+        internal IntPtr fFlags2;
         internal IntPtr lParam;
     }
 
-    [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
-    internal static extern void DoReaderMode(ref READERMODEINFO prmi);
+    [LibraryImport("comctl32.dll", EntryPoint = "#383", SetLastError = true)]
+    internal static partial void DoReaderMode(ref READERMODEINFO prmi);
 
     #endregion
 
