@@ -9,7 +9,7 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 
 2023-11-19:
 Implemented ReadOnlyMemory/ReadOnlySpan for readmes in a branch, but didn't get any perf improvement.
-We save 40MB in string allocs, but then we get 12MB of ReadOnlyMemory allocs.
+We save 30MB in string allocs, but then we get 12MB of ReadOnlyMemory allocs.
 
 Before:
 Type                   Allocations   Bytes          Average Size (Bytes)
