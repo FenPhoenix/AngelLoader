@@ -30,7 +30,7 @@ public static partial class Utils
     /// <returns></returns>
     internal static string GetFileNameFast(this string path)
     {
-        int index = path.AsSpan().LastIndexOfAny('/', '\\');
+        int index = path.Rel_LastIndexOfDirSep();
         return index == -1 ? path : path[(index + 1)..];
     }
 

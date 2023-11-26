@@ -164,13 +164,7 @@ public static partial class Common
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static int Rel_LastIndexOfDirSep(this string value)
-    {
-        int i1 = value.LastIndexOf('/');
-        int i2 = value.LastIndexOf('\\');
-
-        return Math.Max(i1, i2);
-    }
+    public static int Rel_LastIndexOfDirSep(this string value) => value.AsSpan().LastIndexOfAny('/', '\\');
 
     /// <summary>
     /// Path equality check ignoring case and directory separator differences.
