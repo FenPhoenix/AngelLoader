@@ -3283,7 +3283,7 @@ public sealed partial class Scanner : IDisposable
             if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
                 CountChars(fmIni.Descr, '\"') == 2)
             {
-                fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
+                fmIni.Descr = fmIni.Descr.Trim('\"');
             }
             if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
                 CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
@@ -5345,7 +5345,7 @@ public sealed partial class Scanner : IDisposable
 
         if (version.IsEmpty()) return "";
 
-        string ndv = version.Trim(CA_Period);
+        string ndv = version.Trim('.');
         int index = ndv.IndexOf('.');
         if (index > -1 && ndv.Substring(index + 1).Length < 2)
         {
