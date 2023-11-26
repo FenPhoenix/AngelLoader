@@ -73,6 +73,11 @@ public static partial class Common
         return bytesReadRet;
     }
 
+    public static int ReadAll(this Stream stream, Span<byte> buffer)
+    {
+        return stream.ReadAtLeast(buffer, buffer.Length, throwOnEndOfStream: false);
+    }
+
     public static void StreamCopyNoAlloc(Stream source, Stream destination, byte[] buffer)
     {
         int count;

@@ -436,9 +436,8 @@ internal static class Comparers
             x == y ? 0 :
             x.IsEmpty() ? -1 :
             y.IsEmpty() ? 1 :
-            string.Compare(
-                Path.GetFileNameWithoutExtension(x),
-                Path.GetFileNameWithoutExtension(y),
+            Path.GetFileNameWithoutExtension(x.AsSpan()).CompareTo(
+                Path.GetFileNameWithoutExtension(y.AsSpan()),
                 StringComparison.OrdinalIgnoreCase);
     }
 
