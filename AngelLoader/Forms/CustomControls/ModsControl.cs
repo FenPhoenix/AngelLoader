@@ -250,7 +250,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
     private void Commit()
     {
-        string[] disabledMods = DisabledModsTextBox.Text.Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries);
+        string[] disabledMods = DisabledModsTextBox.Text.Split('+', StringSplitOptions.RemoveEmptyEntries);
 
         var modNames = new DictionaryI<int>(CheckItems.Length);
 
@@ -307,7 +307,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             if (!disabledMods.IsEmpty())
             {
                 disabledModsHash = disabledMods
-                    .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                    .Split('+', StringSplitOptions.RemoveEmptyEntries)
                     .ToHashSetI();
             }
 

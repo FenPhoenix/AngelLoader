@@ -79,15 +79,10 @@ public static partial class Common
     #region Preset char arrays
 
     // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
-    public static readonly char[] CA_Comma = { ',' };
-    public static readonly char[] CA_Semicolon = { ';' };
     public static readonly char[] CA_CommaSemicolon = { ',', ';' };
     public static readonly char[] CA_CommaSpace = { ',', ' ' };
-    public static readonly char[] CA_Backslash = { '\\' };
     public static readonly char[] CA_BS_FS = { '\\', '/' };
     public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
-    public static readonly char[] CA_Plus = { '+' };
-    public static readonly char[] CA_DoubleQuote = { '\"' };
 
     #endregion
 

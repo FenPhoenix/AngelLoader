@@ -136,14 +136,11 @@ public sealed partial class Scanner
     #region Preallocated arrays
 
     // Perf, for passing to params[]-taking methods so we don't allocate all the time
-    private readonly char[] CA_Period = { '.' };
-    private readonly char[] CA_Asterisk = { '*' };
     private readonly char[] CA_AsteriskHyphen = { '*', '-' };
     private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
     private readonly char[] CA_Parens = { '(', ')' };
-    private readonly string[] CRLF_CR_LF = { "\r\n", "\r", "\n" };
-    private readonly string[] SA_DoubleSpaces = { "  " };
+    private readonly string[] CA_Linebreaks = { "\r\n", "\r", "\n" };
     private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
     private readonly string[] SA_AllFiles = { "*" };
     private readonly string[] SA_AllBinFiles = { "*.bin" };

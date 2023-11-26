@@ -974,7 +974,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(CA_Linebreaks, StringSplitOptions.None));
                 }
             }
 
@@ -1079,7 +1079,7 @@ public sealed partial class Scanner : IDisposable
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split(CA_Linebreaks, StringSplitOptions.None));
                     _readmeFiles.Add(readme);
                 }
                 catch
@@ -2347,7 +2347,7 @@ public sealed partial class Scanner : IDisposable
         // to guessing about day/month order.
         if (EuropeanDateRegex().Match(dateString).Success)
         {
-            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex().Replace(dateString, ".").Trim(CA_Period);
+            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex().Replace(dateString, ".").Trim('.');
             if (DateTime.TryParseExact(
                     dateStringTemp,
                     _dateFormatsEuropean,
@@ -2388,7 +2388,7 @@ public sealed partial class Scanner : IDisposable
         dateString = NovemberVariationsRegex().Replace(dateString, "Nov");
         dateString = DecemberVariationsRegex().Replace(dateString, "Dec");
 
-        dateString = dateString.Trim(CA_Period);
+        dateString = dateString.Trim('.');
         dateString = dateString.Trim(CA_Parens);
         dateString = dateString.Trim();
 
@@ -3597,7 +3597,7 @@ public sealed partial class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split(CRLF_CR_LF, StringSplitOptions.None));
+                            last.Lines.ClearFullAndAdd(text.Split(CA_Linebreaks, StringSplitOptions.None));
                         }
                     }
                     finally
@@ -3617,7 +3617,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split(CRLF_CR_LF, StringSplitOptions.None));
+                    last.Lines.ClearFullAndAdd(last.Text.Split(CA_Linebreaks, StringSplitOptions.None));
                 }
             }
             finally
@@ -3920,7 +3920,7 @@ public sealed partial class Scanner : IDisposable
 
         if (value.IsEmpty()) return value;
 
-        if (value[0] == '\"' && value[^1] == '\"') value = value.Trim(CA_DoubleQuote);
+        if (value[0] == '\"' && value[^1] == '\"') value = value.Trim('\"');
 
         if (value.IsEmpty()) return value;
 
@@ -3961,7 +3961,7 @@ public sealed partial class Scanner : IDisposable
             value = value.Substring(0, value.Length - 1);
         }
 
-        value = value.Trim(CA_Asterisk);
+        value = value.Trim('*');
 
         return value;
     }
@@ -4330,7 +4330,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (value.Contains("  ", Ordinal))
                 {
-                    string[] titleWords = value.Split(SA_DoubleSpaces, StringSplitOptions.None);
+                    string[] titleWords = value.Split("  ");
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
@@ -4686,7 +4686,7 @@ public sealed partial class Scanner : IDisposable
             author = author.Substring(0, author.Length - 2);
         }
 
-        return author.TrimEnd(CA_Period).Trim();
+        return author.TrimEnd('.').Trim();
     }
 
     #endregion

@@ -149,7 +149,7 @@ internal static partial class Ini
 
     private static void Config_Articles_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        string[] articles = valTrimmed.ToString().Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        string[] articles = valTrimmed.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
         for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
         config.Articles.ClearAndAdd_Small(articles.Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
     }
@@ -365,7 +365,7 @@ internal static partial class Ini
 
     private static void Config_FilterGames_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        string[] iniGames = valTrimmed.ToString().Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        string[] iniGames = valTrimmed.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < iniGames.Length; i++)
         {
             string iniGame = iniGames[i].Trim();

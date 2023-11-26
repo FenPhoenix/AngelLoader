@@ -490,7 +490,7 @@ internal static partial class Ini
 
     private static void AddColumn(ConfigData config, ReadOnlySpan<char> valTrimmed, Column columnType)
     {
-        valTrimmed = valTrimmed.Trim(CA_Comma);
+        valTrimmed = valTrimmed.Trim(',');
 
         ColumnData col = new() { Id = columnType };
 

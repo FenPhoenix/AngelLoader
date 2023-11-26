@@ -163,7 +163,7 @@ public static partial class FastIO_Native
     {
         // Vital, path must not have a trailing separator
         // We also normalize it manually because we use \?\\ which skips normalization
-        path = path.ToBackSlashes().TrimEnd(CA_Backslash);
+        path = path.ToBackSlashes().TrimEnd('\\');
 
         if (!pathIsKnownValid)
         {

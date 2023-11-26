@@ -1154,19 +1154,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             List<string> retArticles = AppearancePage.ArticlesTextBox.Text
                 .Replace(", ", ",")
-                .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
-
-            // Just in case
-            for (int i = 0; i < retArticles.Count; i++)
-            {
-                if (retArticles[i].IsWhiteSpace())
-                {
-                    retArticles.RemoveAt(i);
-                    i--;
-                }
-            }
 
             OutConfig.Articles.ClearAndAdd_Small(retArticles);
 
@@ -1639,7 +1629,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         articles = Regex.Replace(articles, @"\,{2,}", ",");
 
         // Remove commas from start and end
-        articles = articles.Trim(CA_Comma);
+        articles = articles.Trim(',');
 
         string[] articlesArray = articles.Split(CA_CommaSpace).Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
 

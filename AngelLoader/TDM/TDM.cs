@@ -146,7 +146,7 @@ internal static class TDM
 
         static string GetValueForKey(string line, string key)
         {
-            return line.Substring(key.Length).Trim().Trim(CA_DoubleQuote);
+            return line.Substring(key.Length).Trim().Trim('\"');
         }
 
         static void SkipEntry(List<string> lines, ref int i)

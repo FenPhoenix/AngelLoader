@@ -928,7 +928,7 @@ internal static class GameConfigFiles
         {
             return lastIndex > -1
                 ? lines[lastIndex].Substring(pathKey.Length).Trim()
-                    .Split(CA_Plus, StringSplitOptions.RemoveEmptyEntries)
+                    .Split('+', StringSplitOptions.RemoveEmptyEntries)
                     .Distinct(StringComparer.OrdinalIgnoreCase).ToList()
                 : new List<string>();
         }

@@ -301,7 +301,7 @@ public sealed partial class RtfDisplayedReadmeParser
             _colorTableSB.Append(ch);
         }
 
-        string[] entries = _colorTableSB.ToString().Split(CA_Semicolon);
+        string[] entries = _colorTableSB.ToString().Split(';');
 
         int realEntryCount = entries.Length;
         if (entries.Length == 0)
