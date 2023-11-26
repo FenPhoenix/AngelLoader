@@ -3428,6 +3428,11 @@ public sealed partial class Scanner : IDisposable
         // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
         // Treat 'em like plaintext and see how it goes.
 
+        // Stupid micro-optimization
+        const int rtfHeaderBytesLength = 6;
+
+        Span<byte> rtfHeader = stackalloc byte[rtfHeaderBytesLength];
+
         foreach (NameAndIndex readmeFile in _readmeDirFiles)
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
@@ -3553,14 +3558,10 @@ public sealed partial class Scanner : IDisposable
                     _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer)
                 };
 
-                // Stupid micro-optimization
-                const int rtfHeaderBytesLength = 6;
-
-                _rtfHeaderBuffer.Clear();
-
+                int rtfBytesRead = 0;
                 if (readmeFileLen >= rtfHeaderBytesLength)
                 {
-                    readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
+                    rtfBytesRead = readmeStream.ReadAll(rtfHeader);
                 }
 
                 if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
@@ -3574,7 +3575,7 @@ public sealed partial class Scanner : IDisposable
 
                 ReadmeInternal last = _readmeFiles[^1];
 
-                bool readmeIsRtf = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
+                bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && rtfHeader.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
                     if (_fmFormat == FMFormat.Zip)
