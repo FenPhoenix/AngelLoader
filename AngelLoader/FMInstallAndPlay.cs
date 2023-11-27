@@ -1335,6 +1335,15 @@ internal static class FMInstallAndPlay
         }
     }
 
+    private sealed class Buffers
+    {
+        private byte[]? _extractBuffer;
+        private byte[]? _fileStreamBuffer;
+
+        internal byte[] ExtractTempBuffer => _extractBuffer ??= new byte[StreamCopyBufferSize];
+        internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
+    }
+
     internal static Task<bool> Install(params FanMission[] fms) => InstallInternal(false, false, fms);
 
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
@@ -1476,10 +1485,8 @@ internal static class FMInstallAndPlay
                 cancelMessage: LText.Global.Cancel
             );
 
-            BinaryBuffer buffer = new();
-            byte[]? zipExtractTempBuffer = null;
-            byte[]? rarExtractTempBuffer = null;
-            byte[]? fileStreamBuffer = null;
+            BinaryBuffer binaryBuffer = new();
+            Buffers buffers = new();
 
             for (int i = 0; i < fmDataList.Length; i++)
             {
@@ -1497,16 +1504,16 @@ internal static class FMInstallAndPlay
                 // don't have to so whatever.
 
                 (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
-                    ? InstallFMZip(
+                    ? Task.Run(() => InstallFMZip(
                         fmData.ArchivePath,
                         fmInstalledPath,
                         fmData.FM.Archive,
                         mainPercent,
                         fmDataList.Length,
-                        zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
-                        fileStreamBuffer ??= new byte[FileStreamBufferSize])
+                        buffers.ExtractTempBuffer,
+                        buffers.FileStreamBuffer))
                     : fmData.ArchivePath.ExtIsRar()
-                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, rarExtractTempBuffer ??= new byte[StreamCopyBufferSize]))
+                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, buffers.ExtractTempBuffer))
                     : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                 if (installFailed)
@@ -1559,7 +1566,7 @@ internal static class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, buffer, fileStreamBuffer ??= new byte[FileStreamBufferSize], _installCts.Token);
+                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1569,7 +1576,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, buffer, fileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1580,7 +1587,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, buffer, fileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1619,8 +1626,8 @@ internal static class FMInstallAndPlay
                     await RestoreFM(
                         fmData.FM,
                         archivePaths,
-                        zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
-                        fileStreamBuffer ??= new byte[FileStreamBufferSize],
+                        buffers.ExtractTempBuffer,
+                        buffers.FileStreamBuffer,
                         _installCts.Token);
                 }
                 catch (Exception ex)
@@ -1648,7 +1655,7 @@ internal static class FMInstallAndPlay
         return true;
     }
 
-    private static Task<(bool Canceled, bool InstallFailed)>
+    private static (bool Canceled, bool InstallFailed)
     InstallFMZip(
         string fmArchivePath,
         string fmInstalledPath,
@@ -1658,26 +1665,24 @@ internal static class FMInstallAndPlay
         byte[] tempBuffer,
         byte[] fileStreamBuffer)
     {
-        return Task.Run(() =>
+        bool single = fmCount == 1;
+
+        try
         {
-            bool single = fmCount == 1;
+            Directory.CreateDirectory(fmInstalledPath);
 
-            try
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+
+            int filesCount = archive.Entries.Count;
+            for (int i = 0; i < filesCount; i++)
             {
-                Directory.CreateDirectory(fmInstalledPath);
+                ZipArchiveEntry entry = archive.Entries[i];
 
-                using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+                string fileName = entry.FullName;
 
-                int filesCount = archive.Entries.Count;
-                for (int i = 0; i < filesCount; i++)
-                {
-                    ZipArchiveEntry entry = archive.Entries[i];
+                if (fileName[^1].IsDirSep()) continue;
 
-                    string fileName = entry.FullName;
-
-                    if (fileName[^1].IsDirSep()) continue;
-
-                    // Disabled for this release as I need to test it more thoroughly
+                // Disabled for this release as I need to test it more thoroughly
 #if false
                     #region Relative/malicious path check
 
@@ -1697,49 +1702,48 @@ internal static class FMInstallAndPlay
                     #endregion
 #endif
 
-                    if (fileName.Rel_ContainsDirSep())
-                    {
-                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-                    }
+                if (fileName.Rel_ContainsDirSep())
+                {
+                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                }
 
-                    string extractedName = Path.Combine(fmInstalledPath, fileName);
-                    entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+                string extractedName = Path.Combine(fmInstalledPath, fileName);
+                entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
 
-                    File_UnSetReadOnly(extractedName);
+                File_UnSetReadOnly(extractedName);
 
-                    int percent = GetPercentFromValue_Int(i + 1, filesCount);
+                int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+                int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(percent);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmArchive,
-                            subPercent: percent
-                        );
-                    }
+                if (single)
+                {
+                    Core.View.SetProgressPercent(percent);
+                }
+                else
+                {
+                    Core.View.SetProgressBoxState_Double(
+                        mainPercent: newMainPercent,
+                        subMessage: fmArchive,
+                        subPercent: percent
+                    );
+                }
 
-                    if (_installCts.Token.IsCancellationRequested)
-                    {
-                        return (true, false);
-                    }
+                if (_installCts.Token.IsCancellationRequested)
+                {
+                    return (true, false);
                 }
             }
-            catch (Exception ex)
-            {
-                Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-                return (false, true);
-            }
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+            Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+            return (false, true);
+        }
 
-            return (false, false);
-        });
+        return (false, false);
     }
 
     private static (bool Canceled, bool InstallFailed)
