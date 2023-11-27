@@ -13,6 +13,18 @@ public static partial class Common
 
     #region Methods
 
+    /*
+    @NET5(FileStream cached buffer):
+    We currently pass a buffer all around a million times. We would like to have this just use a rented array.
+    However, it's very tricky to do so:
+    -We can't inherit from FileStream because then the strategy ends up being DerivedFileStreamStrategy with the
+     original strategy as a field. Then we have to get two instances and all the frigging reflection crap just to
+     set the value. We can't cache instances of course because there'll be new ones for every new FileStream.
+    -We can't use a wrapper struct because many of the callers need a Stream-derived type.
+    -We could do a Stream-derived type and have the buffer-cached FileStream as a member and override everything
+     and redirect to the member FileStream. Maybe this would prevent the JIT from devirtualizing. Would it matter?
+    -We could use a wrapper struct and make the callsites messier.
+    */
     public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
         FileStream fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096);
