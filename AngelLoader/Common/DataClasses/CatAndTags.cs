@@ -106,9 +106,8 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
 
     public void Add(string category, FMTagsCollection tags)
     {
-        if (!_dict.ContainsKey(category))
+        if (_dict.TryAdd(category, tags))
         {
-            _dict[category] = tags;
             _list.Add(category);
         }
     }
