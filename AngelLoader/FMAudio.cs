@@ -22,9 +22,9 @@ internal static class FMAudio
     // Maybe do similar to scanner, write all errors to log and then tell user there were errors during the
     // conversion.
 
-    private static readonly byte[] _riff = { (byte)'R', (byte)'I', (byte)'F', (byte)'F' };
-    private static readonly byte[] _wave = { (byte)'W', (byte)'A', (byte)'V', (byte)'E' };
-    private static readonly byte[] _fmt = { (byte)'f', (byte)'m', (byte)'t', (byte)' ' };
+    private static readonly byte[] _riff = "RIFF"u8.ToArray();
+    private static readonly byte[] _wave = "WAVE"u8.ToArray();
+    private static readonly byte[] _fmt = "fmt "u8.ToArray();
 
     private static CancellationTokenSource _conversionCts = new();
     private static void CancelToken() => _conversionCts.CancelIfNotDisposed();

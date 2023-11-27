@@ -54,27 +54,9 @@ public static partial class Common
         }
     }
 
-    public static readonly byte[] RTFHeaderBytes =
-    {
-        (byte)'{',
-        (byte)'\\',
-        (byte)'r',
-        (byte)'t',
-        (byte)'f',
-        (byte)'1'
-    };
+    public static readonly byte[] RTFHeaderBytes = @"{\rtf1"u8.ToArray();
 
-    public static readonly byte[] MAPPARAM =
-    {
-        (byte)'M',
-        (byte)'A',
-        (byte)'P',
-        (byte)'P',
-        (byte)'A',
-        (byte)'R',
-        (byte)'A',
-        (byte)'M'
-    };
+    public static readonly byte[] MAPPARAM = "MAPPARAM"u8.ToArray();
 
     #region Preset char arrays
 

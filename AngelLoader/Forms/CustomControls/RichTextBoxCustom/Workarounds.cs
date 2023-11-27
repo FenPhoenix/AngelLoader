@@ -395,75 +395,13 @@ internal sealed partial class RichTextBoxCustom
 
     #region Workaround to fix black transparent regions in images
 
-    private static readonly byte[] _shppict =
-    {
-#if false
-        (byte)'{',
-        (byte)'\\',
-        (byte)'*',
-#endif
-        (byte)'\\',
-        (byte)'s',
-        (byte)'h',
-        (byte)'p',
-        (byte)'p',
-        (byte)'i',
-        (byte)'c',
-        (byte)'t'
-    };
+    private static readonly byte[] _shppict = @"\shppict"u8.ToArray();
 
-    private static readonly byte[] _shppictBlanked =
-    {
-#if false
-        (byte)'{',
-        (byte)'\\',
-        (byte)'*',
-#endif
-        (byte)'\\',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x'
-    };
+    private static readonly byte[] _shppictBlanked = @"\xxxxxxx"u8.ToArray();
 
-    private static readonly byte[] _nonshppict =
-    {
-#if false
-        (byte)'{',
-#endif
-        (byte)'\\',
-        (byte)'n',
-        (byte)'o',
-        (byte)'n',
-        (byte)'s',
-        (byte)'h',
-        (byte)'p',
-        (byte)'p',
-        (byte)'i',
-        (byte)'c',
-        (byte)'t'
-    };
+    private static readonly byte[] _nonshppict = @"\nonshppict"u8.ToArray();
 
-    private static readonly byte[] _nonshppictBlanked =
-    {
-#if false
-        (byte)'{',
-#endif
-        (byte)'\\',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x'
-    };
+    private static readonly byte[] _nonshppictBlanked = @"\xxxxxxxxxx"u8.ToArray();
 
     /*
     Alright kids, gather round while your ol' Grandpa Fen explains you the deal.
