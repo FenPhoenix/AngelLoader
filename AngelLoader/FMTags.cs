@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using AngelLoader.DataClasses;
+using SpanExtensions;
 using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -194,31 +195,6 @@ internal static class FMTags
         fm.TagsString = TagsToString(fm.Tags, writeEmptyCategories: false, sb);
     }
 
-    private static bool TryGetCatAndTag(string item, out string cat, out string tag)
-    {
-        switch (item.CountCharsUpToAmount(':', 2))
-        {
-            case > 1:
-                cat = "";
-                tag = "";
-                return false;
-            case 1:
-                int index = item.IndexOf(':');
-                cat = item.Substring(0, index).Trim();
-                // Save an alloc if we're ascii lowercase already (case conversion always allocs, even if
-                // the new string is the same as the old)
-                if (!cat.IsAsciiLower()) cat = cat.ToLowerInvariant();
-                tag = item.Substring(index + 1).Trim();
-                break;
-            default:
-                cat = PresetTags.MiscCategory;
-                tag = item.Trim();
-                break;
-        }
-
-        return true;
-    }
-
     internal static bool TryGetCatAndTag(ReadOnlySpan<char> item, out string cat, out string tag)
     {
         switch (item.CountCharsUpToAmount(':', 2))
@@ -258,17 +234,9 @@ internal static class FMTags
     {
         if (tagsToAdd.IsWhiteSpace()) return;
 
-        /*
-        @MEM(AddTagsToFMAndGlobalList/string.Split): This runs for every FM on startup, we could use the array-renting version
-        Although the UI load is still the bottleneck, so speeding this up wouldn't actually decrease startup
-        time at all. Meh.
-        Also, this returned array is also temporary, we really just want the substrings out of the main string,
-        and the Split array is just the easiest way to do it, but it's not actually necessary for the task at hand.
-        */
-        string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < tagsArray.Length; i++)
+        foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.SplitAny(tagsToAdd, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
         {
-            if (!TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+            if (!TryGetCatAndTag(item, out string cat, out string tag) ||
                 cat.IsEmpty() || tag.IsEmpty())
             {
                 continue;
