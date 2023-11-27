@@ -29,6 +29,7 @@ public static partial class Common
         return -1;
     }
 
+#if false
     public static int FindIndexOfCharSequence(string input, string pattern, int start = 0)
     {
         char firstChar = pattern[0];
@@ -52,7 +53,6 @@ public static partial class Common
         return -1;
     }
 
-#if false
     public static int FindIndexOfByteSequence(List<byte> input, byte[] pattern, int start = 0)
     {
         byte firstByte = pattern[0];

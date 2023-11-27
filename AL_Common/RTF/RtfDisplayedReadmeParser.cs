@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using System.Text;
 using JetBrains.Annotations;
+using SpanExtensions;
 using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
@@ -277,10 +278,45 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
     private RtfError ParseAndBuildColorTable()
     {
-        var _colorTableSB = new StringBuilder(4096);
+        ClearReturnFields(RtfError.OK);
+
+        int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
+        if (closingBraceIndex == -1) return ClearReturnFields(RtfError.OK);
+
+        ReadOnlySpan<byte> colorTableSpan = _rtfBytes.Array.AsSpan(CurrentPos, closingBraceIndex - CurrentPos);
+
+        _colorTable = new List<Color>(colorTableSpan.Count((byte)';'));
+
+        bool first = true;
+        foreach (ReadOnlySpan<byte> entry in ReadOnlySpanExtensions.Split(colorTableSpan, (byte)';'))
+        {
+            if (entry.IsWhiteSpace())
+            {
+                if (first)
+                {
+                    // 0 alpha will be the flag for "this is the omitted default/auto color"
+                    _colorTable.Add(Color.FromArgb(0, 0, 0, 0));
+                }
+            }
+            else
+            {
+                ReadOnlySpan<byte> redString = "\\red"u8;
+                ReadOnlySpan<byte> greenString = "\\green"u8;
+                ReadOnlySpan<byte> blueString = "\\blue"u8;
+
+                if (GetColorByte(entry, redString, out byte red) &&
+                    GetColorByte(entry, greenString, out byte green) &&
+                    GetColorByte(entry, blueString, out byte blue))
+                {
+                    _colorTable.Add(Color.FromArgb(red, green, blue));
+                }
+            }
+            first = false;
+        }
+
+        return first ? ClearReturnFields(RtfError.OK) : RtfError.OK;
 
         RtfError ClearReturnFields(RtfError error)
         {
@@ -288,100 +324,42 @@ public sealed partial class RtfDisplayedReadmeParser
             return error;
         }
 
-        ClearReturnFields(RtfError.OK);
-
-        while (true)
+        static bool GetColorByte(ReadOnlySpan<byte> entry, ReadOnlySpan<byte> hueWord, out byte result)
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
-            if (ch == '}')
+            int hueIndex = entry.IndexOf(hueWord);
+            if (hueIndex > -1)
             {
-                CurrentPos--;
-                break;
-            }
-            _colorTableSB.Append(ch);
-        }
-
-        string[] entries = _colorTableSB.ToString().Split(';');
-
-        int realEntryCount = entries.Length;
-        if (entries.Length == 0)
-        {
-            return ClearReturnFields(RtfError.OK);
-        }
-        // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
-        // in the loop below
-        else if (entries.Length > 1 && entries[^1].IsWhiteSpace())
-        {
-            realEntryCount--;
-        }
-
-        _colorTable = new List<Color>(realEntryCount);
-
-        for (int i = 0; i < realEntryCount; i++)
-        {
-            string entry = entries[i].Trim();
-
-            if (entry.IsEmpty())
-            {
-                // 0 alpha will be the flag for "this is the omitted default/auto color"
-                _colorTable.Add(Color.FromArgb(0, 0, 0, 0));
-            }
-            else
-            {
-                const string redString = "\\red";
-                const int redStringLen = 4;
-                const string greenString = "\\green";
-                const int greenStringLen = 6;
-                const string blueString = "\\blue";
-                const int blueStringLen = 5;
-
-                static bool GetColorByte(string entry, string hueString, int hueStringLen, out byte result)
+                int indexPastHue = hueIndex + hueWord.Length;
+                if (indexPastHue < entry.Length)
                 {
-                    int hueIndex = FindIndexOfCharSequence(entry, hueString);
-                    if (hueIndex > -1)
+                    byte firstDigit = entry[indexPastHue];
+                    if (firstDigit.IsAsciiNumeric())
                     {
-                        int indexPastHue = hueIndex + hueStringLen;
-                        if (indexPastHue < entry.Length)
+                        int colorValue = firstDigit - '0';
+                        for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
                         {
-                            char firstDigit = entry[indexPastHue];
-                            if (char.IsAsciiDigit(firstDigit))
+                            byte c = entry[colorI];
+                            if (!c.IsAsciiNumeric()) break;
+                            // Color value too long, must be 1-3 digits
+                            if (colorI >= indexPastHue + 3)
                             {
-                                int colorValue = firstDigit - '0';
-                                for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
-                                {
-                                    char c = entry[colorI];
-                                    if (!char.IsAsciiDigit(c)) break;
-                                    // Color value too long, must be 1-3 digits
-                                    if (colorI >= indexPastHue + 3)
-                                    {
-                                        result = 0;
-                                        return false;
-                                    }
-                                    colorValue *= 10;
-                                    colorValue += c - '0';
-                                }
-                                if (colorValue is >= 0 and <= 255)
-                                {
-                                    result = (byte)colorValue;
-                                    return true;
-                                }
+                                result = 0;
+                                return false;
                             }
+                            colorValue *= 10;
+                            colorValue += c - '0';
+                        }
+                        if (colorValue is >= 0 and <= 255)
+                        {
+                            result = (byte)colorValue;
+                            return true;
                         }
                     }
-
-                    result = 0;
-                    return false;
-                }
-
-                if (GetColorByte(entry, redString, redStringLen, out byte red) &&
-                    GetColorByte(entry, greenString, greenStringLen, out byte green) &&
-                    GetColorByte(entry, blueString, blueStringLen, out byte blue))
-                {
-                    _colorTable.Add(Color.FromArgb(red, green, blue));
                 }
             }
-        }
 
-        return RtfError.OK;
+            result = 0;
+            return false;
+        }
     }
 }
