@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+    <PackageReference Include="SpanExtensions.Net" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
