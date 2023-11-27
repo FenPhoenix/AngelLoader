@@ -376,7 +376,6 @@ internal static partial class FMBackupAndRestore
     internal static Task RestoreFM(
         FanMission fm,
         List<string> archivePaths,
-        byte[] zipExtractTempBuffer,
         byte[] fileStreamBuffer,
         CancellationToken ct)
     {
@@ -423,12 +422,12 @@ internal static partial class FMBackupAndRestore
                         if (!fn.Rel_ContainsDirSep())
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true);
                         }
                         else if (fm.Game == Game.SS2 && (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true);
                         }
 
                         if (Canceled(ct)) return;
@@ -455,7 +454,7 @@ internal static partial class FMBackupAndRestore
                                   (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                                entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
+                                entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
 
                             if (Canceled(ct)) return;
@@ -529,7 +528,7 @@ internal static partial class FMBackupAndRestore
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                             }
 
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, efn), overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, efn), overwrite: true);
 
                             if (Canceled(ct)) return;
                         }

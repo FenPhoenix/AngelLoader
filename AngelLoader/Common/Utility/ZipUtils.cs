@@ -30,14 +30,13 @@ public static partial class Utils
     internal static void ExtractToFile_Fast(
         this ZipArchiveEntry entry,
         string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
+        bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
         using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
         using (Stream source = entry.Open())
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            source.CopyTo(destination);
         }
         File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
     }
@@ -45,14 +44,13 @@ public static partial class Utils
     internal static void ExtractToFile_Fast(
         this RarArchiveEntry entry,
         string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
+        bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
         using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
         using (Stream source = entry.OpenEntryStream())
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            source.CopyTo(destination);
         }
         if (entry.LastModifiedTime != null)
         {
@@ -63,14 +61,13 @@ public static partial class Utils
     internal static void ExtractToFile_Fast(
         this RarReader reader,
         string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
+        bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
         using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
         using (Stream source = reader.OpenEntryStream())
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            source.CopyTo(destination);
         }
         DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
         if (lastModifiedTime != null)

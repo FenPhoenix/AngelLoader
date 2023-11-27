@@ -82,14 +82,5 @@ public static partial class Common
         return stream.ReadAtLeast(buffer, buffer.Length, throwOnEndOfStream: false);
     }
 
-    public static void StreamCopyNoAlloc(Stream source, Stream destination, byte[] buffer)
-    {
-        int count;
-        while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
-        {
-            destination.Write(buffer, 0, count);
-        }
-    }
-
     #endregion
 }

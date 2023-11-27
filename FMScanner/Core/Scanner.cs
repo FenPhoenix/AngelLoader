@@ -1542,7 +1542,7 @@ public sealed partial class Scanner : IDisposable
                         {
                             string dir = Path.GetDirectoryName(finalFileName)!;
                             Directory.CreateDirectory(dir);
-                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true, DiskFileStreamBuffer);
+                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true);
                         }
                     }
                 }
@@ -3631,7 +3631,7 @@ public sealed partial class Scanner : IDisposable
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
         using var es = _archive.OpenEntry(readmeEntry);
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        es.CopyTo(_generalMemoryStream);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
     }
@@ -3641,7 +3641,7 @@ public sealed partial class Scanner : IDisposable
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
         using var es = readmeEntry.OpenEntryStream();
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        es.CopyTo(_generalMemoryStream);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
     }
@@ -5418,13 +5418,6 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    #region Stream copy with buffer
-
-    private byte[]? _streamCopyBuffer;
-    private byte[] StreamCopyBuffer => _streamCopyBuffer ??= new byte[81920];
-
-    #endregion
-
     #region Generic dir/file functions
 
     private string[] EnumFiles(string path, SearchOption searchOption)
@@ -5492,7 +5485,7 @@ public sealed partial class Scanner : IDisposable
                 _generalMemoryStream.SetLength(entryLength);
                 _generalMemoryStream.Position = 0;
 
-                StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
+                entryStream.CopyTo(_generalMemoryStream);
                 _generalMemoryStream.Position = 0;
 
                 Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ??

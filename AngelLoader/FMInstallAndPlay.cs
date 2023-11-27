@@ -1337,10 +1337,7 @@ internal static class FMInstallAndPlay
 
     private sealed class Buffers
     {
-        private byte[]? _extractBuffer;
         private byte[]? _fileStreamBuffer;
-
-        internal byte[] ExtractTempBuffer => _extractBuffer ??= new byte[StreamCopyBufferSize];
         internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
     }
 
@@ -1510,10 +1507,9 @@ internal static class FMInstallAndPlay
                         fmData.FM.Archive,
                         mainPercent,
                         fmDataList.Length,
-                        buffers.ExtractTempBuffer,
                         buffers.FileStreamBuffer))
                     : fmData.ArchivePath.ExtIsRar()
-                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, buffers.ExtractTempBuffer))
+                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
                     : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                 if (installFailed)
@@ -1626,7 +1622,6 @@ internal static class FMInstallAndPlay
                     await RestoreFM(
                         fmData.FM,
                         archivePaths,
-                        buffers.ExtractTempBuffer,
                         buffers.FileStreamBuffer,
                         _installCts.Token);
                 }
@@ -1662,7 +1657,6 @@ internal static class FMInstallAndPlay
         string fmArchive,
         int mainPercent,
         int fmCount,
-        byte[] tempBuffer,
         byte[] fileStreamBuffer)
     {
         bool single = fmCount == 1;
@@ -1709,7 +1703,7 @@ internal static class FMInstallAndPlay
                 }
 
                 string extractedName = Path.Combine(fmInstalledPath, fileName);
-                entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+                entry.ExtractToFile_Fast(extractedName, overwrite: true);
 
                 File_UnSetReadOnly(extractedName);
 
@@ -1747,7 +1741,7 @@ internal static class FMInstallAndPlay
     }
 
     private static (bool Canceled, bool InstallFailed)
-    InstallFMRar(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount, byte[] tempBuffer)
+    InstallFMRar(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
     {
         bool single = fmCount == 1;
 
@@ -1802,7 +1796,7 @@ internal static class FMInstallAndPlay
                     }
 
                     string extractedName = Path.Combine(fmInstalledPath, fileName);
-                    reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+                    reader.ExtractToFile_Fast(extractedName, overwrite: true);
 
                     File_UnSetReadOnly(extractedName);
 
