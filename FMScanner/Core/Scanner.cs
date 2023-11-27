@@ -4656,7 +4656,7 @@ public sealed partial class Scanner : IDisposable
         return author.IsWhiteSpace() ? "" : CleanupCopyrightAuthor(author);
     }
 
-    private string CleanupCopyrightAuthor(string author)
+    private static string CleanupCopyrightAuthor(string author)
     {
         author = author.Trim().RemoveSurroundingParentheses();
 
