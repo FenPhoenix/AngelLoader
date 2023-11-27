@@ -42,6 +42,10 @@ public static partial class Common
                                 "_buffer",
                                 BindingFlags.NonPublic | BindingFlags.Instance);
                         _fileStreamBufferFieldFound = _bufferField != null;
+                        if (_fileStreamBufferFieldFound == true)
+                        {
+                            _bufferField?.SetValue(strategyInstance, buffer);
+                        }
                     }
                 }
             }
