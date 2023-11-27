@@ -337,12 +337,12 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T[] Cleared<T>(this T[] array)
     {
-        Array.Clear(array, 0, array.Length);
+        Array.Clear(array);
         return array;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Clear<T>(this T[] array) => Array.Clear(array, 0, array.Length);
+    public static void Clear<T>(this T[] array) => Array.Clear(array);
 
     public static bool StartsWith(this byte[] first, byte[] second)
     {
@@ -355,22 +355,6 @@ public static partial class Common
         return true;
     }
 
-    public static void AddRange_Small<T>(this List<T> list, List<T> items)
-    {
-        for (int i = 0; i < items.Count; i++)
-        {
-            list.Add(items[i]);
-        }
-    }
-
-    public static void AddRange_Small<T>(this List<T> list, T[] items)
-    {
-        for (int i = 0; i < items.Length; i++)
-        {
-            list.Add(items[i]);
-        }
-    }
-
     #region Clear and add
 
     public static void ClearAndAdd_Single<T>(this List<T> list, T item)
@@ -379,31 +363,7 @@ public static partial class Common
         list.Add(item);
     }
 
-    public static void ClearAndAdd_Small<T>(this List<T> list, List<T> items)
-    {
-        list.Clear();
-        for (int i = 0; i < items.Count; i++)
-        {
-            list.Add(items[i]);
-        }
-    }
-
-    public static void ClearAndAdd_Small<T>(this List<T> list, T[] items)
-    {
-        list.Clear();
-        for (int i = 0; i < items.Length; i++)
-        {
-            list.Add(items[i]);
-        }
-    }
-
-    /// <summary>
-    /// Uses AddRange(), which incurs an extra copy of the passed array for no conceivable reason.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <param name="items"></param>
-    public static void ClearAndAdd_Large<T>(this List<T> list, T[] items)
+    public static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
     {
         list.Clear();
         list.AddRange(items);

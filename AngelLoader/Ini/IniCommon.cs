@@ -705,7 +705,7 @@ internal static partial class Ini
         // TODO: This should really be like an "Ordered HashSet" but there's no such thing I don't think
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
-        config.FMArchivePaths.ClearAndAdd_Small(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
+        config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
     }
 
     #endregion

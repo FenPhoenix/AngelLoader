@@ -3105,7 +3105,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange_Small(_misFiles);
+        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles);
 
         #endregion
 

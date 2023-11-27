@@ -1158,7 +1158,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
-            OutConfig.Articles.ClearAndAdd_Small(retArticles);
+            OutConfig.Articles.ClearAndAdd(retArticles);
 
             OutConfig.MoveArticlesToEnd = AppearancePage.MoveArticlesToEndCheckBox.Checked;
 
