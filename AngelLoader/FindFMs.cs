@@ -53,9 +53,9 @@ internal static class FindFMs
                     {
                         string value = item.Key;
                         string key = value.ToInstDirNameFMSel(_instDirNameContext, true);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated.ContainsKey(key))
+                        if (!key.IsEmpty() && !value.IsEmpty())
                         {
-                            _archivesToInstDirNameFMSelTruncated.Add(key, value);
+                            _archivesToInstDirNameFMSelTruncated.TryAdd(key, value);
                         }
                     }
                 }
@@ -70,9 +70,9 @@ internal static class FindFMs
                     {
                         string value = item.Key;
                         string key = value.ToInstDirNameFMSel(_instDirNameContext, false);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated.ContainsKey(key))
+                        if (!key.IsEmpty() && !value.IsEmpty())
                         {
-                            _archivesToInstDirNameFMSelNotTruncated.Add(key, value);
+                            _archivesToInstDirNameFMSelNotTruncated.TryAdd(key, value);
                         }
                     }
                 }
@@ -89,9 +89,9 @@ internal static class FindFMs
                 {
                     string value = item.Key;
                     string key = value.ToInstDirNameNDL(_instDirNameContext, truncate: true);
-                    if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated.ContainsKey(key))
+                    if (!key.IsEmpty() && !value.IsEmpty())
                     {
-                        _archivesToInstDirNameNDLTruncated.Add(key, value);
+                        _archivesToInstDirNameNDLTruncated.TryAdd(key, value);
                     }
                 }
             }
@@ -108,9 +108,9 @@ internal static class FindFMs
                     string key = item.Key;
                     // ReSharper disable once InlineTemporaryVariable
                     string value = key;
-                    if (!key.IsEmpty() && !value.IsEmpty() && !_archives.ContainsKey(key))
+                    if (!key.IsEmpty() && !value.IsEmpty())
                     {
-                        _archives.Add(key, value);
+                        _archives.TryAdd(key, value);
                     }
                 }
             }
@@ -128,9 +128,9 @@ internal static class FindFMs
                     {
                         string value = FMDataIniList[i].Archive;
                         string key = value.ToInstDirNameFMSel(_instDirNameContext, truncate: true);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelTruncated_FromFMDataIniList.ContainsKey(key))
+                        if (!key.IsEmpty() && !value.IsEmpty())
                         {
-                            _archivesToInstDirNameFMSelTruncated_FromFMDataIniList.Add(key, value);
+                            _archivesToInstDirNameFMSelTruncated_FromFMDataIniList.TryAdd(key, value);
                         }
                     }
                 }
@@ -145,9 +145,9 @@ internal static class FindFMs
                     {
                         string value = FMDataIniList[i].Archive;
                         string key = value.ToInstDirNameFMSel(_instDirNameContext, truncate: false);
-                        if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.ContainsKey(key))
+                        if (!key.IsEmpty() && !value.IsEmpty())
                         {
-                            _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.Add(key, value);
+                            _archivesToInstDirNameFMSelNotTruncated_FromFMDataIniList.TryAdd(key, value);
                         }
                     }
                 }
@@ -164,9 +164,9 @@ internal static class FindFMs
                 {
                     string value = FMDataIniList[i].Archive;
                     string key = value.ToInstDirNameNDL(_instDirNameContext, truncate: true);
-                    if (!key.IsEmpty() && !value.IsEmpty() && !_archivesToInstDirNameNDLTruncated_FromFMDataIniList.ContainsKey(key))
+                    if (!key.IsEmpty() && !value.IsEmpty())
                     {
-                        _archivesToInstDirNameNDLTruncated_FromFMDataIniList.Add(key, value);
+                        _archivesToInstDirNameNDLTruncated_FromFMDataIniList.TryAdd(key, value);
                     }
                 }
             }
@@ -182,9 +182,9 @@ internal static class FindFMs
                 {
                     string value = FMDataIniList[i].Archive;
                     string key = FMDataIniList[i].InstalledDir;
-                    if (!key.IsEmpty() && !value.IsEmpty() && !_installedDirs_FromFMDataIniList.ContainsKey(key))
+                    if (!key.IsEmpty() && !value.IsEmpty())
                     {
-                        _installedDirs_FromFMDataIniList.Add(key, value);
+                        _installedDirs_FromFMDataIniList.TryAdd(key, value);
                     }
                 }
             }
@@ -409,9 +409,9 @@ internal static class FindFMs
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (!fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+            if (!fm.InstalledDir.IsEmpty())
             {
-                fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
+                fmDataIniInstDirDict.TryAdd(fm.InstalledDir, fm);
             }
         }
 
@@ -622,9 +622,9 @@ internal static class FindFMs
                 for (int i = 0; i < FMDataIniList.Count; i++)
                 {
                     FanMission fm = FMDataIniList[i];
-                    if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+                    if (!fm.Archive.IsEmpty())
                     {
-                        archivesDict.Add(fm.Archive, fm);
+                        archivesDict.TryAdd(fm.Archive, fm);
                     }
                 }
             }
@@ -688,11 +688,7 @@ internal static class FindFMs
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (!hash.Contains(fm.InstalledDir))
-            {
-                hash.Add(fm.InstalledDir);
-            }
-            else
+            if (!hash.Add(fm.InstalledDir))
             {
                 bool truncate = fm.Game != Game.Thief3;
                 for (int j = 0; ; j++)
@@ -730,13 +726,13 @@ internal static class FindFMs
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty() && !fmDataIniInstDirDict.ContainsKey(fm.InstalledDir))
+            if (fm.Archive.IsEmpty() && !fm.InstalledDir.IsEmpty())
             {
-                fmDataIniInstDirDict.Add(fm.InstalledDir, fm);
+                fmDataIniInstDirDict.TryAdd(fm.InstalledDir, fm);
             }
-            if (!fm.Archive.IsEmpty() && !fmDataIniArchiveDict.ContainsKey(fm.Archive))
+            if (!fm.Archive.IsEmpty())
             {
-                fmDataIniArchiveDict.Add(fm.Archive, fm);
+                fmDataIniArchiveDict.TryAdd(fm.Archive, fm);
             }
         }
 
@@ -976,16 +972,9 @@ internal static class FindFMs
             // out of the view list at least.
             // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
             // We shouldn't have duplicate archives, but importing might add different installed dirs...
-            if (!fm.Archive.IsEmpty())
+            if (!fm.Archive.IsEmpty() && !viewListHash.Add(fm.Archive))
             {
-                if (!viewListHash.Contains(fm.Archive))
-                {
-                    viewListHash.Add(fm.Archive);
-                }
-                else
-                {
-                    continue;
-                }
+                continue;
             }
 
             // Perf so we don't have to iterate the list again later
