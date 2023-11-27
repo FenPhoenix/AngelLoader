@@ -52,6 +52,7 @@ using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Readers.Rar;
+using SpanExtensions;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;
@@ -3306,16 +3307,14 @@ public sealed partial class Scanner : IDisposable
 
         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !fmIni.Tags.IsEmpty())
         {
-            string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-
             string authorString = "";
-            for (int i = 0, authorsFound = 0; i < tagsArray.Length; i++)
+            int authorsFound = 0;
+            foreach (ReadOnlySpan<char> tag in ReadOnlySpanExtensions.SplitAny(fmIni.Tags, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
             {
-                string tag = tagsArray[i];
                 if (tag.StartsWithI("author:"))
                 {
                     if (authorsFound > 0 && !authorString.EndsWithO(", ")) authorString += ", ";
-                    authorString += tag.Substring(tag.IndexOf(':') + 1).Trim();
+                    authorString += tag[(tag.IndexOf(':') + 1)..].Trim().ToString();
                     authorsFound++;
                 }
             }
