@@ -1478,6 +1478,7 @@ internal static class FMInstallAndPlay
 
             BinaryBuffer buffer = new();
             byte[]? zipExtractTempBuffer = null;
+            byte[]? rarExtractTempBuffer = null;
             byte[]? fileStreamBuffer = null;
 
             for (int i = 0; i < fmDataList.Length; i++)
@@ -1505,7 +1506,7 @@ internal static class FMInstallAndPlay
                         zipExtractTempBuffer ??= new byte[StreamCopyBufferSize],
                         fileStreamBuffer ??= new byte[FileStreamBufferSize])
                     : fmData.ArchivePath.ExtIsRar()
-                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, zipExtractTempBuffer ??= new byte[StreamCopyBufferSize]))
+                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, rarExtractTempBuffer ??= new byte[StreamCopyBufferSize]))
                     : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
                 if (installFailed)
