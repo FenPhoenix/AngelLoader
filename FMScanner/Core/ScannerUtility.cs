@@ -96,7 +96,7 @@ internal static class Utility
         // We don't scan HTML files, but we may still need them to check their dates
         readme.ExtIsHtml();
 
-    #region Baked-in extension checks (generated)
+    #region Extension checks
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsIbt(this string value) => value.EndsWithI(".ibt");
