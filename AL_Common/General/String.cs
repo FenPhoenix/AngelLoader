@@ -35,6 +35,7 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EndsWithI(this string str, string value) => str.EndsWith(value, OrdinalIgnoreCase);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool StartsWithI(this ReadOnlySpan<char> str, string value) => str.StartsWith(value, OrdinalIgnoreCase);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
