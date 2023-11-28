@@ -371,6 +371,30 @@ public static partial class Common
                lastDotIndex > value.LastIndexOf('\\');
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsRtf(this string value) => value.EndsWithI(".rtf");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsWri(this string value) => value.EndsWithI(".wri");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsHtml(this string value) => value.EndsWithI(".html") || value.EndsWithI(".htm");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsGlml(this string value) => value.EndsWithI(".glml");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsZip(this string value) => value.EndsWithI(".zip");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
+
     #endregion
 
     #region Set file attributes

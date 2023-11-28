@@ -42,45 +42,21 @@ public static partial class Utils
 
     #region Filename extension checks
 
-    internal static bool IsValidReadme(this string value)
-    {
-        // Well, this is embarrassing... Apparently EndsWithI is faster than the baked-in ones.
-        // Dunno how that could be the case, but whatever...
-        return value.EndsWithI(".txt") ||
-               value.EndsWithI(".rtf") ||
-               value.EndsWithI(".wri") ||
-               value.EndsWithI(".glml") ||
-               value.EndsWithI(".html") ||
-               value.EndsWithI(".htm");
-    }
+    // General version; might need to be different than the scanner version
+    internal static bool IsValidReadme(this string readme) =>
+        readme.ExtIsTxt() ||
+        readme.ExtIsRtf() ||
+        readme.ExtIsWri() ||
+        readme.ExtIsGlml() ||
+        readme.ExtIsHtml();
 
     #region Baked-in extension checks
-    // Just passthroughs now because EndsWithI turned out to be faster(?!)
 
-    internal static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
-
-    internal static bool ExtIsRtf(this string value) => value.EndsWithI(".rtf");
-
-    internal static bool ExtIsWri(this string value) => value.EndsWithI(".wri");
-
-    internal static bool ExtIsHtml(this string value) => value.EndsWithI(".html") || value.EndsWithI(".htm");
-
-    internal static bool ExtIsGlml(this string value) => value.EndsWithI(".glml");
-
-    /*
-    @RAR: Finish going through these.
-    @RAR: We have too much duplicated code now, clean it up.
-    */
+    // @RAR: We have too much duplicated code now, clean it up.
     internal static bool ExtIsArchive(this string value) =>
-        value.EndsWithI(".zip") ||
-        value.EndsWithI(".7z") ||
-        value.EndsWithI(".rar");
-
-    internal static bool ExtIsZip(this string value) => value.EndsWithI(".zip");
-
-    internal static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
-
-    internal static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
+        value.ExtIsZip() ||
+        value.ExtIs7z() ||
+        value.ExtIsRar();
 
     #endregion
 
