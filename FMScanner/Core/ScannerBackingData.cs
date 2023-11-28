@@ -45,7 +45,6 @@ public sealed partial class Scanner
         internal const string BooksS = "books/";
         internal const string FamS = Fam + "/";
         internal const string IntrfaceS = "intrface/";
-        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
         internal const string MeshS = Mesh + "/";
         internal const string MotionsS = Motions + "/";
         internal const string MoviesS = Movies + "/";
@@ -61,7 +60,6 @@ public sealed partial class Scanner
         internal const string T3FMExtras2S = "FanMissionExtras/";
 
         internal const string T3DetectS = "Content/T3/Maps/";
-        internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
     }
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]

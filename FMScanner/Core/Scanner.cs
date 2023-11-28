@@ -2582,7 +2582,7 @@ public sealed partial class Scanner : IDisposable
         {
             int lsi;
             return path.PathStartsWithI(FMDirs.IntrfaceS) &&
-                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
                    path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
                    (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
                    (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
@@ -2596,7 +2596,7 @@ public sealed partial class Scanner : IDisposable
         {
             int len = path.Length;
             return path.PathStartsWithI(FMDirs.IntrfaceS) &&
-                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
                    // We don't need to check the length because we only need length == 6 but by virtue of
                    // starting with "intrface/", our length is guaranteed to be at least 9
                    (path[len - 6] == 'r' || path[len - 6] == 'R') &&
@@ -2650,7 +2650,7 @@ public sealed partial class Scanner : IDisposable
                 };
 
                 if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                    fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
+                    fn.Rel_CountDirSeps(FMDirs.T3DetectS.Length) == 0)
                 {
                     if (t3Found)
                     {

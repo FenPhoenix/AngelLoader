@@ -28,10 +28,8 @@ internal static class GameConfigFiles
 
     // cam_mod.ini
     private const string key_fm_selector = "fm_selector";
-    private const int key_fm_selector_len = 11;
     private const string key_fm = "fm";
     private const string key_fm_path = "fm_path";
-    private const int key_fm_path_len = 7;
     private const string mod_path = "mod_path";
     private const string uber_mod_path = "uber_mod_path";
     private const string mp_mod_path = "mp_mod_path";
@@ -39,9 +37,7 @@ internal static class GameConfigFiles
 
     // cam_mod.ini, cam.cfg
     private const string key_fm_language = "fm_language";
-    private const int key_fm_language_len = 11;
     private const string key_fm_language_forced = "fm_language_forced";
-    private const int key_fm_language_forced_len = 18;
 
     // cam.cfg
     private const string key_character_detail = "character_detail";
@@ -142,21 +138,21 @@ internal static class GameConfigFiles
 
                 if (!langOnly && lineTS.StartsWithIPlusWhiteSpace(key_fm_path))
                 {
-                    path = lineTS.Substring(key_fm_path_len).Trim();
+                    path = lineTS.Substring(key_fm_path.Length).Trim();
                 }
                 else if (lineTS.StartsWithIPlusWhiteSpace(key_fm_language))
                 {
-                    fm_language = lineTS.Substring(key_fm_language_len).Trim();
+                    fm_language = lineTS.Substring(key_fm_language.Length).Trim();
                 }
                 else if (lineTS.StartsWithI(key_fm_language_forced))
                 {
-                    if (lineTS.Trim().Length == key_fm_language_forced_len)
+                    if (lineTS.Trim().Length == key_fm_language_forced.Length)
                     {
                         fm_language_forced = true;
                     }
-                    else if (char.IsWhiteSpace(lineTS[key_fm_language_forced_len]))
+                    else if (char.IsWhiteSpace(lineTS[key_fm_language_forced.Length]))
                     {
-                        fm_language_forced = lineTS.Substring(key_fm_language_forced_len).Trim() != "0";
+                        fm_language_forced = lineTS.Substring(key_fm_language_forced.Length).Trim() != "0";
                     }
                 }
             }
@@ -524,7 +520,7 @@ internal static class GameConfigFiles
                 {
                     string selectorFileName;
                     return line.StartsWithIPlusWhiteSpace(key_fm_selector) &&
-                           (selectorFileName = line.Substring(key_fm_selector_len + 1)).EndsWithI(".dll") &&
+                           (selectorFileName = line.Substring(key_fm_selector.Length + 1)).EndsWithI(".dll") &&
                            !selectorFileName.PathEqualsI(stubPath) &&
                            !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
                            File.Exists(Path.Combine(gamePath, selectorFileName))
@@ -601,7 +597,7 @@ internal static class GameConfigFiles
 
                 string selectorFileName;
                 if (lt.StartsWithIPlusWhiteSpace(key_fm_selector) &&
-                    (selectorFileName = lt.Substring(key_fm_selector_len + 1)).EndsWithI(".dll"))
+                    (selectorFileName = lt.Substring(key_fm_selector.Length + 1)).EndsWithI(".dll"))
                 {
                     if (!tempSelectorsList.PathContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
                 }
@@ -678,7 +674,7 @@ internal static class GameConfigFiles
             if (!resetSelector || changeLoaderIfResetting)
             {
                 if (lt.StartsWithIPlusWhiteSpace(key_fm_selector) &&
-                    lt.Substring(key_fm_selector_len + 1).TrimStart().PathEqualsI(selectorPath))
+                    lt.Substring(key_fm_selector.Length + 1).TrimStart().PathEqualsI(selectorPath))
                 {
                     if (loaderIsAlreadyUs)
                     {
