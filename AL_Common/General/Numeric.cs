@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace AL_Common;
@@ -17,8 +18,7 @@ public static partial class Common
     /// <param name="min"></param>
     /// <param name="max"></param>
     /// <returns></returns>
-    public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
-        value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
+    public static T Clamp<T>(this T value, T min, T max) where T : INumber<T> => T.Clamp(value, min, max);
 
     /// <summary>
     /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
