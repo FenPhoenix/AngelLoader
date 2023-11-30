@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using AL_Common;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -56,9 +55,9 @@ internal static class ColorUtils
         b = b > 0.04045 ? (float)Math.Pow((b + 0.055f) / 1.055f, 2.4f) : b / 12.92f;
 
         // Convert linear sRGB -> Oklab
-        float l = CubicRoot((0.4122214708f * r) + (0.5363325363f * g) + (0.0514459929f * b));
-        float m = CubicRoot((0.2119034982f * r) + (0.6806995451f * g) + (0.1073969566f * b));
-        float s = CubicRoot((0.0883024619f * r) + (0.2817188376f * g) + (0.6299787005f * b));
+        float l = (float)Math.Cbrt((0.4122214708f * r) + (0.5363325363f * g) + (0.0514459929f * b));
+        float m = (float)Math.Cbrt((0.2119034982f * r) + (0.6806995451f * g) + (0.1073969566f * b));
+        float s = (float)Math.Cbrt((0.0883024619f * r) + (0.2817188376f * g) + (0.6299787005f * b));
 
         float l_ = (0.2104542553f * l) + (0.7936177850f * m) - (0.0040720468f * s);
         float a_ = (1.9779984951f * l) - (2.4285922050f * m) + (0.4505937099f * s);
