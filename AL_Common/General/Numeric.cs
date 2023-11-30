@@ -27,7 +27,7 @@ public static partial class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ClampToZero(this int value) => Math.Max(value, 0);
+    public static T ClampToZero<T>(this T value) where T : INumber<T> => T.Max(value, T.Zero);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ClampZeroToOne(this float value) => value.Clamp(0, 1.0f);
@@ -38,7 +38,7 @@ public static partial class Common
     /// <param name="value"></param>
     /// <param name="min"></param>
     /// <returns></returns>
-    public static T ClampToMin<T>(this T value, T min) where T : IComparable<T> => value.CompareTo(min) < 0 ? min : value;
+    public static T ClampToMin<T>(this T value, T min) where T : INumber<T> => T.Max(value, min);
 
     #endregion
 
