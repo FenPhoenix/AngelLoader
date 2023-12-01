@@ -100,14 +100,6 @@ public static class FenGenAttributes
     public sealed class FenGenReadmeEncodingAttribute : Attribute;
 
     /// <summary>
-    /// Quick hack to tell FenGen not to substring the value from a key-value pair line, because it's going<br/>
-    /// to be passed to a method that's designed to work with the entire line, and we can save an allocation.
-    /// </summary>
-    [Conditional("compile_FenGen_attributes")]
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenDoNotSubstringAttribute : Attribute;
-
-    /// <summary>
     /// Hack: Tells FenGen to treat this Flags-enum field as if it's a single-value-at-a-time (non-flags)<br/>
     /// field when it generates read/write code. Only applies to SelectedLang at the moment.
     /// </summary>

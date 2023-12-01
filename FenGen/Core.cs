@@ -156,7 +156,6 @@ internal static class GenAttributes
 
     internal const string FenGenFlagsSingleAssignment = nameof(FenGenFlagsSingleAssignment);
     internal const string FenGenReadmeEncoding = nameof(FenGenReadmeEncoding);
-    internal const string FenGenDoNotSubstring = nameof(FenGenDoNotSubstring);
 
     #region Localizable text
 

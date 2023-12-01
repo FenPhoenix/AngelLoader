@@ -22,7 +22,6 @@ internal static class FMData
         internal ListType ListType = ListType.MultipleLines;
         internal long? NumericEmpty;
         internal bool DoNotTrimValue;
-        internal bool DoNotSubstring;
         internal bool DoNotConvertDateTimeToLocal;
         internal bool DoNotWrite;
         internal bool IsEnumAndSingleAssignment;
@@ -131,9 +130,6 @@ internal static class FMData
                             break;
                         case GenAttributes.FenGenDoNotTrimValue:
                             field.DoNotTrimValue = true;
-                            break;
-                        case GenAttributes.FenGenDoNotSubstring:
-                            field.DoNotSubstring = true;
                             break;
                         case GenAttributes.FenGenNumericEmpty:
                         {

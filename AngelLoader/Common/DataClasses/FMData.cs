@@ -88,7 +88,6 @@ public sealed class FanMission
 
     internal string Author = "";
 
-    [FenGenDoNotSubstring]
     internal Game Game = Game.Null;
 
     internal bool Installed;
@@ -104,7 +103,6 @@ public sealed class FanMission
     internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
     [FenGenReadmeEncoding]
-    [FenGenDoNotSubstring]
     [FenGenIniName("ReadmeEncoding")]
     internal readonly DictionaryI<int> ReadmeCodePages = new();
 
@@ -183,16 +181,13 @@ public sealed class FanMission
     [FenGenIgnore]
     internal bool ResourcesScanned;
     [FenGenIniName("HasResources")]
-    [FenGenDoNotSubstring]
     internal CustomResources Resources = CustomResources.None;
 
     internal bool LangsScanned;
 
-    [FenGenDoNotSubstring]
     internal Language Langs = Language.Default;
 
     [FenGenFlagsSingleAssignment]
-    [FenGenDoNotSubstring]
     internal Language SelectedLang = Language.Default;
 
     [FenGenIgnore]
