@@ -470,8 +470,8 @@ internal static class TDM
             string fullDir = Path.Combine(fmsPath, fileOrDirName);
             if (Directory.Exists(fullDir))
             {
-                List<string> pk4Files = FastIO.GetFilesTopOnly(fullDir, "*.pk4", preallocate: 1);
-                if (pk4Files.Count == 0)
+                string? first = Directory.EnumerateFiles(fullDir, "*.pk4", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                if (first == default)
                 {
                     return false;
                 }

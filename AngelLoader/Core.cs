@@ -22,6 +22,7 @@ We're reading output from ffprobe.exe and 7z.exe. We're only pulling out ascii s
 the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
 */
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -1571,24 +1572,32 @@ internal static class Core
         }
 
         // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
-        using (var fs = File.OpenRead(readmeOnDisk))
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+        try
         {
-            int headerLen = RTFHeaderBytes.Length;
-            // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
-            // end up with an "unable to load readme" error.
-            if (fs.Length >= headerLen)
+            using (var fs = GetReadModeFileStreamWithCachedBuffer(readmeOnDisk, buffer))
             {
-                Span<byte> header = stackalloc byte[headerLen];
-                int bytesRead = fs.ReadAll(header);
-
-                if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
+                int headerLen = RTFHeaderBytes.Length;
+                // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
+                // end up with an "unable to load readme" error.
+                if (fs.Length >= headerLen)
                 {
-                    return (readmeOnDisk, ReadmeType.RichText);
+                    Span<byte> header = stackalloc byte[headerLen];
+                    int bytesRead = fs.ReadAll(header);
+
+                    if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
+                    {
+                        return (readmeOnDisk, ReadmeType.RichText);
+                    }
                 }
             }
-        }
 
-        return (readmeOnDisk, ReadmeType.PlainText);
+            return (readmeOnDisk, ReadmeType.PlainText);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
     }
 
 #if ENABLE_README_TESTS

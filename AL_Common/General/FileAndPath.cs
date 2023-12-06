@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -38,13 +39,21 @@ public static partial class Common
     // you get with the built-in methods
     public static List<string> File_ReadAllLines_List(string path)
     {
-        var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File.OpenRead(path), new StreamReaderCustom());
-        while (sr.Reader.ReadLine() is { } str)
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+        try
         {
-            ret.Add(str);
+            var ret = new List<string>();
+            using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(path, buffer), new StreamReaderCustom());
+            while (sr.Reader.ReadLine() is { } str)
+            {
+                ret.Add(str);
+            }
+            return ret;
         }
-        return ret;
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
     }
 
     public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)

@@ -6,6 +6,8 @@ namespace AL_Common;
 
 public static partial class Common
 {
+    public const int FileStreamBufferSize = 4096;
+
     private static bool? _fileStreamBufferFieldFound;
     private static FieldInfo? _fileStreamStrategyFieldInfo;
     private static Type? _fileStreamBufferedStrategyType;
