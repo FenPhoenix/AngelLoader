@@ -1,8 +1,10 @@
-﻿//#define ENABLE_UNUSED
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-// @NET5(StreamReaderCustom): See if .NET modern's version of this is better/faster/whatever
+//#define ENABLE_UNUSED
 
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 #if ENABLE_UNUSED
@@ -343,7 +345,9 @@ public sealed class StreamReaderCustom
 
     private void CompressBuffer(int n)
     {
-        Buffer.BlockCopy(_byteBuffer, n, _byteBuffer, 0, _byteLen - n);
+        byte[] byteBuffer = _byteBuffer;
+        _ = byteBuffer.Length; // allow JIT to prove object is not null
+        new ReadOnlySpan<byte>(byteBuffer, n, _byteLen - n).CopyTo(byteBuffer);
         _byteLen -= n;
     }
 
@@ -351,42 +355,45 @@ public sealed class StreamReaderCustom
     // It also creates new encodings...
     private void DetectEncoding()
     {
-        if (_byteLen < 2)
-        {
-            return;
-        }
+        byte[] byteBuffer = _byteBuffer;
         _detectEncoding = false;
         bool changedEncoding = false;
-        if (_byteBuffer[0] == 0xFE && _byteBuffer[1] == 0xFF)
+
+        ushort firstTwoBytes = BinaryPrimitives.ReadUInt16LittleEndian(byteBuffer);
+        if (firstTwoBytes == 0xFFFE)
         {
-            _encoding = new UnicodeEncoding(true, true);
+            // Big Endian Unicode
+            _encoding = Encoding.BigEndianUnicode;
             CompressBuffer(2);
             changedEncoding = true;
         }
-        else if (_byteBuffer[0] == 0xFF && _byteBuffer[1] == 0xFE)
+        else if (firstTwoBytes == 0xFEFF)
         {
-            if (_byteLen < 4 || _byteBuffer[2] != 0 || _byteBuffer[3] != 0)
+            // Little Endian Unicode, or possibly little endian UTF32
+            if (_byteLen < 4 || byteBuffer[2] != 0 || byteBuffer[3] != 0)
             {
-                _encoding = new UnicodeEncoding(false, true);
+                _encoding = Encoding.Unicode;
                 CompressBuffer(2);
                 changedEncoding = true;
             }
             else
             {
-                _encoding = new UTF32Encoding(false, true);
+                _encoding = Encoding.UTF32;
                 CompressBuffer(4);
                 changedEncoding = true;
             }
         }
-        else if (_byteLen >= 3 && _byteBuffer[0] == 0xEF && _byteBuffer[1] == 0xBB && _byteBuffer[2] == 0xBF)
+        else if (_byteLen >= 3 && firstTwoBytes == 0xBBEF && byteBuffer[2] == 0xBF)
         {
+            // UTF-8
             _encoding = Encoding.UTF8;
             CompressBuffer(3);
             changedEncoding = true;
         }
-        else if (_byteLen >= 4 && _byteBuffer[0] == 0 && _byteBuffer[1] == 0 && _byteBuffer[2] == 0xFE && _byteBuffer[3] == 0xFF)
+        else if (_byteLen >= 4 && firstTwoBytes == 0 && byteBuffer[2] == 0xFE && byteBuffer[3] == 0xFF)
         {
-            _encoding = new UTF32Encoding(true, true);
+            // Big Endian UTF32
+            _encoding = new UTF32Encoding(bigEndian: true, byteOrderMark: true);
             CompressBuffer(4);
             changedEncoding = true;
         }
@@ -394,40 +401,57 @@ public sealed class StreamReaderCustom
         {
             _detectEncoding = true;
         }
-        if (!changedEncoding)
+        // Note: in the future, if we change this algorithm significantly,
+        // we can support checking for the preamble of the given encoding.
+
+        if (changedEncoding)
         {
-            return;
+            _decoder = _encoding.GetDecoder();
+            int newMaxCharsPerBuffer = _encoding.GetMaxCharCount(byteBuffer.Length);
+            if (newMaxCharsPerBuffer > _maxCharsPerBuffer)
+            {
+                _charBuffer = new char[newMaxCharsPerBuffer];
+            }
+            _maxCharsPerBuffer = newMaxCharsPerBuffer;
         }
-        _decoder = _encoding.GetDecoder();
-        _maxCharsPerBuffer = _encoding.GetMaxCharCount(_byteBuffer.Length);
-        _charBuffer = new char[_maxCharsPerBuffer];
     }
 
     private bool IsPreamble()
     {
-        if (!_checkPreamble) return _checkPreamble;
-
-        int len = _byteLen >= _preamble.Length ? _preamble.Length - _bytePos : _byteLen - _bytePos;
-
-        for (int i = 0; i < len; i++, _bytePos++)
+        if (!_checkPreamble)
         {
-            if (_byteBuffer[_bytePos] != _preamble[_bytePos])
+            return false;
+        }
+
+        return IsPreambleWorker(); // move this call out of the hot path
+        bool IsPreambleWorker()
+        {
+            ReadOnlySpan<byte> preamble = _encoding.Preamble;
+
+            int len = Math.Min(_byteLen, preamble.Length);
+
+            for (int i = _bytePos; i < len; i++)
             {
+                if (_byteBuffer[i] != preamble[i])
+                {
+                    _bytePos = 0; // preamble match failed; back up to beginning of buffer
+                    _checkPreamble = false;
+                    return false;
+                }
+            }
+            _bytePos = len; // we've matched all bytes up to this point
+
+            if (_bytePos == preamble.Length)
+            {
+                // We have a match
+                CompressBuffer(preamble.Length);
                 _bytePos = 0;
                 _checkPreamble = false;
-                break;
+                _detectEncoding = false;
             }
-        }
 
-        if (_checkPreamble && _bytePos == _preamble.Length)
-        {
-            CompressBuffer(_preamble.Length);
-            _bytePos = 0;
-            _checkPreamble = false;
-            _detectEncoding = false;
+            return _checkPreamble;
         }
-
-        return _checkPreamble;
     }
 
     private int ReadBuffer()
@@ -549,65 +573,64 @@ public sealed class StreamReaderCustom
 
 #endif
 
-    private readonly StringBuilder _readLineSB = new();
-
     /// <summary>Reads a line of characters from the current stream and returns the data as a string.</summary>
     /// <returns>The next line from the input stream, or <see langword="null" /> if the end of the input stream is reached.</returns>
     /// <exception cref="T:System.OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
     /// <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
     public string? ReadLine()
     {
-        if (_stream == null!)
+        if (_charPos == _charLen)
         {
-            ThrowHelper.ReaderClosed();
+            if (ReadBuffer() == 0)
+            {
+                return null;
+            }
         }
-        if (_charPos == _charLen && ReadBuffer() == 0)
-        {
-            return null;
-        }
-        bool sbCreated = false;
-        _readLineSB.Clear();
+
+        var vsb = new ValueStringBuilder(stackalloc char[256]);
         do
         {
-            int charPos = _charPos;
-            do
+            // Look for '\r' or \'n'.
+            ReadOnlySpan<char> charBufferSpan = _charBuffer.AsSpan(_charPos, _charLen - _charPos);
+
+            int idxOfNewline = charBufferSpan.IndexOfAny('\r', '\n');
+            if (idxOfNewline >= 0)
             {
-                char ch = _charBuffer[charPos];
-                switch (ch)
+                string retVal;
+                if (vsb.Length == 0)
                 {
-                    case '\n':
-                    case '\r':
-                        string str;
-                        if (sbCreated)
-                        {
-                            _readLineSB.Append(_charBuffer, _charPos, charPos - _charPos);
-                            str = _readLineSB.ToString();
-                        }
-                        else
-                        {
-                            str = new string(_charBuffer, _charPos, charPos - _charPos);
-                        }
-                        _charPos = charPos + 1;
-                        if (ch == '\r' && (_charPos < _charLen || ReadBuffer() > 0) && _charBuffer[_charPos] == '\n')
-                        {
-                            ++_charPos;
-                        }
-                        return str;
-                    default:
-                        ++charPos;
-                        continue;
+                    retVal = new string(charBufferSpan.Slice(0, idxOfNewline));
                 }
+                else
+                {
+                    retVal = string.Concat(vsb.AsSpan(), charBufferSpan.Slice(0, idxOfNewline));
+                    vsb.Dispose();
+                }
+
+                char matchedChar = charBufferSpan[idxOfNewline];
+                _charPos += idxOfNewline + 1;
+
+                // If we found '\r', consume any immediately following '\n'.
+                if (matchedChar == '\r')
+                {
+                    if (_charPos < _charLen || ReadBuffer() > 0)
+                    {
+                        if (_charBuffer[_charPos] == '\n')
+                        {
+                            _charPos++;
+                        }
+                    }
+                }
+
+                return retVal;
             }
-            while (charPos < _charLen);
-            int charCount = _charLen - _charPos;
-            if (!sbCreated)
-            {
-                _readLineSB.EnsureCapacity(charCount + 80);
-                sbCreated = true;
-            }
-            _readLineSB.Append(_charBuffer, _charPos, charCount);
-        }
-        while (ReadBuffer() > 0);
-        return _readLineSB.ToString();
+
+            // We didn't find '\r' or '\n'. Add it to the StringBuilder
+            // and loop until we reach a newline or EOF.
+
+            vsb.Append(charBufferSpan);
+        } while (ReadBuffer() > 0);
+
+        return vsb.ToString();
     }
 }
