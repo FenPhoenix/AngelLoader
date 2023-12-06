@@ -458,46 +458,75 @@ public sealed class StreamReaderCustom
     {
         _charLen = 0;
         _charPos = 0;
+
         if (!_checkPreamble)
         {
             _byteLen = 0;
         }
+
+        bool eofReached = false;
+
         do
         {
             if (_checkPreamble)
             {
                 int len = _stream.Read(_byteBuffer, _bytePos, _byteBuffer.Length - _bytePos);
+
                 if (len == 0)
                 {
-                    if (_byteLen > 0)
-                    {
-                        _charLen += _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, _charLen);
-                        _bytePos = _byteLen = 0;
-                    }
-                    return _charLen;
+                    eofReached = true;
+                    break;
                 }
+
                 _byteLen += len;
             }
             else
             {
                 _byteLen = _stream.Read(_byteBuffer, 0, _byteBuffer.Length);
+
                 if (_byteLen == 0)
                 {
-                    return _charLen;
+                    eofReached = true;
+                    break;
                 }
             }
-#if ENABLE_UNUSED
-            _isBlocked = _byteLen < _byteBuffer.Length;
-#endif
-            if (IsPreamble()) continue;
 
+#if ENABLE_UNUSED
+            // _isBlocked == whether we read fewer bytes than we asked for.
+            // Note we must check it here because CompressBuffer or
+            // DetectEncoding will change byteLen.
+            _isBlocked = (_byteLen < _byteBuffer.Length);
+#endif
+
+            // Check for preamble before detect encoding. This is not to override the
+            // user supplied Encoding for the one we implicitly detect. The user could
+            // customize the encoding which we will loose, such as ThrowOnError on UTF8
+            if (IsPreamble())
+            {
+                continue;
+            }
+
+            // If we're supposed to detect the encoding and haven't done so yet,
+            // do it.  Note this may need to be called more than once.
             if (_detectEncoding && _byteLen >= 2)
             {
                 DetectEncoding();
             }
-            _charLen += _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, _charLen);
+
+            _charLen = _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, 0, flush: false);
+        } while (_charLen == 0);
+
+        if (eofReached)
+        {
+            // EOF has been reached - perform final flush.
+            // We need to reset _bytePos and _byteLen just in case we hadn't
+            // finished processing the preamble before we reached EOF.
+
+            _charLen = _decoder.GetChars(_byteBuffer, 0, _byteLen, _charBuffer, 0, flush: true);
+            _bytePos = 0;
+            _byteLen = 0;
         }
-        while (_charLen == 0);
+
         return _charLen;
     }
 
