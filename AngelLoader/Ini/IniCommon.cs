@@ -415,11 +415,11 @@ internal static partial class Ini
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void CommaCombineHasXFields(CustomResources resources, StringBuilder sb)
+    private static void CommaCombineHasXFields(CustomResources resources, StreamWriter sw)
     {
         if (resources == CustomResources.None)
         {
-            sb.AppendLine(nameof(CustomResources.None));
+            sw.WriteLine(nameof(CustomResources.None));
             return;
         }
 
@@ -430,17 +430,17 @@ internal static partial class Ini
             // Inline the check to be as fast as possible
             if ((resources & (CustomResources)at) != 0)
             {
-                if (notEmpty) sb.Append(',');
-                sb.Append(CustomResourcesNames[i]);
+                if (notEmpty) sw.Write(',');
+                sw.Write(CustomResourcesNames[i]);
                 notEmpty = true;
             }
         }
 
-        sb.AppendLine();
+        sw.WriteLine();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void CommaCombineLanguageFlags(StringBuilder sb, Language languages)
+    private static void CommaCombineLanguageFlags(StreamWriter sw, Language languages)
     {
         bool notEmpty = false;
         uint at = 1;
@@ -449,13 +449,13 @@ internal static partial class Ini
             // Inline the check to be as fast as possible
             if ((languages & (Language)at) != 0)
             {
-                if (notEmpty) sb.Append(',');
-                sb.Append(SupportedLanguages[i]);
+                if (notEmpty) sw.Write(',');
+                sw.Write(SupportedLanguages[i]);
                 notEmpty = true;
             }
         }
 
-        sb.AppendLine();
+        sw.WriteLine();
     }
 
     #endregion

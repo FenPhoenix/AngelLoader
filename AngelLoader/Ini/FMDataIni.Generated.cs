@@ -407,263 +407,274 @@ internal static partial class Ini
 
     private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)
     {
-        var sb = new StringBuilder();
+        using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
 
-        static void AddFMToSB(FanMission fm, StringBuilder sb)
+        Span<char> numberSpan = stackalloc char[20];
+
+        static void AddFMToSB(FanMission fm, StreamWriter sw, Span<char> numberSpan)
         {
-            sb.AppendLine("[FM]");
+            sw.WriteLine("[FM]");
 
             if (fm.NoArchive)
             {
-                sb.Append("NoArchive").AppendLine("=True");
+                sw.WriteLine("NoArchive=True");
             }
             if (fm.MarkedScanned)
             {
-                sb.Append("MarkedScanned").AppendLine("=True");
+                sw.WriteLine("MarkedScanned=True");
             }
             if (fm.Pinned)
             {
-                sb.Append("Pinned").AppendLine("=True");
+                sw.WriteLine("Pinned=True");
             }
             if (!string.IsNullOrEmpty(fm.Archive))
             {
-                sb.Append("Archive").Append('=');
-                sb.AppendLine(fm.Archive);
+                sw.Write("Archive=");
+                sw.WriteLine(fm.Archive);
             }
             if (!string.IsNullOrEmpty(fm.InstalledDir))
             {
-                sb.Append("InstalledDir").Append('=');
-                sb.AppendLine(fm.InstalledDir);
+                sw.Write("InstalledDir=");
+                sw.WriteLine(fm.InstalledDir);
             }
             if (!string.IsNullOrEmpty(fm.TDMInstalledDir))
             {
-                sb.Append("TDMInstalledDir").Append('=');
-                sb.AppendLine(fm.TDMInstalledDir);
+                sw.Write("TDMInstalledDir=");
+                sw.WriteLine(fm.TDMInstalledDir);
             }
             if (fm.TDMVersion != 0)
             {
-                sb.Append("TDMVersion").Append('=');
-                sb.AppendLine(fm.TDMVersion.ToString());
+                fm.TDMVersion.TryFormat(numberSpan, out int written);
+                sw.Write("TDMVersion=");
+                sw.WriteLine(numberSpan[..written]);
             }
             if (!string.IsNullOrEmpty(fm.Title))
             {
-                sb.Append("Title").Append('=');
-                sb.AppendLine(fm.Title);
+                sw.Write("Title=");
+                sw.WriteLine(fm.Title);
             }
             foreach (string s in fm.AltTitles)
             {
-                sb.Append("AltTitles").Append('=');
-                sb.AppendLine(s);
+                sw.Write("AltTitles=");
+                sw.WriteLine(s);
             }
             if (!string.IsNullOrEmpty(fm.Author))
             {
-                sb.Append("Author").Append('=');
-                sb.AppendLine(fm.Author);
+                sw.Write("Author=");
+                sw.WriteLine(fm.Author);
             }
             switch (fm.Game)
             {
                 // Much faster to do this than Enum.ToString()
                 case Game.Thief1:
-                    sb.Append("Game").Append('=').AppendLine("Thief1");
+                    sw.WriteLine("Game=Thief1");
                     break;
                 case Game.Thief2:
-                    sb.Append("Game").Append('=').AppendLine("Thief2");
+                    sw.WriteLine("Game=Thief2");
                     break;
                 case Game.Thief3:
-                    sb.Append("Game").Append('=').AppendLine("Thief3");
+                    sw.WriteLine("Game=Thief3");
                     break;
                 case Game.SS2:
-                    sb.Append("Game").Append('=').AppendLine("SS2");
+                    sw.WriteLine("Game=SS2");
                     break;
                 case Game.TDM:
-                    sb.Append("Game").Append('=').AppendLine("TDM");
+                    sw.WriteLine("Game=TDM");
                     break;
                 case Game.Unsupported:
-                    sb.Append("Game").Append('=').AppendLine("Unsupported");
+                    sw.WriteLine("Game=Unsupported");
                     break;
                     // Don't handle Game.Null because we don't want to write out defaults
             }
             if (fm.Installed)
             {
-                sb.Append("Installed").AppendLine("=True");
+                sw.WriteLine("Installed=True");
             }
             if (fm.NoReadmes)
             {
-                sb.Append("NoReadmes").AppendLine("=True");
+                sw.WriteLine("NoReadmes=True");
             }
             if (fm.ForceReadmeReCache)
             {
-                sb.Append("ForceReadmeReCache").AppendLine("=True");
+                sw.WriteLine("ForceReadmeReCache=True");
             }
             if (!string.IsNullOrEmpty(fm.SelectedReadme))
             {
-                sb.Append("SelectedReadme").Append('=');
-                sb.AppendLine(fm.SelectedReadme);
+                sw.Write("SelectedReadme=");
+                sw.WriteLine(fm.SelectedReadme);
             }
             foreach (var item in fm.ReadmeCodePages)
             {
-                sb.Append("ReadmeEncoding").Append('=');
-                sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());
+                sw.Write("ReadmeEncoding=");
+                sw.Write(item.Key);
+                sw.Write(",");
+                if (item.Value.TryFormat(numberSpan, out int written))
+                {
+                    sw.WriteLine(numberSpan[..written]);
+                }
             }
             if (fm.SizeBytes != 0)
             {
-                sb.Append("SizeBytes").Append('=');
-                sb.AppendLine(fm.SizeBytes.ToString());
+                fm.SizeBytes.TryFormat(numberSpan, out int written);
+                sw.Write("SizeBytes=");
+                sw.WriteLine(numberSpan[..written]);
             }
             if (fm.Rating != -1)
             {
-                sb.Append("Rating").Append('=');
-                sb.AppendLine(fm.Rating.ToString());
+                fm.Rating.TryFormat(numberSpan, out int written);
+                sw.Write("Rating=");
+                sw.WriteLine(numberSpan[..written]);
             }
             if (!string.IsNullOrEmpty(fm.ReleaseDate.UnixDateString))
             {
-                sb.Append("ReleaseDate").Append('=');
-                sb.AppendLine(fm.ReleaseDate.UnixDateString);
+                sw.Write("ReleaseDate=");
+                sw.WriteLine(fm.ReleaseDate.UnixDateString);
             }
             if (!string.IsNullOrEmpty(fm.LastPlayed.UnixDateString))
             {
-                sb.Append("LastPlayed").Append('=');
-                sb.AppendLine(fm.LastPlayed.UnixDateString);
+                sw.Write("LastPlayed=");
+                sw.WriteLine(fm.LastPlayed.UnixDateString);
             }
             if (fm.DateAdded != null)
             {
-                sb.Append("DateAdded").Append('=');
-                sb.AppendLine(new DateTimeOffset((DateTime)fm.DateAdded).ToUnixTimeSeconds().ToString("X"));
+                long seconds = new DateTimeOffset((DateTime)fm.DateAdded).ToUnixTimeSeconds();
+                seconds.TryFormat(numberSpan, out int written, "X");
+                sw.Write("DateAdded=");
+                sw.WriteLine(numberSpan[..written]);
             }
             if (fm.FinishedOn != 0)
             {
-                sb.Append("FinishedOn").Append('=');
-                sb.AppendLine(fm.FinishedOn.ToString());
+                fm.FinishedOn.TryFormat(numberSpan, out int written);
+                sw.Write("FinishedOn=");
+                sw.WriteLine(numberSpan[..written]);
             }
             if (fm.FinishedOnUnknown)
             {
-                sb.Append("FinishedOnUnknown").AppendLine("=True");
+                sw.WriteLine("FinishedOnUnknown=True");
             }
             if (!string.IsNullOrEmpty(fm.Comment))
             {
-                sb.Append("Comment").Append('=');
-                sb.AppendLine(fm.Comment);
+                sw.Write("Comment=");
+                sw.WriteLine(fm.Comment);
             }
             if (!string.IsNullOrEmpty(fm.DisabledMods))
             {
-                sb.Append("DisabledMods").Append('=');
-                sb.AppendLine(fm.DisabledMods);
+                sw.Write("DisabledMods=");
+                sw.WriteLine(fm.DisabledMods);
             }
             if (fm.DisableAllMods)
             {
-                sb.Append("DisableAllMods").AppendLine("=True");
+                sw.WriteLine("DisableAllMods=True");
             }
 #if write_old_resources_style
             if (fm.ResourcesScanned)
             {
-                sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
-                sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
-                sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
-                sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
-                sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
-                sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
-                sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
-                sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
-                sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
-                sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
+                sw.WriteLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
+                sw.WriteLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
+                sw.WriteLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
+                sw.WriteLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
+                sw.WriteLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
+                sw.WriteLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
+                sw.WriteLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
+                sw.WriteLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
+                sw.WriteLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
+                sw.WriteLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
             }
 #else
-            sb.Append("HasResources").Append('=');
+            sw.Write("HasResources=");
             if (fm.ResourcesScanned)
             {
-                CommaCombineHasXFields(fm.Resources, sb);
+                CommaCombineHasXFields(fm.Resources, sw);
             }
             else
             {
-                sb.AppendLine("NotScanned");
+                sw.WriteLine("NotScanned");
             }
 #endif
             if (fm.LangsScanned)
             {
-                sb.Append("LangsScanned").AppendLine("=True");
+                sw.WriteLine("LangsScanned=True");
             }
             if (fm.Langs != 0)
             {
-                sb.Append("Langs").Append('=');
-                CommaCombineLanguageFlags(sb, fm.Langs);
+                sw.Write("Langs=");
+                CommaCombineLanguageFlags(sw, fm.Langs);
             }
             switch (fm.SelectedLang)
             {
                 // Much faster to do this than Enum.ToString()
                 case Language.English:
-                    sb.Append("SelectedLang").Append('=').AppendLine("english");
+                    sw.WriteLine("SelectedLang=english");
                     break;
                 case Language.Czech:
-                    sb.Append("SelectedLang").Append('=').AppendLine("czech");
+                    sw.WriteLine("SelectedLang=czech");
                     break;
                 case Language.Dutch:
-                    sb.Append("SelectedLang").Append('=').AppendLine("dutch");
+                    sw.WriteLine("SelectedLang=dutch");
                     break;
                 case Language.French:
-                    sb.Append("SelectedLang").Append('=').AppendLine("french");
+                    sw.WriteLine("SelectedLang=french");
                     break;
                 case Language.German:
-                    sb.Append("SelectedLang").Append('=').AppendLine("german");
+                    sw.WriteLine("SelectedLang=german");
                     break;
                 case Language.Hungarian:
-                    sb.Append("SelectedLang").Append('=').AppendLine("hungarian");
+                    sw.WriteLine("SelectedLang=hungarian");
                     break;
                 case Language.Italian:
-                    sb.Append("SelectedLang").Append('=').AppendLine("italian");
+                    sw.WriteLine("SelectedLang=italian");
                     break;
                 case Language.Japanese:
-                    sb.Append("SelectedLang").Append('=').AppendLine("japanese");
+                    sw.WriteLine("SelectedLang=japanese");
                     break;
                 case Language.Polish:
-                    sb.Append("SelectedLang").Append('=').AppendLine("polish");
+                    sw.WriteLine("SelectedLang=polish");
                     break;
                 case Language.Russian:
-                    sb.Append("SelectedLang").Append('=').AppendLine("russian");
+                    sw.WriteLine("SelectedLang=russian");
                     break;
                 case Language.Spanish:
-                    sb.Append("SelectedLang").Append('=').AppendLine("spanish");
+                    sw.WriteLine("SelectedLang=spanish");
                     break;
                     // Don't handle Language.Default because we don't want to write out defaults
             }
             if (!string.IsNullOrEmpty(fm.TagsString))
             {
-                sb.Append("TagsString").Append('=');
-                sb.AppendLine(fm.TagsString);
+                sw.Write("TagsString=");
+                sw.WriteLine(fm.TagsString);
             }
             if (fm.NewMantle != null)
             {
-                sb.Append("NewMantle").Append('=');
-                sb.AppendLine(fm.NewMantle.ToString());
+                sw.Write("NewMantle=");
+                sw.WriteLine(fm.NewMantle == true ? bool.TrueString : bool.FalseString);
             }
             if (fm.PostProc != null)
             {
-                sb.Append("PostProc").Append('=');
-                sb.AppendLine(fm.PostProc.ToString());
+                sw.Write("PostProc=");
+                sw.WriteLine(fm.PostProc == true ? bool.TrueString : bool.FalseString);
             }
             if (fm.NDSubs != null)
             {
-                sb.Append("NDSubs").Append('=');
-                sb.AppendLine(fm.NDSubs.ToString());
+                sw.Write("NDSubs=");
+                sw.WriteLine(fm.NDSubs == true ? bool.TrueString : bool.FalseString);
             }
             if (fm.MisCount != -1)
             {
-                sb.Append("MisCount").Append('=');
-                sb.AppendLine(fm.MisCount.ToString());
+                fm.MisCount.TryFormat(numberSpan, out int written);
+                sw.Write("MisCount=");
+                sw.WriteLine(numberSpan[..written]);
             }
         }
 
         foreach (FanMission fm in fmDataList)
         {
-            AddFMToSB(fm, sb);
+            AddFMToSB(fm, sw, numberSpan);
         }
 
         foreach (FanMission fm in fmDataListTDM)
         {
-            AddFMToSB(fm, sb);
+            AddFMToSB(fm, sw, numberSpan);
         }
-
-        using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
-        sw.Write(sb.ToString());
     }
 
     #endregion
