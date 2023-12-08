@@ -409,17 +409,19 @@ internal static class GameConfigFiles
 
             for (int i = 0; i < lines.Count; i++)
             {
-                string lineTS = lines[i].TrimStart();
+                ReadOnlySpan<char> lineTS = lines[i].AsSpan().TrimStart();
                 if (lineTS.StartsWithI(key_character_detail))
                 {
-                    string val = lineTS.Substring(key_character_detail.Length).Trim();
-                    if (removeAll || val == "0")
+                    ReadOnlySpan<char> val = lineTS[key_character_detail.Length..].Trim();
+                    // IMPORTANT: is instead of == because of span comparison shenanigans ('is "0"' is the same as 'SequenceEqual("0")')
+                    // https://steven-giesel.com/blogPost/969cc5e7-da27-4742-ae9a-ab7a66715ff6
+                    if (removeAll || val is "0")
                     {
                         lines.RemoveAt(i);
                         i--;
                         linesModified = true;
                     }
-                    else if (val == "1")
+                    else if (val is "1")
                     {
                         atLeastOneCharacterDetailOneLineFound = true;
                     }
