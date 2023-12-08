@@ -1584,8 +1584,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
+        if (sender is not DarkRadioButton button) return;
+        if (!button.Checked) return;
 
-        VisualTheme theme = sender == AppearancePage.DarkThemeRadioButton
+        VisualTheme theme = button == AppearancePage.DarkThemeRadioButton
             ? VisualTheme.Dark
             : VisualTheme.Classic;
 
