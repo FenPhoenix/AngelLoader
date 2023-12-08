@@ -47,6 +47,11 @@ public static partial class Common
         return ret;
     }
 
+    public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)
+    {
+        return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), new StreamReaderCustom());
+    }
+
     public static FileStream_LengthCached File_OpenReadFast(string path)
     {
         return new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read);

@@ -211,12 +211,16 @@ public static partial class Common
                 Capacity = 0;
             }
 
-            if (_itemsArrayLength < count)
-            {
-                Capacity = count;
-            }
-
             Count = count;
+
+            if (_itemsArrayLength < Count)
+            {
+                T[] objArray = new T[Count];
+                if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, _itemsArrayLength);
+                ItemsArray = objArray;
+                _itemsArrayLength = Count;
+                if (_itemsArrayLength < Count) Count = _itemsArrayLength;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

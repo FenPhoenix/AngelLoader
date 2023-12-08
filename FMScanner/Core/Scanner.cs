@@ -33,8 +33,8 @@ using AL_Common;
 using AL_Common.FastZipReader;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
-using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
+using SharpCompress.Readers.Rar;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;
@@ -91,7 +91,7 @@ public sealed partial class Scanner : IDisposable
     // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
     private readonly FileEncoding _fileEncoding = new(ByteSize.KB * 100);
 
-    private readonly List<FileInfoCustom> _fmDirFileInfos = new();
+    private readonly ListFast<FileInfoCustom> _fmDirFileInfos = new(0);
 
     private ScanOptions _scanOptions = new();
 
@@ -188,12 +188,12 @@ public sealed partial class Scanner : IDisposable
 
     private sealed class FileInfoCustom
     {
-        internal readonly string FullName;
-        internal readonly long Length;
+        internal string FullName;
+        internal long Length;
 
         private SevenZipArchiveEntry? _archiveFileInfo;
 
-        private readonly bool _rar;
+        private bool _rar;
 
         private DateTime? _lastWriteTime;
         internal DateTime LastWriteTime
@@ -216,12 +216,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        internal FileInfoCustom(FileInfo fileInfo)
-        {
-            FullName = fileInfo.FullName;
-            Length = fileInfo.Length;
-            _lastWriteTime = fileInfo.LastWriteTime;
-        }
+        internal FileInfoCustom(FileInfo fileInfo) => Set(fileInfo);
 
         /*
         @MEM(FileInfoCustom.FullName janky horrible inconsistency explanation)
@@ -231,19 +226,38 @@ public sealed partial class Scanner : IDisposable
         a small number of entries. I'm pretty sure that's why I would have done this, because it necessitates an
         fm-is-7zip check everywhere we do a name compare. UGH.
         */
-        internal FileInfoCustom(SevenZipArchiveEntry archiveFileInfo)
+        internal FileInfoCustom(SevenZipArchiveEntry archiveFileInfo) => Set(archiveFileInfo);
+
+        internal FileInfoCustom(RarArchiveEntry entry) => Set(entry);
+
+        [MemberNotNull(nameof(FullName))]
+        internal void Set(FileInfo fileInfo)
         {
+            _rar = false;
+            FullName = fileInfo.FullName;
+            Length = fileInfo.Length;
+            _lastWriteTime = fileInfo.LastWriteTime;
+            _archiveFileInfo = null;
+        }
+
+        [MemberNotNull(nameof(FullName))]
+        internal void Set(SevenZipArchiveEntry archiveFileInfo)
+        {
+            _rar = false;
             FullName = archiveFileInfo.FileName;
             Length = archiveFileInfo.UncompressedSize;
+            _lastWriteTime = null;
             _archiveFileInfo = archiveFileInfo;
         }
 
-        internal FileInfoCustom(RarArchiveEntry entry)
+        [MemberNotNull(nameof(FullName))]
+        internal void Set(RarArchiveEntry entry)
         {
             _rar = true;
             FullName = entry.Key;
             Length = entry.Size;
             _lastWriteTime = entry.LastModifiedTime ?? DateTime.MinValue;
+            _archiveFileInfo = null;
         }
     }
 
@@ -460,7 +474,7 @@ public sealed partial class Scanner : IDisposable
         _tempLines.Clear();
         _topLines.Clear();
         _readmeFiles.Clear();
-        _fmDirFileInfos.Clear();
+        _fmDirFileInfos.ClearFast();
         _ss2Fingerprinted = false;
         _fmWorkingPathDirName = null;
         _fmWorkingPathDirInfo = null;
@@ -1274,6 +1288,9 @@ public sealed partial class Scanner : IDisposable
                     {
                         entriesCount = rarEntries.Count;
                     }
+
+                    _fmDirFileInfos.SetRecycleState(entriesCount);
+
                     for (int i = 0; i < entriesCount; i++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -1372,9 +1389,25 @@ public sealed partial class Scanner : IDisposable
                             fileNamesList.Add(fn);
                         }
 
-                        _fmDirFileInfos.Add(_fmFormat == FMFormat.SevenZip
-                            ? new FileInfoCustom(sevenZipEntry)
-                            : new FileInfoCustom(rarEntry));
+                        FileInfoCustom fileInfoCustom = _fmDirFileInfos[i];
+                        if (fileInfoCustom != null!)
+                        {
+                            if (_fmFormat == FMFormat.SevenZip)
+                            {
+                                fileInfoCustom.Set(sevenZipEntry);
+                            }
+                            else
+                            {
+                                fileInfoCustom.Set(rarEntry);
+                            }
+                        }
+                        else
+                        {
+                            fileInfoCustom = _fmFormat == FMFormat.SevenZip
+                                ? new FileInfoCustom(sevenZipEntry)
+                                : new FileInfoCustom(rarEntry);
+                            _fmDirFileInfos[i] = fileInfoCustom;
+                        }
                     }
                 }
 
@@ -1582,13 +1615,23 @@ public sealed partial class Scanner : IDisposable
                     // Getting the size is horrendously expensive for folders, but if we're doing it then we can
                     // save some time later by using the FileInfo list as a cache.
                     FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
-                    if (_fmDirFileInfos.Capacity < fileInfos.Length) _fmDirFileInfos.Capacity = fileInfos.Length;
+
                     ulong size = 0;
+                    _fmDirFileInfos.SetRecycleState(fileInfos.Length);
                     for (int i = 0; i < fileInfos.Length; i++)
                     {
-                        var fi = new FileInfoCustom(fileInfos[i]);
-                        _fmDirFileInfos.Add(fi);
-                        size += (ulong)fi.Length;
+                        FileInfo fileInfo = fileInfos[i];
+                        FileInfoCustom? fileInfoCustom = _fmDirFileInfos[i];
+                        if (fileInfoCustom != null!)
+                        {
+                            fileInfoCustom.Set(fileInfo);
+                        }
+                        else
+                        {
+                            fileInfoCustom = new FileInfoCustom(fileInfo);
+                            _fmDirFileInfos[i] = fileInfoCustom;
+                        }
+                        size += (ulong)fileInfo.Length;
                     }
                     fmData.Size = size;
                     break;

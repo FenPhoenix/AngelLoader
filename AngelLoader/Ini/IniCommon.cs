@@ -241,45 +241,50 @@ internal static partial class Ini
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AddFMIfNotNull(FanMission? fm)
+    {
+        if (fm != null)
+        {
+            List<FanMission> list = fm.Game == Game.TDM ? FMDataIniListTDM : FMDataIniList;
+            list.Add(fm);
+        }
+    }
+
     internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
         fmsListTDM.Clear();
 
-        var lines = File_ReadAllLines_List(fileName);
+        using var sr = File_OpenTextFast(fileName);
 
-        int linesLength = lines.Count;
-        for (int i = 0; i < linesLength; i++)
+        FanMission? fm = null;
+        while (sr.Reader.ReadLine() is { } line)
         {
-            string lineT = lines[i].Trim();
+            string lineT = line.Trim();
             if (lineT == "[FM]")
             {
-                FanMission fm = new();
-                while (i < linesLength - 1)
+                AddFMIfNotNull(fm);
+                fm = new FanMission();
+            }
+            else if (fm != null)
+            {
+                string lineTS = line.TrimStart();
+                int eqIndex = lineTS.IndexOf('=');
+                if (eqIndex > -1 && lineTS[0] != ';')
                 {
-                    string lineTS = lines[i + 1].TrimStart();
-                    int eqIndex = lineTS.IndexOf('=');
-                    if (eqIndex > -1 && lineTS[0] != ';')
+                    if (_actionDict_FMData.TryGetValue(lineTS, out var result))
                     {
-                        if (_actionDict_FMData.TryGetValue(lineTS, out var result))
-                        {
-                            // If the value is an arbitrary string or other unknowable type, then we need to split
-                            // the string so the value part can go in the FM field. But if the value is a knowable
-                            // type, then we don't need to split the string, we can just parse the value section.
-                            // This slashes our allocation count WAY down.
-                            result.Action(fm, lineTS, eqIndex);
-                        }
+                        // If the value is an arbitrary string or other unknowable type, then we need to split
+                        // the string so the value part can go in the FM field. But if the value is a knowable
+                        // type, then we don't need to split the string, we can just parse the value section.
+                        // This slashes our allocation count WAY down.
+                        result.Action(fm, lineTS, eqIndex);
                     }
-                    else if (lineTS.Length > 0 && lineTS[0] == '[')
-                    {
-                        break;
-                    }
-                    i++;
                 }
-                List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
-                list.Add(fm);
             }
         }
+        AddFMIfNotNull(fm);
     }
 
     internal static void WriteConfigIni()

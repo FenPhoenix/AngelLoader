@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
-using SharpCompress.Readers.Rar;
 using SharpCompress.Archives.SevenZip;
+using SharpCompress.Readers.Rar;
 using static System.StringComparison;
 using static AL_Common.Common;
 
