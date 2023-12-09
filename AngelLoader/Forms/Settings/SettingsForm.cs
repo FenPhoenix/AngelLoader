@@ -799,7 +799,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 capacity: 150
             );
 
-            SetRatingImage();
+            if (!startup) SetRatingImage();
             for (int i = 0; i < ErrorableControls.Length; i++)
             {
                 ShowPathError(ErrorableControls[i], PathErrorIsSet(ErrorableControls[i]));
@@ -1606,6 +1606,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
+        if (sender is not DarkRadioButton { Checked: true }) return;
         AppearancePage.UseShortGameTabNamesCheckBox.Enabled = AppearancePage.OrganizeGamesByTabRadioButton.Checked;
     }
 
@@ -1757,6 +1758,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
+        if (sender is not DarkRadioButton { Checked: true }) return;
         AppearancePage.DateCustomFormatPanel.Enabled = false;
         AppearancePage.PreviewDateLabel.Text = sender == AppearancePage.DateCurrentCultureShortRadioButton
             ? _exampleDate.ToShortDateString()
