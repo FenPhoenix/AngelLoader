@@ -3977,13 +3977,10 @@ public sealed partial class Scanner : IDisposable
                     (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: ") ||
                      lineT.StartsWithI_Local("Original concept by ") ||
                      lineT.StartsWithI_Local("Created by ") ||
-                     lineT.StartsWithI_Local("A Thief 2 fan") ||
-                     lineT.StartsWithI_Local("A Thief Gold fan") ||
-                     lineT.StartsWithI_Local("A Thief 1 fan") ||
-                     lineT.StartsWithI_Local("A Thief fan") ||
+                     AThiefMissionRegex.Match(lineT).Success ||
                      lineT.StartsWithI_Local("A fan mission") ||
                      lineT.StartsWithI_Local("A Thief 3") ||
-                     AThief3Mission.Match(lineT).Success ||
+                     AThief3MissionRegex.Match(lineT).Success ||
                      lineT.StartsWithI_Local("A System Shock") ||
                      lineT.StartsWithI_Local("An SS2")))
                 {
@@ -4373,11 +4370,11 @@ public sealed partial class Scanner : IDisposable
 
         bool swapDone = false;
 
+        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
+
         if (titleContainsAcronym)
         {
-            ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
-            ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
-
             for (int i = 1; i < titles.Count; i++)
             {
                 DetectedTitle altTitle = titles[i];
@@ -4420,6 +4417,18 @@ public sealed partial class Scanner : IDisposable
             (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
+            swapDone = true;
+        }
+
+        if (!swapDone &&
+            titleContainsAcronym &&
+            titles.Count == 2 &&
+            titles[1].Value.Length > titles[0].Value.Length &&
+            !titles[1].Temporary &&
+            !titles[1].Value.StartsWithI_Local(titles[0].Value) &&
+            !titles[1].Value.EqualsIgnoreCaseAndWhiteSpace(titles[0].Value, tempChars1, tempChars2))
+        {
+            SwapMainTitleWithTitleAtIndex(titles, 1);
         }
 
         originalTitles.Clear();

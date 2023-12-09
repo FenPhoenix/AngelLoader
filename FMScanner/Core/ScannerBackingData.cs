@@ -530,7 +530,12 @@ public sealed partial class Scanner
 
     // PERF: Making regexes compiled increases their performance by a huge amount.
     // And as we know, regexes need all the performance help they can get.
-    private readonly Regex AThief3Mission =
+
+    private readonly Regex AThiefMissionRegex =
+        new Regex("^A Thief( 1| 2| Gold)? (fan|campaign)",
+            RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
+
+    private readonly Regex AThief3MissionRegex =
         new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
             RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
 
