@@ -502,8 +502,6 @@ public sealed partial class Scanner
     // GetAuthor() is like 4x faster, GetReleaseDate() is 2x.
     #region Regexes
 
-    // PERF: Making regexes compiled increases their performance by a huge amount.
-    // And as we know, regexes need all the performance help they can get.
     [GeneratedRegex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
     private static partial Regex AThief3MissionRegex();
 
