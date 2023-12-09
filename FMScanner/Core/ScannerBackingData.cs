@@ -502,6 +502,9 @@ public sealed partial class Scanner
     // GetAuthor() is like 4x faster, GetReleaseDate() is 2x.
     #region Regexes
 
+    [GeneratedRegex("^A Thief( 1| 2| Gold)? (fan|campaign)", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
+    private static partial Regex AThiefMissionRegex();
+
     [GeneratedRegex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
     private static partial Regex AThief3MissionRegex();
 

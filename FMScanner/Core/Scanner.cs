@@ -4001,10 +4001,7 @@ public sealed partial class Scanner : IDisposable
                     (lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
                      lineT.StartsWithI("Original concept by ") ||
                      lineT.StartsWithI("Created by ") ||
-                     lineT.StartsWithI("A Thief 2 fan") ||
-                     lineT.StartsWithI("A Thief Gold fan") ||
-                     lineT.StartsWithI("A Thief 1 fan") ||
-                     lineT.StartsWithI("A Thief fan") ||
+                     AThiefMissionRegex().Match(lineT).Success ||
                      lineT.StartsWithI("A fan mission") ||
                      lineT.StartsWithI("A Thief 3") ||
                      AThief3MissionRegex().Match(lineT).Success ||
@@ -4385,11 +4382,11 @@ public sealed partial class Scanner : IDisposable
 
         bool swapDone = false;
 
+        ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
+        ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
+
         if (titleContainsAcronym)
         {
-            ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
-            ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
-
             for (int i = 1; i < titles.Count; i++)
             {
                 DetectedTitle altTitle = titles[i];
@@ -4432,6 +4429,18 @@ public sealed partial class Scanner : IDisposable
             (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
+            swapDone = true;
+        }
+
+        if (!swapDone &&
+            titleContainsAcronym &&
+            titles.Count == 2 &&
+            titles[1].Value.Length > titles[0].Value.Length &&
+            !titles[1].Temporary &&
+            !titles[1].Value.StartsWithI(titles[0].Value) &&
+            !titles[1].Value.EqualsIgnoreCaseAndWhiteSpace(titles[0].Value, tempChars1, tempChars2))
+        {
+            SwapMainTitleWithTitleAtIndex(titles, 1);
         }
 
         originalTitles.Clear();
