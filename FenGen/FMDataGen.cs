@@ -536,7 +536,9 @@ internal static class FMData
 
             if (field.IsReadmeEncoding)
             {
-                w.WL("foreach (var item in " + objDotField + ")");
+                w.WL("if (" + objDotField + ".TryGetDictionary(out var dict))");
+                w.WL("{");
+                w.WL("foreach (var item in dict)");
                 w.WL("{");
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(item.Key);");
@@ -546,17 +548,30 @@ internal static class FMData
                 w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
                 w.WL("}");
+                w.WL("}");
+                w.WL("else if (" + objDotField + ".TryGetSingle(out var single))");
+                w.WL("{");
+                w.WL("sw.Write(\"" + fieldIniName + "=\");");
+                w.WL("sw.Write(single.Key);");
+                w.WL("sw.Write(\",\");");
+                w.WL("if (single.Value.TryFormat(numberSpan, out int written))");
+                w.WL("{");
+                w.WL("sw.WriteLine(numberSpan[..written]);");
+                w.WL("}");
+                w.WL("}");
+
             }
             else if (field.Type.StartsWithO("List<"))
             {
                 bool listTypeIsString = field.Type == "List<string>";
                 if (field.ListType == ListType.MultipleLines)
                 {
-                    string foreachType = listTypeIsString ? "string" : "var";
-                    w.WL("foreach (" + foreachType + " s in " + objDotField + ")");
+                    // Avoid foreach enumerator allocations in case the type doesn't elide them on its own
+                    w.WL("var list = " + objDotField + ";");
+                    w.WL("for (int i = 0; i < list.Count; i++)");
                     w.WL("{");
-
-                    swlSBAppend(fieldIniName, "s", !listTypeIsString ? toString : "");
+                    w.WL("var item = list[i];");
+                    swlSBAppend(fieldIniName, "item", !listTypeIsString ? toString : "");
                     w.WL("}");
                 }
                 else

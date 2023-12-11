@@ -453,10 +453,12 @@ internal static partial class Ini
                 sw.Write("Title=");
                 sw.WriteLine(fm.Title);
             }
-            foreach (string s in fm.AltTitles)
+            var list = fm.AltTitles;
+            for (int i = 0; i < list.Count; i++)
             {
+                var item = list[i];
                 sw.Write("AltTitles=");
-                sw.WriteLine(s);
+                sw.WriteLine(item);
             }
             if (!string.IsNullOrEmpty(fm.Author))
             {
@@ -503,12 +505,25 @@ internal static partial class Ini
                 sw.Write("SelectedReadme=");
                 sw.WriteLine(fm.SelectedReadme);
             }
-            foreach (var item in fm.ReadmeCodePages)
+            if (fm.ReadmeCodePages.TryGetDictionary(out var dict))
+            {
+                foreach (var item in dict)
+                {
+                    sw.Write("ReadmeEncoding=");
+                    sw.Write(item.Key);
+                    sw.Write(",");
+                    if (item.Value.TryFormat(numberSpan, out int written))
+                    {
+                        sw.WriteLine(numberSpan[..written]);
+                    }
+                }
+            }
+            else if (fm.ReadmeCodePages.TryGetSingle(out var single))
             {
                 sw.Write("ReadmeEncoding=");
-                sw.Write(item.Key);
+                sw.Write(single.Key);
                 sw.Write(",");
-                if (item.Value.TryFormat(numberSpan, out int written))
+                if (single.Value.TryFormat(numberSpan, out int written))
                 {
                     sw.WriteLine(numberSpan[..written]);
                 }

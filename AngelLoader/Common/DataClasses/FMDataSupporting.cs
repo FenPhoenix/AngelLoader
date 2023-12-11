@@ -1,7 +1,6 @@
 ﻿#define FenGen_TypeSource
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -64,7 +63,7 @@ internal sealed class ExpandableDate_FromTicks
     }
 }
 
-public sealed class AltTitlesList : IEnumerable<string>
+public sealed class AltTitlesList
 {
     private object? _values;
 
@@ -170,35 +169,48 @@ public sealed class AltTitlesList : IEnumerable<string>
             }
         }
     }
+}
 
-    public IEnumerator<string> GetEnumerator()
+public sealed class ReadmeCodePagesCollection
+{
+    private object? _values;
+
+    #region Massive disgusting hack
+
+    // Because of enumerators being allocated 8 trillion times, let's do this horrible thing where the generated
+    // FMData.ini writer code does the type switch itself.
+
+    public bool TryGetDictionary([NotNullWhen(true)] out DictionaryI<int>? result)
     {
-        if (_values is string str)
+        if (_values is DictionaryI<int> dict)
         {
-            yield return str;
-        }
-        else if (_values != null)
-        {
-            foreach (string item in Unsafe.As<List<string>>(_values))
-            {
-                yield return item;
-            }
+            result = dict;
+            return true;
         }
         else
         {
-            foreach (string item in Array.Empty<string>())
-            {
-                yield return item;
-            }
+            result = null;
+            return false;
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
+    private static readonly KeyValuePair<string, int> _blankSingle = new();
 
-public sealed class ReadmeCodePagesCollection : IEnumerable<KeyValuePair<string, int>>
-{
-    private object? _values;
+    public bool TryGetSingle(out KeyValuePair<string, int> result)
+    {
+        if (_values is KeyValuePair<string, int> single)
+        {
+            result = single;
+            return true;
+        }
+        else
+        {
+            result = _blankSingle;
+            return false;
+        }
+    }
+
+    #endregion
 
     [MemberNotNull(nameof(_values))]
     private void InitValuesToDict()
@@ -247,10 +259,9 @@ public sealed class ReadmeCodePagesCollection : IEnumerable<KeyValuePair<string,
                 }
                 else
                 {
-                    KeyValuePair<string, int> prevSingle = single;
                     InitValuesToDict();
                     DictionaryI<int> dict = Unsafe.As<DictionaryI<int>>(_values);
-                    dict[prevSingle.Key] = prevSingle.Value;
+                    dict[single.Key] = single.Value;
                     dict[key] = value;
                 }
             }
@@ -260,36 +271,6 @@ public sealed class ReadmeCodePagesCollection : IEnumerable<KeyValuePair<string,
                 dict[key] = value;
             }
         }
-    }
-
-    public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
-    {
-        if (_values is not null)
-        {
-            if (_values is KeyValuePair<string, int> single)
-            {
-                yield return single;
-            }
-            else if (_values is DictionaryI<int> dict)
-            {
-                foreach (KeyValuePair<string, int> item in dict)
-                {
-                    yield return item;
-                }
-            }
-        }
-        else
-        {
-            foreach (KeyValuePair<string, int> item in Array.Empty<KeyValuePair<string, int>>())
-            {
-                yield return item;
-            }
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }
 
