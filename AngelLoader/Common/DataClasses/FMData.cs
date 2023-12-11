@@ -1,7 +1,6 @@
 ﻿#define FenGen_FMDataSource
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
