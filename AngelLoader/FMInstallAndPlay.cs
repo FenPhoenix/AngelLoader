@@ -1678,22 +1678,22 @@ internal static class FMInstallAndPlay
 
                 // Disabled for this release as I need to test it more thoroughly
 #if false
-                    #region Relative/malicious path check
+                #region Relative/malicious path check
 
-                    // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't
-                    // worry about it. This is basically what ZipFileExtensions.ExtractToDirectory() does.
+                // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't
+                // worry about it. This is basically what ZipFileExtensions.ExtractToDirectory() does.
 
-                    string extractedName = Path.Combine(fmInstalledPath, fileName);
-                    string full = Path.GetFullPath(extractedName);
-                    if (!full.StartsWithI(fmInstalledPath))
-                    {
-                        throw new IOException(
-                            "Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).\r\n" +
-                            "Entry full file name: " + fileName + "\r\n" +
-                            "Path where it wanted to end up: " + full);
-                    }
+                string extractedName = Path.Combine(fmInstalledPath, fileName);
+                string full = Path.GetFullPath(extractedName);
+                if (!full.StartsWithI(fmInstalledPath))
+                {
+                    throw new IOException(
+                        "Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).\r\n" +
+                        "Entry full file name: " + fileName + "\r\n" +
+                        "Path where it wanted to end up: " + full);
+                }
 
-                    #endregion
+                #endregion
 #endif
 
                 if (fileName.Rel_ContainsDirSep())
@@ -1804,7 +1804,6 @@ internal static class FMInstallAndPlay
                     {
                         return (true, false);
                     }
-
                 }
 
                 int percentOfEntries = GetPercentFromValue_Int(i, entriesCount).Clamp(0, 100);
