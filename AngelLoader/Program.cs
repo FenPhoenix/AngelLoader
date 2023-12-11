@@ -6,6 +6,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.ApplicationServices;
 using static AL_Common.Logger;
@@ -106,7 +107,7 @@ internal static class Program
             SetLogFile(Paths.LogFile);
 
             // We don't need to clear this log because LogStartup overwrites (no append)
-            LogStartup(viewEnv.ProductVersion + " Started session");
+            LogStartup(viewEnv.ProductVersion + " (" + RuntimeInformation.FrameworkDescription + " x64) Started session");
 
             // Do this after the startup log so we don't try to log something at the same time as the non-lock-
             // protected startup log
