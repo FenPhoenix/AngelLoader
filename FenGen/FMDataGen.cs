@@ -158,6 +158,12 @@ internal static class FMData
 
                             field.IniName = GetStringValue(attr);
                             break;
+                        case GenAttributes.FenGenTreatAsList:
+                        {
+                            string val = GetStringValue(attr);
+                            field.Type = "List<" + val + ">";
+                            break;
+                        }
                     }
                 }
             }
@@ -186,9 +192,12 @@ internal static class FMData
                 field.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
                     ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
                     : ((PropertyDeclarationSyntax)item).Identifier).Value!.ToString();
-                field.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
-                    ? ((FieldDeclarationSyntax)item).Declaration.Type
-                    : ((PropertyDeclarationSyntax)item).Type).ToString();
+                if (field.Type.IsEmpty())
+                {
+                    field.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
+                        ? ((FieldDeclarationSyntax)item).Declaration.Type
+                        : ((PropertyDeclarationSyntax)item).Type).ToString();
+                }
                 fields.Add(field);
             }
         }

@@ -83,8 +83,9 @@ public sealed class FanMission
     internal int TDMVersion;
 
     internal string Title = "";
+    [FenGenTreatAsList("string")]
     [FenGenListType("MultipleLines")]
-    internal readonly List<string> AltTitles = new();
+    internal readonly AltTitlesList AltTitles = new();
 
     internal string Author = "";
 

@@ -202,6 +202,8 @@ internal static class GenAttributes
 
     internal const string FenGenRtfDuplicateSourceClass = nameof(FenGenRtfDuplicateSourceClass);
     internal const string FenGenRtfDuplicateDestClass = nameof(FenGenRtfDuplicateDestClass);
+
+    internal const string FenGenTreatAsList = nameof(FenGenTreatAsList);
 }
 
 internal static class Core
