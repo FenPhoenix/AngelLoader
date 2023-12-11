@@ -291,8 +291,7 @@ internal static class TDM
             foreach (FanMission fm in FMDataIniListTDM)
             {
                 // @TDM_CASE(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                // list.
+                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our list.
                 fm.Installed = fmName != null && !fm.MarkedUnavailable && fm.TDMInstalledDir == fmName;
             }
         }
@@ -470,6 +469,7 @@ internal static class TDM
             string fullDir = Path.Combine(fmsPath, fileOrDirName);
             if (Directory.Exists(fullDir))
             {
+                // @MEM: This thing allocates some enumerator-related thing. What a pain...
                 string? first = Directory.EnumerateFiles(fullDir, "*.pk4", SearchOption.TopDirectoryOnly).FirstOrDefault();
                 if (first == default)
                 {
