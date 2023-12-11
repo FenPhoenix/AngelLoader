@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using AL_Common;
 using JetBrains.Annotations;
+using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
 
@@ -193,6 +194,103 @@ public sealed class AltTitlesList : IEnumerable<string>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
+
+public sealed class ReadmeCodePagesCollection : IEnumerable<KeyValuePair<string, int>>
+{
+    private object? _values;
+
+    [MemberNotNull(nameof(_values))]
+    private void InitValuesToDict()
+    {
+        if (_values is not DictionaryI<int>)
+        {
+            _values = new DictionaryI<int>();
+        }
+    }
+
+    public bool TryGetValue(string key, out int value)
+    {
+        if (_values != null)
+        {
+            if (_values is KeyValuePair<string, int> single)
+            {
+                if (key == single.Key)
+                {
+                    value = single.Value;
+                    return true;
+                }
+            }
+            else if (_values is DictionaryI<int> dict)
+            {
+                return dict.TryGetValue(key, out value);
+            }
+        }
+
+        value = 0;
+        return false;
+    }
+
+    public int this[string key]
+    {
+        set
+        {
+            if (_values == null)
+            {
+                _values = new KeyValuePair<string, int>(key, value);
+            }
+            else if (_values is KeyValuePair<string, int> single)
+            {
+                if (key.EqualsI(single.Key))
+                {
+                    _values = new KeyValuePair<string, int>(key, value);
+                }
+                else
+                {
+                    KeyValuePair<string, int> prevSingle = single;
+                    InitValuesToDict();
+                    DictionaryI<int> dict = Unsafe.As<DictionaryI<int>>(_values);
+                    dict[prevSingle.Key] = prevSingle.Value;
+                    dict[key] = value;
+                }
+            }
+            else
+            {
+                DictionaryI<int> dict = Unsafe.As<DictionaryI<int>>(_values);
+                dict[key] = value;
+            }
+        }
+    }
+
+    public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
+    {
+        if (_values is not null)
+        {
+            if (_values is KeyValuePair<string, int> single)
+            {
+                yield return single;
+            }
+            else if (_values is DictionaryI<int> dict)
+            {
+                foreach (KeyValuePair<string, int> item in dict)
+                {
+                    yield return item;
+                }
+            }
+        }
+        else
+        {
+            foreach (KeyValuePair<string, int> item in Array.Empty<KeyValuePair<string, int>>())
+            {
+                yield return item;
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 // IMPORTANT: Do not rename elements or compatibility will break!

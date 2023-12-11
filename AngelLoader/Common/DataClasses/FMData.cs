@@ -105,7 +105,7 @@ public sealed class FanMission
 
     [FenGenReadmeEncoding]
     [FenGenIniName("ReadmeEncoding")]
-    internal readonly DictionaryI<int> ReadmeCodePages = new();
+    internal readonly ReadmeCodePagesCollection ReadmeCodePages = new();
 
     [FenGenNumericEmpty(0)]
     internal ulong SizeBytes = 0;
