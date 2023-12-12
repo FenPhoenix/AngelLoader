@@ -313,8 +313,6 @@ internal static partial class Ini
         }
     }
 
-    // Doesn't handle whitespace around lang strings, but who cares, I'm so done with this.
-    // We don't write out whitespace between them anyway.
     private static void SetFMLanguages(FanMission fm, ReadOnlySpan<char> langsSpan)
     {
         // It's always supposed to be ascii lowercase, so only take the allocation if it's not
@@ -325,55 +323,13 @@ internal static partial class Ini
 
         fm.Langs = Language.Default;
 
-        int len = langsSpan.Length;
-
-        int curStart = 0;
-
-        for (int i = 0; i < len; i++)
+        foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.Split(langsSpan, ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            char c = langsSpan[i];
-
-            if (c == ',' || i == len - 1)
+            if (Langs_TryGetValue(item, 0, item.Length, out Language result))
             {
-                int end = i;
-
-                if (end == len - 1) end++;
-
-                if (end - curStart > 0 && Langs_TryGetValue(langsSpan, curStart, end, out Language result))
-                {
-                    fm.Langs |= result;
-                }
-
-                curStart = i + 1;
+                fm.Langs |= result;
             }
         }
-    }
-
-    private static bool SegmentEquals(this ReadOnlySpan<char> first, int start, int end, string second)
-    {
-        for (; start < end; start++)
-        {
-            if (!char.IsWhiteSpace(first[start])) break;
-        }
-
-        for (; end >= start; end--)
-        {
-            if (!char.IsWhiteSpace(first[end])) break;
-        }
-
-        int secondLen = second.Length;
-        if ((end - start) < secondLen - 1) return false;
-
-        int i = start;
-        int i2 = 0;
-        while (i < end && i2 < secondLen - 1)
-        {
-            if (first[i] != second[i2]) return false;
-
-            i++;
-            i2++;
-        }
-        return true;
     }
 
     private static void FillFMHasXFields(FanMission fm, ReadOnlySpan<char> fieldsSpan)
@@ -381,36 +337,27 @@ internal static partial class Ini
         // Resources must be cleared here
         fm.Resources = CustomResources.None;
 
-        int curStart = 0;
-
-        int len = fieldsSpan.Length;
-
-        for (int i = 0; i < len; i++)
+        bool first = true;
+        foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.Split(fieldsSpan, ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            char c = fieldsSpan[i];
-
-            if (c == ',' || i == len - 1)
+            if (first && item.SequenceEqual(nameof(CustomResources.None)))
             {
-                if (curStart == 0 && fieldsSpan.SegmentEquals(curStart, i, nameof(CustomResources.None)))
+                return;
+            }
+            else
+            {
+                uint at = 1;
+                for (int crI = 1; crI < CustomResourcesCount; crI++, at <<= 1)
                 {
-                    return;
-                }
-                else
-                {
-                    uint at = 1;
-                    for (int crI = 1; crI < CustomResourcesCount; crI++, at <<= 1)
+                    CustomResources cr = (CustomResources)at;
+                    if (item.SequenceEqual(CustomResourcesNames[crI]))
                     {
-                        CustomResources cr = (CustomResources)at;
-                        if (fieldsSpan.SegmentEquals(curStart, i, CustomResourcesNames[crI]))
-                        {
-                            fm.SetResource(cr, true);
-                            break;
-                        }
+                        fm.SetResource(cr, true);
+                        break;
                     }
                 }
-
-                curStart = i + 1;
             }
+            first = false;
         }
     }
 
