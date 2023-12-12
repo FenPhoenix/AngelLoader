@@ -149,8 +149,7 @@ internal static partial class Ini
 
     private static void Config_Articles_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        string[] articles = valTrimmed.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-        for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
+        string[] articles = valTrimmed.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
     }
 
