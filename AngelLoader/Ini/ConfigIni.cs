@@ -1103,6 +1103,12 @@ internal static partial class Ini
         sw.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
 #endif
 
+        /*
+        Doing like 'sw.Append("Value").Append('=').AppendLine(config.Value)' makes us smaller because the "Value"
+        string can be deduplicated with the one in the reader dictionary, whereas adding a '=' directly inline
+        makes it a separate string, bloating up the file a bit. But, appending a '=' is inefficient, so whatever.
+        */
+
         // Put this one first so it can be read quickly so we can get the theme quickly so we can show the
         // themed splash screen quickly
         sw.Append("VisualTheme=").AppendLine(config.VisualTheme);
