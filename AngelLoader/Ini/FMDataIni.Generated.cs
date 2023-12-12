@@ -230,7 +230,7 @@ internal static partial class Ini
     {
         val = val.Trim();
         fm.ResourcesScanned = !val.ValueEqualsIAscii("NotScanned", eqIndex + 1);
-        FillFMHasXFields(fm, val, eqIndex + 1);
+        SetFMCustomResources(fm, val, eqIndex + 1);
     }
 
     private static void FMData_LangsScanned_Set(FanMission fm, string val, int eqIndex)
@@ -584,7 +584,7 @@ internal static partial class Ini
             sb.Append("HasResources").Append('=');
             if (fm.ResourcesScanned)
             {
-                CommaCombineHasXFields(fm.Resources, sb);
+                CommaCombineCustomResources(fm.Resources, sb);
             }
             else
             {

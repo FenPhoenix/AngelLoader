@@ -532,7 +532,7 @@ internal static partial class Ini
         return true;
     }
 
-    private static void FillFMHasXFields(FanMission fm, string fieldsString, int start)
+    private static void SetFMCustomResources(FanMission fm, string fieldsString, int start)
     {
         // Resources must be cleared here
         fm.Resources = CustomResources.None;
@@ -571,7 +571,7 @@ internal static partial class Ini
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void CommaCombineHasXFields(CustomResources resources, StringBuilder sb)
+    private static void CommaCombineCustomResources(CustomResources resources, StringBuilder sb)
     {
         if (resources == CustomResources.None)
         {

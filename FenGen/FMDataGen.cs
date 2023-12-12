@@ -465,7 +465,7 @@ internal static class FMData
             {
                 // Totally shouldn't be hardcoded...
                 w.WL(obj + ".ResourcesScanned = !" + val + ".ValueEqualsIAscii(\"NotScanned\", " + eqIndex + " + 1);");
-                w.WL("FillFMHasXFields(" + obj + ", " + val + ", " + eqIndex + " + 1);");
+                w.WL("SetFMCustomResources(" + obj + ", " + val + ", " + eqIndex + " + 1);");
             }
 
             w.WL("}"); // end of setter method
@@ -751,7 +751,7 @@ internal static class FMData
                 w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
                 w.WL("if (" + obj + ".ResourcesScanned)");
                 w.WL("{");
-                w.WL("CommaCombineHasXFields(" + objDotField + ", sb);");
+                w.WL("CommaCombineCustomResources(" + objDotField + ", sb);");
                 w.WL("}");
                 w.WL("else");
                 w.WL("{");
