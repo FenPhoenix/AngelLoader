@@ -151,7 +151,7 @@ internal static class FMAudio
 
     internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
     {
-        if (!GameIsDark(fm.Game)) return VoidTask;
+        if (!GameIsDark(fm.Game)) return Task.CompletedTask;
 
         static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
 

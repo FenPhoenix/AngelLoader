@@ -37,7 +37,7 @@ internal static class FMDelete
     {
         List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
 
-        if (fms.Count == 0) return VoidTask;
+        if (fms.Count == 0) return Task.CompletedTask;
 
         bool allAreUnavailable = true;
         bool anyAreTDM = false;
@@ -56,7 +56,7 @@ internal static class FMDelete
 
         if (!allAreUnavailable && anyAreTDM)
         {
-            return VoidTask;
+            return Task.CompletedTask;
         }
 
         return allAreUnavailable ? DeleteFMsFromDB(fms) : DeleteFMsFromDisk(fms);
@@ -66,10 +66,10 @@ internal static class FMDelete
 
     internal static Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
     {
-        if (fmsToDelete.Count == 0) return VoidTask;
+        if (fmsToDelete.Count == 0) return Task.CompletedTask;
         foreach (FanMission fm in fmsToDelete)
         {
-            if (!fm.MarkedUnavailable) return VoidTask;
+            if (!fm.MarkedUnavailable) return Task.CompletedTask;
         }
 
         bool single = fmsToDelete.Count == 1;
@@ -89,7 +89,7 @@ internal static class FMDelete
                 yes: LText.FMDeletion.DeleteFromDB_OKMessage,
                 no: LText.Global.Cancel,
                 yesIsDangerous: true);
-        if (result == MBoxButton.No) return VoidTask;
+        if (result == MBoxButton.No) return Task.CompletedTask;
 
         DeleteFMsFromDB_Internal(fmsToDelete);
         return DeleteFromDBRefresh();

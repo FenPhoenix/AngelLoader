@@ -2164,7 +2164,7 @@ internal static class FMInstallAndPlay
         else
         {
             Core.View.RefreshAllSelectedFMs_UpdateInstallState();
-            return VoidTask;
+            return Task.CompletedTask;
         }
     }
 

@@ -2307,10 +2307,10 @@ internal static class Core
     internal static Task PinOrUnpinFM(bool pin)
     {
         FanMission[] selFMs = View.GetSelectedFMs();
-        if (selFMs.Length == 0) return VoidTask;
+        if (selFMs.Length == 0) return Task.CompletedTask;
 
         int rowCount = View.GetRowCount();
-        if (rowCount == 0) return VoidTask;
+        if (rowCount == 0) return Task.CompletedTask;
 
         bool singleFMSelected = selFMs.Length == 1;
 

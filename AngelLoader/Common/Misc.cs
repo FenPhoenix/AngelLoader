@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 
@@ -140,8 +139,6 @@ public static partial class Misc
         new(new[] { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" });
 
     internal static readonly Action NullAction = static () => { };
-
-    internal static readonly Task VoidTask = Task.CompletedTask;
 
     internal static class Defaults
     {

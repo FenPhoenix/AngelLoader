@@ -14,7 +14,6 @@ using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -247,7 +246,7 @@ internal static partial class FMBackupAndRestore
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-            return VoidTask;
+            return Task.CompletedTask;
         }
 
         return Task.Run(() =>
@@ -384,7 +383,7 @@ internal static partial class FMBackupAndRestore
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
-            return VoidTask;
+            return Task.CompletedTask;
         }
 
         bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
