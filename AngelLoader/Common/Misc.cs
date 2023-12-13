@@ -97,13 +97,16 @@ public static partial class Misc
     {
         internal static readonly string InitialSettings = "#initial_setup";
 
-        internal static readonly string[] SettingsPages =
+#pragma warning disable IDE0300 // Simplify collection initialization
+        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+        internal static readonly string[] SettingsPages = new string[SettingsTabCount]
         {
             "#settings_paths_section",
             "#settings_appearance_section",
             "#settings_other_section",
             "#settings_thief_buddy_section"
         };
+#pragma warning restore IDE0300 // Simplify collection initialization
 
         internal static readonly string MainWindow = "#main_window";
         internal static readonly string MissionList = "#mission_list";
