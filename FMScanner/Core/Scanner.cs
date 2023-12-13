@@ -3802,7 +3802,7 @@ public sealed partial class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI("Version History") ||
                     lineStartTrimmed.ContainsI("NewDark") ||
                     lineStartTrimmed.ContainsI("64 Cubed") ||
-                    VersionExclude1Regex.Match(lineStartTrimmed).Success:
+                    VersionExclude1Regex().Match(lineStartTrimmed).Success:
 #endif
                 case SpecialLogic.Author when
                     lineStartTrimmed.StartsWithI("Authors note"):
@@ -4727,7 +4727,7 @@ public sealed partial class Scanner : IDisposable
         else // Starts with non-numbers
         {
             // Find index of the first numeric character
-            Match match = VersionFirstNumberRegex.Match(version);
+            Match match = VersionFirstNumberRegex().Match(version);
             if (match.Success)
             {
                 version = version.Substring(match.Index);

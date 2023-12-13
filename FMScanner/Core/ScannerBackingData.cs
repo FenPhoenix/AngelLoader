@@ -521,46 +521,53 @@ public sealed partial class Scanner
     private static partial Regex AuthorEmailRegex();
 
 #if FMScanner_FullCode
-    private readonly Regex VersionExclude1Regex =
-        new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
+    [GeneratedRegex(@"\d\.\d+\+")]
+    private static partial Regex VersionExclude1Regex();
 
     // TODO: This one looks iffy though
-    private readonly Regex VersionFirstNumberRegex =
-        new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
+    [GeneratedRegex(@"[0123456789\.]+")]
+    private static partial Regex VersionFirstNumberRegex();
+
+    [GeneratedRegex(@"NewDark (?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion1();
+
+    [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion2();
+
+    [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion3();
+
+    [GeneratedRegex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion4();
+
+    [GeneratedRegex(@"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion5();
+
+    [GeneratedRegex(@"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion6();
+
+    [GeneratedRegex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion7();
+
+    [GeneratedRegex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion8();
+
+    [GeneratedRegex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
+    private static partial Regex NewDarkVersion9();
 
     // Much, much faster to iterate through possible regex matches, common ones first
     // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
     private readonly Regex[] NewDarkVersionRegexes =
     {
-        new Regex(@"NewDark (?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
-            IgnoreCaseInvariant | RegexOptions.Compiled |
-            RegexOptions.ExplicitCapture)
+        NewDarkVersion1(),
+        NewDarkVersion2(),
+        NewDarkVersion3(),
+        NewDarkVersion4(),
+        NewDarkVersion5(),
+        NewDarkVersion6(),
+        NewDarkVersion7(),
+        NewDarkVersion8(),
+        NewDarkVersion9()
     };
 #endif
 
