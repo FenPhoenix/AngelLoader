@@ -2159,11 +2159,6 @@ internal static class Core
     /// <returns></returns>
     internal static string GetEditorExe_FromDisk(GameIndex gameIndex)
     {
-        static string Fallback(string gamePath, string editorName) =>
-            TryCombineFilePathAndCheckExistence(gamePath, editorName + ".exe", out string fullPathExe)
-                ? fullPathExe
-                : "";
-
         string gamePath;
         string editorName;
         if (!GameIsDark(gameIndex) ||
@@ -2190,7 +2185,9 @@ internal static class Core
             Log(ErrorText.ExTry + "detect game editor exe\r\nGame: " + gameIndex, ex);
         }
 
-        return Fallback(gamePath, editorName);
+        return TryCombineFilePathAndCheckExistence(gamePath, editorName + ".exe", out string fullPathExe)
+            ? fullPathExe
+            : "";
     }
 
     /// <summary>
