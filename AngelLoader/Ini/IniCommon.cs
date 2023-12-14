@@ -207,10 +207,6 @@ internal static partial class Ini
         {
             if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
             {
-                // If the value is an arbitrary string or other unknowable type, then we need to split
-                // the string so the value part can go in the FM field. But if the value is a knowable
-                // type, then we don't need to split the string, we can just parse the value section.
-                // This slashes our allocation count WAY down.
                 ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
                 result.Action(fm, valRaw);
             }
