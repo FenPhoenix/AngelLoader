@@ -989,15 +989,7 @@ internal static class FindFMs
             // Perf so we don't have to iterate the list again later
             if (fm.NeedsScan()) fmsViewListUnscanned.Add(fm);
 
-            fm.Title =
-                !fm.Title.IsEmpty() ? fm.Title :
-                !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
-                fm.InstalledDir;
-            fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
-
-            FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
-
-            FMsViewList.Add(fm);
+            FinishAndAddFM(fm);
         }
 
         string tdmFMsPath = Config.GetFMInstallPath(GameIndex.TDM);
@@ -1024,15 +1016,7 @@ internal static class FindFMs
                     fmsViewListUnscanned.Add(fm);
                 }
 
-                fm.Title =
-                    !fm.Title.IsEmpty() ? fm.Title :
-                    !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
-                    fm.InstalledDir;
-                fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
-
-                FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
-
-                FMsViewList.Add(fm);
+                FinishAndAddFM(fm);
             }
         }
 
@@ -1043,5 +1027,20 @@ internal static class FindFMs
 #if DateAccTest
         Ini.ReadDateAccuracyFile();
 #endif
+
+        return;
+
+        static void FinishAndAddFM(FanMission fm)
+        {
+            fm.Title =
+                !fm.Title.IsEmpty() ? fm.Title :
+                !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
+                fm.InstalledDir;
+            fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
+
+            FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
+
+            FMsViewList.Add(fm);
+        }
     }
 }
