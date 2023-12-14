@@ -521,7 +521,7 @@ internal static class TDM
                     lineT.StartsWithO("version="))
                 {
                     string versionString = lineT.Substring(lineT.IndexOf('=') + 1).Trim();
-                    Match match = Regex.Match(versionString, "<?(?<VersionRaw>[0123456789]+)");
+                    Match match = Regex.Match(versionString, "(?<VersionRaw>[0123456789]+)");
                     if (match.Success)
                     {
                         string versionRaw = match.Groups["VersionRaw"].Value;
