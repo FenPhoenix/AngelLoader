@@ -46,6 +46,12 @@ public static partial class Utils
 
     #endregion
 
+    /// <summary>
+    /// If you know the existing single line comment is empty, call this one for less work.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
     internal static string ToSingleLineComment(this string value, int maxLength)
     {
         if (value.IsEmpty()) return "";
@@ -55,6 +61,39 @@ public static partial class Utils
         return linebreakIndex > -1 && linebreakIndex <= maxLength
             ? value.Substring(0, linebreakIndex)
             : value.Substring(0, Math.Min(value.Length, maxLength));
+    }
+
+    /// <summary>
+    /// If the existing single line comment might not be empty, call this one to ensure no extra allocations happen
+    /// when the existing single line comment doesn't need updating.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="oldSingleLine"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    internal static string ToSingleLineComment_AllocOnlyIfNeeded(this string value, string oldSingleLine, int maxLength)
+    {
+        if (value.IsEmpty()) return "";
+
+        int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);
+
+        bool cutoffIsLineBreak = linebreakIndex > -1 && linebreakIndex <= maxLength;
+
+        ReadOnlySpan<char> valueSpan =
+            cutoffIsLineBreak
+                ? value.AsSpan(0, linebreakIndex)
+                : value.AsSpan(0, Math.Min(value.Length, maxLength));
+
+        if (!valueSpan.SequenceEqual(oldSingleLine))
+        {
+            return cutoffIsLineBreak
+                ? value.Substring(0, linebreakIndex)
+                : value.Substring(0, Math.Min(value.Length, maxLength));
+        }
+        else
+        {
+            return oldSingleLine;
+        }
     }
 
     #region Escaping
