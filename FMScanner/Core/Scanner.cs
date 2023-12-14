@@ -1565,7 +1565,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    CopySevenZipReadmesToCacheDir(fm);
+                    CopyReadmesToCacheDir(fm);
                 }
                 catch
                 {
@@ -2044,7 +2044,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private void CopySevenZipReadmesToCacheDir(FMToScan fm)
+    private void CopyReadmesToCacheDir(FMToScan fm)
     {
         string cachePath = fm.CachePath;
 
@@ -2053,7 +2053,7 @@ public sealed partial class Scanner : IDisposable
         var readmes = new List<(string Source, string Dest)>();
 
         /*
-        @HTMLRefExtraction(CopySevenZipReadmesToCacheDir):
+        @HTMLRefExtraction(CopyReadmesToCacheDir):
         We don't have the facility to do an HTML reference extraction here (7z scanner readme copy).
         */
 
