@@ -373,12 +373,7 @@ public static partial class Common
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static bool HasFileExtension(this string value)
-    {
-        int lastDotIndex = value.LastIndexOf('.');
-        return lastDotIndex > value.LastIndexOf('/') ||
-               lastDotIndex > value.LastIndexOf('\\');
-    }
+    public static bool HasFileExtension(this string value) => value.LastIndexOf('.') > value.Rel_LastIndexOfDirSep();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
