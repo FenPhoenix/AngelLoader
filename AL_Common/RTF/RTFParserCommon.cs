@@ -969,11 +969,12 @@ public static partial class RTFParserCommon
 
     public enum SymbolFont
     {
+        // Non-font values at the start, to avoid having to check the top bounds
         None,
+        Unset,
         Symbol,
         Wingdings,
-        Webdings,
-        Unset
+        Webdings
     }
 
     public enum RtfDestinationState
