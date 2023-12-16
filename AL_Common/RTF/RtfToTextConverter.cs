@@ -825,7 +825,7 @@ public sealed partial class RtfToTextConverter
 
     public RtfToTextConverter()
     {
-        _symbolFontTables = new uint[4][];
+        _symbolFontTables = new uint[5][];
         _symbolFontTables[(int)SymbolFont.Symbol] = _symbolFontToUnicode;
         _symbolFontTables[(int)SymbolFont.Wingdings] = _wingdingsFontToUnicode;
         _symbolFontTables[(int)SymbolFont.Webdings] = _webdingsFontToUnicode;
@@ -1244,7 +1244,7 @@ public sealed partial class RtfToTextConverter
             // Support bare characters that are supposed to be displayed in a symbol font.
             GroupStack groupStack = _ctx.GroupStack;
             SymbolFont symbolFont = groupStack.CurrentSymbolFont;
-            if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
+            if (symbolFont > SymbolFont.Unset)
             {
                 uint[] fontTable = _symbolFontTables[(int)symbolFont];
                 if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
@@ -1268,7 +1268,7 @@ public sealed partial class RtfToTextConverter
             // Support bare characters that are supposed to be displayed in a symbol font.
             GroupStack groupStack = _ctx.GroupStack;
             SymbolFont symbolFont = groupStack.CurrentSymbolFont;
-            if (symbolFont > SymbolFont.None)
+            if (symbolFont > SymbolFont.Unset)
             {
                 GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
                 _plainText.AddRange(result, result.Count);
@@ -1321,7 +1321,7 @@ public sealed partial class RtfToTextConverter
                 else
                 {
                     SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-                    if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
+                    if (symbolFont > SymbolFont.Unset)
                     {
                         for (int i = 0; i < _hexBuffer.Count; i++)
                         {
@@ -2195,7 +2195,7 @@ public sealed partial class RtfToTextConverter
             // We already know our code point is within bounds of the array, because the arrays also go from
             // 0x20 - 0xFF, so no need to check.
             SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
-            if (symbolFont is > SymbolFont.None and < SymbolFont.Unset)
+            if (symbolFont > SymbolFont.Unset)
             {
                 returnCodePoint = _symbolFontTables[(int)symbolFont][returnCodePoint - 0x20];
             }
