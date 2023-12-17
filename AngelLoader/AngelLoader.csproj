@@ -25,6 +25,11 @@
 		<AssemblyVersion>1.7.7</AssemblyVersion>
 		<FileVersion>1.7.7</FileVersion>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+
+		<!-- Uncommenting these makes the heavy code (rtf parser etc.) run at a remotely reasonable speed right
+		from the get go, but makes startup significantly slower, so we're leaving them commented-out for now. -->
+		<!--<TieredCompilation>false</TieredCompilation>-->
+		<!--<TieredCompilationQuickJit>false</TieredCompilationQuickJit>-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

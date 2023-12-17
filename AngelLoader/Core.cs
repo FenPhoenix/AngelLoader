@@ -12,14 +12,23 @@ NOTE(Core notes):
 
 -@NET5: Process output/error reading, code pages rear their ugly heads again
  From the .NET 7 Process doc:
-"In the .NET Framework, the Process class by default uses Console encodings, which are typically code page
-encodings, for the input, output, and error streams. For example code, on systems whose culture is English
-(United States), code page 437 is the default encoding for the Console class. However, .NET Core may make
-only a limited subset of these encodings available. If this is the case, it uses Encoding.UTF8 as the default
-encoding."
+ "In the .NET Framework, the Process class by default uses Console encodings, which are typically code page
+ encodings, for the input, output, and error streams. For example code, on systems whose culture is English
+ (United States), code page 437 is the default encoding for the Console class. However, .NET Core may make
+ only a limited subset of these encodings available. If this is the case, it uses Encoding.UTF8 as the default
+ encoding."
 
-We're reading output from ffprobe.exe and 7z.exe. We're only pulling out ascii strings, so we're fine with all
-the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
+ We're reading output from ffprobe.exe and 7z.exe. We're only pulling out ascii strings, so we're fine with all
+ the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
+
+-@NET5(Tiered/quick-jit):
+ We need to keep the tiering/quick-jit crap turned on or else our startup time regresses to significantly slower
+ than Framework.
+ But if we really need a method to jit fast the first time, we can use this attribute on it:
+ [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+
+ If we're eventually able to go full AOT (waiting on WinForms), presumably this whole frustrating pile of perf
+ heartaches will be gone for good and everything will just be blazing instantly. We'll see.
 */
 using System;
 using System.Buffers;
