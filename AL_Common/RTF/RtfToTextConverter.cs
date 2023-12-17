@@ -2148,7 +2148,7 @@ public sealed partial class RtfToTextConverter
         if (codePoint < 0)
         {
             codePoint += 65536;
-            if (codePoint is < 0 or > ushort.MaxValue)
+            if (codePoint < 0)
             {
                 returnCodePoint = _unicodeUnknown_Char;
                 return;
@@ -2206,7 +2206,7 @@ public sealed partial class RtfToTextConverter
         if (codePoint < 0)
         {
             codePoint += 65536;
-            if (codePoint is < 0 or > ushort.MaxValue)
+            if (codePoint < 0)
             {
                 returnCodePoint = _unicodeUnknown_Char;
                 return;
