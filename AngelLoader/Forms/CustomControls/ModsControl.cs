@@ -237,7 +237,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         }
     }
 
-    private void CheckList_Paint(object sender, PaintEventArgs e)
+    private void CheckList_Paint(object? sender, PaintEventArgs e)
     {
         if (_cautionRectangle != Rectangle.Empty && ShowImportantCheckBox.Checked)
         {
