@@ -559,7 +559,6 @@ internal static class FMData
                 w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
                 w.WL("}");
-
             }
             else if (field.Type.StartsWithO("List<"))
             {
