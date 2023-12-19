@@ -46,6 +46,8 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
     internal void SoftClearList()
     {
+        ScrollToTop();
+
         CheckItems = Array.Empty<CheckItem>();
 
         foreach (DarkCheckBox cb in _checkBoxes)
@@ -61,9 +63,6 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     private void SetList(CheckItem[] items, string cautionText)
     {
         const int x = 18;
-
-        // IMPORTANT(Mods list set): We must scroll up to the top or else all hell breaks loose with checkbox positioning/drawing
-        CheckList.AutoScrollPosition = Point.Empty;
 
         bool firstCautionDone = false;
 
@@ -133,6 +132,15 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         }
 
         CheckItems = items;
+    }
+
+    // IMPORTANT(Mods list set): We must scroll up to the top or else all hell breaks loose with checkbox positioning/drawing
+    private void ScrollToTop()
+    {
+        if (CheckList.AutoScrollPosition != Point.Empty)
+        {
+            CheckList.AutoScrollPosition = Point.Empty;
+        }
     }
 
     private void RecreateList(int maxCheckBoxCount)
@@ -297,6 +305,8 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     {
         try
         {
+            ScrollToTop();
+
             CheckList.SuspendDrawing();
 
             DisabledModsTextBox.Text = disabledMods;
