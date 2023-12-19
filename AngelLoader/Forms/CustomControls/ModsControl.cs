@@ -46,6 +46,8 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
 
     internal void SoftClearList()
     {
+        ScrollToTop();
+
         CheckItems = Array.Empty<CheckItem>();
 
         foreach (DarkCheckBox cb in _checkBoxes)
@@ -118,7 +120,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             RefreshCautionLabelText(cautionText);
 
             _cautionRectangle = new Rectangle(
-                4,
+                0, // X will be set on draw for manual "anchoring"
                 4 + firstCautionY,
                 0, // Width will be set on draw for manual "anchoring"
                 (4 + y) - (4 + firstCautionY)
@@ -130,6 +132,15 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         }
 
         CheckItems = items;
+    }
+
+    // IMPORTANT(Mods list set): We must scroll up to the top or else all hell breaks loose with checkbox positioning/drawing
+    private void ScrollToTop()
+    {
+        if (CheckList.AutoScrollPosition != Point.Empty)
+        {
+            CheckList.AutoScrollPosition = Point.Empty;
+        }
     }
 
     private void RecreateList(int maxCheckBoxCount)
@@ -226,13 +237,16 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         }
     }
 
-
-    private void CheckList_Paint(object? sender, PaintEventArgs e)
+    private void CheckList_Paint(object sender, PaintEventArgs e)
     {
         if (_cautionRectangle != Rectangle.Empty && ShowImportantCheckBox.Checked)
         {
-            _cautionRectangle.Width = CheckList.ClientRectangle.Width - 8;
-            e.Graphics.FillRectangle(CheckList._darkModeEnabled ? DarkColors.Fen_RedHighlightBrush : Brushes.MistyRose, _cautionRectangle);
+            Rectangle rect = new(
+                e.ClipRectangle.X,
+                _cautionRectangle.Y + CheckList.AutoScrollPosition.Y,
+                e.ClipRectangle.Width,
+                _cautionRectangle.Height);
+            e.Graphics.FillRectangle(CheckList._darkModeEnabled ? DarkColors.Fen_RedHighlightBrush : Brushes.MistyRose, rect);
         }
     }
 
@@ -291,6 +305,8 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     {
         try
         {
+            ScrollToTop();
+
             CheckList.SuspendDrawing();
 
             DisabledModsTextBox.Text = disabledMods;
