@@ -338,7 +338,7 @@ public interface IView : ISettingsChangeableView
         bool ImportSelectedReadme,
         bool ImportFinishedOn,
         bool ImportSize)
-        ShowImportFromMultipleInisForm(ImportType importType);
+        ShowImportFromMultipleInisWindow(ImportType importType);
 
     #endregion
 

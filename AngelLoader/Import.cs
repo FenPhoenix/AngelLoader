@@ -98,7 +98,7 @@ internal static class Import
                 bool importTags,
                 bool importSelectedReadme,
                 bool importFinishedOn,
-                bool importSize) = Core.View.ShowImportFromMultipleInisForm(importType);
+                bool importSize) = Core.View.ShowImportFromMultipleInisWindow(importType);
 
             if (!accepted) return;
             foreach (string file in returnedIniFiles) iniFiles.Add(file);

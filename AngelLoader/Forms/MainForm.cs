@@ -5066,7 +5066,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool ImportSelectedReadme,
         bool ImportFinishedOn,
         bool ImportSize)
-    ShowImportFromMultipleInisForm(ImportType importType)
+    ShowImportFromMultipleInisWindow(ImportType importType)
     {
         using var f = new ImportFromMultipleInisForm(importType);
         return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
