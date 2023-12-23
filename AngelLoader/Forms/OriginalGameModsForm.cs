@@ -30,6 +30,8 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
         OrigGameModsControl.SetAndRecreateList(gameIndex, DisabledMods);
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize(GameIndex gameIndex)
     {
         Text = GetLocalizedGameName(gameIndex);

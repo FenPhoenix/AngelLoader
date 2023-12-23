@@ -179,6 +179,8 @@ public partial class DarkTaskDialog : DarkFormBase
         }
     }
 
+    public override void RespondToSystemThemeChange() => SetTheme(Config.VisualTheme);
+
     private void SetTheme(VisualTheme theme)
     {
         if (theme == VisualTheme.Dark)

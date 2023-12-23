@@ -31,6 +31,17 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
+/*
+@FollowSysTheme(Settings): The follow checkbox doesn't behave correctly in the following situation:
+-Have the Windows theme set to Light
+-Open Settings with Classic checked
+-Check Follow
+-Change the system theme in Windows to Dark
+-The theme doesn't update
+-Click OK
+-The main window is half-themed
+*/
+
 internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 {
     #region Private fields
@@ -47,7 +58,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly string _inLanguage;
     private readonly LText_Class _inLText;
 
-    private readonly VisualTheme _inTheme;
+    private VisualTheme _inTheme;
 
     #endregion
 
@@ -787,6 +798,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         PathsPage.LayoutFLP.PerformLayout();
 
         base.OnShown(e);
+    }
+
+    public override void RespondToSystemThemeChange()
+    {
+        // Prevent reverting the theme to previous on cancel
+        _inTheme = Config.VisualTheme;
+        SetTheme(Config.VisualTheme, startup: false);
     }
 
     private void SetTheme(VisualTheme theme, bool startup)

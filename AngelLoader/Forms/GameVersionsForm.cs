@@ -118,6 +118,8 @@ public sealed class GameVersionsForm : DarkFormBase
         Localize();
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize()
     {
         Text = LText.GameVersionsWindow.TitleText;
