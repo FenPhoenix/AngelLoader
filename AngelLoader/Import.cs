@@ -205,6 +205,7 @@ internal static class Import
                          we may as well let it do the work.
                         */
                         FindFMs.Find();
+                        TDM.UpdateTDMDataFromDisk(refresh: false);
                     }
                 }
             }
