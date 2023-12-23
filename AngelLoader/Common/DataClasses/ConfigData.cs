@@ -439,6 +439,8 @@ public sealed class ConfigData
 
     internal VisualTheme VisualTheme = VisualTheme.Classic;
 
+    internal bool FollowSystemTheme;
+
     internal bool ShowUnsupported;
     internal bool ShowUnavailableFMs;
 
