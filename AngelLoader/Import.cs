@@ -662,6 +662,9 @@ internal static class Import
 
         static ImportError DoImport(string[] lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
+            string[]? _archiveDirFiles = null;
+            string[] GetArchiveDirFiles(string archiveDir) => _archiveDirFiles ??= Directory.GetFiles(archiveDir, "*", SearchOption.AllDirectories);
+
             bool archiveDirRead = false;
             string archiveDir = "";
 
@@ -719,7 +722,7 @@ internal static class Import
                     try
                     {
                         // NDL always searches subdirectories as well
-                        foreach (string f in Directory.EnumerateFiles(archiveDir, "*", SearchOption.AllDirectories))
+                        foreach (string f in GetArchiveDirFiles(archiveDir))
                         {
                             // @DIRSEP: '/' conversion due to string.ContainsI()
                             if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
