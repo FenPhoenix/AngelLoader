@@ -15,6 +15,15 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
+/*
+@Import: Overhaul the import system. It needs:
+-Quadratic searches changed to hash lookups
+-NDL 1.7.0 AdditionalArchiveRoots support
+-Thorough testing with full sets from each loader
+-Notes addressed and bugs fixed
+-Perf
+*/
+
 internal static class Import
 {
     private sealed class FieldsToImport
