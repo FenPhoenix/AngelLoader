@@ -590,14 +590,14 @@ internal static class Import
 
                     while (i < lines.Length - 1)
                     {
-                        // TODO: FMSel: We're not trimming these lines at all. Is this to spec?
+                        // @Import: FMSel: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
                         if (lineFM.StartsWithO("NiceName="))
                         {
                             fm.Title = lineFM.Substring(9);
                         }
                         /*
-                        TODO/BUG: This field can have a leading subfolder!!! like "import_test\1999-06-04_PoorLordBafford.zip"
+                        @Import/BUG: This field can have a leading subfolder!!! like "import_test\1999-06-04_PoorLordBafford.zip"
                         Argh! This completely wrecks everything! I think it searches subfolders always?
                         I thought only NDL had that functionality... Yikes... and FMSel even distinguishes
                         archives in different folders with a subdir prefix and a bracketed number after the
@@ -689,7 +689,7 @@ internal static class Import
                 {
                     while (i < lines.Length - 1)
                     {
-                        // TODO: NDL: We're not trimming these lines at all. Is this to spec?
+                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lc = lines[i + 1];
                         if (lc.StartsWithO("ArchiveRoot="))
                         {
@@ -718,7 +718,7 @@ internal static class Import
                 if (archiveDirRead &&
                     line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                 {
-                    // NOTE: There can be a problem like:
+                    // @Import: There can be a problem like:
                     // installed name is CoolMission[1]
                     // it gets written like [FM=CoolMission[1]]
                     // it gets read and all [ and ] chars are removed
@@ -754,7 +754,7 @@ internal static class Import
 
                     while (i < lines.Length - 1)
                     {
-                        // TODO: NDL: We're not trimming these lines at all. Is this to spec?
+                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
                         if (lineFM.StartsWithO("NiceName="))
                         {
@@ -845,7 +845,7 @@ internal static class Import
                 FanMission mainFM = FMDataIniList[mainFMi];
 
                 if (!checkedArray[mainFMi] &&
-                    // TODO: Import match-up
+                    // @Import: Import match-up
                     // We should match installed dirs better! Match to FMSel/NDL _-replace style, truncated
                     // and not, etc... even bracket-numbered? D:
                     ((importType == ImportType.DarkLoader &&
@@ -854,7 +854,7 @@ internal static class Import
                       ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
                        importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
                      (importType == ImportType.NewDarkLoader &&
-                      // BUG:? Why aren't we checking archive for this?!?!
+                      // @Import: BUG:? Why aren't we checking archive for this?!?!
                       // Test this!
                       (
                           //(!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
@@ -863,7 +863,7 @@ internal static class Import
                      )
                     )
                    /*
-                   NOTE: Original v1.01 is like this:
+                   @Import: Original v1.01 is like this:
 
                    if (!mainFM.Checked &&
                        (importType == ImportType.DarkLoader &&
