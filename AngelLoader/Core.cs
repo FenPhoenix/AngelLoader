@@ -563,6 +563,7 @@ internal static class Core
         Config.Language = outConfig.Language;
 
         Config.VisualTheme = outConfig.VisualTheme;
+        Config.FollowSystemTheme = outConfig.FollowSystemTheme;
 
         Config.GameOrganization = outConfig.GameOrganization;
         Config.UseShortGameTabNames = outConfig.UseShortGameTabNames;

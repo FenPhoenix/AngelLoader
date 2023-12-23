@@ -412,15 +412,22 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             #region Appearance page
 
-            switch (_selfTheme)
+            if (config.FollowSystemTheme)
             {
-                case VisualTheme.Classic:
-                    AppearancePage.ClassicThemeRadioButton.Checked = true;
-                    break;
-                case VisualTheme.Dark:
-                default:
-                    AppearancePage.DarkThemeRadioButton.Checked = true;
-                    break;
+                AppearancePage.FollowSystemThemeRadioButton.Checked = true;
+            }
+            else
+            {
+                switch (_selfTheme)
+                {
+                    case VisualTheme.Classic:
+                        AppearancePage.ClassicThemeRadioButton.Checked = true;
+                        break;
+                    case VisualTheme.Dark:
+                    default:
+                        AppearancePage.DarkThemeRadioButton.Checked = true;
+                        break;
+                }
             }
 
             #region Game organization
@@ -685,6 +692,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             AppearancePage.ClassicThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
             AppearancePage.DarkThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
+            AppearancePage.FollowSystemThemeRadioButton.CheckedChanged += VisualThemeRadioButtons_CheckedChanged;
 
             AppearancePage.OrganizeGamesByTabRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
             AppearancePage.OrganizeGamesInOneListRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
@@ -881,6 +889,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 AppearancePage.VisualThemeGroupBox.Text = LText.SettingsWindow.Appearance_Theme;
                 AppearancePage.ClassicThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Classic;
                 AppearancePage.DarkThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_Dark;
+                AppearancePage.FollowSystemThemeRadioButton.Text = LText.SettingsWindow.Appearance_Theme_FollowSystem;
 
                 AppearancePage.FMsListGroupBox.Text = LText.SettingsWindow.Appearance_FMsList;
                 AppearancePage.GameOrganizationLabel.Text = LText.SettingsWindow.Appearance_GameOrganization;
@@ -1134,9 +1143,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OutConfig.Language = LangComboBox.SelectedBackingItem();
 
-            OutConfig.VisualTheme = AppearancePage.DarkThemeRadioButton.Checked
-                ? VisualTheme.Dark
-                : VisualTheme.Classic;
+            if (AppearancePage.FollowSystemThemeRadioButton.Checked)
+            {
+                OutConfig.VisualTheme = Core.GetSystemTheme();
+                OutConfig.FollowSystemTheme = true;
+            }
+            else
+            {
+                OutConfig.VisualTheme =
+                    AppearancePage.DarkThemeRadioButton.Checked
+                    ? VisualTheme.Dark
+                    : VisualTheme.Classic;
+                OutConfig.FollowSystemTheme = false;
+            }
 
             #region Game organization
 
@@ -1587,9 +1606,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         if (sender is not DarkRadioButton button) return;
         if (!button.Checked) return;
 
-        VisualTheme theme = button == AppearancePage.DarkThemeRadioButton
-            ? VisualTheme.Dark
-            : VisualTheme.Classic;
+        VisualTheme theme =
+            button == AppearancePage.DarkThemeRadioButton ? VisualTheme.Dark :
+            button == AppearancePage.ClassicThemeRadioButton ? VisualTheme.Classic :
+            Core.GetSystemTheme();
 
         try
         {
