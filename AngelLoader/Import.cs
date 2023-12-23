@@ -353,6 +353,7 @@ internal static class Import
                                 try
                                 {
                                     // DarkLoader only does zip format
+                                    // @Import(DarkLoader): Multiple disk hit
                                     foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
                                     {
                                         string fnNoExt = Path.GetFileNameWithoutExtension(f);
