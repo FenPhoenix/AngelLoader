@@ -714,6 +714,10 @@ internal static class Core
             sortAndSetFilter = true;
         }
 
+        // Do this BEFORE the view refresh!
+        // Prevents the Installed TDM FM from losing its Installed=true state until the next refresh.
+        TDM.UpdateTDMDataFromDisk(refresh: true);
+
         if (sortAndSetFilter)
         {
             // Just always force refresh of FM to make sure whatever we've changed will take.
@@ -728,7 +732,6 @@ internal static class Core
             View.RefreshMods();
         }
 
-        TDM.UpdateTDMDataFromDisk(refresh: true);
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
 
         Ini.WriteConfigIni();
