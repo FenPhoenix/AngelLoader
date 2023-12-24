@@ -36,6 +36,8 @@ internal static partial class Native
     internal const int STATE_SYSTEM_INVISIBLE = 0x00008000;
     internal const int STATE_SYSTEM_UNAVAILABLE = 0x00000001;
 
+    internal const int WM_SETTINGCHANGE = 0x001A;
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT

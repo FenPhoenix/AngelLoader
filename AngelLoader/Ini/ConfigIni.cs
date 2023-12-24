@@ -308,10 +308,19 @@ internal static partial class Ini
 
     private static void Config_VisualTheme_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed.ToString(), _bFlagsEnum);
-        if (field != null)
+        if (valTrimmed == "FollowSystemTheme")
         {
-            config.VisualTheme = (VisualTheme)field.GetValue(null);
+            config.FollowSystemTheme = true;
+            config.VisualTheme = Core.GetSystemTheme();
+        }
+        else
+        {
+            config.FollowSystemTheme = false;
+            FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed.ToString(), _bFlagsEnum);
+            if (field != null)
+            {
+                config.VisualTheme = (VisualTheme)field.GetValue(null);
+            }
         }
     }
 
@@ -985,7 +994,8 @@ internal static partial class Ini
     };
 
     // Read only the theme, hopefully from the top, for perf
-    internal static VisualTheme ReadThemeFromConfigIni(string path)
+    internal static (VisualTheme Theme, bool FollowSystemTheme)
+    ReadThemeFromConfigIni(string path)
     {
         try
         {
@@ -995,15 +1005,26 @@ internal static partial class Ini
                 string lineT = line.Trim();
                 if (lineT.StartsWithO("VisualTheme="))
                 {
-                    return lineT.ValueEqualsIAscii("Dark", 12) ? VisualTheme.Dark : VisualTheme.Classic;
+                    if (lineT.ValueEqualsIAscii("FollowSystemTheme", 12))
+                    {
+                        return (Core.GetSystemTheme(), true);
+                    }
+                    else if (lineT.ValueEqualsIAscii("Dark", 12))
+                    {
+                        return (VisualTheme.Dark, false);
+                    }
+                    else
+                    {
+                        return (VisualTheme.Classic, false);
+                    }
                 }
             }
 
-            return VisualTheme.Classic;
+            return (VisualTheme.Classic, false);
         }
         catch
         {
-            return VisualTheme.Classic;
+            return (VisualTheme.Classic, false);
         }
     }
 
@@ -1111,7 +1132,15 @@ internal static partial class Ini
 
         // Put this one first so it can be read quickly so we can get the theme quickly so we can show the
         // themed splash screen quickly
-        sw.Append("VisualTheme=").AppendLine(config.VisualTheme);
+        sw.Append("VisualTheme=");
+        if (config.FollowSystemTheme)
+        {
+            sw.Append("FollowSystemTheme").AppendLine();
+        }
+        else
+        {
+            sw.Append(config.VisualTheme).AppendLine();
+        }
 
         #region Settings window
 

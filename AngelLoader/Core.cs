@@ -45,6 +45,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using Microsoft.Win32;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
@@ -113,7 +114,7 @@ internal static class Core
         #endregion
 
         // Perf: The only thing the splash screen needs is the theme
-        Config.VisualTheme = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
+        (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
         bool enableTDMWatchers = false;
@@ -2658,5 +2659,28 @@ internal static class Core
         }
 
         #endregion
+    }
+
+    internal static VisualTheme GetSystemTheme()
+    {
+        try
+        {
+            // Firefox uses this registry key, so if it's reliable enough for them, it's reliable enough for me
+            object? appsUseLightThemeKey = Registry.GetValue(
+                keyName: @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+                valueName: "AppsUseLightTheme",
+                defaultValue: -1);
+
+            if (appsUseLightThemeKey is int keyInt)
+            {
+                return keyInt == 0 ? VisualTheme.Dark : VisualTheme.Classic;
+            }
+        }
+        catch
+        {
+            return VisualTheme.Classic;
+        }
+
+        return VisualTheme.Classic;
     }
 }
