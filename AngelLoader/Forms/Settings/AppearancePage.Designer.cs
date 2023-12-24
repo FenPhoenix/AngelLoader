@@ -32,7 +32,6 @@ sealed partial class AppearancePage
     private void InitializeComponent()
     {
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -83,6 +82,7 @@ sealed partial class AppearancePage
             this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.PlayWithoutFMGroupBox.SuspendLayout();
             this.FMsListGroupBox.SuspendLayout();
@@ -112,15 +112,8 @@ sealed partial class AppearancePage
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 1211);
+            this.PagePanel.Size = new System.Drawing.Size(496, 1219);
             this.PagePanel.TabIndex = 0;
-            // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
             // 
             // PlayWithoutFMGroupBox
             // 
@@ -128,7 +121,7 @@ sealed partial class AppearancePage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_MultipleButtonsRadioButton);
             this.PlayWithoutFMGroupBox.Controls.Add(this.PlayWithoutFM_SingleButtonRadioButton);
-            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1112);
+            this.PlayWithoutFMGroupBox.Location = new System.Drawing.Point(8, 1120);
             this.PlayWithoutFMGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.PlayWithoutFMGroupBox.Name = "PlayWithoutFMGroupBox";
             this.PlayWithoutFMGroupBox.Size = new System.Drawing.Size(480, 80);
@@ -177,7 +170,7 @@ sealed partial class AppearancePage
             this.FMsListGroupBox.Controls.Add(this.MoveArticlesToEndCheckBox);
             this.FMsListGroupBox.Controls.Add(this.EnableIgnoreArticlesCheckBox);
             this.FMsListGroupBox.Controls.Add(this.ArticlesTextBox);
-            this.FMsListGroupBox.Location = new System.Drawing.Point(8, 188);
+            this.FMsListGroupBox.Location = new System.Drawing.Point(8, 196);
             this.FMsListGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.FMsListGroupBox.Name = "FMsListGroupBox";
             this.FMsListGroupBox.Size = new System.Drawing.Size(480, 688);
@@ -521,7 +514,7 @@ sealed partial class AppearancePage
             this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
-            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 1044);
+            this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 1052);
             this.ReadmeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
             this.ReadmeGroupBox.Size = new System.Drawing.Size(480, 56);
@@ -549,7 +542,7 @@ sealed partial class AppearancePage
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowExitButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.ShowUninstallButtonCheckBox);
-            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 888);
+            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 896);
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(480, 144);
@@ -613,7 +606,7 @@ sealed partial class AppearancePage
             this.VisualThemeGroupBox.Location = new System.Drawing.Point(8, 80);
             this.VisualThemeGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.VisualThemeGroupBox.Name = "VisualThemeGroupBox";
-            this.VisualThemeGroupBox.Size = new System.Drawing.Size(480, 96);
+            this.VisualThemeGroupBox.Size = new System.Drawing.Size(480, 104);
             this.VisualThemeGroupBox.TabIndex = 1;
             this.VisualThemeGroupBox.TabStop = false;
             this.VisualThemeGroupBox.Text = "Theme";
@@ -668,13 +661,20 @@ sealed partial class AppearancePage
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
             // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 0;
+            // 
             // AppearancePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "AppearancePage";
-            this.Size = new System.Drawing.Size(496, 1211);
+            this.Size = new System.Drawing.Size(496, 1219);
             this.PagePanel.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.ResumeLayout(false);
             this.PlayWithoutFMGroupBox.PerformLayout();
