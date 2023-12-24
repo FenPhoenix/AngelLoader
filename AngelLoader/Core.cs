@@ -2670,7 +2670,7 @@ internal static class Core
             object? appsUseLightThemeKey = Registry.GetValue(
                 keyName: @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
                 valueName: "AppsUseLightTheme",
-                defaultValue: -1);
+                defaultValue: "");
 
             if (appsUseLightThemeKey is int keyInt)
             {
