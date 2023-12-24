@@ -744,6 +744,7 @@ internal sealed class LText_Class
         internal readonly string Appearance_Theme = "Theme";
         internal readonly string Appearance_Theme_Classic = "Classic";
         internal readonly string Appearance_Theme_Dark = "Dark";
+        internal readonly string Appearance_Theme_FollowSystem = "Follow system theme";
         [FenGenBlankLine]
         internal readonly string Appearance_FMsList = "FMs list";
         [FenGenBlankLine]
