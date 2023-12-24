@@ -439,7 +439,7 @@ public sealed class ConfigData
 
     internal VisualTheme VisualTheme = VisualTheme.Classic;
 
-    internal bool FollowSystemTheme;
+    internal bool FollowSystemTheme = true;
 
     internal bool ShowUnsupported;
     internal bool ShowUnavailableFMs;
