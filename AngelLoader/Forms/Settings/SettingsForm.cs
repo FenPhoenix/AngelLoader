@@ -31,17 +31,6 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
-/*
-@FollowSysTheme(Settings): The follow checkbox doesn't behave correctly in the following situation:
--Have the Windows theme set to Light
--Open Settings with Classic checked
--Check Follow
--Change the system theme in Windows to Dark
--The theme doesn't update
--Click OK
--The main window is half-themed
-*/
-
 internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 {
     #region Private fields
@@ -58,7 +47,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly string _inLanguage;
     private readonly LText_Class _inLText;
 
-    private VisualTheme _inTheme;
+    private readonly VisualTheme _inTheme;
+    private readonly bool _inFollowSystemTheme;
 
     #endregion
 
@@ -158,6 +148,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         _inLText = LText;
 
         _inTheme = config.VisualTheme;
+        _inFollowSystemTheme = config.FollowSystemTheme;
 
         #endregion
 
@@ -663,7 +654,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         if (_inTheme != VisualTheme.Classic)
         {
-            SetTheme(_selfTheme, startup: true);
+            SetTheme(_selfTheme, config.FollowSystemTheme, startup: true);
         }
         else
         {
@@ -802,18 +793,17 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     public override void RespondToSystemThemeChange()
     {
-        // Prevent reverting the theme to previous on cancel
-        _inTheme = Config.VisualTheme;
-        SetTheme(Config.VisualTheme, startup: false);
+        SetTheme(Config.VisualTheme, Config.FollowSystemTheme, startup: false);
     }
 
-    private void SetTheme(VisualTheme theme, bool startup)
+    private void SetTheme(VisualTheme theme, bool followSystemTheme, bool startup)
     {
         _selfTheme = theme;
 
         // Some parts of the code check this (eg. theme renderers) so we need to set it. We'll revert it
         // back to the passed-in theme if we cancel.
         Config.VisualTheme = theme;
+        Config.FollowSystemTheme = followSystemTheme;
 
         try
         {
@@ -1082,7 +1072,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             if (!_state.IsStartup())
             {
                 bool langsDifferent = !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage);
-                bool themesDifferent = _inTheme != _selfTheme;
+                bool newFollowSystemTheme = AppearancePage.FollowSystemThemeRadioButton.Checked;
+                VisualTheme newTheme = Core.GetSystemTheme();
+                bool themesDifferent = _inTheme != _selfTheme || newFollowSystemTheme != _inFollowSystemTheme || newTheme != _inTheme;
 
                 try
                 {
@@ -1098,9 +1090,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         _ownerForm?.Localize();
                     }
 
-                    if (themesDifferent)
+                    if (_inFollowSystemTheme)
+                    {
+                        Config.VisualTheme = Core.GetSystemTheme();
+                        Config.FollowSystemTheme = true;
+                        _ownerForm?.SetTheme(Config.VisualTheme);
+                    }
+                    else if (themesDifferent)
                     {
                         Config.VisualTheme = _inTheme;
+                        Config.FollowSystemTheme = _inFollowSystemTheme;
                         _ownerForm?.SetTheme(_inTheme);
                     }
                 }
@@ -1623,7 +1622,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             SetCursors(wait: true);
 
-            SetTheme(theme, startup: false);
+            SetTheme(theme, button == AppearancePage.FollowSystemThemeRadioButton, startup: false);
             _ownerForm?.SetTheme(theme);
         }
         finally
