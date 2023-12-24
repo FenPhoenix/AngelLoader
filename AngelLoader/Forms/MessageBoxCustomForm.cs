@@ -170,6 +170,8 @@ public sealed partial class MessageBoxCustomForm : DarkFormBase
         if (Config.DarkMode) SetTheme(Config.VisualTheme);
     }
 
+    public override void RespondToSystemThemeChange() => SetTheme(Config.VisualTheme);
+
     private void SetTheme(VisualTheme theme)
     {
         SetThemeBase(theme, x => x == BottomFLP);

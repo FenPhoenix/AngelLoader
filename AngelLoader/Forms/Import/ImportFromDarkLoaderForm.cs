@@ -51,6 +51,8 @@ public sealed partial class ImportFromDarkLoaderForm : DarkFormBase
         Localize();
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize()
     {
         Text = LText.Importing.ImportFromDarkLoader_TitleText;

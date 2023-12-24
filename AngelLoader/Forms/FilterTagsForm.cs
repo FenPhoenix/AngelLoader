@@ -38,6 +38,8 @@ public sealed partial class FilterTagsForm : DarkFormBase
         if (TagsFilter.NotTags.Count > 0) FillTreeView(TagsFilter.NotTags);
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize()
     {
         Text = LText.TagsFilterBox.TitleText;

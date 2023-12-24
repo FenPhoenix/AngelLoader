@@ -46,6 +46,8 @@ public sealed partial class ImportFromMultipleInisForm : DarkFormBase
         Cancel_Button.Focus();
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize()
     {
         Text = _importType == ImportType.NewDarkLoader

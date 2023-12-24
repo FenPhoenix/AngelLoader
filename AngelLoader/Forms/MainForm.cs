@@ -309,6 +309,13 @@ public sealed partial class MainForm : DarkFormBase,
                         // @FollowSysTheme: All windows now need to be able to change their theme when signaled
                         SetTheme(Config.VisualTheme);
                         m.Result = IntPtr.Zero;
+
+                        List<IntPtr> handles = Native.GetProcessWindowHandles();
+                        foreach (IntPtr handle in handles)
+                        {
+                            Control? control = Control.FromHandle(handle);
+                            if (control is DarkFormBase form) form.RespondToSystemThemeChange();
+                        }
                     }
                 }
             }
@@ -1929,6 +1936,8 @@ public sealed partial class MainForm : DarkFormBase,
             _ = Images.Uninstall_24;
         }
     });
+
+    public override void RespondToSystemThemeChange() => SetTheme(Config.VisualTheme);
 
     public void SetTheme(VisualTheme theme) => SetTheme(theme, startup: false, createControlHandles: false, preloadImagesTask: null);
 

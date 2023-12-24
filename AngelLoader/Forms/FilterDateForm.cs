@@ -66,6 +66,8 @@ public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void ShowDate(DateType dateType, bool shown)
     {
         DarkTextBox label = dateType == DateType.From ? NoMinLabel : NoMaxLabel;

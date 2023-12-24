@@ -39,6 +39,8 @@ public sealed partial class ScanAllFMsForm : DarkFormBase
         Localize(selected);
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void Localize(bool selected)
     {
         Text = selected ? LText.ScanAllFMsBox.TitleTextSelected : LText.ScanAllFMsBox.TitleText;

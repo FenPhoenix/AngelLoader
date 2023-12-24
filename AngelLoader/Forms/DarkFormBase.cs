@@ -10,7 +10,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public class DarkFormBase : Form
+public abstract class DarkFormBase : Form
 {
     private bool _loading = true;
 
@@ -43,6 +43,8 @@ public class DarkFormBase : Form
     #region Theming
 
     private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
+
+    public abstract void RespondToSystemThemeChange();
 
     private protected void SetThemeBase(
         VisualTheme theme,

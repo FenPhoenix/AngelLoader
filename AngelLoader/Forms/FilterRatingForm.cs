@@ -60,6 +60,8 @@ public sealed partial class FilterRatingForm : DarkFormBase, IEventDisabler
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     private void ResetButton_Click(object sender, EventArgs e)
     {
         using (new DisableEvents(this))
