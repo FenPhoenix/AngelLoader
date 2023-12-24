@@ -104,7 +104,7 @@ internal static class Core
         #endregion
 
         // Perf: The only thing the splash screen needs is the theme
-        (Config.VisualTheme,Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
+        (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
         bool enableTDMWatchers = false;

@@ -1021,11 +1021,11 @@ internal static partial class Ini
                 }
             }
 
-            return (VisualTheme.Classic, false);
+            return (Core.GetSystemTheme(), true);
         }
         catch
         {
-            return (VisualTheme.Classic, false);
+            return (Core.GetSystemTheme(), true);
         }
     }
 
