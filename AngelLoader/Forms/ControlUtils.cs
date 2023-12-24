@@ -877,4 +877,21 @@ internal static class ControlUtils
                     ? LText.Global.UninstallFMs
                     : LText.Global.UninstallFM;
     }
+
+    internal static bool SystemThemeHasChanged(ref Message m, out VisualTheme newTheme)
+    {
+        if (m.Msg == Native.WM_SETTINGCHANGE &&
+            Config.FollowSystemTheme &&
+            (string?)Marshal.PtrToStringUni(m.LParam) is "ImmersiveColorSet")
+        {
+            newTheme = Core.GetSystemTheme();
+            if (newTheme != Config.VisualTheme)
+            {
+                return true;
+            }
+        }
+
+        newTheme = default;
+        return false;
+    }
 }
