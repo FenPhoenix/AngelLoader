@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -53,6 +54,14 @@ public abstract class DarkFormBase : Form
         Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
+        // Set title bar theme
+        int value = theme == VisualTheme.Dark ? 1 : 0;
+        Native.DwmSetWindowAttribute(
+            Handle,
+            Native.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+            ref value,
+            Marshal.SizeOf<int>());
+
         ControlUtils.SetTheme(
             baseControl: this,
             controlColors: _controlColors,

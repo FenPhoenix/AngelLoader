@@ -635,6 +635,17 @@ internal static partial class Native
     [LibraryImport("gdi32.dll", SetLastError = true)]
     internal static partial IntPtr CreateSolidBrush(int crColor);
 
+    [Flags]
+    internal enum DWMWINDOWATTRIBUTE
+    {
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20,
+        DWMWA_SYSTEMBACKDROP_TYPE = 38,
+        DWMWA_CAPTION_COLOR = 35
+    }
+
+    [LibraryImport("dwmapi.dll")]
+    internal static partial int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, ref int pvAttribute, int cbAttribute);
+
     #endregion
 
     #region Enumerate window handles
