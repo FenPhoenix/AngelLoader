@@ -39,13 +39,11 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -293,31 +291,17 @@ public sealed partial class MainForm : DarkFormBase,
         {
             Win32ThemeHooks.ReloadTheme();
         }
-        else if (m.Msg == Native.WM_SETTINGCHANGE)
+        else if (ControlUtils.SystemThemeHasChanged(ref m, out VisualTheme newTheme))
         {
-            if (Config.FollowSystemTheme)
-            {
-                string? str = Marshal.PtrToStringUni(m.LParam);
-                if (str is "ImmersiveColorSet")
-                {
-                    VisualTheme newTheme = Core.GetSystemTheme();
-                    if (newTheme != Config.VisualTheme)
-                    {
-                        // @FollowSysTheme: Test, remove for final
-                        Trace.WriteLine("Theme different");
-                        Config.VisualTheme = newTheme;
-                        // @FollowSysTheme: All windows now need to be able to change their theme when signaled
-                        SetTheme(Config.VisualTheme);
-                        m.Result = IntPtr.Zero;
+            Config.VisualTheme = newTheme;
+            SetTheme(Config.VisualTheme);
+            m.Result = IntPtr.Zero;
 
-                        List<IntPtr> handles = Native.GetProcessWindowHandles();
-                        foreach (IntPtr handle in handles)
-                        {
-                            Control? control = Control.FromHandle(handle);
-                            if (control is DarkFormBase form) form.RespondToSystemThemeChange();
-                        }
-                    }
-                }
+            List<IntPtr> handles = Native.GetProcessWindowHandles();
+            foreach (IntPtr handle in handles)
+            {
+                Control? control = Control.FromHandle(handle);
+                if (control is DarkFormBase form) form.RespondToSystemThemeChange();
             }
         }
         base.WndProc(ref m);

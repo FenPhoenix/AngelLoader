@@ -102,9 +102,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     protected override void WndProc(ref Message m)
     {
-        if (_state.IsStartup() && m.Msg == Native.WM_THEMECHANGED)
+        if (_state.IsStartup())
         {
-            Win32ThemeHooks.ReloadTheme();
+            if (m.Msg == Native.WM_THEMECHANGED)
+            {
+                Win32ThemeHooks.ReloadTheme();
+            }
+            else if (ControlUtils.SystemThemeHasChanged(ref m, out VisualTheme newTheme))
+            {
+                Config.VisualTheme = newTheme;
+                SetTheme(Config.VisualTheme, Config.FollowSystemTheme, startup: false);
+                m.Result = IntPtr.Zero;
+            }
         }
         base.WndProc(ref m);
     }

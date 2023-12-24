@@ -879,4 +879,21 @@ internal static class ControlUtils
     }
 
     internal static string ToStringOrEmpty(this object? obj) => obj?.ToString() ?? "";
+
+    internal static bool SystemThemeHasChanged(ref Message m, out VisualTheme newTheme)
+    {
+        if (m.Msg == Native.WM_SETTINGCHANGE &&
+            Config.FollowSystemTheme &&
+            (string?)Marshal.PtrToStringUni(m.LParam) is "ImmersiveColorSet")
+        {
+            newTheme = Core.GetSystemTheme();
+            if (newTheme != Config.VisualTheme)
+            {
+                return true;
+            }
+        }
+
+        newTheme = default;
+        return false;
+    }
 }
