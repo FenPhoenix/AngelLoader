@@ -615,7 +615,20 @@ internal static class FMInstallAndPlay
             string exeNotFoundMessage = playingOriginalGame
                 ? LText.AlertMessages.Play_ExecutableNotFound
                 : LText.AlertMessages.Play_ExecutableNotFoundFM;
-            Core.Dialogs.ShowError(gameName + ":\r\n" + exeNotFoundMessage);
+
+            if (gameExe.IsEmpty())
+            {
+                Log(gameName + ": Game executable not specified.");
+            }
+            else
+            {
+                Log(gameName + ": Game executable not found: " + gameExe);
+            }
+
+            string finalMessage = gameName + ":\r\n" + exeNotFoundMessage;
+            if (!gameExe.IsEmpty()) finalMessage += "\r\n\r\n" + gameExe;
+
+            Core.Dialogs.ShowError(finalMessage);
             return failed;
         }
 
