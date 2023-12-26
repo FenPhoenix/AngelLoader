@@ -263,17 +263,40 @@ public static partial class Utils
         }
     }
 
-    internal static bool TryWriteAllLines(string file, List<string> lines)
+    internal static bool TryWriteAllLines(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception)
     {
         try
         {
             File.WriteAllLines(file, lines);
+            exception = null;
             return true;
         }
         catch (Exception ex)
         {
             Log(ErrorText.ExWrite + file, ex);
+            exception = ex;
             return false;
+        }
+    }
+
+    internal static bool DirectoryHasWritePermission(string path)
+    {
+        try
+        {
+            using FileStream fs = File.Create(
+                Path.Combine(path, Path.GetRandomFileName()),
+                1,
+                FileOptions.DeleteOnClose);
+            return true;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (Exception)
+        {
+            // The write may still fail for other reasons, but we still have write permission in theory
+            return true;
         }
     }
 

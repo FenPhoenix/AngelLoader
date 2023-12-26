@@ -107,6 +107,9 @@ internal static class Core
         (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
         Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
+#if !X64
+        (bool True, string? ProgramFiles64Path)[] gameLocatedIn64BitProgramFiles = new (bool True, string? ProgramFiles64Path)[SupportedGameCount];
+#endif
         bool enableTDMWatchers = false;
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
@@ -163,10 +166,23 @@ internal static class Core
                         // Existence checks on startup are merely a perf optimization: values start blank so just
                         // don't set them if we don't have a game exe
                         string gameExe = Config.GetGameExe(gameIndex);
-                        if (!gameExe.IsEmpty() && File.Exists(gameExe))
+
+                        if (!gameExe.IsEmpty())
                         {
-                            (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                            if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
+                            // @GameDirWrite: Check write permissions here too
+#if !X64
+                            // @GameDirWrite: Test this
+                            if (PathContainsUnsupportedProgramFilesFolder(gameExe, out string programFilesPathName))
+                            {
+                                gameLocatedIn64BitProgramFiles[i] = (true, programFilesPathName);
+                            }
+#endif
+
+                            if (File.Exists(gameExe))
+                            {
+                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                                if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
+                            }
                         }
                     }
                 }
@@ -193,6 +209,29 @@ internal static class Core
                 _configReadARE.Set();
             }
         });
+
+#if !X64
+        // @GameDirWrite: Test this
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+
+            var locatedIn64BitProgramFiles = gameLocatedIn64BitProgramFiles[i];
+            if (locatedIn64BitProgramFiles.True)
+            {
+                Log(GetLocalizedGameName(gameIndex) + ": Game is located in 64-bit Program Files directory: " +
+                    (locatedIn64BitProgramFiles.ProgramFiles64Path ?? "<unknown>") + "\r\n" +
+                    "32-bit AngelLoader is not able to access this directory.\r\n" +
+                    "Game exe: " + Config.GetGameExe(gameIndex));
+
+                Dialogs.ShowError(
+                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                    LText.AlertMessages.ProgramFiles64On32
+                );
+            }
+
+        }
+#endif
 
         // We can't show the splash screen until we know our theme, which we have to get from the config
         // file, so we can't show it any earlier than this.
