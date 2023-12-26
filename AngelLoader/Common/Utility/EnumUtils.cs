@@ -18,4 +18,7 @@ public static partial class Utils
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool HasFlagFast(this Difficulty @enum, Difficulty flag) => (@enum & flag) != 0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool HasFlagFast(this SetGameDataError @enum, SetGameDataError flag) => (@enum & flag) != 0;
 }

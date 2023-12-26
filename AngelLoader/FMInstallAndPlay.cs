@@ -485,8 +485,10 @@ internal static class FMInstallAndPlay
             {
                 Core.Dialogs.ShowError(
                     GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir + "\r\n\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_Details);
+                    LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                    icon: MBoxIcon.Warning
+                );
             }
         }
         else
@@ -655,11 +657,30 @@ internal static class FMInstallAndPlay
 
             Core.Dialogs.ShowError(
                 GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                LText.AlertMessages.ProgramFiles64On32
+                LText.AlertMessages.ProgramFiles64On32,
+                icon: MBoxIcon.Warning
             );
             return failed;
         }
 #endif
+
+        if (gameIndex != GameIndex.Thief3 || Paths.GetSneakyOptionsIni().IsPortable)
+        {
+            if (!DirectoryHasWritePermission(gamePath))
+            {
+                Log(gameName + ": No write permission for game directory.\r\n" +
+                    "Game path: " + gamePath);
+
+                Core.Dialogs.ShowError(
+                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                    icon: MBoxIcon.Warning
+                );
+
+                return failed;
+            }
+        }
 
         if (gameExe.IsEmpty() || !File.Exists(gameExe))
         {
