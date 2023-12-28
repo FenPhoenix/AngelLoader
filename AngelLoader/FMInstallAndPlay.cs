@@ -481,6 +481,7 @@ internal static class FMInstallAndPlay
         {
             // If SU is not portable, we should be accessing somewhere in the Documents folder, which should not
             // be write-protected and also the alert messages say "game directory" so that would be misleading.
+            // @GENGAMES(Manual game-dir-needs-write-access check): Efficiency, don't do the portable check again
             if (gameIndex != GameIndex.Thief3 || suIsPortable)
             {
                 Core.Dialogs.ShowError(
@@ -664,7 +665,7 @@ internal static class FMInstallAndPlay
         }
 #endif
 
-        if (gameIndex != GameIndex.Thief3 || Paths.GetSneakyOptionsIni().IsPortable)
+        if (GameDirNeedsWriteAccess(gameIndex))
         {
             if (!DirectoryHasWritePermission(gamePath))
             {

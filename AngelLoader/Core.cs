@@ -838,8 +838,7 @@ internal static class Core
         Config.SetGamePath(gameIndex, gamePath);
 
         bool checkGameDirWritePermission =
-            !gamePath.IsEmpty() &&
-            (gameIndex != GameIndex.Thief3 || Paths.GetSneakyOptionsIni().IsPortable);
+            !gamePath.IsEmpty() && GameDirNeedsWriteAccess(gameIndex);
 
         if (checkGameDirWritePermission && !DirectoryHasWritePermission(gamePath))
         {

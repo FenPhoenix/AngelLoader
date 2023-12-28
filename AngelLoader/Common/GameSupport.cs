@@ -190,5 +190,10 @@ public static partial class GameSupport
     internal static bool GameRequiresBackupPath(GameIndex gameIndex) => GameIsDark(gameIndex) || gameIndex == GameIndex.Thief3;
 
     internal static bool GameSupportsImport(GameIndex gameIndex) => GameIsDark(gameIndex) || gameIndex == GameIndex.Thief3;
+
+    internal static bool GameDirNeedsWriteAccess(GameIndex gameIndex)
+    {
+        return gameIndex != GameIndex.Thief3 || Paths.SneakyUpgradeIsPortable();
+    }
 }
 // @GENGAMES (GameSupport): End
