@@ -648,23 +648,6 @@ internal static class FMInstallAndPlay
 
         #region Exe: Fail if blank or not found
 
-#if !X64
-        // @GameDirWrite: Test this
-        if (PathContainsUnsupportedProgramFilesFolder(gameExe, out string programFilesPathName))
-        {
-            Log(gameName + ": Game is located in 64-bit Program Files directory: " + programFilesPathName + "\r\n" +
-                "32-bit AngelLoader is not able to access this directory.\r\n" +
-                "Game path: " + gamePath);
-
-            Core.Dialogs.ShowError(
-                GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                LText.AlertMessages.ProgramFiles64On32,
-                icon: MBoxIcon.Warning
-            );
-            return failed;
-        }
-#endif
-
         if (GameDirNeedsWriteAccess(gameIndex))
         {
             if (!DirectoryHasWritePermission(gamePath))
@@ -1329,6 +1312,7 @@ internal static class FMInstallAndPlay
 
             if (Canceled(install)) return fail;
 
+            string gamePath = Config.GetGamePath(gameIndex);
             string gameExe = Config.GetGameExe(gameIndex);
             string gameName = GetLocalizedGameName(gameIndex);
             string instBasePath = Config.GetFMInstallPath(gameIndex);
@@ -1356,6 +1340,25 @@ internal static class FMInstallAndPlay
             {
                 if (install)
                 {
+                    // @GameDirWrite: We need to be checking FM installed path here, not game path
+                    if (GameDirNeedsWriteAccess(gameIndex))
+                    {
+                        if (!DirectoryHasWritePermission(gamePath))
+                        {
+                            Log(gameName + ": No write permission for game directory.\r\n" +
+                                "Game path: " + gamePath);
+
+                            Core.Dialogs.ShowError(
+                                GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                                LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
+                                LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                                icon: MBoxIcon.Warning
+                            );
+
+                            return fail;
+                        }
+                    }
+
                     if (!File.Exists(gameExe))
                     {
                         Log("Game executable not found.\r\n" +
