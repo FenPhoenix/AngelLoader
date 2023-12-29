@@ -1070,7 +1070,7 @@ public static partial class RTFParserCommon
         const int bits = 8;
         // 7 instructions on Framework x86
         // 8 instructions on Framework x64
-        // 7 instructions on Framework .NET 8 x64
+        // 7 instructions on .NET 8 x64
         return ((character - ' ') | (' ' - character)) >> (bits - 1);
     }
 
