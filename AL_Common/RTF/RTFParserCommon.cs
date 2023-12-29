@@ -1066,12 +1066,12 @@ public static partial class RTFParserCommon
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int MinusOneIfNotSpace_8Bits(char character)
     {
-        int ret = character ^ ' ';
-        // We only use 8 bits of a char's 16, so we can skip a couple shifts (tested)
-        ret |= (ret >> 4);
-        ret |= (ret >> 2);
-        ret |= (ret >> 1);
-        return -(ret & 1);
+        // We only use 8 bits of a char's 16
+        const int bits = 8;
+        // 7 instructions on Framework x86
+        // 8 instructions on Framework x64
+        // 7 instructions on Framework .NET 8 x64
+        return ((character - ' ') | (' ' - character)) >> (bits - 1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
