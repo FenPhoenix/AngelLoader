@@ -5207,9 +5207,30 @@ public sealed partial class MainForm : DarkFormBase,
         TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
     }
 
+    private int _storedFMsDGVFirstDisplayedScrollingRowIndex;
+
+    private void MainSplitContainer_FullScreenBeforeChanged(object sender, EventArgs e)
+    {
+        if (!MainSplitContainer.FullScreen)
+        {
+            _storedFMsDGVFirstDisplayedScrollingRowIndex = FMsDGV.FirstDisplayedScrollingRowIndex;
+        }
+    }
+
     private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
     {
         MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
+        if (!MainSplitContainer.FullScreen)
+        {
+            try
+            {
+                FMsDGV.FirstDisplayedScrollingRowIndex = _storedFMsDGVFirstDisplayedScrollingRowIndex;
+            }
+            catch
+            {
+                CenterSelectedFM();
+            }
+        }
     }
 
     private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)

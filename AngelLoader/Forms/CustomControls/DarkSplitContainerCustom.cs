@@ -128,6 +128,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
         DoubleBuffered = true;
     }
 
+    public event EventHandler? FullScreenBeforeChanged;
     public event EventHandler? FullScreenChanged;
 
     #region Public methods
@@ -140,19 +141,9 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     {
         try
         {
-            static void SetPanelMinSize(DarkSplitContainerCustom @this, Panel panel, int size)
-            {
-                if (panel == Panel.Panel1)
-                {
-                    @this.Panel1MinSize = size;
-                }
-                else
-                {
-                    @this.Panel2MinSize = size;
-                }
-            }
-
             if (suspendResume) this.SuspendDrawing();
+
+            FullScreenBeforeChanged?.Invoke(this, EventArgs.Empty);
 
             bool isPanel1 = FullScreenCollapsePanel == Panel.Panel1;
 
@@ -177,6 +168,20 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
         {
             FullScreenChanged?.Invoke(this, EventArgs.Empty);
             if (suspendResume) this.ResumeDrawing();
+        }
+
+        return;
+
+        static void SetPanelMinSize(DarkSplitContainerCustom @this, Panel panel, int size)
+        {
+            if (panel == Panel.Panel1)
+            {
+                @this.Panel1MinSize = size;
+            }
+            else
+            {
+                @this.Panel2MinSize = size;
+            }
         }
     }
 

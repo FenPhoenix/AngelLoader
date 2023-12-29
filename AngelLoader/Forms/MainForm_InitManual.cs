@@ -219,6 +219,7 @@ public sealed partial class MainForm
         MainSplitContainer.Size = new Size(1671, 672);
         MainSplitContainer.SplitterDistance = 309;
         MainSplitContainer.TabIndex = 0;
+        MainSplitContainer.FullScreenBeforeChanged += MainSplitContainer_FullScreenBeforeChanged;
         MainSplitContainer.FullScreenChanged += MainSplitContainer_FullScreenChanged;
         // 
         // TopSplitContainer
