@@ -419,8 +419,9 @@ internal static class Core
 
                 Dialogs.ShowError(
                     GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir + "\r\n\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                    LText.AlertMessages.NoWriteAccessToGameDir_AdvanceWarning + "\r\n\r\n" +
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    Config.GetGamePath(gameIndex),
                     icon: MBoxIcon.Warning
                 );
             }

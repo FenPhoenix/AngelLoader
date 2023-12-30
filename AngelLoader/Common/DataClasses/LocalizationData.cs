@@ -283,13 +283,10 @@ internal sealed class LText_Class
         internal readonly string DarkLoader_OpenNow = "Open DarkLoader now";
         [FenGenBlankLine]
         // @GameDirWrite: Make these shorter, clearer? Should it be "write permission"?
-        internal readonly string NoWriteAccessToGameDir = "AngelLoader does not have write access to the game directory. The game will not be able to be played.";
+        internal readonly string NoWriteAccessToGameDir_AdvanceWarning = "AngelLoader does not have write access to the game directory. The game will not be able to be played.";
         internal readonly string NoWriteAccessToGameDir_Play = "AngelLoader does not have write access to the game directory. Unable to play.";
-        internal readonly string NoWriteAccessToGameDir_Details = "A common reason for this is the game directory being located inside Program Files. If this is the case, you'll need to move it to another location.";
-        [FenGenBlankLine]
-        [FenGenComment(
-            "This will only be shown in 32-bit versions of AngelLoader, but must still always be present in this language file.")]
-        internal readonly string ProgramFiles64On32 = "The game is located inside the 64-bit Program Files directory, which is not accessible by this 32-bit version of AngelLoader. It's recommended to use a 64-bit version of AngelLoader on a 64-bit OS.";
+        internal readonly string GameDirInsideProgramFiles_Explanation = "A common reason for this is the game directory being located inside Program Files. If this is the case, you'll need to move it to another location.";
+        internal readonly string NoWriteAccessToInstalledFMsDir = "AngelLoader does not have write access to the installed FMs directory.";
     }
 
     internal sealed class MainMenu_Class

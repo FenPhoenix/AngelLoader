@@ -487,7 +487,8 @@ internal static class FMInstallAndPlay
                 Core.Dialogs.ShowError(
                     GetLocalizedGameNameColon(gameIndex) + "\r\n" +
                     LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    gamePath,
                     icon: MBoxIcon.Warning
                 );
             }
@@ -658,7 +659,8 @@ internal static class FMInstallAndPlay
                 Core.Dialogs.ShowError(
                     GetLocalizedGameNameColon(gameIndex) + "\r\n" +
                     LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_Details,
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    gamePath,
                     icon: MBoxIcon.Warning
                 );
 
@@ -1312,7 +1314,6 @@ internal static class FMInstallAndPlay
 
             if (Canceled(install)) return fail;
 
-            string gamePath = Config.GetGamePath(gameIndex);
             string gameExe = Config.GetGameExe(gameIndex);
             string gameName = GetLocalizedGameName(gameIndex);
             string instBasePath = Config.GetFMInstallPath(gameIndex);
@@ -1340,25 +1341,6 @@ internal static class FMInstallAndPlay
             {
                 if (install)
                 {
-                    // @GameDirWrite: We need to be checking FM installed path here, not game path
-                    if (GameDirNeedsWriteAccess(gameIndex))
-                    {
-                        if (!DirectoryHasWritePermission(gamePath))
-                        {
-                            Log(gameName + ": No write permission for game directory.\r\n" +
-                                "Game path: " + gamePath);
-
-                            Core.Dialogs.ShowError(
-                                GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                                LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
-                                LText.AlertMessages.NoWriteAccessToGameDir_Details,
-                                icon: MBoxIcon.Warning
-                            );
-
-                            return fail;
-                        }
-                    }
-
                     if (!File.Exists(gameExe))
                     {
                         Log("Game executable not found.\r\n" +
@@ -1382,6 +1364,22 @@ internal static class FMInstallAndPlay
 
                         return fail;
                     }
+                }
+
+                if (!DirectoryHasWritePermission(instBasePath))
+                {
+                    Log(gameName + ": No write permission for installed FMs directory.\r\n" +
+                        "Installed FMs directory: " + instBasePath);
+
+                    Core.Dialogs.ShowError(
+                        GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                        LText.AlertMessages.NoWriteAccessToInstalledFMsDir + "\r\n\r\n" +
+                        LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                        instBasePath,
+                        icon: MBoxIcon.Warning
+                    );
+
+                    return fail;
                 }
 
                 if (Canceled(install)) return fail;

@@ -284,6 +284,8 @@ public static partial class Utils
     {
         try
         {
+            if (path.IsWhiteSpace()) return true;
+
             using FileStream fs = File.Create(
                 Path.Combine(path, Path.GetRandomFileName()),
                 1,
