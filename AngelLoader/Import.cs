@@ -245,9 +245,12 @@ internal static class Import
     {
         #region Local functions
 
-        static string RemoveDLArchiveBadChars(string archive)
+        static string RemoveDLArchiveBadChars(string archive, string[] badChars)
         {
-            foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
+            foreach (string s in badChars)
+            {
+                archive = archive.Replace(s, "");
+            }
             return archive;
         }
 
@@ -258,7 +261,9 @@ internal static class Import
 
         #region Data
 
-        string[] _nonFMHeaders =
+        string[] badChars = new[] { "]", "\u0009", "\u000A", "\u000D" };
+
+        string[] nonFMHeaders =
         {
             "[options]",
             "[window]",
@@ -279,7 +284,7 @@ internal static class Import
         //    darkGameSS2 = 4
         //}
 
-        var _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+        Regex darkLoaderFMRegex = new(@"\.[0123456789]+]$", RegexOptions.Compiled);
 
         #endregion
 
@@ -340,9 +345,9 @@ internal static class Import
 
                         // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
                         if (missionDirsRead &&
-                            !_nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
+                            !nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
                             lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
-                            _darkLoaderFMRegex.Match(lineTB).Success)
+                            darkLoaderFMRegex.Match(lineTB).Success)
                         {
                             int lastIndexDot = lineTB.LastIndexOf('.');
                             string archive = lineTB.Substring(1, lastIndexDot - 1);
@@ -358,7 +363,7 @@ internal static class Import
                                     foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
                                     {
                                         string fnNoExt = Path.GetFileNameWithoutExtension(f);
-                                        if (RemoveDLArchiveBadChars(fnNoExt).EqualsI(archive))
+                                        if (RemoveDLArchiveBadChars(fnNoExt, badChars).EqualsI(archive))
                                         {
                                             archive = fnNoExt;
                                             goto breakout;
