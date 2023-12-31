@@ -166,8 +166,6 @@ internal static class Core
 
                         if (!gameExe.IsEmpty())
                         {
-                            // @GameDirWrite: Check write permissions here too
-
                             if (File.Exists(gameExe))
                             {
                                 (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
