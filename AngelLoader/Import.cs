@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AL_Common;
@@ -303,7 +304,10 @@ internal static class Import
         {
             try
             {
-                List<string> lines = File_ReadAllLines_List(iniFile);
+                // It appears that DarkLoader uses the default legacy system codepage (437 for North America usually),
+                // although I don't understand Delphi Pascal enough to 100% confirm it doesn't have some additional
+                // behavior... but this is likely to result in better text than UTF8, so.
+                List<string> lines = File_ReadAllLines_List(iniFile, GetOEMCodePageOrFallback(Encoding.UTF8), true);
 
                 if (importFMData)
                 {

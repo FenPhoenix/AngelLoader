@@ -283,6 +283,21 @@ public static partial class Utils
         timer.Start();
     }
 
+    internal static Encoding GetOEMCodePageOrFallback(Encoding fallback)
+    {
+        Encoding enc;
+        try
+        {
+            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch
+        {
+            enc = fallback;
+        }
+
+        return enc;
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {

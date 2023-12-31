@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using static System.StringComparison;
 
 namespace AL_Common;
@@ -40,6 +41,17 @@ public static partial class Common
     {
         var ret = new List<string>();
         using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), new StreamReaderCustom());
+        while (sr.Reader.ReadLine() is { } str)
+        {
+            ret.Add(str);
+        }
+        return ret;
+    }
+
+    public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
+    {
+        var ret = new List<string>();
+        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
