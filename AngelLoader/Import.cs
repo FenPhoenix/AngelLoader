@@ -325,7 +325,7 @@ internal static class Import
                      do because the size is part of the id.
                      Possible solutions:
                      -Come up with a way to differentiate same-named archives in our own database
-                     -Ask to the user which one they want to take (displaying metadata), and take that one only
+                     -Ask the user which one they want to take (displaying metadata), and take that one only
                     */
                     for (int i = 0; i < lines.Count; i++)
                     {
