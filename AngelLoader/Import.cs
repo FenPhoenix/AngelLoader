@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using FMScanner;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -240,6 +241,10 @@ internal static class Import
 
     #region Private methods
 
+    // @Import(DarkLoader): DL writes its ini file in non-UTF8
+    // Notepad++ detects mine as ANSI (presumably 1252)
+    // Check the DarkLoader source code for how exactly it decides what encoding to write the ini in
+
     private static (ImportError Error, List<FanMission> FMs)
     ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
@@ -261,10 +266,10 @@ internal static class Import
 
         #region Data
 
-        string[] badChars = new[] { "]", "\u0009", "\u000A", "\u000D" };
+        string[] badChars = { "]", "\u0009", "\u000A", "\u000D" };
 
-        string[] nonFMHeaders =
-        {
+        HashSetI nonFMHeaders =
+        [
             "[options]",
             "[window]",
             "[mission directories]",
@@ -272,7 +277,7 @@ internal static class Import
             "[Thief 2]",
             "[Thief2x]",
             "[SShock 2]"
-        };
+        ];
 
         // Not used - we scan for game types ourselves currently
         //private enum DLGame
@@ -286,105 +291,107 @@ internal static class Import
 
         Regex darkLoaderFMRegex = new(@"\.[0123456789]+]$", RegexOptions.Compiled);
 
+        const string missionDirsHeader = "[mission directories]";
+
         #endregion
 
         var fms = new List<FanMission>();
 
-        bool missionDirsRead = false;
-        var archiveDirs = new List<string>();
+        var archives = new DictionaryI<string>();
 
         ImportError DoImport()
         {
             try
             {
-                string[] lines = File.ReadAllLines(iniFile);
+                List<string> lines = File_ReadAllLines_List(iniFile);
 
                 if (importFMData)
                 {
-                    for (int i = 0; i < lines.Length; i++)
+                    #region Read archive directories
+
+                    // We need to know the archive dirs before doing anything, because we may need to recreate
+                    // some lossy names (if any bad chars have been removed by DarkLoader).
+
+                    // @Import(DarkLoader): Test when multiple archives with the same name exist in different archive dirs
+                    // Does it use first or last encountered? Check this!
+                    for (int i = 0; i < lines.Count; i++)
                     {
-                        string line = lines[i];
-                        string lineTS = line.TrimStart();
-                        string lineTB = lineTS.TrimEnd();
-
-                        #region Read archive directories
-
-                        // We need to know the archive dirs before doing anything, because we may need to
-                        // recreate some lossy names (if any bad chars have been removed by DarkLoader).
-                        if (!missionDirsRead && lineTB == "[mission directories]")
+                        string lineT = lines[i].Trim();
+                        if (lineT.EqualsI(missionDirsHeader))
                         {
-                            while (i < lines.Length - 1)
+                            HashSetI archivesHash = new();
+
+                            while (i < lines.Count - 1)
                             {
                                 string lt = lines[i + 1].Trim();
                                 if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWithO("=1"))
                                 {
-                                    archiveDirs.Add(lt.Substring(0, lt.Length - 2));
+                                    string dir = lt.Substring(0, lt.Length - 2);
+                                    if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
+                                    try
+                                    {
+                                        // DarkLoader only does zip format
+                                        foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
+                                        {
+                                            string fnNoExt = Path.GetFileNameWithoutExtension(f);
+                                            if (fnNoExt.IsWhiteSpace()) continue;
+                                            if (archivesHash.Add(fnNoExt))
+                                            {
+                                                archives[RemoveDLArchiveBadChars(fnNoExt, badChars)] = fnNoExt;
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log(ErrorText.Ex + "in DarkLoader archive dir file enumeration", ex);
+                                    }
                                 }
-                                else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                                else if (lt.IsIniHeader())
                                 {
                                     break;
                                 }
                                 i++;
                             }
-
-                            if (archiveDirs.Count == 0 || archiveDirs.All(static x => x.IsWhiteSpace()))
-                            {
-                                return ImportError.NoArchiveDirsFound;
-                            }
-
-                            // Restart from the beginning of the file, this time skipping anything that isn't
-                            // an FM entry
-                            i = -1;
-                            missionDirsRead = true;
-                            continue;
+                            break;
                         }
+                    }
 
-                        #endregion
+                    if (archives.Count == 0)
+                    {
+                        return ImportError.NoArchiveDirsFound;
+                    }
 
-                        #region Read FM entries
+                    #endregion
 
-                        // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
-                        if (missionDirsRead &&
-                            !nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
-                            lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
-                            darkLoaderFMRegex.Match(lineTB).Success)
+                    #region Read FM entries
+
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        string lineT = lines[i].Trim();
+
+                        if (!nonFMHeaders.Contains(lineT) &&
+                            lineT.Length > 0 &&
+                            lineT[0] == '[' &&
+                            lineT[lineT.Length - 1] == ']' &&
+                            lineT.Contains('.') &&
+                            darkLoaderFMRegex.Match(lineT).Success)
                         {
-                            int lastIndexDot = lineTB.LastIndexOf('.');
-                            string archive = lineTB.Substring(1, lastIndexDot - 1);
-                            string size = lineTB.Substring(lastIndexDot + 1, lineTB.Length - lastIndexDot - 2);
+                            int lastIndexDot = lineT.LastIndexOf('.');
+                            string dlArchive = lineT.Substring(1, lastIndexDot - 1);
+                            string size = lineT.Substring(lastIndexDot + 1, lineT.Length - lastIndexDot - 2);
 
-                            foreach (string dir in archiveDirs)
+                            if (!archives.TryGetValue(dlArchive, out string realArchive))
                             {
-                                if (!Directory.Exists(dir)) continue;
-                                try
-                                {
-                                    // DarkLoader only does zip format
-                                    // @Import(DarkLoader): Multiple disk hit
-                                    foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
-                                    {
-                                        string fnNoExt = Path.GetFileNameWithoutExtension(f);
-                                        if (RemoveDLArchiveBadChars(fnNoExt, badChars).EqualsI(archive))
-                                        {
-                                            archive = fnNoExt;
-                                            goto breakout;
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log(ErrorText.Ex + "in DarkLoader archive dir file enumeration", ex);
-                                }
+                                continue;
                             }
 
-                            breakout:
-
-                            archive += ".zip";
+                            realArchive += ".zip";
 
                             ulong.TryParse(size, out ulong sizeBytes);
                             var fm = new FanMission
                             {
-                                Archive = archive,
-                                InstalledDir = archive.ToInstDirNameFMSel(instDirNameContext, true),
+                                Archive = realArchive,
+                                InstalledDir = realArchive.ToInstDirNameFMSel(instDirNameContext, true),
                                 SizeBytes = sizeBytes
                             };
 
@@ -393,7 +400,7 @@ internal static class Import
                             // fact it's somewhat likely they would have done so, but still, better to just
                             // scan for it ourselves later)
 
-                            while (i < lines.Length - 1)
+                            while (i < lines.Count - 1)
                             {
                                 string lts = lines[i + 1].TrimStart();
                                 string ltb = lts.TrimEnd();
@@ -457,9 +464,9 @@ internal static class Import
 
                             fms.Add(fm);
                         }
-
-                        #endregion
                     }
+
+                    #endregion
                 }
 
                 if (importSaves)
@@ -500,7 +507,7 @@ internal static class Import
     }
 
     private static bool
-    ImportDarkLoaderSaves(string[] lines)
+    ImportDarkLoaderSaves(List<string> lines)
     {
         // We DON'T use game generalization here, because DarkLoader only supports T1/T2/SS2 and will never
         // change (it's not updated anymore). So it's okay that we code those games in manually here.
@@ -512,7 +519,7 @@ internal static class Import
         bool t2DirRead = false;
         bool ss2DirRead = false;
 
-        for (int i = 0; i < lines.Length; i++)
+        for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
             string lineTS = line.TrimStart();
@@ -520,7 +527,7 @@ internal static class Import
 
             if (lineTB == "[options]")
             {
-                while (i < lines.Length - 1)
+                while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
                     if (lt.StartsWithI("thief1dir="))
