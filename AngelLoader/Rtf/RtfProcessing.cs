@@ -273,7 +273,7 @@ internal static class RtfProcessing
         We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
         */
 
-        bool colorTableFound = false;
+        bool colorTableWorkRequired = false;
         bool langWorkRequired = false;
 
         if (darkMode)
@@ -285,7 +285,7 @@ internal static class RtfProcessing
             preCheckForColorTableTimer.Start();
 #endif
 
-            colorTableFound = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
+            colorTableWorkRequired = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
 
 #if PROCESS_README_TIME_TEST
             preCheckForColorTableTimer.Stop();
@@ -359,7 +359,7 @@ internal static class RtfProcessing
         (bool success, List<Color>? colorTable, List<LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
-                getColorTable: darkMode && colorTableFound,
+                getColorTable: colorTableWorkRequired,
                 getLangs: langWorkRequired);
 
 #if PROCESS_README_TIME_TEST
@@ -379,7 +379,7 @@ internal static class RtfProcessing
 
         ListFast<byte>? colorEntriesBytesList = null;
 
-        if (success && darkMode && colorTableFound)
+        if (success && colorTableWorkRequired)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
@@ -395,8 +395,6 @@ internal static class RtfProcessing
 
         if (success && langWorkRequired && langItems?.Count > 0)
         {
-            #region Calculate new byte array length
-
             for (int i = 0; i < langItems.Count; i++)
             {
                 LangItem item = langItems[i];
@@ -526,7 +524,6 @@ internal static class RtfProcessing
             return currentReadmeBytes;
         }
 
-        #endregion
     }
 
     private static void CopyInserts(
