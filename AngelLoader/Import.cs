@@ -697,13 +697,15 @@ internal static class Import
         List<string> lines = File_ReadAllLines_List(iniFile, Encoding.Default, true);
         var fms = new List<FanMission>();
 
-        static void TryAddToArchivesHash(string dir, HashSetI archivesHash)
+        static void TryAddToArchivesHash(string dir, DictionaryI<FileInfo> archivesDict)
         {
             try
             {
                 // NDL always searches subdirectories as well
-                foreach (string f in Directory.GetFiles(dir, "*", SearchOption.AllDirectories))
+                foreach (FileInfo fi in new DirectoryInfo(dir).GetFiles("*", SearchOption.AllDirectories))
                 {
+                    string f = fi.FullName;
+
                     // @DIRSEP: '/' conversion due to string.ContainsI()
                     if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
                     {
@@ -712,7 +714,7 @@ internal static class Import
                             fn.ExtIsArchive() &&
                             !fn.ContainsI(Paths.FMSelBak))
                         {
-                            archivesHash.Add(fn);
+                            archivesDict[fn] = fi;
                         }
                     }
                 }
@@ -726,7 +728,7 @@ internal static class Import
         // @Import(NDL): Test!
         static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
-            HashSetI archivesHash = new();
+            DictionaryI<FileInfo> archivesDict = new();
 
             #region Read archive directory
 
@@ -754,7 +756,7 @@ internal static class Import
                             string dir = lc.Substring(lc.IndexOf('=') + 1).Trim();
                             if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
                             archiveRoot = dir;
-                            TryAddToArchivesHash(dir, archivesHash);
+                            TryAddToArchivesHash(dir, archivesDict);
                         }
                         else if (lc.StartsWithFast("AdditionalArchiveRoots="))
                         {
@@ -772,7 +774,7 @@ internal static class Import
                                 {
                                     continue;
                                 }
-                                TryAddToArchivesHash(dir, archivesHash);
+                                TryAddToArchivesHash(dir, archivesDict);
                             }
                         }
                         else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
@@ -790,9 +792,13 @@ internal static class Import
 
             #endregion
 
-            if (archivesHash.Count == 0) return ImportError.NoArchiveDirsFound;
+            if (archivesDict.Count == 0) return ImportError.NoArchiveDirsFound;
 
-            List<string> archivesList = archivesHash.ToList();
+            List<FileInfo> archivesList = new(archivesDict.Count);
+            foreach (var item in archivesDict)
+            {
+                archivesList.Add(item.Value);
+            }
             DictionaryI<FanMission> fmsInstalledDirDict = new();
 
             #region Read FM entries (initial)
@@ -878,15 +884,33 @@ internal static class Import
 
             #region Set FM archive fields
 
+            static bool SizesMatch(FileInfo archiveFI, FanMission fm)
+            {
+                return archiveFI.Length >= 0 && fm.SizeBytes == (ulong)archiveFI.Length;
+            }
+
+            static string RemoveBrackets(string str) => str.Replace("[", "").Replace("]", "");
+
             for (int i = 0; i < archivesList.Count; i++)
             {
                 // @Import(NDL set archive fields): Try really hard to make sure we get an archive for each FM
 
-                string archive = archivesList[i];
-                if (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) ||
-                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) ||
-                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true), out fm) ||
-                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false), out fm))
+                FileInfo archiveFI = archivesList[i];
+                string archive = archiveFI.Name;
+
+                // NewDarkLoader removes square brackets [] on ini read, but still writes them out, so it's possible
+                // for them to be in there, so we need to check both cases.
+                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: false)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false)), out fm) && SizesMatch(archiveFI, fm)))
                 {
                     fm.Archive = archive;
                 }
@@ -901,9 +925,141 @@ internal static class Import
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
 
         return (ImportError.None, importedFMs);
+    }
+
+    private static List<FanMission> MergeImportedFMData_NDL(List<FanMission> importedFMs, FieldsToImport fields)
+    {
+        var importedFMsInMainList = new List<FanMission>();
+
+        DictionaryI<FanMission> archivesDict = new();
+        DictionaryI<FanMission> instDirsDict = new();
+        foreach (FanMission fm in FMDataIniList)
+        {
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            {
+                archivesDict[fm.Archive] = fm;
+            }
+            if (!instDirsDict.ContainsKey(fm.InstalledDir))
+            {
+                instDirsDict[fm.InstalledDir] = fm;
+            }
+        }
+
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
+                instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
+                {
+                    mainFM.Title = importedFM.Title;
+                }
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                {
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                    mainFM.FinishedOnUnknown = false;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    mainFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    mainFM.DisabledMods = importedFM.DisabledMods;
+                    mainFM.DisableAllMods = mainFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    mainFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    mainFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.Size && mainFM.SizeBytes == 0)
+                {
+                    mainFM.SizeBytes = importedFM.SizeBytes;
+                }
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
+            }
+            else
+            {
+                var newFM = new FanMission
+                {
+                    Archive = importedFM.Archive,
+                    InstalledDir = importedFM.InstalledDir
+                };
+
+                if (fields.Title)
+                {
+                    newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                        !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                        importedFM.InstalledDir;
+                }
+                if (fields.ReleaseDate)
+                {
+                    newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.Comment)
+                {
+                    newFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    newFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    newFM.DisabledMods = importedFM.DisabledMods;
+                    newFM.DisableAllMods = newFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    newFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    newFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.Size)
+                {
+                    newFM.SizeBytes = importedFM.SizeBytes;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOn = importedFM.FinishedOn;
+                }
+
+                newFM.MarkedScanned = true;
+
+                FMDataIniList.Add(newFM);
+                importedFMsInMainList.Add(newFM);
+            }
+        }
+
+        return importedFMsInMainList;
     }
 
     private static List<FanMission>
