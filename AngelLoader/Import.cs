@@ -386,9 +386,7 @@ internal static class Import
                         string lineT = lines[i].Trim();
 
                         if (!nonFMHeaders.Contains(lineT) &&
-                            lineT.Length > 0 &&
-                            lineT[0] == '[' &&
-                            lineT[lineT.Length - 1] == ']' &&
+                            lineT.IsIniHeader() &&
                             lineT.Contains('.') &&
                             darkLoaderFMRegex.Match(lineT).Success)
                         {
@@ -471,7 +469,7 @@ internal static class Import
                                     // result will be 0 on fail, which is the empty value so it's fine
                                     fm.FinishedOn = result;
                                 }
-                                else if (!ltb.IsEmpty() && ltb[0] == '[' && ltb[ltb.Length - 1] == ']')
+                                else if (ltb.IsIniHeader())
                                 {
                                     break;
                                 }
@@ -564,7 +562,7 @@ internal static class Import
                         ss2Dir = lt.Substring(10).Trim();
                         ss2DirRead = true;
                     }
-                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                    else if (lt.IsIniHeader())
                     {
                         break;
                     }
@@ -691,7 +689,7 @@ internal static class Import
                         {
                             fm.SelectedReadme = lineFM.Substring(9);
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                        else if (lineFM.IsIniHeader())
                         {
                             break;
                         }
@@ -802,7 +800,7 @@ internal static class Import
                                 TryAddToArchivesHash(dir, archivesDict);
                             }
                         }
-                        else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
+                        else if (lc.IsIniHeader())
                         {
                             break;
                         }
@@ -894,7 +892,7 @@ internal static class Import
                             ulong.TryParse(lineFM.Substring(7), out ulong result);
                             fm.SizeBytes = result;
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                        else if (lineFM.IsIniHeader())
                         {
                             break;
                         }
