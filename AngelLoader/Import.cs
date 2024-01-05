@@ -300,8 +300,6 @@ internal static class Import
 
         var fms = new List<FanMission>();
 
-        var archives = new DictionaryI<string>();
-
         ImportError DoImport()
         {
             try
@@ -313,6 +311,9 @@ internal static class Import
 
                 if (importFMData)
                 {
+                    var archives = new DictionaryI<string>();
+                    HashSetI fmArchivesHash = new();
+
                     #region Read archive directories
 
                     // We need to know the archive dirs before doing anything, because we may need to recreate
@@ -477,7 +478,10 @@ internal static class Import
                                 i++;
                             }
 
-                            fms.Add(fm);
+                            if (fmArchivesHash.Add(fm.Archive))
+                            {
+                                fms.Add(fm);
+                            }
                         }
                     }
 
