@@ -204,6 +204,7 @@ internal static class Import
                         -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
                         tags wouldn't work because they're only in TagsString and blah blah blah.
                         -But couldn't I just call the tag list updater?
+                        -Refreshes the TDM ini list, deduping any new name collisions there may now be.
                         -This also updates the FM stats on the UI, and anything else that FindFMs() might update.
                          We could just do that explicitly here of course, but as long as we're calling this anyway
                          we may as well let it do the work.
