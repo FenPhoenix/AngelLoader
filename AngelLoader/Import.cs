@@ -696,52 +696,112 @@ internal static class Import
         string[] lines = File.ReadAllLines(iniFile);
         var fms = new List<FanMission>();
 
+        static void TryAddToArchivesHash(string dir, HashSetI archivesHash)
+        {
+            try
+            {
+                // NDL always searches subdirectories as well
+                foreach (string f in Directory.GetFiles(dir, "*", SearchOption.AllDirectories))
+                {
+                    // @DIRSEP: '/' conversion due to string.ContainsI()
+                    if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
+                    {
+                        string fn = Path.GetFileName(f);
+                        if (!fn.IsWhiteSpace() &&
+                            fn.ExtIsArchive() &&
+                            !fn.ContainsI(Paths.FMSelBak))
+                        {
+                            archivesHash.Add(fn);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
+            }
+        }
+
+        // @Import(NDL): Test!
         static ImportError DoImport(string[] lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
-            string[]? _archiveDirFiles = null;
-            string[] GetArchiveDirFiles(string archiveDir) => _archiveDirFiles ??= Directory.GetFiles(archiveDir, "*", SearchOption.AllDirectories);
+            HashSetI archivesHash = new();
 
-            bool archiveDirRead = false;
-            string archiveDir = "";
+            #region Read archive directory
+
+            // Unfortunately NDL doesn't store its archive names, so we have to do a file search
+            // similar to DarkLoader
 
             for (int i = 0; i < lines.Length; i++)
             {
+                // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                 string line = lines[i];
 
-                #region Read archive directory
-
-                if (!archiveDirRead && line == "[Config]")
+                if (line == "[Config]")
                 {
+                    string archiveRoot = "";
+
+                    bool archiveRootFound = false;
+                    bool additionalArchiveRootsFound = false;
+
                     while (i < lines.Length - 1)
                     {
-                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lc = lines[i + 1];
                         if (lc.StartsWithFast("ArchiveRoot="))
                         {
-                            archiveDir = lc.Substring(12).Trim();
-                            break;
+                            archiveRootFound = true;
+                            string dir = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
+                            archiveRoot = dir;
+                            TryAddToArchivesHash(dir, archivesHash);
+                        }
+                        else if (lc.StartsWithFast("AdditionalArchiveRoots="))
+                        {
+                            additionalArchiveRootsFound = true;
+                            string val = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            string[] dirs = val.Split(CA_Semicolon, StringSplitOptions.RemoveEmptyEntries);
+                            for (int dirI = 0; dirI < dirs.Length; dirI++)
+                            {
+                                string dir = dirs[dirI].Trim();
+                                if (!archiveRoot.IsEmpty() && dir.PathEqualsI(archiveRoot))
+                                {
+                                    continue;
+                                }
+                                if (dir.IsWhiteSpace() || !Directory.Exists(dir))
+                                {
+                                    continue;
+                                }
+                                TryAddToArchivesHash(dir, archivesHash);
+                            }
                         }
                         else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
                         {
                             break;
                         }
+                        if (archiveRootFound && additionalArchiveRootsFound)
+                        {
+                            break;
+                        }
                         i++;
                     }
-
-                    if (archiveDir.IsEmpty()) return ImportError.NoArchiveDirsFound;
-
-                    i = -1;
-                    archiveDirRead = true;
-                    continue;
                 }
+            }
 
-                #endregion
+            #endregion
 
-                #region Read FM entries
+            if (archivesHash.Count == 0) return ImportError.NoArchiveDirsFound;
 
-                // MUST CHECK archiveDirRead OR IT ADDS EVERY FM TWICE!
-                if (archiveDirRead &&
-                    line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+            List<string> archivesList = archivesHash.ToList();
+            DictionaryI<FanMission> fmsInstalledDirDict = new();
+
+            #region Read FM entries (initial)
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                // @Import: NDL: We're not trimming these lines at all. Is this to spec?
+                string line = lines[i];
+
+                if (line.Length >= 5 && line.StartsWithFast("[FM="))
                 {
                     // @Import: There can be a problem like:
                     // installed name is CoolMission[1]
@@ -752,30 +812,7 @@ internal static class Import
                     string instName = line.Substring(4, line.Length - 5);
 
                     var fm = new FanMission { InstalledDir = instName };
-
-                    // Unfortunately NDL doesn't store its archive names, so we have to do a file search
-                    // similar to DarkLoader
-                    try
-                    {
-                        // NDL always searches subdirectories as well
-                        foreach (string f in GetArchiveDirFiles(archiveDir))
-                        {
-                            // @DIRSEP: '/' conversion due to string.ContainsI()
-                            if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
-                            {
-                                string fn = Path.GetFileNameWithoutExtension(f);
-                                if (fn.ToInstDirNameNDL(instDirNameContext, true).EqualsI(instName) || fn.EqualsI(instName))
-                                {
-                                    fm.Archive = Path.GetFileName(f);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
-                    }
+                    fmsInstalledDirDict[instName] = fm;
 
                     while (i < lines.Length - 1)
                     {
@@ -834,9 +871,27 @@ internal static class Import
 
                     fms.Add(fm);
                 }
-
-                #endregion
             }
+
+            #endregion
+
+            #region Set FM archive fields
+
+            for (int i = 0; i < archivesList.Count; i++)
+            {
+                // @Import(NDL set archive fields): Try really hard to make sure we get an archive for each FM
+
+                string archive = archivesList[i];
+                if (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) ||
+                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) ||
+                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true), out fm) ||
+                    fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false), out fm))
+                {
+                    fm.Archive = archive;
+                }
+            }
+
+            #endregion
 
             return ImportError.None;
         }
