@@ -514,7 +514,7 @@ internal static class Import
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.DarkLoader, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
 
         return (ImportError.None, importedFMs);
     }
@@ -931,6 +931,98 @@ internal static class Import
         return (ImportError.None, importedFMs);
     }
 
+    private static List<FanMission> MergeImportedFMData_DL(List<FanMission> importedFMs, FieldsToImport fields)
+    {
+        var importedFMsInMainList = new List<FanMission>();
+
+        DictionaryI<FanMission> archivesDict = new();
+        foreach (FanMission fm in FMDataIniList)
+        {
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            {
+                archivesDict[fm.Archive] = fm;
+            }
+        }
+
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
+                {
+                    mainFM.Title = importedFM.Title;
+                }
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                {
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                    mainFM.FinishedOnUnknown = false;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Size && mainFM.SizeBytes == 0)
+                {
+                    mainFM.SizeBytes = importedFM.SizeBytes;
+                }
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
+            }
+            else
+            {
+                var newFM = new FanMission
+                {
+                    Archive = importedFM.Archive,
+                    InstalledDir = importedFM.InstalledDir
+                };
+
+                if (fields.Title)
+                {
+                    newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                        !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                        importedFM.InstalledDir;
+                }
+                if (fields.ReleaseDate)
+                {
+                    newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.Comment)
+                {
+                    newFM.Comment = importedFM.Comment;
+                }
+                if (fields.Size)
+                {
+                    newFM.SizeBytes = importedFM.SizeBytes;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOn = importedFM.FinishedOn;
+                }
+
+                newFM.MarkedScanned = true;
+
+                FMDataIniList.Add(newFM);
+                importedFMsInMainList.Add(newFM);
+            }
+        }
+
+        return importedFMsInMainList;
+    }
+
     private static List<FanMission> MergeImportedFMData_NDL(List<FanMission> importedFMs, FieldsToImport fields)
     {
         var importedFMsInMainList = new List<FanMission>();
@@ -951,7 +1043,7 @@ internal static class Import
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
                 instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
