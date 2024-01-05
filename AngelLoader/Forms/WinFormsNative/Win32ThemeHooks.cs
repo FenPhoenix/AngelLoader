@@ -45,12 +45,16 @@ internal static class Win32ThemeHooks
 
     #region GetSysColorBrush
 
+#if !NETFRAMEWORK || !X64
+
     private static LocalHook? _getSysColorBrushHook;
 
     private static GetSysColorBrushDelegate? GetSysColorBrush_Original;
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
     private delegate IntPtr GetSysColorBrushDelegate(int nIndex);
+
+#endif
 
     #endregion
 
@@ -132,7 +136,9 @@ internal static class Win32ThemeHooks
         {
             // If we fail, oh well, just keep the classic-mode colors then... better than nothing
             _getSysColorHook?.Dispose();
+#if !NETFRAMEWORK || !X64
             _getSysColorBrushHook?.Dispose();
+#endif
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
         }
@@ -264,6 +270,8 @@ internal static class Win32ThemeHooks
             : GetSysColor_Original!(nIndex);
     }
 
+#if !NETFRAMEWORK || !X64
+
     private static IntPtr GetSysColorBrush_Hooked(int nIndex)
     {
         return !_disableHookedTheming && Global.Config.DarkMode
@@ -296,6 +304,8 @@ internal static class Win32ThemeHooks
             }
             : GetSysColorBrush_Original!(nIndex);
     }
+
+#endif
 
     #endregion
 
