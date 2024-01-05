@@ -603,6 +603,8 @@ internal static class Import
 
         static void DoImport(string[] lines, List<FanMission> fms)
         {
+            HashSetI fmArchivesHash = new();
+
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
@@ -630,17 +632,18 @@ internal static class Import
                         I thought only NDL had that functionality... Yikes... and FMSel even distinguishes
                         archives in different folders with a subdir prefix and a bracketed number after the
                         install dir name and all.
-
-                        @Import(FMSel subfolders):
-                        We should just remove the leading path and then do a hashset/list thing like DL/NDL.
-                        That will take care of the case where the subfolder file names are not in the list already.
-                        In the unlikely case that there are duplicate-named files in subfolders, there's nothing
-                        we can really do since we don't support this, so just taking the first is as good as any
-                        option.
                         */
                         else if (lineFM.StartsWithFast("Archive="))
                         {
-                            fm.Archive = lineFM.Substring(8);
+                            string archive = lineFM.Substring(8);
+                            /*
+                            FMSel searches subfolders and its archive fields can have leading relative paths
+                            (eg. "import_test\1999-06-04_PoorLordBafford.zip"). Stripping them takes care of the
+                            case where the subfolder file names are not in the list already. In the unlikely case
+                            that there are duplicate-named files in subfolders, there's nothing we can really do
+                            since we don't support this, so just taking the first is as good as any option.
+                            */
+                            fm.Archive = archive.GetFileNameFast();
                         }
                         else if (lineFM.StartsWithFast("ReleaseDate="))
                         {
@@ -688,7 +691,10 @@ internal static class Import
                         i++;
                     }
 
-                    fms.Add(fm);
+                    if (fmArchivesHash.Add(fm.Archive))
+                    {
+                        fms.Add(fm);
+                    }
                 }
             }
         }
@@ -700,6 +706,7 @@ internal static class Import
         return (ImportError.None, importedFMs);
     }
 
+    // @Import(NDL): NDL has a "relative paths" option - find out what this is and if we need to do anything to account for it
     private static (ImportError Error, List<FanMission> FMs)
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
