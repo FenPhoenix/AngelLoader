@@ -758,6 +758,7 @@ internal static class Import
                             archiveRoot = dir;
                             TryAddToArchivesHash(dir, archivesDict);
                         }
+                        // @Import(NDL): Test additional archive roots
                         else if (lc.StartsWithFast("AdditionalArchiveRoots="))
                         {
                             additionalArchiveRootsFound = true;
