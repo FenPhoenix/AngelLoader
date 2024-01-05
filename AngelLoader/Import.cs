@@ -611,6 +611,9 @@ internal static class Import
                 {
                     string instName = line.Substring(4, line.Length - 5);
 
+                    // @Import(FMSel): FMSel has number-append name collision handling, so we need to handle it
+                    // For scenarios where we have an installed dir but no archive name, we should try to do
+                    // something to still be able to merge it in. This situation is probably rare though.
                     var fm = new FanMission { InstalledDir = instName };
 
                     while (i < lines.Length - 1)
@@ -685,7 +688,7 @@ internal static class Import
 
         DoImport(lines, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.FMSel, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
 
         return (ImportError.None, importedFMs);
     }
@@ -1155,113 +1158,79 @@ internal static class Import
         return importedFMsInMainList;
     }
 
-    private static List<FanMission>
-    MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
+    private static List<FanMission> MergeImportedFMData_FMSel(List<FanMission> importedFMs, FieldsToImport fields)
     {
-        // Perf
-        int initCount = FMDataIniList.Count;
-        bool[] checkedArray = new bool[initCount];
-
-        // We can't just send back the list we got in, because we will have deep-copied them to the main list
         var importedFMsInMainList = new List<FanMission>();
 
-        for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
+        DictionaryI<FanMission> archivesDict = new();
+        DictionaryI<FanMission> instDirsDict = new();
+        foreach (FanMission fm in FMDataIniList)
         {
-            FanMission importedFM = importedFMs[impFMi];
-
-            bool existingFound = false;
-            for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
             {
-                FanMission mainFM = FMDataIniList[mainFMi];
+                archivesDict[fm.Archive] = fm;
+            }
+            if (!instDirsDict.ContainsKey(fm.InstalledDir))
+            {
+                instDirsDict[fm.InstalledDir] = fm;
+            }
+        }
 
-                if (!checkedArray[mainFMi] &&
-                    // @Import: Import match-up
-                    // We should match installed dirs better! Match to FMSel/NDL _-replace style, truncated
-                    // and not, etc... even bracket-numbered? D:
-                    ((importType == ImportType.DarkLoader &&
-                      mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                     (importType == ImportType.FMSel &&
-                      ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                       importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
-                     (importType == ImportType.NewDarkLoader &&
-                      ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                        importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)
-                      )
-                     )
-                    )
-                   )
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+                instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
                 {
-                    if (fields.Title && !importedFM.Title.IsEmpty())
-                    {
-                        mainFM.Title = importedFM.Title;
-                    }
-                    if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
-                    {
-                        mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
-                    }
-                    if (fields.LastPlayed)
-                    {
-                        mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
-                    }
+                    mainFM.Title = importedFM.Title;
+                }
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                {
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    mainFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    mainFM.DisabledMods = importedFM.DisabledMods;
+                    mainFM.DisableAllMods = mainFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    mainFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    mainFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
+                {
                     if (fields.FinishedOn)
                     {
-                        mainFM.FinishedOn = importedFM.FinishedOn;
-                        if (importType != ImportType.FMSel)
-                        {
-                            mainFM.FinishedOnUnknown = false;
-                        }
+                        mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                     }
-                    if (fields.Comment)
-                    {
-                        mainFM.Comment = importedFM.Comment;
-                    }
-
-                    if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
-                    {
-                        if (fields.Rating)
-                        {
-                            mainFM.Rating = importedFM.Rating;
-                        }
-                        if (fields.DisabledMods)
-                        {
-                            mainFM.DisabledMods = importedFM.DisabledMods;
-                            mainFM.DisableAllMods = mainFM.DisabledMods == "*";
-                        }
-                        if (fields.Tags)
-                        {
-                            mainFM.TagsString = importedFM.TagsString;
-                        }
-                        if (fields.SelectedReadme)
-                        {
-                            mainFM.SelectedReadme = importedFM.SelectedReadme;
-                        }
-                    }
-                    if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
-                    {
-                        if (fields.Size && mainFM.SizeBytes == 0)
-                        {
-                            mainFM.SizeBytes = importedFM.SizeBytes;
-                        }
-                    }
-                    else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
-                    {
-                        if (fields.FinishedOn)
-                        {
-                            mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
-                        }
-                    }
-
-                    mainFM.MarkedScanned = true;
-
-                    checkedArray[mainFMi] = true;
-
-                    importedFMsInMainList.Add(mainFM);
-
-                    existingFound = true;
-                    break;
                 }
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
             }
-            if (!existingFound)
+            else
             {
                 var newFM = new FanMission
                 {
@@ -1287,44 +1256,26 @@ internal static class Import
                 {
                     newFM.Comment = importedFM.Comment;
                 }
-
-                if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
+                if (fields.Rating)
                 {
-                    if (fields.Rating)
-                    {
-                        newFM.Rating = importedFM.Rating;
-                    }
-                    if (fields.DisabledMods)
-                    {
-                        newFM.DisabledMods = importedFM.DisabledMods;
-                        newFM.DisableAllMods = newFM.DisabledMods == "*";
-                    }
-                    if (fields.Tags)
-                    {
-                        newFM.TagsString = importedFM.TagsString;
-                    }
-                    if (fields.SelectedReadme)
-                    {
-                        newFM.SelectedReadme = importedFM.SelectedReadme;
-                    }
+                    newFM.Rating = importedFM.Rating;
                 }
-                if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
+                if (fields.DisabledMods)
                 {
-                    if (fields.Size)
-                    {
-                        newFM.SizeBytes = importedFM.SizeBytes;
-                    }
-                    if (fields.FinishedOn)
-                    {
-                        newFM.FinishedOn = importedFM.FinishedOn;
-                    }
+                    newFM.DisabledMods = importedFM.DisabledMods;
+                    newFM.DisableAllMods = newFM.DisabledMods == "*";
                 }
-                else if (importType == ImportType.FMSel)
+                if (fields.Tags)
                 {
-                    if (fields.FinishedOn)
-                    {
-                        newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
-                    }
+                    newFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    newFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                 }
 
                 newFM.MarkedScanned = true;
