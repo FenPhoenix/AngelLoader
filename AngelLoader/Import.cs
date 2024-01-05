@@ -630,6 +630,13 @@ internal static class Import
                         I thought only NDL had that functionality... Yikes... and FMSel even distinguishes
                         archives in different folders with a subdir prefix and a bracketed number after the
                         install dir name and all.
+
+                        @Import(FMSel subfolders):
+                        We should just remove the leading path and then do a hashset/list thing like DL/NDL.
+                        That will take care of the case where the subfolder file names are not in the list already.
+                        In the unlikely case that there are duplicate-named files in subfolders, there's nothing
+                        we can really do since we don't support this, so just taking the first is as good as any
+                        option.
                         */
                         else if (lineFM.StartsWithFast("Archive="))
                         {
