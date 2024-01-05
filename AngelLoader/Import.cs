@@ -145,6 +145,8 @@ internal static class Import
 
         InstDirNameContext instDirNameContext = new();
 
+        Ini.WriteFullFMDataIni(makeBackup: true);
+
         // For DarkLoader this will be only one file, so it works out.
         // This is so we can keep just the one await call.
         foreach (string iniFile in iniFiles)
