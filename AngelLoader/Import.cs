@@ -598,14 +598,15 @@ internal static class Import
     private static (ImportError Error, List<FanMission> FMs)
     ImportFMSelInternal(string iniFile, FieldsToImport fields)
     {
-        string[] lines = File.ReadAllLines(iniFile);
+        // As far as can be ascertained through manual testing, FMSel seems to read/write its ini file in UTF8.
+        List<string> lines = File_ReadAllLines_List(iniFile);
         var fms = new List<FanMission>();
 
-        static void DoImport(string[] lines, List<FanMission> fms)
+        static void DoImport(List<string> lines, List<FanMission> fms)
         {
             HashSetI fmArchivesHash = new();
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 string line = lines[i];
 
@@ -618,7 +619,7 @@ internal static class Import
                     // something to still be able to merge it in. This situation is probably rare though.
                     var fm = new FanMission { InstalledDir = instName };
 
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         // @Import: FMSel: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
