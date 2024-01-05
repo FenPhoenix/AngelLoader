@@ -693,7 +693,8 @@ internal static class Import
     private static (ImportError Error, List<FanMission> FMs)
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
-        string[] lines = File.ReadAllLines(iniFile);
+        // NewDarkLoader uses Encoding.Default for NewDarkLoader.ini, confirmed from source and testing 1.7.0
+        List<string> lines = File_ReadAllLines_List(iniFile, Encoding.Default, true);
         var fms = new List<FanMission>();
 
         static void TryAddToArchivesHash(string dir, HashSetI archivesHash)
@@ -723,7 +724,7 @@ internal static class Import
         }
 
         // @Import(NDL): Test!
-        static ImportError DoImport(string[] lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
+        static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
             HashSetI archivesHash = new();
 
@@ -732,7 +733,7 @@ internal static class Import
             // Unfortunately NDL doesn't store its archive names, so we have to do a file search
             // similar to DarkLoader
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                 string line = lines[i];
@@ -744,7 +745,7 @@ internal static class Import
                     bool archiveRootFound = false;
                     bool additionalArchiveRootsFound = false;
 
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         string lc = lines[i + 1];
                         if (lc.StartsWithFast("ArchiveRoot="))
@@ -796,7 +797,7 @@ internal static class Import
 
             #region Read FM entries (initial)
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                 string line = lines[i];
@@ -814,7 +815,7 @@ internal static class Import
                     var fm = new FanMission { InstalledDir = instName };
                     fmsInstalledDirDict[instName] = fm;
 
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
